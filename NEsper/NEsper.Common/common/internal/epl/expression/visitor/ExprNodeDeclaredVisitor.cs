@@ -26,6 +26,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
             DeclaredExpressions = new List<ExprDeclaredNode>(1);
         }
 
+                
+        public bool IsWalkDeclExprParam => true;
+
         public IList<ExprDeclaredNode> DeclaredExpressions { get; }
 
         public bool IsVisit(ExprNode exprNode)

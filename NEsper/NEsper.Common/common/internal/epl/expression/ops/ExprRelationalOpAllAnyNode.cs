@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.type;
@@ -25,10 +24,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     [Serializable]
     public class ExprRelationalOpAllAnyNode : ExprNodeBase
     {
-        private readonly RelationalOpEnum relationalOpEnum;
-        private readonly bool isAll;
+        private readonly RelationalOpEnum _relationalOpEnum;
+        private readonly bool _isAll;
 
-        [NonSerialized] private ExprRelationalOpAllAnyNodeForge forge;
+        [NonSerialized] private ExprRelationalOpAllAnyNodeForge _forge;
 
         /// <summary>
         /// Ctor.
@@ -39,19 +38,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             RelationalOpEnum relationalOpEnum,
             bool isAll)
         {
-            this.relationalOpEnum = relationalOpEnum;
-            this.isAll = isAll;
+            this._relationalOpEnum = relationalOpEnum;
+            this._isAll = isAll;
         }
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
         public override ExprForge Forge {
-            get => forge;
+            get => _forge;
         }
 
         public bool IsConstantResult {
@@ -63,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         /// </summary>
         /// <returns>indicator all or any</returns>
         public bool IsAll {
-            get => isAll;
+            get => _isAll;
         }
 
         /// <summary>
@@ -71,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         /// </summary>
         /// <returns>enum with relational op type</returns>
         public RelationalOpEnum RelationalOpEnum {
-            get => relationalOpEnum;
+            get => _relationalOpEnum;
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)
@@ -132,16 +131,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
             }
 
-            RelationalOpEnumComputer computer = relationalOpEnum.GetComputer(coercionType, coercionType, coercionType);
-            forge = new ExprRelationalOpAllAnyNodeForge(this, computer, hasCollectionOrArray);
+            RelationalOpEnumComputer computer = _relationalOpEnum.GetComputer(coercionType, coercionType, coercionType);
+            _forge = new ExprRelationalOpAllAnyNodeForge(this, computer, hasCollectionOrArray);
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
-            ChildNodes[0].ToEPL(writer, Precedence);
-            writer.Write(relationalOpEnum.GetExpressionText());
-            if (isAll) {
+            ChildNodes[0].ToEPL(writer, Precedence, flags);
+            writer.Write(_relationalOpEnum.GetExpressionText());
+            if (_isAll) {
                 writer.Write("all");
             }
             else {
@@ -153,7 +153,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             for (int i = 0; i < ChildNodes.Length - 1; i++) {
                 writer.Write(delimiter);
-                ChildNodes[i + 1].ToEPL(writer, Precedence);
+                ChildNodes[i + 1].ToEPL(writer, Precedence, flags);
                 delimiter = ",";
             }
 
@@ -174,8 +174,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             ExprRelationalOpAllAnyNode other = (ExprRelationalOpAllAnyNode) node;
 
-            if ((other.relationalOpEnum != relationalOpEnum) ||
-                (other.isAll != isAll)) {
+            if ((other._relationalOpEnum != _relationalOpEnum) ||
+                (other._isAll != _isAll)) {
                 return false;
             }
 

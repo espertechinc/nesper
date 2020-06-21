@@ -13,20 +13,21 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.resultset.select.typable;
 
 namespace com.espertech.esper.common.@internal.epl.expression.etc
 {
-    public class ExprEvalEnumerationAtBeanSingleForge : ExprForge
+    public class ExprEvalEnumerationAtBeanSingleForge : ExprForge, SelectExprProcessorTypableForge
     {
-        internal readonly ExprEnumerationForge enumerationForge;
-        private readonly EventType eventTypeSingle;
+        private readonly ExprEnumerationForge _enumerationForge;
+        private readonly EventType _eventTypeSingle;
 
         public ExprEvalEnumerationAtBeanSingleForge(
             ExprEnumerationForge enumerationForge,
             EventType eventTypeSingle)
         {
-            this.enumerationForge = enumerationForge;
-            this.eventTypeSingle = eventTypeSingle;
+            this._enumerationForge = enumerationForge;
+            this._eventTypeSingle = eventTypeSingle;
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -39,15 +40,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return enumerationForge.EvaluateGetEventBeanCodegen(codegenMethodScope, exprSymbol, codegenClassScope);
+            return _enumerationForge.EvaluateGetEventBeanCodegen(codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
+
         public Type EvaluationType {
-            get => eventTypeSingle.UnderlyingType;
+            get => typeof(EventBean);
+        }
+
+        public Type  UnderlyingEvaluationType {
+            get => _eventTypeSingle.UnderlyingType;
         }
 
         public ExprNodeRenderable ExprForgeRenderable {
-            get => enumerationForge.EnumForgeRenderable;
+            get => _enumerationForge.EnumForgeRenderable;
         }
 
         public ExprForgeConstantType ForgeConstantType {

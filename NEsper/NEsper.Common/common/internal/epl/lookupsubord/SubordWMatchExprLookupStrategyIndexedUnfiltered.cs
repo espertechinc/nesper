@@ -13,7 +13,6 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.lookup;
 using com.espertech.esper.common.@internal.epl.lookupplansubord;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.lookupsubord
@@ -56,11 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
                 removeEvents.AddAll(matches);
             }
 
-            if (removeEvents == null) {
-                return null;
-            }
-
-            EventBean[] result = removeEvents.ToArray();
+            EventBean[] result = removeEvents?.ToArray();
 
             return result;
         }

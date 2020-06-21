@@ -10,6 +10,7 @@ using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.client.metric;
 using com.espertech.esper.common.client.variable;
 using com.espertech.esper.runtime.client;
+using com.espertech.esper.runtime.@internal.kernel.stage;
 
 namespace com.espertech.esper.runtime.@internal.kernel.service
 {
@@ -23,7 +24,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             EPContextPartitionService contextPartitionService,
             EPVariableService variableService,
             EPMetricsService metricsService,
-            EPFireAndForgetService fireAndForgetService)
+            EPFireAndForgetService fireAndForgetService,
+            EPStageServiceSPI stageService)
         {
             Services = services;
             Runtime = eventService;
@@ -33,6 +35,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             VariableService = variableService;
             MetricsService = metricsService;
             FireAndForgetService = fireAndForgetService;
+            StageService = stageService;
         }
 
         public EPServicesContext Services { get; }
@@ -52,5 +55,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         public EPMetricsService MetricsService { get; }
 
         public EPFireAndForgetService FireAndForgetService { get; }
+        
+        public EPStageServiceSPI StageService { get; }
     }
 } // end of namespace

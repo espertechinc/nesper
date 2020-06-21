@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public IList<CodegenNamedParam> ParamNames { get; }
 
-        public CodegenBlock Block { get; internal set; }
+        public CodegenBlock Block { get; }
 
         public CodegenExpressionLambda WithLambdaType(Type lambdaType)
         {
@@ -56,6 +56,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         public CodegenExpressionLambda WithParams(IEnumerable<CodegenNamedParam> argNames)
         {
             ParamNames.AddAll(argNames);
+            return this;
+        }
+
+        public CodegenExpressionLambda WithParam(CodegenNamedParam param)
+        {
+            ParamNames.Add(param);
             return this;
         }
 
@@ -114,6 +120,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         {
             ParamNames.ForEach(paramName => paramName.MergeClasses(classes));
             Block.MergeClasses(classes);
+        }
+
+        public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            // TODO
+            Block.Statements.ForEach(statement => {
+                statement.TraverseExpressions(consumer);
+            });
         }
     }
 } // end of namespace

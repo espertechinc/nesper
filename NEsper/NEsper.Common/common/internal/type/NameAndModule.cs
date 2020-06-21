@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,7 +18,7 @@ namespace com.espertech.esper.common.@internal.type
 {
     public class NameAndModule
     {
-        public readonly static NameAndModule[] EMPTY_ARRAY = new NameAndModule[0];
+        public static readonly NameAndModule[] EMPTY_ARRAY = new NameAndModule[0];
 
         private readonly string name;
         private readonly string moduleName;

@@ -14,11 +14,13 @@ using com.espertech.esper.common.client.hook.forgeinject;
 using com.espertech.esper.common.client.hook.vdw;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -36,6 +38,12 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
         private int _streamNumber;
         private ExprNode[] _validatedParameterExpressions;
         private ViewForgeEnv _viewForgeEnv;
+
+        public ISet<string> UniqueKeys => _forge.UniqueKeyPropertyNames;
+
+        public EventType EventType { get; private set; }
+
+        public string ViewName => "virtual-data-window";
 
         public VirtualDWViewFactoryForge(
             Type clazz,
@@ -55,7 +63,22 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             _customConfigs = customConfigs;
         }
 
-        public ISet<string> UniqueKeys => _forge.UniqueKeyPropertyNames;
+        public virtual IList<ViewFactoryForge> InnerForges => EmptyList<ViewFactoryForge>.Instance;
+
+        public virtual IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
+        {
+            return EmptyList<StmtClassForgeableFactory>.Instance;
+        }
+
+        public void SetViewParameters(
+            IList<ExprNode> parameters,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber)
+        {
+            _parameters = parameters;
+            _viewForgeEnv = viewForgeEnv;
+            _streamNumber = streamNumber;
+        }
 
         public void Attach(
             EventType parentEventType,
@@ -104,10 +127,6 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
                     ex);
             }
         }
-
-        public EventType EventType { get; private set; }
-
-        public string ViewName => "virtual-data-window";
 
         public CodegenExpression Make(
             CodegenMethodScope parent,
@@ -164,15 +183,6 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             return builder.Build();
         }
 
-        public void SetViewParameters(
-            IList<ExprNode> parameters,
-            ViewForgeEnv viewForgeEnv,
-            int streamNumber)
-        {
-            _parameters = parameters;
-            _viewForgeEnv = viewForgeEnv;
-            _streamNumber = streamNumber;
-        }
 
         public void Accept(ViewForgeVisitor visitor)
         {

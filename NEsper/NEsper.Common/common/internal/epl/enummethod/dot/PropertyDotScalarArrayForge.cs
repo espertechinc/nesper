@@ -165,7 +165,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 typeof(PropertyDotScalarArrayForge),
                 codegenClassScope);
             method.Block
-                .IfRefNullReturnNull(symbols.GetAddEvent(method))
+                .IfNullReturnNull(symbols.GetAddEvent(method))
                 .MethodReturn(
                     CodegenEvaluateGetInternal(symbols.GetAddEvent(method), methodScope, codegenClassScope));
             return LocalMethod(method);
@@ -187,9 +187,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             return ConstantNull();
         }
 
-        public void ToEPL(
-            TextWriter writer,
-            ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(GetType().Name);
         }
@@ -212,7 +212,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                             Ref("@event"),
                             codegenMethodScope,
                             codegenClassScope)));
-            return LocalMethodBuild(method).Pass(@event).Pass(evalctx).Call();
+            return LocalMethodBuild(method)
+                .Pass(@event)
+                .Pass(evalctx).
+                Call();
         }
 
         private ICollection<object> EvaluateGetInternal(EventBean @event)
@@ -260,7 +263,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                             Ref("value"))));
             }
             else {
-                method = block.MethodReturn(Ref("value"));
+                method = block.MethodReturn(FlexWrap(Ref("value")));
             }
 
             return LocalMethodBuild(method).Pass(@event).Call();

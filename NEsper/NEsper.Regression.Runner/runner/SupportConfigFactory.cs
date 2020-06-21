@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.IO;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
@@ -14,7 +15,9 @@ using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.regressionlib.support.util;
 
-namespace com.espertech.esper.regressionrun.Runner
+using NEsper.Scripting.ClearScript;
+
+namespace com.espertech.esper.regressionrun.runner
 {
     public class SupportConfigFactory
     {
@@ -46,10 +49,27 @@ namespace com.espertech.esper.regressionrun.Runner
             else
             {
                 config = new Configuration(container);
+
+                config.Common.Scripting.AddEngine(typeof(ScriptingEngineJScript));
+                
+                // Runtime
                 config.Runtime.Threading.IsInternalTimerEnabled = false;
                 config.Runtime.ExceptionHandling.AddClass(typeof(SupportExceptionHandlerFactoryRethrow));
                 config.Runtime.ExceptionHandling.UndeployRethrowPolicy = UndeployRethrowPolicy.RETHROW_FIRST;
+                
+                // Compiler
                 config.Compiler.ByteCode.AttachEPL = true;
+                config.Compiler.Logging.AuditDirectory = "C:\\src\\Espertech\\NEsper-8.5.0\\NEsper\\NEsper.Regression.Review\\generated";
+
+                if (!string.IsNullOrWhiteSpace(config.Compiler.Logging.AuditDirectory)) {
+                    try {
+                        Directory.Delete(config.Compiler.Logging.AuditDirectory, true);
+                    }
+                    catch (DirectoryNotFoundException) {
+                    }
+
+                    Directory.CreateDirectory(config.Compiler.Logging.AuditDirectory);
+                }
 
                 if (Environment.GetEnvironmentVariable(SYSTEM_PROPERTY_LOG_CODE) != null)
                 {

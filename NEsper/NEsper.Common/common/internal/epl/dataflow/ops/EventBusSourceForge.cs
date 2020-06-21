@@ -59,16 +59,17 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             DataFlowParameterValidation.Validate("filter", filter, eventType, typeof(bool), context);
 
             try {
-                IList<ExprNode> filters = new EmptyList<ExprNode>();
+                IList<ExprNode> filters = EmptyList<ExprNode>.Instance;
                 if (filter != null) {
                     filters = Collections.SingletonList(filter);
                 }
 
                 var streamTypeService = new StreamTypeServiceImpl(eventType, eventType.Name, true);
-                FilterSpecCompiled = FilterSpecCompiler.MakeFilterSpec(
+                var compiledDesc = FilterSpecCompiler.MakeFilterSpec(
                     eventType,
                     eventType.Name,
                     filters,
+                    null,
                     null,
                     null,
                     null,
@@ -76,6 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                     null,
                     context.StatementRawInfo,
                     context.Services);
+                FilterSpecCompiled = compiledDesc.FilterSpecCompiled;
             }
             catch (ExprValidationException ex) {
                 throw new ExprValidationException("Failed to obtain filter parameters: " + ex.Message, ex);

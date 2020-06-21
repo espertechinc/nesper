@@ -8,7 +8,7 @@
 
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.supportunit.util;
-using com.espertech.esper.container;
+
 using NUnit.Framework;
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCompare;
 
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             Assert.AreEqual(expected, DeepEqualsIgnoreDupAndOrder(setTwo, setOne));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestDeepEquals()
         {
             Assert.IsFalse(DeepEquals(supportExprNodeFactory.Make2SubNodeAnd(), supportExprNodeFactory.Make3SubNodeAnd(), false));
@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             Assert.IsTrue(DeepEquals(supportExprNodeFactory.Make3SubNodeAnd(), supportExprNodeFactory.Make3SubNodeAnd(), false));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestDeepEqualsIgnoreOrder()
         {
             // compare on set being empty
@@ -108,7 +108,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ComparePermutations(true, new ExprNode[] {e2, e1, e2}, new ExprNode[] {e2, e1});
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestDeepEqualsIsSubset()
         {
             Assert.IsTrue(DeepEqualsIsSubset(empty, empty));

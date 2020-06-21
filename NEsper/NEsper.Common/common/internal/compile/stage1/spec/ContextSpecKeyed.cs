@@ -10,6 +10,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.controller.condition;
 using com.espertech.esper.common.@internal.context.controller.keyed;
@@ -36,6 +37,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         public ContextSpecCondition OptionalTermination { get; set; }
 
         public IList<ContextSpecConditionFilter> OptionalInit { get; }
+        
+        public MultiKeyClassRef MultiKeyClassRef { get; set; }
 
         public CodegenExpression MakeCodegen(
             CodegenMethodScope parent,
@@ -55,10 +58,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             }
 
             method.Block
-                .DeclareVar<ContextControllerDetailKeyed>(
-                    "detail",
-                    NewInstance(typeof(ContextControllerDetailKeyed)))
-                .SetProperty(Ref("detail"), "Items", Ref("items"));
+                .DeclareVar<ContextControllerDetailKeyed>("detail", NewInstance(typeof(ContextControllerDetailKeyed)))
+                .SetProperty(Ref("detail"), "Items", Ref("items"))
+                .SetProperty(Ref("detail"), "MultiKeyFromObjectArray", MultiKeyCodegen.CodegenMultiKeyFromArrayTransform(MultiKeyClassRef, method, classScope));
 
             if (OptionalInit != null && !OptionalInit.IsEmpty()) {
                 method.Block.DeclareVar<ContextConditionDescriptorFilter[]>(

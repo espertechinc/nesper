@@ -6,17 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.@internal.epl.lookup;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.airegistry
 {
     public class AIRegistryFactoryMap : AIRegistryFactory
     {
-        public readonly static AIRegistryFactoryMap INSTANCE = new AIRegistryFactoryMap();
+        public static readonly AIRegistryFactoryMap INSTANCE = new AIRegistryFactoryMap();
 
         private AIRegistryFactoryMap()
         {

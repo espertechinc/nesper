@@ -77,9 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
 
         public override void RemoveMatch(ISet<EventBean> matchEvent)
         {
-            if (topStateNode != null) {
-                topStateNode.RemoveMatch(matchEvent);
-            }
+            topStateNode?.RemoveMatch(matchEvent);
         }
 
         public void EvaluateTrue(
@@ -117,9 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         public override void Quit()
         {
             rootNode.agentInstanceContext.InstrumentationProvider.QPatternRootQuit();
-            if (topStateNode != null) {
-                topStateNode.Quit();
-            }
+            topStateNode?.Quit();
 
             topStateNode = null;
             rootNode.agentInstanceContext.InstrumentationProvider.APatternRootQuit();
@@ -136,9 +132,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         public override void Accept(EvalStateNodeVisitor visitor)
         {
             visitor.VisitRoot(this);
-            if (topStateNode != null) {
-                topStateNode.Accept(visitor);
-            }
+            topStateNode?.Accept(visitor);
         }
 
         public override string ToString()

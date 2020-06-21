@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -23,8 +22,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             bool isGenerateSynthetic);
 
         void ProcessJoin(
-            ISet<MultiKey<EventBean>> newData,
-            ISet<MultiKey<EventBean>> oldData,
+            ISet<MultiKeyArrayOfKeys<EventBean>> newData,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldData,
             bool isGenerateSynthetic);
 
         UniformPair<EventBean[]> OutputView(bool isSynthesize);

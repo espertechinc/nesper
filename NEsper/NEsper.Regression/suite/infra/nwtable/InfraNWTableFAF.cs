@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -27,6 +28,8 @@ using com.espertech.esper.runtime.client;
 using NEsper.Avro.Extensions;
 using NEsper.Avro.Util.Support;
 
+using Newtonsoft.Json.Linq;
+
 using NUnit.Framework;
 
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
@@ -41,61 +44,164 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         {
             var execs = new List<RegressionExecution>();
 
+            WithSelectWildcard(execs);
+            WithSelectWildcardSceneTwo(execs);
+            WithInsert(execs);
+            WithUpdate(execs);
+            WithDelete(execs);
+            WithDeleteContextPartitioned(execs);
+            WithSelectCountStar(execs);
+            WithAggUngroupedRowForAll(execs);
+            WithInClause(execs);
+            WithAggUngroupedRowForGroup(execs);
+            WithJoin(execs);
+            WithAggUngroupedRowForEvent(execs);
+            WithJoinWhere(execs);
+            With3StreamInnerJoin(execs);
+            WithExecuteFilter(execs);
+            WithInvalid(execs);
+            WithSelectDistinct(execs);
+
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectWildcard(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraSelectWildcard(true));
             execs.Add(new InfraSelectWildcard(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithSelectWildcardSceneTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraSelectWildcardSceneTwo(true));
             execs.Add(new InfraSelectWildcardSceneTwo(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithInsert(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraInsert(true));
             execs.Add(new InfraInsert(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithUpdate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraUpdate(true));
             execs.Add(new InfraUpdate(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithDelete(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraDelete(true));
             execs.Add(new InfraDelete(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithDeleteContextPartitioned(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraDeleteContextPartitioned(true));
             execs.Add(new InfraDeleteContextPartitioned(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithSelectCountStar(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraSelectCountStar(true));
             execs.Add(new InfraSelectCountStar(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithAggUngroupedRowForAll(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraAggUngroupedRowForAll(true));
             execs.Add(new InfraAggUngroupedRowForAll(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithInClause(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraInClause(true));
             execs.Add(new InfraInClause(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithAggUngroupedRowForGroup(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraAggUngroupedRowForGroup(true));
             execs.Add(new InfraAggUngroupedRowForGroup(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraJoin(true, true));
             execs.Add(new InfraJoin(false, false));
             execs.Add(new InfraJoin(true, false));
             execs.Add(new InfraJoin(false, true));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithAggUngroupedRowForEvent(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraAggUngroupedRowForEvent(true));
             execs.Add(new InfraAggUngroupedRowForEvent(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithJoinWhere(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraJoinWhere(true));
             execs.Add(new InfraJoinWhere(false));
+            return execs;
+        }
 
-            foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+        public static IList<RegressionExecution> With3StreamInnerJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                 execs.Add(new Infra3StreamInnerJoin(rep, true));
                 execs.Add(new Infra3StreamInnerJoin(rep, false));
             }
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithExecuteFilter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraExecuteFilter(true));
             execs.Add(new InfraExecuteFilter(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraInvalid(true));
             execs.Add(new InfraInvalid(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithSelectDistinct(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraSelectDistinct(true));
             execs.Add(new InfraSelectDistinct(false));
-
             return execs;
         }
 
@@ -238,6 +344,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 }
 
                 env.EventService.SendEventAvro(record, eventName);
+            } else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
+                var @event = new JObject();
+                foreach (var attribute in attributes) {
+                    var key = attribute.Split('=')[0];
+                    var value = attribute.Split('=')[1];
+                    @event.Add(key, value);
+                }
+                env.EventService.SendEventJson(@event.ToString(), eventName);
             }
             else {
                 Assert.Fail();
@@ -373,11 +487,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             return env.Runtime.FireAndForgetService.ExecuteQuery(compiled);
         }
 
-        internal class InfraSelectDistinct : RegressionExecution
+        public class InfraSelectDistinct : RegressionExecution
         {
             private readonly bool namedWindow;
 
-            internal InfraSelectDistinct(bool namedWindow)
+            public InfraSelectDistinct(bool namedWindow)
             {
                 this.namedWindow = namedWindow;
             }
@@ -425,11 +539,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             }
         }
 
-        internal class InfraExecuteFilter : RegressionExecution
+        public class InfraExecuteFilter : RegressionExecution
         {
             private readonly bool namedWindow;
 
-            internal InfraExecuteFilter(bool namedWindow)
+            public InfraExecuteFilter(bool namedWindow)
             {
                 this.namedWindow = namedWindow;
             }
@@ -455,11 +569,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             }
         }
 
-        internal class InfraInvalid : RegressionExecution
+        public class InfraInvalid : RegressionExecution
         {
             private readonly bool namedWindow;
 
-            internal InfraInvalid(bool namedWindow)
+            public InfraInvalid(bool namedWindow)
             {
                 this.namedWindow = namedWindow;
             }
@@ -478,13 +592,6 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 epl = "selectoo man";
                 TryInvalidFAFCompile(env, path, epl, "Incorrect syntax near 'selectoo' [selectoo man]");
-
-                epl = "select (select * from MyInfra) from MyInfra";
-                TryInvalidFAFCompile(
-                    env,
-                    path,
-                    epl,
-                    "Subqueries are not a supported feature of on-demand queries [select (select * from MyInfra) from MyInfra]");
 
                 epl = "select * from MyInfra output every 10 seconds";
                 TryInvalidFAFCompile(
@@ -564,12 +671,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             }
         }
 
-        internal class Infra3StreamInnerJoin : RegressionExecution
+        public class Infra3StreamInnerJoin : RegressionExecution
         {
             private readonly EventRepresentationChoice eventRepresentationEnum;
             private readonly bool namedWindow;
 
-            internal Infra3StreamInnerJoin(
+            public Infra3StreamInnerJoin(
                 EventRepresentationChoice eventRepresentationEnum,
                 bool namedWindow)
             {
@@ -579,21 +686,17 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public void Run(RegressionEnvironment env)
             {
-                var eplEvents = eventRepresentationEnum.GetAnnotationText() +
-                                " create schema Product (ProductId string, CategoryId string);" +
-                                eventRepresentationEnum.GetAnnotationText() +
-                                " create schema Category (CategoryId string, Owner string);" +
-                                eventRepresentationEnum.GetAnnotationText() +
-                                " create schema ProductOwnerDetails (ProductId string, Owner string);";
+                var eplEvents =
+                    eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedProduct>() + " create schema Product (ProductId string, CategoryId string);" +
+                    eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedCategory>() + " create schema Category (CategoryId string, Owner string);" +
+                    eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedProductOwnerDetails>() + " create schema ProductOwnerDetails (ProductId string, Owner string);";
+
                 string epl;
                 if (namedWindow) {
                     epl = eplEvents +
-                          eventRepresentationEnum.GetAnnotationText() +
-                          " create window WinProduct#keepall as select * from Product;" +
-                          eventRepresentationEnum.GetAnnotationText() +
-                          " create window WinCategory#keepall as select * from Category;" +
-                          eventRepresentationEnum.GetAnnotationText() +
-                          " create window WinProductOwnerDetails#keepall as select * from ProductOwnerDetails;" +
+                          "create window WinProduct#keepall as select * from Product;" +
+                          "create window WinCategory#keepall as select * from Category;" +
+                          "create window WinProductOwnerDetails#keepall as select * from ProductOwnerDetails;" +
                           "insert into WinProduct select * from Product;" +
                           "insert into WinCategory select * from Category;" +
                           "insert into WinProductOwnerDetails select * from ProductOwnerDetails;";
@@ -705,11 +808,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             }
         }
 
-        internal class InfraJoinWhere : RegressionExecution
+        public class InfraJoinWhere : RegressionExecution
         {
             private readonly bool namedWindow;
 
-            internal InfraJoinWhere(bool namedWindow)
+            public InfraJoinWhere(bool namedWindow)
             {
                 this.namedWindow = namedWindow;
             }
@@ -799,11 +902,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             }
         }
 
-        internal class InfraAggUngroupedRowForEvent : RegressionExecution
+        public class InfraAggUngroupedRowForEvent : RegressionExecution
         {
             private readonly bool namedWindow;
 
-            internal InfraAggUngroupedRowForEvent(bool namedWindow)
+            public InfraAggUngroupedRowForEvent(bool namedWindow)
             {
                 this.namedWindow = namedWindow;
             }
@@ -838,12 +941,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             }
         }
 
-        internal class InfraJoin : RegressionExecution
+        public class InfraJoin : RegressionExecution
         {
             private readonly bool isFirstNW;
             private readonly bool isSecondNW;
 
-            internal InfraJoin(
+            public InfraJoin(
                 bool isFirstNW,
                 bool isSecondNW)
             {
@@ -895,11 +998,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             }
         }
 
-        internal class InfraAggUngroupedRowForGroup : RegressionExecution
+        public class InfraAggUngroupedRowForGroup : RegressionExecution
         {
             private readonly bool namedWindow;
 
-            internal InfraAggUngroupedRowForGroup(bool namedWindow)
+            public InfraAggUngroupedRowForGroup(bool namedWindow)
             {
                 this.namedWindow = namedWindow;
             }
@@ -933,11 +1036,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             }
         }
 
-        internal class InfraInClause : RegressionExecution
+        public class InfraInClause : RegressionExecution
         {
             private readonly bool namedWindow;
 
-            internal InfraInClause(bool namedWindow)
+            public InfraInClause(bool namedWindow)
             {
                 this.namedWindow = namedWindow;
             }
@@ -973,11 +1076,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             }
         }
 
-        internal class InfraAggUngroupedRowForAll : RegressionExecution
+        public class InfraAggUngroupedRowForAll : RegressionExecution
         {
             private readonly bool namedWindow;
 
-            internal InfraAggUngroupedRowForAll(bool namedWindow)
+            public InfraAggUngroupedRowForAll(bool namedWindow)
             {
                 this.namedWindow = namedWindow;
             }
@@ -1009,11 +1112,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             }
         }
 
-        internal class InfraSelectCountStar : RegressionExecution
+        public class InfraSelectCountStar : RegressionExecution
         {
             private readonly bool namedWindow;
 
-            internal InfraSelectCountStar(bool namedWindow)
+            public InfraSelectCountStar(bool namedWindow)
             {
                 this.namedWindow = namedWindow;
             }
@@ -1091,11 +1194,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             }
         }
 
-        internal class InfraSelectWildcard : RegressionExecution
+        public class InfraSelectWildcard : RegressionExecution
         {
             private readonly bool namedWindow;
 
-            internal InfraSelectWildcard(bool namedWindow)
+            public InfraSelectWildcard(bool namedWindow)
             {
                 this.namedWindow = namedWindow;
             }
@@ -1139,11 +1242,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             }
         }
 
-        internal class InfraSelectWildcardSceneTwo : RegressionExecution
+        public class InfraSelectWildcardSceneTwo : RegressionExecution
         {
             private readonly bool namedWindow;
 
-            internal InfraSelectWildcardSceneTwo(bool namedWindow)
+            public InfraSelectWildcardSceneTwo(bool namedWindow)
             {
                 this.namedWindow = namedWindow;
             }
@@ -1216,11 +1319,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             }
         }
 
-        internal class InfraDeleteContextPartitioned : RegressionExecution
+        public class InfraDeleteContextPartitioned : RegressionExecution
         {
             private readonly bool namedWindow;
 
-            internal InfraDeleteContextPartitioned(bool namedWindow)
+            public InfraDeleteContextPartitioned(bool namedWindow)
             {
                 this.namedWindow = namedWindow;
             }
@@ -1332,11 +1435,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             }
         }
 
-        internal class InfraDelete : RegressionExecution
+        public class InfraDelete : RegressionExecution
         {
             private readonly bool namedWindow;
 
-            internal InfraDelete(bool namedWindow)
+            public InfraDelete(bool namedWindow)
             {
                 this.namedWindow = namedWindow;
             }
@@ -1453,11 +1556,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             }
         }
 
-        internal class InfraUpdate : RegressionExecution
+        public class InfraUpdate : RegressionExecution
         {
             private readonly bool namedWindow;
 
-            internal InfraUpdate(bool namedWindow)
+            public InfraUpdate(bool namedWindow)
             {
                 this.namedWindow = namedWindow;
             }
@@ -1467,6 +1570,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = SetupInfra(env, namedWindow);
                 string[] fields = {"TheString", "IntPrimitive"};
 
+                /*
                 // test update-all
                 for (var i = 0; i < 2; i++) {
                     env.SendEventBean(new SupportBean("E" + i, i));
@@ -1622,6 +1726,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         new object[] {"E0", 1000},
                         new object[] {"E0", 0});
                 }
+                */
 
                 // test update via UDF and setter
                 if (namedWindow) {
@@ -1637,14 +1742,30 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 }
 
                 env.UndeployAll();
+                
+                path.Clear();
+                    
+                // test update using array-assignment; this is mostly tested via on-merge otherwise
+                String eplInfra = namedWindow ?
+                    "@Name('TheInfra') create window MyInfra#keepall as (mydoubles double[primitive]);\n" :
+                    "@Name('TheInfra') create table MyInfra as (mydoubles double[primitive])";
+                env.CompileDeploy(eplInfra, path);
+                env.CompileExecuteFAF("insert into MyInfra select new double[] {1, 2, 3} as mydoubles", path);
+                env.CompileExecuteFAF("update MyInfra set mydoubles[3-2] = 4", path);
+                EPFireAndForgetQueryResult resultDoubles = env.CompileExecuteFAF("select * from MyInfra", path);
+                CollectionAssert.AreEquivalent(
+                    new double[] {1, 4, 3},
+                    resultDoubles.Array[0].Get("mydoubles").UnwrapIntoArray<double>());
+
+                env.UndeployAll();
             }
         }
 
-        internal class InfraInsert : RegressionExecution
+        public class InfraInsert : RegressionExecution
         {
             private readonly bool namedWindow;
 
-            internal InfraInsert(bool namedWindow)
+            public InfraInsert(bool namedWindow)
             {
                 this.namedWindow = namedWindow;
             }
@@ -1768,6 +1889,24 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 env.UndeployAll();
             }
+        }
+        
+        [Serializable]
+        public class MyLocalJsonProvidedProduct {
+            public String ProductId;
+            public String CategoryId;
+        }
+
+        [Serializable]
+        public  class MyLocalJsonProvidedCategory {
+            public String CategoryId;
+            public String Owner;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedProductOwnerDetails  {
+            public String ProductId;
+            public String Owner;
         }
     }
 } // end of namespace

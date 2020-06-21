@@ -8,10 +8,13 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
@@ -23,31 +26,145 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLOtherInvalid());
-            execs.Add(new EPLOtherSubscriberOnly());
-            execs.Add(new EPLOtherDiscreteDelivery());
+            WithInvalid(execs);
+            WithSubscriberOnly(execs);
+            WithDiscreteDelivery(execs);
+            WithGroupDelivery(execs);
+            WithGroupDeliveryMultikeyWArraySingleArray(execs);
+            WithGroupDeliveryMultikeyWArrayTwoField(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupDeliveryMultikeyWArrayTwoField(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherGroupDeliveryMultikeyWArrayTwoField());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupDeliveryMultikeyWArraySingleArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherGroupDeliveryMultikeyWArraySingleArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupDelivery(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLOtherGroupDelivery());
             return execs;
         }
 
-        private static void SendTimer(
-            RegressionEnvironment env,
-            long timeInMSec)
+        public static IList<RegressionExecution> WithDiscreteDelivery(IList<RegressionExecution> execs = null)
         {
-            env.AdvanceTime(timeInMSec);
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherDiscreteDelivery());
+            return execs;
         }
 
-        private static void SendEvent(
-            RegressionEnvironment env,
-            string theString,
-            double doubleBoxed,
-            SupportEnum enumVal)
+        public static IList<RegressionExecution> WithSubscriberOnly(IList<RegressionExecution> execs = null)
         {
-            var bean = new SupportBean();
-            bean.TheString = theString;
-            bean.DoubleBoxed = doubleBoxed;
-            bean.EnumValue = enumVal;
-            env.SendEventBean(bean);
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherSubscriberOnly());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherInvalid());
+            return execs;
+        }
+
+        internal class EPLOtherGroupDeliveryMultikeyWArrayTwoField : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.AdvanceTime(0);
+                string[] fields = new[] {"TheString", "IntPrimitive", "LongPrimitive"};
+                string epl = "create context MyContext start @now end after 1 second;\n" +
+                             "@Name('s0') context MyContext select * from SupportBean#keepall output snapshot when terminated for grouped_delivery (IntPrimitive, LongPrimitive)";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendSB(env, "E1", 1, 10);
+                SendSB(env, "E2", 2, 10);
+                SendSB(env, "E3", 1, 11);
+                SendSB(env, "E4", 2, 10);
+                SendSB(env, "E5", 1, 10);
+
+                env.AdvanceTime(1000);
+
+                IList<EventBean[]> received = env.Listener("s0").NewDataList;
+                Assert.AreEqual(3, received.Count);
+                EPAssertionUtil.AssertPropsPerRow(
+                    received[0],
+                    fields,
+                    new[] {
+                        new object[] {"E1", 1, 10L},
+                        new object[] {"E5", 1, 10L}
+                    });
+                EPAssertionUtil.AssertPropsPerRow(
+                    received[1],
+                    fields,
+                    new[] {
+                        new object[] {"E2", 2, 10L},
+                        new object[] {"E4", 2, 10L}
+                    });
+                EPAssertionUtil.AssertPropsPerRow(
+                    received[2],
+                    fields,
+                    new[] {
+                        new object[] {"E3", 1, 11L}
+                    });
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class EPLOtherGroupDeliveryMultikeyWArraySingleArray : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.AdvanceTime(0);
+                string[] fields = new[] {"Id", "IntOne"};
+                string epl = "create context MyContext start @now end after 1 second;\n" +
+                             "@Name('s0') context MyContext select * from SupportEventWithManyArray#keepall output snapshot when terminated for grouped_delivery (IntOne)";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendManyArray(env, "E1", new[] {1, 2});
+                SendManyArray(env, "E2", new[] {1, 3});
+                SendManyArray(env, "E3", new[] {1, 2});
+                SendManyArray(env, "E4", new[] {1, 4});
+                SendManyArray(env, "E5", new[] {1, 4});
+
+                env.AdvanceTime(1000);
+
+                IList<EventBean[]> received = env.Listener("s0").NewDataList;
+                Assert.AreEqual(3, received.Count);
+                EPAssertionUtil.AssertPropsPerRow(
+                    received[0],
+                    fields,
+                    new[] {
+                        new object[] {"E1", new[] {1, 2}},
+                        new object[] {"E3", new[] {1, 2}}
+                    });
+                EPAssertionUtil.AssertPropsPerRow(
+                    received[1],
+                    fields,
+                    new[] {
+                        new object[] {"E2", new[] {1, 3}}
+                    });
+                EPAssertionUtil.AssertPropsPerRow(
+                    received[2],
+                    fields,
+                    new[] {
+                        new object[] {"E4", new[] {1, 4}},
+                        new object[] {"E5", new[] {1, 4}}
+                    });
+
+                env.UndeployAll();
+            }
         }
 
         internal class EPLOtherInvalid : RegressionExecution
@@ -95,10 +212,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var subscriber = new SupportSubscriberMRD();
+                SupportSubscriberMRD subscriber = new SupportSubscriberMRD();
                 SendTimer(env, 0);
-                env.CompileDeploy(
-                    "@Name('s0') select irstream TheString,IntPrimitive from SupportBean#time_batch(1) for discrete_delivery");
+                env.CompileDeploy("@Name('s0') select irstream TheString,IntPrimitive from SupportBean#time_batch(1) for discrete_delivery");
                 env.Statement("s0").Subscriber = subscriber;
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -112,8 +228,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.UndeployAll();
                 subscriber.Reset();
-                env.CompileDeploy(
-                    "@Name('s0') select irstream TheString,IntPrimitive from SupportBean#time_batch(1) for grouped_delivery(IntPrimitive)");
+                env.CompileDeploy("@Name('s0') select irstream TheString,IntPrimitive from SupportBean#time_batch(1) for grouped_delivery(IntPrimitive)");
                 env.Statement("s0").Subscriber = subscriber;
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -138,8 +253,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 SendTimer(env, 0);
-                env.CompileDeploy("@Name('s0') select * from SupportBean#time_batch(1) for discrete_delivery")
-                    .AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from SupportBean#time_batch(1) for discrete_delivery").AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean("E2", 2));
@@ -148,20 +262,26 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Assert.AreEqual(3, env.Listener("s0").NewDataList.Count);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[0],
-                    new [] { "TheString","IntPrimitive" },
-                    new[] {new object[] {"E1", 1}});
+                    "TheString,IntPrimitive".SplitCsv(),
+                    new[] {
+                        new object[] {"E1", 1}
+                    });
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[1],
-                    new [] { "TheString","IntPrimitive" },
-                    new[] {new object[] {"E2", 2}});
+                    "TheString,IntPrimitive".SplitCsv(),
+                    new[] {
+                        new object[] {"E2", 2}
+                    });
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[2],
-                    new [] { "TheString","IntPrimitive" },
-                    new[] {new object[] {"E3", 1}});
+                    "TheString,IntPrimitive".SplitCsv(),
+                    new[] {
+                        new object[] {"E3", 1}
+                    });
                 env.UndeployAll();
 
                 // test no-event delivery
-                var epl = "@Name('s0') SELECT *  FROM ObjectEvent OUTPUT ALL EVERY 1 seconds for discrete_delivery";
+                string epl = "@Name('s0') SELECT *  FROM ObjectEvent OUTPUT ALL EVERY 1 seconds for discrete_delivery";
                 env.CompileDeploy(epl).AddListener("s0");
                 env.SendEventBean(new object(), "ObjectEvent");
                 SendTimer(env, 2000);
@@ -178,9 +298,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 SendTimer(env, 0);
-                env.CompileDeploy(
-                        "@Name('s0') select * from SupportBean#time_batch(1) for grouped_delivery (IntPrimitive)")
-                    .AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from SupportBean#time_batch(1) for grouped_delivery (IntPrimitive)").AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
 
@@ -193,18 +311,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Assert.AreEqual(2, env.Listener("s0").NewDataList[0].Length);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[0],
-                    new [] { "TheString","IntPrimitive" },
-                    new[] {new object[] {"E1", 1}, new object[] {"E3", 1}});
+                    "TheString,IntPrimitive".SplitCsv(),
+                    new[] {
+                        new object[] {"E1", 1},
+                        new object[] {"E3", 1}
+                    });
                 Assert.AreEqual(1, env.Listener("s0").NewDataList[1].Length);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[1],
-                    new [] { "TheString","IntPrimitive" },
-                    new[] {new object[] {"E2", 2}});
+                    "TheString,IntPrimitive".SplitCsv(),
+                    new[] {
+                        new object[] {"E2", 2}
+                    });
 
                 // test sorted
                 env.UndeployAll();
-                env.CompileDeploy(
-                    "@Name('s0') select * from SupportBean#time_batch(1) order by IntPrimitive desc for grouped_delivery (IntPrimitive)");
+                env.CompileDeploy("@Name('s0') select * from SupportBean#time_batch(1) order by IntPrimitive desc for grouped_delivery (IntPrimitive)");
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -215,17 +337,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Assert.AreEqual(1, env.Listener("s0").NewDataList[0].Length);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[0],
-                    new [] { "TheString","IntPrimitive" },
-                    new[] {new object[] {"E2", 2}});
+                    "TheString,IntPrimitive".SplitCsv(),
+                    new[] {
+                        new object[] {"E2", 2}
+                    });
                 Assert.AreEqual(2, env.Listener("s0").NewDataList[1].Length);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[1],
-                    new [] { "TheString","IntPrimitive" },
-                    new[] {new object[] {"E1", 1}, new object[] {"E3", 1}});
+                    "TheString,IntPrimitive".SplitCsv(),
+                    new[] {
+                        new object[] {"E1", 1},
+                        new object[] {"E3", 1}
+                    });
 
                 // test multiple criteria
                 env.UndeployAll();
-                var stmtText =
+                string stmtText =
                     "@Name('s0') select TheString, DoubleBoxed, EnumValue from SupportBean#time_batch(1) order by TheString, DoubleBoxed, EnumValue for grouped_delivery(DoubleBoxed, EnumValue)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
@@ -239,7 +366,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SendEvent(env, "E8", 10d, SupportEnum.ENUM_VALUE_1); // D
                 SendTimer(env, 3000);
                 Assert.AreEqual(4, env.Listener("s0").NewDataList.Count);
-                var fields = new [] { "TheString","DoubleBoxed","EnumValue" };
+                string[] fields = "TheString,DoubleBoxed,EnumValue".SplitCsv();
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[0],
                     fields,
@@ -257,7 +384,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[2],
                     fields,
-                    new[] {new object[] {"E3", 9d, SupportEnum.ENUM_VALUE_2}});
+                    new[] {
+                        new object[] {"E3", 9d, SupportEnum.ENUM_VALUE_2}
+                    });
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[3],
                     fields,
@@ -269,7 +398,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.UndeployAll();
 
                 // test SODA
-                var model = env.EplToModel(stmtText);
+                EPStatementObjectModel model = env.EplToModel(stmtText);
                 Assert.AreEqual(stmtText, model.ToEPL());
                 env.CompileDeploy(model).AddListener("s0");
 
@@ -281,7 +410,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[0],
                     fields,
-                    new[] {new object[] {"E1", 10d, SupportEnum.ENUM_VALUE_2}});
+                    new[] {
+                        new object[] {"E1", 10d, SupportEnum.ENUM_VALUE_2}
+                    });
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[1],
                     fields,
@@ -292,6 +423,45 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.UndeployAll();
             }
+        }
+
+        private static void SendTimer(
+            RegressionEnvironment env,
+            long timeInMSec)
+        {
+            env.AdvanceTime(timeInMSec);
+        }
+
+        private static void SendEvent(
+            RegressionEnvironment env,
+            string theString,
+            double? doubleBoxed,
+            SupportEnum enumVal)
+        {
+            SupportBean bean = new SupportBean();
+            bean.TheString = theString;
+            bean.DoubleBoxed = doubleBoxed;
+            bean.EnumValue = enumVal;
+            env.SendEventBean(bean);
+        }
+
+        private static void SendSB(
+            RegressionEnvironment env,
+            string theString,
+            int intPrimitive,
+            long longPrimitive)
+        {
+            SupportBean sb = new SupportBean(theString, intPrimitive);
+            sb.LongPrimitive = longPrimitive;
+            env.SendEventBean(sb);
+        }
+
+        private static void SendManyArray(
+            RegressionEnvironment env,
+            string id,
+            int[] intOne)
+        {
+            env.SendEventBean(new SupportEventWithManyArray(id).WithIntOne(intOne));
         }
     }
 } // end of namespace

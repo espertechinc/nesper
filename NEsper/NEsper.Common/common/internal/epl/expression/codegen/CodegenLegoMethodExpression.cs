@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -35,41 +33,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             return LocalMethod(expressionMethod, eps, isNewData, exprEvalCtx);
         }
 
-        public static void CodegenBooleanExpressionReturnNullIfNullOrNotPass(
+        public static CodegenMethod CodegenExpression(
             ExprForge forge,
-            CodegenClassScope classScope,
             CodegenMethod parent,
-            CodegenExpression eps,
-            CodegenExpression isNewData,
-            CodegenExpression exprEvalCtx)
+            CodegenClassScope classScope)
         {
-            CheckEvaluationType(forge);
-            var expressionMethod = CodegenBooleanExpressionBoxedToPrimitive(forge, parent, classScope);
-            CodegenExpression evaluation = LocalMethod(expressionMethod, eps, isNewData, exprEvalCtx);
-            parent.Block.IfCondition(Not(evaluation)).BlockReturn(ConstantNull());
+            return CodegenExpression(forge, parent, classScope, true);
         }
-
-        public static void CodegenBooleanExpressionReturnIfNullOrNotPass(
-            ExprForge forge,
-            CodegenClassScope classScope,
-            CodegenMethod parent,
-            CodegenExpression eps,
-            CodegenExpression isNewData,
-            CodegenExpression exprEvalCtx)
-        {
-            CheckEvaluationType(forge);
-            var expressionMethod = CodegenBooleanExpressionBoxedToPrimitive(forge, parent, classScope);
-            CodegenExpression evaluation = LocalMethod(expressionMethod, eps, isNewData, exprEvalCtx);
-            parent.Block.IfCondition(Not(evaluation)).BlockReturnNoValue();
-        }
-
+        
         public static CodegenMethod CodegenExpression(
             ExprForge forge,
             CodegenMethod parent,
             CodegenClassScope classScope,
             bool returnMissingValueAsNull)
         {
-            var evaluationType = forge.EvaluationType; // GetBoxedType();
+            var evaluationType = forge.EvaluationType;
             if (returnMissingValueAsNull) {
                 evaluationType = evaluationType.GetBoxedType();
             }
@@ -81,11 +59,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
 
             exprMethod.Block.DebugStack();
             
-            var expression = CodegenLegoCast.CastSafeFromObjectType(
-                evaluationType,
-                forge.EvaluateCodegen(evaluationType, exprMethod, exprSymbol, classScope));
+            var expression = forge.EvaluateCodegen(evaluationType, exprMethod, exprSymbol, classScope);
             exprSymbol.DerivedSymbolsCodegen(parent, exprMethod.Block, classScope);
-            exprMethod.Block.MethodReturn(expression);
+
+            if (evaluationType != typeof(void)) {
+                exprMethod.Block.MethodReturn(expression);
+                //CodegenLegoCast.CastSafeFromObjectType(evaluationType, expression);
+            }
+            else {
+                exprMethod.Block.Expression(expression);
+            }
+
             return exprMethod;
         }
 

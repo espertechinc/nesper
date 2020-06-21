@@ -29,9 +29,9 @@ namespace com.espertech.esper.common.@internal.db.drivers
             RegisterDataProviders(container);
         }
 
-        private static void RegisterDataProviders(IContainer container)
+        private static void RegisterBuiltinDataProviders(IContainer container)
         {
-#if NETFRAMEWORK
+#if DEPRECATED
             foreach (DataRow dataTableRow in DbProviderFactories.GetFactoryClasses().Rows)
             {
                 // Name
@@ -49,7 +49,10 @@ namespace com.espertech.esper.common.@internal.db.drivers
                 }
             }
 #endif
+        }
 
+        private static void RegisterDataProviders(IContainer container)
+        {
             var candidateTypes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(assembly => assembly.GetTypes())
                 .Where(type => type.IsSubclassOf(typeof(DbProviderFactory)));

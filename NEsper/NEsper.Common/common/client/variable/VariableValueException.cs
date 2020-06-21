@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.client.variable
 {
@@ -20,6 +21,12 @@ namespace com.espertech.esper.common.client.variable
         /// <param name="message">supplies exception details</param>
         public VariableValueException(string message)
             : base(message)
+        {
+        }
+
+        protected VariableValueException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

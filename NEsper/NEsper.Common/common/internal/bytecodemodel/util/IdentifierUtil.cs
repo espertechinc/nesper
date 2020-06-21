@@ -6,14 +6,16 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.util
 {
-    public class IdentifierUtil
+    public static class IdentifierUtil
     {
         public static string GetIdentifierMayStartNumeric(string str)
         {
@@ -58,6 +60,61 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
             }
 
             return false;
+        }
+
+        public static string[] ProtectedKeyWords = new string[] {
+            "event",
+            "internal",
+            "protected",
+            "public",
+            "private",
+            "base",
+            "lock",
+            "object",
+            "in",
+            "out"
+        };
+
+        public static string CodeInclusionName(this string variableName)
+        {
+            if (variableName != null) {
+                foreach (var keyword in ProtectedKeyWords) {
+                    if (variableName == keyword) {
+                        variableName = $"@{keyword}";
+                    }
+                }
+            }
+
+            return variableName;
+        }
+        
+        public static string CodeInclusionTypeName(this string typeName)
+        {
+            if (typeName != null) {
+                foreach (var keyword in ProtectedKeyWords) {
+                    typeName = Regex.Replace(typeName, $"\\.({keyword})(\\.|$)", ".@$1$2");
+                }
+
+                typeName = typeName.Replace('+', '.');
+            }
+
+            return typeName;
+        }
+
+        public static string CodeInclusionTypeName(this Type type)
+        {
+            return CodeInclusionTypeName(type.FullName);
+        }
+        
+        public static string CodeInclusionTypeName<T>()
+        {
+            return CodeInclusionTypeName(typeof(T));
+        }
+
+        public static bool IsGenericOrNestedTypeName(string typeName)
+        {
+            return (typeName.IndexOf('<') != -1) ||
+                   (typeName.IndexOf('+') != -1);
         }
     }
 } // end of namespace

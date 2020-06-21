@@ -6,10 +6,14 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Threading;
+
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.compile.stage1;
 using com.espertech.esper.common.@internal.context.compile;
 using com.espertech.esper.common.@internal.context.module;
+using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.classprovided.compiletime;
 using com.espertech.esper.common.@internal.epl.dataflow.core;
 using com.espertech.esper.common.@internal.epl.expression.declared.compiletime;
 using com.espertech.esper.common.@internal.epl.historical.database.connection;
@@ -27,6 +31,8 @@ using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.eventtyperepo;
 using com.espertech.esper.common.@internal.@event.xml;
+using com.espertech.esper.common.@internal.serde.compiletime.eventtype;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.container;
@@ -35,6 +41,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 {
     public class ModuleCompileTimeServices
     {
+        private static long _generation = 0L;
+        
         public ModuleCompileTimeServices(
             IContainer container,
             CompilerServices compilerServices,
@@ -43,6 +51,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             ContextCompileTimeResolver contextCompileTimeResolver,
             BeanEventTypeStemService beanEventTypeStemService,
             BeanEventTypeFactoryPrivate beanEventTypeFactoryPrivate,
+            ClassProvidedCompileTimeRegistry classProvidedCompileTimeRegistry,
+            ClassProvidedCompileTimeResolver classProvidedCompileTimeResolver,
             DatabaseConfigServiceCompileTime databaseConfigServiceCompileTime,
             ImportServiceCompileTime importService,
             ExprDeclaredCompileTimeRegistry exprDeclaredCompileTimeRegistry,
@@ -51,15 +61,19 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             EventTypeCompileTimeRegistry eventTypeCompileTimeRegistry,
             EventTypeCompileTimeResolver eventTypeCompileTimeResolver,
             EventTypeRepositoryImpl eventTypeRepositoryPreconfigured,
+            bool fireAndForget,
             IndexCompileTimeRegistry indexCompileTimeRegistry,
             ModuleDependenciesCompileTime moduleDependencies,
             ModuleAccessModifierService moduleVisibilityRules,
             NamedWindowCompileTimeResolver namedWindowCompileTimeResolver,
             NamedWindowCompileTimeRegistry namedWindowCompileTimeRegistry,
+            ParentClassLoader parentClassLoader,
             PatternObjectResolutionService patternObjectResolutionService,
             ScriptCompileTimeRegistry scriptCompileTimeRegistry,
             ScriptCompileTimeResolver scriptCompileTimeResolver,
-            ScriptServiceCompileTime scriptServiceCompileTime,
+            ScriptCompiler scriptCompiler,
+            SerdeEventTypeCompileTimeRegistry serdeEventTypeRegistry,
+            SerdeCompileTimeResolver serdeResolver, 
             TableCompileTimeRegistry tableCompileTimeRegistry,
             TableCompileTimeResolver tableCompileTimeResolver,
             VariableCompileTimeRegistry variableCompileTimeRegistry,
@@ -67,6 +81,10 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             ViewResolutionService viewResolutionService,
             XMLFragmentEventTypeFactory xmlFragmentEventTypeFactory)
         {
+            var generation = Interlocked.Increment(ref _generation);
+            
+            Namespace = $"generation_{generation}";
+
             Container = container;
             CompilerServices = compilerServices;
             Configuration = configuration;
@@ -87,20 +105,30 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             ModuleVisibilityRules = moduleVisibilityRules;
             NamedWindowCompileTimeResolver = namedWindowCompileTimeResolver;
             NamedWindowCompileTimeRegistry = namedWindowCompileTimeRegistry;
+            ParentClassLoader = parentClassLoader;
             PatternObjectResolutionService = patternObjectResolutionService;
-            ScriptServiceCompileTime = scriptServiceCompileTime;
             ScriptCompileTimeRegistry = scriptCompileTimeRegistry;
             ScriptCompileTimeResolver = scriptCompileTimeResolver;
+            ScriptCompiler = scriptCompiler;
             TableCompileTimeRegistry = tableCompileTimeRegistry;
             TableCompileTimeResolver = tableCompileTimeResolver;
             VariableCompileTimeRegistry = variableCompileTimeRegistry;
             VariableCompileTimeResolver = variableCompileTimeResolver;
             ViewResolutionService = viewResolutionService;
             XmlFragmentEventTypeFactory = xmlFragmentEventTypeFactory;
+
+            #region ESPER_8.5.0
+            ClassProvidedCompileTimeRegistry = classProvidedCompileTimeRegistry;
+            ClassProvidedCompileTimeResolver = classProvidedCompileTimeResolver;
+            SerdeEventTypeRegistry = serdeEventTypeRegistry;
+            SerdeResolver = serdeResolver;
+            IsFireAndForget = fireAndForget;
+            #endregion
         }
 
         public ModuleCompileTimeServices(IContainer container)
         {
+            Namespace = null;
             Container = container;
             CompilerServices = null;
             Configuration = null;
@@ -121,18 +149,28 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             ModuleVisibilityRules = null;
             NamedWindowCompileTimeResolver = null;
             NamedWindowCompileTimeRegistry = null;
+            ParentClassLoader = null;
             PatternObjectResolutionService = null;
-            ScriptServiceCompileTime = null;
             ScriptCompileTimeRegistry = null;
             ScriptCompileTimeResolver = null;
+            ScriptCompiler = null;
             TableCompileTimeRegistry = null;
             TableCompileTimeResolver = null;
             VariableCompileTimeRegistry = null;
             VariableCompileTimeResolver = null;
             ViewResolutionService = null;
             XmlFragmentEventTypeFactory = null;
+            
+            #region ESPER_8.5.0
+            ClassProvidedCompileTimeRegistry = null;
+            ClassProvidedCompileTimeResolver = null;
+            SerdeEventTypeRegistry = null;
+            SerdeResolver = null;
+            IsFireAndForget = false;
+            #endregion
         }
 
+        public string Namespace { get; }
         public IContainer Container { get; }
 
         public BeanEventTypeStemService BeanEventTypeStemService { get; }
@@ -142,7 +180,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         public CompilerServices CompilerServices { get; }
 
         public Configuration Configuration { get; set; }
-
+        
         public ContextCompileTimeRegistry ContextCompileTimeRegistry { get; }
 
         public ContextCompileTimeResolver ContextCompileTimeResolver { get; }
@@ -173,11 +211,13 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
         public PatternObjectResolutionService PatternObjectResolutionService { get; }
 
-        public ScriptServiceCompileTime ScriptServiceCompileTime { get; }
+        public ParentClassLoader ParentClassLoader { get; }
 
         public ScriptCompileTimeRegistry ScriptCompileTimeRegistry { get; }
 
         public ScriptCompileTimeResolver ScriptCompileTimeResolver { get; }
+
+        public ScriptCompiler ScriptCompiler { get; }
 
         public TableCompileTimeRegistry TableCompileTimeRegistry { get; }
 
@@ -195,6 +235,18 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
         public DataFlowCompileTimeRegistry DataFlowCompileTimeRegistry { get; } = new DataFlowCompileTimeRegistry();
 
+#region ESPER_8.5.0
+        public ClassProvidedCompileTimeRegistry ClassProvidedCompileTimeRegistry { get; }
+        
+        public ClassProvidedCompileTimeResolver ClassProvidedCompileTimeResolver { get; }
+        
+        public bool IsFireAndForget { get; }
+        
+        public SerdeEventTypeCompileTimeRegistry SerdeEventTypeRegistry { get; }
+        
+        public SerdeCompileTimeResolver SerdeResolver { get; }
+#endregion
+        
         public bool IsInstrumented()
         {
             return Configuration.Compiler.ByteCode.IsInstrumented;

@@ -16,18 +16,16 @@ using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
-using com.espertech.esper.common.@internal.context.compile;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.epl.util;
-using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.common.@internal.@event.core;
-using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.schedule;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
@@ -114,6 +112,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
                 compileTimeConstant,
                 initialValue,
                 services.ImportServiceCompileTime,
+                services.ClassProvidedExtension,
                 EventBeanTypedEventFactoryCompileTime.INSTANCE,
                 services.EventTypeRepositoryPreconfigured,
                 services.BeanEventTypeFactoryPrivate);
@@ -177,21 +176,29 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
             var classNameRSP = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(ResultSetProcessorFactoryProvider),
                 classPostfix);
-            var packageScope = new CodegenNamespaceScope(
+            var namespaceScope = new CodegenNamespaceScope(
                 @namespace,
                 statementFieldsClassName,
                 services.IsInstrumented);
+            
+            // serde
+            DataInputOutputSerdeForge serde = DataInputOutputSerdeForgeNotApplicable.INSTANCE;
+            if (metaData.EventType == null) {
+                serde = services.SerdeResolver.SerdeForVariable(
+                    metaData.Type, metaData.VariableName, _base.StatementRawInfo);
+            }
 
             var forge =
                 new StatementAgentInstanceFactoryCreateVariableForge(
                     createDesc.VariableName,
                     initialValueExpr,
                     classNameRSP);
-            var aiFactoryForgable = new StmtClassForgableAIFactoryProviderCreateVariable(
+            var aiFactoryForgeable = new StmtClassForgeableAIFactoryProviderCreateVariable(
                 aiFactoryProviderClassName,
-                packageScope,
+                namespaceScope,
                 forge,
-                createDesc.VariableName);
+                createDesc.VariableName,
+                serde);
 
             var informationals = StatementInformationalsUtil.GetInformationals(
                 _base,
@@ -200,28 +207,30 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
                 Collections.GetEmptyList<NamedWindowConsumerStreamSpec>(),
                 true,
                 resultSetProcessor.SelectSubscriberDescriptor,
-                packageScope,
+                namespaceScope,
                 services);
+            informationals.Properties.Put(StatementProperty.CREATEOBJECTNAME, createDesc.VariableName);
+
             var statementProviderClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
-            var stmtProvider = new StmtClassForgableStmtProvider(
+            var stmtProvider = new StmtClassForgeableStmtProvider(
                 aiFactoryProviderClassName,
                 statementProviderClassName,
                 informationals,
-                packageScope);
+                namespaceScope);
 
-            IList<StmtClassForgable> forgables = new List<StmtClassForgable>();
-            forgables.Add(
-                new StmtClassForgableRSPFactoryProvider(
+            var forgeables = new List<StmtClassForgeable>();
+            forgeables.Add(
+                new StmtClassForgeableRSPFactoryProvider(
                     classNameRSP,
                     resultSetProcessor,
-                    packageScope,
+                    namespaceScope,
                     _base.StatementRawInfo));
-            forgables.Add(aiFactoryForgable);
-            forgables.Add(stmtProvider);
-            forgables.Add(new StmtClassForgableStmtFields(statementFieldsClassName, packageScope, 0));
+            forgeables.Add(aiFactoryForgeable);
+            forgeables.Add(stmtProvider);
+            forgeables.Add(new StmtClassForgeableStmtFields(statementFieldsClassName, namespaceScope, 0));
             return new StmtForgeMethodResult(
-                forgables,
+                forgeables,
                 Collections.GetEmptyList<FilterSpecCompiled>(),
                 Collections.GetEmptyList<ScheduleHandleCallbackProvider>(),
                 Collections.GetEmptyList<NamedWindowConsumerStreamSpec>(),

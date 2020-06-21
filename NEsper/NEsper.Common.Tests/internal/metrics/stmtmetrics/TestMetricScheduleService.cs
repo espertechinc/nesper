@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             executions = new List<MetricExec>();
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestFlow()
         {
             svc.CurrentTime = 1000;

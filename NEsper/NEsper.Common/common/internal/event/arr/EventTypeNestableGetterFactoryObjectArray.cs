@@ -15,28 +15,28 @@ using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.@event.property;
-using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.@event.arr
 {
     public class EventTypeNestableGetterFactoryObjectArray : EventTypeNestableGetterFactory
     {
-        private readonly string eventTypeName;
+        private readonly string _eventTypeName;
 
         public EventTypeNestableGetterFactoryObjectArray(
             string eventTypeName,
             IDictionary<string, int> propertiesIndex)
         {
-            this.eventTypeName = eventTypeName;
+            _eventTypeName = eventTypeName;
             PropertiesIndex = propertiesIndex;
         }
 
         public IDictionary<string, int> PropertiesIndex { get; }
 
-        public EventPropertyGetterSPI GetPropertyProvidedGetter(
+        public EventPropertyGetterSPI GetPropertyDynamicGetter(
             IDictionary<string, object> nestableTypes,
-            string propertyName,
-            Property prop,
+            string propertyExpression,
+            DynamicProperty prop,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
         {
@@ -93,13 +93,14 @@ namespace com.espertech.esper.common.@internal.@event.arr
             string propertyNameAtomic,
             int index,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            EventType innerType)
+            EventType innerType,
+            BeanEventTypeFactory beanEventTypeFactory)
         {
             var propertyIndex = GetAssertIndex(propertyNameAtomic);
             return new ObjectArrayArrayPropertyGetter(propertyIndex, index, eventBeanTypedEventFactory, innerType);
         }
 
-        public EventPropertyGetterSPI GetGetterIndexedPONO(
+        public EventPropertyGetterSPI GetGetterIndexedClassArray(
             string propertyNameAtomic,
             int index,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
@@ -285,10 +286,18 @@ namespace com.espertech.esper.common.@internal.@event.arr
         {
             if (!PropertiesIndex.TryGetValue(propertyName, out var index)) {
                 throw new PropertyAccessException(
-                    "Property '" + propertyName + "' could not be found as a property of type '" + eventTypeName + "'");
+                    "Property '" + propertyName + "' could not be found as a property of type '" + _eventTypeName + "'");
             }
 
             return index;
+        }
+
+        public EventPropertyGetterSPI GetGetterRootedDynamicNested(
+            Property prop,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventTypeFactory beanEventTypeFactory)
+        {
+            throw new IllegalStateException("This getter is not available for object-array events");
         }
     }
 } // end of namespace

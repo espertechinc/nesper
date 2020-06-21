@@ -24,11 +24,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
     public class EvalFilterStateNode : EvalStateNode,
         FilterHandleCallback
     {
-        internal readonly EvalFilterNode evalFilterNode;
-        internal MatchedEventMap beginState;
-        internal EPStatementHandleCallbackFilter handle;
-
-        internal bool isStarted;
+        private readonly EvalFilterNode _evalFilterNode;
+        private MatchedEventMap _beginState;
+        private EPStatementHandleCallbackFilter _handle;
+        private bool _isStarted;
 
         /// <summary>
         ///     Constructor.
@@ -40,12 +39,12 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
             EvalFilterNode evalFilterNode)
             : base(parentNode)
         {
-            this.evalFilterNode = evalFilterNode;
+            this._evalFilterNode = evalFilterNode;
         }
 
-        public override EvalNode FactoryNode => evalFilterNode;
+        public override EvalNode FactoryNode => _evalFilterNode;
 
-        public EvalFilterNode EvalFilterNode => evalFilterNode;
+        public EvalFilterNode EvalFilterNode => _evalFilterNode;
 
         public override bool IsFilterStateNode => true;
 
@@ -57,34 +56,34 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
             EventBean theEvent,
             ICollection<FilterHandleCallback> allStmtMatches)
         {
-            var agentInstanceContext = evalFilterNode.Context.AgentInstanceContext;
-            agentInstanceContext.InstrumentationProvider.QPatternFilterMatch(evalFilterNode.factoryNode, theEvent);
+            var agentInstanceContext = _evalFilterNode.Context.AgentInstanceContext;
+            agentInstanceContext.InstrumentationProvider.QPatternFilterMatch(_evalFilterNode.factoryNode, theEvent);
 
-            if (!isStarted) {
+            if (!_isStarted) {
                 agentInstanceContext.InstrumentationProvider.APatternFilterMatch(true);
                 return;
             }
 
-            var passUp = beginState.ShallowCopy();
+            var passUp = _beginState.ShallowCopy();
 
-            if (evalFilterNode.FactoryNode.FilterSpec.OptionalPropertyEvaluator != null) {
+            if (_evalFilterNode.FactoryNode.FilterSpec.OptionalPropertyEvaluator != null) {
                 var propertyEvents =
-                    evalFilterNode.FactoryNode.FilterSpec.OptionalPropertyEvaluator.GetProperty(
+                    _evalFilterNode.FactoryNode.FilterSpec.OptionalPropertyEvaluator.GetProperty(
                         theEvent,
-                        evalFilterNode.Context.AgentInstanceContext);
+                        _evalFilterNode.Context.AgentInstanceContext);
                 if (propertyEvents == null) {
                     return; // no results, ignore match
                 }
 
                 // Add event itself to the match event structure if a tag was provided
-                if (evalFilterNode.FactoryNode.EventAsName != null) {
-                    passUp.Add(evalFilterNode.FactoryNode.EventAsTagNumber, propertyEvents);
+                if (_evalFilterNode.FactoryNode.EventAsName != null) {
+                    passUp.Add(_evalFilterNode.FactoryNode.EventAsTagNumber, propertyEvents);
                 }
             }
             else {
                 // Add event itself to the match event structure if a tag was provided
-                if (evalFilterNode.FactoryNode.EventAsName != null) {
-                    passUp.Add(evalFilterNode.FactoryNode.EventAsTagNumber, theEvent);
+                if (_evalFilterNode.FactoryNode.EventAsName != null) {
+                    passUp.Add(_evalFilterNode.FactoryNode.EventAsTagNumber, theEvent);
                 }
             }
 
@@ -100,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
                 isQuitted = true;
                 agentInstanceContext.AuditProvider.PatternInstance(
                     false,
-                    evalFilterNode.factoryNode,
+                    _evalFilterNode.factoryNode,
                     agentInstanceContext);
             }
 
@@ -113,44 +112,46 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
 
         public override void Start(MatchedEventMap beginState)
         {
-            var agentInstanceContext = evalFilterNode.Context.AgentInstanceContext;
-            agentInstanceContext.InstrumentationProvider.QPatternFilterStart(evalFilterNode.factoryNode, beginState);
+            var agentInstanceContext = _evalFilterNode.Context.AgentInstanceContext;
+            agentInstanceContext.InstrumentationProvider.QPatternFilterStart(_evalFilterNode.factoryNode, beginState);
 
-            this.beginState = beginState;
-            if (isStarted) {
+            _beginState = beginState;
+            if (_isStarted) {
                 throw new IllegalStateException("Filter state node already active");
             }
 
-            agentInstanceContext.AuditProvider.PatternInstance(true, evalFilterNode.factoryNode, agentInstanceContext);
+            agentInstanceContext.AuditProvider.PatternInstance(true, _evalFilterNode.factoryNode, agentInstanceContext);
 
             // Start the filter
-            isStarted = true;
+            _isStarted = true;
 
-            var filterService = evalFilterNode.Context.FilterService;
-            handle = new EPStatementHandleCallbackFilter(
-                evalFilterNode.Context.AgentInstanceContext.EpStatementAgentInstanceHandle,
+            var filterService = _evalFilterNode.Context.FilterService;
+            _handle = new EPStatementHandleCallbackFilter(
+                _evalFilterNode.Context.AgentInstanceContext.EpStatementAgentInstanceHandle,
                 this);
-            var filterSpec = evalFilterNode.FactoryNode.FilterSpec;
-            FilterValueSetParam[][] filterValues = filterSpec.GetValueSet(
+            var filterSpec = _evalFilterNode.FactoryNode.FilterSpec;
+            var filterValues = filterSpec.GetValueSet(
                 beginState,
-                evalFilterNode.AddendumFilters,
+                _evalFilterNode.AddendumFilters,
                 agentInstanceContext,
                 agentInstanceContext.StatementContextFilterEvalEnv);
-            filterService.Add(filterSpec.FilterForEventType, filterValues, handle);
-            var filtersVersion = filterService.FiltersVersion;
-            evalFilterNode.Context.AgentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion
-                .StmtFilterVersion = filtersVersion;
+            if (filterValues != null) {
+                filterService.Add(filterSpec.FilterForEventType, filterValues, _handle);
+                var filtersVersion = filterService.FiltersVersion;
+                _evalFilterNode.Context.AgentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion
+                    .StmtFilterVersion = filtersVersion;
+            }
 
             agentInstanceContext.InstrumentationProvider.APatternFilterStart();
         }
 
         public override void Quit()
         {
-            var agentInstanceContext = evalFilterNode.Context.AgentInstanceContext;
-            agentInstanceContext.InstrumentationProvider.QPatternFilterQuit(evalFilterNode.factoryNode, beginState);
-            agentInstanceContext.AuditProvider.PatternInstance(false, evalFilterNode.factoryNode, agentInstanceContext);
+            var agentInstanceContext = _evalFilterNode.Context.AgentInstanceContext;
+            agentInstanceContext.InstrumentationProvider.QPatternFilterQuit(_evalFilterNode.factoryNode, _beginState);
+            agentInstanceContext.AuditProvider.PatternInstance(false, _evalFilterNode.factoryNode, agentInstanceContext);
 
-            isStarted = false;
+            _isStarted = false;
             StopFiltering();
 
             agentInstanceContext.InstrumentationProvider.APatternFilterQuit();
@@ -161,9 +162,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
             bool isQuitted,
             EventBean optionalTriggeringEvent)
         {
-            var agentInstanceContext = evalFilterNode.Context.AgentInstanceContext;
+            var agentInstanceContext = _evalFilterNode.Context.AgentInstanceContext;
             agentInstanceContext.AuditProvider.PatternTrue(
-                evalFilterNode.FactoryNode,
+                _evalFilterNode.FactoryNode,
                 this,
                 theEvent,
                 isQuitted,
@@ -173,7 +174,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
 
         public override void Accept(EvalStateNodeVisitor visitor)
         {
-            visitor.VisitFilter(evalFilterNode.FactoryNode, this, handle, beginState);
+            visitor.VisitFilter(_evalFilterNode.FactoryNode, this, _handle, _beginState);
         }
 
         public override string ToString()
@@ -181,45 +182,63 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
             var buffer = new StringBuilder();
             buffer.Append("EvalFilterStateNode");
             buffer.Append(" tag=");
-            buffer.Append(evalFilterNode.FactoryNode.FilterSpec);
+            buffer.Append(_evalFilterNode.FactoryNode.FilterSpec);
             buffer.Append(" spec=");
-            buffer.Append(evalFilterNode.FactoryNode.FilterSpec);
+            buffer.Append(_evalFilterNode.FactoryNode.FilterSpec);
             return buffer.ToString();
         }
 
         public override void RemoveMatch(ISet<EventBean> matchEvent)
         {
-            if (!isStarted) {
+            if (!_isStarted) {
                 return;
             }
 
-            if (PatternConsumptionUtil.ContainsEvent(matchEvent, beginState)) {
+            if (PatternConsumptionUtil.ContainsEvent(matchEvent, _beginState)) {
                 Quit();
-                var agentInstanceContext = evalFilterNode.Context.AgentInstanceContext;
-                agentInstanceContext.AuditProvider.PatternFalse(evalFilterNode.FactoryNode, this, agentInstanceContext);
+                var agentInstanceContext = _evalFilterNode.Context.AgentInstanceContext;
+                agentInstanceContext.AuditProvider.PatternFalse(_evalFilterNode.FactoryNode, this, agentInstanceContext);
                 ParentEvaluator.EvaluateFalse(this, true);
             }
         }
 
         private void StopFiltering()
         {
-            var agentInstanceContext = evalFilterNode.Context.AgentInstanceContext;
-            var filterSpec = evalFilterNode.FactoryNode.FilterSpec;
-            FilterValueSetParam[][] filterValues = filterSpec.GetValueSet(
-                beginState,
-                evalFilterNode.AddendumFilters,
+            var agentInstanceContext = _evalFilterNode.Context.AgentInstanceContext;
+            var filterSpec = _evalFilterNode.FactoryNode.FilterSpec;
+            var filterValues = filterSpec.GetValueSet(
+                _beginState,
+                _evalFilterNode.AddendumFilters,
                 agentInstanceContext,
                 agentInstanceContext.StatementContextFilterEvalEnv);
-            var filterService = evalFilterNode.Context.FilterService;
-            if (handle != null) {
-                filterService.Remove(handle, filterSpec.FilterForEventType, filterValues);
+            var filterService = _evalFilterNode.Context.FilterService;
+            if (_handle != null && filterValues != null) {
+                filterService.Remove(_handle, filterSpec.FilterForEventType, filterValues);
+                var filtersVersionX = filterService.FiltersVersion;
+                _evalFilterNode.Context.AgentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersionX;
             }
 
-            handle = null;
-            isStarted = false;
+            _handle = null;
+            _isStarted = false;
             var filtersVersion = filterService.FiltersVersion;
-            evalFilterNode.Context.AgentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion
+            _evalFilterNode.Context.AgentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion
                 .StmtFilterVersion = filtersVersion;
+        }
+        
+        public override void Transfer(AgentInstanceTransferServices services) {
+            if (_handle == null) {
+                return;
+            }
+            var filterSpec = _evalFilterNode.FactoryNode.FilterSpec;
+            var filterValues = filterSpec.GetValueSet(
+                _beginState,
+                _evalFilterNode.AddendumFilters,
+                services.AgentInstanceContext,
+                services.AgentInstanceContext.StatementContextFilterEvalEnv);
+            if (filterValues != null) {
+                services.AgentInstanceContext.FilterService.Remove(_handle, filterSpec.FilterForEventType, filterValues);
+                services.TargetFilterService.Add(filterSpec.FilterForEventType, filterValues, _handle);
+            }
         }
     }
 } // end of namespace

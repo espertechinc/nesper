@@ -96,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             object theEvent,
             object expected)
         {
-            var fields = new [] { "val" };
+            var fields = new[] {"val"};
             env.CompileDeploy(epl).AddListener("s0");
 
             // preload
@@ -116,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             }
 
             var delta = PerformanceObserver.MilliTime - startTime;
-            Assert.That(delta, Is.LessThan(1500), "delta=" + delta);
+            Assert.That(delta, Is.LessThan(2000), "delta=" + delta);
             log.Info("delta=" + delta);
 
             env.UndeployAll();

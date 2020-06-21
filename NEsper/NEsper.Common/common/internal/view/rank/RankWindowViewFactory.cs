@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.view.access;
@@ -28,7 +29,7 @@ namespace com.espertech.esper.common.@internal.view.rank
 
         public bool[] IsDescendingValues { get; set; }
 
-        public ExprEvaluator[] UniqueEvaluators { get; set; }
+        public ExprEvaluator CriteriaEval { get; set; }
 
         public ExprEvaluator[] SortCriteriaEvaluators { get; set; }
 
@@ -40,8 +41,12 @@ namespace com.espertech.esper.common.@internal.view.rank
 
         public Type[] SortCriteriaTypes { get; set; }
 
-        public Type[] UniqueTypes { get; set; }
+        public Type[] CriteriaTypes { get; set; }
 
+        public DataInputOutputSerde KeySerde { get; set; }
+        
+        public DataInputOutputSerde[] SortSerdes { get; set; }
+        
         public string ViewName => ViewEnum.RANK_WINDOW.GetViewName();
 
         public void Init(

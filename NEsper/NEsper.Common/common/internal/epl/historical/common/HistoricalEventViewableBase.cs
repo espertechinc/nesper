@@ -18,7 +18,6 @@ using com.espertech.esper.common.@internal.epl.historical.execstrategy;
 using com.espertech.esper.common.@internal.epl.historical.indexingstrategy;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.view.core;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.threadlocal;
 
 namespace com.espertech.esper.common.@internal.epl.historical.common
@@ -32,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
     {
         protected internal static readonly EventBean[][] NULL_ROWS;
 
-        private static readonly PollResultIndexingStrategy ITERATOR_INDEXING_STRATEGY =
+        private static readonly PollResultIndexingStrategy IteratorIndexingStrategy =
             new ProxyPollResultIndexingStrategy {
                 ProcIndex = (
                     pollResult,
@@ -47,11 +46,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
 #endif
             };
 
-        protected internal readonly AgentInstanceContext agentInstanceContext;
-        protected internal readonly HistoricalEventViewableFactoryBase factory;
-        protected internal readonly PollExecStrategy pollExecStrategy;
-        protected internal View child;
-        protected internal HistoricalDataCache dataCache;
+        private readonly AgentInstanceContext _agentInstanceContext;
+        private readonly HistoricalEventViewableFactoryBase _factory;
+        private readonly PollExecStrategy _pollExecStrategy;
+        private View _child;
+        protected HistoricalDataCache DataCache;
 
         static HistoricalEventViewableBase()
         {
@@ -64,15 +63,19 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
             PollExecStrategy pollExecStrategy,
             AgentInstanceContext agentInstanceContext)
         {
-            this.factory = factory;
-            this.pollExecStrategy = pollExecStrategy;
-            this.agentInstanceContext = agentInstanceContext;
+            _factory = factory;
+            _pollExecStrategy = pollExecStrategy;
+            _agentInstanceContext = agentInstanceContext;
         }
 
         public void Stop(AgentInstanceStopServices services)
         {
-            pollExecStrategy.Destroy();
-            dataCache.Destroy();
+            _pollExecStrategy.Destroy();
+            DataCache.Destroy();
+        }
+
+        public void Transfer(AgentInstanceTransferServices services)
+        {
         }
 
         public EventTable[][] Poll(
@@ -80,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
             PollResultIndexingStrategy indexingStrategy,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var localDataCache = factory.DataCacheThreadLocal.GetOrCreate();
+            var localDataCache = _factory.DataCacheThreadLocal.GetOrCreate();
             var strategyStarted = false;
 
             var resultPerInputRow = new EventTable[lookupEventsPerStream.Length][];
@@ -90,21 +93,26 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
             for (var row = 0; row < lookupEventsPerStream.Length; row++) {
                 // Build lookup keys
                 eventsPerStream = lookupEventsPerStream[row];
-                var lookupValue = factory.evaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                var lookupValue = _factory.Evaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext);
 
                 EventTable[] result = null;
 
                 // try the threadlocal iteration cache, if set
+                object cacheMultiKey = null;
+                if (localDataCache != null || DataCache.IsActive) {
+                    cacheMultiKey = _factory.LookupValueToMultiKey.Invoke(lookupValue);
+                }
+                
                 if (localDataCache != null) {
-                    result = localDataCache.GetCached(lookupValue);
+                    result = localDataCache.GetCached(cacheMultiKey);
                 }
 
                 // try the connection cache
                 if (result == null) {
-                    var multi = dataCache.GetCached(lookupValue);
+                    var multi = DataCache.GetCached(cacheMultiKey);
                     if (multi != null) {
                         result = multi;
-                        localDataCache?.Put(lookupValue, multi);
+                        localDataCache?.Put(cacheMultiKey, multi);
                     }
                 }
 
@@ -117,29 +125,26 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
                     // not found in cache, get from actual polling (db query)
                     try {
                         if (!strategyStarted) {
-                            pollExecStrategy.Start();
+                            _pollExecStrategy.Start();
                             strategyStarted = true;
                         }
 
                         // Poll using the polling execution strategy and lookup values
-                        IList<EventBean> pollResult = pollExecStrategy.Poll(lookupValue, agentInstanceContext);
+                        IList<EventBean> pollResult = _pollExecStrategy.Poll(lookupValue, _agentInstanceContext);
 
                         // index the result, if required, using an indexing strategy
-                        var indexTable = indexingStrategy.Index(pollResult, dataCache.IsActive, agentInstanceContext);
+                        var indexTable = indexingStrategy.Index(pollResult, DataCache.IsActive, _agentInstanceContext);
 
                         // assign to row
                         resultPerInputRow[row] = indexTable;
 
                         // save in cache
-                        dataCache.Put(lookupValue, indexTable);
-
-                        if (localDataCache != null) {
-                            localDataCache.Put(lookupValue, indexTable);
-                        }
+                        DataCache.Put(cacheMultiKey, indexTable);
+                        localDataCache?.Put(cacheMultiKey, indexTable);
                     }
                     catch (EPException) {
                         if (strategyStarted) {
-                            pollExecStrategy.Done();
+                            _pollExecStrategy.Done();
                         }
 
                         throw;
@@ -148,22 +153,22 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
             }
 
             if (strategyStarted) {
-                pollExecStrategy.Done();
+                _pollExecStrategy.Done();
             }
 
             return resultPerInputRow;
         }
 
-        public IThreadLocal<HistoricalDataCache> DataCacheThreadLocal => factory.DataCacheThreadLocal;
+        public IThreadLocal<HistoricalDataCache> DataCacheThreadLocal => _factory.DataCacheThreadLocal;
 
-        public bool HasRequiredStreams => factory.HasRequiredStreams;
+        public bool HasRequiredStreams => _factory.HasRequiredStreams;
 
         public View Child {
-            get => child;
-            set => child = value;
+            get => _child;
+            set => _child = value;
         }
 
-        public EventType EventType => factory.EventType;
+        public EventType EventType => _factory.EventType;
 
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -172,7 +177,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
 
         public IEnumerator<EventBean> GetEnumerator()
         {
-            var tablesPerRow = Poll(NULL_ROWS, ITERATOR_INDEXING_STRATEGY, agentInstanceContext);
+            var tablesPerRow = Poll(NULL_ROWS, IteratorIndexingStrategy, _agentInstanceContext);
             return new IterablesArrayEnumerator(tablesPerRow);
         }
     }

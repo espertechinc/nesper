@@ -9,9 +9,6 @@
 using System;
 using System.Runtime.Serialization;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.module
 {
     /// <summary>

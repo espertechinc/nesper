@@ -72,9 +72,7 @@ namespace com.espertech.esper.common.@internal.view.derived
         {
             IDictionary<string, object> result = new Dictionary<string, object>();
             result.Put(ViewFieldEnum.CORRELATION__CORRELATION.GetName(), baseStatisticsBean.Correlation);
-            if (additionalProps != null) {
-                additionalProps.AddProperties(result, decoration);
-            }
+            additionalProps?.AddProperties(result, decoration);
 
             return eventAdapterService.AdapterForTypedMap(result, eventType);
         }

@@ -13,7 +13,7 @@ namespace com.espertech.esper.common.@internal.util
     [TestFixture]
     public class TestLevenshteinDistance : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestDistance()
         {
             Assert.AreEqual(1, LevenshteinDistance.ComputeLevenshteinDistance("abc", "abcd"));

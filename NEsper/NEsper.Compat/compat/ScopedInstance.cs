@@ -27,15 +27,9 @@ namespace com.espertech.esper.compat
         /// Gets the current instance value.
         /// </summary>
         /// <value>The current.</value>
-        public static T Current
-        {
-            get { return _instance; }
-        }
+        public static T Current => _instance;
 
-        public static bool IsSet
-        {
-            get { return _instance != default(T); }
-        }
+        public static bool IsSet => _instance != default(T);
 
         /// <summary>
         /// Sets the specified instance.

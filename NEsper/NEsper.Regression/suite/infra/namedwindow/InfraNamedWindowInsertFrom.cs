@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
@@ -35,11 +36,46 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraCreateNamedAfterNamed());
-            execs.Add(new InfraInsertWhereTypeAndFilter());
-            execs.Add(new InfraInsertWhereOMStaggered());
-            execs.Add(new InfraInvalid());
+            WithCreateNamedAfterNamed(execs);
+            WithInsertWhereTypeAndFilter(execs);
+            WithInsertWhereOMStaggered(execs);
+            WithInvalid(execs);
+            WithVariantStream(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithVariantStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraVariantStream());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInsertWhereOMStaggered(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraInsertWhereOMStaggered());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInsertWhereTypeAndFilter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraInsertWhereTypeAndFilter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateNamedAfterNamed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraCreateNamedAfterNamed());
             return execs;
         }
 
@@ -130,6 +166,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 Assert.AreEqual(
                     StatementType.CREATE_WINDOW,
                     env.Statement("windowTwo").GetProperty(StatementProperty.STATEMENTTYPE));
+                Assert.AreEqual(
+                    "MyWindowTwo", 
+                    env.Statement("windowTwo").GetProperty(StatementProperty.CREATEOBJECTNAME));
 
                 // create window with keep-all and filter
                 var stmtTextCreateThree =
@@ -241,7 +280,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     TryAssertionInsertWhereOMStaggered(env, rep);
                 }
             }
@@ -251,7 +290,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 EventRepresentationChoice eventRepresentationEnum)
             {
                 var path = new RegressionPath();
-                var stmtTextCreateOne = eventRepresentationEnum.GetAnnotationText() +
+                var stmtTextCreateOne = eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyWindowIWOM>() +
                                         " @Name('window') create window MyWindowIWOM#keepall as select a, b from MyMapAB";
                 env.CompileDeploy(stmtTextCreateOne, path);
                 Assert.IsTrue(eventRepresentationEnum.MatchesClass(env.Statement("window").EventType.UnderlyingType));
@@ -287,17 +326,17 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("windowTwo"),
-                    new [] { "a","b" },
+                    new[] {"a", "b"},
                     new[] {new object[] {"E2", 10}, new object[] {"E3", 10}});
 
                 // test select individual fields and from an insert-from named window
                 env.CompileDeploy(
-                    eventRepresentationEnum.GetAnnotationText() +
+                    eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyWindowIWOMThree>() +
                     " @Name('windowThree') create window MyWindowIWOMThree#keepall as select a from MyWindowIWOMTwo insert where a = 'E2'",
                     path);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("windowThree"),
-                    new [] { "a" },
+                    new[] {"a"},
                     new[] {new object[] {"E2"}});
 
                 env.UndeployAll();
@@ -321,7 +360,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 Assert.AreEqual("A1", events[0].Get("Id?"));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("window"),
-                    new [] { "Id?" },
+                    new[] {"Id?"},
                     new[] {new object[] {"A1"}, new object[] {"B1"}});
 
                 env.UndeployAll();
@@ -362,6 +401,20 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 env.UndeployAll();
             }
+        }
+
+
+        [Serializable]
+        public class MyLocalJsonProvidedMyWindowIWOM
+        {
+            public string a;
+            public int b;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedMyWindowIWOMThree
+        {
+            public string a;
         }
     }
 } // end of namespace

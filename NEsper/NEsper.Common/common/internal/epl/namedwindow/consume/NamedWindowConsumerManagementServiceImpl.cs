@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.@internal.context.util;
-using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
 {

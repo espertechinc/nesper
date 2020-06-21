@@ -21,10 +21,19 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 {
     public class CodegenNamedParam
     {
+        public Type Type { get; }
+
+        public string TypeName { get; }
+
+        public string Name { get; }
+        
+        public bool HasOutputModifier { get; set; }
+
         public CodegenNamedParam(
             Type type,
             string name)
         {
+            HasOutputModifier = false;
             Type = type ?? throw new ArgumentException("Invalid null type");
             TypeName = null;
             Name = name;
@@ -34,6 +43,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             string typeName,
             string name)
         {
+            HasOutputModifier = false;
             Type = null;
             TypeName = typeName ?? throw new ArgumentException("Invalid null type");
             Name = name;
@@ -46,20 +56,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         {
         }
 
-        public Type Type { get; }
-
-        public string TypeName { get; }
-
-        public string Name { get; }
-
         public void Render(
             StringBuilder builder)
         {
+            if (HasOutputModifier) {
+                builder.Append("out ");
+            }
+            
             if (Type != null) {
                 AppendClassName(builder, Type);
             }
             else {
-                builder.Append(TypeName);
+                builder.Append(TypeName.CodeInclusionTypeName());
             }
 
             builder.Append(" ").Append(Name);
@@ -280,6 +288,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         public ParameterSyntax CodegenSyntaxAsParameter()
         {
             throw new NotImplementedException();
+        }
+
+        public CodegenNamedParam WithOutputModifier()
+        {
+            HasOutputModifier = true;
+            return this;
         }
     }
 } // end of namespace

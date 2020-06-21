@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.That(() => e.Current, Throws.InstanceOf<InvalidOperationException>());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void BasicTestNumberAscCombinationEnumeration()
         {
             Compare(new[] { new[] { 0 } }, 1);

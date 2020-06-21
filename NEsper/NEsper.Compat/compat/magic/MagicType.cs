@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -713,7 +712,7 @@ namespace com.espertech.esper.compat.magic
                 }
 
                 var subType = typeof(T).GetElementType();
-                var subCast = typeof(MagicPropertyInfo)
+                var subCast = typeof(MagicType)
                     .GetMethod("CastTo")
                     .MakeGenericMethod(subType);
 
@@ -893,7 +892,7 @@ namespace com.espertech.esper.compat.magic
         public override Action<object, object> SetFunction {
             get {
                 if ((SetMethod != null) && (_setFunction == null)) {
-                    var castTo = typeof(MagicPropertyInfo)
+                    var castTo = typeof(MagicType)
                         .GetMethod("CastTo")
                         .MakeGenericMethod(GetMethod.ReturnType);
 
@@ -974,26 +973,20 @@ namespace com.espertech.esper.compat.magic
         /// property from an object instance.
         /// </summary>
         /// <value>The get function.</value>
-        public override Func<object, object> GetFunction {
-            get { return GetValue; }
-        }
+        public override Func<object, object> GetFunction => GetValue;
 
         /// <summary>
         /// Returns a function that can be used to set the value of the
         /// property in an object instance.
         /// </summary>
         /// <value>The set function.</value>
-        public override Action<object, object> SetFunction {
-            get { return SetValue; }
-        }
+        public override Action<object, object> SetFunction => SetValue;
 
         /// <summary>
         /// Gets a value indicating whether this property can be set.
         /// </summary>
         /// <value><c>true</c> if this instance can write; otherwise, <c>false</c>.</value>
-        public override bool CanWrite {
-            get { return Child.CanWrite; }
-        }
+        public override bool CanWrite => Child.CanWrite;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DynamicMagicPropertyInfo"/> class.

@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -19,7 +18,7 @@ namespace com.espertech.esper.common.@internal.type
     ///     Enum representing relational types of operation.
     /// </summary>
     [Serializable]
-    public class BitWiseOpEnum
+    public partial class BitWiseOpEnum
     {
         /// <summary>
         ///     Bitwise and.
@@ -36,26 +35,26 @@ namespace com.espertech.esper.common.@internal.type
         /// </summary>
         public static readonly BitWiseOpEnum BXOR = new BitWiseOpEnum("^");
 
-        private static readonly IDictionary<HashableMultiKey, Computer> computers;
+        private static readonly IDictionary<BitWiseOpDesc, Computer> computers;
 
         static BitWiseOpEnum()
         {
-            computers = new Dictionary<HashableMultiKey, Computer>();
-            computers.Put(new HashableMultiKey(new object[] {typeof(byte?), BAND}), new BAndByte());
-            computers.Put(new HashableMultiKey(new object[] {typeof(short?), BAND}), new BAndShort());
-            computers.Put(new HashableMultiKey(new object[] {typeof(int?), BAND}), new BAndInt());
-            computers.Put(new HashableMultiKey(new object[] {typeof(long?), BAND}), new BAndLong());
-            computers.Put(new HashableMultiKey(new object[] {typeof(bool?), BAND}), new BAndBoolean());
-            computers.Put(new HashableMultiKey(new object[] {typeof(byte?), BOR}), new BOrByte());
-            computers.Put(new HashableMultiKey(new object[] {typeof(short?), BOR}), new BOrShort());
-            computers.Put(new HashableMultiKey(new object[] {typeof(int?), BOR}), new BOrInt());
-            computers.Put(new HashableMultiKey(new object[] {typeof(long?), BOR}), new BOrLong());
-            computers.Put(new HashableMultiKey(new object[] {typeof(bool?), BOR}), new BOrBoolean());
-            computers.Put(new HashableMultiKey(new object[] {typeof(byte?), BXOR}), new BXorByte());
-            computers.Put(new HashableMultiKey(new object[] {typeof(short?), BXOR}), new BXorShort());
-            computers.Put(new HashableMultiKey(new object[] {typeof(int?), BXOR}), new BXorInt());
-            computers.Put(new HashableMultiKey(new object[] {typeof(long?), BXOR}), new BXorLong());
-            computers.Put(new HashableMultiKey(new object[] {typeof(bool?), BXOR}), new BXorBoolean());
+            computers = new Dictionary<BitWiseOpDesc, Computer>();
+            computers.Put(new BitWiseOpDesc(typeof(byte?), BAND), new BAndByte());
+            computers.Put(new BitWiseOpDesc(typeof(short?), BAND), new BAndShort());
+            computers.Put(new BitWiseOpDesc(typeof(int?), BAND), new BAndInt());
+            computers.Put(new BitWiseOpDesc(typeof(long?), BAND), new BAndLong());
+            computers.Put(new BitWiseOpDesc(typeof(bool?), BAND), new BAndBoolean());
+            computers.Put(new BitWiseOpDesc(typeof(byte?), BOR), new BOrByte());
+            computers.Put(new BitWiseOpDesc(typeof(short?), BOR), new BOrShort());
+            computers.Put(new BitWiseOpDesc(typeof(int?), BOR), new BOrInt());
+            computers.Put(new BitWiseOpDesc(typeof(long?), BOR), new BOrLong());
+            computers.Put(new BitWiseOpDesc(typeof(bool?), BOR), new BOrBoolean());
+            computers.Put(new BitWiseOpDesc(typeof(byte?), BXOR), new BXorByte());
+            computers.Put(new BitWiseOpDesc(typeof(short?), BXOR), new BXorShort());
+            computers.Put(new BitWiseOpDesc(typeof(int?), BXOR), new BXorInt());
+            computers.Put(new BitWiseOpDesc(typeof(long?), BXOR), new BXorLong());
+            computers.Put(new BitWiseOpDesc(typeof(bool?), BXOR), new BXorBoolean());
         }
 
         private BitWiseOpEnum(string expressionText)
@@ -92,264 +91,7 @@ namespace com.espertech.esper.common.@internal.type
                     "Expected base numeric or boolean type for computation result but got type " + coercedType);
             }
 
-            var key = new HashableMultiKey(new object[] {coercedType, this});
-            return computers.Get(key);
-        }
-
-        /// <summary>
-        ///     Computer for relational op.
-        /// </summary>
-        public interface Computer
-        {
-            /// <summary>
-            ///     Computes using the 2 numbers or boolean a result object.
-            /// </summary>
-            /// <param name="objOne">is the first number or boolean</param>
-            /// <param name="objTwo">is the second number or boolean</param>
-            /// <returns>result</returns>
-            object Compute(
-                object objOne,
-                object objTwo);
-        }
-
-        /// <summary>
-        ///     Computer for type-specific arith. operations.
-        /// </summary>
-        /// <summary>
-        ///     Bit Wise And.
-        /// </summary>
-        public class BAndByte : Computer
-        {
-            public object Compute(
-                object objOne,
-                object objTwo)
-            {
-                var n1 = (byte) objOne;
-                var n2 = (byte) objTwo;
-                return (byte) (n1 & n2);
-            }
-        }
-
-        /// <summary>
-        ///     Bit Wise Or.
-        /// </summary>
-        public class BOrByte : Computer
-        {
-            public object Compute(
-                object objOne,
-                object objTwo)
-            {
-                var n1 = (byte) objOne;
-                var n2 = (byte) objTwo;
-                return (byte) (n1 | n2);
-            }
-        }
-
-        /// <summary>
-        ///     Bit Wise Xor.
-        /// </summary>
-        public class BXorByte : Computer
-        {
-            public object Compute(
-                object objOne,
-                object objTwo)
-            {
-                var n1 = (byte) objOne;
-                var n2 = (byte) objTwo;
-                return (byte) (n1 ^ n2);
-            }
-        }
-
-        /// <summary>
-        ///     Computer for type-specific arith. operations.
-        /// </summary>
-        /// <summary>
-        ///     Bit Wise And.
-        /// </summary>
-        public class BAndShort : Computer
-        {
-            public object Compute(
-                object objOne,
-                object objTwo)
-            {
-                var n1 = (short) objOne;
-                var n2 = (short) objTwo;
-                return (short) (n1 & n2);
-            }
-        }
-
-        /// <summary>
-        ///     Bit Wise Or.
-        /// </summary>
-        public class BOrShort : Computer
-        {
-            public object Compute(
-                object objOne,
-                object objTwo)
-            {
-                var n1 = (short) objOne;
-                var n2 = (short) objTwo;
-                return (short) (n1 | n2);
-            }
-        }
-
-        /// <summary>
-        ///     Bit Wise Xor.
-        /// </summary>
-        public class BXorShort : Computer
-        {
-            public object Compute(
-                object objOne,
-                object objTwo)
-            {
-                var n1 = (short) objOne;
-                var n2 = (short) objTwo;
-                return (short) (n1 ^ n2);
-            }
-        }
-
-        /// <summary>
-        ///     Computer for type-specific arith. operations.
-        /// </summary>
-        /// <summary>
-        ///     Bit Wise And.
-        /// </summary>
-        public class BAndInt : Computer
-        {
-            public object Compute(
-                object objOne,
-                object objTwo)
-            {
-                var n1 = (int) objOne;
-                var n2 = (int) objTwo;
-                return n1 & n2;
-            }
-        }
-
-        /// <summary>
-        ///     Bit Wise Or.
-        /// </summary>
-        public class BOrInt : Computer
-        {
-            public object Compute(
-                object objOne,
-                object objTwo)
-            {
-                var n1 = (int) objOne;
-                var n2 = (int) objTwo;
-                return n1 | n2;
-            }
-        }
-
-        /// <summary>
-        ///     Bit Wise Xor.
-        /// </summary>
-        public class BXorInt : Computer
-        {
-            public object Compute(
-                object objOne,
-                object objTwo)
-            {
-                var n1 = (int) objOne;
-                var n2 = (int) objTwo;
-                return n1 ^ n2;
-            }
-        }
-
-        /// <summary>
-        ///     Computer for type-specific arith. operations.
-        /// </summary>
-        /// <summary>
-        ///     Bit Wise And.
-        /// </summary>
-        public class BAndLong : Computer
-        {
-            public object Compute(
-                object objOne,
-                object objTwo)
-            {
-                var n1 = (long) objOne;
-                var n2 = (long) objTwo;
-                return n1 & n2;
-            }
-        }
-
-        /// <summary>
-        ///     Bit Wise Or.
-        /// </summary>
-        public class BOrLong : Computer
-        {
-            public object Compute(
-                object objOne,
-                object objTwo)
-            {
-                var n1 = (long) objOne;
-                var n2 = (long) objTwo;
-                return n1 | n2;
-            }
-        }
-
-        /// <summary>
-        ///     Bit Wise Xor.
-        /// </summary>
-        public class BXorLong : Computer
-        {
-            public object Compute(
-                object objOne,
-                object objTwo)
-            {
-                var n1 = (long) objOne;
-                var n2 = (long) objTwo;
-                return n1 ^ n2;
-            }
-        }
-
-        /// <summary>
-        ///     Computer for type-specific arith. operations.
-        /// </summary>
-        /// <summary>
-        ///     Bit Wise And.
-        /// </summary>
-        public class BAndBoolean : Computer
-        {
-            public object Compute(
-                object objOne,
-                object objTwo)
-            {
-                var b1 = (bool) objOne;
-                var b2 = (bool) objTwo;
-                return b1 & b2;
-            }
-        }
-
-        /// <summary>
-        ///     Bit Wise Or.
-        /// </summary>
-        public class BOrBoolean : Computer
-        {
-            public object Compute(
-                object objOne,
-                object objTwo)
-            {
-                var b1 = (bool) objOne;
-                var b2 = (bool) objTwo;
-                return b1 | b2;
-            }
-        }
-
-        /// <summary>
-        ///     Bit Wise Xor.
-        /// </summary>
-        public class BXorBoolean : Computer
-        {
-            public object Compute(
-                object objOne,
-                object objTwo)
-            {
-                var b1 = (bool) objOne;
-                var b2 = (bool) objTwo;
-                return b1 ^ b2;
-            }
+            return computers.Get(new BitWiseOpDesc(coercedType, this));
         }
     }
 } // end of namespace

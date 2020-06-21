@@ -6,13 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.condition;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.context.controller.initterm
@@ -49,6 +46,12 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             IntSeqKey controllerPath,
             BiConsumer<ContextControllerInitTermPartitionKey, int> partKeyAndCPId);
 
+        void EndVisitConditions(
+            IntSeqKey controllerPath,
+            BiConsumer<ContextControllerConditionNonHA, int> partKeyAndCPId);
+
         void Destroy();
+        
+        ContextControllerCondition MgmtGetStartCondition(IntSeqKey conditionPath);
     }
 } // end of namespace

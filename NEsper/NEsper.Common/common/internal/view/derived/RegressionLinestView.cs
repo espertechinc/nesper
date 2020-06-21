@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -14,7 +13,6 @@ using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.view.core;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.view.derived
@@ -86,9 +84,7 @@ namespace com.espertech.esper.common.@internal.view.derived
             result.Put(ViewFieldEnum.REGRESSION__SUMXY.GetName(), baseStatisticsBean.SumXY);
             result.Put(ViewFieldEnum.REGRESSION__SUMY.GetName(), baseStatisticsBean.SumY);
             result.Put(ViewFieldEnum.REGRESSION__SUMYSQ.GetName(), baseStatisticsBean.SumYSq);
-            if (additionalProps != null) {
-                additionalProps.AddProperties(result, decoration);
-            }
+            additionalProps?.AddProperties(result, decoration);
 
             return eventAdapterService.AdapterForTypedMap(result, eventType);
         }

@@ -10,6 +10,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.compile;
+using com.espertech.esper.common.@internal.epl.classprovided.core;
 using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
@@ -29,6 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.util
             PathRegistry<string, TableMetaData> tablePathRegistry,
             PathRegistry<string, ContextMetaData> contextPathRegistry,
             PathRegistry<NameAndParamNum, ExpressionScriptProvided> scriptPathRegistry,
+            PathRegistry<string, ClassProvided> classProvidedPathRegistry,
             EventTypeRepositoryImpl eventTypePreconfigured,
             VariableRepositoryPreconfigured variablePreconfigured)
         {
@@ -39,6 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.util
             TablePathRegistry = tablePathRegistry;
             ContextPathRegistry = contextPathRegistry;
             ScriptPathRegistry = scriptPathRegistry;
+            ClassProvidedPathRegistry = classProvidedPathRegistry;
             EventTypePreconfigured = eventTypePreconfigured;
             VariablePreconfigured = variablePreconfigured;
         }
@@ -56,6 +59,8 @@ namespace com.espertech.esper.common.@internal.epl.util
         public PathRegistry<string, ContextMetaData> ContextPathRegistry { get; }
 
         public PathRegistry<NameAndParamNum, ExpressionScriptProvided> ScriptPathRegistry { get; }
+
+        public PathRegistry<string, ClassProvided> ClassProvidedPathRegistry { get; }
 
         public EventTypeRepositoryImpl EventTypePreconfigured { get; }
 

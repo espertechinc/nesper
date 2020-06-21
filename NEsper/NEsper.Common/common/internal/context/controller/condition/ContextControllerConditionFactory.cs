@@ -6,13 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.controller.condition
 {
@@ -44,17 +41,12 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
 
             if (endpoint is ContextConditionDescriptorCrontab) {
                 ContextConditionDescriptorCrontab crontab = (ContextConditionDescriptorCrontab) endpoint;
-                ScheduleSpec schedule = ScheduleExpressionUtil.CrontabScheduleBuild(
-                    crontab.Evaluators,
-                    controller.Realization.AgentInstanceContextCreate);
+                ScheduleSpec[] schedules = new ScheduleSpec[crontab.EvaluatorsPerCrontab.Length];
+                for (int i = 0; i < schedules.Length; i++) {
+                    schedules[i] = ScheduleExpressionUtil.CrontabScheduleBuild(crontab.EvaluatorsPerCrontab[i], controller.Realization.AgentInstanceContextCreate);
+                }
                 long scheduleSlot = controller.Realization.AgentInstanceContextCreate.ScheduleBucket.AllocateSlot();
-                return new ContextControllerConditionCrontabImpl(
-                    conditionPath,
-                    scheduleSlot,
-                    schedule,
-                    crontab,
-                    callback,
-                    controller);
+                return new ContextControllerConditionCrontabImpl(conditionPath, scheduleSlot, schedules, crontab, callback, controller);
             }
 
             if (endpoint is ContextConditionDescriptorPattern) {

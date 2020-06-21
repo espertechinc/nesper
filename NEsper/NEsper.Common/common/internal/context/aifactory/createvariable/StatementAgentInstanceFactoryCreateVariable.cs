@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
             var variableService = agentInstanceContext.VariableManagementService;
             var deploymentId = agentInstanceContext.DeploymentId;
             var agentInstanceId = agentInstanceContext.AgentInstanceId;
-            IList<AgentInstanceStopCallback> stopCallbacks = new List<AgentInstanceStopCallback>(2);
+            IList<AgentInstanceMgmtCallback> stopCallbacks = new List<AgentInstanceMgmtCallback>(2);
 
             // allocate state
             // for create-variable with contexts we allocate on new-context
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
             }
 
             stopCallbacks.Add(
-                new ProxyAgentInstanceStopCallback {
+                new ProxyAgentInstanceMgmtCallback {
                     ProcStop = services => {
                         services.AgentInstanceContext.VariableManagementService.DeallocateVariableState(
                             services.AgentInstanceContext.DeploymentId,
@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
                 agentInstanceContext.AgentInstanceId,
                 createVariableView);
             stopCallbacks.Add(
-                new ProxyAgentInstanceStopCallback {
+                new ProxyAgentInstanceMgmtCallback {
                     ProcStop = services => {
                         services.AgentInstanceContext.VariableManagementService.UnregisterCallback(
                             deploymentId,

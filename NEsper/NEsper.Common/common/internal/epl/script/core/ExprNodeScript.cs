@@ -20,7 +20,6 @@ using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
-using com.espertech.esper.common.@internal.epl.script.compiletime;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
@@ -146,7 +145,9 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 
         public IList<ExprNode> AdditionalNodes => Parameters;
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(Script.Name);
             ExprNodeUtilityPrint.ToExpressionStringIncludeParen(Parameters, writer);
@@ -166,7 +167,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 
             var that = (ExprNodeScript) node;
 
-            if (Script != null ? !Script.Equals(that.Script) : that.Script != null) {
+            if (!Script?.Equals(that.Script) ?? that.Script != null) {
                 return false;
             }
 
@@ -182,6 +183,10 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                         Script.Name,
                         Script.ParameterNames.Length,
                         Parameters.Count));
+            }
+
+            if (!validationContext.StatementCompileTimeService.Configuration.Compiler.Scripts.IsEnabled) {
+                throw new ExprValidationException("Script compilation has been disabled by configuration");
             }
 
             // validate all expression parameters
@@ -212,7 +217,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 parameterTypes,
                 Script.CompiledBuf,
                 validationContext.ImportService,
-                validationContext.ScriptService);
+                validationContext.ScriptCompiler);
 
             // Determine declared return type
             var declaredReturnType = GetDeclaredReturnType(Script.OptionalReturnTypeName, validationContext);
@@ -273,7 +278,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 Script.Name,
                 Script.Expression,
                 Script.ParameterNames,
-                forges,
+                Parameters.ToArray(),
                 returnType,
                 _defaultDialect);
             return null;
@@ -287,10 +292,10 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             Type[] parameterTypes,
             ExpressionScriptCompiled scriptCompiledBuf,
             ImportServiceCompileTime importService,
-            ScriptServiceCompileTime scriptingService)
+            ScriptCompiler scriptingCompiler)
         {
             return new ExpressionScriptCompiledImpl(
-                scriptingService.Compile(
+                scriptingCompiler.Compile(
                     Script.OptionalDialect ?? _defaultDialect,
                     Script));
         }
@@ -330,9 +335,9 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 symbols.GetAddExprEvalCtx(codegenMethodScope));
         }
 
-        public CodegenExpressionField GetField(CodegenClassScope codegenClassScope)
+        public CodegenExpressionInstanceField GetField(CodegenClassScope codegenClassScope)
         {
-            return codegenClassScope.NamespaceScope.AddOrGetFieldSharable(
+            return codegenClassScope.NamespaceScope.AddOrGetDefaultFieldSharable(
                 new ScriptCodegenFieldSharable(_scriptDescriptor, codegenClassScope));
         }
 
@@ -344,7 +349,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 return null;
             }
 
-            if (returnTypeName.Equals("void")) {
+            if (returnTypeName == "void") {
                 return null;
             }
 
@@ -360,7 +365,10 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             }
 
             try {
-                return validationContext.ImportService.ResolveClass(returnTypeName, false);
+                return validationContext.ImportService.ResolveClass(
+                    returnTypeName,
+                    false,
+                    ExtensionClassEmpty.INSTANCE);
             }
             catch (ImportException) {
                 throw new ExprValidationException(

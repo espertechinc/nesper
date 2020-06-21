@@ -10,8 +10,6 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
-using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.magic;
 using com.espertech.esper.regressionlib.framework;

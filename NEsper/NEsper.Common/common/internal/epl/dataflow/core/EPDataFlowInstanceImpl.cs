@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.@internal.context.aifactory.createdataflow;
@@ -65,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
 
             State = EPDataFlowState.INSTANTIATED;
 
-            _operators = new OrderedDictionary<int, Pair<object, bool>>();
+            _operators = new OrderedListDictionary<int, Pair<object, bool>>();
             foreach (var entry in operators) {
                 _operators.Put(entry.Key, new Pair<object, bool>(entry.Value, false));
             }
@@ -252,9 +251,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
             }
             else {
                 // handle run
-                if (_runCurrentThread != null) {
-                    _runCurrentThread.Interrupt();
-                }
+                _runCurrentThread?.Interrupt();
 
                 _runCurrentThread = null;
             }

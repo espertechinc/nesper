@@ -6,10 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.configuration.compiler;
-using com.espertech.esper.common.client.hook.aggfunc;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
@@ -23,7 +20,6 @@ using com.espertech.esper.common.@internal.epl.expression.table;
 using com.espertech.esper.common.@internal.epl.expression.time.node;
 using com.espertech.esper.common.@internal.epl.expression.variable;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
-using com.espertech.esper.common.@internal.@event.property;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -35,6 +31,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
+
+using com.espertech.esper.common.@internal.epl.expression.assign;
+using com.espertech.esper.common.@internal.epl.expression.chain;
 
 using static com.espertech.esper.common.@internal.@event.propertyparser.PropertyParserNoDep;
 
@@ -48,8 +47,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprNodeOrigin origin,
             ExprNode[] expressions)
         {
-            ExprNodeSummaryVisitor summaryVisitor = new ExprNodeSummaryVisitor();
-            foreach (ExprNode expression in expressions) {
+            var summaryVisitor = new ExprNodeSummaryVisitor();
+            foreach (var expression in expressions) {
                 ValidatePlainExpression(origin, expression, summaryVisitor);
             }
         }
@@ -58,26 +57,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprNodeOrigin origin,
             ExprNode expression)
         {
-            ExprNodeSummaryVisitor summaryVisitor = new ExprNodeSummaryVisitor();
+            var summaryVisitor = new ExprNodeSummaryVisitor();
             ValidatePlainExpression(origin, expression, summaryVisitor);
         }
 
-        public static ExprNode GetValidatedAssignment(
-            OnTriggerSetAssignment assignment,
+        public static void ValidateAssignment(
+            bool allowLHSVariables,
+            ExprNodeOrigin origin,
+            OnTriggerSetAssignment spec,
             ExprValidationContext validationContext)
         {
-            Pair<string, ExprNode> strictAssignment = CheckGetAssignmentToVariableOrProp(assignment.Expression);
-            if (strictAssignment != null) {
-                ExprNode validatedRightSide = GetValidatedSubtreeInternal(
-                    strictAssignment.Second,
-                    validationContext,
-                    true);
-                assignment.Expression.SetChildNode(1, validatedRightSide);
-                return assignment.Expression;
+            // equals-assignments are "a=1" and "a[1]=2" and such
+            // they are not "a.reset()"
+            var assignment = CheckGetStraightAssignment(spec.Expression, allowLHSVariables);
+            if (assignment == null) {
+                assignment = new ExprAssignmentCurly(spec.Expression);
             }
-            else {
-                return GetValidatedSubtreeInternal(assignment.Expression, validationContext, true);
-            }
+
+            assignment.Validate(origin, validationContext);
+            spec.Validated = assignment;
         }
 
         /// <summary>
@@ -87,13 +85,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// <returns>null if minimal, otherwise name of offending sub-expression</returns>
         public static string IsMinimalExpression(ExprNode expression)
         {
-            ExprNodeSubselectDeclaredDotVisitor subselectVisitor = new ExprNodeSubselectDeclaredDotVisitor();
+            var subselectVisitor = new ExprNodeSubselectDeclaredDotVisitor();
             expression.Accept(subselectVisitor);
             if (subselectVisitor.Subselects.Count > 0) {
                 return "a subselect";
             }
 
-            ExprNodeViewResourceVisitor viewResourceVisitor = new ExprNodeViewResourceVisitor();
+            var viewResourceVisitor = new ExprNodeViewResourceVisitor();
             expression.Accept(viewResourceVisitor);
             if (viewResourceVisitor.ExprNodes.Count > 0) {
                 return "a function that requires view resources (prior, prev)";
@@ -140,20 +138,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     else {
                         text = ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(exprNode);
                         if (text.Length > 40) {
-                            string shortened = text.Substring(0, 35);
+                            var shortened = text.Substring(0, 35);
                             text = shortened + "...(" + text.Length + " chars)";
                         }
 
                         text = "'" + text + "'";
                     }
 
-                    var errorText = string.Format(
-                        "Failed to validate {0} expression {1}: {2}",
-                        origin.GetClauseName(),
-                        text,
-                        ex.Message);
-
-                    throw new ExprValidationException(errorText, ex);
+                    throw MakeValidationExWExpression(origin, text, ex);
                 }
                 catch (ExprValidationException) {
                     throw;
@@ -170,6 +162,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
         }
 
+        public static ExprValidationException MakeValidationExWExpression(
+            ExprNodeOrigin origin,
+            String text,
+            ExprValidationException ex)
+        {
+            return new ExprValidationException(
+                $"Failed to validate {origin.GetClauseName()} expression {text}: {ex.Message}",
+                ex);
+        }
+
         public static bool ValidateNamedExpectType(
             ExprNamedParameterNode namedParameterNode,
             Type[] expectedTypes)
@@ -178,11 +180,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 throw GetNamedValidationException(namedParameterNode.ParameterName, expectedTypes);
             }
 
-            ExprNode childNode = namedParameterNode.ChildNodes[0];
-            Type returnType = childNode.Forge.EvaluationType.GetBoxedType();
+            var childNode = namedParameterNode.ChildNodes[0];
+            var returnType = childNode.Forge.EvaluationType.GetBoxedType();
 
-            bool found = false;
-            foreach (Type expectedType in expectedTypes) {
+            var found = false;
+            foreach (var expectedType in expectedTypes) {
                 if (expectedType == typeof(TimePeriod) && childNode is ExprTimePeriod) {
                     found = true;
                     break;
@@ -211,10 +213,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 expectedType = "a " + TypeHelper.GetSimpleNameForType(expected[0]) + "-typed value";
             }
             else {
-                StringWriter buf = new StringWriter();
+                var buf = new StringWriter();
                 buf.Write("any of the following types: ");
-                string delimiter = "";
-                foreach (Type clazz in expected) {
+                var delimiter = "";
+                foreach (var clazz in expected) {
                     buf.Write(delimiter);
                     buf.Write(TypeHelper.GetSimpleNameForType(clazz));
                     delimiter = ",";
@@ -223,10 +225,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 expectedType = buf.ToString();
             }
 
-            string message = "Failed to validate named parameter '" +
-                             parameterName +
-                             "', expected a single expression returning " +
-                             expectedType;
+            var message = "Failed to validate named parameter '" +
+                          parameterName +
+                          "', expected a single expression returning " +
+                          expectedType;
             return new ExprValidationException(message);
         }
 
@@ -235,14 +237,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
             IDictionary<string, ExprNamedParameterNode> nameds = null;
 
-            foreach (ExprNode node in parameters) {
+            foreach (var node in parameters) {
                 if (node is ExprNamedParameterNode) {
-                    ExprNamedParameterNode named = (ExprNamedParameterNode) node;
+                    var named = (ExprNamedParameterNode) node;
                     if (nameds == null) {
                         nameds = new Dictionary<string, ExprNamedParameterNode>();
                     }
 
-                    string lowerCaseName = named.ParameterName.ToLowerInvariant();
+                    var lowerCaseName = named.ParameterName.ToLowerInvariant();
                     if (nameds.ContainsKey(lowerCaseName)) {
                         throw new ExprValidationException("Duplicate parameter '" + lowerCaseName + "'");
                     }
@@ -262,9 +264,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             IDictionary<string, ExprNamedParameterNode> namedExpressions,
             string[] namedParameters)
         {
-            foreach (KeyValuePair<string, ExprNamedParameterNode> entry in namedExpressions) {
-                bool found = false;
-                foreach (string named in namedParameters) {
+            foreach (var entry in namedExpressions) {
+                var found = false;
+                foreach (var named in namedParameters) {
                     if (named.Equals(entry.Key)) {
                         found = true;
                         break;
@@ -286,25 +288,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprValidationContext validationContext,
             bool isTopLevel)
         {
-            ExprNode result = exprNode;
+            var result = exprNode;
             if (exprNode is ExprLambdaGoesNode) {
                 return exprNode;
             }
 
-            for (int i = 0; i < exprNode.ChildNodes.Length; i++) {
-                ExprNode childNode = exprNode.ChildNodes[i];
+            for (var i = 0; i < exprNode.ChildNodes.Length; i++) {
+                var childNode = exprNode.ChildNodes[i];
                 if (childNode is ExprDeclaredOrLambdaNode node) {
                     if (node.IsValidated) {
                         continue;
                     }
                 }
 
-                ExprNode childNodeValidated = GetValidatedSubtreeInternal(childNode, validationContext, false);
+                var childNodeValidated = GetValidatedSubtreeInternal(childNode, validationContext, false);
                 exprNode.SetChildNode(i, childNodeValidated);
             }
 
             try {
-                ExprNode optionalReplacement = exprNode.Validate(validationContext);
+                var optionalReplacement = exprNode.Validate(validationContext);
                 if (optionalReplacement != null) {
                     return GetValidatedSubtreeInternal(optionalReplacement, validationContext, isTopLevel);
                 }
@@ -312,7 +314,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             catch (ExprValidationException e) {
                 if (exprNode is ExprIdentNode identNode) {
                     try {
-                        result = ResolveStaticMethodOrField(identNode, e, validationContext);
+                        if (!ResolveStaticMethodOrField(identNode, e, validationContext, out result)) {
+                            throw;
+                        }
                     }
                     catch (ExprValidationException) {
                         var resolutionStream = ResolveAsStreamName(identNode, validationContext);
@@ -354,7 +358,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 return;
             }
 
-            for (int i = 0; i < exprNode.Length; i++) {
+            for (var i = 0; i < exprNode.Length; i++) {
                 exprNode[i] = GetValidatedSubtree(origin, exprNode[i], validationContext);
             }
         }
@@ -368,27 +372,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 return;
             }
 
-            foreach (ExprNode[] anExprNode in exprNode) {
+            foreach (var anExprNode in exprNode) {
                 GetValidatedSubtree(origin, anExprNode, validationContext);
             }
         }
 
         public static void Validate(
             ExprNodeOrigin origin,
-            IList<ExprChainedSpec> chainSpec,
+            IList<Chainable> chainSpec,
             ExprValidationContext validationContext)
         {
             // validate all parameters
-            foreach (ExprChainedSpec chainElement in chainSpec) {
-                IList<ExprNode> validated = new List<ExprNode>();
-                foreach (ExprNode expr in chainElement.Parameters) {
-                    validated.Add(GetValidatedSubtree(origin, expr, validationContext));
-                    if (expr is ExprNamedParameterNode) {
-                        throw new ExprValidationException("Named parameters are not allowed");
-                    }
-                }
-
-                chainElement.Parameters = validated;
+            foreach (var chainElement in chainSpec) {
+                chainElement.Validate(origin, validationContext);
             }
         }
 
@@ -402,7 +398,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 summaryVisitor.HasSubselect ||
                 summaryVisitor.HasStreamSelect ||
                 summaryVisitor.HasPreviousPrior) {
-                string text = ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(expression);
+                var text = ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(expression);
                 throw new ExprValidationException(
                     "Invalid " +
                     origin.GetClauseName() +
@@ -416,39 +412,42 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         // look the same, however as the validation could not resolve "Stream.property('key')" before calling this method,
         // this method tries to resolve the mapped property as a static method.
         // Assumes that this is an ExprIdentNode.
-        private static ExprNode ResolveStaticMethodOrField(
+        private static bool ResolveStaticMethodOrField(
             ExprIdentNode identNode,
             ExprValidationException propertyException,
-            ExprValidationContext validationContext)
+            ExprValidationContext validationContext,
+            out ExprNode exprNode)
         {
             // Reconstruct the original string
-            StringBuilder mappedProperty = new StringBuilder(identNode.UnresolvedPropertyName);
+            var mappedProperty = new StringBuilder(identNode.UnresolvedPropertyName);
             if (identNode.StreamOrPropertyName != null) {
                 mappedProperty.Insert(0, identNode.StreamOrPropertyName + '.');
             }
 
             // Parse the mapped property format into a class name, method and single string parameter
-            MappedPropertyParseResult parse = ParseMappedProperty(mappedProperty.ToString());
+            var parse = ParseMappedProperty(mappedProperty.ToString());
             if (parse == null) {
-                ExprConstantNode constNode = ResolveIdentAsEnumConst(
+                var constNode = ResolveIdentAsEnumConst(
                     mappedProperty.ToString(),
-                    validationContext.ImportService);
+                    validationContext.ImportService,
+                    validationContext.ClassProvidedExtension);
                 if (constNode == null) {
-                    throw propertyException;
+                    exprNode = null;
+                    return false;
                 }
-                else {
-                    return constNode;
-                }
+
+                exprNode = constNode;
+                return true;
             }
 
             // If there is a class name, assume a static method is possible.
             if (parse.ClassName != null) {
-                IList<ExprNode> parameters =
-                    Collections.SingletonList((ExprNode) new ExprConstantNodeImpl(parse.ArgString));
-                IList<ExprChainedSpec> chain = new List<ExprChainedSpec>();
-                chain.Add(new ExprChainedSpec(parse.ClassName, Collections.GetEmptyList<ExprNode>(), false));
-                chain.Add(new ExprChainedSpec(parse.MethodName, parameters, false));
-                ConfigurationCompilerExpression exprConfig =
+                var parameters = Collections.SingletonList<ExprNode>(new ExprConstantNodeImpl(parse.ArgString));
+                IList<Chainable> chain = new List<Chainable>();
+                chain.Add(new ChainableName(parse.ClassName));
+                chain.Add(new ChainableCall(parse.MethodName, parameters));
+
+                var exprConfig =
                     validationContext.StatementCompileTimeService.Configuration.Compiler.Expression;
                 ExprNode result = new ExprDotNodeImpl(chain, exprConfig.IsDuckTyping, exprConfig.IsUdfCache);
 
@@ -462,18 +461,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         e);
                 }
 
-                return result;
+                exprNode = result;
+                return true;
             }
 
             // There is no class name, try a single-row function
-            string functionName = parse.MethodName;
+            var functionName = parse.MethodName;
             try {
-                Pair<Type, ImportSingleRowDesc> classMethodPair =
-                    validationContext.ImportService.ResolveSingleRow(functionName);
-                IList<ExprNode> parameters =
-                    Collections.SingletonList((ExprNode) new ExprConstantNodeImpl(parse.ArgString));
-                IList<ExprChainedSpec> chain = Collections.SingletonList(
-                    new ExprChainedSpec(classMethodPair.Second.MethodName, parameters, false));
+                var classMethodPair = validationContext.ImportService
+                    .ResolveSingleRow(functionName, validationContext.ClassProvidedExtension);
+                var parameters = Collections.SingletonList<ExprNode>(new ExprConstantNodeImpl(parse.ArgString));
+                var chain = Collections.SingletonList<Chainable>(new ChainableCall(classMethodPair.Second.MethodName, parameters));
+                
                 ExprNode result = new ExprPlugInSingleRowNode(
                     functionName,
                     classMethodPair.First,
@@ -492,7 +491,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         "Plug-in aggregation function '" + parse.MethodName + "' failed validation: " + ex.Message);
                 }
 
-                return result;
+                exprNode = result;
+                return true;
             }
             catch (ImportUndefinedException) {
                 // Not an single-row function
@@ -503,8 +503,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             // Try an aggregation function factory
             try {
-                AggregationFunctionForge aggregationForge =
-                    validationContext.ImportService.ResolveAggregationFunction(parse.MethodName);
+                var aggregationForge = validationContext.ImportService.ResolveAggregationFunction(
+                    parse.MethodName, validationContext.ClassProvidedExtension);
                 ExprNode result = new ExprPlugInAggNode(false, aggregationForge, parse.MethodName);
                 result.AddChildNode(new ExprConstantNodeImpl(parse.ArgString));
 
@@ -520,7 +520,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         "Plug-in aggregation function '" + parse.MethodName + "' failed validation: " + e.Message);
                 }
 
-                return result;
+                exprNode = result;
+                return true;
             }
             catch (ImportUndefinedException) {
                 // Not an aggregation function
@@ -552,18 +553,107 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         }
 
         private static ExprConstantNode ResolveIdentAsEnumConst(
-            string constant,
-            ImportServiceCompileTime importService)
+            string constant, 
+            ImportServiceCompileTime classpathImportService,
+            ExtensionClass classpathExtension)
         {
-            EnumValue enumValue =
-                ImportCompileTimeUtil.ResolveIdentAsEnum(constant, importService, false);
-            if (enumValue != null) {
-                return new ExprConstantNodeImpl(enumValue);
+            var enumValue = ImportCompileTimeUtil.ResolveIdentAsEnum(constant, classpathImportService, classpathExtension, false);
+            return enumValue != null ? new ExprConstantNodeImpl(enumValue) : null;
+        }
+
+        private static ExprAssignment CheckGetStraightAssignment(
+            ExprNode node,
+            bool allowLHSVariables)
+        {
+            var prop = CheckGetAssignmentToProp(node);
+            if (prop != null) {
+                return new ExprAssignmentStraight(node, new ExprAssignmentLHSIdent(prop.First), prop.Second);
+            }
+
+            if (!(node is ExprEqualsNode)) {
+                return null;
+            }
+
+            var equals = (ExprEqualsNode) node;
+            var lhs = equals.ChildNodes[0];
+            var rhs = equals.ChildNodes[1];
+
+            if (lhs is ExprVariableNode) {
+                var variableNode = (ExprVariableNode) equals.ChildNodes[0];
+                if (!allowLHSVariables) {
+                    throw new ExprValidationException(
+                        "Left-hand-side does not allow variables for variable '" + variableNode.VariableMetadata.VariableName + "'");
+                }
+
+                var variableNameWSubprop = variableNode.VariableNameWithSubProp;
+                var variableName = variableNameWSubprop;
+                String subPropertyName = null;
+                var indexOfDot = variableNameWSubprop.IndexOf('.');
+                if (indexOfDot != -1) {
+                    subPropertyName = variableNameWSubprop.Substring(indexOfDot + 1);
+                    variableName = variableNameWSubprop.Substring(0, indexOfDot);
+                }
+
+                ExprAssignmentLHS lhsAssign;
+                if (subPropertyName != null) {
+                    lhsAssign = new ExprAssignmentLHSIdentWSubprop(variableName, subPropertyName);
+                }
+                else {
+                    lhsAssign = new ExprAssignmentLHSIdent(variableName);
+                }
+
+                return new ExprAssignmentStraight(node, lhsAssign, rhs);
+            }
+
+            if (lhs is ExprDotNode dot) {
+                var chainables = dot.ChainSpec;
+                if (chainables.Count == 2 &&
+                    chainables[0] is ChainableName name &&
+                    chainables[1] is ChainableArray array) {
+                    return new ExprAssignmentStraight(node, new ExprAssignmentLHSArrayElement(name.Name, array.Indexes), rhs);
+                }
+
+                if (allowLHSVariables &&
+                    dot.ChildNodes[0] is ExprVariableNode variableNode &&
+                    chainables.Count == 1 &&
+                    chainables[0] is ChainableArray chainableArray) {
+                    return new ExprAssignmentStraight(
+                        node,
+                        new ExprAssignmentLHSArrayElement(
+                            variableNode.VariableMetadata.VariableName,
+                            chainableArray.Indexes),
+                        rhs);
+                }
+
+                throw new ExprValidationException(
+                    "Unrecognized left-hand-side assignment '" + ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(dot) + "'");
+            }
+
+            if (lhs is ExprTableAccessNode) {
+                throw new ExprValidationException("Table access expression not allowed on the left hand side, please remove the table prefix");
             }
 
             return null;
         }
 
+        private static Pair<String, ExprNode> CheckGetAssignmentToProp(ExprNode node)
+        {
+            if (node is ExprEqualsNode equals) {
+                if (equals.ChildNodes[0] is ExprIdentNode identNode) {
+                    return new Pair<string, ExprNode>(identNode.FullUnresolvedName, equals.ChildNodes[1]);
+                }
+            }
+
+            return null;
+        }
+
+        public static ExprEqualsNode GetEqualsNodeIfAssignment(ExprNode node)
+        {
+            return node is ExprEqualsNode equalsNode ? equalsNode : null;
+        }
+
+
+#if DEPRECATED
         public static Pair<string, ExprNode> CheckGetAssignmentToVariableOrProp(ExprNode node)
         {
             Pair<string, ExprNode> prop = CheckGetAssignmentToProp(node);
@@ -603,14 +693,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprIdentNode identNode = (ExprIdentNode) equals.ChildNodes[0];
             return new Pair<string, ExprNode>(identNode.FullUnresolvedName, equals.ChildNodes[1]);
         }
+#endif
 
         public static void ValidateNoSpecialsGroupByExpressions(ExprNode[] groupByNodes)
         {
-            ExprNodeSubselectDeclaredDotVisitor visitorSubselects = new ExprNodeSubselectDeclaredDotVisitor();
-            ExprNodeGroupingVisitorWParent visitorGrouping = new ExprNodeGroupingVisitorWParent();
+            var visitorSubselects = new ExprNodeSubselectDeclaredDotVisitor();
+            var visitorGrouping = new ExprNodeGroupingVisitorWParent();
             IList<ExprAggregateNode> aggNodesInGroupBy = new List<ExprAggregateNode>(1);
 
-            foreach (ExprNode groupByNode in groupByNodes) {
+            foreach (var groupByNode in groupByNodes) {
                 // no subselects
                 groupByNode.Accept(visitorSubselects);
                 if (visitorSubselects.Subselects.Count > 0) {

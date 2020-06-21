@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compiler.client;
@@ -29,6 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+            execs.Add(new ClientVisibilityDeployDepClass());
             execs.Add(new ClientVisibilityDeployDepScript());
             execs.Add(new ClientVisibilityDeployDepVariablePublic());
             execs.Add(new ClientVisibilityDeployDepVariablePath());
@@ -64,6 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 Assert.Fail();
             }
             catch (EPDeployPreconditionException ex) {
+                Assert.AreEqual(-1, ex.RolloutItemNumber);
                 if (!message.Equals("skip")) {
                     SupportMessageAssertUtil.AssertMessage(ex.Message, message);
                 }
@@ -74,16 +75,31 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             }
         }
 
+        public class ClientVisibilityDeployDepClass : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                env.Compile(
+                    "@Name('infra') create inlined_class \"\"\" public class MyClass { public static string DoIt() { return \"def\"; } }\"\"\";\n",
+                    path); // Note: not deploying, just adding to path
+
+                var text = "dependency application-inlined class 'MyClass'";
+                TryInvalidDeploy(env, path, "select MyClass.DoIt() from SupportBean", text);
+            }
+        }
+
+
         public class ClientVisibilityDeployDepEventTypePublic : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var configuration = new Configuration();
+                var configuration = env.Runtime.ConfigurationDeepCopy;
                 configuration.Common.AddEventType(typeof(SomeEvent));
 
                 EPCompiled compiled;
                 try {
-                    compiled = EPCompilerProvider.Compiler.Compile(
+                    compiled = env.Compiler.Compile(
                         "select * from SomeEvent",
                         new CompilerArguments(configuration));
                 }
@@ -99,13 +115,13 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
         {
             public void Run(RegressionEnvironment env)
             {
-                var configuration = new Configuration();
+                var configuration = env.Runtime.ConfigurationDeepCopy;
                 configuration.Common.AddVariable("mypublicvariable", typeof(string), null, true);
                 configuration.Common.AddEventType(typeof(SupportBean));
 
                 EPCompiled compiled;
                 try {
-                    compiled = EPCompilerProvider.Compiler.Compile(
+                    compiled = env.Compiler.Compile(
                         "select mypublicvariable from SupportBean",
                         new CompilerArguments(configuration));
                 }

@@ -49,7 +49,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                 this.positionalParams = ExprNodeUtilityMake.AddExpression(positionalParams, optionalFilter);
             }
 
-            return new AggregationFactoryMethodNth(this, first.Forge.EvaluationType, size);
+            var childType = first.Forge.EvaluationType;
+            var serde = validationContext.SerdeResolver.SerdeForAggregationDistinct(childType, validationContext.StatementRawInfo);
+            var distinctValueSerde = isDistinct ? serde : null;
+            return new AggregationForgeFactoryNth(this, childType, serde, distinctValueSerde, size);
         }
 
         public override string AggregationFunctionName {

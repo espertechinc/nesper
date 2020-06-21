@@ -28,6 +28,28 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public static bool CanRenderConstant(object constant) {
+            switch (constant) {
+                case string _:
+                case char _:
+                case null:
+                case byte _:
+                case short _:
+                case int _:
+                case long _:
+                case float _:
+                case double _:
+                case decimal _:
+                case bool _:
+                case BigInteger _:
+                case Array _:
+                case Type _:
+                    return true;
+                default:
+                    return constant.GetType().IsEnum;
+            }
+        }
+
         public static void RenderConstant(
             StringBuilder builder,
             object constant)
@@ -45,6 +67,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             }
             else if (constant == null) {
                 builder.Append("null");
+            }
+            else if (constant is int) {
+                builder.Append(Literal((int) constant).ToFullString());
             }
             else if (constant is long) {
                 builder.Append(Literal((long) constant).ToFullString());
@@ -79,28 +104,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 builder.Append(booleanConstant ? "true" : "false");
             }
             else if (constant is Array asArray) {
-                if (asArray.Length == 0) {
-                    builder.Append("new ");
-                    AppendClassName(builder, constant.GetType().GetElementType());
-                    builder.Append("[]{}");
-                }
-                else {
-                    builder.Append("new ");
-                    AppendClassName(builder, constant.GetType().GetElementType());
-                    builder.Append("[] {");
-                    var delimiter = "";
-                    for (var i = 0; i < asArray.Length; i++) {
-                        builder.Append(delimiter);
-                        RenderConstant(builder, asArray.GetValue(i));
-                        delimiter = ",";
-                    }
-
-                    builder.Append("}");
-                }
-            }
-            else if (constant.GetType().IsEnum) {
-                AppendClassName(builder, constant.GetType());
-                builder.Append(".").Append(constant);
+                RenderArray(builder, asArray);
             }
             else if (constant is Type) {
                 CodegenExpressionClass.RenderClass((Type) constant, builder);
@@ -108,8 +112,36 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             else if (constant is BigInteger) {
                 RenderBigInteger((BigInteger) constant, builder);
             }
+            else if (constant.GetType().IsEnum) {
+                AppendClassName(builder, constant.GetType());
+                builder.Append(".").Append(constant);
+            }
             else {
                 builder.Append(constant);
+            }
+        }
+
+        private static void RenderArray(
+            StringBuilder builder,
+            Array asArray)
+        {
+            if (asArray.Length == 0) {
+                builder.Append("new ");
+                AppendClassName(builder, asArray.GetType().GetElementType());
+                builder.Append("[]{}");
+            }
+            else {
+                builder.Append("new ");
+                AppendClassName(builder, asArray.GetType().GetElementType());
+                builder.Append("[] {");
+                var delimiter = "";
+                for (var i = 0; i < asArray.Length; i++) {
+                    builder.Append(delimiter);
+                    RenderConstant(builder, asArray.GetValue(i));
+                    delimiter = ",";
+                }
+
+                builder.Append("}");
             }
         }
 

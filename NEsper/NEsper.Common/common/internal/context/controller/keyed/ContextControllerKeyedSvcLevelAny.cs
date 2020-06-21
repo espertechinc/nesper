@@ -105,6 +105,17 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             }
         }
 
+        public void KeyVisitEntry(
+            IntSeqKey controllerPath,
+            Consumer<ContextControllerKeyedSvcEntry> consumer)
+        {
+            foreach (var entry in _keys) {
+                if (controllerPath.Equals(entry.Key.Path)) {
+                    consumer.Invoke(entry.Value);
+                }
+            }
+        }
+
         public int KeyGetSubpathOrCPId(
             IntSeqKey controllerPath,
             object key)

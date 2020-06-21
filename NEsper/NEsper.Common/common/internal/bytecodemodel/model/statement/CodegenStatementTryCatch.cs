@@ -12,7 +12,9 @@ using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
@@ -20,11 +22,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
     public class CodegenStatementTryCatch : CodegenStatementWBlockBase
     {
-        private readonly IList<CodegenStatementTryCatchCatchBlock> catchBlocks =
+        private readonly IList<CodegenStatementTryCatchCatchBlock> _catchBlocks =
             new List<CodegenStatementTryCatchCatchBlock>(1);
 
-        private CodegenBlock finallyBlock;
-        private CodegenBlock tryBlock;
+        private CodegenBlock _finallyBlock;
+        private CodegenBlock _tryBlock;
 
         public CodegenStatementTryCatch(CodegenBlock parent)
             : base(parent)
@@ -32,13 +34,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         }
 
         public CodegenBlock Try {
-            get => tryBlock;
+            get => _tryBlock;
             set {
-                if (tryBlock != null) {
+                if (_tryBlock != null) {
                     throw new IllegalStateException("Try-block already provided");
                 }
 
-                tryBlock = value;
+                _tryBlock = value;
             }
         }
 
@@ -47,18 +49,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             string name)
         {
             var block = new CodegenBlock(this);
-            catchBlocks.Add(new CodegenStatementTryCatchCatchBlock(ex, name, block));
+            _catchBlocks.Add(new CodegenStatementTryCatchCatchBlock(ex, name, block));
             return block;
         }
 
         public CodegenBlock TryFinally()
         {
-            if (finallyBlock != null) {
+            if (_finallyBlock != null) {
                 throw new IllegalStateException("Finally already set");
             }
 
-            finallyBlock = new CodegenBlock(this);
-            return finallyBlock;
+            _finallyBlock = new CodegenBlock(this);
+            return _finallyBlock;
         }
 
         public override void Render(
@@ -68,12 +70,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             CodegenIndent indent)
         {
             builder.Append("try {\n");
-            tryBlock.Render(builder, isInnerClass, level + 1, indent);
+            _tryBlock.Render(builder, isInnerClass, level + 1, indent);
             indent.Indent(builder, level);
             builder.Append("}");
 
             var delimiter = "";
-            foreach (var pair in catchBlocks) {
+            foreach (var pair in _catchBlocks) {
                 builder.Append(delimiter);
                 builder.Append(" catch (");
                 AppendClassName(builder, pair.Ex);
@@ -86,11 +88,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
                 delimiter = "\n";
             }
 
-            if (finallyBlock != null) {
+            if (_finallyBlock != null) {
                 builder.Append("\n");
                 indent.Indent(builder, level);
                 builder.Append("finally {\n");
-                finallyBlock.Render(builder, isInnerClass, level + 1, indent);
+                _finallyBlock.Render(builder, isInnerClass, level + 1, indent);
                 indent.Indent(builder, level);
                 builder.Append("}");
             }
@@ -100,12 +102,22 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 
         public override void MergeClasses(ISet<Type> classes)
         {
-            tryBlock.MergeClasses(classes);
-            foreach (var pair in catchBlocks) {
+            _tryBlock.MergeClasses(classes);
+            foreach (var pair in _catchBlocks) {
                 pair.MergeClasses(classes);
             }
 
-            finallyBlock?.MergeClasses(classes);
+            _finallyBlock?.MergeClasses(classes);
+        }
+
+        public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            _tryBlock.TraverseExpressions(consumer);
+            foreach (CodegenStatementTryCatchCatchBlock pair in _catchBlocks) {
+                pair.TraverseExpressions(consumer);
+            }
+
+            _finallyBlock?.TraverseExpressions(consumer);
         }
     }
 } // end of namespace

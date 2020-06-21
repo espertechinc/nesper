@@ -8,7 +8,7 @@
 
 using System;
 using System.Threading;
-using com.espertech.esper.compat.threading;
+
 using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.compat.collections
@@ -110,7 +110,7 @@ namespace com.espertech.esper.compat.collections
             {
                 if (!BoundBlockingQueueOverride.IsEngaged)
                 {
-                    for (int ii = 0; Interlocked.Read(ref _count) > _maxLength;)
+                    for (var ii = 0; Interlocked.Read(ref _count) > _maxLength;)
                     {
                         SlimLock.SmartWait(++ii);
                     }
@@ -120,7 +120,7 @@ namespace com.espertech.esper.compat.collections
             // Create the new node
             var node = new Node(item);
             // Get the write node for the thread
-            Node branch = _wnode;
+            var branch = _wnode;
 
             for (; ;)
             {

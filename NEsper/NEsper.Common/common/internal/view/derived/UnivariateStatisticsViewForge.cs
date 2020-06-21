@@ -12,8 +12,10 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.serde.compiletime.eventtype;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
@@ -68,8 +70,17 @@ namespace com.espertech.esper.common.@internal.view.derived
 
             fieldExpression = validated[0];
 
-            additionalProps = StatViewAdditionalPropsForge.Make(validated, 1, parentEventType, streamNumber);
+            additionalProps = StatViewAdditionalPropsForge.Make(validated, 1, parentEventType, streamNumber, viewForgeEnv);
             eventType = UnivariateStatisticsView.CreateEventType(additionalProps, viewForgeEnv, streamNumber);
+        }
+
+        public override IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
+        {
+            return SerdeEventTypeUtility.Plan(
+                eventType,
+                viewForgeEnv.StatementRawInfo,
+                viewForgeEnv.SerdeEventTypeRegistry,
+                viewForgeEnv.SerdeResolver);
         }
 
         internal override Type TypeOfFactory()

@@ -170,7 +170,6 @@ namespace com.espertech.esper.common.@internal.context.util
                 statementContext.StatementInformationals.InstrumentationProvider;
             return new AgentInstanceContext(
                 statementContext,
-                agentInstanceId,
                 epStatementAgentInstanceHandle,
                 agentInstanceFilterProxy,
                 contextProperties,

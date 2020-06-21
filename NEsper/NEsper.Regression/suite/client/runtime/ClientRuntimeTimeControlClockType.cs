@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
@@ -35,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             Assert.IsFalse(runtime.EventService.IsExternalClockingEnabled());
             var waitStart = DateTimeHelper.CurrentTimeMillis;
             var waitTarget = waitStart + 10000;
-            
+
             long currMillis;
             while ((currMillis = DateTimeHelper.CurrentTimeMillis) < waitTarget) {
                 if (runtime.EventService.CurrentTime > 0) {

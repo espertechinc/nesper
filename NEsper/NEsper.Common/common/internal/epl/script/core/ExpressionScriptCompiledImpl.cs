@@ -21,15 +21,13 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         /// Initializes a new instance of the <see cref="ExpressionScriptCompiledImpl"/> class.
         /// </summary>
         /// <param name="scriptAction">The script action.</param>
-        public ExpressionScriptCompiledImpl(Func<ScriptArgs, Object> scriptAction)
+        public ExpressionScriptCompiledImpl(Func<ScriptArgs, object> scriptAction)
         {
             ScriptAction = scriptAction;
         }
 
-        public Func<ScriptArgs, Object> ScriptAction { get; private set; }
+        public Func<ScriptArgs, object> ScriptAction { get; }
 
-        public Type KnownReturnType {
-            get { return null; }
-        }
+        public Type KnownReturnType => null;
     }
 }

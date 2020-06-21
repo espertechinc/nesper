@@ -29,7 +29,7 @@ namespace com.espertech.esper.compat
     /// collections. Similarly, CopyTo will copy fewer than Count elements
     /// in this situation.
     /// </remarks>
-    
+
     public sealed class WeakDictionary<TKey, TValue> : IDictionary<TKey, TValue>
         where TKey : class
         where TValue : class
@@ -68,10 +68,12 @@ namespace com.espertech.esper.compat
         /// </summary>
         /// <param name="capacity">The capacity.</param>
         /// <param name="comparer">The comparer.</param>
-        public WeakDictionary(int capacity, IEqualityComparer<TKey> comparer)
+        public WeakDictionary(
+            int capacity,
+            IEqualityComparer<TKey> comparer)
         {
             this.comparer = new WeakKeyComparer<TKey>(comparer);
-            this.dictionary = new Dictionary<object, TValue>(capacity, this.comparer);
+            dictionary = new Dictionary<object, TValue>(capacity, this.comparer);
         }
 
         /// <summary>
@@ -85,11 +87,8 @@ namespace com.espertech.esper.compat
         /// </remarks>
         /// <value></value>
         /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</returns>
-        
-        public int Count
-        {
-            get { return this.dictionary.Count; }
-        }
+
+        public int Count => dictionary.Count;
 
         /// <summary>
         /// Adds an element with the provided key and value to the <see cref="T:System.Collections.Generic.IDictionary`2"></see>.
@@ -99,11 +98,13 @@ namespace com.espertech.esper.compat
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IDictionary`2"></see> is read-only.</exception>
         /// <exception cref="T:System.ArgumentException">An element with the same key already exists in the <see cref="T:System.Collections.Generic.IDictionary`2"></see>.</exception>
         /// <exception cref="T:System.ArgumentNullException">key is null.</exception>
-        public void Add(TKey key, TValue value)
+        public void Add(
+            TKey key,
+            TValue value)
         {
             if (key == null) throw new ArgumentNullException("key");
-            WeakReference<TKey> weakKey = new WeakKeyReference<TKey>(key, this.comparer);
-            this.dictionary.Add(weakKey, value);
+            WeakReference<TKey> weakKey = new WeakKeyReference<TKey>(key, comparer);
+            dictionary.Add(weakKey, value);
         }
 
         /// <summary>
@@ -116,7 +117,7 @@ namespace com.espertech.esper.compat
         /// <exception cref="T:System.ArgumentNullException">key is null.</exception>
         public bool ContainsKey(TKey key)
         {
-        	return this.dictionary.ContainsKey( key ) ;
+            return dictionary.ContainsKey(key);
         }
 
         /// <summary>
@@ -130,7 +131,7 @@ namespace com.espertech.esper.compat
         /// <exception cref="T:System.ArgumentNullException">key is null.</exception>
         public bool Remove(TKey key)
         {
-            return this.dictionary.Remove(key);
+            return dictionary.Remove(key);
         }
 
         /// <summary>
@@ -139,25 +140,30 @@ namespace com.espertech.esper.compat
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        public bool TryGetValue(TKey key, out TValue value)
+        public bool TryGetValue(
+            TKey key,
+            out TValue value)
         {
-            WeakReference<TKey> tempKey = new WeakKeyReference<TKey>(key, this.comparer);
+            if (key == null) {
+                value = default;
+                return false;
+            }
 
-            TValue rvalue ;
-        	if ( this.dictionary.TryGetValue( tempKey, out rvalue ) )
-        	{
-        		WeakReference<TKey> weakKey = (WeakReference<TKey>) tempKey ;
-        		if ( weakKey.IsAlive )
-        		{
-        			value = rvalue ;
-        			return true ;
-        		}
-        		
-        		this.dictionary.Remove( key ) ;            		
-        	}
-        	
-        	value = default(TValue);
-        	return false ;
+            WeakReference<TKey> tempKey = new WeakKeyReference<TKey>(key, comparer);
+
+            TValue rvalue;
+            if (dictionary.TryGetValue(tempKey, out rvalue)) {
+                var weakKey = (WeakReference<TKey>) tempKey;
+                if (weakKey.IsAlive) {
+                    value = rvalue;
+                    return true;
+                }
+
+                dictionary.Remove(key);
+            }
+
+            value = default(TValue);
+            return false;
         }
 
         /// <summary>
@@ -165,10 +171,12 @@ namespace com.espertech.esper.compat
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
-        private void SetValue(TKey key, TValue value)
+        private void SetValue(
+            TKey key,
+            TValue value)
         {
-            WeakReference<TKey> weakKey = new WeakKeyReference<TKey>(key, this.comparer);
-            this.dictionary[weakKey] = value;
+            WeakReference<TKey> weakKey = new WeakKeyReference<TKey>(key, comparer);
+            dictionary[weakKey] = value;
         }
 
         /// <summary>
@@ -177,7 +185,7 @@ namespace com.espertech.esper.compat
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only. </exception>
         public void Clear()
         {
-            this.dictionary.Clear();
+            dictionary.Clear();
         }
 
         /// <summary>
@@ -188,19 +196,17 @@ namespace com.espertech.esper.compat
         /// </returns>
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            foreach (KeyValuePair<object, TValue> kvp in this.dictionary)
-            {
-                WeakReference<TKey> weakKey = (WeakReference<TKey>)(kvp.Key);
-                TKey key = weakKey.Target;
-                TValue value = kvp.Value;
-                if (weakKey.IsAlive)
-                {
+            foreach (var kvp in dictionary) {
+                var weakKey = (WeakReference<TKey>) (kvp.Key);
+                var key = weakKey.Target;
+                var value = kvp.Value;
+                if (weakKey.IsAlive) {
                     yield return new KeyValuePair<TKey, TValue>(key, value);
                 }
             }
         }
 
-        
+
         /// <summary>
         /// Removes the left-over weak references for entries in the dictionary
         /// whose key or value has already been reclaimed by the garbage
@@ -210,25 +216,21 @@ namespace com.espertech.esper.compat
         public void RemoveCollectedEntries()
         {
             List<object> toRemove = null;
-            foreach (KeyValuePair<object, TValue> pair in this.dictionary)
-            {
-                WeakReference<TKey> weakKey = (WeakReference<TKey>)(pair.Key);
+            foreach (var pair in dictionary) {
+                var weakKey = (WeakReference<TKey>) (pair.Key);
 
-                if (!weakKey.IsAlive)
-                {
-                	if (toRemove == null)
-                	{
+                if (!weakKey.IsAlive) {
+                    if (toRemove == null) {
                         toRemove = new List<object>();
-                	}
+                    }
+
                     toRemove.Add(weakKey);
                 }
             }
 
-            if (toRemove != null)
-            {
-                foreach (object key in toRemove)
-                {
-                    this.dictionary.Remove(key);
+            if (toRemove != null) {
+                foreach (var key in toRemove) {
+                    dictionary.Remove(key);
                 }
             }
         }
@@ -237,21 +239,18 @@ namespace com.espertech.esper.compat
         /// Gets an enumerator that enumerates the keys.
         /// </summary>
         /// <value>The keys enum.</value>
-        
+
         public IEnumerator<TKey> KeysEnum {
-        	get 
-        	{
-        		foreach( WeakReference<TKey> weakKey in this.dictionary.Keys )
-        		{
-        			if ( weakKey.IsAlive )
-        			{
-        				yield return weakKey.Target;
-        			}
-        		}
-        	}
+            get {
+                foreach (WeakReference<TKey> weakKey in dictionary.Keys) {
+                    if (weakKey.IsAlive) {
+                        yield return weakKey.Target;
+                    }
+                }
+            }
         }
-        
-        
+
+
         #region IDictionary<TKey,TValue> Members
 
         /// <summary>
@@ -259,19 +258,16 @@ namespace com.espertech.esper.compat
         /// </summary>
         /// <value></value>
         /// <returns>An <see cref="T:System.Collections.Generic.ICollection`1"></see> containing the keys of the object that : <see cref="T:System.Collections.Generic.IDictionary`2"></see>.</returns>
-        public ICollection<TKey> Keys
-        {
-            get
-            {
-        		List<TKey> keyList = new List<TKey>() ;
-        		IEnumerator<TKey> keyEnum = this.KeysEnum ;
-        		while( keyEnum.MoveNext() )
-        		{
-        			keyList.Add( keyEnum.Current ) ;
-        		}
-        		
-        		return keyList ;
-        	}
+        public ICollection<TKey> Keys {
+            get {
+                var keyList = new List<TKey>();
+                var keyEnum = KeysEnum;
+                while (keyEnum.MoveNext()) {
+                    keyList.Add(keyEnum.Current);
+                }
+
+                return keyList;
+            }
         }
 
         /// <summary>
@@ -279,39 +275,34 @@ namespace com.espertech.esper.compat
         /// </summary>
         /// <value></value>
         /// <returns>An <see cref="T:System.Collections.Generic.ICollection`1"></see> containing the values in the object that : <see cref="T:System.Collections.Generic.IDictionary`2"></see>.</returns>
-        public ICollection<TValue> Values
-        {
-            get { throw new Exception("The method or operation is not implemented."); }
-        }
+        public ICollection<TValue> Values => throw new Exception("The method or operation is not implemented.");
 
         /// <summary>
         /// Gets or sets the item with the specified key.
         /// </summary>
         /// <value></value>
-        public TValue this[TKey key]
-        {
-            get
-            {
-            	Object tempKey = key ;
-            	TValue rvalue ;
-            	if ( this.dictionary.TryGetValue( tempKey, out rvalue ) )
-            	{
-            		WeakReference<TKey> weakKey = (WeakReference<TKey>) tempKey ;
-            		if ( weakKey.IsAlive )
-            		{
-            			return rvalue ;
-            		}
-            		
-            		this.dictionary.Remove( key ) ;            		
-            	}
-            	
-            	throw new KeyNotFoundException( "Value '" + key + "' not found" ) ;
+        public TValue this[TKey key] {
+            get {
+                if (key == null) throw new ArgumentNullException(nameof(key));
+
+                object tempKey = key;
+
+                TValue rvalue;
+                if (dictionary.TryGetValue(tempKey, out rvalue)) {
+                    var weakKey = (WeakReference<TKey>) tempKey;
+                    if (weakKey.IsAlive) {
+                        return rvalue;
+                    }
+
+                    dictionary.Remove(key);
+                }
+
+                throw new KeyNotFoundException("Value '" + key + "' not found");
             }
-            set
-            {
-                if (key == null) throw new ArgumentNullException("key");
-                WeakReference<TKey> weakKey = new WeakKeyReference<TKey>(key, this.comparer);
-                this.dictionary[weakKey] = value;
+            set {
+                if (key == null) throw new ArgumentNullException(nameof(key));
+                WeakReference<TKey> weakKey = new WeakKeyReference<TKey>(key, comparer);
+                dictionary[weakKey] = value;
             }
         }
 
@@ -324,7 +315,7 @@ namespace com.espertech.esper.compat
         /// </summary>
         /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.</exception>
-        
+
         public void Add(KeyValuePair<TKey, TValue> item)
         {
             Add(item.Key, item.Value);
@@ -340,20 +331,17 @@ namespace com.espertech.esper.compat
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            Object tempKey = item.Key ;
-            
-        	TValue value ;
-        	if ( this.dictionary.TryGetValue( tempKey, out value ) )
-            {
-        		WeakReference<TKey> weakKey = (WeakReference<TKey>) tempKey ;
-            	if ( weakKey.IsAlive )
-            	{
-            		return Equals( value, item.Value ) ;
-            	}
-            	
-            	this.dictionary.Remove( item.Key ) ;
-        	}
-            
+            object tempKey = item.Key;
+
+            if (dictionary.TryGetValue(tempKey, out var value)) {
+                var weakKey = (WeakReference<TKey>) tempKey;
+                if (weakKey.IsAlive) {
+                    return Equals(value, item.Value);
+                }
+
+                dictionary.Remove(item.Key);
+            }
+
             return false;
         }
 
@@ -365,8 +353,10 @@ namespace com.espertech.esper.compat
         /// <exception cref="T:System.ArgumentOutOfRangeException">arrayIndex is less than 0.</exception>
         /// <exception cref="T:System.ArgumentNullException">array is null.</exception>
         /// <exception cref="T:System.ArgumentException">array is multidimensional.-or-arrayIndex is equal to or greater than the length of array.-or-The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1"></see> is greater than the available space from arrayIndex to the end of the destination array.-or-Type T cannot be cast automatically to the type of the destination array.</exception>
-        
-        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+
+        public void CopyTo(
+            KeyValuePair<TKey, TValue>[] array,
+            int arrayIndex)
         {
             throw new Exception("The method or operation is not implemented.");
         }
@@ -377,10 +367,7 @@ namespace com.espertech.esper.compat
         /// <value></value>
         /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only; otherwise, false.</returns>
 
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         /// <summary>
         /// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
@@ -390,7 +377,7 @@ namespace com.espertech.esper.compat
         /// true if item was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false. This method also returns false if item is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"></see>.
         /// </returns>
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.</exception>
-        
+
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
             return Remove(item.Key);
@@ -406,10 +393,10 @@ namespace com.espertech.esper.compat
         /// <returns>
         /// An <see cref="T:System.Collections.IEnumerator"></see> object that can be used to iterate through the collection.
         /// </returns>
-        
+
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
 
         #endregion
@@ -424,16 +411,20 @@ namespace com.espertech.esper.compat
         /// <param name="key"></param>
         /// <param name="defaultValue"></param>
         /// <returns></returns>
-        public TValue Get(TKey key, TValue defaultValue)
+        public TValue Get(
+            TKey key,
+            TValue defaultValue)
         {
-            TValue returnValue = defaultValue;
-            if (key != null)
-            {
-                if (!TryGetValue(key, out returnValue))
-                {
-                    returnValue = defaultValue;
-                }
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+
+            if (!TryGetValue(key, out var returnValue)) {
+                returnValue = defaultValue;
             }
+            else {
+                returnValue = defaultValue;
+            }
+
             return returnValue;
         }
 
@@ -445,6 +436,9 @@ namespace com.espertech.esper.compat
         /// <returns></returns>
         public TValue Get(TKey key)
         {
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+
             return Get(key, default(TValue));
         }
 
@@ -454,8 +448,13 @@ namespace com.espertech.esper.compat
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public void Put(TKey key, TValue value)
+        public void Put(
+            TKey key,
+            TValue value)
         {
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+
             this[key] = value;
         }
 
@@ -465,10 +464,14 @@ namespace com.espertech.esper.compat
         /// If a value was previously mapped it is returned.
         /// </summary>
 
-        public TValue Push(TKey key, TValue value)
+        public TValue Push(
+            TKey key,
+            TValue value)
         {
-            TValue temp;
-            TryGetValue(key, out temp);
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+
+            TryGetValue(key, out TValue temp);
             this[key] = value;
             return temp;
         }
@@ -480,8 +483,7 @@ namespace com.espertech.esper.compat
         /// <param name="source"></param>
         public void PutAll(IDictionary<TKey, TValue> source)
         {
-            foreach( KeyValuePair<TKey, TValue> entry in source )
-            {
+            foreach (var entry in source) {
                 this[entry.Key] = entry.Value;
             }
         }
@@ -491,14 +493,12 @@ namespace com.espertech.esper.compat
         /// </summary>
         /// <value></value>
         /// <returns></returns>
-        public TValue FirstValue
-        {
-            get
-            {
-                IEnumerator<KeyValuePair<TKey, TValue>> enumObj = GetEnumerator();
+        public TValue FirstValue {
+            get {
+                var enumObj = GetEnumerator();
                 return enumObj.MoveNext()
-                           ? enumObj.Current.Value
-                           : default(TValue);
+                    ? enumObj.Current.Value
+                    : default(TValue);
             }
         }
 
@@ -509,14 +509,16 @@ namespace com.espertech.esper.compat
         /// <param name="key">Search key into the dictionary</param>
         /// <param name="value">The value removed from the dictionary (if found).</param>
         /// <returns></returns>
-        public bool Remove(TKey key, out TValue value)
+        public bool Remove(
+            TKey key,
+            out TValue value)
         {
-            if (!TryGetValue(key, out value))
-            {
+            if (key == null) {
+                value = default;
                 return false;
             }
 
-            return Remove(key);
+            return TryGetValue(key, out value) && Remove(key);
         }
 
         /// <summary>
@@ -528,13 +530,14 @@ namespace com.espertech.esper.compat
         /// <returns></returns>
         public TValue RemoveAndReturn(TKey key)
         {
-            TValue tempItem;
-
-            return Remove(key, out tempItem)
-                    ? tempItem
-                    : default(TValue);
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+            
+            return Remove(key, out TValue tempItem)
+                ? tempItem
+                : default(TValue);
         }
 
         #endregion
-    } 
+    }
 }

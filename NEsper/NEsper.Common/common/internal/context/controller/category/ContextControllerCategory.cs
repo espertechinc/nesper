@@ -13,14 +13,14 @@ using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.mgr;
+using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.controller.category
 {
     public abstract class ContextControllerCategory : ContextControllerBase
     {
-        protected internal readonly ContextControllerCategoryFactory factory;
-        protected internal ContextControllerCategorySvc categorySvc;
+        private readonly ContextControllerCategoryFactory factory;
 
         public ContextControllerCategory(
             ContextManagerRealization realization,
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
 
         public override ContextControllerFactory Factory => factory;
 
-        public ContextControllerCategoryFactory CategoryFactory => factory;
+        public ContextControllerCategorySvc CategorySvc { get; set; }
 
         public override void Activate(
             IntSeqKey path,
@@ -57,14 +57,14 @@ namespace com.espertech.esper.common.@internal.context.controller.category
                 count++;
             }
 
-            categorySvc.MgmtCreate(path, parentPartitionKeys, subpathOrCPIds);
+            CategorySvc.MgmtCreate(path, parentPartitionKeys, subpathOrCPIds);
         }
 
         public override void Deactivate(
             IntSeqKey path,
             bool terminateChildContexts)
         {
-            var subpathIdorCPs = categorySvc.MgmtDelete(path);
+            var subpathIdorCPs = CategorySvc.MgmtDelete(path);
             if (subpathIdorCPs != null && terminateChildContexts) {
                 for (var i = 0; i < factory.CategorySpec.Items.Length; i++) {
                     realization.ContextPartitionTerminate(path, subpathIdorCPs[i], this, null, false, null);
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
                     return;
                 }
 
-                var ids = categorySvc.MgmtGetSubpathOrCPIds(path);
+                var ids = CategorySvc.MgmtGetSubpathOrCPIds(path);
                 if (ids != null) {
                     var count = -1;
                     foreach (ContextControllerDetailCategoryItem categoryItem in factory.CategorySpec.Items) {
@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
 
             if (contextPartitionSelector is ContextPartitionSelectorFiltered) {
                 var filter = (ContextPartitionSelectorFiltered) contextPartitionSelector;
-                var ids = categorySvc.MgmtGetSubpathOrCPIds(path);
+                var ids = CategorySvc.MgmtGetSubpathOrCPIds(path);
                 if (ids != null) {
                     var count = -1;
                     foreach (ContextControllerDetailCategoryItem categoryItem in factory.CategorySpec.Items) {
@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
             }
 
             if (contextPartitionSelector is ContextPartitionSelectorAll) {
-                var ids = categorySvc.MgmtGetSubpathOrCPIds(path);
+                var ids = CategorySvc.MgmtGetSubpathOrCPIds(path);
                 if (ids != null) {
                     foreach (var id in ids) {
                         realization.ContextPartitionRecursiveVisit(path, id, this, visitor, selectorPerLevel);
@@ -143,7 +143,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
 
             if (contextPartitionSelector is ContextPartitionSelectorById) {
                 var byId = (ContextPartitionSelectorById) contextPartitionSelector;
-                var ids = categorySvc.MgmtGetSubpathOrCPIds(path);
+                var ids = CategorySvc.MgmtGetSubpathOrCPIds(path);
                 foreach (var id in ids) {
                     if (byId.ContextPartitionIds.Contains(id)) {
                         realization.ContextPartitionRecursiveVisit(path, id, this, visitor, selectorPerLevel);
@@ -158,7 +158,25 @@ namespace com.espertech.esper.common.@internal.context.controller.category
 
         public override void Destroy()
         {
-            categorySvc.Destroy();
+            CategorySvc.Destroy();
+        }
+
+        public override void Transfer(
+            IntSeqKey path,
+            bool transferChildContexts,
+            AgentInstanceTransferServices xfer)
+        {
+            if (!transferChildContexts) {
+                // nothing to do
+                return;
+            }
+
+            int[] ids = CategorySvc.MgmtGetSubpathOrCPIds(path);
+            if (ids != null) {
+                foreach (int id in ids) {
+                    realization.TransferRecursive(path, id, this, xfer);
+                }
+            }
         }
     }
 } // end of namespace

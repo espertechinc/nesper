@@ -15,7 +15,6 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
@@ -60,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         filterEval.EvaluateCodegen(typeof(bool?), method, symbols, classScope));
                 }
 
-                @foreach.IfRefNullReturnNull(left);
+                @foreach.IfNullReturnNull(left);
 
                 Type valueRightType;
                 if (selectEval != null) {
@@ -87,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     else {
                         ifRight.DeclareVar<object>("left", coercer.CoerceCodegen(left, symbols.LeftResultType))
                             .DeclareVar<object>("right", coercer.CoerceCodegen(Ref("valueRight"), valueRightType))
-                            .DeclareVar<bool>("eq", ExprDotMethod(Ref("left"), "Equals", Ref("right")))
+                            .DeclareVar<bool>("eq", StaticMethod<object>("Equals", Ref("left"), Ref("right")))
                             .IfCondition(Ref("eq"))
                             .BlockReturn(Constant(!isNotIn));
                     }

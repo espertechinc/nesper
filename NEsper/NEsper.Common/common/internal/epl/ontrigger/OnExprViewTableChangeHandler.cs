@@ -26,11 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
 
         public EventBean[] Events {
             get {
-                if (coll == null) {
-                    return null;
-                }
-
-                return coll.ToArray();
+                return coll?.ToArray();
             }
         }
 

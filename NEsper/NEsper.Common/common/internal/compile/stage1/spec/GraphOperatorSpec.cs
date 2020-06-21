@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     public class GraphOperatorSpec
     {
         public GraphOperatorSpec(
-            String operatorName,
+            string operatorName,
             GraphOperatorInput input,
             GraphOperatorOutput output,
             GraphOperatorDetail detail,

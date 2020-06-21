@@ -73,6 +73,11 @@ namespace com.espertech.esper.compat.io
             _binaryWriter.Write(value);
         }
 
+        public void WriteChar(char value)
+        {
+            _binaryWriter.Write(value);
+        }
+
         public void WriteUTF(string value)
         {
             _binaryWriter.Write(value);

@@ -22,8 +22,9 @@ using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.avro;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.@event.json.compiletime;
+using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.map;
-using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -99,6 +100,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             var isOnlyWildcard = @base.StatementSpec.Raw.SelectClauseSpec.IsOnlyWildcard;
             var isWildcard = @base.StatementSpec.Raw.SelectClauseSpec.IsUsingWildcard;
             var namedWindowVisibility = services.ModuleVisibilityRules.GetAccessModifierNamedWindow(@base, typeName);
+            var additionalForgeables = new List<StmtClassForgeableFactory>();
+            
             try {
                 if (isWildcard && !isOnlyWildcard) {
                     var metadata = new EventTypeMetadata(
@@ -172,6 +175,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                                 null,
                                 null,
                                 @base.StatementName);
+                        } else if (representation == EventUnderlyingType.JSON) {
+                            EventTypeForgeablesPair pair = JsonEventTypeUtility.MakeJsonTypeCompileTimeNewType(
+                                metadata.Invoke(EventTypeApplicationType.JSON),
+                                compiledProperties,
+                                null,
+                                null,
+                                @base.StatementRawInfo,
+                                services);
+                            targetType = pair.EventType;
+                            additionalForgeables.AddRange(pair.AdditionalForgeables);
                         }
                         else {
                             throw new IllegalStateException("Unrecognized representation " + representation);
@@ -207,6 +220,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                                 avro,
                                 null,
                                 null);
+                        } else if (selectFromType is JsonEventType) {
+                            JsonEventType jsonType = (JsonEventType) selectFromType;
+                            targetType = JsonEventTypeUtility.MakeJsonTypeCompileTimeExistingType(
+                                metadata.Invoke(EventTypeApplicationType.JSON),
+                                jsonType,
+                                services);
                         }
                         else if (selectFromType is MapEventType) {
                             var mapType = (MapEventType) selectFromType;
@@ -250,11 +269,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                 throw new ExprValidationException(ex.Message, ex);
             }
 
-            var filter = new FilterSpecCompiled(targetType, typeName, new IList<FilterSpecParamForge>[0], null);
+            var filter = new FilterSpecCompiled(targetType, typeName, FilterSpecPlanForge.EMPTY, null);
             return new CreateWindowCompileResult(
                 filter,
                 newSelectClauseSpecRaw,
-                optionalSelectFrom == null ? null : optionalSelectFrom.EventType);
+                optionalSelectFrom?.EventType,
+                additionalForgeables);
         }
 
         private static IList<NamedWindowSelectedProps> CompileLimitedSelect(

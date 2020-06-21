@@ -6,6 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+using System.Collections.Generic;
+
 using com.espertech.esper.regressionlib.framework;
 
 using static com.espertech.esper.regressionlib.suite.@event.xml.EventXMLNoSchemaSimpleXMLDOMGetter;
@@ -13,9 +16,55 @@ using static com.espertech.esper.regressionlib.suite.@event.xml.EventXMLNoSchema
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
-    public class EventXMLNoSchemaSimpleXMLXPathGetter : RegressionExecution
+    public class EventXMLNoSchemaSimpleXMLXPathGetter
     {
-        public void Run(RegressionEnvironment env)
+        public static List<RegressionExecution> Executions()
+        {
+            var execs = new List<RegressionExecution>();
+            WithPreconfig(execs);
+            WithCreateSchema(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLNoSchemaSimpleXMLXPathGetterCreateSchema());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPreconfig(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLNoSchemaSimpleXMLXPathGetterPreconfig());
+            return execs;
+        }
+
+        public class EventXMLNoSchemaSimpleXMLXPathGetterPreconfig : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunAssertion(env, "TestXMLNoSchemaTypeWXPathPropTrue", new RegressionPath());
+            }
+        }
+
+        public class EventXMLNoSchemaSimpleXMLXPathGetterCreateSchema : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@public @buseventtype " +
+                          "@XMLSchema(RootElementName='myevent', XPathPropertyExpr=true)" +
+                          "create xml schema MyEventCreateSchema()";
+                var path = new RegressionPath();
+                env.CompileDeploy(epl, path);
+                RunAssertion(env, "MyEventCreateSchema", path);
+            }
+        }
+
+        private static void RunAssertion(
+            RegressionEnvironment env,
+            String eventTypeName,
+            RegressionPath path)
         {
             var stmt = "@Name('s0') select " +
                        "element1, " +
@@ -24,14 +73,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                        "element2.element21('e21_2') as mappedElement," +
                        "element2.element21[1] as indexedElement," +
                        "element3.myattribute as invalidattribute " +
-                       "from TestXMLNoSchemaTypeWXPathPropTrue#length(100)";
-            env.CompileDeploy(stmt).AddListener("s0");
+                       "from " +
+                       eventTypeName +
+                       "#length(100)";
+            env.CompileDeploy(stmt, path).AddListener("s0");
 
             // Generate document with the specified in element1 to confirm we have independent events
-            SendEvent(env, "EventA", "TestXMLNoSchemaTypeWXPathPropTrue");
+            SendEvent(env, "EventA", eventTypeName);
             AssertDataGetter(env, "EventA", true);
 
-            SendEvent(env, "EventB", "TestXMLNoSchemaTypeWXPathPropTrue");
+            SendEvent(env, "EventB", eventTypeName);
             AssertDataGetter(env, "EventB", true);
 
             env.UndeployAll();

@@ -13,7 +13,6 @@ using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.settings;
 
 namespace com.espertech.esper.common.@internal.epl.script.core
 {
@@ -32,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             var defaultDialect = compileTimeServices.Configuration.Compiler.Scripts.DefaultDialect;
             var scriptsSet = new HashSet<NameParameterCountKey>();
             foreach (var script in scripts) {
-                ValidateScript(script, defaultDialect, compileTimeServices.ImportServiceCompileTime);
+                ValidateScript(script, defaultDialect, compileTimeServices.ScriptCompiler);
 
                 var key = new NameParameterCountKey(
                     script.Name,
@@ -60,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         private static void ValidateScript(
             ExpressionScriptProvided script,
             string defaultDialect,
-            ImportServiceCompileTime classpathImportService)
+            ScriptCompiler scriptCompiler)
         {
             var dialect = script.OptionalDialect ?? defaultDialect;
             if (dialect == null) {
@@ -70,12 +69,15 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                     "', please configure a default dialect or provide a dialect explicitly");
             }
 
+            scriptCompiler.VerifyScript(dialect, script);
+            
 #if false
             ExpressionScriptCompiled compiledBuf = JSR223Helper
                 .VerifyCompileScript(script.Name, script.Expression, dialect);
 
             script.CompiledBuf = compiledBuf;
-
+#endif
+            
             if (script.ParameterNames.Length != 0) {
                 var parameters = new HashSet<String>();
                 foreach (var param in script.ParameterNames) {
@@ -87,9 +89,6 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                     parameters.Add(param);
                 }
             }
-#else
-            throw new NotSupportedException();
-#endif
         }
     }
 }

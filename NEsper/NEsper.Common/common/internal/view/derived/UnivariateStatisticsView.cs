@@ -6,11 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.view.core;
@@ -74,7 +72,7 @@ namespace com.espertech.esper.common.@internal.view.derived
                 }
 
                 if ((viewFactory.additionalProps != null) && (newData.Length != 0)) {
-                    var additionalEvals = viewFactory.additionalProps.GetAdditionalEvals();
+                    var additionalEvals = viewFactory.additionalProps.AdditionalEvals;
                     if (lastValuesEventNew == null) {
                         lastValuesEventNew = new object[additionalEvals.Length];
                     }
@@ -164,9 +162,7 @@ namespace com.espertech.esper.common.@internal.view.derived
                 baseStatisticsBean.XStandardDeviationPop);
             result.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__VARIANCE.GetName(), baseStatisticsBean.XVariance);
             result.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE.GetName(), baseStatisticsBean.XAverage);
-            if (additionalProps != null) {
-                additionalProps.AddProperties(result, lastNewValues);
-            }
+            additionalProps?.AddProperties(result, lastNewValues);
 
             return eventAdapterService.AdapterForTypedMap(result, eventType);
         }

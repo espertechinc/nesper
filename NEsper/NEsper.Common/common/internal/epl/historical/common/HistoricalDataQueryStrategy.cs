@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
 
         public void Lookup(
             EventBean[] lookupEvents,
-            ICollection<MultiKey<EventBean>> joinSet,
+            ICollection<MultiKeyArrayOfKeys<EventBean>> joinSet,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             EventBean[][] lookupRows;
@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
                 if (_isOuterJoin && !subsetIterAdvanced) {
                     var resultRow = new EventBean[2];
                     resultRow[_myStreamNumber] = lookupEvents[count];
-                    joinSet.Add(new MultiKey<EventBean>(resultRow));
+                    joinSet.Add(new MultiKeyArrayOfKeys<EventBean>(resultRow));
                 }
                 else {
                     bool foundMatch = false;
@@ -126,12 +126,12 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
                                     true,
                                     exprEvaluatorContext);
                                 if ((compareResult != null) && true.Equals(compareResult)) {
-                                    joinSet.Add(new MultiKey<EventBean>(resultRow));
+                                    joinSet.Add(new MultiKeyArrayOfKeys<EventBean>(resultRow));
                                     foundMatch = true;
                                 }
                             }
                             else {
-                                joinSet.Add(new MultiKey<EventBean>(resultRow));
+                                joinSet.Add(new MultiKeyArrayOfKeys<EventBean>(resultRow));
                             }
                         } while (subsetIter.MoveNext());
                     }
@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
                     if ((_isOuterJoin) && (!foundMatch)) {
                         var resultRow = new EventBean[2];
                         resultRow[_myStreamNumber] = lookupEvents[count];
-                        joinSet.Add(new MultiKey<EventBean>(resultRow));
+                        joinSet.Add(new MultiKeyArrayOfKeys<EventBean>(resultRow));
                     }
                 }
 

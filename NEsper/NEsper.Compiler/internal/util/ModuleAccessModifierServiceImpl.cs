@@ -118,7 +118,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 }
             }
 
-            bool busEventType = AnnotationUtil.FindAnnotation(raw.Annotations, typeof(BusEventTypeAttribute)) != null;
+            var busEventType = AnnotationUtil.HasAnnotation(raw.Annotations, typeof(BusEventTypeAttribute));
             if (busEventType) {
                 return EventTypeBusModifier.BUS;
             }
@@ -132,15 +132,15 @@ namespace com.espertech.esper.compiler.@internal.util
             Func<ConfigurationCompilerByteCode, NameAccessModifier> configGet)
         {
             if (options != null) {
-                NameAccessModifier? result = optionsGet.Invoke(options);
+                var result = optionsGet.Invoke(options);
                 if (result != null) {
                     return result.Value;
                 }
             }
 
-            bool isPrivate = AnnotationUtil.FindAnnotation(annotations, typeof(PrivateAttribute)) != null;
-            bool isProtected = AnnotationUtil.FindAnnotation(annotations, typeof(ProtectedAttribute)) != null;
-            bool isPublic = AnnotationUtil.FindAnnotation(annotations, typeof(PublicAttribute)) != null;
+            var isPrivate = AnnotationUtil.HasAnnotation(annotations, typeof(PrivateAttribute));
+            var isProtected = AnnotationUtil.HasAnnotation(annotations, typeof(ProtectedAttribute));
+            var isPublic = AnnotationUtil.HasAnnotation(annotations, typeof(PublicAttribute));
             if (isPrivate) {
                 if (isProtected) {
                     throw new EPException("Encountered both the @private and the @protected annotation");

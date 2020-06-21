@@ -27,9 +27,30 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLJoin2StreamAndPropertyPerfRemoveStream());
-            execs.Add(new EPLJoin2StreamAndPropertyPerf2Properties());
+            WithRemoveStream(execs);
+            With2Properties(execs);
+            With3Properties(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With3Properties(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLJoin2StreamAndPropertyPerf3Properties());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With2Properties(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoin2StreamAndPropertyPerf2Properties());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRemoveStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoin2StreamAndPropertyPerfRemoveStream());
             return execs;
         }
 

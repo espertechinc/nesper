@@ -15,13 +15,13 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 namespace com.espertech.esper.common.@internal.@event.core
 {
     /// <summary>
-    ///     Writer for a single property value to an event.
+    ///     Writes a single property value to an event.
     /// </summary>
     public interface EventPropertyWriterSPI : EventPropertyWriter
     {
         CodegenExpression WriteCodegen(
             CodegenExpression assigned,
-            CodegenExpression und,
+            CodegenExpression underlying,
             CodegenExpression target,
             CodegenMethodScope parent,
             CodegenClassScope classScope);
@@ -48,14 +48,14 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public CodegenExpression WriteCodegen(
             CodegenExpression assigned,
-            CodegenExpression und,
+            CodegenExpression underlying,
             CodegenExpression target,
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
             return ProcWriteCodegen(
                 assigned,
-                und,
+                underlying,
                 target,
                 parent,
                 classScope);

@@ -26,18 +26,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         ExprEvaluator,
         ExprNodeRenderable
     {
-        private readonly int streamNum;
-        private readonly EventType namedWindowAsType;
-        private readonly Type returnType;
+        private readonly int _streamNum;
+        private readonly EventType _namedWindowAsType;
+        private readonly Type _returnType;
 
         public ExprEvalStreamInsertNamedWindow(
             int streamNum,
             EventType namedWindowAsType,
             Type returnType)
         {
-            this.streamNum = streamNum;
-            this.namedWindowAsType = namedWindowAsType;
-            this.returnType = returnType;
+            this._streamNum = streamNum;
+            this._namedWindowAsType = namedWindowAsType;
+            this._returnType = returnType;
         }
 
         public object Evaluate(
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         }
 
         public int StreamNum {
-            get => streamNum;
+            get => _streamNum;
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             var namedWindowType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
-                EventTypeUtility.ResolveTypeCodegen(namedWindowAsType, EPStatementInitServicesConstants.REF));
+                EventTypeUtility.ResolveTypeCodegen(_namedWindowAsType, EPStatementInitServicesConstants.REF));
             var methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean),
                 typeof(ExprEvalStreamInsertNamedWindow),
@@ -75,15 +75,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
             var refEPS = exprSymbol.GetAddEPS(methodNode);
 
-            var method = EventTypeUtility.GetAdapterForMethodName(namedWindowAsType);
+            var method = EventTypeUtility.GetAdapterForMethodName(_namedWindowAsType);
             methodNode.Block
-                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamNum)))
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(_streamNum)))
                 .IfRefNullReturnNull("@event")
                 .MethodReturn(
                     ExprDotMethod(
                         eventSvc,
                         method,
-                        Cast(namedWindowAsType.UnderlyingType, ExprDotUnderlying(Ref("@event"))),
+                        FlexCast(_namedWindowAsType.UnderlyingType, ExprDotUnderlying(Ref("@event"))),
                         namedWindowType));
             return LocalMethod(methodNode);
         }
@@ -93,16 +93,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         }
 
         public Type EvaluationType {
-            get => returnType;
+            get => _returnType;
         }
 
         public ExprNodeRenderable ExprForgeRenderable {
             get => this;
         }
 
-        public void ToEPL(
-            TextWriter writer,
-            ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(this.GetType().Name);
         }

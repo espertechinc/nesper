@@ -24,16 +24,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         ExprEvaluator,
         ExprNodeRenderable
     {
-        private readonly EventPropertyGetterSPI getter;
-        private readonly int streamNum;
+        private readonly EventPropertyGetterSPI _getter;
+        private readonly int _streamNum;
 
         public ExprEvalByGetter(
             int streamNum,
             EventPropertyGetterSPI getter,
             Type returnType)
         {
-            this.streamNum = streamNum;
-            this.getter = getter;
+            _streamNum = streamNum;
+            _getter = getter;
             EvaluationType = returnType;
         }
 
@@ -42,12 +42,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var @event = eventsPerStream[streamNum];
+            var @event = eventsPerStream[_streamNum];
             if (@event == null) {
                 return null;
             }
 
-            return getter.Get(@event);
+            return _getter.Get(@event);
         }
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
@@ -64,12 +64,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
-                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamNum)))
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(_streamNum)))
                 .IfRefNullReturnNull("@event")
                 .MethodReturn(
                     CodegenLegoCast.CastSafeFromObjectType(
                         EvaluationType,
-                        getter.EventBeanGetCodegen(Ref("@event"), methodNode, codegenClassScope)));
+                        _getter.EventBeanGetCodegen(Ref("@event"), methodNode, codegenClassScope)));
             return LocalMethod(methodNode);
         }
 
@@ -79,7 +79,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
         public void ToEPL(
             TextWriter writer,
-            ExprPrecedenceEnum parentPrecedence)
+            ExprPrecedenceEnum parentPrecedence,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(GetType().Name);
         }

@@ -12,9 +12,10 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.module;
-using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.output.polled;
@@ -40,46 +41,41 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
         private const string NAME_GROUPREPS = "groupReps";
         private readonly Type[] groupKeyTypes;
 
-        private readonly SelectExprProcessorForge selectExprProcessorForge;
         private readonly EventType[] typesPerStream;
         private readonly bool unboundedProcessor;
+        private readonly MultiKeyClassRef multiKeyClassRef;
 
         public ResultSetProcessorRowPerGroupForge(
             EventType resultEventType,
             EventType[] typesPerStream,
-            SelectExprProcessorForge selectExprProcessorForge,
             ExprNode[] groupKeyNodeExpressions,
             ExprForge optionalHavingNode,
             bool isSelectRStream,
             bool isUnidirectional,
             OutputLimitSpec outputLimitSpec,
             bool isSorting,
-            bool noDataWindowSingleStream,
             bool isHistoricalOnly,
-            bool iterateUnbounded,
             ResultSetProcessorOutputConditionType? outputConditionType,
             EventType[] eventTypes,
-            OutputConditionPolledFactoryForge optionalOutputFirstConditionFactory)
+            OutputConditionPolledFactoryForge optionalOutputFirstConditionFactory,
+            MultiKeyClassRef multiKeyClassRef,
+            bool unboundedProcessor)
         {
             ResultEventType = resultEventType;
             this.typesPerStream = typesPerStream;
             GroupKeyNodeExpressions = groupKeyNodeExpressions;
-            this.selectExprProcessorForge = selectExprProcessorForge;
             OptionalHavingNode = optionalHavingNode;
             IsSorting = isSorting;
             IsSelectRStream = isSelectRStream;
             IsUnidirectional = isUnidirectional;
             OutputLimitSpec = outputLimitSpec;
-            var noDataWindowSingleSnapshot = iterateUnbounded ||
-                                             outputLimitSpec != null &&
-                                             outputLimitSpec.DisplayLimit == OutputLimitLimitType.SNAPSHOT &&
-                                             noDataWindowSingleStream;
-            unboundedProcessor = noDataWindowSingleSnapshot && !isHistoricalOnly;
             IsHistoricalOnly = isHistoricalOnly;
             OutputConditionType = outputConditionType;
             EventTypes = eventTypes;
             OptionalOutputFirstConditionFactory = optionalOutputFirstConditionFactory;
             groupKeyTypes = ExprNodeUtilityQuery.GetExprResultTypes(groupKeyNodeExpressions);
+            this.multiKeyClassRef = multiKeyClassRef;
+            this.unboundedProcessor = unboundedProcessor;
         }
 
         public EventType ResultEventType { get; }
@@ -98,8 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 
         public bool IsHistoricalOnly { get; }
 
-        public bool IsOutputLast =>
-            OutputLimitSpec != null && OutputLimitSpec.DisplayLimit == OutputLimitLimitType.LAST;
+        public bool IsOutputLast => OutputLimitSpec != null && OutputLimitSpec.DisplayLimit == OutputLimitLimitType.LAST;
 
         public bool IsOutputAll => OutputLimitSpec != null && OutputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL;
 
@@ -113,6 +108,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 
         public Type InterfaceClass => typeof(ResultSetProcessorRowPerGroup);
 
+        public MultiKeyClassRef MultiKeyClassRef => multiKeyClassRef;
+
         public void InstanceCodegen(
             CodegenInstanceAux instance,
             CodegenClassScope classScope,
@@ -124,20 +121,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 "SelectExprProcessor",
                 GetType(),
                 classScope,
-                propertyNode => propertyNode.GetterBlock.BlockReturn(REF_SELECTEXPRPROCESSOR));
+                propertyNode => propertyNode.GetterBlock.BlockReturn(MEMBER_SELECTEXPRPROCESSOR));
             instance.Properties.AddProperty(
                 typeof(AggregationService),
                 "AggregationService",
                 GetType(),
                 classScope,
-                propertyNode => propertyNode.GetterBlock.BlockReturn(REF_AGGREGATIONSVC));
+                propertyNode => propertyNode.GetterBlock.BlockReturn(MEMBER_AGGREGATIONSVC));
             instance.Methods.AddMethod(
                 typeof(ExprEvaluatorContext),
                 "GetAgentInstanceContext",
-                new EmptyList<CodegenNamedParam>(),
+                EmptyList<CodegenNamedParam>.Instance,
                 GetType(),
                 classScope,
-                node => node.Block.ReturnMethodOrBlock(REF_AGENTINSTANCECONTEXT));
+                node => node.Block.ReturnMethodOrBlock(MEMBER_AGENTINSTANCECONTEXT));
             instance.Properties.AddProperty(
                 typeof(bool),
                 "HasHavingClause",
@@ -151,7 +148,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 classScope,
                 propertyNode => propertyNode.GetterBlock.BlockReturn(Constant(IsSelectRStream)));
             ResultSetProcessorUtil.EvaluateHavingClauseCodegen(OptionalHavingNode, classScope, instance);
-            ResultSetProcessorGroupedUtil.GenerateGroupKeySingleCodegen(GroupKeyNodeExpressions, classScope, instance);
+            GenerateGroupKeySingle = ResultSetProcessorGroupedUtil.GenerateGroupKeySingleCodegen(GroupKeyNodeExpressions, multiKeyClassRef, classScope, instance);
+            GenerateGroupKeyArrayView = ResultSetProcessorGroupedUtil.GenerateGroupKeyArrayViewCodegen(GenerateGroupKeySingle, classScope, instance);
+            GenerateGroupKeyArrayJoin = ResultSetProcessorGroupedUtil.GenerateGroupKeyArrayJoinCodegen(GenerateGroupKeySingle, classScope, instance);
+
             ResultSetProcessorRowPerGroupImpl.GenerateOutputBatchedNoSortWMapCodegen(this, classScope, instance);
             ResultSetProcessorRowPerGroupImpl.GenerateOutputBatchedArrFromEnumeratorCodegen(this, classScope, instance);
             ResultSetProcessorRowPerGroupImpl.RemovedAggregationGroupKeyCodegen(classScope, instance);
@@ -159,22 +159,28 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             if (unboundedProcessor) {
                 var factory = classScope.AddOrGetDefaultFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
                 instance.AddMember(NAME_GROUPREPS, typeof(ResultSetProcessorRowPerGroupUnboundHelper));
+                CodegenExpression groupKeySerde = MultiKeyClassRef.GetExprMKSerde(classScope.NamespaceScope.InitMethod, classScope);
+
                 var eventType = classScope.AddDefaultFieldUnshared(
                     true,
                     typeof(EventType),
                     EventTypeUtility.ResolveTypeCodegen(typesPerStream[0], EPStatementInitServicesConstants.REF));
-                instance.ServiceCtor.Block.AssignRef(
+
+                instance.ServiceCtor.Block
+                    .AssignRef(
                         NAME_GROUPREPS,
                         ExprDotMethod(
                             factory,
                             "MakeRSRowPerGroupUnboundGroupRep",
                             Constant(groupKeyTypes),
+                            groupKeySerde,
                             eventType,
-                            REF_AGENTINSTANCECONTEXT))
-                    .ExprDotMethod(REF_AGGREGATIONSVC, "SetRemovedCallback", Ref(NAME_GROUPREPS));
+                            MEMBER_AGENTINSTANCECONTEXT))
+                    .ExprDotMethod(MEMBER_AGGREGATIONSVC, "SetRemovedCallback", Member(NAME_GROUPREPS));
             }
             else {
-                instance.ServiceCtor.Block.ExprDotMethod(REF_AGGREGATIONSVC, "SetRemovedCallback", Ref("this"));
+                instance.ServiceCtor.Block
+                    .ExprDotMethod(MEMBER_AGGREGATIONSVC, "SetRemovedCallback", Ref("this"));
             }
         }
 
@@ -335,8 +341,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 
         public string InstrumentedQName => "ResultSetProcessGroupedRowPerGroup";
 
-        public Type[] GroupKeyTypes {
-            get { return groupKeyTypes; }
-        }
+        public Type[] GroupKeyTypes => groupKeyTypes;
+        
+        public CodegenMethod GenerateGroupKeySingle { get; private set; }
+
+        public CodegenMethod GenerateGroupKeyArrayView { get; private set; }
+
+        public CodegenMethod GenerateGroupKeyArrayJoin { get; private set; }
     }
 } // end of namespace

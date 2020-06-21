@@ -19,9 +19,7 @@ using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -30,12 +28,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
     public class ExprTableIdentNode : ExprNodeBase,
         ExprForgeInstrumentable
     {
-        private readonly TableMetaData tableMetadata;
-        private readonly string streamOrPropertyName;
-        private readonly string unresolvedPropertyName;
-        private readonly Type returnType;
-        private readonly int streamNum;
-        private readonly int columnNum;
+        private readonly int _columnNum;
+        private readonly string _columnName;
+        private readonly int _streamNum;
+        private readonly string _streamOrPropertyName;
+        private readonly TableMetaData _tableMetadata;
+        private readonly string _unresolvedPropertyName;
 
         public ExprTableIdentNode(
             TableMetaData tableMetadata,
@@ -43,27 +41,109 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             string unresolvedPropertyName,
             Type returnType,
             int streamNum,
+            string columnName,
             int columnNum)
         {
-            this.tableMetadata = tableMetadata;
-            this.streamOrPropertyName = streamOrPropertyName;
-            this.unresolvedPropertyName = unresolvedPropertyName;
-            this.returnType = returnType;
-            this.streamNum = streamNum;
-            this.columnNum = columnNum;
+            _tableMetadata = tableMetadata;
+            _streamOrPropertyName = streamOrPropertyName;
+            _unresolvedPropertyName = unresolvedPropertyName;
+            EvaluationType = returnType;
+            _streamNum = streamNum;
+            _columnNum = columnNum;
+            _columnName = columnName;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
+
+        public bool IsConstantResult => false;
+
+        public override ExprForge Forge => this;
+
+        public ExprNode ForgeRenderable => this;
+
+        public int ColumnNum => _columnNum;
+
+        public string ColumnName => _columnName;
+
+        public int StreamNum => _streamNum;
+
+        public TableMetaData TableMetadata => _tableMetadata;
+
+        public string UnresolvedPropertyName => _unresolvedPropertyName;
+
+        public CodegenExpression EvaluateCodegenUninstrumented(
+            Type requiredType,
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope codegenClassScope)
         {
-            ExprIdentNodeImpl.ToPrecedenceFreeEPL(writer, streamOrPropertyName, unresolvedPropertyName);
+            var method = parent.MakeChild(requiredType, GetType(), codegenClassScope);
+            method.Block.DeclareVar<object>(
+                "result",
+                StaticMethod(
+                    typeof(ExprTableIdentNode),
+                    "TableColumnAggValue",
+                    Constant(_streamNum),
+                    Constant(_columnNum),
+                    symbols.GetAddEPS(method),
+                    symbols.GetAddIsNewData(method),
+                    symbols.GetAddExprEvalCtx(method)));
+            if (requiredType == typeof(object)) {
+                method.Block.MethodReturn(Ref("result"));
+            }
+            else {
+                method.Block.MethodReturn(Cast(requiredType.GetBoxedType(), Ref("result")));
+            }
+
+            return LocalMethod(method);
         }
 
-        public override ExprPrecedenceEnum Precedence {
-            get => ExprPrecedenceEnum.UNARY;
+        public CodegenExpression EvaluateCodegen(
+            Type requiredType,
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope codegenClassScope)
+        {
+            return new InstrumentationBuilderExpr(
+                    GetType(),
+                    this,
+                    "ExprTableSubproperty",
+                    requiredType,
+                    parent,
+                    symbols,
+                    codegenClassScope)
+                .Qparams(Constant(_tableMetadata.TableName), Constant(_unresolvedPropertyName))
+                .Build();
         }
 
-        public bool IsConstantResult {
-            get => false;
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
+
+        public ExprEvaluator ExprEvaluator {
+            get {
+                return new ProxyExprEvaluator {
+                    ProcEvaluate = (
+                        eventsPerStream,
+                        isNewData,
+                        context) => {
+                        throw new UnsupportedOperationException("Cannot evaluate at compile time");
+                    },
+                };
+            }
+        }
+
+        public Type EvaluationType { get; }
+
+        ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
+
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
+        {
+            ExprIdentNodeImpl.ToPrecedenceFreeEPL(
+                writer,
+                _streamOrPropertyName,
+                _unresolvedPropertyName,
+                ExprNodeRenderableFlags.DEFAULTFLAGS);
         }
 
         public override bool EqualsNode(
@@ -78,84 +158,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             return null;
         }
 
-        public CodegenExpression EvaluateCodegenUninstrumented(
-            Type requiredType,
-            CodegenMethodScope parent,
-            ExprForgeCodegenSymbol symbols,
-            CodegenClassScope codegenClassScope)
+        /// <summary>
+        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="streamNum">stream num</param>
+        /// <param name="eventsPerStream">events</param>
+        /// <returns>value</returns>
+        public static AggregationRow TableColumnRow(
+            int streamNum,
+            EventBean[] eventsPerStream)
         {
-            CodegenMethod method = parent.MakeChild(requiredType, this.GetType(), codegenClassScope);
-            method.Block.DeclareVar<object>(
-                "result",
-                StaticMethod(
-                    typeof(ExprTableIdentNode),
-                    "TableColumnAggValue",
-                    Constant(streamNum),
-                    Constant(columnNum),
-                    symbols.GetAddEPS(method),
-                    symbols.GetAddIsNewData(method),
-                    symbols.GetAddExprEvalCtx(method)));
-            if (requiredType == typeof(object)) {
-                method.Block.MethodReturn(Ref("result"));
-            }
-            else {
-                method.Block.MethodReturn(Cast(Boxing.GetBoxedType(requiredType), Ref("result")));
-            }
-
-            return LocalMethod(method);
-        }
-
-        public CodegenExpression EvaluateCodegen(
-            Type requiredType,
-            CodegenMethodScope parent,
-            ExprForgeCodegenSymbol symbols,
-            CodegenClassScope codegenClassScope)
-        {
-            return new InstrumentationBuilderExpr(
-                    this.GetType(),
-                    this,
-                    "ExprTableSubproperty",
-                    requiredType,
-                    parent,
-                    symbols,
-                    codegenClassScope)
-                .Qparams(new CodegenExpression[] {Constant(tableMetadata.TableName), Constant(unresolvedPropertyName)})
-                .Build();
-        }
-
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
-
-        public ExprEvaluator ExprEvaluator {
-            get {
-                return new ProxyExprEvaluator() {
-                    ProcEvaluate = (
-                        eventsPerStream,
-                        isNewData,
-                        context) => {
-                        throw new UnsupportedOperationException("Cannot evaluate at compile time");
-                    },
-                };
-            }
-        }
-
-        public Type EvaluationType {
-            get => returnType;
-        }
-
-        public override ExprForge Forge {
-            get => this;
-        }
-
-        ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
-
-        public ExprNode ForgeRenderable {
-            get => this;
+            var oa = (ObjectArrayBackedEventBean) eventsPerStream[streamNum];
+            return ExprTableEvalStrategyUtil.GetRow(oa);
         }
 
         /// <summary>
-        /// NOTE: Code-generation-invoked method, method name and parameter order matters
+        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
         /// <param name="streamNum">stream num</param>
         /// <param name="column">col</param>
@@ -170,8 +188,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             bool isNewData,
             ExprEvaluatorContext ctx)
         {
-            ObjectArrayBackedEventBean oa = (ObjectArrayBackedEventBean) eventsPerStream[streamNum];
-            AggregationRow row = ExprTableEvalStrategyUtil.GetRow(oa);
+            var oa = (ObjectArrayBackedEventBean) eventsPerStream[streamNum];
+            var row = ExprTableEvalStrategyUtil.GetRow(oa);
             return row.GetValue(column, eventsPerStream, isNewData, ctx);
         }
     }

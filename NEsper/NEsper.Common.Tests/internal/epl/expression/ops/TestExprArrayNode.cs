@@ -9,7 +9,6 @@
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.util;
-using com.espertech.esper.container;
 
 using NUnit.Framework;
 
@@ -47,14 +46,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         private ExprArrayNode[] arrayNodes;
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEqualsNode()
         {
             Assert.IsTrue(arrayNodes[0].EqualsNode(arrayNodes[1], false));
             Assert.IsFalse(arrayNodes[0].EqualsNode(new SupportExprNode(null), false));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEvaluate()
         {
             var result = arrayNodes[0].Forge.ExprEvaluator.Evaluate(null, true, null);
@@ -80,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.AreEqual(1, ((object[]) result)[1]);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetType()
         {
             Assert.AreEqual(typeof(object[]), arrayNodes[0].Forge.EvaluationType);
@@ -89,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.AreEqual(typeof(object[]), arrayNodes[3].Forge.EvaluationType);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestToExpressionString()
         {
             Assert.AreEqual("{}", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(arrayNodes[0]));

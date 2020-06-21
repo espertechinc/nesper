@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\src\Espertech\NEsper-master\NEsper\grammar\EsperEPL2Grammar.g4 by ANTLR 4.7.1
+// Generated from C:\Src\Espertech\NEsper-8.5.0\NEsper\grammar\EsperEPL2Grammar.g4 by ANTLR 4.7.1
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -65,6 +65,16 @@ public interface IEsperEPL2GrammarListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitStartJsonValueRule([NotNull] EsperEPL2GrammarParser.StartJsonValueRuleContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.classDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterClassDecl([NotNull] EsperEPL2GrammarParser.ClassDeclContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.classDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitClassDecl([NotNull] EsperEPL2GrammarParser.ClassDeclContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.expressionDecl"/>.
 	/// </summary>
@@ -766,6 +776,16 @@ public interface IEsperEPL2GrammarListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitCreateExpressionExpr([NotNull] EsperEPL2GrammarParser.CreateExpressionExprContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.createClassExpr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterCreateClassExpr([NotNull] EsperEPL2GrammarParser.CreateClassExprContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.createClassExpr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitCreateClassExpr([NotNull] EsperEPL2GrammarParser.CreateClassExprContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.createContextDetail"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -935,6 +955,16 @@ public interface IEsperEPL2GrammarListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitColumnList([NotNull] EsperEPL2GrammarParser.ColumnListContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.columnListKeywordAllowed"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterColumnListKeywordAllowed([NotNull] EsperEPL2GrammarParser.ColumnListKeywordAllowedContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.columnListKeywordAllowed"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitColumnListKeywordAllowed([NotNull] EsperEPL2GrammarParser.ColumnListKeywordAllowedContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.fromClause"/>.
 	/// </summary>
@@ -1286,6 +1316,16 @@ public interface IEsperEPL2GrammarListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitRowLimit([NotNull] EsperEPL2GrammarParser.RowLimitContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.crontabLimitParameterSetList"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterCrontabLimitParameterSetList([NotNull] EsperEPL2GrammarParser.CrontabLimitParameterSetListContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.crontabLimitParameterSetList"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitCrontabLimitParameterSetList([NotNull] EsperEPL2GrammarParser.CrontabLimitParameterSetListContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.crontabLimitParameterSet"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -1636,16 +1676,6 @@ public interface IEsperEPL2GrammarListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitSubstitutionCanChain([NotNull] EsperEPL2GrammarParser.SubstitutionCanChainContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.chainedFunction"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterChainedFunction([NotNull] EsperEPL2GrammarParser.ChainedFunctionContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainedFunction"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitChainedFunction([NotNull] EsperEPL2GrammarParser.ChainedFunctionContext context);
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.newAssign"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -1978,36 +2008,6 @@ public interface IEsperEPL2GrammarListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitFirstLastWindowAggregation([NotNull] EsperEPL2GrammarParser.FirstLastWindowAggregationContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.eventPropertyOrLibFunction"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterEventPropertyOrLibFunction([NotNull] EsperEPL2GrammarParser.EventPropertyOrLibFunctionContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.eventPropertyOrLibFunction"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitEventPropertyOrLibFunction([NotNull] EsperEPL2GrammarParser.EventPropertyOrLibFunctionContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.libFunction"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterLibFunction([NotNull] EsperEPL2GrammarParser.LibFunctionContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.libFunction"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitLibFunction([NotNull] EsperEPL2GrammarParser.LibFunctionContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.libFunctionWithClass"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterLibFunctionWithClass([NotNull] EsperEPL2GrammarParser.LibFunctionWithClassContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.libFunctionWithClass"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitLibFunctionWithClass([NotNull] EsperEPL2GrammarParser.LibFunctionWithClassContext context);
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.libFunctionNoClass"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -2017,26 +2017,6 @@ public interface IEsperEPL2GrammarListener : IParseTreeListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	void ExitLibFunctionNoClass([NotNull] EsperEPL2GrammarParser.LibFunctionNoClassContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.funcIdentTop"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterFuncIdentTop([NotNull] EsperEPL2GrammarParser.FuncIdentTopContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.funcIdentTop"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitFuncIdentTop([NotNull] EsperEPL2GrammarParser.FuncIdentTopContext context);
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.funcIdentInner"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void EnterFuncIdentInner([NotNull] EsperEPL2GrammarParser.FuncIdentInnerContext context);
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.funcIdentInner"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	void ExitFuncIdentInner([NotNull] EsperEPL2GrammarParser.FuncIdentInnerContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.funcIdentChained"/>.
 	/// </summary>
@@ -2568,35 +2548,85 @@ public interface IEsperEPL2GrammarListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitNumericListParameter([NotNull] EsperEPL2GrammarParser.NumericListParameterContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.eventProperty"/>.
+	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.chainable"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterEventProperty([NotNull] EsperEPL2GrammarParser.EventPropertyContext context);
+	void EnterChainable([NotNull] EsperEPL2GrammarParser.ChainableContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.eventProperty"/>.
+	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainable"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitEventProperty([NotNull] EsperEPL2GrammarParser.EventPropertyContext context);
+	void ExitChainable([NotNull] EsperEPL2GrammarParser.ChainableContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.eventPropertyAtomic"/>.
+	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableRootWithOpt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterEventPropertyAtomic([NotNull] EsperEPL2GrammarParser.EventPropertyAtomicContext context);
+	void EnterChainableRootWithOpt([NotNull] EsperEPL2GrammarParser.ChainableRootWithOptContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.eventPropertyAtomic"/>.
+	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableRootWithOpt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitEventPropertyAtomic([NotNull] EsperEPL2GrammarParser.EventPropertyAtomicContext context);
+	void ExitChainableRootWithOpt([NotNull] EsperEPL2GrammarParser.ChainableRootWithOptContext context);
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.eventPropertyIdent"/>.
+	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableElements"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void EnterEventPropertyIdent([NotNull] EsperEPL2GrammarParser.EventPropertyIdentContext context);
+	void EnterChainableElements([NotNull] EsperEPL2GrammarParser.ChainableElementsContext context);
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.eventPropertyIdent"/>.
+	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableElements"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	void ExitEventPropertyIdent([NotNull] EsperEPL2GrammarParser.EventPropertyIdentContext context);
+	void ExitChainableElements([NotNull] EsperEPL2GrammarParser.ChainableElementsContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableAtomicWithOpt"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterChainableAtomicWithOpt([NotNull] EsperEPL2GrammarParser.ChainableAtomicWithOptContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableAtomicWithOpt"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitChainableAtomicWithOpt([NotNull] EsperEPL2GrammarParser.ChainableAtomicWithOptContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableAtomic"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterChainableAtomic([NotNull] EsperEPL2GrammarParser.ChainableAtomicContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableAtomic"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitChainableAtomic([NotNull] EsperEPL2GrammarParser.ChainableAtomicContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableArray"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterChainableArray([NotNull] EsperEPL2GrammarParser.ChainableArrayContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableArray"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitChainableArray([NotNull] EsperEPL2GrammarParser.ChainableArrayContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableWithArgs"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterChainableWithArgs([NotNull] EsperEPL2GrammarParser.ChainableWithArgsContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableWithArgs"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitChainableWithArgs([NotNull] EsperEPL2GrammarParser.ChainableWithArgsContext context);
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableIdent"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterChainableIdent([NotNull] EsperEPL2GrammarParser.ChainableIdentContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableIdent"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitChainableIdent([NotNull] EsperEPL2GrammarParser.ChainableIdentContext context);
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.identOrTicked"/>.
 	/// </summary>

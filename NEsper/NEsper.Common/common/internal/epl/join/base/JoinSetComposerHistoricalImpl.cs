@@ -30,10 +30,11 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
     {
         private readonly bool allowInitIndex;
         private readonly EventTable[][] repositories;
-        private readonly ISet<MultiKey<EventBean>> newResults = new LinkedHashSet<MultiKey<EventBean>>();
 
         // Set semantic eliminates duplicates in result set, use Linked set to preserve order
-        private readonly ISet<MultiKey<EventBean>> oldResults = new LinkedHashSet<MultiKey<EventBean>>();
+        private readonly ISet<MultiKeyArrayOfKeys<EventBean>> newResults = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
+        private readonly ISet<MultiKeyArrayOfKeys<EventBean>> oldResults = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
+        
         private readonly ExprEvaluatorContext staticEvalExprEvaluatorContext;
         private readonly Viewable[] streamViews;
 
@@ -104,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             }
         }
 
-        public UniformPair<ISet<MultiKey<EventBean>>> Join(
+        public UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>> Join(
             EventBean[][] newDataPerStream,
             EventBean[][] oldDataPerStream,
             ExprEvaluatorContext exprEvaluatorContext)
@@ -155,12 +156,12 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             }
 
             instrumentationCommon.AJoinCompositionHistorical(newResults, oldResults);
-            return new UniformPair<ISet<MultiKey<EventBean>>>(newResults, oldResults);
+            return new UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>(newResults, oldResults);
         }
 
-        public ISet<MultiKey<EventBean>> StaticJoin()
+        public ISet<MultiKeyArrayOfKeys<EventBean>> StaticJoin()
         {
-            ISet<MultiKey<EventBean>> result = new LinkedHashSet<MultiKey<EventBean>>();
+            ISet<MultiKeyArrayOfKeys<EventBean>> result = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
             var lookupEvents = new EventBean[1];
 
             // Assign a local cache for the thread's evaluation of the join

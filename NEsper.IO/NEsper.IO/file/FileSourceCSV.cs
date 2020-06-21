@@ -27,7 +27,6 @@ namespace com.espertech.esperio.file
 {
 	public class FileSourceCSV : DataFlowSourceOperator
 	{
-
 		private readonly FileSourceFactory _factory;
 		private readonly AdapterInputSource _adapterInputSource;
 		private readonly bool _hasHeaderLine;
@@ -45,7 +44,8 @@ namespace com.espertech.esperio.file
 
 		private CSVReader _reader;
 
-		public FileSourceCSV(FileSourceFactory factory,
+		public FileSourceCSV(
+			FileSourceFactory factory,
 			DataFlowOpInitializeContext context,
 			AdapterInputSource adapterInputSource,
 			bool hasHeaderLine,
@@ -150,7 +150,7 @@ namespace com.espertech.esperio.file
 			StatementContext statementContext,
 			string dateFormat)
 		{
-			var writeables = EventTypeUtility.GetWriteableProperties(outputEventType, false);
+			var writeables = EventTypeUtility.GetWriteableProperties(outputEventType, false, false);
 
 			IList<int> indexesList = new List<int>();
 			IList<SimpleTypeParser> parserList = new List<SimpleTypeParser>();
@@ -171,10 +171,7 @@ namespace com.espertech.esperio.file
 				}
 
 				SimpleTypeParser parser;
-				if ((propertyType == typeof(DateTime)) ||
-				    (propertyType == typeof(DateTimeOffset)) ||
-				    (propertyType == typeof(DateTimeEx))) {
-
+				if (propertyType.IsDateTime() && !propertyType.IsInt64()) {
 					var dateTimeFormat = dateFormat != null
 						? DateTimeFormat.For(dateFormat)
 						: DateTimeFormat.ISO_DATE_TIME;
@@ -248,7 +245,8 @@ namespace com.espertech.esperio.file
 			private readonly SimpleTypeParser[] _parsers;
 			private readonly EventBeanManufacturer _eventBeanManufacturer;
 
-			internal ParseMakePropertiesDesc(int[] indexes,
+			internal ParseMakePropertiesDesc(
+				int[] indexes,
 				SimpleTypeParser[] parsers,
 				EventBeanManufacturer eventBeanManufacturer)
 			{

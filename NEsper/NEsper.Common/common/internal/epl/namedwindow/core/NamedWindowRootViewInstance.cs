@@ -211,5 +211,11 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
         {
             visitor.Visit(IndexRepository.Tables);
         }
+        
+        
+        public void ClearDeliveriesRemoveStream(EventBean[] removedEvents)
+        {
+            AgentInstanceContext.StatementResultService.ClearDeliveriesRemoveStream(removedEvents);
+        }
     }
 } // end of namespace

@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using Avro.Generic;
 
 using com.espertech.esper.common.client.scopetest;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
@@ -27,9 +26,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
     {
         public void Run(RegressionEnvironment env)
         {
+            var path = new RegressionPath();
+
             // Bean
             RunAssertion(
                 env,
+                path,
                 "Bean",
                 FBEANWTYPE,
                 new Bean_Type_Root(),
@@ -40,6 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             // Map
             RunAssertion(
                 env,
+                path,
                 "Map",
                 FMAPWTYPE,
                 new Dictionary<string, object>(),
@@ -48,22 +51,49 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 new Dictionary<string, object>());
 
             // OA
-            RunAssertion(env, "OA", FOAWTYPE, new object[0], new object[0], new object[0], new object[0]);
+            RunAssertion(
+                env,
+                path,
+                "OA",
+                FOAWTYPE,
+                new object[0],
+                new object[0],
+                new object[0],
+                new object[0]);
 
             // Avro
             var fake = SchemaBuilder.Record("fake");
             RunAssertion(
                 env,
+                path,
                 "Avro",
                 FAVROWTYPE,
                 new GenericRecord(fake),
                 new GenericRecord(fake),
                 new GenericRecord(fake),
                 new GenericRecord(fake));
+            
+            // Json
+            var schemas = "@public @buseventtype @name('schema') create json schema Json_Type_Root();\n" +
+                             "@public @buseventtype create json schema Json_Type_1() inherits Json_Type_Root;\n" +
+                             "@public @buseventtype create json schema Json_Type_2() inherits Json_Type_Root;\n" +
+                             "@public @buseventtype create json schema Json_Type_2_1() inherits Json_Type_2;\n";
+            env.CompileDeploy(schemas, path);
+            RunAssertion(
+                env,
+                path,
+                "Json",
+                FJSONWTYPE,
+                "{}",
+                "{}",
+                "{}",
+                "{}");
+
         }
 
         private void RunAssertion(
             RegressionEnvironment env,
+            RegressionPath path,
             string typePrefix,
             FunctionSendEventWType sender,
             object root,
@@ -75,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var statements = new EPStatement[4];
             var listeners = new SupportUpdateListener[4];
             for (var i = 0; i < typeNames.Length; i++) {
-                env.CompileDeploy("@Name('s" + i + "') select * from " + typePrefix + "_" + typeNames[i]);
+                env.CompileDeploy("@Name('s" + i + "') select * from " + typePrefix + "_" + typeNames[i], path);
                 statements[i] = env.Statement("s" + i);
                 listeners[i] = new SupportUpdateListener();
                 statements[i].AddListener(listeners[i]);

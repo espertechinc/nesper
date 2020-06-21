@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.compile.stage1;
 using com.espertech.esper.common.@internal.compile.stage1.specmapper;
 using com.espertech.esper.common.@internal.context.compile;
 using com.espertech.esper.common.@internal.context.module;
+using com.espertech.esper.common.@internal.epl.classprovided.compiletime;
 using com.espertech.esper.common.@internal.epl.dataflow.core;
 using com.espertech.esper.common.@internal.epl.enummethod.compile;
 using com.espertech.esper.common.@internal.epl.expression.declared.compiletime;
@@ -28,102 +29,130 @@ using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.eventtyperepo;
+using com.espertech.esper.common.@internal.@event.xml;
+using com.espertech.esper.common.@internal.serde.compiletime.eventtype;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.view.core;
+using com.espertech.esper.compat;
 using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.compile.stage3
 {
     public class StatementCompileTimeServices
     {
-        private readonly ModuleCompileTimeServices services;
+        private readonly ModuleCompileTimeServices _services;
+        private readonly ClassProvidedExtension _classProvidedExtension;
+        private readonly EventTypeNameGeneratorStatement _eventTypeNameGeneratorStatement;
 
         public StatementCompileTimeServices(
             int statementNumber,
             ModuleCompileTimeServices services)
-        {
-            this.services = services;
-            EventTypeNameGeneratorStatement = new EventTypeNameGeneratorStatement(statementNumber);
+        {    
+            _services = services;
+            _eventTypeNameGeneratorStatement = new EventTypeNameGeneratorStatement(statementNumber);
+            _classProvidedExtension = new ClassProvidedExtensionImpl(services.ClassProvidedCompileTimeResolver);
         }
 
-        public BeanEventTypeStemService BeanEventTypeStemService => services.BeanEventTypeStemService;
+        public BeanEventTypeStemService BeanEventTypeStemService => _services.BeanEventTypeStemService;
 
-        public BeanEventTypeFactoryPrivate BeanEventTypeFactoryPrivate => services.BeanEventTypeFactoryPrivate;
+        public BeanEventTypeFactoryPrivate BeanEventTypeFactoryPrivate => _services.BeanEventTypeFactoryPrivate;
 
-        public Configuration Configuration => services.Configuration;
+        public Configuration Configuration => _services.Configuration;
 
-        public ContextCompileTimeRegistry ContextCompileTimeRegistry => services.ContextCompileTimeRegistry;
+        public ContextCompileTimeRegistry ContextCompileTimeRegistry => _services.ContextCompileTimeRegistry;
 
-        public ContextCompileTimeResolver ContextCompileTimeResolver => services.ContextCompileTimeResolver;
+        public ContextCompileTimeResolver ContextCompileTimeResolver => _services.ContextCompileTimeResolver;
+        
+        public ClassProvidedCompileTimeRegistry ClassProvidedCompileTimeRegistry => _services.ClassProvidedCompileTimeRegistry;
 
-        public DatabaseConfigServiceCompileTime DatabaseConfigServiceCompileTime =>
-            services.DatabaseConfigServiceCompileTime;
+        public ClassProvidedCompileTimeResolver ClassProvidedCompileTimeResolver => _services.ClassProvidedCompileTimeResolver;
 
-        public ImportServiceCompileTime ImportServiceCompileTime =>
-            services.ImportServiceCompileTime;
+        public DatabaseConfigServiceCompileTime DatabaseConfigServiceCompileTime => _services.DatabaseConfigServiceCompileTime;
+
+        public ImportServiceCompileTime ImportServiceCompileTime => _services.ImportServiceCompileTime;
 
         public EnumMethodCallStackHelperImpl EnumMethodCallStackHelper { get; } = new EnumMethodCallStackHelperImpl();
 
         public ExprDeclaredCompileTimeRegistry ExprDeclaredCompileTimeRegistry =>
-            services.ExprDeclaredCompileTimeRegistry;
+            _services.ExprDeclaredCompileTimeRegistry;
 
         public ExprDeclaredCompileTimeResolver ExprDeclaredCompileTimeResolver =>
-            services.ExprDeclaredCompileTimeResolver;
+            _services.ExprDeclaredCompileTimeResolver;
 
-        public EventTypeCompileTimeRegistry EventTypeCompileTimeRegistry => services.EventTypeCompileTimeRegistry;
+        public EventTypeCompileTimeRegistry EventTypeCompileTimeRegistry => _services.EventTypeCompileTimeRegistry;
 
-        public EventTypeRepositoryImpl EventTypeRepositoryPreconfigured => services.EventTypeRepositoryPreconfigured;
+        public EventTypeRepositoryImpl EventTypeRepositoryPreconfigured => _services.EventTypeRepositoryPreconfigured;
 
-        public IndexCompileTimeRegistry IndexCompileTimeRegistry => services.IndexCompileTimeRegistry;
+        public IndexCompileTimeRegistry IndexCompileTimeRegistry => _services.IndexCompileTimeRegistry;
 
-        public ModuleAccessModifierService ModuleVisibilityRules => services.ModuleVisibilityRules;
+        public ModuleAccessModifierService ModuleVisibilityRules => _services.ModuleVisibilityRules;
 
-        public NamedWindowCompileTimeResolver NamedWindowCompileTimeResolver => services.NamedWindowCompileTimeResolver;
+        public NamedWindowCompileTimeResolver NamedWindowCompileTimeResolver => _services.NamedWindowCompileTimeResolver;
 
-        public NamedWindowCompileTimeRegistry NamedWindowCompileTimeRegistry => services.NamedWindowCompileTimeRegistry;
+        public NamedWindowCompileTimeRegistry NamedWindowCompileTimeRegistry => _services.NamedWindowCompileTimeRegistry;
 
-        public PatternObjectResolutionService PatternResolutionService => services.PatternObjectResolutionService;
+        public PatternObjectResolutionService PatternResolutionService => _services.PatternObjectResolutionService;
 
-        public TableCompileTimeResolver TableCompileTimeResolver => services.TableCompileTimeResolver;
+        public TableCompileTimeResolver TableCompileTimeResolver => _services.TableCompileTimeResolver;
 
-        public TableCompileTimeRegistry TableCompileTimeRegistry => services.TableCompileTimeRegistry;
+        public TableCompileTimeRegistry TableCompileTimeRegistry => _services.TableCompileTimeRegistry;
 
-        public VariableCompileTimeRegistry VariableCompileTimeRegistry => services.VariableCompileTimeRegistry;
+        public VariableCompileTimeRegistry VariableCompileTimeRegistry => _services.VariableCompileTimeRegistry;
 
-        public VariableCompileTimeResolver VariableCompileTimeResolver => services.VariableCompileTimeResolver;
+        public VariableCompileTimeResolver VariableCompileTimeResolver => _services.VariableCompileTimeResolver;
 
-        public ViewResolutionService ViewResolutionService => services.ViewResolutionService;
+        public ViewResolutionService ViewResolutionService => _services.ViewResolutionService;
 
-        public ScriptCompileTimeResolver ScriptCompileTimeResolver => services.ScriptCompileTimeResolver;
+        public ScriptCompileTimeResolver ScriptCompileTimeResolver => _services.ScriptCompileTimeResolver;
 
-        public ScriptCompileTimeRegistry ScriptCompileTimeRegistry => services.ScriptCompileTimeRegistry;
+        public ScriptCompileTimeRegistry ScriptCompileTimeRegistry => _services.ScriptCompileTimeRegistry;
 
-        public ScriptServiceCompileTime ScriptServiceCompileTime => services.ScriptServiceCompileTime;
+        public ModuleDependenciesCompileTime ModuleDependenciesCompileTime => _services.ModuleDependencies;
 
-        public ModuleDependenciesCompileTime ModuleDependenciesCompileTime => services.ModuleDependencies;
+        public EventTypeNameGeneratorStatement EventTypeNameGeneratorStatement => _eventTypeNameGeneratorStatement;
 
-        public EventTypeNameGeneratorStatement EventTypeNameGeneratorStatement { get; }
+        public EventTypeAvroHandler EventTypeAvroHandler => _services.EventTypeAvroHandler;
 
-        public EventTypeAvroHandler EventTypeAvroHandler => services.EventTypeAvroHandler;
+        public EventTypeCompileTimeResolver EventTypeCompileTimeResolver => _services.EventTypeCompileTimeResolver;
 
-        public EventTypeCompileTimeResolver EventTypeCompileTimeResolver => services.EventTypeCompileTimeResolver;
+        public CompilerServices CompilerServices => _services.CompilerServices;
 
-        public CompilerServices CompilerServices => services.CompilerServices;
+        public ScriptCompiler ScriptCompiler => _services.ScriptCompiler;
 
-        public DataFlowCompileTimeRegistry DataFlowCompileTimeRegistry => services.DataFlowCompileTimeRegistry;
+        public DataFlowCompileTimeRegistry DataFlowCompileTimeRegistry => _services.DataFlowCompileTimeRegistry;
 
         public StatementSpecMapEnv StatementSpecMapEnv => new StatementSpecMapEnv(
-            services.ImportServiceCompileTime,
-            services.VariableCompileTimeResolver,
-            services.Configuration,
-            services.ExprDeclaredCompileTimeResolver,
-            services.ContextCompileTimeResolver,
-            services.TableCompileTimeResolver,
-            services.ScriptCompileTimeResolver,
-            services.CompilerServices);
+            _services.ImportServiceCompileTime,
+            _services.VariableCompileTimeResolver,
+            _services.Configuration,
+            _services.ExprDeclaredCompileTimeResolver,
+            _services.ContextCompileTimeResolver,
+            _services.TableCompileTimeResolver,
+            _services.ScriptCompileTimeResolver,
+            _services.CompilerServices,
+            _classProvidedExtension);
 
-        public bool IsInstrumented => services.IsInstrumented();
+        public bool IsInstrumented => _services.IsInstrumented();
 
-        public IContainer Container => services.Container;
+        public IContainer Container => _services.Container;
+
+        public ModuleCompileTimeServices Services => _services;
+
+        public bool IsAttachPatternText => _services.Configuration.Compiler.ByteCode.IsAttachPatternEPL;
+        
+        public string Namespace => _services.Namespace;
+
+        public ClassLoader ParentClassLoader => _services.ParentClassLoader;
+
+        public SerdeEventTypeCompileTimeRegistry SerdeEventTypeRegistry => _services.SerdeEventTypeRegistry;
+
+        public SerdeCompileTimeResolver SerdeResolver => _services.SerdeResolver;
+
+        public XMLFragmentEventTypeFactory XmlFragmentEventTypeFactory => _services.XmlFragmentEventTypeFactory;
+
+        public bool IsFireAndForget => _services.IsFireAndForget;
+
+        public ClassProvidedExtension ClassProvidedExtension => _classProvidedExtension;
     }
 } // end of namespace

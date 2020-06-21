@@ -22,9 +22,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         protected FilterBooleanExpressionFactory filterBooleanExpressionFactory; // subclasses by generated code
 
         public FilterSpecParamExprNode(
-            ExprFilterSpecLookupable lookupable,
+            ExprFilterSpecLookupable lkupable,
             FilterOperator filterOperator)
-            : base(lookupable, filterOperator)
+            : base(lkupable, filterOperator)
         {
         }
 
@@ -72,27 +72,27 @@ namespace com.espertech.esper.common.@internal.filterspec
 
     public class ProxyFilterSpecParamExprNode : FilterSpecParamExprNode
     {
-        public delegate object GetFilterValueFunc(
+        public delegate FilterValueSetParam GetFilterValueFunc(
             MatchedEventMap matchedEvents,
             ExprEvaluatorContext exprEvaluatorContext,
             StatementContextFilterEvalEnv filterEvalEnv);
 
         public ProxyFilterSpecParamExprNode(
-            ExprFilterSpecLookupable lookupable,
-            FilterOperator filterOperator) : base(lookupable, filterOperator)
+            ExprFilterSpecLookupable lkupable,
+            FilterOperator filterOperator) : base(lkupable, filterOperator)
         {
         }
 
         public ProxyFilterSpecParamExprNode(
             GetFilterValueFunc getFilterValue,
-            ExprFilterSpecLookupable lookupable,
-            FilterOperator filterOperator) : base(lookupable, filterOperator)
+            ExprFilterSpecLookupable lkupable,
+            FilterOperator filterOperator) : base(lkupable, filterOperator)
         {
             ProcGetFilterValue = getFilterValue;
         }
 
         public GetFilterValueFunc ProcGetFilterValue { get; set; }
-        public override object GetFilterValue(
+        public override FilterValueSetParam GetFilterValue(
             MatchedEventMap matchedEvents,
             ExprEvaluatorContext exprEvaluatorContext,
             StatementContextFilterEvalEnv filterEvalEnv)

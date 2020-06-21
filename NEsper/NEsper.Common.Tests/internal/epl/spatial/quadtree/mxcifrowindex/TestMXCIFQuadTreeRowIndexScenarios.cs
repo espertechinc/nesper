@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif;
 using com.espertech.esper.compat.collections;
 
@@ -21,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
     [TestFixture]
     public class TestMxcifQuadTreeRowIndexScenarios : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestSubdivideAdd()
         {
             var tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100, 2, 3);
@@ -31,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             Assert.AreEqual(3, NavigateLeaf(tree, "nw,nw").Count);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestDimension()
         {
             var tree = MXCIFQuadTreeFactory.Make(1000, 100000, 9000, 900000);
@@ -44,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             AssertFound(tree, 4000, 790000, 900, 9000, "");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestSuperslim()
         {
             var tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100, 1, 100);
@@ -56,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             Compare(10, 95, 1, 1, "\"R2\"", (XYWHRectangleMultiType) se.Data);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestSubdivideMultiChild()
         {
             var tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100, 4, 3);
@@ -98,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             Compare(90, 45, 1, 1, "\"R5\"", collection[2]);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestRemoveNonExistent()
         {
             var tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100, 20, 20);
@@ -138,7 +136,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             AssertFound(tree, 10, 60, 10000, 10000, "");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestSubdivideSingleMerge()
         {
             var tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100, 3, 2);
@@ -178,7 +176,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             Compare(80, 60, 1, 1, "[\"P4\"]", collection[1]);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestSubdivideMultitypeMerge()
         {
             var tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100, 6, 2);

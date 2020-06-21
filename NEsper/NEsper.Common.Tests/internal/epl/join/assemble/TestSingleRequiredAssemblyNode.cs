@@ -26,14 +26,14 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         private SupportJoinProcNode parentNode;
         private BranchRequiredAssemblyNode reqNode;
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestChildResult()
         {
             TestSingleOptionalAssemblyNode.TestChildResult(
                 reqNode, parentNode, supportJoinResultNodeFactory);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestProcess()
         {
             // the node does nothing when asked to process as it doesn't originate events

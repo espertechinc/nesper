@@ -6,11 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using System.Xml;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
@@ -18,20 +19,65 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
-    public class EventXMLSchemaXPathBacked : RegressionExecution
+    public class EventXMLSchemaXPathBacked
     {
-        public void Run(RegressionEnvironment env)
+        public static List<RegressionExecution> Executions()
         {
-            RunAssertion(env, true, "XMLSchemaConfigOne");
+            var execs = new List<RegressionExecution>();
+            WithPreconfig(execs);
+            WithCreateSchema(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLSchemaXPathBackedCreateSchema());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPreconfig(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLSchemaXPathBackedPreconfig());
+            return execs;
+        }
+
+        public class EventXMLSchemaXPathBackedPreconfig : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunAssertion(env, true, "XMLSchemaConfigOne", new RegressionPath());
+            }
+        }
+
+        public class EventXMLSchemaXPathBackedCreateSchema : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var resourceManager = env.Container.ResourceManager();
+                var schemaUriSimpleSchema = resourceManager.ResolveResourceURL("regression/simpleSchema.xsd");
+                var epl = "@public @buseventtype " +
+                          "@XMLSchema(RootElementName='simpleEvent', SchemaResource='" +
+                          schemaUriSimpleSchema +
+                          "', XPathPropertyExpr=true)" +
+                          "@XMLSchemaNamespacePrefix(Prefix='ss', Namespace='samples:schemas:simpleSchema')" +
+                          "@XMLSchemaField(Name='customProp', XPath='count(/ss:simpleEvent/ss:nested3/ss:nested4)', Type='number')" +
+                          "create xml schema MyEventCreateSchema()";
+                var path = new RegressionPath();
+                env.CompileDeploy(epl, path);
+                RunAssertion(env, true, "MyEventCreateSchema", path);
+            }
         }
 
         internal static void RunAssertion(
             RegressionEnvironment env,
             bool xpath,
-            string typeName)
+            string typeName,
+            RegressionPath path)
         {
             var stmtSelectWild = "@Name('s0') select * from " + typeName;
-            env.CompileDeploy(stmtSelectWild).AddListener("s0");
+            env.CompileDeploy(stmtSelectWild, path).AddListener("s0");
             var type = env.Statement("s0").EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(type);
 
@@ -57,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                        typeName +
                        "#length(100)";
 
-            env.CompileDeploy(stmt).AddListener("s0");
+            env.CompileDeploy(stmt, path).AddListener("s0");
             type = env.Statement("s0").EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(type);
             CollectionAssert.AreEquivalent(

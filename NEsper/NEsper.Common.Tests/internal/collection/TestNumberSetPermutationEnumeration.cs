@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Reflection;
 
 using com.espertech.esper.compat.collections;
@@ -47,13 +46,13 @@ namespace com.espertech.esper.common.@internal.collection
 
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInvalid()
         {
             Assert.That(() => PermutationEnumerator.Create(0), Throws.ArgumentException);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestNext()
         {
             int[] numberSet = { 10, 11, 12 };

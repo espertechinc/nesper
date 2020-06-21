@@ -25,11 +25,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
     {
         public const string SYSTEM_PROPETIES_NAME = "systemproperties";
 
-        private readonly string systemPropertyName;
+        private readonly string _systemPropertyName;
 
         public ExprEvalSystemProperty(string systemPropertyName)
         {
-            this.systemPropertyName = systemPropertyName;
+            this._systemPropertyName = systemPropertyName;
         }
 
         public override ExprForge Forge => this;
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return Environment.GetEnvironmentVariable(systemPropertyName);
+            return Environment.GetEnvironmentVariable(_systemPropertyName);
         }
 
         public ExprEvaluator ExprEvaluator => this;
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(typeof(Environment), "GetEnvironmentVariable", Constant(systemPropertyName));
+            return StaticMethod(typeof(Environment), "GetEnvironmentVariable", Constant(_systemPropertyName));
         }
 
         public Type EvaluationType => typeof(string);
@@ -69,18 +69,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 return new ProxyExprNodeRenderable {
                     ProcToEPL = (
                         writer,
-                        parentPrecedence) => {
-                        ToPrecedenceFreeEPL(writer);
+                        parentPrecedence,
+                        flags) => {
+                        ToPrecedenceFreeEPL(writer, flags);
                     }
                 };
             }
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(SYSTEM_PROPETIES_NAME);
             writer.Write("'");
-            writer.Write(systemPropertyName);
+            writer.Write(_systemPropertyName);
             writer.Write("'");
         }
 
@@ -98,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
             var that = (ExprEvalSystemProperty) other;
 
-            return systemPropertyName.Equals(that.systemPropertyName);
+            return _systemPropertyName.Equals(that._systemPropertyName);
         }
     }
 } // end of namespace

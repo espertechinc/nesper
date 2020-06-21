@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -63,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         /// <param name="statementContext">context</param>
         /// <returns>indicator for output condition</returns>
         public bool CheckAfterCondition(
-            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
             StatementContext statementContext)
         {
             return _afterConditionState.CheckUpdateAfterCondition(newEvents, statementContext);

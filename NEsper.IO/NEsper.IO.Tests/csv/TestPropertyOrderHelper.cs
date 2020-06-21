@@ -24,16 +24,16 @@ namespace com.espertech.esperio.csv
         public void SetUp()
     	{
     		_propertyTypes = new LinkedHashMap<String, Object>();
-    		_propertyTypes.Put("myInt", typeof(int?));
-    		_propertyTypes.Put("myDouble", typeof(double?));
-    		_propertyTypes.Put("myString", typeof(String));
+    		_propertyTypes.Put("MyInt", typeof(int?));
+    		_propertyTypes.Put("MyDouble", typeof(double?));
+    		_propertyTypes.Put("MyString", typeof(String));
     	}
     
         [Test]
     	public void TestResolveTitleRow()
     	{
     		// Use first row
-    		var firstRow = new String[] { "myDouble", "myInt", "myString" };
+    		var firstRow = new String[] { "MyDouble", "MyInt", "MyString" };
     		Assert.AreEqual(firstRow, CSVPropertyOrderHelper.ResolvePropertyOrder(firstRow, _propertyTypes));
     	}
     }

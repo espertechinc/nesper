@@ -36,7 +36,7 @@ namespace com.espertech.esper.compat.collections
         /// <param name="isCaseSensitive">if set to <c>true</c> [is case sensitive].</param>
         public StringDictionary(bool isCaseSensitive)
         {
-            _subDictionary = new OrderedDictionary<string, V>();
+            _subDictionary = new OrderedListDictionary<string, V>();
             IsCaseSensitive = isCaseSensitive;
             if (isCaseSensitive) {
                 _normalizeKey = s => s;
@@ -263,7 +263,7 @@ namespace com.espertech.esper.compat.collections
         public V this[string key]
         {
             get => _subDictionary[_normalizeKey(key)];
-            set { _subDictionary[_normalizeKey(key)] = value; }
+            set => _subDictionary[_normalizeKey(key)] = value;
         }
 
         /// <summary>

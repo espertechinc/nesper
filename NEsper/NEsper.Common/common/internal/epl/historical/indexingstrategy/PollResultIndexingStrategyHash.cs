@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
 
         public void Init()
         {
-            factory = new PropertyHashedEventTableFactory(StreamNum, PropertyNames, false, null, ValueGetter);
+            factory = new PropertyHashedEventTableFactory(StreamNum, PropertyNames, false, null, ValueGetter, null);
         }
     }
 } // end of namespace

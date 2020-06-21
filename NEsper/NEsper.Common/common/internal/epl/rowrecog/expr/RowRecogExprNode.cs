@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
+using com.espertech.esper.common.@internal.compile.stage1.specmapper;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
@@ -41,6 +42,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
         public IList<RowRecogExprNode> ChildNodes { get; private set; }
 
         public abstract void ToPrecedenceFreeEPL(TextWriter writer);
+        
+        public abstract RowRecogExprNode CheckedCopySelf(ExpressionCopier expressionCopier);
 
         public void ToEPL(
             TextWriter writer,
@@ -112,6 +115,17 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
             }
 
             ChildNodes = newChildNodes;
+        }
+
+        public RowRecogExprNode CheckedCopy(ExpressionCopier expressionCopier)
+        {
+            var copy = CheckedCopySelf(expressionCopier);
+            foreach (var child in ChildNodes) {
+                var childCopy = child.CheckedCopy(expressionCopier);
+                copy.AddChildNode(childCopy);
+            }
+
+            return copy;
         }
     }
 } // end of namespace

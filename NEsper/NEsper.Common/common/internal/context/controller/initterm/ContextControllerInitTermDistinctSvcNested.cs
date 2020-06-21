@@ -6,11 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.collection;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.controller.initterm
@@ -42,11 +40,8 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             object key)
         {
             ISet<object> keys = distinctContexts.Get(controllerPath);
-            if (keys == null) {
-                return;
-            }
 
-            keys.Remove(key);
+            keys?.Remove(key);
         }
 
         public void Clear(IntSeqKey path)

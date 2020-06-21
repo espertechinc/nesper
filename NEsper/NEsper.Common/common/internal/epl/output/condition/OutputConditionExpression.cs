@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                         agentInstanceContext.AgentInstanceId,
                         this);
                     agentInstanceContext.AddTerminationCallback(
-                        new ProxyAgentInstanceStopCallback {
+                        new ProxyAgentInstanceMgmtCallback {
                             ProcStop = services => {
                                 services.AgentInstanceContext.VariableManagementService.UnregisterCallback(
                                     theVariableDepId,

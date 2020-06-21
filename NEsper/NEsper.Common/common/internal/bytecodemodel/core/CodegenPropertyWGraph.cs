@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             CodegenBlock getterBlock,
             CodegenBlock setterBlock,
             bool isPublic,
-            bool isOverride)
+            MemberModifier modifiers)
         {
             if (returnType == null && returnTypeName == null) {
                 throw new ArgumentException("Invalid null return type");
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             GetterBlock = getterBlock;
             SetterBlock = setterBlock;
             IsPublic = isPublic;
-            IsOverride = isOverride;
+            Modifiers = modifiers;
             ReturnType = returnType;
             ReturnTypeName = returnTypeName;
             OptionalComment = optionalComment;
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public bool IsPublic { get; set; }
 
-        public bool IsOverride { get; set; }
+        public MemberModifier Modifiers { get; }
 
         public void MergeClasses(ISet<Type> classes)
         {
@@ -91,8 +91,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
                 builder.Append("public ");
             }
 
-            if (IsOverride) {
+            if (Modifiers.IsOverride()) {
                 builder.Append("override ");
+            }
+            if (Modifiers.IsVirtual()) {
+                builder.Append("virtual ");
             }
 
             if (ReturnType != null) {
@@ -165,9 +168,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
             tokenList = tokenList.Add(token);
 
-            // Override modifier
-            if (IsOverride) {
+            if (Modifiers.IsOverride()) {
                 tokenList = tokenList.Add(Token(SyntaxKind.OverrideKeyword));
+            }
+            if (Modifiers.IsVirtual()) {
+                tokenList = tokenList.Add(Token(SyntaxKind.VirtualKeyword));
             }
 
             return tokenList;

@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
         {
             _events[_lookupStream] = theEvent;
             var mk = _hashGetter.Evaluate(_events, true, context);
-            if (mk is MultiKey<object> multiKeyArray) {
+            if (mk is MultiKeyArrayOfKeys<object> multiKeyArray) {
                 keys.AddAll(multiKeyArray.Array);
             }
             else {
@@ -134,7 +134,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             }
 
             var mk = _hashGetter.Evaluate(eventsToUse, true, context);
-            if (mk is MultiKey<object> mkArray) {
+            if (mk is MultiKeyArrayOfKeys<object> mkArray) {
                 keys.AddAll(mkArray.Array);
             }
             else {

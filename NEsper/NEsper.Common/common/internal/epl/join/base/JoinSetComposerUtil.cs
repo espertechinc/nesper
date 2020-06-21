@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
 
         public static void Filter(
             ExprEvaluator filterExprNode,
-            ISet<MultiKey<EventBean>> events,
+            ISet<MultiKeyArrayOfKeys<EventBean>> events,
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {

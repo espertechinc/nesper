@@ -13,6 +13,7 @@ using System.Reflection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
+using com.espertech.esper.common.@internal.epl.expression.chain;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.core;
@@ -25,11 +26,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
     {
         public static ExprDotStaticMethodWrap Make(
             MethodInfo method,
-            IList<ExprChainedSpec> modifiedChain,
+            IList<Chainable> chain,
             string optionalEventTypeName,
             ExprValidationContext validationContext)
         {
-            if (modifiedChain.IsEmpty() || !EnumMethodEnumExtensions.IsEnumerationMethod(modifiedChain[0].Name)) {
+            if (chain.IsEmpty() || !EnumMethodResolver.IsEnumerationMethod(chain[0].GetRootNameOrEmptyString(), validationContext.ImportService)) {
                 return null;
             }
 
@@ -55,14 +56,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                     return new ExprDotStaticMethodWrapEventBeanColl(eventType);
                 }
 
-                if (genericType == null || TypeHelper.IsBuiltinDataType(genericType)) {
+                if (genericType == null) {
                     return new ExprDotStaticMethodWrapCollection(method.Name, genericType);
                 }
             }
 
             if (method.ReturnType.IsGenericEnumerable()) {
                 var genericType = TypeHelper.GetGenericReturnType(method, true);
-                if (genericType == null || TypeHelper.IsBuiltinDataType(genericType)) {
+                if (genericType == null) {
                     return new ExprDotStaticMethodWrapIterableScalar(method.Name, genericType, method.ReturnType);
                 }
 

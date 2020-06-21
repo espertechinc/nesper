@@ -39,4 +39,9 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         void AppendTo(TextWriter writer);
     }
+
+    public class FilterValueSetParamConstants
+    {
+        public static readonly FilterValueSetParam[][] EMPTY = new FilterValueSetParam[0][];
+    }
 } // end of namespace

@@ -12,8 +12,8 @@ using System.Collections.Generic;
 using Antlr4.Runtime.Tree;
 
 using com.espertech.esper.common.@internal.compile.stage1.spec;
+using com.espertech.esper.common.@internal.compile.stage1.specmapper;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.grammar.@internal.generated;
 
@@ -24,12 +24,12 @@ namespace com.espertech.esper.compiler.@internal.parse
         public static IList<CreateTableColumn> GetColumns(
             IList<EsperEPL2GrammarParser.CreateTableColumnContext> ctxs,
             IDictionary<ITree, ExprNode> astExprNodeMap,
-            ImportServiceCompileTime importService)
+            StatementSpecMapEnv mapEnv)
         {
             IList<CreateTableColumn> cols = new List<CreateTableColumn>(ctxs.Count);
             foreach (var colctx in ctxs)
             {
-                cols.Add(GetColumn(colctx, astExprNodeMap, importService));
+                cols.Add(GetColumn(colctx, astExprNodeMap, mapEnv));
             }
 
             return cols;
@@ -38,12 +38,12 @@ namespace com.espertech.esper.compiler.@internal.parse
         private static CreateTableColumn GetColumn(
             EsperEPL2GrammarParser.CreateTableColumnContext ctx,
             IDictionary<ITree, ExprNode> astExprNodeMap,
-            ImportServiceCompileTime importService)
+            StatementSpecMapEnv mapEnv)
         {
             var columnName = ctx.n.Text;
 
             ExprNode optExpression = null;
-            if (ctx.builtinFunc() != null || ctx.libFunction() != null)
+            if (ctx.builtinFunc() != null || ctx.chainable() != null)
             {
                 optExpression = ASTExprHelper.ExprCollectSubNodes(ctx, 0, astExprNodeMap)[0];
             }
@@ -72,7 +72,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 annots = new List<AnnotationDesc>(ctx.annotationEnum().Length);
                 foreach (EsperEPL2GrammarParser.AnnotationEnumContext anctx in ctx.annotationEnum())
                 {
-                    annots.Add(ASTAnnotationHelper.Walk(anctx, importService));
+                    annots.Add(ASTAnnotationHelper.Walk(anctx, mapEnv.ImportService));
                 }
             }
 

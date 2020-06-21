@@ -12,6 +12,8 @@ using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
 
+using static com.espertech.esper.compiler.@internal.util.CompilerVersion;
+
 namespace com.espertech.esper.regressionlib.suite.client.compile
 {
     public class ClientCompileOutput
@@ -19,18 +21,25 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+            Withe(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> Withe(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientCompileOutputManifestSimple());
             return execs;
         }
 
-        internal class ClientCompileOutputManifestSimple : RegressionExecution
+        private class ClientCompileOutputManifestSimple : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var compiled = env.Compile("select * from SupportBean");
 
                 var manifest = compiled.Manifest;
-                Assert.AreEqual("8.0.0-beta1", manifest.CompilerVersion);
+                Assert.AreEqual(COMPILER_VERSION, manifest.CompilerVersion);
                 Assert.IsNotNull(manifest.ModuleProviderClassName);
             }
         }

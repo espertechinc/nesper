@@ -13,7 +13,8 @@ using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.epl.variable;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
 
@@ -39,9 +40,9 @@ namespace com.espertech.esper.regressionrun.suite.epl
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEPLVariables()
+        public void TestEPLVariablesUse()
         {
-            RegressionRunner.Run(session, EPLVariables.Executions());
+            RegressionRunner.Run(session, EPLVariablesUse.Executions());
         }
 
         [Test, RunInApplicationDomain]
@@ -62,10 +63,10 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLVariablesEventTyped.Executions());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEPLVariablesPerf()
         {
-            RegressionRunner.Run(session, new EPLVariablesPerf());
+            RegressionRunner.Run(session, new EPLVariablesPerf(), true);
         }
 
         [Test, RunInApplicationDomain]
@@ -74,11 +75,83 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLVariablesOutputRate.Executions());
         }
 
+        [Test, RunInApplicationDomain]
+        public void TestEPLVariablesInlinedClass()
+        {
+            RegressionRunner.Run(session, EPLVariablesInlinedClass.Executions());
+        }
+
+        /// <summary>
+        /// Auto-test(s): EPLVariablesOnSet
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLVariablesOnSet.Executions());
+        /// </code>
+        /// </summary>
+
+        public class TestEPLVariablesOnSet : AbstractTestBase
+        {
+            public TestEPLVariablesOnSet() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithExpression() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithExpression());
+
+            [Test, RunInApplicationDomain]
+            public void WithArrayInvalid() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithArrayInvalid());
+
+            [Test]
+            public void WithArrayBoxed() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithArrayBoxed());
+
+            [Test, RunInApplicationDomain]
+            public void WithArrayAtIndex() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithArrayAtIndex());
+
+            [Test, RunInApplicationDomain]
+            public void WithSubqueryMultikeyWArray() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithSubqueryMultikeyWArray());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithCoercion() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithCoercion());
+
+            [Test, RunInApplicationDomain]
+            public void WithRuntimeOrderMultiple() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithRuntimeOrderMultiple());
+
+            [Test, RunInApplicationDomain]
+            public void WithAssignmentOrderDup() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithAssignmentOrderDup());
+
+            [Test, RunInApplicationDomain]
+            public void WithAssignmentOrderNoDup() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithAssignmentOrderNoDup());
+
+            [Test, RunInApplicationDomain]
+            public void WithWDeploy() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithWDeploy());
+
+            [Test, RunInApplicationDomain]
+            public void WithSubquery() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithSubquery());
+
+            [Test, RunInApplicationDomain]
+            public void WithWithFilter() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithWithFilter());
+
+            [Test, RunInApplicationDomain]
+            public void WithObjectModel() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithObjectModel());
+
+            [Test, RunInApplicationDomain]
+            public void WithCompile() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithCompile());
+
+            [Test, RunInApplicationDomain]
+            public void WithSimpleSceneTwo() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithSimpleSceneTwo());
+
+            [Test, RunInApplicationDomain]
+            public void WithSimple() => RegressionRunner.Run(_session, EPLVariablesOnSet.WithSimple());
+        }
+
+
         private RegressionSession session;
 
         private static void Configure(Configuration configuration)
         {
-            foreach (Type clazz in new Type[]{
+            foreach (Type clazz in new[] {
                 typeof(SupportBean),
                 typeof(SupportBean_S0),
                 typeof(SupportBean_S1),
@@ -86,14 +159,16 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 typeof(SupportBean_A),
                 typeof(SupportBean_B),
                 typeof(SupportMarketDataBean),
-                typeof(EPLVariables.MyVariableCustomEvent)})
-            {
+                typeof(EPLVariablesUse.MyVariableCustomEvent),
+                typeof(SupportEventWithIntArray),
+                typeof(SupportBeanNumeric)
+            }) {
                 configuration.Common.AddEventType(clazz);
             }
 
-            configuration.Common.AddImportType(typeof(EPLVariables.MySimpleVariableServiceFactory));
-            configuration.Common.AddImportType(typeof(EPLVariables.MySimpleVariableService));
-            configuration.Common.AddImportType(typeof(EPLVariables.MyVariableCustomType));
+            configuration.Common.AddImportType(typeof(EPLVariablesUse.MySimpleVariableServiceFactory));
+            configuration.Common.AddImportType(typeof(EPLVariablesUse.MySimpleVariableService));
+            configuration.Common.AddImportType(typeof(EPLVariablesUse.MyVariableCustomType));
 
             configuration.Common.AddImportType(typeof(SupportEnum));
 
@@ -103,13 +178,13 @@ namespace com.espertech.esper.regressionrun.suite.epl
             common.AddVariable("papi_1", typeof(string), "begin");
             common.AddVariable("papi_2", typeof(bool), true);
             common.AddVariable("papi_3", typeof(string), "value");
-            common.AddVariable("myRuntimeInitService", typeof(EPLVariables.MySimpleVariableService), null);
+            common.AddVariable("myRuntimeInitService", typeof(EPLVariablesUse.MySimpleVariableService), null);
             common.AddVariable("MYCONST_TWO", "string", null, true);
-            common.AddVariable("varcoll", "String[]", new string[] { "E1", "E2" }, true);
-            common.AddVariable("mySimpleVariableService", typeof(EPLVariables.MySimpleVariableService), null);
-            common.AddVariable("myInitService", typeof(EPLVariables.MySimpleVariableService), EPLVariables.MySimpleVariableServiceFactory.MakeService());
+            common.AddVariable("varcoll", "String[]", new string[] {"E1", "E2"}, true);
+            common.AddVariable("mySimpleVariableService", typeof(EPLVariablesUse.MySimpleVariableService), null);
+            common.AddVariable("myInitService", typeof(EPLVariablesUse.MySimpleVariableService), EPLVariablesUse.MySimpleVariableServiceFactory.MakeService());
             common.AddVariable("supportEnum", typeof(SupportEnum), SupportEnum.ENUM_VALUE_1);
-            common.AddVariable("enumWithOverride", typeof(EPLVariables.MyEnumWithOverride), EPLVariables.MyEnumWithOverride.LONG);
+            common.AddVariable("enumWithOverride", typeof(EPLVariablesUse.MyEnumWithOverride), EPLVariablesUse.MyEnumWithOverride.LONG);
             common.AddVariable("var1", typeof(int), -1);
             common.AddVariable("var2", typeof(string), "abc");
             common.AddVariable("var1SS", typeof(string), "a");
@@ -145,7 +220,10 @@ namespace com.espertech.esper.regressionrun.suite.epl
             common.AddVariable("varsobj2", typeof(object), "ABC", true);
             common.AddVariable("var_output_limit", typeof(long), "3");
             common.AddVariable("myNonSerializable", typeof(EPLVariablesEventTyped.NonSerializable), EPLVariablesEventTyped.NON_SERIALIZABLE);
-            common.AddVariable("my_variable_custom_typed", typeof(EPLVariables.MyVariableCustomType), EPLVariables.MyVariableCustomType.Of("abc"), true);
+            common.AddVariable("my_variable_custom_typed", typeof(EPLVariablesUse.MyVariableCustomType), EPLVariablesUse.MyVariableCustomType.Of("abc"), true);
+            common.AddVariable("varargsTestClient", typeof(EPLVariablesUse.SupportVarargsClient), new EPLVariablesUse.SupportVarargsClientImpl());
+
+            common.AddVariable("my_variable_custom_typed", typeof(EPLVariablesUse.MyVariableCustomType), EPLVariablesUse.MyVariableCustomType.Of("abc"), true);
 
             configuration.Compiler.ViewResources.IterableUnbound = true;
             configuration.Compiler.ByteCode.AllowSubscriber = true;

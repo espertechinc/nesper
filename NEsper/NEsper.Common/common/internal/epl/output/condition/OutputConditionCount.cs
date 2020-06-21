@@ -51,11 +51,9 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             int newDataCount,
             int oldDataCount)
         {
-            if (variableReader != null) {
-                var value = variableReader.Value;
-                if (value != null) {
-                    eventRate = value.AsInt64();
-                }
+            var value = variableReader?.Value;
+            if (value != null) {
+                eventRate = value.AsInt64();
             }
 
             NewEventsCount += newDataCount;

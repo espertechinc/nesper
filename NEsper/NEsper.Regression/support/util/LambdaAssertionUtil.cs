@@ -17,6 +17,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
+using com.espertech.esper.regressionlib.support.expreval;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
@@ -31,12 +32,20 @@ namespace com.espertech.esper.regressionlib.support.util
             params object[] expected)
         {
             var result = listener.AssertOneGetNew().Get(field);
+
+            AssertValuesArrayScalar(result, expected);
+        }
+
+        public static void AssertValuesArrayScalar(
+            object result,
+            params object[] expected)
+        {
             if (expected == null) {
                 Assert.IsNull(result);
                 return;
             }
 
-            var arr = ((ICollection<object>) result).ToArray();
+            var arr = result.UnwrapIntoArray<object>();
             EPAssertionUtil.AssertEqualsExactOrder(expected, arr);
         }
 
@@ -45,9 +54,12 @@ namespace com.espertech.esper.regressionlib.support.util
             string property,
             string expectedList)
         {
-            var arr = listener.AssertOneGetNew()
-                .Get(property)
-                .UnwrapIntoArray<SupportBean_ST0>();
+            AssertST0Id(listener.AssertOneGetNew().Get(property), expectedList);
+        }
+
+        public static void AssertST0Id(object value, string expectedList)
+        {
+            var arr = value.UnwrapIntoArray<SupportBean_ST0>();
             if (arr == null) {
                 arr = new SupportBean_ST0[0];
             }
@@ -100,6 +112,11 @@ namespace com.espertech.esper.regressionlib.support.util
             }
         }
 
+        public static void AssertTypes(EventType type, string field, Type clazz)
+        {
+            AssertTypes(type, new string[]{ field }, new []{ clazz });
+        }
+
         public static void AssertTypesAllSame(
             EventType type,
             string[] fields,
@@ -108,6 +125,26 @@ namespace com.espertech.esper.regressionlib.support.util
             var count = 0;
             foreach (var field in fields) {
                 Assert.AreEqual(clazz, type.GetPropertyType(field), "position " + count);
+            }
+        }
+
+        public static void AssertSingleAndEmptySupportColl(
+            SupportEvalBuilder builder,
+            string[] fields)
+        {
+            var assertionOne = builder.WithAssertion(SupportCollection.MakeString("E1"));
+            foreach (var field in fields) {
+                assertionOne.Verify(field, value => LambdaAssertionUtil.AssertValuesArrayScalar(value, "E1"));
+            }
+
+            var assertionTwo = builder.WithAssertion(SupportCollection.MakeString(null));
+            foreach (var field in fields) {
+                assertionTwo.Verify(field, value => LambdaAssertionUtil.AssertValuesArrayScalar(value, null));
+            }
+
+            var assertionThree = builder.WithAssertion(SupportCollection.MakeString(""));
+            foreach (var field in fields) {
+                assertionThree.Verify(field, value => LambdaAssertionUtil.AssertValuesArrayScalar(value));
             }
         }
 

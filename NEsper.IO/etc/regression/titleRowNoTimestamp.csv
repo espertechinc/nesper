@@ -1,4 +1,4 @@
-myString, myInt, myDouble
+MyString, MyInt, MyDouble
 "one", 1, 1.1
 "three", 3, 3.3
 "five", 5, 5.5

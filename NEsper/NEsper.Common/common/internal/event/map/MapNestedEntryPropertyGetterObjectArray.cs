@@ -36,15 +36,28 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public override object HandleNestedValue(object value)
         {
-            if (!(value is object[])) {
-                if (value is EventBean) {
-                    return arrayGetter.Get((EventBean) value);
-                }
-
-                return null;
+            if (value is object[] arrayValue) {
+                return arrayGetter.GetObjectArray(arrayValue);
             }
 
-            return arrayGetter.GetObjectArray((object[]) value);
+            if (value is EventBean eventBean) {
+                return arrayGetter.Get(eventBean);
+            }
+
+            return null;
+        }
+        
+        
+        public override bool HandleNestedValueExists(object value) {
+            if (value is object[] arrayValue) {
+                return arrayGetter.IsObjectArrayExistsProperty(arrayValue);
+            }
+
+            if (value is ObjectArrayBackedEventBean eventBean) {
+                return arrayGetter.IsObjectArrayExistsProperty(eventBean.Properties);
+            }
+
+            return false;
         }
 
         public override object HandleNestedValueFragment(object value)
@@ -77,6 +90,22 @@ namespace com.espertech.esper.common.@internal.@event.map
             return LocalMethod(method, name);
         }
 
+
+        public override CodegenExpression HandleNestedValueExistsCodegen(
+            CodegenExpression name,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            CodegenMethod method = CodegenLegoPropertyBeanOrUnd.From(
+                codegenMethodScope,
+                codegenClassScope,
+                typeof(object[]),
+                arrayGetter,
+                CodegenLegoPropertyBeanOrUnd.AccessType.EXISTS,
+                GetType());
+            return LocalMethod(method, name);
+        }
+        
         public override CodegenExpression HandleNestedValueFragmentCodegen(
             CodegenExpression name,
             CodegenMethodScope codegenMethodScope,

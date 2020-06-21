@@ -12,22 +12,28 @@ using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
     public class CodegenStatementThrow : CodegenStatementBase,
         CodegenStatement
     {
-        private readonly CodegenExpression expression;
+        private readonly CodegenExpression _expression;
 
         public CodegenStatementThrow(CodegenExpression expression)
         {
-            this.expression = expression;
+            _expression = expression;
         }
 
         public override void MergeClasses(ISet<Type> classes)
         {
-            expression.MergeClasses(classes);
+            _expression.MergeClasses(classes);
+        }
+        
+        public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            consumer.Invoke(_expression);
         }
 
         public override void RenderStatement(
@@ -35,7 +41,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             bool isInnerClass)
         {
             builder.Append("throw ");
-            expression.Render(builder, isInnerClass, 4, new CodegenIndent(true));
+            _expression.Render(builder, isInnerClass, 4, new CodegenIndent(true));
         }
     }
 } // end of namespace

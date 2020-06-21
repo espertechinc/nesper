@@ -23,18 +23,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
     public class ExprEvalUnderlyingEvaluatorTable : ExprEvaluator,
         ExprForge
     {
-        private readonly int streamNum;
-        private readonly Type resultType;
-        private readonly TableMetaData tableMetadata;
+        private readonly int _streamNum;
+        private readonly Type _resultType;
+        private readonly TableMetaData _tableMetadata;
 
         public ExprEvalUnderlyingEvaluatorTable(
             int streamNum,
             Type resultType,
             TableMetaData tableMetadata)
         {
-            this.streamNum = streamNum;
-            this.resultType = resultType;
-            this.tableMetadata = tableMetadata;
+            this._streamNum = streamNum;
+            this._resultType = resultType;
+            this._tableMetadata = tableMetadata;
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -42,18 +42,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         }
 
         public Type EvaluationType {
-            get => resultType;
+            get => _resultType;
         }
 
         public ExprNodeRenderable ExprForgeRenderable {
             get {
-                return new ProxyExprNodeRenderable() {
-                    ProcToEPL = (
-                        writer,
-                        parentPrecedence) => {
-                        writer.Write(this.GetType().Name);
-                    },
-                };
+                return new ProxyExprNodeRenderable((writer, parentPrecedence, flags) => {
+                    writer.Write(this.GetType().Name);
+                });
             }
         }
 
@@ -72,13 +68,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             CodegenClassScope codegenClassScope)
         {
             CodegenExpressionInstanceField eventToPublic =
-                TableDeployTimeResolver.MakeTableEventToPublicField(tableMetadata, codegenClassScope, this.GetType());
+                TableDeployTimeResolver.MakeTableEventToPublicField(_tableMetadata, codegenClassScope, this.GetType());
             CodegenMethod method = parent.MakeChild(
                 typeof(object[]),
                 typeof(ExprEvalUnderlyingEvaluatorTable),
                 codegenClassScope);
-            method.Block.IfRefNullReturnNull(exprSymbol.GetAddEPS(method))
-                .DeclareVar<EventBean>("@event", ArrayAtIndex(exprSymbol.GetAddEPS(method), Constant(streamNum)))
+            method.Block.IfNullReturnNull(exprSymbol.GetAddEPS(method))
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(exprSymbol.GetAddEPS(method), Constant(_streamNum)))
                 .IfRefNullReturnNull("@event")
                 .MethodReturn(
                     ExprDotMethod(

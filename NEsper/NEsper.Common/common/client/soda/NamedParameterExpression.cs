@@ -65,20 +65,20 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write(name);
             writer.Write(':');
-            if (this.Children.Count > 1 || this.Children.IsEmpty())
+            if (Children.Count > 1 || Children.IsEmpty())
             {
                 writer.Write('(');
             }
 
             string delimiter = "";
-            foreach (Expression expr in this.Children)
+            foreach (Expression expr in Children)
             {
                 writer.Write(delimiter);
                 expr.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ",";
             }
 
-            if (this.Children.Count > 1 || this.Children.IsEmpty())
+            if (Children.Count > 1 || Children.IsEmpty())
             {
                 writer.Write(')');
             }

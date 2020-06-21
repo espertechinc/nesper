@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
                 throw new ArgumentException("Invalid null type");
             }
 
-            TypeName = typeName;
+            TypeName = typeName?.CodeInclusionTypeName();
             Type = type;
             Name = name;
             IsMemberWhenCtorParam = memberWhenCtorParam;

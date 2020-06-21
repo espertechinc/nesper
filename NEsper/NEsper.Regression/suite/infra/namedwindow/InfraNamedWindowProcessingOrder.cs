@@ -6,13 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using Avro.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NEsper.Avro.Extensions;
@@ -29,11 +29,25 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+            WithDispatchBackQueue(execs);
+            WithOrderedDeleteAndSelect(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOrderedDeleteAndSelect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraOrderedDeleteAndSelect());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDispatchBackQueue(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                 execs.Add(new InfraDispatchBackQueue(rep));
             }
 
-            execs.Add(new InfraOrderedDeleteAndSelect());
             return execs;
         }
 
@@ -48,21 +62,21 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
             public void Run(RegressionEnvironment env)
             {
-                var epl = eventRepresentationEnum.GetAnnotationText() +
-                          " create schema StartValueEvent as (dummy string);\n";
-                epl += eventRepresentationEnum.GetAnnotationText() +
+                string epl = eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedStartValueEvent>() +
+                             " create schema StartValueEvent as (dummy string);\n";
+                epl += eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedTestForwardEvent>() +
                        " create schema TestForwardEvent as (prop1 string);\n";
-                epl += eventRepresentationEnum.GetAnnotationText() +
+                epl += eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedTestInputEvent>() +
                        " create schema TestInputEvent as (dummy string);\n";
                 epl += "insert into TestForwardEvent select'V1' as prop1 from TestInputEvent;\n";
-                epl += eventRepresentationEnum.GetAnnotationText() +
+                epl += eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedNamedWin>() +
                        " create window NamedWin#unique(prop1) (prop1 string, prop2 string);\n";
                 epl += "insert into NamedWin select 'V1' as prop1, 'O1' as prop2 from StartValueEvent;\n";
                 epl += "on TestForwardEvent update NamedWin as work set prop2 = 'U1' where work.prop1 = 'V1';\n";
                 epl += "@Name('select') select irstream prop1, prop2 from NamedWin;\n";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("select");
 
-                var fields = new [] { "prop1","prop2" };
+                var fields = new[] {"prop1", "prop2"};
                 if (eventRepresentationEnum.IsObjectArrayEvent()) {
                     env.SendEventObjectArray(new object[] {"dummyValue"}, "StartValueEvent");
                 }
@@ -74,6 +88,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                         new GenericRecord(
                             SchemaBuilder.Record("soemthing")),
                         "StartValueEvent");
+                }
+                else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
+                    env.EventService.SendEventJson("{}", "StartValueEvent");
                 }
                 else {
                     Assert.Fail();
@@ -95,6 +112,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                         new GenericRecord(
                             SchemaBuilder.Record("soemthing")),
                         "TestInputEvent");
+                }
+                else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
+                    env.EventService.SendEventJson("{}", "TestInputEvent");
                 }
                 else {
                     Assert.Fail();
@@ -138,6 +158,31 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 env.UndeployAll();
             }
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedStartValueEvent
+        {
+            public string dummy;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedTestForwardEvent
+        {
+            public string prop1;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedTestInputEvent
+        {
+            public string dummy;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedNamedWin
+        {
+            public string prop1;
+            public string prop2;
         }
     }
 } // end of namespace

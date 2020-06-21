@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
@@ -34,8 +33,8 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         private readonly bool[] selfJoinRepositoryResets;
         private readonly int streamNumber;
 
-        private readonly ISet<MultiKey<EventBean>> emptyResults = new LinkedHashSet<MultiKey<EventBean>>();
-        private readonly ISet<MultiKey<EventBean>> newResults = new LinkedHashSet<MultiKey<EventBean>>();
+        private readonly ISet<MultiKeyArrayOfKeys<EventBean>> emptyResults = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
+        private readonly ISet<MultiKeyArrayOfKeys<EventBean>> newResults = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
 
         public JoinSetComposerStreamToWinImpl(
             bool allowInitIndex,
@@ -98,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             }
         }
 
-        public UniformPair<ISet<MultiKey<EventBean>>> Join(
+        public UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>> Join(
             EventBean[][] newDataPerStream,
             EventBean[][] oldDataPerStream,
             ExprEvaluatorContext exprEvaluatorContext)
@@ -151,10 +150,10 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
 
             exprEvaluatorContext.InstrumentationProvider.AJoinCompositionStreamToWin(newResults);
 
-            return new UniformPair<ISet<MultiKey<EventBean>>>(newResults, emptyResults);
+            return new UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>(newResults, emptyResults);
         }
 
-        public ISet<MultiKey<EventBean>> StaticJoin()
+        public ISet<MultiKeyArrayOfKeys<EventBean>> StaticJoin()
         {
             throw new UnsupportedOperationException("Iteration over a unidirectional join is not supported");
         }

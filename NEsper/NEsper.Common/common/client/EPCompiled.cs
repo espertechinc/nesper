@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace com.espertech.esper.common.client
@@ -20,21 +21,21 @@ namespace com.espertech.esper.common.client
         /// <summary>
         ///     Ctor.
         /// </summary>
-        /// <param name="assembly">assembly containing classes</param>
+        /// <param name="assemblies">assemblies containing classes</param>
         /// <param name="manifest">the manifest</param>
         public EPCompiled(
-            Assembly assembly,
+            ICollection<Assembly> assemblies,
             EPCompiledManifest manifest)
         {
-            Assembly = assembly;
+            Assemblies = assemblies;
             Manifest = manifest;
         }
 
         /// <summary>
-        ///     Returns a map of class name and byte code for a classloader
+        ///     Returns a set of assemblies.
         /// </summary>
         /// <value>classes</value>
-        public Assembly Assembly { get; }
+        public ICollection<Assembly> Assemblies { get; }
 
         /// <summary>
         ///     Returns a manifest object

@@ -6,16 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.namedwindow.compile;
 using com.espertech.esper.common.@internal.epl.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.namedwindow.path
@@ -27,19 +24,22 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.path
         private readonly NamedWindowCompileTimeRegistry locals;
         private readonly PathRegistry<string, NamedWindowMetaData> path;
         private readonly ModuleDependenciesCompileTime moduleDependencies;
+        private readonly bool isFireAndForget;
 
         public NamedWindowCompileTimeResolverImpl(
             string moduleName,
             ICollection<string> moduleUses,
             NamedWindowCompileTimeRegistry locals,
             PathRegistry<string, NamedWindowMetaData> path,
-            ModuleDependenciesCompileTime moduleDependencies)
+            ModuleDependenciesCompileTime moduleDependencies,
+            bool isFireAndForget)
         {
             this.moduleName = moduleName;
             this.moduleUses = moduleUses;
             this.locals = locals;
             this.path = path;
             this.moduleDependencies = moduleDependencies;
+            this.isFireAndForget = isFireAndForget;
         }
 
         public NamedWindowMetaData Resolve(string namedWindowName)
@@ -53,7 +53,8 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.path
             try {
                 var pair = path.GetAnyModuleExpectSingle(namedWindowName, moduleUses);
                 if (pair != null) {
-                    if (!NameAccessModifierExtensions.Visible(
+                    if (!isFireAndForget &&
+                        !NameAccessModifierExtensions.Visible(
                         pair.First.EventType.Metadata.AccessModifier,
                         pair.First.NamedWindowModuleName,
                         moduleName)) {

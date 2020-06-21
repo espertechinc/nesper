@@ -23,6 +23,8 @@ using com.espertech.esper.common.@internal.epl.expression.subquery;
 using com.espertech.esper.common.@internal.epl.expression.table;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
+using com.espertech.esper.common.@internal.epl.rowrecog.core;
+using com.espertech.esper.common.@internal.epl.rowrecog.expr;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -34,7 +36,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static StatementSpecCompiled Compile(
+        public static StatementSpecCompiledDesc Compile(
             StatementSpecRaw spec,
             Compilable compilable,
             bool isSubquery,
@@ -47,6 +49,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         {
             IList<StreamSpecCompiled> compiledStreams;
             ISet<string> eventTypeReferences = new HashSet<string>();
+            IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>(2);
 
             if (!isOnDemandQuery && spec.FireAndForgetSpec != null) {
                 throw new StatementSpecCompileException(
@@ -77,10 +80,14 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     whereClause.Accept(viewResourceVisitor);
                     disqualified = viewResourceVisitor.ExprNodes.Count > 0;
                 }
+                
+                var streamSpec = (FilterStreamSpecRaw) spec.StreamSpecs[0];
+                if (streamSpec.RawFilterSpec.OptionalPropertyEvalSpec != null) {
+                    disqualified = true;
+                }
 
                 if (!disqualified) {
                     spec.WhereClause = null;
-                    var streamSpec = (FilterStreamSpecRaw) spec.StreamSpecs[0];
                     streamSpec.RawFilterSpec.FilterExpressions.Add(whereClause);
                 }
             }
@@ -123,15 +130,22 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 throw new StatementSpecCompileException(ex.Message, ex, compilable.ToEPL());
             }
 
+            // Expand match-recognize patterns
+            if (spec.MatchRecognizeSpec != null) {
+                RowRecogExprNode expandedPatternNode;
+                try {
+                    var copier = new ExpressionCopier(
+                        spec, statementRawInfo.OptionalContextDescriptor, compileTimeServices, visitor);
+                    expandedPatternNode = RowRecogPatternExpandUtil.Expand(spec.MatchRecognizeSpec.Pattern, copier);
+                } catch (ExprValidationException ex) {
+                    throw new StatementSpecCompileException(ex.Message, ex, compilable.ToEPL());
+                }
+                spec.MatchRecognizeSpec.Pattern = expandedPatternNode;
+            }
+            
             if (isSubquery && !visitor.Subselects.IsEmpty()) {
                 throw new StatementSpecCompileException(
                     "Invalid nested subquery, subquery-within-subquery is not supported",
-                    compilable.ToEPL());
-            }
-
-            if (isOnDemandQuery && !visitor.Subselects.IsEmpty()) {
-                throw new StatementSpecCompileException(
-                    "Subqueries are not a supported feature of on-demand queries",
                     compilable.ToEPL());
             }
 
@@ -144,8 +158,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             // Compile subselects found
             var subselectNumber = 0;
             foreach (var subselect in subselectNodes) {
-                StatementSpecRaw raw = subselect.StatementSpecRaw;
-                var compiled = Compile(
+                var raw = subselect.StatementSpecRaw;
+                var desc = Compile(
                     raw,
                     compilable,
                     true,
@@ -155,7 +169,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     Collections.GetEmptyList<ExprTableAccessNode>(),
                     statementRawInfo,
                     compileTimeServices);
-                subselect.SetStatementSpecCompiled(compiled, subselectNumber);
+                additionalForgeables.AddAll(desc.AdditionalForgeables);
+                subselect.SetStatementSpecCompiled(desc.Compiled, subselectNumber);
                 subselectNumber++;
             }
 
@@ -172,7 +187,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 var streamNum = 0;
                 foreach (var rawSpec in spec.StreamSpecs) {
                     streamNum++;
-                    var compiled = StreamSpecCompiler.Compile(
+                    var desc = StreamSpecCompiler.Compile(
                         rawSpec,
                         eventTypeReferences,
                         spec.InsertIntoDesc != null,
@@ -183,7 +198,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                         streamNum,
                         statementRawInfo,
                         compileTimeServices);
-                    compiledStreams.Add(compiled);
+                    additionalForgeables.AddAll(desc.AdditionalForgeables);
+                    compiledStreams.Add(desc.StreamSpecCompiled);
                 }
             }
             catch (ExprValidationException ex) {
@@ -208,7 +224,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     compilable.ToEPL());
             }
 
-            return new StatementSpecCompiled(
+            var compiled = new StatementSpecCompiled(
                 spec,
                 compiledStreams.ToArray(),
                 selectClauseCompiled,
@@ -217,6 +233,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 subselectNodes,
                 visitor.DeclaredExpressions,
                 tableAccessNodes);
+
+            return new StatementSpecCompiledDesc(compiled, additionalForgeables);
         }
 
         public static SelectClauseSpecCompiled CompileSelectClause(SelectClauseSpecRaw spec)

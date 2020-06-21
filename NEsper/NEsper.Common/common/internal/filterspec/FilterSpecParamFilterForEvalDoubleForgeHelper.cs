@@ -9,9 +9,7 @@
 using System;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
-using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.common.@internal.epl.expression.codegen;
 
 namespace com.espertech.esper.common.@internal.filterspec
 {

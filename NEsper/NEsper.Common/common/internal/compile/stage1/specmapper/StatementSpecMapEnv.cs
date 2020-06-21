@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.context.compile;
+using com.espertech.esper.common.@internal.epl.classprovided.compiletime;
 using com.espertech.esper.common.@internal.epl.expression.declared.compiletime;
 using com.espertech.esper.common.@internal.epl.script.compiletime;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
@@ -26,7 +27,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             ContextCompileTimeResolver contextCompileTimeResolver,
             TableCompileTimeResolver tableCompileTimeResolver,
             ScriptCompileTimeResolver scriptCompileTimeResolver,
-            CompilerServices compilerServices)
+            CompilerServices compilerServices,
+            ClassProvidedExtension classProvidedExtension)
         {
             ImportService = importService;
             VariableCompileTimeResolver = variableCompileTimeResolver;
@@ -36,6 +38,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             TableCompileTimeResolver = tableCompileTimeResolver;
             ScriptCompileTimeResolver = scriptCompileTimeResolver;
             CompilerServices = compilerServices;
+            ClassProvidedExtension = classProvidedExtension;
         }
 
         public ImportServiceCompileTime ImportService { get; }
@@ -53,5 +56,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
         public ScriptCompileTimeResolver ScriptCompileTimeResolver { get; }
 
         public CompilerServices CompilerServices { get; }
+
+        public bool IsAttachPatternText => Configuration.Compiler.ByteCode.IsAttachPatternEPL;
+        
+        public ClassProvidedExtension ClassProvidedExtension { get; }
     }
 } // end of namespace

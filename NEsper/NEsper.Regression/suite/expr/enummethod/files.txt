@@ -1,0 +1,20 @@
+ExprEnumAggregate
+ ExprEnumAllOfAnyOf
+ ExprEnumAverage
+ ExprEnumCountOf
+ ExprEnumDistinct
+ ExprEnumDocSamples
+ ExprEnumExceptIntersectUnion
+ ExprEnumFirstLastOf
+ ExprEnumGroupBy
+ ExprEnumInvalid
+ ExprEnumMinMax
+ ExprEnumMostLeastFrequent
+ ExprEnumOrderBy
+ ExprEnumReverse
+ ExprEnumSelectFrom
+ ExprEnumSequenceEqual
+ ExprEnumSumOf
+ ExprEnumTakeAndTakeLast
+ ExprEnumTakeWhileAndWhileLast
+ ExprEnumToMap

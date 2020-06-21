@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
 
@@ -27,5 +28,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
         public Type[] PropertyTypes { get; set; }
 
         public string AliasName { get; set; }
+        
+        public DataInputOutputSerde KeySerde { get; set; }
     }
 } // end of namespace

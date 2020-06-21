@@ -12,13 +12,13 @@ using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
-using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.rettype
 {
@@ -27,67 +27,59 @@ namespace com.espertech.esper.common.@internal.rettype
     ///     <para>
     ///         Use factory methods to initialize return type information according to the return values
     ///         that your expression is going to provide.
-    ///         Use <see cref="EPTypeHelper.CollectionOfEvents(com.espertech.esper.common.client.EventType)" />
-    ///         to indicate that the expression returns a collection of events.
-    ///         Use <see cref="EPTypeHelper.SingleEvent(com.espertech.esper.common.client.EventType)" />
-    ///         to indicate that the expression returns a single event.
-    ///         Use <see cref="EPTypeHelper.CollectionOfSingleValue(Type)" />
-    ///         to indicate that the expression returns a collection of single values.
-    ///         A single value can be any object including null.
-    ///         Use <see cref="EPTypeHelper.Array(Type)" />
-    ///         to indicate that the expression returns an array of single values.
-    ///         A single value can be any object including null.
-    ///         Use <see cref="EPTypeHelper.SingleValue(Type)" />
-    ///         to indicate that the expression returns a single value.
-    ///         A single value can be any object including null.
-    ///         Such expression results cannot be used as input to enumeration methods, for example.
     ///     </para>
+    ///     <ol>
+    ///         <li>
+    ///             Use <see cref="EPTypeHelper.CollectionOfEvents(com.espertech.esper.common.client.EventType)" />
+    ///             to indicate that the expression returns a collection of events.
+    ///         </li>
+    ///         <li>
+    ///             Use <see cref="EPTypeHelper.SingleEvent(com.espertech.esper.common.client.EventType)" />
+    ///             to indicate that the expression returns a single event.
+    ///         </li>
+    ///         <li>
+    ///             Use <see cref="EPTypeHelper.CollectionOfSingleValue(Type)" />
+    ///             to indicate that the expression returns a collection of single values.
+    ///             A single value can be any object including null.
+    ///         </li>
+    ///         <li>
+    ///             Use <see cref="EPTypeHelper.Array(Type)" />
+    ///             to indicate that the expression returns an array of single values.
+    ///             A single value can be any object including null.
+    ///         </li>
+    ///         <li>
+    ///             Use <see cref="EPTypeHelper.SingleValue(Type)" />
+    ///             to indicate that the expression returns a single value.
+    ///             A single value can be any object including null.
+    ///             Such expression results cannot be used as input to enumeration methods, for example.
+    ///         </li>
+    ///     </ol>
     /// </summary>
     public static class EPTypeHelper
     {
         public static EventType GetEventTypeSingleValued(this EPType type)
         {
-            if (type is EventEPType) {
-                return ((EventEPType) type).EventType;
-            }
-
-            return null;
+            return (type as EventEPType)?.EventType;
         }
 
         public static EventType GetEventTypeMultiValued(this EPType type)
         {
-            if (type is EventMultiValuedEPType) {
-                return ((EventMultiValuedEPType) type).Component;
-            }
-
-            return null;
+            return (type as EventMultiValuedEPType)?.Component;
         }
 
         public static Type GetClassMultiValued(this EPType type)
         {
-            if (type is ClassMultiValuedEPType) {
-                return ((ClassMultiValuedEPType) type).Component;
-            }
-
-            return null;
+            return (type as ClassMultiValuedEPType)?.Component;
         }
 
         public static Type GetClassMultiValuedContainer(this EPType type)
         {
-            if (type is ClassMultiValuedEPType) {
-                return ((ClassMultiValuedEPType) type).Container;
-            }
-
-            return null;
+            return (type as ClassMultiValuedEPType)?.Container;
         }
 
         public static Type GetClassSingleValued(this EPType type)
         {
-            if (type is ClassEPType) {
-                return ((ClassEPType) type).Clazz;
-            }
-
-            return null;
+            return (type as ClassEPType)?.Clazz;
         }
 
         public static bool IsCarryEvent(this EPType epType)
@@ -101,11 +93,7 @@ namespace com.espertech.esper.common.@internal.rettype
                 return ((EventMultiValuedEPType) epType).Component;
             }
 
-            if (epType is EventEPType) {
-                return ((EventEPType) epType).EventType;
-            }
-
-            return null;
+            return (epType as EventEPType)?.EventType;
         }
 
         /// <summary>
@@ -119,7 +107,7 @@ namespace com.espertech.esper.common.@internal.rettype
                 throw new ArgumentException("Invalid null array component type");
             }
 
-            var arrayType = TypeHelper.GetArrayType(arrayComponentType); 
+            var arrayType = TypeHelper.GetArrayType(arrayComponentType);
             return new ClassMultiValuedEPType(
                 arrayType,
                 arrayComponentType);
@@ -128,7 +116,7 @@ namespace com.espertech.esper.common.@internal.rettype
         /// <summary>
         ///     Indicate that the expression return type is a single (non-enumerable) value of the given type.
         ///     The expression can still return an array or collection or events however
-        ///     since the runtimewould not know the type of such objects and may not use runtime reflection
+        ///     since the runtime would not know the type of such objects and may not use runtime reflection
         ///     it may not allow certain operations on expression results.
         /// </summary>
         /// <param name="singleValueType">
@@ -141,7 +129,7 @@ namespace com.espertech.esper.common.@internal.rettype
             // null value allowed
             if (singleValueType != null && singleValueType.IsArray) {
                 return new ClassMultiValuedEPType(
-                    singleValueType, 
+                    singleValueType,
                     singleValueType.GetElementType());
             }
 
@@ -157,6 +145,7 @@ namespace com.espertech.esper.common.@internal.rettype
         ///     Indicate that the expression return type is a collection of a given component type.
         /// </summary>
         /// <param name="collectionComponentType">collection component type</param>
+        /// <param name="collectionType"></param>
         /// <returns>collection of single value expression result type</returns>
         public static EPType CollectionOfSingleValue(
             Type collectionComponentType,
@@ -166,9 +155,9 @@ namespace com.espertech.esper.common.@internal.rettype
                 throw new ArgumentException("Invalid null collection component type");
             }
 
-            Type containerType = typeof(FlexCollection);
+            var containerType = typeof(FlexCollection);
 
-            #if false
+#if false
             // Have not yet deduced the black magic of why and when we decide the type of
             // collection.  It's not entirely clear and is a work-in-progress.
             // TBD: fix the general determinism of this algorithm.
@@ -186,10 +175,10 @@ namespace com.espertech.esper.common.@internal.rettype
             } else {
                 containerType = typeof(ICollection<object>);
             }
-            #endif
-            
+#endif
+
             return new ClassMultiValuedEPType(
-                containerType, 
+                containerType,
                 collectionComponentType);
         }
 
@@ -204,7 +193,22 @@ namespace com.espertech.esper.common.@internal.rettype
                 throw new ArgumentException("Invalid null event type");
             }
 
-            return new EventMultiValuedEPType(typeof(ICollection<EventBean>), eventTypeOfCollectionEvents);
+            return new EventMultiValuedEPType(typeof(FlexCollection), eventTypeOfCollectionEvents);
+            //return new EventMultiValuedEPType(typeof(ICollection<EventBean>), eventTypeOfCollectionEvents);
+        }
+
+        /// <summary>
+        ///Indicate that the expression return type is an array of events of given type.
+        /// </summary>
+        /// <param name="eventTypeOfArrayEvents">the event type of the events that are part of the array</param>
+        /// <returns>array of events expression result type</returns> 
+        public static EPType ArrayOfEvents(EventType eventTypeOfArrayEvents)
+        {
+            if (eventTypeOfArrayEvents == null) {
+                throw new ArgumentException("Invalid null event type");
+            }
+
+            return new EventMultiValuedEPType(typeof(EventBean[]), eventTypeOfArrayEvents);
         }
 
         /// <summary>
@@ -256,27 +260,24 @@ namespace com.espertech.esper.common.@internal.rettype
                 return "event type '" + type.EventType.Name + "'";
             }
 
-            if (epType is EventMultiValuedEPType) {
-                var type = (EventMultiValuedEPType) epType;
-                if (type.Container == typeof(EventType[])) {
-                    return "array of events of type '" + type.Component.Name + "'";
+            if (epType is EventMultiValuedEPType eventMultiValuedEpType) {
+                if (eventMultiValuedEpType.Container == typeof(EventType[])) {
+                    return "array of events of type '" + eventMultiValuedEpType.Component.Name + "'";
                 }
 
-                return "collection of events of type '" + type.Component.Name + "'";
+                return "collection of events of type '" + eventMultiValuedEpType.Component.Name + "'";
             }
 
-            if (epType is ClassMultiValuedEPType) {
-                var type = (ClassMultiValuedEPType) epType;
-                if (type.Container.IsArray) {
-                    return "array of " + type.Component.Name;
+            if (epType is ClassMultiValuedEPType classMultiValuedEpType) {
+                if (classMultiValuedEpType.Container.IsArray) {
+                    return "array of " + classMultiValuedEpType.Component.CleanName();
                 }
 
-                return "collection of " + type.Component.Name;
+                return "collection of " + classMultiValuedEpType.Component.CleanName();
             }
 
-            if (epType is ClassEPType) {
-                var type = (ClassEPType) epType;
-                return "class " + type.Clazz.CleanName();
+            if (epType is ClassEPType classEpType) {
+                return "class " + classEpType.Clazz.CleanName();
             }
 
             if (epType is NullEPType) {
@@ -313,8 +314,9 @@ namespace com.espertech.esper.common.@internal.rettype
 
         public static Type GetCodegenReturnType(this EPType theType)
         {
-            if (theType is EventMultiValuedEPType) {
-                return typeof(FlexCollection);
+            if (theType is EventMultiValuedEPType eventMultiValuedEpType) {
+                // TBD - Please review, may need to be turned back to FlexCollection
+                return eventMultiValuedEpType.Container;
                 //return typeof(ICollection<EventBean>);
             }
 
@@ -392,5 +394,42 @@ namespace com.espertech.esper.common.@internal.rettype
 
             return null;
         }
+        
+        
+        public static void TraverseAnnotations<T>(
+            IList<Type> classes, 
+            BiConsumer<Type, T> consumer)
+            where T : Attribute
+        {
+            var annotationClass = typeof(T);
+            WalkAnnotations(classes, (annotation, clazz) => {
+                if (annotation.GetType() == annotationClass) {
+                    consumer.Invoke(clazz, (T) annotation);
+                }
+            });
+        }
+
+        private static void WalkAnnotations(
+            IEnumerable<Type> classes,
+            AnnotationConsumer consumer)
+        {
+            if (classes == null) {
+                return;
+            }
+            foreach (var clazz in classes) {
+                foreach (var annotation in clazz.UnwrapAttributes(true)) {
+                    consumer.Invoke(annotation, clazz);
+                }
+            }
+        }
+
+        public delegate void AnnotationConsumer(Attribute annotation, Type type);
+
+#if false
+        public static EPType CollectionOfSingleValue(Type collectionComponentType)
+        {
+            throw new NotImplementedException();
+        }
+#endif
     }
 } // end of namespace

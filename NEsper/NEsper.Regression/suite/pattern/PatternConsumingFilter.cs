@@ -10,7 +10,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -22,11 +21,46 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new PatternFollowedBy());
-            execs.Add(new PatternAnd());
-            execs.Add(new PatternFilterAndSceneTwo());
-            execs.Add(new PatternOr());
+            WithFollowedBy(execs);
+            WithAnd(execs);
+            WithFilterAndSceneTwo(execs);
+            WithOr(execs);
+            WithInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new PatternInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOr(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternOr());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFilterAndSceneTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternFilterAndSceneTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAnd(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternAnd());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFollowedBy(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternFollowedBy());
             return execs;
         }
 
@@ -56,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "a","b" };
+                var fields = new[] {"a", "b"};
                 var pattern =
                     "@Name('s0') select a.TheString as a, b.TheString as b from pattern[every a=SupportBean -> b=SupportBean@consume]";
                 env.CompileDeploy(pattern).AddListener("s0");
@@ -90,7 +124,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "a","b" };
+                var fields = new[] {"a", "b"};
                 var pattern =
                     "@Name('s0') select a.TheString as a, b.TheString as b from pattern[every (a=SupportBean and b=SupportBean)]";
                 env.CompileDeploy(pattern).AddListener("s0");
@@ -162,7 +196,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "a","b" };
+                var fields = new[] {"a", "b"};
                 TryAssertion(
                     env,
                     fields,
@@ -211,7 +245,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     "select a.TheString as a, b.TheString as b from pattern[every a=SupportBean(IntPrimitive=10)@consume(1) or b=SupportBean] order by a asc",
                     new object[] {"E1", null});
 
-                fields = new [] { "a","b","c" };
+                fields = new[] {"a", "b", "c"};
                 TryAssertion(
                     env,
                     fields,

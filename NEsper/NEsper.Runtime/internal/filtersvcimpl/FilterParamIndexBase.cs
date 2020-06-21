@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.compat.collections;
@@ -102,8 +103,9 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         }
 
         public abstract void MatchEvent(
-            EventBean theTheEvent,
-            ICollection<FilterHandle> matches);
+            EventBean theEvent,
+            ICollection<FilterHandle> matches,
+            ExprEvaluatorContext ctx);
 
         public abstract void GetTraverseStatement(
             EventTypeIndexTraverse traverse,

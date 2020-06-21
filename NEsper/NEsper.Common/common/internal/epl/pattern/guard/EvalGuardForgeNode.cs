@@ -35,8 +35,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
         /// <summary>
         ///     Constructor.
         /// </summary>
+        /// <param name="attachPatternText">whether to attach EPL subexpression text</param>
         /// <param name="patternGuardSpec">factory for guard construction</param>
-        public EvalGuardForgeNode(PatternGuardSpec patternGuardSpec)
+        public EvalGuardForgeNode(bool attachPatternText, PatternGuardSpec patternGuardSpec) : base(attachPatternText)
         {
             PatternGuardSpec = patternGuardSpec;
         }

@@ -53,6 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
                 return new OutputConditionPolledExpressionFactoryForge(
                     outputLimitSpec.WhenExpressionNode,
                     outputLimitSpec.ThenExpressions,
+                    statementRawInfo.StatementName,
                     compileTimeServices);
             }
 

@@ -132,7 +132,7 @@ namespace com.espertech.esper.compat.collections
 		{
 			yield return m_additionalItem ;
 			
-			foreach( T item in m_baseCollection ) {
+			foreach( var item in m_baseCollection ) {
 				yield return item;
 			}
 		}
@@ -149,7 +149,7 @@ namespace com.espertech.esper.compat.collections
 		{
 			yield return m_additionalItem ;
 			
-			foreach( T item in m_baseCollection ) {
+			foreach( var item in m_baseCollection ) {
 				yield return item;
 			}
 		}

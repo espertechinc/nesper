@@ -9,8 +9,6 @@
 using System;
 using System.Collections.Generic;
 
-using Castle.Facilities.TypedFactory.Internal;
-
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.regressionlib.support.epl

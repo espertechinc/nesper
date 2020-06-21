@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -57,20 +56,19 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
                 return null;
             }
 
-            OrderedDictionary<object, CompositeIndexEntry> index =
-                (OrderedDictionary<object, CompositeIndexEntry>) parent;
+            IOrderedDictionary<object, CompositeIndexEntry> index =
+                (IOrderedDictionary<object, CompositeIndexEntry>) parent;
 
+            
             IDictionary<object, CompositeIndexEntry> submap;
-            try {
+            if (index.KeyComparer.Compare(comparableStart, comparableEnd) <= 0) {
                 submap = index.Between(comparableStart, includeStart, comparableEnd, includeEnd);
             }
-            catch (ArgumentException) {
-                if (_allowReverseRange) {
-                    submap = index.Between(comparableEnd, includeStart, comparableStart, includeEnd);
-                }
-                else {
-                    return null;
-                }
+            else if (_allowReverseRange) {
+                submap = index.Between(comparableEnd, includeStart, comparableStart, includeEnd);
+            }
+            else {
+                return null;
             }
 
             return CompositeIndexQueryRange.Handle(theEvent, submap, null, result, next, postProcessor);
@@ -99,18 +97,18 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
                 return null;
             }
 
-            var index = (OrderedDictionary<object, CompositeIndexEntry>) parent;
+            var index = (IOrderedDictionary<object, CompositeIndexEntry>) parent;
+         
             IDictionary<object, CompositeIndexEntry> submap;
-            try {
+
+            if (index.KeyComparer.Compare(comparableStart, comparableEnd) <= 0) {
                 submap = index.Between(comparableStart, includeStart, comparableEnd, includeEnd);
             }
-            catch (ArgumentException) {
-                if (_allowReverseRange) {
-                    submap = index.Between(comparableEnd, includeStart, comparableStart, includeEnd);
-                }
-                else {
-                    return null;
-                }
+            else if (_allowReverseRange) {
+                submap = index.Between(comparableEnd, includeStart, comparableStart, includeEnd);
+            }
+            else {
+                return null;
             }
 
             return CompositeIndexQueryRange.Handle(eventPerStream, submap, null, result, next, postProcessor);

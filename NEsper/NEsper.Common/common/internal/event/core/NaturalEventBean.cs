@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -76,9 +77,13 @@ namespace com.espertech.esper.common.@internal.@event.core
                 "Property access not allowed for natural events without the synthetic event present");
         }
 
-        public object Underlying => OptionalSynthetic != null
-            ? OptionalSynthetic.Underlying
-            : Natural;
+        public object Underlying {
+            get =>
+                OptionalSynthetic != null
+                    ? OptionalSynthetic.Underlying
+                    : Natural;
+            set => throw new NotSupportedException();
+        }
 
         public object GetFragment(string propertyExpression)
         {

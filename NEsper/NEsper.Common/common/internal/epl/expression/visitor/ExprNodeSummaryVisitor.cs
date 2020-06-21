@@ -26,6 +26,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
         /// <value>true for plain</value>
         public bool IsPlain => !(HasProperties | HasAggregation | HasSubselect | HasStreamSelect | HasPreviousPrior);
 
+        public bool IsWalkDeclExprParam => true;
+
         public bool HasProperties { get; private set; }
 
         public bool HasAggregation { get; private set; }

@@ -137,14 +137,24 @@ namespace com.espertech.esper.compat
             return new DateTime(MicrosToTicks(micros + DateTimeConstants.Boundary * 1000), DateTimeKind.Utc);
         }
 
+        public static DateTime UtcFromNanos(this long nanos)
+        {
+            return new DateTime(NanosToTicks(nanos + DateTimeConstants.Boundary * 1000000), DateTimeKind.Utc);
+        }
+
         public static DateTime TimeFromMillis(this long millis)
         {
             return UtcFromMillis(millis).ToLocalTime();
         }
 
-        public static DateTime FromMicros(this long micros)
+        public static DateTime TimeFromMicros(this long micros)
         {
             return UtcFromMicros(micros).ToLocalTime();
+        }
+
+        public static DateTime TimeFromNanos(this long nanos)
+        {
+            return UtcFromNanos(nanos).ToLocalTime();
         }
 
         public static DateTime GetCurrentTimeUniversal()
@@ -170,19 +180,13 @@ namespace com.espertech.esper.compat
         /// Returns the current time in millis
         /// </summary>
 
-        public static long CurrentTimeMillis
-        {
-            get { return UtcMillis(DateTime.UtcNow); }
-        }
+        public static long CurrentTimeMillis => UtcMillis(DateTime.UtcNow);
 
         /// <summary>
         /// Gets the current time in nanoseconds.
         /// </summary>
         /// <value>The current time nanos.</value>
-        public static long CurrentTimeNanos
-        {
-            get { return UtcNanos(DateTime.UtcNow); }
-        }
+        public static long CurrentTimeNanos => UtcNanos(DateTime.UtcNow);
 
         public static DateTimeOffset TranslateTo(this DateTime dateTime, TimeZoneInfo timeZone)
         {

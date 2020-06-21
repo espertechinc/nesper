@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.etc;
@@ -133,7 +132,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return new ExprEvalUnderlyingEvaluator(streamNum, resultType);
         }
 
-        internal static Pair<ExprForge[], ExprEvaluator[]> MakeVarargArrayEval(
+        internal static ExprForge[] MakeVarargArrayForges(
             MethodInfo method,
             ExprForge[] childForges)
         {
@@ -154,7 +153,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 Type lastReturns = lastForge.EvaluationType;
                 if (lastReturns != null && lastReturns.IsArray) {
                     forges[methodParameterTypes.Length - 1] = lastForge;
-                    return new Pair<ExprForge[], ExprEvaluator[]>(forges, evals);
+                    return forges;
                 }
             }
 
@@ -188,7 +187,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 needCoercion ? coercers : null);
             forges[methodParameterTypes.Length - 1] = varargForge;
             evals[methodParameterTypes.Length - 1] = varargForge.ExprEvaluator;
-            return new Pair<ExprForge[], ExprEvaluator[]>(forges, evals);
+            return forges;
         }
 
         public static ExprNode[] AddExpression(
@@ -225,6 +224,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             return ConnectExpressionsByLogicalAnd(nodes);
+        }
+        
+        public static ExprNode ConnectExpressionsByLogicalAndWhenNeeded(ExprNode left, ExprNode right) {
+            if (left == null && right == null) {
+                return null;
+            }
+            if (left != null && right == null) {
+                return left;
+            }
+            if (left == null) {
+                return right;
+            }
+            ExprAndNode andNode = new ExprAndNodeImpl();
+            andNode.AddChildNode(left);
+            andNode.AddChildNode(right);
+            return andNode;
         }
 
         public static ExprNode ConnectExpressionsByLogicalAnd(
@@ -264,6 +279,33 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             return andNode;
+        }
+
+        public static ExprNode ConnectExpressionsByLogicalOrWhenNeeded(ICollection<ExprNode> nodes)
+        {
+            if (nodes == null || nodes.IsEmpty()) {
+                return null;
+            }
+
+            if (nodes.Count == 1) {
+                return nodes.First();
+            }
+
+            return ConnectExpressionsByLogicalOr(nodes);
+        }
+
+        public static ExprOrNode ConnectExpressionsByLogicalOr(ICollection<ExprNode> nodes)
+        {
+            if (nodes.Count < 2) {
+                throw new ArgumentException("Invalid empty or 1-element list of nodes");
+            }
+
+            ExprOrNode orNode = new ExprOrNode();
+            foreach (ExprNode node in nodes) {
+                orNode.AddChildNode(node);
+            }
+
+            return orNode;
         }
 
         public static void SetChildIdentNodesOptionalEvent(ExprNode exprNode)

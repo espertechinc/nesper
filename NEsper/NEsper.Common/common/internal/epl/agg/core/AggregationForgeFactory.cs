@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.agg.core
 {
@@ -36,6 +37,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         ExprAggregateNodeBase AggregationExpression { get; }
 
         AggregationPortableValidation AggregationPortableValidation { get; }
+
+        MathContext OptionalMathContext { get; }
 
         void InitMethodForge(
             int col,

@@ -28,11 +28,46 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new PatternMultiple());
-            execs.Add(new PatternMixed());
-            execs.Add(new PatternSinglePermFalseAndQuit());
-            execs.Add(new PatternSingleMaxSimple());
+            WithMultiple(execs);
+            WithMixed(execs);
+            WithSinglePermFalseAndQuit(execs);
+            WithSingleMaxSimple(execs);
+            WithOperatorFollowedByMaxInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOperatorFollowedByMaxInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new PatternOperatorFollowedByMaxInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSingleMaxSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternSingleMaxSimple());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSinglePermFalseAndQuit(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternSinglePermFalseAndQuit());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMixed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternMixed());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMultiple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternMultiple());
             return execs;
         }
 

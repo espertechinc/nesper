@@ -14,5 +14,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
     {
         public IList<CodegenMethodWGraph> PublicMethods { get; } = new List<CodegenMethodWGraph>(2);
         public IList<CodegenMethodWGraph> PrivateMethods { get; } = new List<CodegenMethodWGraph>();
+        public int Count => PublicMethods.Count + PrivateMethods.Count;
     }
 } // end of namespace

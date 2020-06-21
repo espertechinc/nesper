@@ -95,7 +95,9 @@ namespace com.espertech.esper.common.@internal.@event.avro
         public AvroSchemaEventType NewEventTypeFromJson(
             EventTypeMetadata metadata,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            string schemaJson)
+            string schemaJson,
+            IList<EventType> superTypes,
+            ISet<EventType> deepSuperTypes)
         {
             throw new UnsupportedOperationException();
         }

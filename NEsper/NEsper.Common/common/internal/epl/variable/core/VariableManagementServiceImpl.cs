@@ -11,14 +11,14 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.client.variable;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.schedule;
-using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading.locks;
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
     ///         This algorithm works as follows:
     ///     </para>
     ///     <para>
-    ///         A thread processing an event into the runtimevia sendEvent() calls the "setLocalVersion" method once
+    ///         A thread processing an event into the runtime via sendEvent() calls the "setLocalVersion" method once
     ///         before processing a statement that has variables.
     ///         This places into a threadlocal variable the current version number, say version 570.
     ///     </para>
@@ -190,11 +190,8 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             VariableChangeCallback variableChangeCallback)
         {
             var entry = DeploymentsWithVariables.Get(deploymentId);
-            if (entry == null) {
-                return;
-            }
 
-            var variable = entry.GetVariable(variableName);
+            var variable = entry?.GetVariable(variableName);
             if (variable == null) {
                 return;
             }
@@ -225,11 +222,8 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             VariableChangeCallback variableChangeCallback)
         {
             var entry = DeploymentsWithVariables.Get(deploymentId);
-            if (entry == null) {
-                return;
-            }
 
-            var variable = entry.GetVariable(variableName);
+            var variable = entry?.GetVariable(variableName);
             if (variable == null) {
                 return;
             }
@@ -244,9 +238,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             }
 
             var callbacks = cps.Get(agentInstanceId);
-            if (callbacks != null) {
-                callbacks.Remove(variableChangeCallback);
-            }
+            callbacks?.Remove(variableChangeCallback);
         }
 
         public void AllocateVariableState(
@@ -343,11 +335,8 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             string variableName)
         {
             var entry = DeploymentsWithVariables.Get(deploymentId);
-            if (entry == null) {
-                return null;
-            }
 
-            return entry.GetVariable(variableName);
+            return entry?.GetVariable(variableName);
         }
 
         public VariableReader GetReader(
@@ -356,11 +345,8 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             int agentInstanceIdAccessor)
         {
             var entry = DeploymentsWithVariables.Get(deploymentId);
-            if (entry == null) {
-                return null;
-            }
 
-            var variable = entry.GetVariable(variableName);
+            var variable = entry?.GetVariable(variableName);
             if (variable == null) {
                 return null;
             }
@@ -420,12 +406,10 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 
                 // make a callback that the value changed
                 var cpsCallback = changeCallbacksPerCP[uncommittedEntry.Key];
-                if (cpsCallback != null) {
-                    var callbacks = cpsCallback.Get(uncommittedEntry.Value.First);
-                    if (callbacks != null) {
-                        foreach (var callback in callbacks) {
-                            callback.Update(newValue, oldValue);
-                        }
+                var callbacks = cpsCallback?.Get(uncommittedEntry.Value.First);
+                if (callbacks != null) {
+                    foreach (var callback in callbacks) {
+                        callback.Update(newValue, oldValue);
                     }
                 }
 
@@ -483,7 +467,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                         "' of declared event type '" +
                         variable.MetaData.EventType.Name +
                         "' underlying type '" +
-                        variable.MetaData.EventType.UnderlyingType.Name +
+                        variable.MetaData.EventType.UnderlyingType.CleanName() +
                         "' cannot be assigned a value of type '" +
                         valueType.Name +
                         "'");
@@ -531,11 +515,8 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         {
             lock (this) {
                 var entry = DeploymentsWithVariables.Get(deploymentId);
-                if (entry == null) {
-                    return;
-                }
 
-                var variable = entry.GetVariable(variableName);
+                var variable = entry?.GetVariable(variableName);
                 if (variable == null) {
                     return;
                 }
@@ -565,24 +546,10 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         public void AddVariable(
             string deploymentId,
             VariableMetaData metaData,
-            string optionalDeploymentIdContext)
+            string optionalDeploymentIdContext,
+            DataInputOutputSerde optionalSerde)
         {
             lock (this) {
-                DataInputOutputSerdeWCollation<object> optionalSerde = null;
-                if (OptionalStateHandler != null && !metaData.IsConstant) {
-                    try {
-                        optionalSerde = OptionalStateHandler.GetVariableSerde(deploymentId, metaData);
-                    }
-                    catch (EPException) {
-                        throw;
-                    }
-                    catch (Exception t) {
-                        throw new EPException(
-                            "Failed to determine serde for variable '" + metaData.VariableName + "': " + t.Message,
-                            t);
-                    }
-                }
-
                 // check if already exists
                 var deploymentEntry = DeploymentsWithVariables.Get(deploymentId);
                 if (deploymentEntry != null) {

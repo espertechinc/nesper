@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
 
@@ -30,9 +31,10 @@ namespace com.espertech.esper.common.@internal.view.sort
         DataWindowViewForgeWithPrevious
     {
         private const string NAME = "Sort";
-        internal bool[] isDescendingValues;
+        private bool[] isDescendingValues;
         private ExprForge sizeForge;
-        internal ExprNode[] sortCriteriaExpressions;
+        private ExprNode[] sortCriteriaExpressions;
+        private DataInputOutputSerdeForge[] sortSerdes;
         private bool useCollatorSort;
 
         private IList<ExprNode> viewParameters;
@@ -86,6 +88,10 @@ namespace com.espertech.esper.common.@internal.view.sort
                     sortCriteriaExpressions[i - 1] = validated[i];
                 }
             }
+
+            sortSerdes = viewForgeEnv.SerdeResolver.SerdeForDataWindowSortCriteria(
+                ExprNodeUtilityQuery.GetExprResultTypes(sortCriteriaExpressions),
+                viewForgeEnv.StatementRawInfo);
         }
 
         internal override Type TypeOfFactory()
@@ -115,7 +121,9 @@ namespace com.espertech.esper.common.@internal.view.sort
                     "SortCriteriaTypes",
                     Constant(ExprNodeUtilityQuery.GetExprResultTypes(sortCriteriaExpressions)))
                 .SetProperty(factory, "IsDescendingValues", Constant(isDescendingValues))
-                .SetProperty(factory, "IsUseCollatorSort", Constant(useCollatorSort));
+                .SetProperty(factory, "IsUseCollatorSort", Constant(useCollatorSort))
+                .SetProperty(factory, "SortSerdes", DataInputOutputSerdeForgeExtensions.CodegenArray(sortSerdes, method, classScope, null));
+
         }
     }
 } // end of namespace

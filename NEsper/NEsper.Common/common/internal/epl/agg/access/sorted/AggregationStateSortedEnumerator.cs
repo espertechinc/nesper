@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -25,20 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         /// <param name="window">sorted map with events</param>
         /// <param name="reverse">if set to <c>true</c> [reverse].</param>
         public AggregationStateSortedEnumerator(
-            SortedDictionary<object, object> window,
-            bool reverse)
-            : base(reverse ? Enumerable.Reverse(window.Keys) : window.Keys)
-        {
-            _window = window;
-        }
-
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="window">sorted map with events</param>
-        /// <param name="reverse">if set to <c>true</c> [reverse].</param>
-        public AggregationStateSortedEnumerator(
-            OrderedDictionary<object, object> window,
+            IOrderedDictionary<object, object> window,
             bool reverse)
             : base(reverse ? Enumerable.Reverse(window.Keys) : window.Keys)
         {

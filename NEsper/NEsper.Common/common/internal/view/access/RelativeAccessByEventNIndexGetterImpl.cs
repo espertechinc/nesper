@@ -67,9 +67,6 @@ namespace com.espertech.esper.common.@internal.view.access
         public RelativeAccessByEventNIndex GetAccessor(EventBean theEvent)
         {
             var iStreamRelativeAccess = accessorByEvent.Get(theEvent);
-            if (iStreamRelativeAccess == null) {
-                return null;
-            }
 
             return iStreamRelativeAccess;
         }

@@ -28,11 +28,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EPLDataflowInvalid());
-            execs.Add(new EPLDataflowAllTypes());
+WithInvalid(execs);
+WithAllTypes(execs);
             return execs;
         }
-
+public static IList<RegressionExecution> WithAllTypes(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowAllTypes());
+    return execs;
+}public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowInvalid());
+    return execs;
+}
         private static void TryInvalidFilter(
             RegressionEnvironment env,
             string filter,

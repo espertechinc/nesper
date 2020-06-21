@@ -12,13 +12,12 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.multikey;
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
-
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCodegen;
 
 namespace com.espertech.esper.common.@internal.view.unique
 {
@@ -30,23 +29,24 @@ namespace com.espertech.esper.common.@internal.view.unique
         DataWindowViewForgeUniqueCandidate
     {
         public const string NAME = "Unique-By";
-        protected ExprNode[] criteriaExpressions;
 
-        protected IList<ExprNode> viewParameters;
+        private ExprNode[] _criteriaExpressions;
+        private IList<ExprNode> _viewParameters;
+        private MultiKeyClassRef _multiKeyClassNames;
 
         public ISet<string> UniquenessCandidatePropertyNames =>
-            ExprNodeUtilityQuery.GetPropertyNamesIfAllProps(criteriaExpressions);
+            ExprNodeUtilityQuery.GetPropertyNamesIfAllProps(_criteriaExpressions);
 
         public override string ViewName => NAME;
 
-        public ExprNode[] CriteriaExpressions => criteriaExpressions;
+        public ExprNode[] CriteriaExpressions => _criteriaExpressions;
 
         public override void SetViewParameters(
             IList<ExprNode> parameters,
             ViewForgeEnv viewForgeEnv,
             int streamNumber)
         {
-            viewParameters = parameters;
+            _viewParameters = parameters;
         }
 
         public override void Attach(
@@ -54,21 +54,33 @@ namespace com.espertech.esper.common.@internal.view.unique
             int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
-            criteriaExpressions = ViewForgeSupport.Validate(
+            _criteriaExpressions = ViewForgeSupport.Validate(
                 ViewName,
                 parentEventType,
-                viewParameters,
+                _viewParameters,
                 false,
                 viewForgeEnv,
                 streamNumber);
 
-            if (criteriaExpressions.Length == 0) {
+            if (_criteriaExpressions.Length == 0) {
                 var errorMessage =
                     ViewName + " view requires a one or more expressions providing unique values as parameters";
                 throw new ViewParameterException(errorMessage);
             }
 
             this.eventType = parentEventType;
+        }
+
+
+        public override IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
+        {
+            var desc = MultiKeyPlanner.PlanMultiKey(
+                _criteriaExpressions,
+                false,
+                viewForgeEnv.StatementRawInfo,
+                viewForgeEnv.SerdeResolver);
+            _multiKeyClassNames = desc.ClassRef;
+            return desc.MultiKeyForgeables;
         }
 
         internal override Type TypeOfFactory()
@@ -87,15 +99,7 @@ namespace com.espertech.esper.common.@internal.view.unique
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block
-                .SetProperty(
-                    factory,
-                    "CriteriaEvals",
-                    CodegenEvaluators(criteriaExpressions, method, GetType(), classScope))
-                .SetProperty(
-                    factory,
-                    "CriteriaTypes",
-                    Constant(ExprNodeUtilityQuery.GetExprResultTypes(criteriaExpressions)));
+            ViewMultiKeyHelper.Assign(_criteriaExpressions, _multiKeyClassNames, method, factory, symbols, classScope);
         }
     }
 } // end of namespace

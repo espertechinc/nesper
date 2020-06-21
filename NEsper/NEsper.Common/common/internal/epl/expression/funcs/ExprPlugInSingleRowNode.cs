@@ -12,7 +12,10 @@ using System.IO;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.compiler;
+using com.espertech.esper.common.@internal.compile.stage2;
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
+using com.espertech.esper.common.@internal.epl.expression.chain;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
@@ -28,23 +31,33 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     /// </summary>
     public class ExprPlugInSingleRowNode : ExprNodeBase,
         ExprFilterOptimizableNode,
-        ExprNodeInnerNodeProvider
+        ExprNodeInnerNodeProvider,
+        ExprNodeWithChainSpec
     {
         private readonly Type clazz;
         private readonly ImportSingleRowDesc config;
 
         private ExprPlugInSingleRowNodeForge forge;
+        [NonSerialized] private StatementCompileTimeServices compileTimeServices;
+        [NonSerialized] private StatementRawInfo statementRawInfo;
+
 
         public ExprPlugInSingleRowNode(
             string functionName,
             Type clazz,
-            IList<ExprChainedSpec> chainSpec,
+            IList<Chainable> chainSpec,
             ImportSingleRowDesc config)
         {
             FunctionName = functionName;
             this.clazz = clazz;
             ChainSpec = chainSpec;
             this.config = config;
+        }
+
+        public ImportSingleRowDesc Config => config;
+
+        public bool IsLocalInlinedClass {
+            get => forge.IsLocalInlinedClass;
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -61,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
         }
 
-        public IList<ExprChainedSpec> ChainSpec { get; }
+        public IList<Chainable> ChainSpec { get; }
 
         public string FunctionName { get; }
 
@@ -118,17 +131,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         public ExprFilterSpecLookupableForge FilterLookupable {
             get {
                 CheckValidated(forge);
+                var filterSerde = compileTimeServices.SerdeResolver.SerdeForFilter(forge.EvaluationType, statementRawInfo);
                 return new ExprFilterSpecLookupableForge(
                     ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(this),
                     forge,
+                    null,
                     forge.EvaluationType,
-                    true);
+                    true,
+                    filterSerde);
             }
         }
 
         public IList<ExprNode> AdditionalNodes => ExprNodeUtilityQuery.CollectChainParameters(ChainSpec);
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             ExprNodeUtilityPrint.ToExpressionString(ChainSpec, writer, false, FunctionName);
         }
@@ -157,10 +175,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
+            compileTimeServices = validationContext.StatementCompileTimeService;
+            statementRawInfo = validationContext.StatementRawInfo;
+            
             ExprNodeUtilityValidate.Validate(ExprNodeOrigin.PLUGINSINGLEROWPARAM, ChainSpec, validationContext);
 
             // get first chain item
-            IList<ExprChainedSpec> chainList = new List<ExprChainedSpec>(ChainSpec);
+            var chainList = new List<Chainable>(ChainSpec);
             var firstItem = chainList.DeleteAt(0);
 
             // Get the types of the parameters for the first invocation
@@ -173,11 +194,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             var staticMethodDesc = ExprNodeUtilityResolve.ResolveMethodAllowWildcardAndStream(
                 clazz.FullName,
                 null,
-                firstItem.Name,
-                firstItem.Parameters,
+                firstItem.GetRootNameOrEmptyString(),
+                firstItem.GetParametersOrEmpty(),
                 allowWildcard,
                 streamZeroType,
-                new ExprNodeUtilResolveExceptionHandlerDefault(firstItem.Name, true),
+                new ExprNodeUtilResolveExceptionHandlerDefault(firstItem.GetRootNameOrEmptyString(), true),
                 FunctionName,
                 validationContext.StatementRawInfo,
                 validationContext.StatementCompileTimeService);
@@ -235,7 +256,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 optionalLambdaWrap,
                 config.IsRethrowExceptions,
                 null,
-                validationContext.StatementName);
+                validationContext.StatementName,
+                staticMethodDesc.IsLocalInlinedClass);
 
             // If caching the result, evaluate now and return the result.
             if (isReturnsConstantResult) {

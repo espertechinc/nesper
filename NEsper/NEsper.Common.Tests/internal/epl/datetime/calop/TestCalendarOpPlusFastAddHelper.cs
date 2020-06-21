@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.compat.datetime;
@@ -19,7 +17,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
     [TestFixture]
     public class TestCalendarOpPlusFastAddHelper : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestCompute()
         {
             long defaultCurrent = DateTimeParsingFunctions.ParseDefaultMSec("2002-05-30T09:51:01.150");

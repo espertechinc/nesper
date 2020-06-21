@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using System.Xml.XPath;
@@ -15,28 +16,122 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.@event.xml;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
+using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
-using NUnit.Framework.Interfaces;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
-    public class EventXMLSchemaEventTransposeXPathConfigured : RegressionExecution
+    public class EventXMLSchemaEventTransposeXPathConfigured
     {
-        public void Run(RegressionEnvironment env)
+        public static List<RegressionExecution> Executions()
         {
-            RunAssertionXPathConfigured(env);
-            RunAssertionXPathExpression();
+            var execs = new List<RegressionExecution>();
+            WithPreconfig(execs);
+            WithCreateSchema(execs);
+            WithXPathExpression(execs);
+            return execs;
         }
 
-        private void RunAssertionXPathConfigured(RegressionEnvironment env)
+        public static IList<RegressionExecution> WithXPathExpression(IList<RegressionExecution> execs = null)
         {
-            env.CompileDeploy(
-                "@Name('insert') insert into Nested3Stream select nested1simple, nested4array from MyXMLEventXPC#lastevent");
-            env.CompileDeploy("@Name('sw') select * from MyXMLEventXPC#lastevent");
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLSchemaEventTransposeXPathConfiguredXPathExpression());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLSchemaEventTransposeXPathConfiguredCreateSchema());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPreconfig(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLSchemaEventTransposeXPathConfiguredPreconfig());
+            return execs;
+        }
+
+        public class EventXMLSchemaEventTransposeXPathConfiguredPreconfig : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunAssertion(env, "MyXMLEventXPC", new RegressionPath());
+            }
+        }
+
+        public class EventXMLSchemaEventTransposeXPathConfiguredCreateSchema : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var resourceManager = env.Container.ResourceManager();
+                var schemaUriSimpleSchema = resourceManager.ResolveResourceURL("regression/simpleSchema.xsd");
+                var epl = "@public @buseventtype " +
+                          "@XMLSchema(RootElementName='simpleEvent', SchemaResource='" +
+                          schemaUriSimpleSchema +
+                          "', AutoFragment=false)" +
+                          "@XMLSchemaNamespacePrefix(Prefix='ss', Namespace='samples:schemas:simpleSchema')" +
+                          "@XMLSchemaField(Name='nested1simple', XPath='/ss:simpleEvent/ss:nested1', Type='ANY', EventTypeName='MyNestedEventXPC')" +
+                          "@XMLSchemaField(Name='nested4array', XPath='//ss:nested4', Type='nodeset', EventTypeName='MyNestedArrayEventXPC')" +
+                          "create xml schema MyEventCreateSchema()";
+                var path = new RegressionPath();
+                env.CompileDeploy(epl, path);
+                RunAssertion(env, "MyEventCreateSchema", path);
+            }
+        }
+
+        public class EventXMLSchemaEventTransposeXPathConfiguredXPathExpression : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var ctx = new XPathNamespaceContext();
+                ctx.AddNamespace("n0", "samples:schemas:simpleSchema");
+
+                XmlNode node = SupportXML.GetDocument().DocumentElement;
+
+                var pathExprOne = XPathExpression.Compile("/n0:simpleEvent/n0:nested1", ctx);
+                var pathExprOneIterator = node.CreateNavigator().Select(pathExprOne);
+                Assert.That(pathExprOne.ReturnType, Is.EqualTo(XPathResultType.NodeSet));
+                Assert.That(pathExprOneIterator.MoveNext(), Is.True);
+                Assert.That(pathExprOneIterator.Current.UnderlyingObject, Is.InstanceOf<XmlElement>());
+                Assert.That(pathExprOneIterator.Current.NodeType, Is.EqualTo(XPathNodeType.Element));
+
+                //System.out.println("Result:\n" + SchemaUtil.serialize(result));
+
+                var pathExprTwo = XPathExpression.Compile("/n0:simpleEvent/n0:nested1/n0:prop1", ctx);
+                var pathExprTwoIterator = node.CreateNavigator().Select(pathExprTwo);
+                Assert.That(pathExprTwoIterator.MoveNext(), Is.True);
+                Assert.That(pathExprTwoIterator.Current.UnderlyingObject, Is.InstanceOf<XmlElement>());
+                Assert.That(pathExprTwoIterator.Current.NodeType, Is.EqualTo(XPathNodeType.Element));
+                Assert.That(pathExprTwoIterator.Current.MoveToFirstChild(), Is.True);
+                Assert.That(pathExprTwoIterator.Current.NodeType, Is.EqualTo(XPathNodeType.Text));
+                Assert.That(pathExprTwoIterator.Current.TypedValue, Is.EqualTo("SAMPLE_V1"));
+
+                //System.out.println("Result 2: <" + resultTwo + ">");
+
+                var pathExprThree = XPathExpression.Compile("/n0:simpleEvent/n0:nested3", ctx);
+                var pathExprThreeIterator = node.CreateNavigator().Select(pathExprThree);
+                Assert.That(pathExprThreeIterator.MoveNext(), Is.True);
+                Assert.That(pathExprThreeIterator.Current.UnderlyingObject, Is.InstanceOf<XmlElement>());
+                Assert.That(pathExprThreeIterator.Current.NodeType, Is.EqualTo(XPathNodeType.Element));
+                Assert.That(pathExprThreeIterator.Current.HasChildren, Is.True);
+
+                //System.out.println("Result 3: <" + resultThree + ">");
+            }
+        }
+
+        private static void RunAssertion(
+            RegressionEnvironment env,
+            String eventTypeName,
+            RegressionPath path)
+        {
+            env.CompileDeploy("@Name('insert') insert into Nested3Stream select nested1simple, nested4array from " + eventTypeName + "#lastevent", path);
+            env.CompileDeploy("@Name('sw') select * from " + eventTypeName + "#lastevent", path);
+
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("insert").EventType);
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("sw").EventType);
             CollectionAssert.AreEquivalent(
@@ -100,16 +195,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 fragmentTypeNested4Item.FragmentType.PropertyDescriptors);
             SupportEventTypeAssertionUtil.AssertConsistency(fragmentTypeNested4Item.FragmentType);
 
-            SupportXML.SendDefaultEvent(env.EventService, "ABC", "MyXMLEventXPC");
+            SupportXML.SendDefaultEvent(env.EventService, "ABC", eventTypeName);
 
             var received = env.Statement("insert").First();
             EPAssertionUtil.AssertProps(
                 received,
-                new [] { "nested1simple.prop1","nested1simple.prop2","nested1simple.attr1","nested1simple.nested2.prop3[1]" },
+                new[] {"nested1simple.prop1", "nested1simple.prop2", "nested1simple.attr1", "nested1simple.nested2.prop3[1]"},
                 new object[] {"SAMPLE_V1", true, "SAMPLE_ATTR1", 4});
             EPAssertionUtil.AssertProps(
                 received,
-                new [] { "nested4array[0].id","nested4array[0].prop5[1]","nested4array[1].id" },
+                new[] {"nested4array[0].id", "nested4array[0].prop5[1]", "nested4array[1].id"},
                 new object[] {"a", "SAMPLE_V8", "b"});
 
             // assert event and fragments alone
@@ -138,43 +233,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             Assert.AreEqual("b", nested4arrayItem.Get("id"));
 
             env.UndeployAll();
-        }
-
-        private void RunAssertionXPathExpression()
-        {
-            var ctx = new XPathNamespaceContext();
-            ctx.AddNamespace("n0", "samples:schemas:simpleSchema");
-
-            XmlNode node = SupportXML.GetDocument().DocumentElement;
-
-            var pathExprOne = XPathExpression.Compile("/n0:simpleEvent/n0:nested1", ctx);
-            var pathExprOneIterator = node.CreateNavigator().Select(pathExprOne);
-            Assert.That(pathExprOne.ReturnType, Is.EqualTo(XPathResultType.NodeSet));
-            Assert.That(pathExprOneIterator.MoveNext(), Is.True);
-            Assert.That(pathExprOneIterator.Current.UnderlyingObject, Is.InstanceOf<XmlElement>());
-            Assert.That(pathExprOneIterator.Current.NodeType, Is.EqualTo(XPathNodeType.Element));
-
-            //System.out.println("Result:\n" + SchemaUtil.serialize(result));
-
-            var pathExprTwo = XPathExpression.Compile("/n0:simpleEvent/n0:nested1/n0:prop1", ctx);
-            var pathExprTwoIterator = node.CreateNavigator().Select(pathExprTwo);
-            Assert.That(pathExprTwoIterator.MoveNext(), Is.True);
-            Assert.That(pathExprTwoIterator.Current.UnderlyingObject, Is.InstanceOf<XmlElement>());
-            Assert.That(pathExprTwoIterator.Current.NodeType, Is.EqualTo(XPathNodeType.Element));
-            Assert.That(pathExprTwoIterator.Current.MoveToFirstChild(), Is.True);
-            Assert.That(pathExprTwoIterator.Current.NodeType, Is.EqualTo(XPathNodeType.Text));
-            Assert.That(pathExprTwoIterator.Current.TypedValue, Is.EqualTo("SAMPLE_V1"));
-            
-            //System.out.println("Result 2: <" + resultTwo + ">");
-
-            var pathExprThree = XPathExpression.Compile("/n0:simpleEvent/n0:nested3", ctx);
-            var pathExprThreeIterator = node.CreateNavigator().Select(pathExprThree);
-            Assert.That(pathExprThreeIterator.MoveNext(), Is.True);
-            Assert.That(pathExprThreeIterator.Current.UnderlyingObject, Is.InstanceOf<XmlElement>());
-            Assert.That(pathExprThreeIterator.Current.NodeType, Is.EqualTo(XPathNodeType.Element));
-            Assert.That(pathExprThreeIterator.Current.HasChildren, Is.True);
-            
-            //System.out.println("Result 3: <" + resultThree + ">");
         }
     }
 } // end of namespace

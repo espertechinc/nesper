@@ -10,7 +10,6 @@ using System;
 using System.IO;
 using System.Net;
 using System.Reflection;
-using System.Threading;
 using System.Xml;
 
 using com.espertech.esper.common.client.configuration.common;

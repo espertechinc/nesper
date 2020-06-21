@@ -14,8 +14,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
 {
     public class DatetimeMethodEnumStatics
     {
-        public static readonly ForgeFactory CALENDAR_FORGE_FACTORY = new CalendarForgeFactory();
-        public static readonly ForgeFactory REFORMAT_FORGE_FACTORY = new ReformatForgeFactory();
-        public static readonly ForgeFactory INTERVAL_FORGE_FACTORY = new IntervalForgeFactory();
+        public static readonly DatetimeMethodProviderForgeFactory CALENDAR_FORGE_FACTORY = new CalendarForgeFactory();
+        public static readonly DatetimeMethodProviderForgeFactory REFORMAT_FORGE_FACTORY = new ReformatForgeFactory();
+        public static readonly DatetimeMethodProviderForgeFactory INTERVAL_FORGE_FACTORY = new IntervalForgeFactory();
     }
 } // end of namespace

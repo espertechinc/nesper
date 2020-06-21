@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -15,13 +14,13 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.collection
 {
-    public class RefCountedSetAtomicInteger<K>
+    public class RefCountedSetAtomicInteger<TK>
     {
-        private readonly IDictionary<K, Object> _refs;
+        private readonly IDictionary<TK, object> _refs;
 
         public RefCountedSetAtomicInteger()
         {
-            _refs = new Dictionary<K, Object>();
+            _refs = new Dictionary<TK, object>();
         }
 
         /// <summary>Clear out the collection. </summary>
@@ -30,7 +29,7 @@ namespace com.espertech.esper.common.@internal.collection
             _refs.Clear();
         }
 
-        public bool Add(K key)
+        public bool Add(TK key)
         {
             var count = _refs.Get(key);
             if (count == null) {
@@ -48,7 +47,7 @@ namespace com.espertech.esper.common.@internal.collection
             }
         }
 
-        public bool Remove(K key)
+        public bool Remove(TK key)
         {
             var count = _refs.Get(key);
             if (count == null) {
@@ -70,7 +69,7 @@ namespace com.espertech.esper.common.@internal.collection
             }
         }
 
-        public void RemoveAll(K key)
+        public void RemoveAll(TK key)
         {
             _refs.Remove(key);
         }
@@ -80,7 +79,7 @@ namespace com.espertech.esper.common.@internal.collection
             return _refs.IsEmpty();
         }
 
-        public IDictionary<K, object> Refs {
+        public IDictionary<TK, object> Refs {
             get { return _refs; }
         }
     }

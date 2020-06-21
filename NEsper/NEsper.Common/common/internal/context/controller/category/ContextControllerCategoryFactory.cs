@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.context.airegistry;
 using com.espertech.esper.common.@internal.context.controller.core;
@@ -24,6 +25,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
 {
     public class ContextControllerCategoryFactory : ContextControllerFactoryBase
     {
+        public string ContextName { get; set; }
         public ContextControllerDetailCategory CategorySpec { get; set; }
 
         public override ContextController Create(ContextManagerRealization contextManagerRealization)
@@ -37,6 +39,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
             int nestingLevel,
             object partitionKey,
             ContextControllerStatementDesc optionalStatementDesc,
+            IDictionary<int, ContextControllerStatementDesc> statements,
             AgentInstanceContext agentInstanceContextStatement)
         {
             if (!forStatement) {
@@ -47,19 +50,25 @@ namespace com.espertech.esper.common.@internal.context.controller.category
                 }
             }
 
-            int categoryNum = partitionKey.AsInt32();
-            ContextControllerDetailCategoryItem item = CategorySpec.Items[categoryNum];
-            return FilterSpecActivatable.EvaluateValueSet(
-                item.CompiledFilterParam,
+            var categoryNum = partitionKey.AsInt32();
+            var item = CategorySpec.Items[categoryNum];
+            FilterValueSetParam[][] filters = item.FilterPlan.EvaluateValueSet(
                 null,
-                agentInstanceContextStatement);
+                agentInstanceContextStatement,
+                agentInstanceContextStatement.StatementContextFilterEvalEnv);
+            if (filters == null) {
+                throw new EPException(
+                    "Category context '" + ContextName + "' for category '" + item.Name + "' has evaluated to a condition that cannot become true");
+            }
+
+            return filters;
         }
 
         public override void PopulateContextProperties(
             IDictionary<string, object> props,
             object allPartitionKey)
         {
-            ContextControllerDetailCategoryItem item = CategorySpec.Items[allPartitionKey.AsInt32()];
+            var item = CategorySpec.Items[allPartitionKey.AsInt32()];
             props.Put(PROP_CTX_LABEL, item.Name);
         }
 
@@ -71,8 +80,8 @@ namespace com.espertech.esper.common.@internal.context.controller.category
 
         public override ContextPartitionIdentifier GetContextPartitionIdentifier(object partitionKey)
         {
-            int categoryNum = partitionKey.AsInt32();
-            ContextControllerDetailCategoryItem item = CategorySpec.Items[categoryNum];
+            var categoryNum = partitionKey.AsInt32();
+            var item = CategorySpec.Items[categoryNum];
             return new ContextPartitionIdentifierCategory(item.Name);
         }
     }

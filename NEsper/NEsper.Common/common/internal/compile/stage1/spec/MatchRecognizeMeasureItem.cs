@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="name">as name</param>
         public MatchRecognizeMeasureItem(
             ExprNode expr,
-            String name)
+            string name)
         {
             Expr = expr;
             Name = name;

@@ -9,35 +9,48 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     public class ExprFilterSpecLookupable
     {
-        [NonSerialized] private readonly EventPropertyValueGetter getter;
+        private readonly String _expression;
+        [NonSerialized] private readonly ExprEventEvaluator _eval;
+        private readonly Type _returnType;
+        private readonly bool _isNonPropertyEval;
+        private readonly DataInputOutputSerde _valueSerde;
+        [NonSerialized] private readonly ExprEvaluator _expr;
 
         public ExprFilterSpecLookupable(
-            string expression,
-            EventPropertyValueGetter getter,
+            String expression,
+            ExprEventEvaluator eval,
+            ExprEvaluator expr,
             Type returnType,
-            bool isNonPropertyGetter)
+            bool isNonPropertyEval,
+            DataInputOutputSerde valueSerde)
         {
-            this.getter = getter; // apparently, the getter can be null (wth)
-            Expression = expression ?? throw new ArgumentNullException(nameof(expression));
-            // For type consistency for recovery and serde define as boxed type
-            ReturnType = returnType?.GetBoxedType();
-            IsNonPropertyGetter = isNonPropertyGetter;
+            _expression = expression;
+            _eval = eval;
+            _expr = expr;
+            _returnType = Boxing.GetBoxedType(returnType); // For type consistency for recovery and serde define as boxed type
+            _isNonPropertyEval = isNonPropertyEval;
+            _valueSerde = valueSerde;
         }
 
-        public string Expression { get; }
+        public string Expression => _expression;
 
-        public EventPropertyValueGetter Getter => getter;
+        public ExprEventEvaluator Eval => _eval;
 
-        public Type ReturnType { get; }
+        public Type ReturnType => _returnType;
+                
+        public bool IsNonPropertyEval => _isNonPropertyEval;
 
-        public bool IsNonPropertyGetter { get; }
+        public DataInputOutputSerde ValueSerde => ValueSerde;
+
+        public ExprEvaluator Expr => _expr;
 
         public override bool Equals(object o)
         {
@@ -50,12 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             var that = (ExprFilterSpecLookupable) o;
-
-            if (!Expression.Equals(that.Expression)) {
-                return false;
-            }
-
-            return true;
+            return _expression.Equals(that._expression);
         }
 
         public override int GetHashCode()
@@ -71,6 +79,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public override string ToString()
         {
             return $"ExprFilterSpecLookupable{{expression='{Expression}'}}";
+        }
+
+        public ExprFilterSpecLookupable Make(
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext exprEvaluatorContext) {
+            // this lookupable does not depend on matched-events or evaluation-context
+            // we allow it to be a factory of itself
+            return this;
         }
     }
 } // end of namespace

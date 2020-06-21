@@ -7,12 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Net;
 using System.Xml;
 using System.Xml.XPath;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
-using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.container;
 using NUnit.Framework;
 
@@ -48,41 +46,41 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestSimpleProperties()
         {
             Assert.AreEqual("SAMPLE_V6", eventSchemaOne.Get("prop4"));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestNestedProperties()
         {
             Assert.AreEqual(true, eventSchemaOne.Get("nested1.prop2"));
             Assert.AreEqual(typeof(bool), eventSchemaOne.Get("nested1.prop2").GetType());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMappedProperties()
         {
             Assert.AreEqual("SAMPLE_V8", eventSchemaOne.Get("nested3.nested4('a').prop5[1]"));
             Assert.AreEqual("SAMPLE_V11", eventSchemaOne.Get("nested3.nested4('c').prop5[1]"));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestIndexedProperties()
         {
             Assert.AreEqual(5, eventSchemaOne.Get("nested1.nested2.prop3[2]"));
             Assert.AreEqual(typeof(int?), eventSchemaOne.EventType.GetPropertyType("nested1.nested2.prop3[2]"));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestCustomProperty()
         {
             Assert.AreEqual(typeof(double?), eventSchemaOne.EventType.GetPropertyType("customProp"));
             Assert.AreEqual(3.0d, eventSchemaOne.Get("customProp"));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestAttrProperty()
         {
             Assert.AreEqual(true, eventSchemaOne.Get("prop4.attr2"));
@@ -92,7 +90,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             Assert.AreEqual(typeof(string), eventSchemaOne.EventType.GetPropertyType("nested3.nested4[1].id"));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInvalidCollectionAccess()
         {
             try

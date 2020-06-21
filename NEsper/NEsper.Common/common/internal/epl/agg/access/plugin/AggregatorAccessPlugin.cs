@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
     {
         private readonly AggregationMultiFunctionStateModeManaged mode;
 
-        private readonly CodegenExpressionRef state;
+        private readonly CodegenExpressionMember state;
 
         public AggregatorAccessPlugin(
             int col,
@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             CodegenClassScope classScope)
         {
             if (mode.HasHA) {
-                method.Block.Expression(StaticMethod(mode.Serde, "Write", output, RowDotRef(row, state)));
+                method.Block.Expression(StaticMethod(mode.Serde, "Write", output, RowDotMember(row, state)));
             }
         }
 
@@ -104,13 +104,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             CodegenClassScope classScope)
         {
             if (mode.HasHA) {
-                method.Block.AssignRef(RowDotRef(row, state), StaticMethod(mode.Serde, "Read", input));
+                method.Block.AssignRef(RowDotMember(row, state), StaticMethod(mode.Serde, "Read", input));
             }
         }
 
         public static CodegenExpression CodegenGetAccessTableState(int column)
         {
-            return RefCol("state", column);
+            return MemberCol("state", column);
         }
     }
 } // end of namespace

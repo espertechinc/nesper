@@ -37,10 +37,12 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
         public AggregationMultiFunctionAgentMode AgentMode =>
             throw new UnsupportedOperationException("The lookup function is only for table-column-reads");
 
-        public AggregationMultiFunctionTableReaderMode TableReaderMode =>
-            new AggregationMultiFunctionTableReaderModeManaged()
-                .SetInjectionStrategyTableReaderFactory(
-                    new InjectionStrategyClassNewInstance(typeof(SupportReferenceCountedMapTableReaderFactory))
-                        .AddExpression("eval", eval));
+        public AggregationMultiFunctionAggregationMethodMode GetAggregationMethodMode(AggregationMultiFunctionAggregationMethodContext ctx)
+        {
+            return new AggregationMultiFunctionAggregationMethodModeManaged()
+                .SetInjectionStrategyAggregationMethodFactory(
+                    new InjectionStrategyClassNewInstance(typeof(SupportReferenceCountedMapAggregationMethodFactory))
+                .AddExpression("eval", eval));        
+        }
     }
 } // end of namespace

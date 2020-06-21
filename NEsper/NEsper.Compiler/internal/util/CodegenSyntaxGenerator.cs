@@ -87,14 +87,16 @@ namespace com.espertech.esper.compiler.@internal.util
                 .ToList();
 
             ISet<ImportDecl> imports = new SortedSet<ImportDecl>();
-            imports.Add(new ImportDecl(typeof(Int32).Namespace, null));
+            imports.Add(new ImportDecl(typeof(int).Namespace, null));
             imports.Add(new ImportDecl(typeof(CompatExtensions).Namespace, null));
             imports.Add(new ImportDecl(typeof(UnsupportedOperationException).Namespace, null));
             imports.Add(new ImportDecl(typeof(Enumerable).Namespace, null));
 
             for (var ii = 0; ii < typeList.Count; ii++) {
                 var type = typeList[ii];
-                imports.Add(new ImportDecl(type.Namespace, null));
+                if (type.Namespace != null) {
+                    imports.Add(new ImportDecl(type.Namespace, null));
+                }
             }
 
             if (AssemblyIndices.Count == 0) {
@@ -111,9 +113,12 @@ namespace com.espertech.esper.compiler.@internal.util
                 if (IsAmbiguous(type, imports, AssemblyIndices))
 #endif
                 {
-                    imports.Add(new ImportDecl(
-                        type.Namespace,
-                        type.CleanName(false)));
+                    if (type.Namespace != null) {
+                        imports.Add(
+                            new ImportDecl(
+                                type.Namespace,
+                                type.CleanName(false)));
+                    }
                 }
             }
 
@@ -128,7 +133,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
             CodeGenerationUtil.Importsdecl(builder, imports);
             CodeGenerationUtil.NamespaceDecl(builder, clazz.Namespace);
-            CodeGenerationUtil.Classimplements(builder, clazz.ClassName, clazz.InterfaceImplemented, null, true, false);
+            CodeGenerationUtil.Classimplements(builder, clazz.ClassName, clazz.BaseList, true, false);
 
             // members
             GenerateCodeMembers(builder, clazz.ExplicitMembers, clazz.OptionalCtor, 2);
@@ -150,8 +155,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 CodeGenerationUtil.Classimplements(
                     builder,
                     inner.ClassName,
-                    inner.InterfaceImplemented,
-                    inner.InterfaceGenericClass,
+                    inner.BaseList,
                     false,
                     false);
 
@@ -213,8 +217,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 CodeGenerationUtil.Classimplements(
                     builder,
                     inner.ClassName,
-                    inner.InterfaceImplemented,
-                    inner.InterfaceGenericClass,
+                    inner.BaseList,
                     false,
                     false);
 

@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.collection
@@ -47,6 +48,19 @@ namespace com.espertech.esper.common.@internal.collection
             if (Dependencies.IsEmpty()) {
                 Dependencies = null;
             }
+        }
+
+        public PathDeploymentEntry<TE> Copy()
+        {
+            TE reference;
+            if (Entity is Copyable<TE> copyableEntity) {
+                reference = copyableEntity.Copy();
+            }
+            else {
+                reference = Entity;
+            }
+
+            return new PathDeploymentEntry<TE>(DeploymentId, reference);
         }
     }
 } // end of namespace

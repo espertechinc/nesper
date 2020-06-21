@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
                 }
 
                 // never share anything else
-                return new ProxyAggregationMultiFunctionStateKey();
+                return new InertAggregationMultiFunctionStateKey();
             }
         }
 
@@ -171,8 +171,10 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
         public AggregationMultiFunctionAgentMode AgentMode =>
             throw new UnsupportedOperationException("This implementation does not support tables");
 
-        public AggregationMultiFunctionTableReaderMode TableReaderMode =>
-            throw new UnsupportedOperationException("Table-column-read not implemented");
+        public AggregationMultiFunctionAggregationMethodMode GetAggregationMethodMode(AggregationMultiFunctionAggregationMethodContext ctx)
+        {
+            return null; // not implemented
+        }
 
         public static void Reset()
         {

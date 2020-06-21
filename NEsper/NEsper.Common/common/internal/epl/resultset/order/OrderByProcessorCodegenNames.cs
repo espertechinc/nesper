@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             typeof(EventBean[][]), REF_GENERATINGEVENTS.Ref,
             typeof(bool), ExprForgeCodegenNames.REF_ISNEWDATA.Ref,
             typeof(ExprEvaluatorContext), REF_EXPREVALCONTEXT.Ref,
-            typeof(AggregationService), REF_AGGREGATIONSVC.Ref);
+            typeof(AggregationService), MEMBER_AGGREGATIONSVC.Ref);
 
         public static readonly IList<CodegenNamedParam> SORTWGROUPKEYS_PARAMS = CodegenNamedParam.From(
             typeof(EventBean[]), REF_OUTGOINGEVENTS.Ref,
@@ -53,14 +53,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             typeof(object[]), REF_ORDERGROUPBYKEYS.Ref, 
             typeof(bool), ExprForgeCodegenNames.REF_ISNEWDATA.Ref,
             typeof(ExprEvaluatorContext), REF_EXPREVALCONTEXT.Ref,
-            typeof(AggregationService), REF_AGGREGATIONSVC.Ref);
+            typeof(AggregationService), MEMBER_AGGREGATIONSVC.Ref);
 
         public static readonly IList<CodegenNamedParam> SORTROLLUP_PARAMS = CodegenNamedParam.From(
             typeof(EventBean[]), REF_OUTGOINGEVENTS.Ref,
             typeof(IList<GroupByRollupKey>), REF_ORDERCURRENTGENERATORS.Ref,
             typeof(bool), ExprForgeCodegenNames.REF_ISNEWDATA.Ref,
-            typeof(AgentInstanceContext), REF_AGENTINSTANCECONTEXT.Ref,
-            typeof(AggregationService), REF_AGGREGATIONSVC.Ref);
+            typeof(AgentInstanceContext), MEMBER_AGENTINSTANCECONTEXT.Ref,
+            typeof(AggregationService), MEMBER_AGGREGATIONSVC.Ref);
 
         public static readonly IList<CodegenNamedParam> SORTTWOKEYS_PARAMS = CodegenNamedParam.From(
             typeof(EventBean), REF_ORDERFIRSTEVENT.Ref,

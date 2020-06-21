@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
@@ -31,17 +30,102 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ResultSetAggregateCountSimple());
-            execs.Add(new ResultSetAggregateCountPlusStar());
-            execs.Add(new ResultSetAggregateCountHaving());
-            execs.Add(new ResultSetAggregateSumHaving());
-            execs.Add(new ResultSetAggregateCountOneViewOM());
-            execs.Add(new ResultSetAggregateGroupByCountNestedAggregationAvg());
-            execs.Add(new ResultSetAggregateCountOneViewCompile());
-            execs.Add(new ResultSetAggregateCountOneView());
-            execs.Add(new ResultSetAggregateCountJoin());
-            execs.Add(new ResultSetAggregateCountDistinctGrouped());
+            WithCountSimple(execs);
+            WithCountPlusStar(execs);
+            WithCountHaving(execs);
+            WithSumHaving(execs);
+            WithCountOneViewOM(execs);
+            WithGroupByCountNestedAggregationAvg(execs);
+            WithCountOneViewCompile(execs);
+            WithCountOneView(execs);
+            WithCountJoin(execs);
+            WithCountDistinctGrouped(execs);
+            WithSumNamedWindowRemoveGroup(execs);
+            WithCountDistinctMultikeyWArray(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCountDistinctMultikeyWArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateCountDistinctMultikeyWArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSumNamedWindowRemoveGroup(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateSumNamedWindowRemoveGroup());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCountDistinctGrouped(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateCountDistinctGrouped());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCountJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateCountJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCountOneView(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateCountOneView());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCountOneViewCompile(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateCountOneViewCompile());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupByCountNestedAggregationAvg(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateGroupByCountNestedAggregationAvg());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCountOneViewOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateCountOneViewOM());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSumHaving(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateSumHaving());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCountHaving(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateCountHaving());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCountPlusStar(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateCountPlusStar());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCountSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateCountSimple());
             return execs;
         }
 
@@ -188,6 +272,37 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             return new SupportMarketDataBean(symbol, price, 0L, null);
         }
 
+        private static void SendManyArrayAssert(
+            RegressionEnvironment env,
+            int[] intOne,
+            int[] intTwo,
+            long expectedC0,
+            long expectedC1)
+        {
+            env.SendEventBean(new SupportEventWithManyArray("id").WithIntOne(intOne).WithIntTwo(intTwo));
+            EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "c0,c1".SplitCsv(), new object[] {expectedC0, expectedC1});
+        }
+
+        internal class ResultSetAggregateCountDistinctMultikeyWArray : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "@Name('s0') select count(distinct IntOne) as c0, count(distinct {IntOne, IntTwo}) as c1 from SupportEventWithManyArray#length(3)";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendManyArrayAssert(env, new int[] {1, 2}, new int[] {1}, 1, 1);
+                SendManyArrayAssert(env, new int[] {1, 2}, new int[] {1}, 1, 1);
+                SendManyArrayAssert(env, new int[] {1, 3}, new int[] {1}, 2, 2);
+
+                env.Milestone(0);
+
+                SendManyArrayAssert(env, new int[] {1, 4}, new int[] {1}, 3, 3);
+                SendManyArrayAssert(env, new int[] {1, 3}, new int[] {2}, 2, 3);
+
+                env.UndeployAll();
+            }
+        }
+
         internal class ResultSetAggregateCountPlusStar : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -314,7 +429,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "count(*) as countAll, " +
                           "count(distinct Volume) as countDistVol, " +
                           "count(Volume) as countVol" +
-                          " from " + typeof(SupportMarketDataBean).Name + "#length(3) " +
+                          " from " +
+                          typeof(SupportMarketDataBean).Name +
+                          "#length(3) " +
                           "where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" " +
                           "group by Symbol";
                 Assert.That(model.ToEPL(), Is.EqualTo(epl));
@@ -341,37 +458,37 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 SendEvent(env, SYMBOL_DELL, 50L);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "Symbol","cnt","val" },
+                    new[] {"Symbol", "cnt", "val"},
                     new object[] {"DELL", 1L, 1d});
 
                 SendEvent(env, SYMBOL_DELL, 51L);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "Symbol","cnt","val" },
+                    new[] {"Symbol", "cnt", "val"},
                     new object[] {"DELL", 2L, 1.5d});
 
                 SendEvent(env, SYMBOL_DELL, 52L);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "Symbol","cnt","val" },
+                    new[] {"Symbol", "cnt", "val"},
                     new object[] {"DELL", 3L, 2d});
 
                 SendEvent(env, "IBM", 52L);
                 var events = env.Listener("s0").LastNewData;
                 EPAssertionUtil.AssertProps(
                     events[0],
-                    new [] { "Symbol","cnt","val" },
+                    new[] {"Symbol", "cnt", "val"},
                     new object[] {"DELL", 2L, 2d});
                 EPAssertionUtil.AssertProps(
                     events[1],
-                    new [] { "Symbol","cnt","val" },
+                    new[] {"Symbol", "cnt", "val"},
                     new object[] {"IBM", 1L, 1d});
                 env.Listener("s0").Reset();
 
                 SendEvent(env, SYMBOL_DELL, 53L);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "Symbol","cnt","val" },
+                    new[] {"Symbol", "cnt", "val"},
                     new object[] {"DELL", 2L, 2.5d});
 
                 env.UndeployAll();
@@ -463,7 +580,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "TheString","mysum" };
+                var fields = new[] {"TheString", "mysum"};
                 var epl = "create window MyWindow.win:keepall() as select * from SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
                           "on SupportBean_A a delete from MyWindow w where w.TheString = a.Id;\n" +

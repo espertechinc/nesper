@@ -51,10 +51,12 @@ namespace com.espertech.esper.common.@internal.context.mgr
         public void StoppedStatement(
             string deploymentIdCreateContext,
             string contextName,
-            ContextControllerStatementDesc statement)
+            int statementId,
+            string statementName,
+            string statementDeploymentId)
         {
             var contextManager = GetAssertContextManager(deploymentIdCreateContext, contextName);
-            contextManager.StopStatement(statement);
+            contextManager.StopStatement(statementId, statementName, statementDeploymentId);
         }
 
         public ContextManager GetContextManager(
@@ -62,11 +64,8 @@ namespace com.espertech.esper.common.@internal.context.mgr
             string contextName)
         {
             var deployment = deployments.Get(deploymentIdCreateContext);
-            if (deployment == null) {
-                return null;
-            }
 
-            return deployment.GetContextManager(contextName);
+            return deployment?.GetContextManager(contextName);
         }
 
         public int ContextCount {

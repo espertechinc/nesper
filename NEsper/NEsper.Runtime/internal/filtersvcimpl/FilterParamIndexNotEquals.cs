@@ -32,9 +32,10 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         public override void MatchEvent(
             EventBean theEvent,
-            ICollection<FilterHandle> matches)
+            ICollection<FilterHandle> matches,
+            ExprEvaluatorContext ctx)
         {
-            object attributeValue = Lookupable.Getter.Get(theEvent);
+            object attributeValue = Lookupable.Eval.Eval(theEvent, ctx);
             if (InstrumentationHelper.ENABLED) {
                 InstrumentationHelper.Get().QFilterReverseIndex(this, attributeValue);
             }
@@ -56,7 +57,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                     }
 
                     if (!entry.Key.Equals(attributeValue)) {
-                        entry.Value.MatchEvent(theEvent, matches);
+                        entry.Value.MatchEvent(theEvent, matches, ctx);
                     }
                 }
             }

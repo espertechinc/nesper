@@ -28,11 +28,46 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraEarlyUniqueIndexViolation());
-            execs.Add(new InfraLateUniqueIndexViolation());
-            execs.Add(new InfraFAFUpdate());
-            execs.Add(new InfraTableKeyUpdateSingleKey());
+            WithEarlyUniqueIndexViolation(execs);
+            WithLateUniqueIndexViolation(execs);
+            WithFAFUpdate(execs);
+            WithTableKeyUpdateSingleKey(execs);
+            WithTableKeyUpdateMultiKey(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTableKeyUpdateMultiKey(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraTableKeyUpdateMultiKey());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTableKeyUpdateSingleKey(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraTableKeyUpdateSingleKey());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFAFUpdate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraFAFUpdate());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLateUniqueIndexViolation(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraLateUniqueIndexViolation());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEarlyUniqueIndexViolation(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraEarlyUniqueIndexViolation());
             return execs;
         }
 
@@ -102,11 +137,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 catch (EPException ex) {
                     SupportMessageAssertUtil.AssertMessage(
                         ex,
-                        "Unique index violation, index 'MyTableEUIV' is a unique index and key 'HashableMultiKey[\"E1\", 0]' already exists");
+                        "Unique index violation, index 'MyTableEUIV' is a unique index and key 'MultiKey<E1,0>' already exists");
                     // assert events are unchanged - no update actually performed
                     EPAssertionUtil.AssertPropsPerRowAnyOrder(
                         env.GetEnumerator("create"),
-                        new [] { "pKey0","pkey1" },
+                        new[] {"pKey0", "pkey1"},
                         new[] {new object[] {"E1", 10}, new object[] {"E1", 20}});
                 }
 
@@ -118,11 +153,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 }
                 catch (EPException ex) {
                     SupportMessageAssertUtil.AssertMessage(
-                        ex, "Unexpected exception in statement 'on-update': Unique index violation, index 'MyTableEUIV' is a unique index and key 'HashableMultiKey[\"E1\", 0]' already exists");
+                        ex,
+                        "Unexpected exception in statement 'on-update': Unique index violation, index 'MyTableEUIV' is a unique index and key 'MultiKey<E1,0>' already exists");
                     // assert events are unchanged - no update actually performed
                     EPAssertionUtil.AssertPropsPerRowAnyOrder(
                         env.Statement("create").GetEnumerator(),
-                        new [] { "pKey0","pkey1" },
+                        new[] {"pKey0", "pkey1"},
                         new[] {new object[] {"E1", 10}, new object[] {"E1", 20}});
                 }
 
@@ -190,11 +226,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 }
                 catch (EPException ex) {
                     SupportMessageAssertUtil.AssertMessage(
-                        ex, "Unexpected exception in statement 'on-update': Unique index violation, index 'MyUniqueSecondary' is a unique index and key '0' already exists");
+                        ex,
+                        "Unexpected exception in statement 'on-update': Unique index violation, index 'MyUniqueSecondary' is a unique index and key '0' already exists");
                     // assert events are unchanged - no update actually performed
                     EPAssertionUtil.AssertPropsPerRowAnyOrder(
                         env.GetEnumerator("create"),
-                        new [] { "pKey0","pkey1" },
+                        new[] {"pKey0", "pkey1"},
                         new[] {new object[] {"E1", 10}, new object[] {"E2", 20}});
                 }
 
@@ -245,7 +282,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "pKey0","pkey1","c0" };
+                var fields = new[] {"pKey0", "pkey1", "c0"};
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@Name('s1') create table MyTableMultiKey(pKey0 string primary key, pkey1 int primary key, c0 long)",
@@ -301,7 +338,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "pKey0","c0" };
+                var fields = new[] {"pKey0", "c0"};
                 var path = new RegressionPath();
                 env.CompileDeploy("@Name('s0') create table MyTableSingleKey(pKey0 string primary key, c0 int)", path);
                 env.CompileDeploy(

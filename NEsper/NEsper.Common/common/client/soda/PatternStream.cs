@@ -129,10 +129,7 @@ namespace com.espertech.esper.common.client.soda
             }
 
             writer.Write(" [");
-            if (expression != null)
-            {
-                expression.ToEPL(writer, PatternExprPrecedenceEnum.MINIMUM, formatter);
-            }
+            expression?.ToEPL(writer, PatternExprPrecedenceEnum.MINIMUM, formatter);
 
             writer.Write(']');
         }

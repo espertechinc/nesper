@@ -51,10 +51,6 @@ namespace com.espertech.esper.compat
         /// <summary>
         /// Gets the value.
         /// </summary>
-        public T Value
-        {
-            get { return _value; }
-        }
-
+        public T Value => _value;
     }
 }

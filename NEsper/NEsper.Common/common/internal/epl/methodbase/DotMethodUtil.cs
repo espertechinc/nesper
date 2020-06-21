@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -169,7 +168,7 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
                     methodUsedName,
                     type.GetTypeName(),
                     false,
-                    found.Type,
+                    found.ParamType,
                     found.SpecificType,
                     provided.ReturnType,
                     i,

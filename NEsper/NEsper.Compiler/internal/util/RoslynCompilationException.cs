@@ -27,11 +27,13 @@ namespace com.espertech.esper.compiler.@internal.util
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         /// <exception cref="NotImplementedException"></exception>
-        public RoslynCompilationException(string message) : base(message)
+        public RoslynCompilationException(string message)
+            : base(message)
         {
         }
 
-        protected RoslynCompilationException(SerializationInfo info,
+        protected RoslynCompilationException(
+            SerializationInfo info,
             StreamingContext context) : base(info, context)
         {
         }

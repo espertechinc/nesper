@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -16,8 +15,6 @@ using com.espertech.esper.common.@internal.epl.expression.visitor;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.epl.pattern.filter;
 using com.espertech.esper.common.@internal.epl.pattern.observer;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.util
 {
@@ -38,18 +35,12 @@ namespace com.espertech.esper.common.@internal.epl.util
             // Recursively compile the statement within the statement.
             WalkSubselectSelectClause(spec.SelectClauseSpec.SelectExprList, visitor);
 
-            if (spec.WhereClause != null) {
-                spec.WhereClause.Accept(visitor);
-            }
+            spec.WhereClause?.Accept(visitor);
 
-            if (spec.HavingClause != null) {
-                spec.HavingClause.Accept(visitor);
-            }
+            spec.HavingClause?.Accept(visitor);
 
             if (spec.UpdateDesc != null) {
-                if (spec.UpdateDesc.OptionalWhereClause != null) {
-                    spec.UpdateDesc.OptionalWhereClause.Accept(visitor);
-                }
+                spec.UpdateDesc.OptionalWhereClause?.Accept(visitor);
 
                 foreach (OnTriggerSetAssignment assignment in spec.UpdateDesc.Assignments) {
                     assignment.Expression.Accept(visitor);
@@ -62,6 +53,24 @@ namespace com.espertech.esper.common.@internal.epl.util
 
             // walk streams
             WalkStreamSpecs(spec, visitor);
+
+            // walk FAF
+            WalkFAFSpec(spec.FireAndForgetSpec, visitor);
+        }
+
+        private static void WalkFAFSpec(
+            FireAndForgetSpec fireAndForgetSpec,
+            ExprNodeSubselectDeclaredDotVisitor visitor)
+        {
+            if (fireAndForgetSpec == null) {
+                return;
+            }
+
+            if (fireAndForgetSpec is FireAndForgetSpecUpdate update) {
+                foreach (OnTriggerSetAssignment assignment in update.Assignments) {
+                    assignment.Expression.Accept(visitor);
+                }
+            }
         }
 
         public static void WalkStreamSpecs(
@@ -127,9 +136,7 @@ namespace com.espertech.esper.common.@internal.epl.util
             else if (onTriggerDesc is OnTriggerSplitStreamDesc) {
                 OnTriggerSplitStreamDesc splits = (OnTriggerSplitStreamDesc) onTriggerDesc;
                 foreach (OnTriggerSplitStream split in splits.SplitStreams) {
-                    if (split.WhereClause != null) {
-                        split.WhereClause.Accept(visitor);
-                    }
+                    split.WhereClause?.Accept(visitor);
 
                     if (split.SelectClause.SelectExprList != null) {
                         WalkSubselectSelectClause(split.SelectClause.SelectExprList, visitor);
@@ -139,14 +146,10 @@ namespace com.espertech.esper.common.@internal.epl.util
             else if (onTriggerDesc is OnTriggerMergeDesc) {
                 OnTriggerMergeDesc merge = (OnTriggerMergeDesc) onTriggerDesc;
                 foreach (OnTriggerMergeMatched matched in merge.Items) {
-                    if (matched.OptionalMatchCond != null) {
-                        matched.OptionalMatchCond.Accept(visitor);
-                    }
+                    matched.OptionalMatchCond?.Accept(visitor);
 
                     foreach (OnTriggerMergeAction action in matched.Actions) {
-                        if (action.OptionalWhereClause != null) {
-                            action.OptionalWhereClause.Accept(visitor);
-                        }
+                        action.OptionalWhereClause?.Accept(visitor);
 
                         if (action is OnTriggerMergeActionUpdate) {
                             OnTriggerMergeActionUpdate update = (OnTriggerMergeActionUpdate) action;

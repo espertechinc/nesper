@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                        "create window MyWindowOne#keepall as select * from MyTypeOne;" +
                        "insert into MyWindowOne select * from MyTypeOne;";
                 env.CompileDeploy(text).UndeployAll();
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 // test on-merge
                 var moduleString =

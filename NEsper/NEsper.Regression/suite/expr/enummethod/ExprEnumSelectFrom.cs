@@ -9,136 +9,245 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionlib.support.util;
+using com.espertech.esper.regressionlib.support.expreval;
+
+using NUnit.Framework;
+
+using static com.espertech.esper.regressionlib.support.util.LambdaAssertionUtil;
 
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
-    public class ExprEnumSelectFrom
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            var execs = new List<RegressionExecution>();
-            execs.Add(new ExprEnumNew());
-            execs.Add(new ExprEnumSelect());
-            return execs;
-        }
+	public class ExprEnumSelectFrom
+	{
 
-        private static IDictionary<string, object>[] ToMapArray(object result)
-        {
-            if (result == null) {
-                return null;
-            }
+		public static ICollection<RegressionExecution> Executions()
+		{
+			List<RegressionExecution> execs = new List<RegressionExecution>();
+			execs.Add(new ExprEnumSelectFromEventsPlain());
+			execs.Add(new ExprEnumSelectFromEventsWIndexWSize());
+			execs.Add(new ExprEnumSelectFromEventsWithNew());
+			execs.Add(new ExprEnumSelectFromScalarPlain());
+			execs.Add(new ExprEnumSelectFromScalarWIndexWSize());
+			return execs;
+		}
 
-            return result.UnwrapIntoArray<IDictionary<string, object>>();
-        }
+		internal class ExprEnumSelectFromScalarWIndexWSize : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0,c1".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
+				builder.WithExpression(fields[0], "Strvals.selectFrom( (v, i) => v || '_' || Convert.ToString(i))");
+				builder.WithExpression(fields[1], "Strvals.selectFrom( (v, i, s) => v || '_' || Convert.ToString(i) || '_' || Convert.ToString(s))");
 
-        internal class ExprEnumNew : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var eplFragment = "@Name('s0') select " +
-                                  "Contained.selectFrom(x -> new {c0 = Id||'x', c1 = Key0||'y'}) as val0 " +
-                                  "from SupportBean_ST0_Container";
-                env.CompileDeploy(eplFragment).AddListener("s0");
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    new [] { "val0" },
-                    new[] {typeof(ICollection<object>)});
+				builder.WithAssertion(SupportCollection.MakeString("E1,E2,E3"))
+					.Verify(fields[0], value => AssertValuesArrayScalar(value, "E1_0", "E2_1", "E3_2"))
+					.Verify(fields[1], value => AssertValuesArrayScalar(value, "E1_0_3", "E2_1_3", "E3_2_3"));
 
-                env.SendEventBean(SupportBean_ST0_Container.Make3Value("E1,12,0", "E2,11,0", "E3,2,0"));
-                EPAssertionUtil.AssertPropsPerRow(
-                    ToMapArray(env.Listener("s0").AssertOneGetNewAndReset().Get("val0")),
-                    new [] { "c0", "c1" },
-                    new[] {
-                        new object[] {"E1x", "12y"}, 
-                        new object[] {"E2x", "11y"}, 
-                        new object[] {"E3x", "2y"}
-                    });
+				builder.WithAssertion(SupportCollection.MakeString(""))
+					.Verify(fields[0], value => AssertValuesArrayScalar(value))
+					.Verify(fields[1], value => AssertValuesArrayScalar(value));
 
-                env.SendEventBean(SupportBean_ST0_Container.Make3Value("E4,0,1"));
-                EPAssertionUtil.AssertPropsPerRow(
-                    ToMapArray(env.Listener("s0").AssertOneGetNewAndReset().Get("val0")),
-                    new [] { "c0", "c1" },
-                    new[] {new object[] {"E4x", "0y"}});
+				builder.WithAssertion(SupportCollection.MakeString("E1"))
+					.Verify(fields[0], value => AssertValuesArrayScalar(value, "E1_0"))
+					.Verify(fields[1], value => AssertValuesArrayScalar(value, "E1_0_1"));
 
-                env.SendEventBean(SupportBean_ST0_Container.Make3Value(null));
-                EPAssertionUtil.AssertPropsPerRow(
-                    ToMapArray(env.Listener("s0").AssertOneGetNewAndReset().Get("val0")),
-                    new [] { "c0", "c1" },
-                    null);
+				builder.WithAssertion(SupportCollection.MakeString(null))
+					.Verify(fields[0], Assert.IsNull)
+					.Verify(fields[1], Assert.IsNull);
 
-                env.SendEventBean(SupportBean_ST0_Container.Make3Value());
-                EPAssertionUtil.AssertPropsPerRow(
-                    ToMapArray(env.Listener("s0").AssertOneGetNewAndReset().Get("val0")),
-                    new [] { "c0", "c1" },
-                    new object[0][]);
+				builder.Run(env);
+			}
+		}
 
-                env.UndeployAll();
-            }
-        }
+		internal class ExprEnumSelectFromEventsWIndexWSize : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0,c1".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
+				builder.WithExpression(fields[0], "Contained.selectFrom( (v, i) => new {v0=v.Id,v1=i})");
+				builder.WithExpression(fields[1], "Contained.selectFrom( (v, i, s) => new {v0=v.Id,v1=i + 100*s})");
 
-        internal class ExprEnumSelect : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var eplFragment = "@Name('s0') select " +
-                                  "Contained.selectFrom(x -> Id) as val0 " +
-                                  "from SupportBean_ST0_Container";
-                env.CompileDeploy(eplFragment).AddListener("s0");
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    new [] { "val0" },
-                    new[] {typeof(ICollection<object>)});
+				builder.WithAssertion(SupportBean_ST0_Container.Make3Value("E1,12,0", "E2,11,0", "E3,2,0"))
+					.Verify(
+						fields[0],
+						value => AssertRows(
+							value,
+							new object[][] {
+								new object[] {"E1", 0},
+								new object[] {"E2", 1},
+								new object[] {"E3", 2}
+							}))
+					.Verify(
+						fields[1],
+						value => AssertRows(
+							value,
+							new object[][] {
+								new object[] {"E1", 300},
+								new object[] {"E2", 301},
+								new object[] {"E3", 302}
+							}));
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,12", "E2,11", "E3,2"));
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val0", "E1", "E2", "E3");
-                env.Listener("s0").Reset();
+				builder.WithAssertion(SupportBean_ST0_Container.Make3Value("E4,0,1"))
+					.Verify(
+						fields[0],
+						value => AssertRows(
+							value,
+							new object[][] {
+								new object[] {"E4", 0}
+							}))
+					.Verify(
+						fields[1],
+						value => AssertRows(
+							value,
+							new object[][] {
+								new object[] {"E4", 100}
+							}));
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value(null));
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val0", null);
-                env.Listener("s0").Reset();
+				builder.WithAssertion(SupportBean_ST0_Container.Make3ValueNull())
+					.Verify(fields[0], value => AssertRows(value, null))
+					.Verify(fields[1], value => AssertRows(value, null));
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value());
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val0");
-                env.Listener("s0").Reset();
-                env.UndeployAll();
+				builder.WithAssertion(SupportBean_ST0_Container.Make3Value())
+					.Verify(fields[0], value => AssertRows(value, new object[0][]))
+					.Verify(fields[1], value => AssertRows(value, new object[0][]));
 
-                // test scalar-coll with lambda
-                var fields = new [] { "val0" };
-                var eplLambda = "@Name('s0') select " +
-                                "Strvals.selectFrom(v -> extractNum(v)) as val0 " +
-                                "from SupportCollection";
-                env.CompileDeploy(eplLambda).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fields,
-                    new[] {typeof(ICollection<object>), typeof(ICollection<object>)});
+				builder.Run(env);
+			}
 
-                env.SendEventBean(SupportCollection.MakeString("E2,E1,E5,E4"));
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val0", 2, 1, 5, 4);
-                env.Listener("s0").Reset();
+			private void AssertRows(
+				object value,
+				object[][] expected)
+			{
+				EPAssertionUtil.AssertPropsPerRow(ToMapArray(value), "v0,v1".SplitCsv(), expected);
+			}
+		}
 
-                env.SendEventBean(SupportCollection.MakeString("E1"));
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val0", 1);
-                env.Listener("s0").Reset();
+		internal class ExprEnumSelectFromEventsWithNew : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string field = "c0";
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
+				builder.WithExpression(field, "Contained.selectFrom(x => new {c0 = Id||'x', c1 = Key0||'y'})");
 
-                env.SendEventBean(SupportCollection.MakeString(null));
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val0", null);
-                env.Listener("s0").Reset();
+				builder.WithStatementConsumer(stmt => AssertTypes(stmt.EventType, field, typeof(ICollection<object>)));
 
-                env.SendEventBean(SupportCollection.MakeString(""));
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val0");
+				builder.WithAssertion(SupportBean_ST0_Container.Make3Value("E1,12,0", "E2,11,0", "E3,2,0"))
+					.Verify(
+						field,
+						value => AssertRows(
+							value,
+							new object[][] {
+								new object[] {"E1x", "12y"},
+								new object[] {"E2x", "11y"},
+								new object[] {"E3x", "2y"}
+							}));
 
-                env.UndeployAll();
-            }
-        }
-    }
+				builder.WithAssertion(SupportBean_ST0_Container.Make3Value("E4,0,1"))
+					.Verify(
+						field,
+						value => AssertRows(
+							value,
+							new object[][] {
+								new object[] {"E4x", "0y"}
+							}));
+
+				builder.WithAssertion(SupportBean_ST0_Container.Make3ValueNull())
+					.Verify(field, value => AssertRows(value, null));
+
+				builder.WithAssertion(SupportBean_ST0_Container.Make3Value())
+					.Verify(field, value => AssertRows(value, new object[0][]));
+
+				builder.Run(env);
+			}
+
+			private void AssertRows(
+				object value,
+				object[][] expected)
+			{
+				EPAssertionUtil.AssertPropsPerRow(ToMapArray(value), "c0,c1".SplitCsv(), expected);
+			}
+		}
+
+		internal class ExprEnumSelectFromEventsPlain : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string field = "c0";
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
+				builder.WithExpression(field, "Contained.selectFrom(x => Id)");
+
+				builder.WithStatementConsumer(stmt => AssertTypes(stmt.EventType, "c0", typeof(ICollection<object>)));
+
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,12", "E2,11", "E3,2"))
+					.Verify(field, value => AssertValuesArrayScalar(value, "E1", "E2", "E3"));
+
+				builder.WithAssertion(SupportBean_ST0_Container.Make2ValueNull())
+					.Verify(field, Assert.IsNull);
+
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value())
+					.Verify(field, value => AssertValuesArrayScalar(value));
+
+				builder.Run(env);
+			}
+		}
+
+		internal class ExprEnumSelectFromScalarPlain : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+
+				string field = "c0";
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
+				builder.WithExpression(field, "Strvals.selectFrom(v => extractNum(v))");
+
+				builder.WithStatementConsumer(stmt => AssertTypes(stmt.EventType, field, typeof(ICollection<object>)));
+
+				builder.WithAssertion(SupportCollection.MakeString("E2,E1,E5,E4"))
+					.Verify(field, value => AssertValuesArrayScalar(value, 2, 1, 5, 4));
+
+				builder.WithAssertion(SupportCollection.MakeString("E1"))
+					.Verify(field, value => AssertValuesArrayScalar(value, 1));
+
+				builder.WithAssertion(SupportCollection.MakeString(null))
+					.Verify(field, Assert.IsNull);
+
+				builder.WithAssertion(SupportCollection.MakeString(""))
+					.Verify(field, value => AssertValuesArrayScalar(value));
+
+				builder.Run(env);
+			}
+		}
+
+		private static IDictionary<string, object>[] ToMapArray(object result)
+		{
+			if (result == null) {
+				return null;
+			}
+
+			if (result is FlexCollection flexCollection) {
+				return result
+					.AsObjectCollection()
+					.Unwrap<IDictionary<string, object>>()
+					.ToArray();
+			}
+
+			return result
+				.Unwrap<IDictionary<string, object>>()
+				.ToArray();
+		}
+	}
 } // end of namespace

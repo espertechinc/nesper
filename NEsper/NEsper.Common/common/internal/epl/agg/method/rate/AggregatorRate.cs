@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
@@ -27,37 +28,29 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
     /// </summary>
     public class AggregatorRate : AggregatorMethodWDistinctWFilterBase
     {
-        protected CodegenExpressionRef accumulator;
-
-        protected AggregationFactoryMethodRate factory;
-        protected CodegenExpressionRef isSet;
-        protected CodegenExpressionRef latest;
-        protected CodegenExpressionRef oldest;
+        private AggregationForgeFactoryRate _factory;
+        private CodegenExpressionMember _accumulator;
+        private CodegenExpressionMember _isSet;
+        private CodegenExpressionMember _latest;
+        private CodegenExpressionMember _oldest;
 
         public AggregatorRate(
-            AggregationFactoryMethodRate factory,
+            AggregationForgeFactoryRate factory,
             int col,
             CodegenCtor rowCtor,
             CodegenMemberCol membersColumnized,
             CodegenClassScope classScope,
             Type optionalDistinctValueType,
+            DataInputOutputSerdeForge optionalDistinctSerde,
             bool hasFilter,
             ExprNode optionalFilter)
-            : base(
-                factory,
-                col,
-                rowCtor,
-                membersColumnized,
-                classScope,
-                optionalDistinctValueType,
-                hasFilter,
-                optionalFilter)
+            : base(factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter)
         {
-            this.factory = factory;
-            accumulator = membersColumnized.AddMember(col, typeof(double), "accumulator");
-            latest = membersColumnized.AddMember(col, typeof(long), "latest");
-            oldest = membersColumnized.AddMember(col, typeof(long), "oldest");
-            isSet = membersColumnized.AddMember(col, typeof(bool), "isSet");
+            _factory = factory;
+            _accumulator = membersColumnized.AddMember(col, typeof(double), "accumulator");
+            _latest = membersColumnized.AddMember(col, typeof(long), "latest");
+            _oldest = membersColumnized.AddMember(col, typeof(long), "oldest");
+            _isSet = membersColumnized.AddMember(col, typeof(bool), "isSet");
         }
 
         protected override void ApplyEvalEnterFiltered(
@@ -68,11 +61,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
         {
             var firstType = forges[0].EvaluationType;
             var firstExpr = forges[0].EvaluateCodegen(typeof(long), method, symbols, classScope);
-            method.Block.AssignRef(latest, SimpleNumberCoercerFactory.CoercerLong.CodegenLong(firstExpr, firstType));
+            method.Block.AssignRef(_latest, SimpleNumberCoercerFactory.CoercerLong.CodegenLong(firstExpr, firstType));
 
-            var numFilters = factory.Parent.OptionalFilter != null ? 1 : 0;
+            var numFilters = _factory.Parent.OptionalFilter != null ? 1 : 0;
             if (forges.Length == numFilters + 1) {
-                method.Block.Increment(accumulator);
+                method.Block.Increment(_accumulator);
             }
             else {
                 var secondType = forges[1].EvaluationType;
@@ -80,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
                 var secondValue = SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(
                     secondExpr, secondType);
                 method.Block.AssignCompound(
-                    accumulator,
+                    _accumulator,
                     "+",
                     secondValue);
             }
@@ -92,24 +85,24 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             ExprForge[] forges,
             CodegenClassScope classScope)
         {
-            var numFilters = factory.Parent.OptionalFilter != null ? 1 : 0;
+            var numFilters = _factory.Parent.OptionalFilter != null ? 1 : 0;
 
             var firstType = forges[0].EvaluationType;
             var firstExpr = forges[0].EvaluateCodegen(typeof(long), method, symbols, classScope);
             var firstValue = SimpleNumberCoercerFactory.CoercerLong.CodegenLong(firstExpr, firstType);
 
             method.Block
-                .AssignRef(oldest, firstValue)
-                .IfCondition(Not(isSet))
-                .AssignRef(isSet, ConstantTrue());
+                .AssignRef(_oldest, firstValue)
+                .IfCondition(Not(_isSet))
+                .AssignRef(_isSet, ConstantTrue());
             if (forges.Length == numFilters + 1) {
-                method.Block.Decrement(accumulator);
+                method.Block.Decrement(_accumulator);
             }
             else {
                 var secondType = forges[1].EvaluationType;
                 var secondExpr = forges[1].EvaluateCodegen(typeof(double), method, symbols, classScope);
                 var secondValue = SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(secondExpr, secondType);
-                method.Block.AssignCompound(accumulator, "-", secondValue);
+                method.Block.AssignCompound(_accumulator, "-", secondValue);
             }
         }
 
@@ -135,22 +128,22 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.AssignRef(accumulator, Constant(0))
-                .AssignRef(latest, Constant(0))
-                .AssignRef(oldest, Constant(0));
+            method.Block.AssignRef(_accumulator, Constant(0))
+                .AssignRef(_latest, Constant(0))
+                .AssignRef(_oldest, Constant(0));
         }
 
         public override void GetValueCodegen(
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.IfCondition(Not(isSet))
+            method.Block.IfCondition(Not(_isSet))
                 .BlockReturn(ConstantNull())
                 .MethodReturn(
                     Op(
-                        Op(accumulator, "*", Constant(factory.TimeAbacus.OneSecond)),
+                        Op(_accumulator, "*", Constant(_factory.TimeAbacus.OneSecond)),
                         "/",
-                        Op(latest, "-", oldest)));
+                        Op(_latest, "-", _oldest)));
         }
 
         protected override void WriteWODistinct(
@@ -163,10 +156,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             CodegenClassScope classScope)
         {
             method.Block
-                .Apply(WriteDouble(output, row, accumulator))
-                .Apply(WriteLong(output, row, latest))
-                .Apply(WriteLong(output, row, oldest))
-                .Apply(WriteBoolean(output, row, isSet));
+                .Apply(WriteDouble(output, row, _accumulator))
+                .Apply(WriteLong(output, row, _latest))
+                .Apply(WriteLong(output, row, _oldest))
+                .Apply(WriteBoolean(output, row, _isSet));
         }
 
         protected override void ReadWODistinct(
@@ -178,10 +171,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             CodegenClassScope classScope)
         {
             method.Block
-                .Apply(ReadDouble(row, accumulator, input))
-                .Apply(ReadLong(row, latest, input))
-                .Apply(ReadLong(row, oldest, input))
-                .Apply(ReadBoolean(row, isSet, input));
+                .Apply(ReadDouble(row, _accumulator, input))
+                .Apply(ReadLong(row, _latest, input))
+                .Apply(ReadLong(row, _oldest, input))
+                .Apply(ReadBoolean(row, _isSet, input));
         }
     }
 } // end of namespace

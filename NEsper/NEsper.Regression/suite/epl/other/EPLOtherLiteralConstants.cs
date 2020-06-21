@@ -8,7 +8,6 @@
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
@@ -29,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                new [] { "mybyte","myunicode","zero8","zero9","zeroZero8" },
+                new[] {"mybyte", "myunicode", "zero8", "zero9", "zeroZero8"},
                 new object[] {(byte) 35, "A", 8, 9, 8});
 
             env.UndeployAll();

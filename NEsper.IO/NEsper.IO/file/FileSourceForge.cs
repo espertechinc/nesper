@@ -24,27 +24,25 @@ namespace com.espertech.esperio.file
 	public class FileSourceForge : DataFlowOperatorForge
 	{
 
-		[DataFlowOpParameter] private ExprNode _file;
+		[DataFlowOpParameter] private ExprNode file;
 
-		[DataFlowOpParameter] private ExprNode _classpathFile;
+		[DataFlowOpParameter] private ExprNode hasHeaderLine;
 
-		[DataFlowOpParameter] private ExprNode _hasHeaderLine;
+		[DataFlowOpParameter] private ExprNode hasTitleLine;
 
-		[DataFlowOpParameter] private ExprNode _hasTitleLine;
+		[DataFlowOpParameter] private IDictionary<string, object> adapterInputSource;
 
-		[DataFlowOpParameter] private IDictionary<string, object> _adapterInputSource;
+		[DataFlowOpParameter] private ExprNode numLoops;
 
-		[DataFlowOpParameter] private ExprNode _numLoops;
+		[DataFlowOpParameter] private string[] propertyNames;
 
-		[DataFlowOpParameter] private string[] _propertyNames;
+		[DataFlowOpParameter] private ExprNode format;
 
-		[DataFlowOpParameter] private ExprNode _format;
+		[DataFlowOpParameter] private ExprNode propertyNameLine;
 
-		[DataFlowOpParameter] private ExprNode _propertyNameLine;
+		[DataFlowOpParameter] private ExprNode propertyNameFile;
 
-		[DataFlowOpParameter] private ExprNode _propertyNameFile;
-
-		[DataFlowOpParameter] private ExprNode _dateFormat;
+		[DataFlowOpParameter] private ExprNode dateFormat;
 
 		private EventType _outputEventType;
 
@@ -62,15 +60,14 @@ namespace com.espertech.esperio.file
 				_outputPortTypes[entry.Key] = entry.Value.OptionalDeclaredType.EventType;
 			}
 
-			_file = DataFlowParameterValidation.Validate("file", _file, typeof(string), context);
-			_classpathFile = DataFlowParameterValidation.Validate("classpathFile", _classpathFile, typeof(bool), context);
-			_hasHeaderLine = DataFlowParameterValidation.Validate("hasHeaderLine", _hasHeaderLine, typeof(bool), context);
-			_hasTitleLine = DataFlowParameterValidation.Validate("hasTitleLine", _hasTitleLine, typeof(bool), context);
-			_numLoops = DataFlowParameterValidation.Validate("numLoops", _numLoops, typeof(int?), context);
-			_format = DataFlowParameterValidation.Validate("format", _format, typeof(string), context);
-			_propertyNameLine = DataFlowParameterValidation.Validate("propertyNameLine", _propertyNameLine, typeof(string), context);
-			_propertyNameFile = DataFlowParameterValidation.Validate("propertyNameFile", _propertyNameFile, typeof(string), context);
-			_dateFormat = DataFlowParameterValidation.Validate("dateFormat", _dateFormat, typeof(string), context);
+			file = DataFlowParameterValidation.Validate("file", file, typeof(string), context);
+			hasHeaderLine = DataFlowParameterValidation.Validate("hasHeaderLine", hasHeaderLine, typeof(bool), context);
+			hasTitleLine = DataFlowParameterValidation.Validate("hasTitleLine", hasTitleLine, typeof(bool), context);
+			numLoops = DataFlowParameterValidation.Validate("numLoops", numLoops, typeof(int?), context);
+			format = DataFlowParameterValidation.Validate("format", format, typeof(string), context);
+			propertyNameLine = DataFlowParameterValidation.Validate("propertyNameLine", propertyNameLine, typeof(string), context);
+			propertyNameFile = DataFlowParameterValidation.Validate("propertyNameFile", propertyNameFile, typeof(string), context);
+			dateFormat = DataFlowParameterValidation.Validate("dateFormat", dateFormat, typeof(string), context);
 			return null;
 		}
 
@@ -80,17 +77,16 @@ namespace com.espertech.esperio.file
 			CodegenClassScope classScope)
 		{
 			return new SAIFFInitializeBuilder(typeof(FileSourceFactory), GetType(), "factory", parent, symbols, classScope)
-				.Exprnode("file", _file)
-				.Exprnode("classpathFile", _classpathFile)
-				.Exprnode("hasHeaderLine", _hasHeaderLine)
-				.Exprnode("hasTitleLine", _hasTitleLine)
-				.Exprnode("numLoops", _numLoops)
-				.Constant("propertyNames", _propertyNames)
-				.Exprnode("format", _format)
-				.Exprnode("propertyNameLine", _propertyNameLine)
-				.Exprnode("propertyNameFile", _propertyNameFile)
-				.Exprnode("dateFormat", _dateFormat)
-				.Map("adapterInputSource", _adapterInputSource)
+				.Exprnode("file", file)
+				.Exprnode("hasHeaderLine", hasHeaderLine)
+				.Exprnode("hasTitleLine", hasTitleLine)
+				.Exprnode("numLoops", numLoops)
+				.Constant("propertyNames", propertyNames)
+				.Exprnode("format", format)
+				.Exprnode("propertyNameLine", propertyNameLine)
+				.Exprnode("propertyNameFile", propertyNameFile)
+				.Exprnode("dateFormat", dateFormat)
+				.Map("adapterInputSource", adapterInputSource)
 				.Eventtype("outputEventType", _outputEventType)
 				.Eventtypes("outputPortTypes", _outputPortTypes)
 				.Build();

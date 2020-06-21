@@ -113,4 +113,18 @@ namespace com.espertech.esper.common.client.meta
         /// </summary>
         EXCLUDEPLANHINTDERIVED
     }
+
+    public static class EventTypeTypeClassExtensions
+    {
+        /// <summary>
+        /// Returns true if the event type type-class represents a table.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static bool IsTable(this EventTypeTypeClass value)
+        {
+            return value == EventTypeTypeClass.TABLE_PUBLIC ||
+                   value == EventTypeTypeClass.TABLE_INTERNAL;
+        }
+    }
 } // end of namespace

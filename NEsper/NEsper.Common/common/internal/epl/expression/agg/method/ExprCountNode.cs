@@ -62,7 +62,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                 optionalFilter = positionalParams[1];
             }
 
-            return new AggregationFactoryMethodCount(this, ignoreNulls, childType);
+            var distinctValueSerde = isDistinct ? validationContext.SerdeResolver.SerdeForAggregationDistinct(childType, validationContext.StatementRawInfo) : null;
+            return new AggregationForgeFactoryCount(this, ignoreNulls, childType, distinctValueSerde);
         }
 
         public override string AggregationFunctionName {

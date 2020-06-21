@@ -23,7 +23,6 @@ namespace com.espertech.esper.common.client.soda
         private string _tableName;
         private IList<Expression> _keyExpressions;
         private string _optionalColumn;
-        private Expression _optionalAggregate;
 
         /// <summary>
         /// Ctor.
@@ -38,17 +37,14 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="tableName">the table name</param>
         /// <param name="keyExpressions">the list of key expressions for each table primary key in the same order as declared</param>
         /// <param name="optionalColumn">optional column name</param>
-        /// <param name="optionalAggregate">optional aggregation function</param>
         public TableAccessExpression(
             string tableName,
             IList<Expression> keyExpressions,
-            string optionalColumn,
-            Expression optionalAggregate)
+            string optionalColumn)
         {
-            this._tableName = tableName;
-            this._keyExpressions = keyExpressions;
-            this._optionalColumn = optionalColumn;
-            this._optionalAggregate = optionalAggregate;
+            _tableName = tableName;
+            _keyExpressions = keyExpressions;
+            _optionalColumn = optionalColumn;
         }
 
         public override ExpressionPrecedenceEnum Precedence
@@ -71,12 +67,6 @@ namespace com.espertech.esper.common.client.soda
                 writer.Write(".");
                 writer.Write(_optionalColumn);
             }
-
-            if (_optionalAggregate != null)
-            {
-                writer.Write(".");
-                _optionalAggregate.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-            }
         }
 
         /// <summary>
@@ -94,7 +84,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="tableName">table name</param>
         public TableAccessExpression SetTableName(string tableName)
         {
-            this._tableName = tableName;
+            _tableName = tableName;
             return this;
         }
 
@@ -113,7 +103,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="keyExpressions">primary key expressions</param>
         public TableAccessExpression SetKeyExpressions(IList<Expression> keyExpressions)
         {
-            this._keyExpressions = keyExpressions;
+            _keyExpressions = keyExpressions;
             return this;
         }
 
@@ -132,26 +122,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="optionalColumn">table column name or null if accessing row</param>
         public TableAccessExpression SetOptionalColumn(string optionalColumn)
         {
-            this._optionalColumn = optionalColumn;
-            return this;
-        }
-
-        /// <summary>
-        /// Returns the optional table column aggregation accessor to use.
-        /// </summary>
-        /// <returns>table column aggregation accessor</returns>
-        public Expression OptionalAggregate {
-            get => _optionalAggregate;
-            set => _optionalAggregate = value;
-        }
-
-        /// <summary>
-        /// Sets the optional table column aggregation accessor to use.
-        /// </summary>
-        /// <param name="optionalAggregate">table column aggregation accessor</param>
-        public TableAccessExpression SetOptionalAggregate(Expression optionalAggregate)
-        {
-            this._optionalAggregate = optionalAggregate;
+            _optionalColumn = optionalColumn;
             return this;
         }
     }

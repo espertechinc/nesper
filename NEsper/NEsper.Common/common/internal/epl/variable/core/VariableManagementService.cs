@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
@@ -43,7 +44,8 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         void AddVariable(
             string deploymentId,
             VariableMetaData metaData,
-            string optionalDeploymentIdContext);
+            string optionalDeploymentIdContext,
+            DataInputOutputSerde optionalSerde);
 
         /// <summary>
         ///     Returns a reader that provides access to variable values. The reader considers the

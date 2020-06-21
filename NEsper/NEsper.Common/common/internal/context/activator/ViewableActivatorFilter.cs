@@ -50,32 +50,36 @@ namespace com.espertech.esper.common.@internal.context.activator
                 agentInstanceContext.StatementContextFilterEvalEnv);
 
             EventStream theStream;
-            if (!agentInstanceContext.AuditProvider.Activated() &&
-                !agentInstanceContext.InstrumentationProvider.Activated()) {
-                theStream = CanIterate
-                    ? new ZeroDepthStreamIterable(FilterSpec.ResultEventType)
-                    : (EventStream) new ZeroDepthStreamNoIterate(FilterSpec.ResultEventType);
+            if (filterValues == null) {
+                theStream = new ZeroDepthStreamNoIterate(FilterSpec.ResultEventType);
             }
             else {
-                var streamNum = StreamNumFromClause ?? -1;
-                theStream = CanIterate
-                    ? new ZeroDepthStreamIterableWAudit(
-                        FilterSpec.ResultEventType,
-                        agentInstanceContext,
-                        FilterSpec,
-                        streamNum,
-                        isSubselect,
-                        SubselectNumber)
-                    : (EventStream) new ZeroDepthStreamNoIterateWAudit(
-                        FilterSpec.ResultEventType,
-                        agentInstanceContext,
-                        FilterSpec,
-                        streamNum,
-                        isSubselect,
-                        SubselectNumber);
+                if (!agentInstanceContext.AuditProvider.Activated() &&
+                    !agentInstanceContext.InstrumentationProvider.Activated()) {
+                    theStream = CanIterate
+                        ? new ZeroDepthStreamIterable(FilterSpec.ResultEventType)
+                        : (EventStream) new ZeroDepthStreamNoIterate(FilterSpec.ResultEventType);
+                }
+                else {
+                    var streamNum = StreamNumFromClause ?? -1;
+                    theStream = CanIterate
+                        ? new ZeroDepthStreamIterableWAudit(
+                            FilterSpec.ResultEventType,
+                            agentInstanceContext,
+                            FilterSpec,
+                            streamNum,
+                            isSubselect,
+                            SubselectNumber)
+                        : (EventStream) new ZeroDepthStreamNoIterateWAudit(
+                            FilterSpec.ResultEventType,
+                            agentInstanceContext,
+                            FilterSpec,
+                            streamNum,
+                            isSubselect,
+                            SubselectNumber);
+                }
             }
 
-            var statementId = agentInstanceContext.StatementId;
             FilterHandleCallback filterCallback;
             if (FilterSpec.OptionalPropertyEvaluator == null) {
                 filterCallback = new ProxyFilterHandleCallback {
@@ -106,12 +110,18 @@ namespace com.espertech.esper.common.@internal.context.activator
             var filterHandle = new EPStatementHandleCallbackFilter(
                 agentInstanceContext.EpStatementAgentInstanceHandle,
                 filterCallback);
-            agentInstanceContext.StatementContext.StatementContextRuntimeServices.FilterService.Add(
-                FilterSpec.FilterForEventType,
-                filterValues,
-                filterHandle);
-            var filterStopCallback = new ViewableActivatorFilterStopCallback(Container, filterHandle, FilterSpec);
-            return new ViewableActivationResult(theStream, filterStopCallback, null, false, false, null, null);
+            if (filterValues != null) {
+                agentInstanceContext
+                    .StatementContext
+                    .FilterService
+                    .Add(
+                        FilterSpec.FilterForEventType,
+                        filterValues,
+                        filterHandle);
+            }
+
+            ViewableActivatorFilterMgmtCallback stopCallback = new ViewableActivatorFilterMgmtCallback(Container, filterHandle, FilterSpec);
+            return new ViewableActivationResult(theStream, stopCallback, null, false, false, null, null, null);
         }
     }
 } // end of namespace

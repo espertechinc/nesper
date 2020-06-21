@@ -13,11 +13,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 {
     public class ExprEvalStreamNumEnumCollEval : ExprEvaluator
     {
-        private readonly ExprEnumerationEval enumeration;
+        private readonly ExprEnumerationEval _enumeration;
 
         public ExprEvalStreamNumEnumCollEval(ExprEnumerationEval enumeration)
         {
-            this.enumeration = enumeration;
+            this._enumeration = enumeration;
         }
 
         public object Evaluate(
@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return enumeration.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context);
+            return _enumeration.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context);
         }
     }
 } // end of namespace

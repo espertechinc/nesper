@@ -32,5 +32,7 @@ namespace com.espertech.esper.common.@internal.context.module
         public ModuleIndexMeta[] PathIndexes { get; set; }
 
         public NameParamNumAndModule[] PathScripts { get; set; }
+        
+        public NameAndModule[] PathClasses { get; set; }
     }
 } // end of namespace

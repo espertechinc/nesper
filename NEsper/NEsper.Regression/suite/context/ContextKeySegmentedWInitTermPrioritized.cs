@@ -12,7 +12,6 @@ using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -20,7 +19,7 @@ using com.espertech.esper.regressionlib.support.context;
 
 using NUnit.Framework;
 
-using static com.espertech.esper.regressionlib.support.filter.SupportFilterHelper;
+using static com.espertech.esper.regressionlib.support.filter.SupportFilterServiceHelper;
 
 namespace com.espertech.esper.regressionlib.suite.context
 {
@@ -226,7 +225,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fields,
                     new object[] {"A", 11 + 12});
 
-                AssertFilterCount(env, 1, "ctx");
+                AssertFilterSvcCount(env, 1, "ctx");
                 env.UndeployAll();
             }
         }
@@ -283,7 +282,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fields,
                     new object[] {"A", 1 + 4 + 6L});
 
-                AssertFilterCount(env, 1, "ctx");
+                AssertFilterSvcCount(env, 1, "ctx");
                 env.UndeployAll();
             }
 
@@ -345,7 +344,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fields,
                     new object[] {null, 2, "B", 12});
 
-                AssertFilterCount(env, 2, "ctx");
+                AssertFilterSvcCount(env, 2, "ctx");
                 env.UndeployAll();
             }
         }
@@ -448,12 +447,12 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fields,
                     new object[] {"C", 0L});
 
-                AssertFilterCount(env, 2, "ctx");
+                AssertFilterSvcCount(env, 2, "ctx");
                 env.UndeployModuleContaining("s0");
 
                 env.Milestone(2);
 
-                AssertFilterCount(env, 0, "ctx");
+                AssertFilterSvcCount(env, 0, "ctx");
                 env.UndeployAll();
             }
         }
@@ -616,9 +615,9 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fields,
                     new object[] {"A", 40});
 
-                AssertFilterCount(env, 1, "ctx");
+                AssertFilterSvcCount(env, 1, "ctx");
                 env.UndeployModuleContaining("s0");
-                AssertFilterCount(env, 0, "ctx");
+                AssertFilterSvcCount(env, 0, "ctx");
                 env.UndeployAll();
             }
         }
@@ -674,7 +673,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fields,
                     new object[] {"A", 3L});
 
-                Assert.AreEqual(3, GetFilterCountApprox(env));
+                Assert.AreEqual(3, GetFilterSvcCountApprox(env));
                 env.UndeployAll();
             }
         }
@@ -735,7 +734,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fields,
                     new object[] {"B", 1, 31L});
 
-                AssertFilterCount(env, 1, "ctx");
+                AssertFilterSvcCount(env, 1, "ctx");
                 env.UndeployAll();
             }
         }
@@ -785,7 +784,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     new[] {new object[] {"A", 1L}});
 
                 env.UndeployModuleContaining("s0");
-                AssertFilterCount(env, 0, "ctx");
+                AssertFilterSvcCount(env, 0, "ctx");
                 env.UndeployAll();
             }
         }
@@ -827,7 +826,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.SendEventBean(new SupportBean("A", 0));
                 env.UndeployModuleContaining("s0");
-                AssertFilterCount(env, 0, "ctx");
+                AssertFilterSvcCount(env, 0, "ctx");
                 env.UndeployAll();
             }
         }

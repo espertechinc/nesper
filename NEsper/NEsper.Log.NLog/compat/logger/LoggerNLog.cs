@@ -14,8 +14,6 @@ using NLog.Targets;
 
 namespace com.espertech.esper.compat.logging
 {
-    using LogManager = LogManager;
-
     /// <summary>
     /// A logger implementation based on NLog.
     /// </summary>

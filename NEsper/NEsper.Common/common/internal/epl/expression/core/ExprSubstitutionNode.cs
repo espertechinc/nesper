@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using System.Text;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -20,7 +21,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.compile.stage3.StmtClassForgableAIFactoryProviderBase;
+using static com.espertech.esper.common.@internal.compile.stage3.StmtClassForgeableAIFactoryProviderBase;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
@@ -74,9 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public ExprNodeRenderable ExprForgeRenderable {
             get {
                 return new ProxyExprNodeRenderable {
-                    ProcToEPL = (
-                        writer,
-                        _) => writer.Write("?")
+                    ProcToEPL = (writer, _, flags) => writer.Write("?")
                 };
             }
         }
@@ -111,7 +110,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     try {
                         ResolvedType = validationContext.ImportService.ResolveClass(
                             OptionalType.ClassIdentifier,
-                            false);
+                            false,
+                            validationContext.ClassProvidedExtension);
                     }
                     catch (ImportException e) {
                         throw new ExprValidationException(
@@ -147,7 +147,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write("?");
         }
@@ -166,6 +168,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             return _field;
+        }
+
+        public void RenderForFilterPlan(StringBuilder stringBuilder)
+        {
+            stringBuilder.Append("substitution parameter");
+            if (OptionalName != null) {
+                stringBuilder
+                    .Append(" name '")
+                    .Append(OptionalName)
+                    .Append("'");
+            }
+
+            if (OptionalType != null) {
+                stringBuilder
+                    .Append(" type '")
+                    .Append(OptionalType.ToEPL())
+                    .Append("'");
+            }
         }
     }
 } // end of namespace

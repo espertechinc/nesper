@@ -19,8 +19,8 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
     /// </summary>
     public class QueryGraphRangeUtil
     {
-        private static readonly IDictionary<HashableMultiKey, QueryGraphRangeConsolidateDesc> OPS_TABLE =
-            new Dictionary<HashableMultiKey, QueryGraphRangeConsolidateDesc>();
+        private static readonly IDictionary<UniformPair<QueryGraphRangeEnum>, QueryGraphRangeConsolidateDesc> OPS_TABLE =
+            new Dictionary<UniformPair<QueryGraphRangeEnum>, QueryGraphRangeConsolidateDesc>();
 
         static QueryGraphRangeUtil()
         {
@@ -44,11 +44,11 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             OPS_TABLE.Put(keyRev, new QueryGraphRangeConsolidateDesc(range, true));
         }
 
-        private static HashableMultiKey GetKey(
+        private static UniformPair<QueryGraphRangeEnum> GetKey(
             QueryGraphRangeEnum op1,
             QueryGraphRangeEnum op2)
         {
-            return new HashableMultiKey(new object[] {op1, op2});
+            return new UniformPair<QueryGraphRangeEnum>(op1, op2);
         }
 
         public static QueryGraphRangeConsolidateDesc GetCanConsolidate(

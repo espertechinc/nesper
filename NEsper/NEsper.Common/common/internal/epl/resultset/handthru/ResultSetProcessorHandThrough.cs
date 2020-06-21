@@ -29,13 +29,23 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             var oldEvents = ConstantNull();
             if (prototype.IsSelectRStream) {
                 oldEvents = StaticMethod(
-                    typeof(ResultSetProcessorHandThroughUtil), METHOD_GETSELECTEVENTSNOHAVINGHANDTHRUJOIN, REF_SELECTEXPRPROCESSOR, REF_OLDDATA,
-                    Constant(false), REF_ISSYNTHESIZE, REF_AGENTINSTANCECONTEXT);
+                    typeof(ResultSetProcessorHandThroughUtil),
+                    METHOD_GETSELECTEVENTSNOHAVINGHANDTHRUJOIN,
+                    MEMBER_SELECTEXPRPROCESSOR,
+                    REF_OLDDATA,
+                    Constant(false),
+                    REF_ISSYNTHESIZE,
+                    MEMBER_AGENTINSTANCECONTEXT);
             }
 
             var newEvents = StaticMethod(
-                typeof(ResultSetProcessorHandThroughUtil), METHOD_GETSELECTEVENTSNOHAVINGHANDTHRUJOIN, REF_SELECTEXPRPROCESSOR, REF_NEWDATA,
-                Constant(true), REF_ISSYNTHESIZE, REF_AGENTINSTANCECONTEXT);
+                typeof(ResultSetProcessorHandThroughUtil),
+                METHOD_GETSELECTEVENTSNOHAVINGHANDTHRUJOIN,
+                MEMBER_SELECTEXPRPROCESSOR,
+                REF_NEWDATA,
+                Constant(true),
+                REF_ISSYNTHESIZE,
+                MEMBER_AGENTINSTANCECONTEXT);
 
             method.Block
                 .DeclareVar<EventBean[]>("selectOldEvents", oldEvents)
@@ -50,13 +60,23 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             var oldEvents = ConstantNull();
             if (prototype.IsSelectRStream) {
                 oldEvents = StaticMethod(
-                    typeof(ResultSetProcessorHandThroughUtil), METHOD_GETSELECTEVENTSNOHAVINGHANDTHRUVIEW, REF_SELECTEXPRPROCESSOR, REF_OLDDATA,
-                    Constant(false), REF_ISSYNTHESIZE, REF_AGENTINSTANCECONTEXT);
+                    typeof(ResultSetProcessorHandThroughUtil),
+                    METHOD_GETSELECTEVENTSNOHAVINGHANDTHRUVIEW,
+                    MEMBER_SELECTEXPRPROCESSOR,
+                    REF_OLDDATA,
+                    Constant(false),
+                    REF_ISSYNTHESIZE,
+                    MEMBER_AGENTINSTANCECONTEXT);
             }
 
             var newEvents = StaticMethod(
-                typeof(ResultSetProcessorHandThroughUtil), METHOD_GETSELECTEVENTSNOHAVINGHANDTHRUVIEW, REF_SELECTEXPRPROCESSOR, REF_NEWDATA,
-                Constant(true), REF_ISSYNTHESIZE, REF_AGENTINSTANCECONTEXT);
+                typeof(ResultSetProcessorHandThroughUtil),
+                METHOD_GETSELECTEVENTSNOHAVINGHANDTHRUVIEW,
+                MEMBER_SELECTEXPRPROCESSOR,
+                REF_NEWDATA,
+                Constant(true),
+                REF_ISSYNTHESIZE,
+                MEMBER_AGENTINSTANCECONTEXT);
 
             method.Block
                 .DeclareVar<EventBean[]>("selectOldEvents", oldEvents)
@@ -78,8 +98,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
                 .DeclareVar<UniformPair<EventBean[]>>(
                     "result",
                     ExprDotMethod(
-                        Ref("this"), "ProcessJoinResult", REF_JOINSET,
-                        StaticMethod(typeof(Collections), "GetEmptySet", new[] { typeof(MultiKey<EventBean>) }),
+                        Ref("this"),
+                        "ProcessJoinResult",
+                        REF_JOINSET,
+                        StaticMethod(typeof(Collections), "GetEmptySet", new[] {typeof(MultiKeyArrayOfKeys<EventBean>)}),
                         Constant(true)))
                 .MethodReturn(
                     NewInstance<ArrayEventEnumerator>(

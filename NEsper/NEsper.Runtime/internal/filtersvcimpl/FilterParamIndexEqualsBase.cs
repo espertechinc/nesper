@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
@@ -59,10 +58,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         {
             foreach (var entry in ConstantsMap)
             {
-                evaluatorStack.Add(new FilterItem(
-                    Lookupable.Expression, 
-                    FilterOperator,
-                    entry.Key));
+                evaluatorStack.Add(new FilterItem(Lookupable.Expression, FilterOperator, entry.Key, this));
                 entry.Value.GetTraverseStatement(traverse, statementIds, evaluatorStack);
                 evaluatorStack.RemoveLast();
             }

@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.controller.initterm;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -37,6 +38,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         public bool IsOverlapping { get; }
 
         public ExprNode[] DistinctExpressions { get; }
+        
+        public MultiKeyClassRef DistinctMultiKey { get; set; }
 
         public CodegenExpression MakeCodegen(
             CodegenMethodScope parent,
@@ -45,29 +48,19 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         {
             var method = parent.MakeChild(typeof(ContextControllerDetailInitiatedTerminated), GetType(), classScope);
 
+            var distinctEval = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(
+                DistinctExpressions, null, DistinctMultiKey, method, classScope);
+
             method.Block
                 .DeclareVar<ContextControllerDetailInitiatedTerminated>(
                     "detail",
                     NewInstance(typeof(ContextControllerDetailInitiatedTerminated)))
                 .SetProperty(Ref("detail"), "StartCondition", StartCondition.Make(method, symbols, classScope))
                 .SetProperty(Ref("detail"), "EndCondition", EndCondition.Make(method, symbols, classScope))
-                .SetProperty(Ref("detail"), "IsOverlapping", Constant(IsOverlapping));
-            if (DistinctExpressions != null && DistinctExpressions.Length > 0) {
-                method.Block
-                    .SetProperty(
-                        Ref("detail"),
-                        "DistinctEval",
-                        ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
-                            ExprNodeUtilityQuery.GetForges(DistinctExpressions),
-                            null,
-                            method,
-                            GetType(),
-                            classScope))
-                    .SetProperty(
-                        Ref("detail"),
-                        "DistinctTypes",
-                        Constant(ExprNodeUtilityQuery.GetExprResultTypes(DistinctExpressions)));
-            }
+                .SetProperty(Ref("detail"), "IsOverlapping", Constant(IsOverlapping))
+                .SetProperty(Ref("detail"), "DistinctEval", distinctEval)
+                .SetProperty(Ref("detail"), "DistinctTypes", DistinctExpressions == null ? ConstantNull() : Constant(ExprNodeUtilityQuery.GetExprResultTypes(DistinctExpressions)))
+                .SetProperty(Ref("detail"), "DistinctSerde", DistinctMultiKey == null ? ConstantNull() : DistinctMultiKey.GetExprMKSerde(method, classScope));
 
             method.Block.MethodReturn(Ref("detail"));
             return LocalMethod(method);

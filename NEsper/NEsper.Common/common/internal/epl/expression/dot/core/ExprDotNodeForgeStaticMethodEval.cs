@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
@@ -17,6 +18,8 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -35,10 +38,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         private readonly ExprDotEval[] _chainEval;
         private readonly ExprEvaluator[] _childEvals;
         private readonly ExprDotNodeForgeStaticMethod _forge;
-#if NOT_USED
-        private object _cachedResult;
-        private bool _isCachedResult;
-#endif
         public ExprDotNodeForgeStaticMethodEval(
             ExprDotNodeForgeStaticMethod forge,
             ExprEvaluator[] childEvals,
@@ -59,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             // The method is static so the object it is invoked on
             // can be null
             try {
-                return _forge.StaticMethod.Invoke(_forge.TargetObject, args);
+                return _forge.StaticMethod.Invoke(_forge.TargetObject?.Value, args);
             }
             catch (Exception e) when (e is TargetException || e is MemberAccessException) {
                 StaticMethodEvalHandleInvocationException(
@@ -89,7 +88,56 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
+            var args = new object[_childEvals.Length];
+            for (var i = 0; i < args.Length; i++) {
+                args[i] = _childEvals[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            }
+
+            // The method is static so the object it is invoked on can be null
+            try {
+                var target = _forge.TargetObject?.Value;
+                var argList = new List<object>(args);
+                if (_forge.StaticMethod.IsExtensionMethod()) {
+                    argList.Insert(0, target);
+                    target = null;
+                }
+                
+                var result = _forge.StaticMethod.Invoke(target, argList.ToArray());
+
+                result = ExprDotNodeUtility.EvaluateChainWithWrap(
+                    _forge.ResultWrapLambda,
+                    result,
+                    null,
+                    _forge.StaticMethod.ReturnType,
+                    _chainEval,
+                    _forge.ChainForges,
+                    eventsPerStream,
+                    isNewData,
+                    exprEvaluatorContext);
+
+                return result;
+            }
+            catch (TargetInvocationException e) {
+                StaticMethodEvalHandleInvocationException(
+                    null,
+                    _forge.StaticMethod.Name,
+                    _forge.StaticMethod.GetParameterTypes(),
+                    _forge.ClassOrPropertyName,
+                    args,
+                    e,
+                    _forge.IsRethrowExceptions);
+            }
+            catch (TargetException e) {
+                StaticMethodEvalHandleInvocationException(
+                    null,
+                    _forge.StaticMethod.Name,
+                    _forge.StaticMethod.GetParameterTypes(),
+                    _forge.ClassOrPropertyName,
+                    args,
+                    e,
+                    _forge.IsRethrowExceptions);
+            }
+            return null;
         }
 
         public static CodegenExpression CodegenExprEval(

@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
     /// </summary>
     public class IntersectBatchView : ViewSupport,
         LastPostObserver,
-        AgentInstanceStopCallback,
+        AgentInstanceMgmtCallback,
         DataWindowView,
         IntersectViewMarker,
         ViewDataVisitableContainer
@@ -66,9 +66,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
         public void Stop(AgentInstanceStopServices services)
         {
             foreach (var view in views) {
-                if (view is AgentInstanceStopCallback) {
-                    ((AgentInstanceStopCallback) view).Stop(services);
-                }
+                (view as AgentInstanceMgmtCallback)?.Stop(services);
             }
         }
 
@@ -240,6 +238,10 @@ namespace com.espertech.esper.common.@internal.view.intersect
         public void VisitViewContainer(ViewDataVisitorContained viewDataVisitor)
         {
             IntersectDefaultView.VisitViewContained(viewDataVisitor, factory, views);
+        }
+        
+        public void Transfer(AgentInstanceTransferServices services)
+        {
         }
     }
 } // end of namespace

@@ -56,17 +56,24 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             EPStatementInitServices services)
         {
             string deploymentId;
-            if (visibility == NameAccessModifier.PRIVATE) {
-                deploymentId = services.DeploymentId;
-            }
-            else if (visibility == NameAccessModifier.PUBLIC) {
-                deploymentId = services.NamedWindowPathRegistry.GetDeploymentId(tableName, optionalModuleName);
-                if (deploymentId == null) {
-                    throw new EPException("Failed to resolve path named window '" + tableName + "'");
+            switch (visibility) {
+                case NameAccessModifier.PRIVATE:
+                    deploymentId = services.DeploymentId;
+                    break;
+
+                case NameAccessModifier.PUBLIC:
+                case NameAccessModifier.INTERNAL:
+                {
+                    deploymentId = services.NamedWindowPathRegistry.GetDeploymentId(tableName, optionalModuleName);
+                    if (deploymentId == null) {
+                        throw new EPException("Failed to resolve path named window '" + tableName + "'");
+                    }
+
+                    break;
                 }
-            }
-            else {
-                throw new ArgumentException("Unrecognized visibility " + visibility);
+
+                default:
+                    throw new ArgumentException("Unrecognized visibility " + visibility);
             }
 
             return deploymentId;

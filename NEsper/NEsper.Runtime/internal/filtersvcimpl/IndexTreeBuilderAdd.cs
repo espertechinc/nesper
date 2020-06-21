@@ -6,11 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Reflection;
 using System.Threading;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.common.@internal.util;
@@ -119,7 +117,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 var parameterPickedForIndex = remainingParameters.RemoveFirst();
                 var index = IndexFactory.CreateIndex(parameterPickedForIndex.Lookupable, lockFactory, parameterPickedForIndex.FilterOperator);
 
-                currentNode.Indizes.Add(index);
+                currentNode.Add(index);
                 AddToIndex(remainingParameters, filterCallback, index, parameterPickedForIndex.FilterForValue, lockFactory);
             }
         }

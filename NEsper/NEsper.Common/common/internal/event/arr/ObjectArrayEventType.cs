@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.@internal.@event.bean.service;
@@ -23,8 +22,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
 {
     public class ObjectArrayEventType : BaseNestableEventType
     {
-        internal IDictionary<string, Pair<EventPropertyDescriptor, ObjectArrayEventBeanPropertyWriter>> propertyWriters;
-        internal EventPropertyDescriptor[] writablePropertyDescriptors;
+        private IDictionary<string, Pair<EventPropertyDescriptor, ObjectArrayEventBeanPropertyWriter>> propertyWriters;
+        private EventPropertyDescriptor[] writablePropertyDescriptors;
 
         public ObjectArrayEventType(
             EventTypeMetadata metadata,
@@ -42,7 +41,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 startTimestampName,
                 endTimestampName,
                 GetGetterFactory(metadata.Name, propertyTypes, optionalSuperTypes),
-                beanEventTypeFactory)
+                beanEventTypeFactory,
+                false)
         {
         }
 
@@ -51,8 +51,6 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public override Type UnderlyingType => typeof(object[]);
 
-        public override EventBeanReader Reader => null;
-
         public override EventPropertyDescriptor[] WriteableProperties {
             get {
                 if (writablePropertyDescriptors == null) {
@@ -60,21 +58,6 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 }
 
                 return writablePropertyDescriptors;
-            }
-        }
-
-        internal override void PostUpdateNestableTypes()
-        {
-            var factory = (EventTypeNestableGetterFactoryObjectArray) GetterFactory;
-            var indexPerProperty = factory.PropertiesIndex;
-            var index = FindMax(indexPerProperty) + 1;
-            foreach (var entry in NestableTypes) {
-                if (indexPerProperty.ContainsKey(entry.Key)) {
-                    continue;
-                }
-
-                indexPerProperty.Put(entry.Key, index);
-                index++;
             }
         }
 
@@ -88,7 +71,6 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
             return new ObjectArrayEventBeanCopyMethodWithArrayMapForge(
                 this,
-                BeanEventTypeFactory.EventBeanTypedEventFactory,
                 pair.MapProperties,
                 pair.ArrayProperties,
                 PropertiesIndexes);
@@ -264,18 +246,6 @@ namespace com.espertech.esper.common.@internal.@event.arr
             }
 
             return new EventTypeNestableGetterFactoryObjectArray(eventTypeName, indexPerProperty);
-        }
-
-        private static int FindMax(IDictionary<string, int> indexPerProperty)
-        {
-            var max = -1;
-            foreach (var entry in indexPerProperty) {
-                if (entry.Value > max) {
-                    max = entry.Value;
-                }
-            }
-
-            return max;
         }
 
         public static object[] ConvertEvent(

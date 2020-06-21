@@ -7,111 +7,149 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
 
+using NUnit.Framework;
+
 namespace com.espertech.esper.regressionlib.suite.expr.datetime
 {
-    public class ExprDTToDateMSec : RegressionExecution
+    public class ExprDTToDateMSec
     {
-        public void Run(RegressionEnvironment env)
+        public static ICollection<RegressionExecution> Executions() {
+            List<RegressionExecution> executions = new List<RegressionExecution>();
+            executions.Add(new ExprToDateTimeExChain());
+            executions.Add(new ExprDTToDateTimeExMSecValue());
+            return executions;
+        }
+
+        public class ExprToDateTimeExChain : RegressionExecution
         {
-            var startTime = "2002-05-30T09:00:00.000";
-            env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(startTime));
+            public void Run(RegressionEnvironment env)
+            {
+                env.AdvanceTime(0);
+                env.CompileDeploy("@Name('s0') select current_timestamp.toDateTimeEx().AddDays(1) as c from SupportBean");
+                env.AddListener("s0");
 
-            string[] fields = {
-                "val1a", "val1b", "val1c", "val1d", "val1e",
-                "val2a", "val2b", "val2c", "val2d", "val2e",
-                "val3a", "val3b", "val3c", "val3d", "val3e",
-                "val4a", "val4b", "val4c", "val4d", "val4e",
-            };
+                env.SendEventBean(new SupportBean("E1", 0));
 
-            var eplFragment =
-                "@Name('s0') select " +
+                var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
+                Assert.That(theEvent, Is.Not.Null);
+                Assert.That(theEvent.Get("c"), Is.InstanceOf<DateTimeEx>());
 
-                "current_timestamp.toDateTime() as val1a," +
-                "LongDate.toDateTime() as val1b," +
-                "DateTimeEx.toDateTime() as val1c," +
-                "DateTimeOffset.toDateTime() as val1d," +
-                "DateTimeEx.toDateTime() as val1e," +
+                var expDateTime = DateTimeEx.UtcInstance(0).AddDays(1);
+                var theDateTime = (DateTimeEx) theEvent.Get("c");
+                Assert.That(theDateTime, Is.EqualTo(expDateTime));
 
-                "current_timestamp.toDateTimeOffset() as val2a," +
-                "LongDate.toDateTimeOffset() as val2b," +
-                "DateTime.toDateTimeOffset() as val2c," +
-                "DateTimeOffset.toDateTimeOffset() as val2d," +
-                "DateTimeEx.toDateTimeOffset() as val2e," +
+                env.UndeployAll();
+            }
+        }
 
-                "current_timestamp.toDateTimeEx() as val3a," +
-                "LongDate.toDateTimeEx() as val3b," +
-                "DateTime.toDateTimeEx() as val3c," +
-                "DateTimeOffset.toDateTimeEx() as val3d," +
-                "DateTimeEx.toDateTimeEx() as val3e," +
+        public class ExprDTToDateTimeExMSecValue : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.CompileDeploy("select current_timestamp.toDateTimeEx().AddDays(1) from SupportBean");
 
-                "current_timestamp.toMillisec() as val4a," +
-                "LongDate.toMillisec() as val4b," +
-                "DateTime.toMillisec() as val4c," +
-                "DateTimeOffset.toMillisec() as val4d," +
-                "DateTimeEx.toMillisec() as val4e" +
+                var startTime = "2002-05-30T09:00:00.000";
+                env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(startTime));
 
-                " from SupportDateTime";
+                string[] fields = {
+                    "val1a", "val1b", "val1c", "val1d", "val1e",
+                    "val2a", "val2b", "val2c", "val2d", "val2e",
+                    "val3a", "val3b", "val3c", "val3d", "val3e",
+                    "val4a", "val4b", "val4c", "val4d", "val4e",
+                };
 
-            env.CompileDeploy(eplFragment).AddListener("s0");
-            LambdaAssertionUtil.AssertTypes(
-                env.Statement("s0").EventType,
-                fields,
-                new[] {
-                    typeof(DateTime?),
-                    typeof(DateTime?),
-                    typeof(DateTime?),
-                    typeof(DateTime?),
-                    typeof(DateTime?),
+                var eplFragment =
+                    "@Name('s0') select " +
 
-                    typeof(DateTimeOffset?),
-                    typeof(DateTimeOffset?),
-                    typeof(DateTimeOffset?),
-                    typeof(DateTimeOffset?),
-                    typeof(DateTimeOffset?),
+                    "current_timestamp.toDateTime() as val1a," +
+                    "LongDate.toDateTime() as val1b," +
+                    "DateTimeEx.toDateTime() as val1c," +
+                    "DateTimeOffset.toDateTime() as val1d," +
+                    "DateTimeEx.toDateTime() as val1e," +
 
-                    typeof(DateTimeEx),
-                    typeof(DateTimeEx),
-                    typeof(DateTimeEx),
-                    typeof(DateTimeEx),
-                    typeof(DateTimeEx),
+                    "current_timestamp.toDateTimeOffset() as val2a," +
+                    "LongDate.toDateTimeOffset() as val2b," +
+                    "DateTime.toDateTimeOffset() as val2c," +
+                    "DateTimeOffset.toDateTimeOffset() as val2d," +
+                    "DateTimeEx.toDateTimeOffset() as val2e," +
 
-                    typeof(long?),
-                    typeof(long?),
-                    typeof(long?),
-                    typeof(long?),
-                    typeof(long?)
-                });
+                    "current_timestamp.toDateTimeEx() as val3a," +
+                    "LongDate.toDateTimeEx() as val3b," +
+                    "DateTime.toDateTimeEx() as val3c," +
+                    "DateTimeOffset.toDateTimeEx() as val3d," +
+                    "DateTimeEx.toDateTimeEx() as val3e," +
 
-            env.SendEventBean(SupportDateTime.Make(startTime));
+                    "current_timestamp.toMillisec() as val4a," +
+                    "LongDate.toMillisec() as val4b," +
+                    "DateTime.toMillisec() as val4c," +
+                    "DateTimeOffset.toMillisec() as val4d," +
+                    "DateTimeEx.toMillisec() as val4e" +
 
-            var expected = EPAssertionUtil.ConcatenateArray(
-                SupportDateTime.GetArrayCoerced(startTime, "date".Repeat(5)),
-                SupportDateTime.GetArrayCoerced(startTime, "dto".Repeat(5)),
-                SupportDateTime.GetArrayCoerced(startTime, "dtx".Repeat(5)),
-                SupportDateTime.GetArrayCoerced(startTime, "long".Repeat(5)));
+                    " from SupportDateTime";
 
-            EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, expected);
+                env.CompileDeploy(eplFragment).AddListener("s0");
+                LambdaAssertionUtil.AssertTypes(
+                    env.Statement("s0").EventType,
+                    fields,
+                    new[] {
+                        typeof(DateTime?),
+                        typeof(DateTime?),
+                        typeof(DateTime?),
+                        typeof(DateTime?),
+                        typeof(DateTime?),
 
-            env.SendEventBean(SupportDateTime.Make(null));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new[] {
-                    SupportDateTime.GetValueCoerced(startTime, "date"), null, null, null, null,
-                    SupportDateTime.GetValueCoerced(startTime, "dto"), null, null, null, null,
-                    SupportDateTime.GetValueCoerced(startTime, "dtx"), null, null, null, null,
-                    SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null, null
-                });
+                        typeof(DateTimeOffset?),
+                        typeof(DateTimeOffset?),
+                        typeof(DateTimeOffset?),
+                        typeof(DateTimeOffset?),
+                        typeof(DateTimeOffset?),
 
-            env.UndeployAll();
+                        typeof(DateTimeEx),
+                        typeof(DateTimeEx),
+                        typeof(DateTimeEx),
+                        typeof(DateTimeEx),
+                        typeof(DateTimeEx),
+
+                        typeof(long?),
+                        typeof(long?),
+                        typeof(long?),
+                        typeof(long?),
+                        typeof(long?)
+                    });
+
+                env.SendEventBean(SupportDateTime.Make(startTime));
+
+                var expected = EPAssertionUtil.ConcatenateArray(
+                    SupportDateTime.GetArrayCoerced(startTime, "date".Repeat(5)),
+                    SupportDateTime.GetArrayCoerced(startTime, "dto".Repeat(5)),
+                    SupportDateTime.GetArrayCoerced(startTime, "dtx".Repeat(5)),
+                    SupportDateTime.GetArrayCoerced(startTime, "long".Repeat(5)));
+
+                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, expected);
+
+                env.SendEventBean(SupportDateTime.Make(null));
+                EPAssertionUtil.AssertProps(
+                    env.Listener("s0").AssertOneGetNewAndReset(),
+                    fields,
+                    new[] {
+                        SupportDateTime.GetValueCoerced(startTime, "date"), null, null, null, null,
+                        SupportDateTime.GetValueCoerced(startTime, "dto"), null, null, null, null,
+                        SupportDateTime.GetValueCoerced(startTime, "dtx"), null, null, null, null,
+                        SupportDateTime.GetValueCoerced(startTime, "long"), null, null, null, null
+                    });
+
+                env.UndeployAll();
+            }
         }
     }
 } // end of namespace

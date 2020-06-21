@@ -8,24 +8,23 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.common.@internal.epl.variable.core;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.variable.compiletime
 {
     public class VariableCompileTimeResolverImpl : VariableCompileTimeResolver
     {
-        private readonly string moduleName;
-        private readonly ICollection<string> moduleUses;
-        private readonly VariableRepositoryPreconfigured publicVariables;
-        private readonly VariableCompileTimeRegistry compileTimeRegistry;
-        private readonly PathRegistry<string, VariableMetaData> pathVariables;
-        private readonly ModuleDependenciesCompileTime moduleDependencies;
+        private readonly string _moduleName;
+        private readonly ICollection<string> _moduleUses;
+        private readonly VariableRepositoryPreconfigured _publicVariables;
+        private readonly VariableCompileTimeRegistry _compileTimeRegistry;
+        private readonly PathRegistry<string, VariableMetaData> _pathVariables;
+        private readonly ModuleDependenciesCompileTime _moduleDependencies;
+        private readonly bool _isFireAndForget;
 
         public VariableCompileTimeResolverImpl(
             string moduleName,
@@ -33,21 +32,23 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
             VariableRepositoryPreconfigured publicVariables,
             VariableCompileTimeRegistry compileTimeRegistry,
             PathRegistry<string, VariableMetaData> pathVariables,
-            ModuleDependenciesCompileTime moduleDependencies)
+            ModuleDependenciesCompileTime moduleDependencies,
+            bool isFireAndForget)
         {
-            this.moduleName = moduleName;
-            this.moduleUses = moduleUses;
-            this.publicVariables = publicVariables;
-            this.compileTimeRegistry = compileTimeRegistry;
-            this.pathVariables = pathVariables;
-            this.moduleDependencies = moduleDependencies;
+            _moduleName = moduleName;
+            _moduleUses = moduleUses;
+            _publicVariables = publicVariables;
+            _compileTimeRegistry = compileTimeRegistry;
+            _pathVariables = pathVariables;
+            _moduleDependencies = moduleDependencies;
+            _isFireAndForget = isFireAndForget;
         }
 
         public VariableMetaData Resolve(string variableName)
         {
-            VariableMetaData local = compileTimeRegistry.GetVariable(variableName);
-            VariableMetaData path = ResolvePath(variableName);
-            VariableMetaData preconfigured = ResolvePreconfigured(variableName);
+            var local = _compileTimeRegistry.GetVariable(variableName);
+            var path = ResolvePath(variableName);
+            var preconfigured = ResolvePreconfigured(variableName);
 
             return CompileTimeResolverUtil.ValidateAmbiguous(
                 local,
@@ -59,31 +60,32 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
 
         private VariableMetaData ResolvePreconfigured(string variableName)
         {
-            VariableMetaData metadata = publicVariables.GetMetadata(variableName);
+            var metadata = _publicVariables.GetMetadata(variableName);
             if (metadata == null) {
                 return null;
             }
 
-            moduleDependencies.AddPublicVariable(variableName);
+            _moduleDependencies.AddPublicVariable(variableName);
             return metadata;
         }
 
         private VariableMetaData ResolvePath(string variableName)
         {
             try {
-                Pair<VariableMetaData, string> pair = pathVariables.GetAnyModuleExpectSingle(variableName, moduleUses);
+                var pair = _pathVariables.GetAnyModuleExpectSingle(variableName, _moduleUses);
                 if (pair == null) {
                     return null;
                 }
 
-                if (!NameAccessModifierExtensions.Visible(
-                    pair.First.VariableVisibility,
-                    pair.First.VariableModuleName,
-                    moduleName)) {
+                if (!_isFireAndForget &&
+                    !NameAccessModifierExtensions.Visible(
+                        pair.First.VariableVisibility,
+                        pair.First.VariableModuleName,
+                        _moduleName)) {
                     return null;
                 }
 
-                moduleDependencies.AddPathVariable(variableName, pair.Second);
+                _moduleDependencies.AddPathVariable(variableName, pair.Second);
                 return pair.First;
             }
             catch (PathException e) {

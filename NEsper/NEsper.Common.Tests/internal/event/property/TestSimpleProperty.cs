@@ -10,8 +10,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.@event;
-using com.espertech.esper.common.@internal.supportunit.util;
-using com.espertech.esper.container;
+
 using NUnit.Framework;
 
 using static com.espertech.esper.common.@internal.@event.core.EventBeanTypedEventFactoryCompileTime;
@@ -39,7 +38,7 @@ namespace com.espertech.esper.common.@internal.@event.property
             eventType = (BeanEventType) theEvent.EventType;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetGetter()
         {
             EventPropertyGetter getter = prop.GetGetter(eventType, INSTANCE, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY);
@@ -50,7 +49,7 @@ namespace com.espertech.esper.common.@internal.@event.property
             Assert.IsNull(invalidPropIndexed.GetGetter(eventType, INSTANCE, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetPropertyType()
         {
             Assert.AreEqual(typeof(string), prop.GetPropertyType(eventType, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));

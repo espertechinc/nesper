@@ -14,6 +14,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
@@ -52,6 +53,11 @@ namespace com.espertech.esper.regressionlib.suite.context
             execs.Add(new ContextKeySegmentedInvalid());
             execs.Add(new ContextKeySegmentedTermByFilter());
             execs.Add(new ContextKeySegmentedMatchRecognize());
+            execs.Add(new ContextKeySegmentedMultikeyWArrayOfPrimitive());
+            execs.Add(new ContextKeySegmentedMultikeyWArrayTwoField());
+            execs.Add(new ContextKeySegmentedWInitTermEndEvent());
+            execs.Add(new ContextKeySegmentedWPatternFireWhenAllocated());
+
             return execs;
         }
 
@@ -134,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             Assert.IsFalse(env.Listener("s0").IsInvoked);
         }
 
-        private static void SendSBEvent(
+        private static SupportBean SendSBEvent(
             RegressionEnvironment env,
             string @string,
             int? intBoxed,
@@ -143,6 +149,189 @@ namespace com.espertech.esper.regressionlib.suite.context
             var bean = new SupportBean(@string, intPrimitive);
             bean.IntBoxed = intBoxed;
             env.SendEventBean(bean);
+            return bean;
+        }
+
+        private static SupportBean SendSBEvent(
+            RegressionEnvironment env,
+            string @string,
+            int intPrimitive)
+        {
+            return SendSBEvent(env, @string, null, intPrimitive);
+        }
+
+        private class ContextKeySegmentedWInitTermEndEvent : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "create context MyContext partition by TheString from SupportBean\n" +
+                          "initiated by SupportBean(IntPrimitive = 1) as startevent\n" +
+                          "terminated by SupportBean(IntPrimitive = 0) as endevent;\n" +
+                          "@Name('s0') context MyContext select context.startevent as c0, context.endevent as c1 from SupportBean output all when terminated;\n";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SupportBean sb1 = SendSBEvent(env, "A", 1);
+                SupportBean sb2 = SendSBEvent(env, "A", 0);
+
+                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "c0,c1".SplitCsv(), new object[] {sb1, sb2});
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ContextKeySegmentedWPatternFireWhenAllocated : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "create context MyContext partition by TheString from SupportBean;\n" +
+                          "@Name('s0') context MyContext select context.key1 as key1 from pattern[timer:interval(0)];\n" +
+                          "context MyContext create variable String lastString = null;\n" +
+                          "context MyContext on pattern[timer:interval(0)] set lastString = context.key1;\n";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendAssertKey(env, "E1");
+                SendAssertNoReceived(env, "E1");
+
+                env.Milestone(0);
+
+                SendAssertNoReceived(env, "E1");
+                SendAssertKey(env, "E2");
+
+                env.UndeployAll();
+            }
+
+            private void SendAssertNoReceived(
+                RegressionEnvironment env,
+                String theString)
+            {
+                env.SendEventBean(new SupportBean(theString, 1));
+                Assert.IsFalse(env.Listener("s0").GetAndClearIsInvoked());
+            }
+
+            private void SendAssertKey(
+                RegressionEnvironment env,
+                String theString)
+            {
+                env.SendEventBean(new SupportBean(theString, 0));
+                Assert.AreEqual(theString, env.Listener("s0").AssertOneGetNewAndReset()["key1"]);
+
+                var pair = new DeploymentIdNamePair(env.DeploymentId("s0"), "lastString");
+                var set = Collections.SingletonSet(pair);
+                var values = env.Runtime.VariableService.GetVariableValue(set, new SupportSelectorPartitioned(theString));
+                Assert.AreEqual(theString, values.Get(pair).First().State);
+            }
+        }
+
+        private class ContextKeySegmentedMultikeyWArrayTwoField : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "create context PartitionByArray partition by Id, Array from SupportEventWithIntArray;\n" +
+                          "@Name('s0') context PartitionByArray select sum(Value) as thesum from SupportEventWithIntArray;\n";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendAssertArray(env, "G1", new int[] {1, 2}, 1, 1);
+                SendAssertArray(env, "G2", new int[] {1, 2}, 2, 2);
+                SendAssertArray(env, "G1", new int[] {1}, 3, 3);
+
+                env.Milestone(0);
+
+                SendAssertArray(env, "G2", new int[] {1, 2}, 10, 2 + 10);
+                SendAssertArray(env, "G1", new int[] {1, 2}, 15, 1 + 15);
+                SendAssertArray(env, "G1", new int[] {1}, 18, 3 + 18);
+
+                var selector = new SupportSelectorPartitioned(Collections.SingletonList(new object[] {"G2", new int[] {1, 2}}));
+                EPAssertionUtil.AssertPropsPerRow(
+                    env.Statement("s0").GetEnumerator(selector),
+                    "thesum".SplitCsv(),
+                    new object[][] {
+                        new object[] {2 + 10}
+                    }
+                );
+
+                ContextPartitionSelectorFiltered selectorWFilter = new ProxyContextPartitionSelectorFiltered(
+                    contextPartitionIdentifier => {
+                        var partitioned = (ContextPartitionIdentifierPartitioned) contextPartitionIdentifier;
+                        return partitioned.Keys[0].Equals("G2") && Arrays.AreEqual((int[]) partitioned.Keys[1], new int[] {1, 2});
+                    });
+                
+                EPAssertionUtil.AssertPropsPerRow(
+                    env.Statement("s0").GetEnumerator(selectorWFilter),
+                    "thesum".SplitCsv(),
+                    new object[][] {
+                        new object[] {2 + 10}
+                    });
+
+                env.UndeployAll();
+            }
+
+            private void SendAssertArray(
+                RegressionEnvironment env,
+                String id,
+                int[] array,
+                int value,
+                int expected)
+            {
+                env.SendEventBean(new SupportEventWithIntArray(id, array, value));
+                Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("thesum"));
+            }
+        }
+
+        private class ContextKeySegmentedMultikeyWArrayOfPrimitive : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "create context PartitionByArray partition by Array from SupportEventWithIntArray;\n" +
+                          "@Name('s0') context PartitionByArray select sum(Value) as thesum from SupportEventWithIntArray;\n";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendAssertArray(env, "E1", new int[] {1, 2}, 10, 10);
+                SendAssertArray(env, "E2", new int[] {1, 2}, 11, 21);
+                SendAssertArray(env, "E3", new int[] {1}, 12, 12);
+                SendAssertArray(env, "E4", new int[] { }, 13, 13);
+                SendAssertArray(env, "E5", null, 14, 14);
+
+                env.Milestone(0);
+
+                SendAssertArray(env, "E10", null, 20, 14 + 20);
+                SendAssertArray(env, "E11", new int[] {1, 2}, 21, 21 + 21);
+                SendAssertArray(env, "E12", new int[] {1}, 22, 12 + 22);
+                SendAssertArray(env, "E13", new int[] { }, 23, 13 + 23);
+
+                var selectorPartition = new SupportSelectorPartitioned(Collections.SingletonList(new object[] {new int[] {1, 2}}));
+                EPAssertionUtil.AssertPropsPerRow(
+                    env.Statement("s0").GetEnumerator(selectorPartition),
+                    "thesum".SplitCsv(),
+                    new object[][] {
+                        new object[] {21 + 21}
+                    });
+
+                ContextPartitionSelectorFiltered selectorWFilter = new ProxyContextPartitionSelectorFiltered(
+                    contextPartitionIdentifier => {
+                        var partitioned = (ContextPartitionIdentifierPartitioned) contextPartitionIdentifier;
+                        return Arrays.AreEqual((int[]) partitioned.Keys[0], new int[] {1});
+                    });
+
+                EPAssertionUtil.AssertPropsPerRow(
+                    env.Statement("s0").GetEnumerator(selectorWFilter),
+                    "thesum".SplitCsv(),
+                    new object[][] {
+                        new object[] {12 + 22}
+                    });
+
+                env.UndeployAll();
+            }
+
+            private void SendAssertArray(
+                RegressionEnvironment env,
+                String id,
+                int[] array,
+                int value,
+                int expected)
+            {
+                env.SendEventBean(new SupportEventWithIntArray(id, array, value));
+                Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("thesum"));
+            }
         }
 
         internal class ContextKeySegmentedPatternFilter : RegressionExecution
@@ -524,7 +713,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 // first send a view events
                 env.SendEventBean(new SupportBean("B1", -1));
                 env.SendEventBean(new SupportBean_S0(-2, "S0"));
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 var fields = new [] { "col1","col2" };
                 env.CompileDeploy(
@@ -534,7 +723,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
                 env.AddListener("s0");
 
-                Assert.AreEqual(2, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(2, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.Milestone(0);
 
@@ -542,7 +731,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.SendEventBean(new SupportBean("S0", -1));
                 env.SendEventBean(new SupportBean("S1", -2));
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
-                Assert.AreEqual(2, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(2, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.Milestone(1);
 
@@ -585,7 +774,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.Milestone(6);
 
                 env.UndeployAll();
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.Milestone(7);
 
@@ -609,7 +798,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Name('context') create context SegmentedByAString " +
                     "partition by TheString from SupportBean, P00 from SupportBean_S0",
                     path);
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 // first send a view events
                 env.SendEventBean(new SupportBean("B1", 1));
@@ -621,7 +810,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
                 env.AddListener("s0");
 
-                Assert.AreEqual(2, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(2, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.SendEventBean(new SupportBean_S0(10, "S0"));
                 EPAssertionUtil.AssertProps(
@@ -631,7 +820,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.Milestone(0);
 
-                Assert.AreEqual(3, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(3, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.SendEventBean(new SupportBean_S0(8, "S1"));
                 EPAssertionUtil.AssertProps(
@@ -641,7 +830,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.Milestone(1);
 
-                Assert.AreEqual(4, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(4, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.SendEventBean(new SupportBean_S0(4, "S0"));
                 EPAssertionUtil.AssertProps(
@@ -651,14 +840,14 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.Milestone(2);
 
-                Assert.AreEqual(4, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(4, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.CompileDeploy(
                     "@Name('s1') context SegmentedByAString select sum(IntPrimitive) as col1 from SupportBean",
                     path);
                 env.AddListener("s1");
 
-                Assert.AreEqual(6, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(6, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.SendEventBean(new SupportBean("S0", 5));
                 EPAssertionUtil.AssertProps(
@@ -666,7 +855,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fields,
                     new object[] {5});
 
-                Assert.AreEqual(6, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(6, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.Milestone(3);
 
@@ -676,21 +865,20 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fields,
                     new object[] {6});
 
-                Assert.AreEqual(8, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(8, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.UndeployModuleContaining("s0");
                 Assert.AreEqual(
                     5,
-                    SupportFilterHelper
-                        .GetFilterCountApprox(env)); // 5 = 3 from context instances and 2 from context itself
+                    SupportFilterServiceHelper.GetFilterSvcCountApprox(env)); // 5 = 3 from context instances and 2 from context itself
 
                 env.Milestone(4);
 
                 env.UndeployModuleContaining("s1");
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.UndeployModuleContaining("context");
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.UndeployAll();
             }

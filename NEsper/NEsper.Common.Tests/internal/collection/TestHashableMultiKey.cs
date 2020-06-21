@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.supportunit.@event;
 
 using NUnit.Framework;
@@ -29,7 +30,7 @@ namespace com.espertech.esper.common.@internal.collection
         private HashableMultiKey keys9 = new HashableMultiKey("a", "b", "c", "d");
         private HashableMultiKey keys10 = new HashableMultiKey("a", "b", "c", "d");
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestHashCode()
         {
             Assert.IsTrue(keys1.GetHashCode() == ("a".GetHashCode() * 31 ^ "b".GetHashCode()));
@@ -47,7 +48,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.IsTrue(keys9.GetHashCode() == keys10.GetHashCode());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEquals()
         {
             Assert.AreEqual(keys2, keys1);
@@ -73,7 +74,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.IsTrue(keys9.Equals(keys10));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGet()
         {
             Assert.AreEqual(1, keys6.Count);
@@ -87,7 +88,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.IsTrue("d" == keys10.Get(3));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestWithSet()
         {
             EventBean[][] testEvents = new EventBean[][]{

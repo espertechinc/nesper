@@ -12,7 +12,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.name
 {
     public class CodegenFieldNameAgg : CodegenFieldName
     {
-        public readonly static CodegenFieldNameAgg INSTANCE = new CodegenFieldNameAgg();
+        public static readonly CodegenFieldNameAgg INSTANCE = new CodegenFieldNameAgg();
 
         private CodegenFieldNameAgg()
         {

@@ -6,22 +6,29 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.common.@internal.serde;
+using System;
+
+using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.@internal.epl.agg.core;
 
 namespace com.espertech.esper.common.@internal.epl.table.core
 {
     public class TableSerdes
     {
         public TableSerdes(
-            DataInputOutputSerdeWCollation<object>[] column,
-            DataInputOutputSerdeWCollation<object> aggregations)
+            DataInputOutputSerde[] column,
+            DataInputOutputSerde<AggregationRow> aggregations)
         {
+            if (column == null || aggregations == null) {
+                throw new ArgumentException("Expected serdes not received");
+            }
+
             ColumnStartingZero = column;
             Aggregations = aggregations;
         }
 
-        public DataInputOutputSerdeWCollation<object>[] ColumnStartingZero { get; }
+        public DataInputOutputSerde[] ColumnStartingZero { get; }
 
-        public DataInputOutputSerdeWCollation<object> Aggregations { get; }
+        public DataInputOutputSerde<AggregationRow> Aggregations { get; }
     }
 } // end of namespace

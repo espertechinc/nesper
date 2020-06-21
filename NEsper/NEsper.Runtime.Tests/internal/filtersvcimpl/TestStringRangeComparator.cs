@@ -9,7 +9,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-using com.espertech.esper.common;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.compat.logging;
 

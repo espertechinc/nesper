@@ -11,13 +11,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.util;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-
-using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
 namespace com.espertech.esper.compiler.@internal.util
 {
@@ -62,8 +61,7 @@ namespace com.espertech.esper.compiler.@internal.util
         public static void Classimplements(
             StringBuilder builder,
             string classname,
-            Type implementedInterface,
-            string implementedInterfaceGeneric,
+            CodegenClassBaseList baseList,
             bool isPublic,
             bool isStatic)
         {
@@ -79,26 +77,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
             builder.Append("class ");
             builder.Append(classname);
-            if (implementedInterface != null) {
-                builder.Append(" : ");
-
-                if (implementedInterface.IsGenericTypeDefinition) {
-                    if (string.IsNullOrEmpty(implementedInterfaceGeneric)) {
-                        throw new ArgumentException(
-                            "implementedInterfaceGeneric must be provided when interface is generic type definition");
-                    }
-
-                    AppendClassName(builder, implementedInterface);
-                    builder
-                        .Append("<")
-                        .Append(implementedInterfaceGeneric)
-                        .Append(">");
-                }
-                else {
-                    AppendClassName(builder, implementedInterface);
-                }
-            }
-
+            baseList.Render(builder);
             builder.Append(" {\n");
         }
 

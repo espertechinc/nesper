@@ -72,6 +72,11 @@ namespace com.espertech.esper.regressionlib.support.bean
             return new SupportBean_ST0_Container(contained);
         }
 
+        public static SupportBean_ST0_Container Make3ValueNull()
+        {
+            return new SupportBean_ST0_Container(null);
+        }
+
         public static IList<SupportBean_ST0> Make2ValueList(params string[] values)
         {
             if (values == null) {
@@ -92,9 +97,19 @@ namespace com.espertech.esper.regressionlib.support.bean
             return new SupportBean_ST0_Container(Make2ValueList(values));
         }
 
+        public static SupportBean_ST0_Container Make2ValueNull()
+        {
+            return new SupportBean_ST0_Container(null);
+        }
+
         public static SupportBean_ST0 MakeTest(string value)
         {
             return Make2Value(value).Contained[0];
+        }
+
+        public override string ToString()
+        {
+            return $"{nameof(Contained)}: {Contained}";
         }
     }
 } // end of namespace

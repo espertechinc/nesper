@@ -11,7 +11,6 @@ using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.diagnostics;
 using com.espertech.esper.compat.logging;
 

@@ -34,12 +34,27 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EPLDataflowLargeNumOpsDataFlow());
-            execs.Add(new EPLDataflowFanInOut());
-            execs.Add(new EPLDataflowFactorial());
+WithLargeNumOpsDataFlow(execs);
+WithFanInOut(execs);
+WithFactorial(execs);
             return execs;
         }
-
+public static IList<RegressionExecution> WithFactorial(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowFactorial());
+    return execs;
+}public static IList<RegressionExecution> WithFanInOut(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowFanInOut());
+    return execs;
+}public static IList<RegressionExecution> WithLargeNumOpsDataFlow(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowLargeNumOpsDataFlow());
+    return execs;
+}
         internal class EPLDataflowLargeNumOpsDataFlow : RegressionExecution
         {
             public void Run(RegressionEnvironment env)

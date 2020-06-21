@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     [Serializable]
     public class ExprNewStructNode : ExprNodeBase
     {
-        private ExprNewStructNodeForge forge;
+        private ExprNewStructNodeForge _forge;
 
         public ExprNewStructNode(string[] columnNames)
         {
@@ -31,15 +31,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
         public override ExprForge Forge {
             get {
-                CheckValidated(forge);
-                return forge;
+                CheckValidated(_forge);
+                return _forge;
             }
         }
 
@@ -49,8 +49,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public bool IsConstantResult {
             get {
-                CheckValidated(forge);
-                return forge.IsAllConstants;
+                CheckValidated(_forge);
+                return _forge.IsAllConstants;
             }
         }
 
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
             }
 
-            forge = new ExprNewStructNodeForge(this, isAllConstants, eventType);
+            _forge = new ExprNewStructNodeForge(this, isAllConstants, eventType);
             return null;
         }
 
@@ -101,7 +101,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return columnNamesSet.SetEquals(other.ColumnNames);
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write("new{");
             var delimiter = "";
@@ -120,7 +121,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
                 if (outputexpr) {
                     writer.Write("=");
-                    expr.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+                    expr.ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
                 }
 
                 delimiter = ",";

@@ -23,6 +23,7 @@ namespace com.espertech.esper.compat
         MONTH = 5,
         ALIGNED_WEEK_OF_YEAR = 6,
         WEEK = 6,
-        YEAR = 7
+        YEAR = 7,
+        DAY_OF_WEEK = 8
     }
 }

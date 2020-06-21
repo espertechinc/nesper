@@ -98,8 +98,8 @@ namespace com.espertech.esper.compat.collections
         /// <param name="keyList">The key list.</param>
         public FixedDictionarySchema(IEnumerable<K> keyList)
         {
-            int index = 0;
-            foreach( K key in keyList ) {
+            var index = 0;
+            foreach( var key in keyList ) {
                 _keyToIndex[key] = index++;
             }
 

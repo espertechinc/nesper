@@ -37,11 +37,46 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraFromClause());
-            execs.Add(new InfraJoinIndexChoice());
-            execs.Add(new InfraCoercion());
-            execs.Add(new InfraUnkeyedTable());
+            WithFromClause(execs);
+            WithJoinIndexChoice(execs);
+            WithCoercion(execs);
+            WithUnkeyedTable(execs);
+            WithOuterJoin(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOuterJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraOuterJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUnkeyedTable(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraUnkeyedTable());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCoercion(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraCoercion());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithJoinIndexChoice(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraJoinIndexChoice());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFromClause(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraFromClause());
             return execs;
         }
 
@@ -184,7 +219,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "TheString"," p1" };
+                var fields = new[] {"TheString", " p1"};
                 var path = new RegressionPath();
                 var epl = "create table MyTable as (p0 string primary key, p1 int);\n" +
                           "@Name('s0') select TheString, p1 from SupportBean unidirectional left outer join MyTable on TheString = p0;\n";
@@ -257,7 +292,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env.SendEventBean(new SupportBean_S0(-1, null));
                     EPAssertionUtil.AssertPropsPerRowAnyOrder(
                         env.Listener("s0").NewDataListFlattened,
-                        new [] { "value" },
+                        new[] {"value"},
                         new[] {new object[] {2000L}, new object[] {3000L}});
                     env.Listener("s0").Reset();
                 };
@@ -267,7 +302,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env.SendEventBean(new SupportBean_S0(10, "G1"));
                     EPAssertionUtil.AssertPropsPerRow(
                         env.Listener("s0").NewDataListFlattened,
-                        new [] { "value" },
+                        new[] {"value"},
                         new[] {new object[] {1000L}});
                     env.Listener("s0").Reset();
                 };
@@ -436,7 +471,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env.SendEventBean(new SupportBean_S0(-1, null));
                     EPAssertionUtil.AssertPropsPerRowAnyOrder(
                         env.Listener("s0").NewDataListFlattened,
-                        new [] { "value" },
+                        new[] {"value"},
                         new[] {new object[] {2000L}});
                     env.Listener("s0").Reset();
                 };
@@ -544,7 +579,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env.SendEventBean(new SupportBeanRange(20L));
                     EPAssertionUtil.AssertPropsPerRowAnyOrder(
                         env.Listener("s0").NewDataListFlattened,
-                        new [] { "value" },
+                        new[] {"value"},
                         new[] {new object[] {2000L}});
                     env.Listener("s0").Reset();
                 };
@@ -600,7 +635,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean());
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a","b" },
+                    new[] {"a", "b"},
                     new object[] {"a1", 10});
 
                 env.UndeployAll();

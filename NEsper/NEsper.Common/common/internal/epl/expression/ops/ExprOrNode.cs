@@ -85,12 +85,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             var appendStr = "";
             foreach (var child in ChildNodes) {
                 writer.Write(appendStr);
-                child.ToEPL(writer, Precedence);
+                child.ToEPL(writer, Precedence, flags);
                 appendStr = " or ";
             }
         }

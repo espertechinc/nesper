@@ -41,9 +41,10 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         public override void MatchEvent(
             EventBean theEvent,
-            ICollection<FilterHandle> matches)
+            ICollection<FilterHandle> matches,
+            ExprEvaluatorContext ctx)
         {
-            object objAttributeValue = Lookupable.Getter.Get(theEvent);
+            object objAttributeValue = Lookupable.Eval.Eval(theEvent, ctx);
             if (InstrumentationHelper.ENABLED) {
                 InstrumentationHelper.Get().QFilterReverseIndex(this, objAttributeValue);
             }
@@ -63,7 +64,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 foreach (var entry in Ranges) {
                     if (string.Compare(entry.Key.Min, attributeValue, StringComparison.Ordinal) > 0 || 
                         string.Compare(entry.Key.Max, attributeValue, StringComparison.Ordinal) < 0) {
-                        entry.Value.MatchEvent(theEvent, matches);
+                        entry.Value.MatchEvent(theEvent, matches, ctx);
                     }
                 }
             }
@@ -71,7 +72,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 foreach (var entry in Ranges) {
                     if (string.Compare(entry.Key.Min, attributeValue, StringComparison.Ordinal) >= 0 || 
                         string.Compare(entry.Key.Max, attributeValue, StringComparison.Ordinal) <= 0) {
-                        entry.Value.MatchEvent(theEvent, matches);
+                        entry.Value.MatchEvent(theEvent, matches, ctx);
                     }
                 }
             }
@@ -80,7 +81,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 foreach (var entry in Ranges) {
                     if (string.Compare(entry.Key.Min, attributeValue, StringComparison.Ordinal) >= 0 || 
                         string.Compare(entry.Key.Max, attributeValue, StringComparison.Ordinal) < 0) {
-                        entry.Value.MatchEvent(theEvent, matches);
+                        entry.Value.MatchEvent(theEvent, matches, ctx);
                     }
                 }
             }
@@ -89,12 +90,16 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 foreach (var entry in Ranges) {
                     if (string.Compare(entry.Key.Min, attributeValue, StringComparison.Ordinal) > 0 || 
                         string.Compare(entry.Key.Max, attributeValue, StringComparison.Ordinal) <= 0) {
-                        entry.Value.MatchEvent(theEvent, matches);
+                        entry.Value.MatchEvent(theEvent, matches, ctx);
                     }
                 }
             }
             else {
                 throw new IllegalStateException("Invalid filter operator " + FilterOperator);
+            }
+            
+            if (RangesNullEndpoints != null) {
+                RangesNullEndpoints.MatchEvent(theEvent, matches, ctx);
             }
 
             if (InstrumentationHelper.ENABLED) {

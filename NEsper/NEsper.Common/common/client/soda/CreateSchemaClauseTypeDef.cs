@@ -27,6 +27,12 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>Avro-array underlying type.</summary>
         AVRO,
 
+        /// <summary>JSON-array underlying type.</summary>
+        JSON,
+
+        /// <summary>XML-array underlying type.</summary>
+        XML,
+
         /// <summary>Undefined (system default) underlying type. </summary>
         NONE
     }
@@ -58,6 +64,14 @@ namespace com.espertech.esper.common.client.soda
 
                 case CreateSchemaClauseTypeDef.AVRO:
                     writer.Write(" avro");
+                    break;
+
+                case CreateSchemaClauseTypeDef.JSON:
+                    writer.Write(" json");
+                    break;
+
+                case CreateSchemaClauseTypeDef.XML:
+                    writer.Write(" xml");
                     break;
 
                 case CreateSchemaClauseTypeDef.NONE:

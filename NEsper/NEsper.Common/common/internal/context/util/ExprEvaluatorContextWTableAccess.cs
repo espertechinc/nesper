@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.@internal.epl.enummethod.cache;
@@ -17,8 +15,7 @@ using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.metrics.audit;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.schedule;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.util
@@ -35,65 +32,43 @@ namespace com.espertech.esper.common.@internal.context.util
             this.context = context;
             this.tableExprEvaluatorContext = tableExprEvaluatorContext;
         }
-
-        public string StatementName {
-            get => context.StatementName;
+        
+        public virtual object FilterReboolConstant
+        {
+            get => null;
+            set { }
         }
 
-        public string RuntimeURI {
-            get => context.RuntimeURI;
-        }
+        public string StatementName => context.StatementName;
 
-        public int StatementId {
-            get => context.StatementId;
-        }
+        public string RuntimeURI => context.RuntimeURI;
 
-        public string DeploymentId {
-            get => context.DeploymentId;
-        }
+        public int StatementId => context.StatementId;
 
-        public TimeProvider TimeProvider {
-            get => context.TimeProvider;
-        }
+        public string DeploymentId => context.DeploymentId;
 
-        public ExpressionResultCacheService ExpressionResultCacheService {
-            get => context.ExpressionResultCacheService;
-        }
+        public TimeProvider TimeProvider => context.TimeProvider;
 
-        public int AgentInstanceId {
-            get => context.AgentInstanceId;
-        }
+        public ExpressionResultCacheService ExpressionResultCacheService => context.ExpressionResultCacheService;
 
-        public EventBean ContextProperties {
-            get => context.ContextProperties;
-        }
+        public int AgentInstanceId => context.AgentInstanceId;
 
-        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext {
-            get => context.AllocateAgentInstanceScriptContext;
-        }
+        public EventBean ContextProperties => context.ContextProperties;
 
-        public IReaderWriterLock AgentInstanceLock {
-            get => context.AgentInstanceLock;
-        }
+        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext => context.AllocateAgentInstanceScriptContext;
 
-        public TableExprEvaluatorContext TableExprEvaluatorContext {
-            get => tableExprEvaluatorContext;
-        }
+        public IReaderWriterLock AgentInstanceLock => context.AgentInstanceLock;
 
-        public object UserObjectCompileTime {
-            get => context.UserObjectCompileTime;
-        }
+        public TableExprEvaluatorContext TableExprEvaluatorContext => tableExprEvaluatorContext;
 
-        public EventBeanService EventBeanService {
-            get => context.EventBeanService;
-        }
+        public object UserObjectCompileTime => context.UserObjectCompileTime;
 
-        public AuditProvider AuditProvider {
-            get => context.AuditProvider;
-        }
+        public EventBeanService EventBeanService => context.EventBeanService;
 
-        public InstrumentationCommon InstrumentationProvider {
-            get => context.InstrumentationProvider;
-        }
+        public AuditProvider AuditProvider => context.AuditProvider;
+
+        public InstrumentationCommon InstrumentationProvider => context.InstrumentationProvider;
+
+        public ExceptionHandlingService ExceptionHandlingService => context.ExceptionHandlingService;
     }
 } // end of namespace

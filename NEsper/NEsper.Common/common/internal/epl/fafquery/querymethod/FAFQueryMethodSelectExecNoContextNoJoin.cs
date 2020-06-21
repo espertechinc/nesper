@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -15,7 +14,6 @@ using com.espertech.esper.common.@internal.context.mgr;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.fafquery.processor;
 using com.espertech.esper.common.@internal.epl.resultset.core;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.epl.fafquery.querymethod.FAFQueryMethodSelectExecUtil;
@@ -42,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             ICollection<EventBean> events;
             AgentInstanceContext agentInstanceContext = null;
             if (processorInstance == null) {
-                events = new EmptyList<EventBean>();
+                events = EmptyList<EventBean>.Instance;
             }
             else {
                 agentInstanceContext = processorInstance.AgentInstanceContext;
@@ -54,13 +52,14 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 select.ResultSetProcessorFactoryProvider,
                 agentInstanceContext,
                 assignerSetter,
-                select.TableAccesses);
+                select.TableAccesses,
+                select.Subselects);
 
             if (select.WhereClause != null) {
                 events = Filtered(events, select.WhereClause, agentInstanceContext);
             }
 
-            return ProcessedNonJoin(resultSetProcessor, events, select.EventBeanReaderDistinct);
+            return ProcessedNonJoin(resultSetProcessor, events, select.DistinctKeyGetter);
         }
     }
 } // end of namespace

@@ -11,24 +11,24 @@ using System;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.client.fireandforget;
-using com.espertech.esper.common.@internal.context.query;
 using com.espertech.esper.common.@internal.epl.fafquery.querymethod;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.@internal.kernel.faf;
 
 namespace com.espertech.esper.runtime.@internal.kernel.service
 {
-    public class EPFireAndForgetServiceImpl : EPFireAndForgetService
+    public class EpFireAndForgetServiceImpl : EPFireAndForgetService
     {
-        private readonly EPServicesContext services;
-        private readonly AtomicBoolean serviceStatusProvider;
+        private readonly EPServicesContext _services;
+        private readonly AtomicBoolean _serviceStatusProvider;
 
-        public EPFireAndForgetServiceImpl(EPServicesContext services, AtomicBoolean serviceStatusProvider)
+        public EpFireAndForgetServiceImpl(
+            EPServicesContext services,
+            AtomicBoolean serviceStatusProvider)
         {
-            this.services = services;
-            this.serviceStatusProvider = serviceStatusProvider;
+            _services = services;
+            _serviceStatusProvider = serviceStatusProvider;
         }
 
         public EPFireAndForgetQueryResult ExecuteQuery(EPCompiled compiled)
@@ -36,32 +36,38 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             return ExecuteQueryUnprepared(compiled, null);
         }
 
-        public EPFireAndForgetQueryResult ExecuteQuery(EPCompiled compiled, ContextPartitionSelector[] contextPartitionSelectors)
+        public EPFireAndForgetQueryResult ExecuteQuery(
+            EPCompiled compiled,
+            ContextPartitionSelector[] contextPartitionSelectors)
         {
-            if (contextPartitionSelectors == null)
-            {
+            if (contextPartitionSelectors == null) {
                 throw new ArgumentException("No context partition selectors provided");
             }
+
             return ExecuteQueryUnprepared(compiled, contextPartitionSelectors);
         }
 
         public EPFireAndForgetPreparedQuery PrepareQuery(EPCompiled compiled)
         {
-            FAFProvider fafProvider = EPRuntimeHelperFAF.QueryMethod(compiled, services);
-            FAFQueryMethodProvider queryMethodProvider = fafProvider.QueryMethodProvider;
+            var fafProvider = EPRuntimeHelperFAF.QueryMethod(compiled, _services);
+            var queryMethodProvider = fafProvider.QueryMethodProvider;
             EPRuntimeHelperFAF.ValidateSubstitutionParams(queryMethodProvider);
-            FAFQueryMethod queryMethod = queryMethodProvider.QueryMethod;
-            queryMethod.Ready();
-            return new EPPreparedQueryImpl(serviceStatusProvider, queryMethodProvider, queryMethod, services);
+            var queryMethod = queryMethodProvider.QueryMethod;
+            queryMethod.Ready(_services.StatementContextRuntimeServices);
+            return new EPPreparedQueryImpl(_serviceStatusProvider, queryMethodProvider, queryMethod, _services);
         }
 
         public EPFireAndForgetPreparedQueryParameterized PrepareQueryWithParameters(EPCompiled compiled)
         {
-            FAFProvider fafProvider = EPRuntimeHelperFAF.QueryMethod(compiled, services);
-            FAFQueryMethodProvider queryMethodProvider = fafProvider.QueryMethodProvider;
-            FAFQueryMethod queryMethod = queryMethodProvider.QueryMethod;
-            queryMethod.Ready();
-            return new EPFireAndForgetPreparedQueryParameterizedImpl(serviceStatusProvider, queryMethodProvider.SubstitutionFieldSetter, queryMethod, queryMethodProvider.QueryInformationals);
+            var fafProvider = EPRuntimeHelperFAF.QueryMethod(compiled, _services);
+            var queryMethodProvider = fafProvider.QueryMethodProvider;
+            var queryMethod = queryMethodProvider.QueryMethod;
+            queryMethod.Ready(_services.StatementContextRuntimeServices);
+            return new EPFireAndForgetPreparedQueryParameterizedImpl(
+                _serviceStatusProvider,
+                queryMethodProvider.SubstitutionFieldSetter,
+                queryMethod,
+                queryMethodProvider.QueryInformationals);
         }
 
         public EPFireAndForgetQueryResult ExecuteQuery(EPFireAndForgetPreparedQueryParameterized parameterizedQuery)
@@ -69,34 +75,44 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             return ExecuteQueryPrepared(parameterizedQuery, null);
         }
 
-        public EPFireAndForgetQueryResult ExecuteQuery(EPFireAndForgetPreparedQueryParameterized parameterizedQuery, ContextPartitionSelector[] selectors)
+        public EPFireAndForgetQueryResult ExecuteQuery(
+            EPFireAndForgetPreparedQueryParameterized parameterizedQuery,
+            ContextPartitionSelector[] selectors)
         {
             return ExecuteQueryPrepared(parameterizedQuery, selectors);
         }
 
-        private EPFireAndForgetQueryResult ExecuteQueryPrepared(EPFireAndForgetPreparedQueryParameterized parameterizedQuery, ContextPartitionSelector[] selectors)
+        private EPFireAndForgetQueryResult ExecuteQueryPrepared(
+            EPFireAndForgetPreparedQueryParameterized parameterizedQuery,
+            ContextPartitionSelector[] selectors)
         {
-            EPFireAndForgetPreparedQueryParameterizedImpl impl = (EPFireAndForgetPreparedQueryParameterizedImpl) parameterizedQuery;
+            var impl = (EPFireAndForgetPreparedQueryParameterizedImpl) parameterizedQuery;
             EPRuntimeHelperFAF.CheckSubstitutionSatisfied(impl);
-            if (!impl.ServiceProviderStatus.Get())
-            {
+            if (!impl.ServiceProviderStatus.Get()) {
                 throw FAFQueryMethodUtil.RuntimeDestroyed();
             }
-            if (impl.ServiceProviderStatus != serviceStatusProvider)
-            {
+
+            if (impl.ServiceProviderStatus != _serviceStatusProvider) {
                 throw new EPException("Service provider has already been destroyed and reallocated");
             }
-            return new EPQueryResultImpl(impl.QueryMethod.Execute(serviceStatusProvider, impl.Fields, selectors, services.ContextManagementService));
+
+            return new EPQueryResultImpl(impl.QueryMethod.Execute(_serviceStatusProvider, impl.Fields, selectors, _services.ContextManagementService));
         }
 
-        private EPFireAndForgetQueryResult ExecuteQueryUnprepared(EPCompiled compiled, ContextPartitionSelector[] contextPartitionSelectors)
+        private EPFireAndForgetQueryResult ExecuteQueryUnprepared(
+            EPCompiled compiled,
+            ContextPartitionSelector[] contextPartitionSelectors)
         {
-            FAFProvider fafProvider = EPRuntimeHelperFAF.QueryMethod(compiled, services);
-            FAFQueryMethodProvider queryMethodProvider = fafProvider.QueryMethodProvider;
+            var fafProvider = EPRuntimeHelperFAF.QueryMethod(compiled, _services);
+            var queryMethodProvider = fafProvider.QueryMethodProvider;
             EPRuntimeHelperFAF.ValidateSubstitutionParams(queryMethodProvider);
-            FAFQueryMethod queryMethod = queryMethodProvider.QueryMethod;
-            queryMethod.Ready();
-            EPPreparedQueryResult result = queryMethod.Execute(serviceStatusProvider, queryMethodProvider.SubstitutionFieldSetter, contextPartitionSelectors, services.ContextManagementService);
+            var queryMethod = queryMethodProvider.QueryMethod;
+            queryMethod.Ready(_services.StatementContextRuntimeServices);
+            var result = queryMethod.Execute(
+                _serviceStatusProvider,
+                queryMethodProvider.SubstitutionFieldSetter,
+                contextPartitionSelectors,
+                _services.ContextManagementService);
             return new EPQueryResultImpl(result);
         }
     }

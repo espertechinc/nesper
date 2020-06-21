@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     /// </summary>
     public class ExprBitWiseNode : ExprNodeBase
     {
-        [NonSerialized] private ExprBitWiseNodeForge forge;
+        [NonSerialized] private ExprBitWiseNodeForge _forge;
 
         /// <summary>
         ///     Ctor.
@@ -44,15 +44,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
         public override ExprForge Forge {
             get {
-                CheckValidated(forge);
-                return forge;
+                CheckValidated(_forge);
+                return _forge;
             }
         }
 
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             var typeOne = ChildNodes[0].Forge.EvaluationType.GetBoxedType();
-            var typeTwo = ChildNodes[0].Forge.EvaluationType.GetBoxedType();
+            var typeTwo = ChildNodes[1].Forge.EvaluationType.GetBoxedType();
             CheckNumericOrBoolean(typeOne);
             CheckNumericOrBoolean(typeTwo);
 
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             var computer = BitWiseOpEnum.GetComputer(typeOne);
-            forge = new ExprBitWiseNodeForge(this, typeOne, computer);
+            _forge = new ExprBitWiseNodeForge(this, typeOne, computer);
             return null;
         }
 
@@ -101,19 +101,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return true;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
-            ChildNodes[0].ToEPL(writer, Precedence);
+            ChildNodes[0].ToEPL(writer, Precedence, flags);
             writer.Write(BitWiseOpEnum.ComputeDescription);
-            ChildNodes[1].ToEPL(writer, Precedence);
+            ChildNodes[1].ToEPL(writer, Precedence, flags);
         }
 
         private void CheckNumericOrBoolean(Type childType)
         {
             if (!childType.IsBoolean() && !childType.IsNumeric()) {
                 throw new ExprValidationException(
-                    "Invalid datatype for bitwise " +
-                    childType.Name +
+                    "Invalid datatype for binary operator, " +
+                    childType.CleanName() +
                     " is not allowed");
             }
         }

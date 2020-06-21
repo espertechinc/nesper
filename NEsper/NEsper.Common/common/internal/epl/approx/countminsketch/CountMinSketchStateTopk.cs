@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -25,12 +24,12 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
         {
             TopKMax = topKMax;
             _lastFreqForItem = new Dictionary<ByteBuffer, long>();
-            Topk = new OrderedDictionary<long, object>(SimpleComparer<long>.Reverse);
+            Topk = new OrderedListDictionary<long, object>(SimpleComparer<long>.Reverse);
         }
 
         public CountMinSketchStateTopk(
             int topKMax,
-            OrderedDictionary<long, object> topk,
+            IOrderedDictionary<long, object> topk,
             IDictionary<ByteBuffer, long> lastFreqForItem)
         {
             TopKMax = topKMax;
@@ -38,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             _lastFreqForItem = lastFreqForItem;
         }
 
-        public OrderedDictionary<long, object> Topk { get; }
+        public IOrderedDictionary<long, object> Topk { get; }
 
         public IList<ByteBuffer> TopKValues {
             get {

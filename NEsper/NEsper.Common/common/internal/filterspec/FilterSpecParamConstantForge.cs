@@ -7,13 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -59,24 +59,24 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .DeclareVar<ExprFilterSpecLookupable>(
                     "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
-                .DeclareVar<FilterOperator>("op", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
+                .DeclareVar<FilterOperator>("filterOperator", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
 
             var getFilterValue = new CodegenExpressionLambda(method.Block)
                 .WithParams(FilterSpecParam.GET_FILTER_VALUE_FP);
             var inner = NewInstance<ProxyFilterSpecParam>(
                 Ref("lookupable"),
-                Ref("op"),
+                Ref("filterOperator"),
                 getFilterValue);
 
             //var inner = NewAnonymousClass(
             //    method.Block,
             //    typeof(FilterSpecParam),
-            //    Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
+            //    Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("filterOperator")));
             //var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
             //    .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
             //inner.AddMethod("GetFilterValue", getFilterValue);
 
-            getFilterValue.Block.BlockReturn(Constant(FilterConstant));
+            getFilterValue.Block.BlockReturn(FilterValueSetParamImpl.CodegenNew(Constant(FilterConstant)));
 
             method.Block.MethodReturn(inner);
             return method;
@@ -115,6 +115,32 @@ namespace com.espertech.esper.common.@internal.filterspec
             var result = base.GetHashCode();
             result = 31 * result + (FilterConstant != null ? FilterConstant.GetHashCode() : 0);
             return result;
+        }
+
+        public override void ValueExprToString(
+            StringBuilder @out,
+            int i)
+        {
+            ValueExprToString(@out, FilterConstant);
+        }
+
+        public static void ValueExprToString(
+            StringBuilder @out,
+            Object constant)
+        {
+            var constantType = constant?.GetType();
+            var constantTypeName = constantType?.CleanName();
+            
+            @out.Append("constant ");
+            CodegenExpressionUtil.RenderConstant(@out, constant);
+            @out.Append(" type ").Append(constantTypeName);
+        }
+
+        public static String ValueExprToString(Object constant)
+        {
+            var builder = new StringBuilder();
+            ValueExprToString(builder, constant);
+            return builder.ToString();
         }
     }
 } // end of namespace

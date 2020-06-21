@@ -14,8 +14,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -42,11 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             ExprEvaluatorContext exprEvaluatorContext)
         {
             EventBean theEvent = eventsPerStream[streamNum];
-            if (theEvent != null) {
-                return theEvent.Underlying;
-            }
-
-            return null;
+            return theEvent?.Underlying;
         }
 
         public ExprNodeRenderable ExprForgeRenderable {
@@ -81,9 +75,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             get => returnType;
         }
 
-        public void ToEPL(
-            TextWriter writer,
-            ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(this.GetType().Name + " stream " + streamNum);
         }

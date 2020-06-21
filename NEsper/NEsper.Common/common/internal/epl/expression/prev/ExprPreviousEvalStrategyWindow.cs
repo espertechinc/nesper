@@ -8,23 +8,21 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.view.access;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.prev
 {
     public class ExprPreviousEvalStrategyWindow : ExprPreviousEvalStrategy
     {
-        private readonly int streamNumber;
-        private readonly ExprEvaluator evalNode;
-        private readonly Type componentType;
-        private readonly RandomAccessByIndexGetter randomAccessGetter;
-        private readonly RelativeAccessByEventNIndexGetter relativeAccessGetter;
+        private readonly int _streamNumber;
+        private readonly ExprEvaluator _evalNode;
+        private readonly Type _componentType;
+        private readonly RandomAccessByIndexGetter _randomAccessGetter;
+        private readonly RelativeAccessByEventNIndexGetter _relativeAccessGetter;
 
         public ExprPreviousEvalStrategyWindow(
             int streamNumber,
@@ -33,11 +31,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             RandomAccessByIndexGetter randomAccessGetter,
             RelativeAccessByEventNIndexGetter relativeAccessGetter)
         {
-            this.streamNumber = streamNumber;
-            this.evalNode = evalNode;
-            this.componentType = componentType;
-            this.randomAccessGetter = randomAccessGetter;
-            this.relativeAccessGetter = relativeAccessGetter;
+            this._streamNumber = streamNumber;
+            this._evalNode = evalNode;
+            this._componentType = componentType;
+            this._randomAccessGetter = randomAccessGetter;
+            this._relativeAccessGetter = relativeAccessGetter;
         }
 
         public object Evaluate(
@@ -46,14 +44,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
         {
             IEnumerator<EventBean> events;
             int size;
-            if (randomAccessGetter != null) {
-                RandomAccessByIndex randomAccess = randomAccessGetter.Accessor;
+            if (_randomAccessGetter != null) {
+                var randomAccess = _randomAccessGetter.Accessor;
                 events = randomAccess.GetWindowEnumerator();
                 size = (int) randomAccess.WindowCount;
             }
             else {
-                EventBean evalEvent = eventsPerStream[streamNumber];
-                RelativeAccessByEventNIndex relativeAccess = relativeAccessGetter.GetAccessor(evalEvent);
+                var evalEvent = eventsPerStream[_streamNumber];
+                var relativeAccess = _relativeAccessGetter.GetAccessor(evalEvent);
                 if (relativeAccess == null) {
                     return null;
                 }
@@ -66,16 +64,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                 return null;
             }
 
-            EventBean originalEvent = eventsPerStream[streamNumber];
-            Array result = Array.CreateInstance(componentType, size);
+            var originalEvent = eventsPerStream[_streamNumber];
+            var result = Arrays.CreateInstanceChecked(_componentType, size);
 
-            for (int i = 0; i < size; i++) {
+            for (var i = 0; i < size; i++) {
                 events.MoveNext();
-                eventsPerStream[streamNumber] = events.Current;
-                result.SetValue(evalNode.Evaluate(eventsPerStream, true, exprEvaluatorContext), i);
+                eventsPerStream[_streamNumber] = events.Current;
+                result.SetValue(_evalNode.Evaluate(eventsPerStream, true, exprEvaluatorContext), i);
             }
 
-            eventsPerStream[streamNumber] = originalEvent;
+            eventsPerStream[_streamNumber] = originalEvent;
             return result;
         }
 
@@ -84,13 +82,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             ExprEvaluatorContext context)
         {
             ICollection<EventBean> events;
-            if (randomAccessGetter != null) {
-                RandomAccessByIndex randomAccess = randomAccessGetter.Accessor;
+            if (_randomAccessGetter != null) {
+                var randomAccess = _randomAccessGetter.Accessor;
                 events = randomAccess.WindowCollectionReadOnly;
             }
             else {
-                EventBean evalEvent = eventsPerStream[streamNumber];
-                RelativeAccessByEventNIndex relativeAccess = relativeAccessGetter.GetAccessor(evalEvent);
+                var evalEvent = eventsPerStream[_streamNumber];
+                var relativeAccess = _relativeAccessGetter.GetAccessor(evalEvent);
                 if (relativeAccess == null) {
                     return null;
                 }
@@ -107,14 +105,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
         {
             IEnumerator<EventBean> events;
             int size;
-            if (randomAccessGetter != null) {
-                RandomAccessByIndex randomAccess = randomAccessGetter.Accessor;
+            if (_randomAccessGetter != null) {
+                var randomAccess = _randomAccessGetter.Accessor;
                 events = randomAccess.GetWindowEnumerator();
                 size = (int) randomAccess.WindowCount;
             }
             else {
-                EventBean evalEvent = eventsPerStream[streamNumber];
-                RelativeAccessByEventNIndex relativeAccess = relativeAccessGetter.GetAccessor(evalEvent);
+                var evalEvent = eventsPerStream[_streamNumber];
+                var relativeAccess = _relativeAccessGetter.GetAccessor(evalEvent);
                 if (relativeAccess == null) {
                     return null;
                 }
@@ -127,16 +125,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                 return Collections.GetEmptyList<object>();
             }
 
-            EventBean originalEvent = eventsPerStream[streamNumber];
+            var originalEvent = eventsPerStream[_streamNumber];
             Deque<object> deque = new ArrayDeque<object>(size);
-            for (int i = 0; i < size; i++) {
+            for (var i = 0; i < size; i++) {
                 events.MoveNext();
-                eventsPerStream[streamNumber] = events.Current;
-                object evalResult = evalNode.Evaluate(eventsPerStream, true, context);
+                eventsPerStream[_streamNumber] = events.Current;
+                var evalResult = _evalNode.Evaluate(eventsPerStream, true, context);
                 deque.Add(evalResult);
             }
 
-            eventsPerStream[streamNumber] = originalEvent;
+            eventsPerStream[_streamNumber] = originalEvent;
             return deque;
         }
 

@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
     /// <summary>
@@ -23,8 +21,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="onTriggerType">for indicationg on-delete, on-select or on-Update</param>
         /// <param name="deleteAndSelect">if set to <c>true</c> [delete and select].</param>
         public OnTriggerWindowDesc(
-            String windowName,
-            String optionalAsName,
+            string windowName,
+            string optionalAsName,
             OnTriggerType onTriggerType,
             bool deleteAndSelect)
             : base(onTriggerType)

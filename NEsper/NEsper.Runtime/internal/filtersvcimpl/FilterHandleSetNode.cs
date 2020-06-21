@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading.locks;
@@ -27,14 +28,14 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
     {
         private readonly IReaderWriterLock _nodeRwLock;
         private readonly LinkedHashSet<FilterHandle> _callbackSet;
-        private readonly List<FilterParamIndexBase> _indizes;
+        private IList<FilterParamIndexBase> _indizes;
 
         /// <summary>Constructor. </summary>
         public FilterHandleSetNode(IReaderWriterLock readWriteLock)
         {
             _nodeRwLock = readWriteLock;
             _callbackSet = new LinkedHashSet<FilterHandle>();
-            _indizes = new List<FilterParamIndexBase>();
+            _indizes = EmptyList<FilterParamIndexBase>.Instance;
         }
 
         /// <summary>
@@ -70,7 +71,11 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         /// <summary>Evaluate an event by asking each index to match the event. Any filter callbacks at this node automatically match the event and do not need to be further evaluated, and are thus added to the "matches" list of callbacks. NOTE: This client should not use the lock before calling this method. </summary>
         /// <param name="theEvent">is the event wrapper supplying the event property values</param>
         /// <param name="matches">is the list of callbacks to add to for any matches found</param>
-        public void MatchEvent(EventBean theEvent, ICollection<FilterHandle> matches)
+        /// <param name="ctx">evaluator context</param>
+        public void MatchEvent(
+            EventBean theEvent,
+            ICollection<FilterHandle> matches,
+            ExprEvaluatorContext ctx)
         {
             using (_nodeRwLock.AcquireReadLock())
             {
@@ -86,7 +91,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 var length = _indizes.Count;
                 for (int ii = 0; ii < length; ii++)
                 {
-                    _indizes[ii].MatchEvent(theEvent, matches);
+                    _indizes[ii].MatchEvent(theEvent, matches, ctx);
                 }
 
                 if (InstrumentationHelper.ENABLED)
@@ -135,6 +140,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         /// <param name="index">index to add</param>
         public void Add(FilterParamIndexBase index)
         {
+            CheckIndizesIsModifiable();
             _indizes.Add(index);
         }
 
@@ -147,6 +153,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         /// <returns>true if found, false if not existing</returns>
         public bool Remove(FilterParamIndexBase index)
         {
+            CheckIndizesIsModifiable();
             return _indizes.Remove(index);
         }
 
@@ -194,6 +201,13 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             foreach (FilterParamIndexBase index in _indizes)
             {
                 index.GetTraverseStatement(traverse, statementIds, evaluatorStack);
+            }
+        }
+
+        private void CheckIndizesIsModifiable()
+        {
+            if (!(_indizes is List<FilterParamIndexBase>)) {
+                _indizes = new List<FilterParamIndexBase>();
             }
         }
 

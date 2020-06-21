@@ -17,6 +17,8 @@ using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.multikey;
+using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.pattern.core;
@@ -29,15 +31,10 @@ using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.annotation.AnnotationUtil;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
-
-using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace com.espertech.esper.common.@internal.context.module
 {
@@ -49,6 +46,7 @@ namespace com.espertech.esper.common.@internal.context.module
         private readonly bool _canSelfJoin;
         private readonly bool _forClauseDelivery;
         private readonly ExprNode[] _groupDelivery;
+        private readonly MultiKeyClassRef _groupDeliveryMultiKey;
         private readonly bool _hasMatchRecognize;
         private readonly bool _hasSubquery;
         private readonly bool _hasTableAccess;
@@ -73,6 +71,7 @@ namespace com.espertech.esper.common.@internal.context.module
         private readonly StatementType _statementType;
         private readonly object _userObjectCompileTime;
         private readonly bool _writesToTables;
+        private readonly ExpressionScriptProvided[] _onScripts;
 
         public StatementInformationalsCompileTime(
             string statementNameCompileTime,
@@ -99,12 +98,14 @@ namespace com.espertech.esper.common.@internal.context.module
             string[] selectClauseColumnNames,
             bool forClauseDelivery,
             ExprNode[] groupDelivery,
+            MultiKeyClassRef groupDeliveryMultiKey,
             IDictionary<StatementProperty, object> properties,
             bool hasMatchRecognize,
             bool instrumented,
             CodegenNamespaceScope namespaceScope,
             string insertIntoLatchName,
-            bool allowSubscriber)
+            bool allowSubscriber,
+            ExpressionScriptProvided[] onScripts)
         {
             _statementNameCompileTime = statementNameCompileTime;
             _alwaysSynthesizeOutputEvents = alwaysSynthesizeOutputEvents;
@@ -130,12 +131,14 @@ namespace com.espertech.esper.common.@internal.context.module
             _selectClauseColumnNames = selectClauseColumnNames;
             _forClauseDelivery = forClauseDelivery;
             _groupDelivery = groupDelivery;
+            _groupDeliveryMultiKey = groupDeliveryMultiKey;
             _properties = properties;
             _hasMatchRecognize = hasMatchRecognize;
             _instrumented = instrumented;
             _namespaceScope = namespaceScope;
             _insertIntoLatchName = insertIntoLatchName;
             _allowSubscriber = allowSubscriber;
+            _onScripts = onScripts;
         }
 
         public CodegenExpression Make(
@@ -144,6 +147,9 @@ namespace com.espertech.esper.common.@internal.context.module
         {
             var method = parent.MakeChild(typeof(StatementInformationalsRuntime), GetType(), classScope);
             var info = Ref("info");
+            var annotationsExpr = _annotations == null
+                ? ConstantNull()
+                : LocalMethod(MakeAnnotations(typeof(Attribute[]), _annotations, method, classScope));
             method.Block
                 .DeclareVar<StatementInformationalsRuntime>(
                     info.Ref,
@@ -157,16 +163,8 @@ namespace com.espertech.esper.common.@internal.context.module
                 .SetProperty(info, "HasSubquery", Constant(_hasSubquery))
                 .SetProperty(info, "IsNeedDedup", Constant(_needDedup))
                 .SetProperty(info, "IsStateless", Constant(_stateless))
-                .SetProperty(
-                    info,
-                    "Annotations",
-                    _annotations == null
-                        ? ConstantNull()
-                        : LocalMethod(MakeAnnotations(typeof(Attribute[]), _annotations, method, classScope)))
-                .SetProperty(
-                    info,
-                    "UserObjectCompileTime",
-                    SerializerUtil.ExpressionForUserObject(_userObjectCompileTime))
+                .SetProperty(info, "Annotations", annotationsExpr)
+                .SetProperty(info, "UserObjectCompileTime", SerializerUtil.ExpressionForUserObject(_userObjectCompileTime))
                 .SetProperty(info, "NumFilterCallbacks", Constant(_numFilterCallbacks))
                 .SetProperty(info, "NumScheduleCallbacks", Constant(_numScheduleCallbacks))
                 .SetProperty(info, "NumNamedWindowCallbacks", Constant(_numNamedWindowCallbacks))
@@ -179,17 +177,7 @@ namespace com.espertech.esper.common.@internal.context.module
                 .SetProperty(info, "SelectClauseTypes", Constant(_selectClauseTypes))
                 .SetProperty(info, "SelectClauseColumnNames", Constant(_selectClauseColumnNames))
                 .SetProperty(info, "IsForClauseDelivery", Constant(_forClauseDelivery))
-                .SetProperty(
-                    info,
-                    "GroupDeliveryEval",
-                    _groupDelivery == null
-                        ? ConstantNull()
-                        : ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
-                            ExprNodeUtilityQuery.GetForges(_groupDelivery),
-                            null,
-                            method,
-                            GetType(),
-                            classScope))
+                .SetProperty(info, "GroupDeliveryEval", MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(_groupDelivery, null, _groupDeliveryMultiKey, method, classScope))
                 .SetProperty(info, "Properties", MakeProperties(_properties, method, classScope))
                 .SetProperty(info, "HasMatchRecognize", Constant(_hasMatchRecognize))
                 .SetProperty(info, "AuditProvider", MakeAuditProvider(method, classScope))
@@ -199,9 +187,12 @@ namespace com.espertech.esper.common.@internal.context.module
                 .SetProperty(info, "SubstitutionParamNames", MakeSubstitutionParamNames(method, classScope))
                 .SetProperty(info, "InsertIntoLatchName", Constant(_insertIntoLatchName))
                 .SetProperty(info, "IsAllowSubscriber", Constant(_allowSubscriber))
+                .SetProperty(info, "OnScripts", MakeOnScripts(_onScripts, method, classScope))
                 .MethodReturn(info);
             return LocalMethod(method);
         }
+
+        public IDictionary<StatementProperty, object> Properties => _properties;
 
         private CodegenExpression MakeSubstitutionParamTypes()
         {
@@ -330,7 +321,7 @@ namespace com.espertech.esper.common.@internal.context.module
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            if (FindAnnotation(_annotations, typeof(AuditAttribute)) == null) {
+            if (!HasAnnotation<AuditAttribute>(_annotations)) {
                 return PublicConstValue(typeof(AuditProviderDefault), "INSTANCE");
             }
 
@@ -356,7 +347,7 @@ namespace com.espertech.esper.common.@internal.context.module
                 new CodegenExpressionLambda(method.Block)
                     .WithParam<EventBean[]>("newData")
                     .WithParam<EventBean[]>("oldData")
-                    .WithParam<AgentInstanceContext>(REF_AGENTINSTANCECONTEXT.Ref)
+                    .WithParam<AgentInstanceContext>(MEMBER_AGENTINSTANCECONTEXT.Ref)
                     .WithParam<ViewFactory>("viewFactory")
                     .WithBody(
                         block => block.StaticMethod(
@@ -364,7 +355,7 @@ namespace com.espertech.esper.common.@internal.context.module
                             "AuditView",
                             Ref("newData"),
                             Ref("oldData"),
-                            REF_AGENTINSTANCECONTEXT,
+                            MEMBER_AGENTINSTANCECONTEXT,
                             Ref("viewFactory"))));
 
             method.Block.SetProperty(
@@ -413,7 +404,7 @@ namespace com.espertech.esper.common.@internal.context.module
                 "ProcScheduleAdd",
                 new CodegenExpressionLambda(method.Block)
                     .WithParam<long>("time")
-                    .WithParam<AgentInstanceContext>(REF_AGENTINSTANCECONTEXT.Ref)
+                    .WithParam<AgentInstanceContext>(MEMBER_AGENTINSTANCECONTEXT.Ref)
                     .WithParam<ScheduleHandle>("scheduleHandle")
                     .WithParam<ScheduleObjectType>("type")
                     .WithParam<string>("name")
@@ -424,7 +415,7 @@ namespace com.espertech.esper.common.@internal.context.module
                                     typeof(AuditPath),
                                     "AuditScheduleAdd",
                                     Ref("time"),
-                                    REF_AGENTINSTANCECONTEXT,
+                                    MEMBER_AGENTINSTANCECONTEXT,
                                     Ref("scheduleHandle"),
                                     Ref("type"),
                                     Ref("name"));
@@ -435,7 +426,7 @@ namespace com.espertech.esper.common.@internal.context.module
                 Ref("auditProvider"),
                 "ProcScheduleRemove",
                 new CodegenExpressionLambda(method.Block)
-                    .WithParam<AgentInstanceContext>(REF_AGENTINSTANCECONTEXT.Ref)
+                    .WithParam<AgentInstanceContext>(MEMBER_AGENTINSTANCECONTEXT.Ref)
                     .WithParam<ScheduleHandle>("scheduleHandle")
                     .WithParam<ScheduleObjectType>("type")
                     .WithParam<string>("name")
@@ -445,7 +436,7 @@ namespace com.espertech.esper.common.@internal.context.module
                                 block.StaticMethod(
                                     typeof(AuditPath),
                                     "AuditScheduleRemove",
-                                    REF_AGENTINSTANCECONTEXT,
+                                    MEMBER_AGENTINSTANCECONTEXT,
                                     Ref("scheduleHandle"),
                                     Ref("type"),
                                     Ref("name"));
@@ -456,7 +447,7 @@ namespace com.espertech.esper.common.@internal.context.module
                 Ref("auditProvider"),
                 "ProcScheduleFire",
                 new CodegenExpressionLambda(method.Block)
-                    .WithParam<AgentInstanceContext>(REF_AGENTINSTANCECONTEXT.Ref)
+                    .WithParam<AgentInstanceContext>(MEMBER_AGENTINSTANCECONTEXT.Ref)
                     .WithParam<ScheduleObjectType>("type")
                     .WithParam<string>("name")
                     .WithBody(
@@ -465,7 +456,7 @@ namespace com.espertech.esper.common.@internal.context.module
                                 block.StaticMethod(
                                     typeof(AuditPath),
                                     "AuditScheduleFire",
-                                    REF_AGENTINSTANCECONTEXT,
+                                    MEMBER_AGENTINSTANCECONTEXT,
                                     Ref("type"),
                                     Ref("name"));
                             }
@@ -546,7 +537,7 @@ namespace com.espertech.esper.common.@internal.context.module
                                     Ref("from"),
                                     Ref("matchEvent"),
                                     Ref("isQuitted"),
-                                    REF_AGENTINSTANCECONTEXT);
+                                    MEMBER_AGENTINSTANCECONTEXT);
                             }
                         }));
 
@@ -565,7 +556,7 @@ namespace com.espertech.esper.common.@internal.context.module
                                     "AuditPatternFalse",
                                     Ref("factoryNode"),
                                     Ref("from"),
-                                    REF_AGENTINSTANCECONTEXT);
+                                    MEMBER_AGENTINSTANCECONTEXT);
                             }
                         }));
 
@@ -584,7 +575,7 @@ namespace com.espertech.esper.common.@internal.context.module
                                     "AuditPatternInstance",
                                     Ref("increase"),
                                     Ref("factoryNode"),
-                                    REF_AGENTINSTANCECONTEXT);
+                                    MEMBER_AGENTINSTANCECONTEXT);
                             }
                         }));
 
@@ -615,7 +606,7 @@ namespace com.espertech.esper.common.@internal.context.module
                     .WithParam<string>("instance")
                     .WithParam<EPDataFlowState>("state")
                     .WithParam<EPDataFlowState>("newState")
-                    .WithParam<AgentInstanceContext>(REF_AGENTINSTANCECONTEXT.Ref)
+                    .WithParam<AgentInstanceContext>(MEMBER_AGENTINSTANCECONTEXT.Ref)
                     .WithBody(
                         block => {
                             if (AuditEnum.DATAFLOW_TRANSITION.GetAudit(_annotations) != null) {
@@ -626,7 +617,7 @@ namespace com.espertech.esper.common.@internal.context.module
                                     Ref("instance"),
                                     Ref("state"),
                                     Ref("newState"),
-                                    REF_AGENTINSTANCECONTEXT);
+                                    MEMBER_AGENTINSTANCECONTEXT);
                             }
                         }));
 
@@ -638,7 +629,7 @@ namespace com.espertech.esper.common.@internal.context.module
                     .WithParam<string>("instance")
                     .WithParam<string>("operatorName")
                     .WithParam<int>("operatorNum")
-                    .WithParam<AgentInstanceContext>(REF_AGENTINSTANCECONTEXT.Ref)
+                    .WithParam<AgentInstanceContext>(MEMBER_AGENTINSTANCECONTEXT.Ref)
                     .WithBody(
                         block => {
                             if (AuditEnum.DATAFLOW_SOURCE.GetAudit(_annotations) != null) {
@@ -649,7 +640,7 @@ namespace com.espertech.esper.common.@internal.context.module
                                     Ref("instance"),
                                     Ref("operatorName"),
                                     Ref("operatorNum"),
-                                    REF_AGENTINSTANCECONTEXT);
+                                    MEMBER_AGENTINSTANCECONTEXT);
                             }
                         }));
 
@@ -662,7 +653,7 @@ namespace com.espertech.esper.common.@internal.context.module
                     .WithParam<string>("operatorName")
                     .WithParam<int>("operatorNum")
                     .WithParam<object[]>("parameters")
-                    .WithParam<AgentInstanceContext>(REF_AGENTINSTANCECONTEXT.Ref)
+                    .WithParam<AgentInstanceContext>(MEMBER_AGENTINSTANCECONTEXT.Ref)
                     .WithBody(
                         block => {
                             if (AuditEnum.DATAFLOW_OP.GetAudit(_annotations) != null) {
@@ -674,7 +665,7 @@ namespace com.espertech.esper.common.@internal.context.module
                                     Ref("operatorName"),
                                     Ref("operatorNum"),
                                     Ref("parameters"),
-                                    REF_AGENTINSTANCECONTEXT);
+                                    MEMBER_AGENTINSTANCECONTEXT);
                             }
                         }));
 
@@ -683,7 +674,7 @@ namespace com.espertech.esper.common.@internal.context.module
                 "ProcContextPartition",
                 new CodegenExpressionLambda(method.Block)
                     .WithParam<bool>("allocate")
-                    .WithParam<AgentInstanceContext>(REF_AGENTINSTANCECONTEXT.Ref)
+                    .WithParam<AgentInstanceContext>(MEMBER_AGENTINSTANCECONTEXT.Ref)
                     .WithBody(
                         block => {
                             if (AuditEnum.CONTEXTPARTITION.GetAudit(_annotations) != null) {
@@ -691,7 +682,7 @@ namespace com.espertech.esper.common.@internal.context.module
                                     typeof(AuditPath),
                                     "AuditContextPartition",
                                     Ref("allocate"),
-                                    REF_AGENTINSTANCECONTEXT);
+                                    MEMBER_AGENTINSTANCECONTEXT);
                             }
                         }));
 
@@ -719,7 +710,7 @@ namespace com.espertech.esper.common.@internal.context.module
             }
 
             var method = parent.MakeChild(
-                typeof(IDictionary<object, object>),
+                typeof(IDictionary<StatementProperty, object>),
                 typeof(StatementInformationalsCompileTime),
                 classScope);
             method.Block
@@ -728,13 +719,31 @@ namespace com.espertech.esper.common.@internal.context.module
                     NewInstance(typeof(Dictionary<StatementProperty, object>)));
             foreach (var entry in properties) {
                 method.Block.ExprDotMethod(
-                    Ref("Properties"),
+                    Ref("properties"),
                     "Put",
                     field.Invoke(entry.Key),
                     value.Invoke(entry.Value));
             }
 
+            method.Block.MethodReturn(Ref("properties"));
             return LocalMethod(method);
+        }
+
+        private CodegenExpression MakeOnScripts(
+            ExpressionScriptProvided[] onScripts,
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
+        {
+            if (onScripts == null || onScripts.Length == 0) {
+                return ConstantNull();
+            }
+
+            CodegenExpression[] init = new CodegenExpression[onScripts.Length];
+            for (int i = 0; i < onScripts.Length; i++) {
+                init[i] = onScripts[i].Make(parent, classScope);
+            }
+
+            return NewArrayWithInit(typeof(ExpressionScriptProvided), init);
         }
     }
 } // end of namespace

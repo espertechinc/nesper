@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+using System.Collections.Generic;
 using System.Xml;
 
 using com.espertech.esper.common.client;
@@ -19,13 +21,62 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
-    public class EventXMLNoSchemaEventTransposeXPathConfigured : RegressionExecution
+    public class EventXMLNoSchemaEventTransposeXPathConfigured
     {
-        public void Run(RegressionEnvironment env)
+        public static ICollection<RegressionExecution> Executions()
         {
-            env.CompileDeploy(
-                "@Name('insert') insert into Nested3Stream select nested1simple, nested4array from MyXMLEvent");
-            env.CompileDeploy("@Name('s0') select * from MyXMLEvent");
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithPreconfig(execs);
+            WithCreateSchema(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLNoSchemaEventTransposeXPathConfiguredCreateSchema());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPreconfig(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLNoSchemaEventTransposeXPathConfiguredPreconfig());
+            return execs;
+        }
+
+        public class EventXMLNoSchemaEventTransposeXPathConfiguredPreconfig : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunAssertion(env, "MyXMLEvent", new RegressionPath());
+            }
+        }
+
+        public class EventXMLNoSchemaEventTransposeXPathConfiguredCreateSchema : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@public @buseventtype " +
+                          "@XMLSchema(RootElementName='simpleEvent')" +
+                          "@XMLSchemaNamespacePrefix(Prefix='ss', Namespace='samples:schemas:simpleSchema')" +
+                          "@XMLSchemaField(Name='nested1simple', XPath='/ss:simpleEvent/ss:nested1', Type='any', EventTypeName='MyNestedEvent')" +
+                          "@XMLSchemaField(Name='nested4array', XPath='//ss:nested4', Type='nodeset', EventTypeName='MyNestedArrayEvent')" +
+                          "create xml schema MyEventCreateSchema();\n";
+                var path = new RegressionPath();
+                env.CompileDeploy(epl, path);
+                RunAssertion(env, "MyEventCreateSchema", path);
+            }
+        }
+
+        private static void RunAssertion(
+            RegressionEnvironment env,
+            String eventTypeName,
+            RegressionPath path)
+        {
+            env.CompileDeploy("@Name('insert') insert into Nested3Stream select nested1simple, nested4array from " + eventTypeName, path);
+            env.CompileDeploy("@Name('s0') select * from " + eventTypeName, path);
+
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("insert").EventType);
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("s0").EventType);
             CollectionAssert.AreEquivalent(
@@ -61,17 +112,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             Assert.AreEqual(0, fragmentTypeNested4.FragmentType.PropertyDescriptors.Count);
             SupportEventTypeAssertionUtil.AssertConsistency(fragmentTypeNested4.FragmentType);
 
-            SupportXML.SendDefaultEvent(env.EventService, "ABC", "MyXMLEvent");
+            SupportXML.SendDefaultEvent(env.EventService, "ABC", eventTypeName);
 
             var received = env.GetEnumerator("insert").Advance();
             EPAssertionUtil.AssertProps(
                 received,
-                new[] { "nested1simple.prop1", "nested1simple.prop2", "nested1simple.attr1", "nested1simple.nested2.prop3[1]" },
-                new object[] { "SAMPLE_V1", "true", "SAMPLE_ATTR1", "4" });
+                new[] {"nested1simple.prop1", "nested1simple.prop2", "nested1simple.attr1", "nested1simple.nested2.prop3[1]"},
+                new object[] {"SAMPLE_V1", "true", "SAMPLE_ATTR1", "4"});
             EPAssertionUtil.AssertProps(
                 received,
-                new[] { "nested4array[0].id", "nested4array[0].prop5[1]", "nested4array[1].id" },
-                new object[] { "a", "SAMPLE_V8", "b" });
+                new[] {"nested4array[0].id", "nested4array[0].prop5[1]", "nested4array[1].id"},
+                new object[] {"a", "SAMPLE_V8", "b"});
 
             // assert event and fragments alone
             var wildcardStmtEventEnum = env.GetEnumerator("s0");
@@ -91,6 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             Assert.IsTrue(eventType.IsIndexed);
             Assert.IsFalse(eventType.IsNative);
             Assert.AreEqual("MyNestedArrayEvent", eventType.FragmentType.Name);
+
             var eventsArray = (EventBean[]) wildcardStmtEvent.GetFragment("nested4array");
             Assert.AreEqual(3, eventsArray.Length);
             Assert.AreEqual("SAMPLE_V8", eventsArray[0].Get("prop5[1]"));

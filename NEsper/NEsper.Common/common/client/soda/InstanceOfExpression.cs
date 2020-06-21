@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.client.soda
             string typeName,
             params string[] moreTypes)
         {
-            this.Children.Add(expressionToCheck);
+            Children.Add(expressionToCheck);
             if (moreTypes == null)
             {
                 typeNames = new string[] { typeName };
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.client.soda
             {
                 typeNames = new string[moreTypes.Length + 1];
                 typeNames[0] = typeName;
-                Array.Copy(moreTypes, 0, this.typeNames, 1, moreTypes.Length);
+                Array.Copy(moreTypes, 0, typeNames, 1, moreTypes.Length);
             }
         }
 
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.client.soda
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("instanceof(");
-            this.Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+            Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             writer.Write(",");
 
             string delimiter = "";

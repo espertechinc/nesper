@@ -12,7 +12,7 @@ using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.@event.avro;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 
 using NEsper.Avro.Extensions;
 
@@ -96,6 +96,12 @@ namespace com.espertech.esper.regressionrun.suite.@event
         public void TestEventAvroSampleConfigDocOutputSchema()
         {
             RegressionRunner.Run(session, new EventAvroSampleConfigDocOutputSchema());
+        }
+        
+        [Test, RunInApplicationDomain]
+        public void TestEventAvroSupertypeInsertInto()
+        {
+            RegressionRunner.Run(session, new EventAvroSupertypeInsertInto());
         }
     }
 } // end of namespace

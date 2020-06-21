@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env,
                 path,
                 epl,
-                "Failed to plan subquery number 1 querying BookWindow: Failed to validate named window use in subquery, Contained-event is only allowed for named windows when not correlated ");
+                "Failed to plan subquery number 1 querying BookWindow: Failed to validate named window use in subquery, contained-event is only allowed for named windows when not correlated ");
 
             env.UndeployAll();
         }

@@ -22,15 +22,86 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLOtherRStreamOnlyOM());
-            execs.Add(new EPLOtherRStreamOnlyCompile());
-            execs.Add(new EPLOtherRStreamOnly());
-            execs.Add(new EPLOtherRStreamInsertInto());
-            execs.Add(new EPLOtherRStreamInsertIntoRStream());
-            execs.Add(new EPLOtherRStreamJoin());
-            execs.Add(new EPLOtherIStreamOnly());
-            execs.Add(new EPLOtherIStreamInsertIntoRStream());
+            WithRStreamOnlyOM(execs);
+            WithRStreamOnlyCompile(execs);
+            WithRStreamOnly(execs);
+            WithRStreamInsertInto(execs);
+            WithRStreamInsertIntoRStream(execs);
+            WithRStreamJoin(execs);
+            WithIStreamOnly(execs);
+            WithIStreamInsertIntoRStream(execs);
+            WithIStreamJoin(execs);
+            WithRStreamOutputSnapshot(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRStreamOutputSnapshot(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherRStreamOutputSnapshot());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIStreamJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLOtherIStreamJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIStreamInsertIntoRStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherIStreamInsertIntoRStream());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIStreamOnly(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherIStreamOnly());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRStreamJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherRStreamJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRStreamInsertIntoRStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherRStreamInsertIntoRStream());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRStreamInsertInto(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherRStreamInsertInto());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRStreamOnly(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherRStreamOnly());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRStreamOnlyCompile(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherRStreamOnlyCompile());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRStreamOnlyOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherRStreamOnlyOM());
             return execs;
         }
 
@@ -53,6 +124,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             theEvent.IntPrimitive = intPrimitive;
             env.SendEventBean(theEvent);
             return theEvent;
+        }
+
+        internal class EPLOtherRStreamOutputSnapshot : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "select rstream * from SupportBean#time(30 minutes) output snapshot";
+                env.CompileDeploy(epl).UndeployAll();
+            }
         }
 
         internal class EPLOtherRStreamOnlyOM : RegressionExecution

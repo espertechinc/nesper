@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
 
         private PointRegionQuadTree<object> tree;
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestAddRemoveSamePoint()
         {
             tree = PointRegionQuadTreeFactory<object>.Make(0, 0, 100, 100);
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             AssertFound(tree, 0, 0, 10, 10, "");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestAddRemoveSimple()
         {
             tree = PointRegionQuadTreeFactory<object>.Make(0, 0, 50, 60, 4, 20);
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             AssertFound(tree, 0, 0, 10, 10, "");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestFewValues()
         {
             tree = PointRegionQuadTreeFactory<object>.Make(0, 0, 100, 100);
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             AssertFound(tree, beginX, beginY, endX - beginX, endY - beginY, "P1");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPoints()
         {
             tree = PointRegionQuadTreeFactory<object>.Make(0, 0, 10, 10);

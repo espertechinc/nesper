@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.support
         public static ImportServiceCompileTime GetInstance(IContainer container)
         {
             return container.ResolveSingleton(
-                () => new ImportServiceCompileTime(
+                () => new ImportServiceCompileTimeImpl(
                     container,
                     null,
                     null,

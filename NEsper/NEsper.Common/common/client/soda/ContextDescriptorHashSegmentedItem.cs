@@ -43,10 +43,7 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             EPStatementFormatter formatter)
         {
-            if (HashFunction != null)
-            {
-                HashFunction.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-            }
+            HashFunction?.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
 
             writer.Write(" from ");
             Filter.ToEPL(writer, formatter);

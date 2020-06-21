@@ -114,9 +114,7 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
 
             if (batchNewData != null) {
                 HandleInternalPostBatch(window, batchNewData);
-                if (viewUpdatedCollection != null) {
-                    viewUpdatedCollection.Update(batchNewData, lastBatch);
-                }
+                viewUpdatedCollection?.Update(batchNewData, lastBatch);
 
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, batchNewData, lastBatch);
                 child.Update(batchNewData, lastBatch);
@@ -127,9 +125,7 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
             }
 
             if (oldData != null && oldData.Length > 0) {
-                if (viewUpdatedCollection != null) {
-                    viewUpdatedCollection.Update(null, oldData);
-                }
+                viewUpdatedCollection?.Update(null, oldData);
 
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, null, oldData);
                 child.Update(null, oldData);

@@ -70,10 +70,7 @@ namespace com.espertech.esper.collection
         /// </summary>
         private int _collisions;
 
-        public double Load
-        {
-            get { return (_collisions * 100.0) / _hashIndex.Length; }
-        }
+        public double Load => (_collisions * 100.0) / _hashIndex.Length;
 
         private static readonly int[] PrimeTable =
         {
@@ -121,7 +118,7 @@ namespace com.espertech.esper.collection
         /// <param name="minCapacity">The minimum capacity.</param>
         public FIFOHashSet(int minCapacity)
         {
-            for (int ii = 0; ii < PrimeTable.Length; ii++)
+            for (var ii = 0; ii < PrimeTable.Length; ii++)
             {
                 if (PrimeTable[ii] > minCapacity)
                 {
@@ -137,7 +134,7 @@ namespace com.espertech.esper.collection
             _freeListHead = -1;
 
             _hashIndex = new int[tableSize];
-            for (int ii = 0; ii < tableSize; ii++)
+            for (var ii = 0; ii < tableSize; ii++)
                 _hashIndex[ii] = -1;
 
             _nodeTable = new Node[tableSize];
@@ -160,7 +157,7 @@ namespace com.espertech.esper.collection
             _freeListHead = -1;
 
             _hashIndex = new int[tableSize];
-            for (int ii = 0; ii < tableSize; ii++)
+            for (var ii = 0; ii < tableSize; ii++)
                 _hashIndex[ii] = -1;
 
             _nodeTable = new Node[tableSize];
@@ -244,7 +241,7 @@ namespace com.espertech.esper.collection
             _freeListHead = -1;
 
             _hashIndex = new int[tableSize];
-            for (int ii = 0; ii < tableSize; ii++)
+            for (var ii = 0; ii < tableSize; ii++)
                 _hashIndex[ii] = -1;
 
             _nodeAllocIndex = 0;
@@ -277,9 +274,9 @@ namespace com.espertech.esper.collection
             var basicHistogram = new SortedDictionary<int, int[]>();
 
             var length = _hashIndex.Length;
-            for (int ii = 0; ii < length; ii++)
+            for (var ii = 0; ii < length; ii++)
             {
-                int chainCount = GetChain(ii).Count();
+                var chainCount = GetChain(ii).Count();
                 int[] chainCountMatch;
 
                 if (basicHistogram.TryGetValue(chainCount, out chainCountMatch))
@@ -321,7 +318,7 @@ namespace com.espertech.esper.collection
             {
                 // No items on the freeList.
                 // Space must be allocated from the existing node table.
-                int index = _nodeAllocIndex;
+                var index = _nodeAllocIndex;
                 if (index == _nodeTable.Length)
                 {
                     var newTableSize = _nodeTable.Length * 2;
@@ -337,7 +334,7 @@ namespace com.espertech.esper.collection
             }
             else
             {
-                int index = _freeListHead;
+                var index = _freeListHead;
                 _freeListHead = _nodeTable[index].NextNodeInChain;
                 _nodeTable[index].SetValues(item, hashCode);
                 return index;
@@ -352,7 +349,7 @@ namespace com.espertech.esper.collection
             _primeIndex++;
             var newHashIndexLength = PrimeTable[_primeIndex];
             var newHashIndex = new int[newHashIndexLength];
-            for (int ii = 0; ii < newHashIndexLength; ii++)
+            for (var ii = 0; ii < newHashIndexLength; ii++)
             {
                 newHashIndex[ii] = -1;
             }
@@ -652,10 +649,7 @@ namespace com.espertech.esper.collection
         /// <returns>
         /// The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"/>.
         /// </returns>
-        public int Count
-        {
-            get { return _nodeCount; }
-        }
+        public int Count => _nodeCount;
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
@@ -663,10 +657,7 @@ namespace com.espertech.esper.collection
         /// <value></value>
         /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only; otherwise, false.
         /// </returns>
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         /// <summary>
         /// Each node contains the content for the node and references to

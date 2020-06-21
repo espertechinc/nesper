@@ -10,8 +10,6 @@ using System;
 
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -36,11 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
                 return Op(rhs, "==", lhs);
             }
 
-            if (lhsType.IsValueType) {
-                return ExprDotMethod(rhs, "Equals", lhs);
-            }
-
-            return ExprDotMethod(lhs, "Equals", rhs);
+            return StaticMethod<object>("Equals", lhs, rhs);
         }
     }
 } // end of namespace

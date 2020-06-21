@@ -42,6 +42,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             execs.Add(new ResultSetQueryTypeSelectAvgExprGroupBy());
             execs.Add(new ResultSetQueryTypeUnboundStreamIterate());
             execs.Add(new ResultSetQueryTypeReclaimSideBySide());
+            execs.Add(new ResultSetQueryTypeRowPerGrpMultikeyWArray(false, true));
+            execs.Add(new ResultSetQueryTypeRowPerGrpMultikeyWArray(false, false));
+            execs.Add(new ResultSetQueryTypeRowPerGrpMultikeyWArray(true, false));
+            execs.Add(new ResultSetQueryTypeRowPerGrpMultikeyWReclaim());
             return execs;
         }
 
@@ -337,11 +341,95 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             env.SendEventBean(new SupportBean(theString, intPrimitive));
         }
 
+        private static void SendEventSBAssert(
+            RegressionEnvironment env,
+            String theString,
+            int intPrimitive,
+            int longPrimitive,
+            long expected)
+        {
+            SupportBean sb = new SupportBean(theString, intPrimitive);
+            sb.LongPrimitive = longPrimitive;
+            env.SendEventBean(sb);
+            Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("thesum"));
+        }
+
         private static void SendTimer(
             RegressionEnvironment env,
             long timeInMSec)
         {
             env.AdvanceTime(timeInMSec);
+        }
+        
+        private static void SendAssertIntArray(RegressionEnvironment env, String id, int[] array, int value, int expected)
+        {
+            var fields = new[] {"thesum"};
+            env.SendEventBean(new SupportEventWithIntArray(id, array, value));
+            EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {expected});
+        }
+
+        public class ResultSetQueryTypeRowPerGrpMultikeyWReclaim : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.AdvanceTime(0);
+                string epl =
+                    "@Hint('reclaim_group_aged=10,reclaim_group_freq=1') @name('s0') select TheString, IntPrimitive, sum(LongPrimitive) as thesum from SupportBean group by TheString, IntPrimitive";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendEventSBAssert(env, "A", 0, 100, 100);
+                SendEventSBAssert(env, "A", 0, 101, 201);
+
+                env.Milestone(0);
+                env.AdvanceTime(11000);
+
+                SendEventSBAssert(env, "A", 0, 104, 104);
+
+                env.UndeployAll();
+            }
+        }
+
+        public class ResultSetQueryTypeRowPerGrpMultikeyWArray : RegressionExecution
+        {
+            private readonly bool join;
+            private readonly bool unbound;
+
+            public ResultSetQueryTypeRowPerGrpMultikeyWArray(
+                bool join,
+                bool unbound)
+            {
+                this.join = join;
+                this.unbound = unbound;
+            }
+
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = join
+                    ? "@Name('s0') select sum(Value) as thesum from SupportEventWithIntArray#keepall, SupportBean#keepall group by Array"
+                    : (unbound
+                        ? "@Name('s0') select sum(Value) as thesum from SupportEventWithIntArray group by Array"
+                        : "@Name('s0') select sum(Value) as thesum from SupportEventWithIntArray#keepall group by Array"
+                    );
+
+                env.CompileDeploy(epl).AddListener("s0");
+                env.SendEventBean(new SupportBean());
+
+                SendAssertIntArray(env, "E1", new int[] {1, 2}, 5, 5);
+
+                env.Milestone(0);
+
+                SendAssertIntArray(env, "E2", new int[] {1, 2}, 10, 15);
+                SendAssertIntArray(env, "E3", new int[] {1}, 11, 11);
+                SendAssertIntArray(env, "E4", new int[] {1, 3}, 12, 12);
+
+                env.Milestone(1);
+
+                SendAssertIntArray(env, "E5", new int[] {1}, 13, 24);
+                SendAssertIntArray(env, "E6", new int[] {1, 3}, 15, 27);
+                SendAssertIntArray(env, "E7", new int[] {1, 2}, 16, 31);
+
+                env.UndeployAll();
+            }
         }
 
         public class ResultSetQueryTypeRowPerGroupSimple : RegressionExecution

@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.collection;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.util;
 
 namespace com.espertech.esper.regressionlib.support.util

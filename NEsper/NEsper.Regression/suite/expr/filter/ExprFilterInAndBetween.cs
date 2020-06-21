@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
+using com.espertech.esper.regressionlib.support.filter;
 using com.espertech.esper.regressionlib.support.multistmtassert;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
@@ -26,17 +27,80 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
     {
         public static IList<RegressionExecution> Executions()
         {
-            var executions = new List<RegressionExecution>();
-            executions.Add(new ExprFilterInDynamic());
-            executions.Add(new ExprFilterSimpleIntAndEnumWrite());
-            executions.Add(new ExprFilterInExpr());
-            executions.Add(new ExprFilterNotIn());
-            executions.Add(new ExprFilterInInvalid());
-            executions.Add(new ExprFilterReuse());
-            executions.Add(new ExprFilterReuseNot());
-            executions.Add(new ExprFilterInMultipleNonMatchingFirst());
-            executions.Add(new ExprFilterInMultipleWithBool());
-            return executions;
+            var execs = new List<RegressionExecution>();
+            WithInDynamic(execs);
+            WithSimpleIntAndEnumWrite(execs);
+            WithInExpr(execs);
+            WithNotIn(execs);
+            WithInInvalid(execs);
+            WithReuse(execs);
+            WithReuseNot(execs);
+            WithInMultipleNonMatchingFirst(execs);
+            WithInMultipleWithBool(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInMultipleWithBool(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterInMultipleWithBool());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInMultipleNonMatchingFirst(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterInMultipleNonMatchingFirst());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithReuseNot(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterReuseNot());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithReuse(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterReuse());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterInInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNotIn(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterNotIn());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInExpr(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterInExpr());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSimpleIntAndEnumWrite(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterSimpleIntAndEnumWrite());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInDynamic(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterInDynamic());
+            return execs;
         }
 
         private static void TryReuse(
@@ -539,14 +603,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                // we do not coerce
-                TryInvalidFilter(env, "select * from SupportBean(IntPrimitive in (1L, 10L))");
-                TryInvalidFilter(env, "select * from SupportBean(IntPrimitive in (1, 10L))");
-                TryInvalidFilter(env, "select * from SupportBean(IntPrimitive in (1, 'x'))");
+                if (SupportFilterOptimizableHelper.HasFilterIndexPlanBasicOrMore(env)) {
+                    // we do not coerce
+                    TryInvalidFilter(env, "select * from SupportBean(IntPrimitive in (1L, 10L))");
+                    TryInvalidFilter(env, "select * from SupportBean(IntPrimitive in (1, 10L))");
+                    TryInvalidFilter(env, "select * from SupportBean(IntPrimitive in (1, 'x'))");
 
-                var expr =
-                    "select * from pattern [a=SupportBean -> b=SupportBean(IntPrimitive in (a.LongPrimitive, a.LongBoxed))]";
-                TryInvalidFilter(env, expr);
+                    var expr =
+                        "select * from pattern [a=SupportBean -> b=SupportBean(IntPrimitive in (a.LongPrimitive, a.LongBoxed))]";
+                    TryInvalidFilter(env, expr);
+                }
             }
         }
 

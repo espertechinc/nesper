@@ -18,6 +18,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 {
@@ -73,24 +74,40 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public CodegenBlock SetterBlock { get; }
 
-        public bool IsOverride { get; set; }
+        public MemberModifier Modifiers { get; set; }
 
-        public bool IsStatic { get; set; }
+        public bool IsOverride => Modifiers.IsOverride();
+
+        public bool IsVirtual => Modifiers.IsVirtual();
+
+        public bool IsStatic => Modifiers.IsStatic();
 
         public CodegenPropertyWGraph AssignedProperty { get; set; }
+        
+        public String AssignedProviderClassName { get; set;  }
 
         public CodegenProperty WithStatic(bool value = true)
         {
-            IsStatic = value;
+            Modifiers = Modifiers.Enable(MemberModifier.STATIC);
             return this;
         }
 
-        public CodegenProperty WithOverride(bool value = true)
+        public CodegenProperty WithVirtual()
         {
-            IsOverride = value;
+            Modifiers = Modifiers
+                .Enable(MemberModifier.VIRTUAL)
+                .Disable(MemberModifier.OVERRIDE);
             return this;
         }
-
+        
+        public CodegenProperty WithOverride()
+        {
+            Modifiers = Modifiers
+                .Enable(MemberModifier.OVERRIDE)
+                .Disable(MemberModifier.VIRTUAL);
+            return this;
+        }
+        
         public CodegenProperty MakeChild(
             Type returnType,
             Type generator,
@@ -280,6 +297,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         {
             throw new NotImplementedException();
         }
+
+        public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class Setter : CodegenStatementWBlockBase
@@ -298,6 +320,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         }
 
         public override void MergeClasses(ISet<Type> classes)
+        {
+            throw new NotImplementedException();
+        }
+        
+        public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
             throw new NotImplementedException();
         }

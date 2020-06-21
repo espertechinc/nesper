@@ -10,13 +10,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -35,34 +32,214 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            #if false
-            execs.Add(new ExprDefineExpressionSimpleSameStmt());
-            execs.Add(new ExprDefineExpressionSimpleSameModule());
-            execs.Add(new ExprDefineExpressionSimpleTwoModule());
-            execs.Add(new ExprDefineAggregationNoAccess());
-            execs.Add(new ExprDefineAggregatedResult());
-            execs.Add(new ExprDefineAggregationAccess());
-            execs.Add(new ExprDefineWildcardAndPattern());
-            execs.Add(new ExprDefineScalarReturn());
-            execs.Add(new ExprDefineNoParameterArithmetic());
-            execs.Add(new ExprDefineOneParameterLambdaReturn());
-            execs.Add(new ExprDefineNoParameterVariable());
-            execs.Add(new ExprDefineAnnotationOrder());
-            execs.Add(new ExprDefineWhereClauseExpression());
-            execs.Add(new ExprDefineSequenceAndNested());
-            execs.Add(new ExprDefineCaseNewMultiReturnNoElse());
-            #endif
-            execs.Add(new ExprDefineSubqueryMultiresult());
-            execs.Add(new ExprDefineSubqueryCross());
-            execs.Add(new ExprDefineSubqueryJoinSameField());
-            execs.Add(new ExprDefineSubqueryCorrelated());
-            execs.Add(new ExprDefineSubqueryUncorrelated());
-            execs.Add(new ExprDefineSubqueryNamedWindowUncorrelated());
-            execs.Add(new ExprDefineSubqueryNamedWindowCorrelated());
-            execs.Add(new ExprDefineNestedExpressionMultiSubquery());
-            execs.Add(new ExprDefineEventTypeAndSODA());
-            execs.Add(new ExprDefineInvalid());
+            WithExpressionSimpleSameStmt(execs);
+            WithExpressionSimpleSameModule(execs);
+            WithExpressionSimpleTwoModule(execs);
+            WithAggregationNoAccess(execs);
+            WithAggregatedResult(execs);
+            WithAggregationAccess(execs);
+            WithWildcardAndPattern(execs);
+            WithScalarReturn(execs);
+            WithNoParameterArithmetic(execs);
+            WithOneParameterLambdaReturn(execs);
+            WithNoParameterVariable(execs);
+            WithAnnotationOrder(execs);
+            WithWhereClauseExpression(execs);
+            WithSequenceAndNested(execs);
+            WithCaseNewMultiReturnNoElse(execs);
+            WithSubqueryMultiresult(execs);
+            WithSubqueryCross(execs);
+            WithSubqueryJoinSameField(execs);
+            WithSubqueryCorrelated(execs);
+            WithSubqueryUncorrelated(execs);
+            WithSubqueryNamedWindowUncorrelated(execs);
+            WithSubqueryNamedWindowCorrelated(execs);
+            WithNestedExpressionMultiSubquery(execs);
+            WithEventTypeAndSODA(execs);
+            WithInvalid(execs);
+            WithSplitStream(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSplitStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ExprDefineSplitStream());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEventTypeAndSODA(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineEventTypeAndSODA());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNestedExpressionMultiSubquery(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineNestedExpressionMultiSubquery());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubqueryNamedWindowCorrelated(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineSubqueryNamedWindowCorrelated());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubqueryNamedWindowUncorrelated(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineSubqueryNamedWindowUncorrelated());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubqueryUncorrelated(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineSubqueryUncorrelated());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubqueryCorrelated(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineSubqueryCorrelated());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubqueryJoinSameField(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineSubqueryJoinSameField());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubqueryCross(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineSubqueryCross());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubqueryMultiresult(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineSubqueryMultiresult());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCaseNewMultiReturnNoElse(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineCaseNewMultiReturnNoElse());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSequenceAndNested(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineSequenceAndNested());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWhereClauseExpression(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineWhereClauseExpression());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAnnotationOrder(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineAnnotationOrder());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNoParameterVariable(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineNoParameterVariable());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOneParameterLambdaReturn(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineOneParameterLambdaReturn());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNoParameterArithmetic(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineNoParameterArithmetic());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithScalarReturn(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineScalarReturn());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWildcardAndPattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineWildcardAndPattern());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAggregationAccess(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineAggregationAccess());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAggregatedResult(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineAggregatedResult());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAggregationNoAccess(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineAggregationNoAccess());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithExpressionSimpleTwoModule(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineExpressionSimpleTwoModule());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithExpressionSimpleSameModule(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineExpressionSimpleSameModule());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithExpressionSimpleSameStmt(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineExpressionSimpleSameStmt());
             return execs;
         }
 
@@ -73,22 +250,22 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             env.CompileDeploy(epl).AddListener("s0");
             LambdaAssertionUtil.AssertTypes(
                 env.Statement("s0").EventType,
-                new [] { "val1" },
-                new[] { typeof(ICollection<object>) });
+                new[] {"val1"},
+                new[] {typeof(ICollection<object>)});
 
             env.SendEventBean(new SupportBean("E1", 2));
             var outArray = env.Listener("s0")
-                    .AssertOneGetNewAndReset()
-                    .Get("val1")
-                    .UnwrapIntoArray<SupportBean>();
-            
+                .AssertOneGetNewAndReset()
+                .Get("val1")
+                .UnwrapIntoArray<SupportBean>();
+
             Assert.AreEqual(0, outArray.Length);
 
             env.SendEventBean(new SupportBean("E2", 3));
             outArray = env.Listener("s0")
-                    .AssertOneGetNewAndReset()
-                    .Get("val1")
-                    .UnwrapIntoArray<SupportBean>();
+                .AssertOneGetNewAndReset()
+                .Get("val1")
+                .UnwrapIntoArray<SupportBean>();
 
             Assert.AreEqual(1, outArray.Length);
             Assert.AreEqual("E2", outArray[0].TheString);
@@ -164,14 +341,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0" };
+                var fields = new[] {"c0"};
 
                 var path = new RegressionPath();
                 env.CompileDeploy("create expression F1 { (select IntPrimitive from SupportBean#lastevent)}", path);
                 env.CompileDeploy(
-                    "create expression F2 { param -> (select a.IntPrimitive from SupportBean#unique(TheString) as a where a.TheString = param.TheString) }",
+                    "create expression F2 { param => (select a.IntPrimitive from SupportBean#unique(TheString) as a where a.TheString = param.TheString) }",
                     path);
-                env.CompileDeploy("create expression F3 { s -> F1()+F2(s) }", path);
+                env.CompileDeploy("create expression F3 { s => F1()+F2(s) }", path);
                 env.CompileDeploy("@Name('s0') select F3(myevent) as c0 from SupportBean as myevent", path)
                     .AddListener("s0");
 
@@ -196,19 +373,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             public void Run(RegressionEnvironment env)
             {
                 var eplNonJoin =
-                    "@Name('s0') expression abc { x -> IntPrimitive } " +
-                    "expression def { (x, y) -> x.IntPrimitive * y.IntPrimitive }" +
+                    "@Name('s0') expression abc { x => IntPrimitive } " +
+                    "expression def { (x, y) => x.IntPrimitive * y.IntPrimitive }" +
                     "select abc(*) as c0, def(*, *) as c1 from SupportBean";
                 env.CompileDeploy(eplNonJoin).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "c0"," c1" },
+                    new[] {"c0", " c1"},
                     new object[] {2, 4});
                 env.UndeployAll();
 
-                var eplPattern = "@Name('s0') expression abc { x -> IntPrimitive * 2} " +
+                var eplPattern = "@Name('s0') expression abc { x => IntPrimitive * 2} " +
                                  "select * from pattern [a=SupportBean -> b=SupportBean(IntPrimitive = abc(a))]";
                 env.CompileDeploy(eplPattern).AddListener("s0");
 
@@ -216,7 +393,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 env.SendEventBean(new SupportBean("E2", 4));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString"," b.TheString" },
+                    new[] {"a.TheString", " b.TheString"},
                     new object[] {"E1", "E2"});
 
                 env.UndeployAll();
@@ -242,12 +419,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
 
                 var epl = "@Name('s0') @Audit('exprdef') " +
                           "expression last2X {\n" +
-                          "  p -> WindowOne(WindowOne.col1 = p.TheString).takeLast(2)\n" +
+                          "  p => WindowOne(WindowOne.col1 = p.TheString).takeLast(2)\n" +
                           "} " +
                           "expression last2Y {\n" +
-                          "  p => WindowTwo(WindowTwo.col1 = p.TheString).takeLast(2).selectFrom(q -> q.col2)\n" +
+                          "  p => WindowTwo(WindowTwo.col1 = p.TheString).takeLast(2).selectFrom(q => q.col2)\n" +
                           "} " +
-                          "select last2X(sb).selectFrom(a -> a.col2).sequenceEqual(last2Y(sb)) as val from SupportBean as sb";
+                          "select last2X(sb).selectFrom(a => a.col2).sequenceEqual(last2Y(sb)) as val from SupportBean as sb";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("A", 1));
@@ -262,9 +439,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var fieldsInner = new [] { "col1","col2" };
+                var fieldsInner = new[] {"col1", "col2"};
                 var epl = "@Name('s0') expression gettotal {" +
-                          " x -> case " +
+                          " x => case " +
                           "  when TheString = 'A' then new { col1 = 'X', col2 = 10 } " +
                           "  when TheString = 'B' then new { col1 = 'Y', col2 = 20 } " +
                           "end" +
@@ -278,7 +455,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
 
                 env.CompileDeploy("@Name('s1') select val0.col1 as c1, val0.col2 as c2 from OtherStream", path)
                     .AddListener("s1");
-                var fieldsConsume = new [] { "c1","c2" };
+                var fieldsConsume = new[] {"c1", "c2"};
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 EPAssertionUtil.AssertPropsMap(
@@ -340,7 +517,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 env.SendEventBean(new SupportBean_ST0("E1", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "scalar()" },
+                    new[] {"scalar()"},
                     new object[] {1});
 
                 env.UndeployAll();
@@ -411,7 +588,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             public void Run(RegressionEnvironment env)
             {
                 var eplDeclare = "@Name('s0') expression subq {" +
-                                 " (x, y) -> (select TheString from SupportBean#keepall where TheString = x.Id and IntPrimitive = y.P10)" +
+                                 " (x, y) => (select TheString from SupportBean#keepall where TheString = x.Id and IntPrimitive = y.P10)" +
                                  "} " +
                                  "select subq(one, two) as val1 " +
                                  "from SupportBean_ST0#lastevent as one, SupportBean_ST1#lastevent as two";
@@ -458,7 +635,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             {
                 var eplDeclare = "@Name('s0') " +
                                  "expression subq {" +
-                                 " x -> (select IntPrimitive from SupportBean#keepall where TheString = x.Pcommon)" + // a common field
+                                 " x => (select IntPrimitive from SupportBean#keepall where TheString = x.Pcommon)" + // a common field
                                  "} " +
                                  "select subq(one) as val1, subq(two) as val2 " +
                                  "from SupportBean_ST0#lastevent as one, SupportBean_ST1#lastevent as two";
@@ -515,14 +692,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             public void Run(RegressionEnvironment env)
             {
                 var eplDeclare = "@Name('s0') expression subqOne {" +
-                                 " x -> (select Id from SupportBean_ST0#keepall where P00 = x.IntPrimitive)" +
+                                 " x => (select Id from SupportBean_ST0#keepall where P00 = x.IntPrimitive)" +
                                  "} " +
                                  "select TheString as val0, subqOne(t) as val1 from SupportBean as t";
                 TryAssertionSubqueryCorrelated(env, eplDeclare);
 
                 var eplAlias =
                     "@Name('s0') expression subqOne alias for {(select Id from SupportBean_ST0#keepall where P00 = t.IntPrimitive)} " +
-                    "select TheString as val0, subqOne(t) as val1 from SupportBean as t";
+                    "select TheString as val0, subqOne() as val1 from SupportBean as t";
                 TryAssertionSubqueryCorrelated(env, eplAlias);
             }
 
@@ -623,13 +800,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             public void Run(RegressionEnvironment env)
             {
                 var eplDeclare =
-                    "@Name('s0') expression subqnamedwin { MyWindow.where(x => x.val1 > 10).orderBy(x -> x.val0) } " +
-                    "select subqnamedwin() as c0, subqnamedwin().where(x -> x.val1 < 100) as c1 from SupportBean_ST0 as t";
+                    "@Name('s0') expression subqnamedwin { MyWindow.where(x => x.val1 > 10).orderBy(x => x.val0) } " +
+                    "select subqnamedwin() as c0, subqnamedwin().where(x => x.val1 < 100) as c1 from SupportBean_ST0 as t";
                 TryAssertionSubqueryNamedWindowUncorrelated(env, eplDeclare);
 
                 var eplAlias =
-                    "@Name('s0') expression subqnamedwin alias for {MyWindow.where(x => x.val1 > 10).orderBy(x -> x.val0)}" +
-                    "select subqnamedwin as c0, subqnamedwin.where(x -> x.val1 < 100) as c1 from SupportBean_ST0";
+                    "@Name('s0') expression subqnamedwin alias for {MyWindow.where(x => x.val1 > 10).orderBy(x => x.val0)}" +
+                    "select subqnamedwin as c0, subqnamedwin.where(x => x.val1 < 100) as c1 from SupportBean_ST0";
                 TryAssertionSubqueryNamedWindowUncorrelated(env, eplAlias);
             }
 
@@ -637,8 +814,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 RegressionEnvironment env,
                 string epl)
             {
-                var fieldsSelected = new [] { "c0", "c1" };
-                var fieldsInside = new [] { "val0" };
+                var fieldsSelected = new[] {"c0", "c1"};
+                var fieldsInside = new[] {"val0"};
 
                 var path = new RegressionPath();
                 env.CompileDeploy(
@@ -703,28 +880,28 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') expression subqnamedwin {" +
-                          "  x => MyWindow(val0 = x.Key0).where(y -> val1 > 10)" +
+                          "  x => MyWindow(val0 = x.Key0).where(y => val1 > 10)" +
                           "} " +
                           "select subqnamedwin(t) as c0 from SupportBean_ST0 as t";
                 TryAssertionSubqNWCorrelated(env, epl);
 
                 // more or less prefixes
                 epl = "@Name('s0') expression subqnamedwin {" +
-                      "  x => MyWindow(val0 = x.Key0).where(y -> y.val1 > 10)" +
+                      "  x => MyWindow(val0 = x.Key0).where(y => y.val1 > 10)" +
                       "} " +
                       "select subqnamedwin(t) as c0 from SupportBean_ST0 as t";
                 TryAssertionSubqNWCorrelated(env, epl);
 
                 // with property-explicit stream name
                 epl = "@Name('s0') expression subqnamedwin {" +
-                      "  x => MyWindow(MyWindow.val0 = x.Key0).where(y -> y.val1 > 10)" +
+                      "  x => MyWindow(MyWindow.val0 = x.Key0).where(y => y.val1 > 10)" +
                       "} " +
                       "select subqnamedwin(t) as c0 from SupportBean_ST0 as t";
                 TryAssertionSubqNWCorrelated(env, epl);
 
                 // with alias
                 epl =
-                    "@Name('s0') expression subqnamedwin alias for {MyWindow(MyWindow.val0 = t.Key0).where(y -> y.val1 > 10)}" +
+                    "@Name('s0') expression subqnamedwin alias for {MyWindow(MyWindow.val0 = t.Key0).where(y => y.val1 > 10)}" +
                     "select subqnamedwin as c0 from SupportBean_ST0 as t";
                 TryAssertionSubqNWCorrelated(env, epl);
 
@@ -738,7 +915,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                     "insert into MyWindowTwo (Id, P00) select TheString, IntPrimitive from SupportBean",
                     path);
                 epl = "expression subqnamedwin {" +
-                      "  x => MyWindowTwo(MyWindowTwo.Id = x.Id).where(y -> y.P00 > 10)" +
+                      "  x => MyWindowTwo(MyWindowTwo.Id = x.Id).where(y => y.P00 > 10)" +
                       "} " +
                       "select subqnamedwin(t) as c0 from SupportBean_ST0 as t";
                 env.CompileDeploy(epl, path);
@@ -749,8 +926,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 RegressionEnvironment env,
                 string epl)
             {
-                var fieldSelected = new [] { "c0" };
-                var fieldInside = new [] { "val0" };
+                var fieldSelected = new[] {"c0"};
+                var fieldInside = new[] {"val0"};
 
                 var path = new RegressionPath();
                 env.CompileDeploy(
@@ -811,10 +988,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             {
                 var fields = new[] {"val1", "val2", "val3", "val4"};
                 var epl = "@Name('s0') " +
-                          "expression sumA {x -> " +
+                          "expression sumA {x => " +
                           "   sum(x.IntPrimitive) " +
                           "} " +
-                          "expression sumB {x -> " +
+                          "expression sumB {x => " +
                           "   sum(x.IntBoxed) " +
                           "} " +
                           "expression countC {" +
@@ -850,7 +1027,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var epl = "@Name('split') expression myLittleExpression { event -> false }" +
+                var epl = "@Name('split') expression myLittleExpression { event => false }" +
                           "on SupportBean as myEvent " +
                           " insert into ABC select * where myLittleExpression(myEvent)" +
                           " insert into DEF select * where not myLittleExpression(myEvent)";
@@ -868,11 +1045,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
         {
             public void Run(RegressionEnvironment env)
             {
-                var eplDeclare = "@Name('s0') expression wb {s => window(*).where(y -> y.IntPrimitive > 2) }" +
+                var eplDeclare = "@Name('s0') expression wb {s => window(*).where(y => y.IntPrimitive > 2) }" +
                                  "select wb(t) as val1 from SupportBean#keepall as t";
                 TryAssertionAggregationAccess(env, eplDeclare);
 
-                var eplAlias = "@Name('s0') expression wb alias for {window(*).where(y -> y.IntPrimitive > 2)}" +
+                var eplAlias = "@Name('s0') expression wb alias for {window(*).where(y => y.IntPrimitive > 2)}" +
                                "select wb as val1 from SupportBean#keepall as t";
                 TryAssertionAggregationAccess(env, eplAlias);
             }
@@ -882,9 +1059,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1" };
-                var epl = "@Name('s0') expression lambda1 { o -> 1 * o.IntPrimitive }\n" +
-                          "expression lambda2 { o -> 3 * o.IntPrimitive }\n" +
+                var fields = new[] {"c0", "c1"};
+                var epl = "@Name('s0') expression lambda1 { o => 1 * o.IntPrimitive }\n" +
+                          "expression lambda2 { o => 3 * o.IntPrimitive }\n" +
                           "select sum(lambda1(e)) as c0, sum(lambda2(e)) as c1 from SupportBean as e";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -908,17 +1085,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
         {
             public void Run(RegressionEnvironment env)
             {
-                var eplScalarDeclare = "@Name('s0') expression scalarfilter {s => Strvals.where(y -> y != 'E1') } " +
-                                       "select scalarfilter(t).where(x -> x != 'E2') as val1 from SupportCollection as t";
+                var eplScalarDeclare = "@Name('s0') expression scalarfilter {s => Strvals.where(y => y != 'E1') } " +
+                                       "select scalarfilter(t).where(x => x != 'E2') as val1 from SupportCollection as t";
                 TryAssertionScalarReturn(env, eplScalarDeclare);
 
-                var eplScalarAlias = "@Name('s0') expression scalarfilter alias for {Strvals.where(y -> y != 'E1')}" +
-                                     "select scalarfilter.where(x -> x != 'E2') as val1 from SupportCollection";
+                var eplScalarAlias = "@Name('s0') expression scalarfilter alias for {Strvals.where(y => y != 'E1')}" +
+                                     "select scalarfilter.where(x => x != 'E2') as val1 from SupportCollection";
                 TryAssertionScalarReturn(env, eplScalarAlias);
 
                 // test with cast and with on-select and where-clause use
                 var inner = "case when myEvent.One = 'X' then 0 else cast(myEvent.One, long) end ";
-                var eplCaseDeclare = "@Name('s0') expression theExpression { myEvent -> " +
+                var eplCaseDeclare = "@Name('s0') expression theExpression { myEvent => " +
                                      inner +
                                      "} " +
                                      "on SupportBeanObject as myEvent select mw.* from MyWindowFirst as mw where mw.myObject = theExpression(myEvent)";
@@ -976,7 +1153,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
 
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
-                    new [] { "val1" },
+                    new[] {"val1"},
                     new[] {
                         typeof(ICollection<object>)
                     });
@@ -996,19 +1173,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 var fields = new[] {"fZero()", "fOne(t)", "fTwo(t,t)", "fThree(t,t)"};
                 var eplDeclared = "@Name('s0') " +
                                   "expression fZero {10} " +
-                                  "expression fOne {x -> x.IntPrimitive} " +
-                                  "expression fTwo {(x,y) -> x.IntPrimitive+y.IntPrimitive} " +
-                                  "expression fThree {(x,y) -> x.IntPrimitive+100} " +
+                                  "expression fOne {x => x.IntPrimitive} " +
+                                  "expression fTwo {(x,y) => x.IntPrimitive+y.IntPrimitive} " +
+                                  "expression fThree {(x,y) => x.IntPrimitive+100} " +
                                   "select fZero(), fOne(t), fTwo(t,t), fThree(t,t) from SupportBean as t";
                 var eplFormatted = "@Name('s0')" +
                                    NEWLINE +
                                    "expression fZero {10}" +
                                    NEWLINE +
-                                   "expression fOne {x -> x.IntPrimitive}" +
+                                   "expression fOne {x => x.IntPrimitive}" +
                                    NEWLINE +
-                                   "expression fTwo {(x,y) -> x.IntPrimitive+y.IntPrimitive}" +
+                                   "expression fTwo {(x,y) => x.IntPrimitive+y.IntPrimitive}" +
                                    NEWLINE +
-                                   "expression fThree {(x,y) -> x.IntPrimitive+100}" +
+                                   "expression fThree {(x,y) => x.IntPrimitive+100}" +
                                    NEWLINE +
                                    "select fZero(), fOne(t), fTwo(t,t), fThree(t,t)" +
                                    NEWLINE +
@@ -1062,20 +1239,20 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             public void Run(RegressionEnvironment env)
             {
                 var eplDeclare = "" +
-                                 "@Name('s0') expression one {x1 => x1.Contained.where(y -> y.P00 < 10) } " +
-                                 "expression two {x2 => one(x2).where(y -> y.P00 > 1)  } " +
+                                 "@Name('s0') expression one {x1 => x1.Contained.where(y => y.P00 < 10) } " +
+                                 "expression two {x2 => one(x2).where(y => y.P00 > 1)  } " +
                                  "select one(s0c) as val1, two(s0c) as val2 from SupportBean_ST0_Container as s0c";
                 TryAssertionOneParameterLambdaReturn(env, eplDeclare);
 
                 var eplAliasWParen = "" +
-                                     "@Name('s0') expression one alias for {Contained.where(y -> y.P00 < 10)}" +
-                                     "expression two alias for {one().where(y -> y.P00 > 1)}" +
+                                     "@Name('s0') expression one alias for {Contained.where(y => y.P00 < 10)}" +
+                                     "expression two alias for {one().where(y => y.P00 > 1)}" +
                                      "select one as val1, two as val2 from SupportBean_ST0_Container as s0c";
                 TryAssertionOneParameterLambdaReturn(env, eplAliasWParen);
 
                 var eplAliasNoParen = "" +
-                                      "@Name('s0') expression one alias for {Contained.where(y -> y.P00 < 10)}" +
-                                      "expression two alias for {one.where(y -> y.P00 > 1)}" +
+                                      "@Name('s0') expression one alias for {Contained.where(y => y.P00 < 10)}" +
+                                      "expression two alias for {one.where(y => y.P00 > 1)}" +
                                       "select one as val1, two as val2 from SupportBean_ST0_Container as s0c";
                 TryAssertionOneParameterLambdaReturn(env, eplAliasNoParen);
             }
@@ -1088,7 +1265,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
 
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
-                    new [] { "val1","val2" },
+                    new[] {"val1", "val2"},
                     new[] {
                         typeof(ICollection<object>),
                         typeof(ICollection<object>)
@@ -1138,7 +1315,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 RegressionEnvironment env,
                 string epl)
             {
-                var fields = new [] { "val1","val2" };
+                var fields = new[] {"val1", "val2"};
                 env.CompileDeploy(epl).AddListener("s0");
 
                 LambdaAssertionUtil.AssertTypes(
@@ -1178,7 +1355,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 var path = new RegressionPath();
                 env.CompileDeploy("@Name('var') create variable int myvar = 2", path);
 
-                var fields = new [] { "val1","val2","val3" };
+                var fields = new[] {"val1", "val2", "val3"};
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 LambdaAssertionUtil.AssertTypes(
@@ -1208,7 +1385,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             public void Run(RegressionEnvironment env)
             {
                 var eplNoAlias =
-                    "@Name('s0') expression one {x->x.BoolPrimitive} select * from SupportBean as sb where one(sb)";
+                    "@Name('s0') expression one {x=>x.BoolPrimitive} select * from SupportBean as sb where one(sb)";
                 TryAssertionWhereClauseExpression(env, eplNoAlias);
 
                 var eplAlias =
@@ -1245,17 +1422,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                     epl,
                     "Failed to plan subquery number 1 querying SupportBean_ST0: Failed to validate filter expression 'P00=IntPrimitive': Property named 'IntPrimitive' is not valid in any stream [expression abc {(select * from SupportBean_ST0#lastevent as st0 where P00=IntPrimitive)} select abc() from SupportBean]");
 
-                epl = "expression abc {x=>Strvals.where(x-> x != 'E1')} select abc(str) from SupportCollection str";
+                epl = "expression abc {x=>Strvals.where(x=> x != 'E1')} select abc(str) from SupportCollection str";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'abc(str)': Error validating expression declaration 'abc': Failed to validate declared expression body expression 'Strvals.where()': Error validating enumeration method 'where', the lambda-parameter name 'x' has already been declared in this context [expression abc {x=>Strvals.where(x-> x != 'E1')} select abc(str) from SupportCollection str]");
+                    "Failed to validate select-clause expression 'abc(str)': Failed to validate expression declaration 'abc': Failed to validate declared expression body expression 'Strvals.where()': Failed to validate enumeration method 'where', the lambda-parameter name 'x' has already been declared in this context [expression abc {x=>Strvals.where(x=> x != 'E1')} select abc(str) from SupportCollection str]");
 
                 epl = "expression abc {avg(IntPrimitive)} select abc() from SupportBean";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'abc()': Error validating expression declaration 'abc': Failed to validate declared expression body expression 'avg(IntPrimitive)': Property named 'IntPrimitive' is not valid in any stream [expression abc {avg(IntPrimitive)} select abc() from SupportBean]");
+                    "Failed to validate select-clause expression 'abc()': Failed to validate expression declaration 'abc': Failed to validate declared expression body expression 'avg(IntPrimitive)': Property named 'IntPrimitive' is not valid in any stream [expression abc {avg(IntPrimitive)} select abc() from SupportBean]");
 
                 epl =
                     "expression abc {(select * from SupportBean_ST0#lastevent as st0 where P00=sb.IntPrimitive)} select abc() from SupportBean sb";
@@ -1268,13 +1445,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'abc()': Error validating expression declaration 'abc': Failed to validate declared expression body expression 'window(*)': The 'window' aggregation function requires that at least one stream is provided [expression abc {window(*)} select abc() from SupportBean]");
+                    "Failed to validate select-clause expression 'abc()': Failed to validate expression declaration 'abc': Failed to validate declared expression body expression 'window(*)': The 'window' aggregation function requires that at least one stream is provided [expression abc {window(*)} select abc() from SupportBean]");
 
-                epl = "expression abc {x -> IntPrimitive} select abc() from SupportBean";
+                epl = "expression abc {x => IntPrimitive} select abc() from SupportBean";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'abc()': Parameter count mismatches for declared expression 'abc', expected 1 parameters but received 0 parameters [expression abc {x -> IntPrimitive} select abc() from SupportBean]");
+                    "Failed to validate select-clause expression 'abc()': Parameter count mismatches for declared expression 'abc', expected 1 parameters but received 0 parameters [expression abc {x => IntPrimitive} select abc() from SupportBean]");
 
                 epl = "expression abc {IntPrimitive} select abc(sb) from SupportBean sb";
                 TryInvalidCompile(
@@ -1282,36 +1459,36 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                     epl,
                     "Failed to validate select-clause expression 'abc(sb)': Parameter count mismatches for declared expression 'abc', expected 0 parameters but received 1 parameters [expression abc {IntPrimitive} select abc(sb) from SupportBean sb]");
 
-                epl = "expression abc {x->} select abc(sb) from SupportBean sb";
+                epl = "expression abc {x=>} select abc(sb) from SupportBean sb";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Incorrect syntax near '}' at line 1 column 19 near reserved keyword 'select' [expression abc {x->} select abc(sb) from SupportBean sb]");
+                    "Incorrect syntax near '}' at line 1 column 19 near reserved keyword 'select' [expression abc {x=>} select abc(sb) from SupportBean sb]");
 
                 epl = "expression abc {IntPrimitive} select abc() from SupportBean sb";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'abc()': Error validating expression declaration 'abc': Failed to validate declared expression body expression 'IntPrimitive': Property named 'IntPrimitive' is not valid in any stream [expression abc {IntPrimitive} select abc() from SupportBean sb]");
+                    "Failed to validate select-clause expression 'abc()': Failed to validate expression declaration 'abc': Failed to validate declared expression body expression 'IntPrimitive': Property named 'IntPrimitive' is not valid in any stream [expression abc {IntPrimitive} select abc() from SupportBean sb]");
 
-                epl = "expression abc {x->x} select abc(1) from SupportBean sb";
+                epl = "expression abc {x=>IntPrimitive} select * from SupportBean sb where abc(sb)";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'abc(1)': Expression 'abc' requires a stream name as a parameter [expression abc {x->x} select abc(1) from SupportBean sb]");
-
-                epl = "expression abc {x->IntPrimitive} select * from SupportBean sb where abc(sb)";
-                TryInvalidCompile(
-                    env,
-                    epl,
-                    "Filter expression not returning a boolean value: 'abc(sb)' [expression abc {x->IntPrimitive} select * from SupportBean sb where abc(sb)]");
+                    "Filter expression not returning a boolean value: 'abc(sb)' [expression abc {x=>IntPrimitive} select * from SupportBean sb where abc(sb)]");
 
                 epl =
-                    "expression abc {x->x.IntPrimitive = 0} select * from SupportBean#lastevent sb1, SupportBean#lastevent sb2 where abc(*)";
+                    "expression abc {x=>x.IntPrimitive = 0} select * from SupportBean#lastevent sb1, SupportBean#lastevent sb2 where abc(*)";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Error validating expression: Failed to validate filter expression 'abc(*)': Expression 'abc' only allows a wildcard parameter if there is a single stream available, please use a stream or tag name instead [expression abc {x->x.IntPrimitive = 0} select * from SupportBean#lastevent sb1, SupportBean#lastevent sb2 where abc(*)]");
+                    "Failed to validate expression: Failed to validate filter expression 'abc(*)': Expression 'abc' only allows a wildcard parameter if there is a single stream available, please use a stream or tag name instead [expression abc {x=>x.IntPrimitive = 0} select * from SupportBean#lastevent sb1, SupportBean#lastevent sb2 where abc(*)]");
+
+                epl = "expression ABC alias for {1} select ABC(t) from SupportBean as t";
+                TryInvalidCompile(
+                    env,
+                    epl,
+                    "Failed to validate select-clause expression 'ABC': Expression 'ABC is an expression-alias and does not allow parameters [expression ABC alias for {1} select ABC(t) from SupportBean as t]");
             }
         }
     }

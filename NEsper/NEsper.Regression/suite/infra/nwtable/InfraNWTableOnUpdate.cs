@@ -11,8 +11,8 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
 
@@ -26,15 +26,43 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         {
             var execs = new List<RegressionExecution>();
 
-            execs.Add(new InfraNWTableOnUpdateSceneOne(true));
-            execs.Add(new InfraNWTableOnUpdateSceneOne(false));
+            WithOnUpdateSceneOne(execs);
+            WithUpdateOrderOfFields(execs);
+            WithSubquerySelf(execs);
+            WithSubqueryMultikeyWArray(execs);
 
-            execs.Add(new InfraUpdateOrderOfFields(true));
-            execs.Add(new InfraUpdateOrderOfFields(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithSubqueryMultikeyWArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraSubqueryMultikeyWArray(true));
+            execs.Add(new InfraSubqueryMultikeyWArray(false));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubquerySelf(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraSubquerySelf(true));
             execs.Add(new InfraSubquerySelf(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithUpdateOrderOfFields(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraUpdateOrderOfFields(true));
+            execs.Add(new InfraUpdateOrderOfFields(false));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOnUpdateSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraNWTableOnUpdateSceneOne(true));
+            execs.Add(new InfraNWTableOnUpdateSceneOne(false));
             return execs;
         }
 
@@ -46,6 +74,57 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             var sb = new SupportBean(theString, intPrimitive);
             sb.DoublePrimitive = doublePrimitive;
             return sb;
+        }
+
+        internal class InfraSubqueryMultikeyWArray : RegressionExecution
+        {
+
+            private bool namedWindow;
+
+            public InfraSubqueryMultikeyWArray(bool namedWindow)
+            {
+                this.namedWindow = namedWindow;
+            }
+
+            public void Run(RegressionEnvironment env)
+            {
+                RegressionPath path = new RegressionPath();
+                string stmtTextCreate = namedWindow
+                    ? "@Name('create') create window MyInfra#keepall() as (Value int)"
+                    : "@Name('create') create table MyInfra(Value int)";
+                env.CompileDeploy(stmtTextCreate, path).AddListener("create");
+                env.CompileExecuteFAF("insert into MyInfra select 0 as Value", path);
+
+                string epl = "on SupportBean update MyInfra set Value = (select sum(Value) as c0 from SupportEventWithIntArray#keepall group by Array)";
+                env.CompileDeploy(epl, path);
+
+                env.SendEventBean(new SupportEventWithIntArray("E1", new int[] {1, 2}, 10));
+                env.SendEventBean(new SupportEventWithIntArray("E2", new int[] {1, 2}, 11));
+
+                env.Milestone(0);
+                AssertUpdate(env, 21);
+
+                env.SendEventBean(new SupportEventWithIntArray("E3", new int[] {1, 2}, 12));
+                AssertUpdate(env, 33);
+
+                env.Milestone(1);
+
+                env.SendEventBean(new SupportEventWithIntArray("E4", new int[] {1}, 13));
+                AssertUpdate(env, null);
+
+                env.UndeployAll();
+            }
+
+            private void AssertUpdate(
+                RegressionEnvironment env,
+                int? expected)
+            {
+                env.SendEventBean(new SupportBean());
+                var enumerator = env.GetEnumerator("create");
+                Assert.That(enumerator.MoveNext(), Is.True);
+                Assert.That(enumerator.Current, Is.Not.Null);
+                Assert.That(enumerator.Current.Get("Value"), Is.EqualTo(expected));
+            }
         }
 
         public class InfraNWTableOnUpdateSceneOne : RegressionExecution

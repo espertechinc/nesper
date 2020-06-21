@@ -6,31 +6,28 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.view.access;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.prev
 {
     public class ExprPreviousEvalStrategyCount : ExprPreviousEvalStrategy
     {
-        private readonly int streamNumber;
-        private readonly RandomAccessByIndexGetter randomAccessGetter;
-        private readonly RelativeAccessByEventNIndexGetter relativeAccessGetter;
+        private readonly int _streamNumber;
+        private readonly RandomAccessByIndexGetter _randomAccessGetter;
+        private readonly RelativeAccessByEventNIndexGetter _relativeAccessGetter;
 
         public ExprPreviousEvalStrategyCount(
             int streamNumber,
             RandomAccessByIndexGetter randomAccessGetter,
             RelativeAccessByEventNIndexGetter relativeAccessGetter)
         {
-            this.streamNumber = streamNumber;
-            this.randomAccessGetter = randomAccessGetter;
-            this.relativeAccessGetter = relativeAccessGetter;
+            this._streamNumber = streamNumber;
+            this._randomAccessGetter = randomAccessGetter;
+            this._relativeAccessGetter = relativeAccessGetter;
         }
 
         public object Evaluate(
@@ -38,13 +35,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             ExprEvaluatorContext exprEvaluatorContext)
         {
             long size;
-            if (randomAccessGetter != null) {
-                RandomAccessByIndex randomAccess = randomAccessGetter.Accessor;
+            if (_randomAccessGetter != null) {
+                RandomAccessByIndex randomAccess = _randomAccessGetter.Accessor;
                 size = randomAccess.WindowCount;
             }
             else {
-                EventBean evalEvent = eventsPerStream[streamNumber];
-                RelativeAccessByEventNIndex relativeAccess = relativeAccessGetter.GetAccessor(evalEvent);
+                EventBean evalEvent = eventsPerStream[_streamNumber];
+                RelativeAccessByEventNIndex relativeAccess = _relativeAccessGetter.GetAccessor(evalEvent);
                 if (relativeAccess == null) {
                     return null;
                 }

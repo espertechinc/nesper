@@ -226,6 +226,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 Assert.AreEqual(
                     StatementType.CREATE_VARIABLE,
                     env.Statement("create-one").GetProperty(StatementProperty.STATEMENTTYPE));
+                Assert.AreEqual(
+                    "var1SAI", env.Statement("create-one").GetProperty(StatementProperty.CREATEOBJECTNAME));
+
                 env.AddListener("create-one");
 
                 string[] fieldsVar1 = {"var1SAI"};
@@ -422,7 +425,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryInvalidCompile(
                     env,
                     "select * from SupportBean output every somevar events",
-                    "Error in the output rate limiting clause: Variable named 'somevar' has not been declared [");
+                    "Failed to validate the output rate limiting clause: Variable named 'somevar' has not been declared [");
 
                 env.UndeployAll();
             }

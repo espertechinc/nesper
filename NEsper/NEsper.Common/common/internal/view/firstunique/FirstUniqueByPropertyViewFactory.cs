@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.view.core;
@@ -20,17 +21,23 @@ namespace com.espertech.esper.common.@internal.view.firstunique
     /// </summary>
     public class FirstUniqueByPropertyViewFactory : ViewFactory
     {
-        protected internal ExprEvaluator[] criteriaEvals;
-        protected internal Type[] criteriaTypes;
-        protected internal EventType eventType;
+        private ExprEvaluator criteriaEval;
+        private Type[] criteriaTypes;
+        private DataInputOutputSerde keySerde;
+        private EventType eventType;
 
-        public ExprEvaluator[] CriteriaEvals {
-            get => criteriaEvals;
-            set => criteriaEvals = value;
+        public ExprEvaluator CriteriaEval {
+            get => criteriaEval;
+            set => criteriaEval = value;
         }
 
         public Type[] CriteriaTypes {
             set => criteriaTypes = value;
+        }
+
+        public DataInputOutputSerde KeySerde {
+            get => keySerde;
+            set => keySerde = value;
         }
 
         public void Init(

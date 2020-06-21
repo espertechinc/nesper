@@ -46,14 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             var handle = new EPStatementAgentInstanceHandle(statementContext.EpStatementHandle, agentInstanceId, @lock);
             var auditProvider = statementContext.StatementInformationals.AuditProvider;
             var instrumentationProvider = statementContext.StatementInformationals.InstrumentationProvider;
-            var agentInstanceContext = new AgentInstanceContext(
-                statementContext,
-                agentInstanceId,
-                handle,
-                null,
-                null,
-                auditProvider,
-                instrumentationProvider);
+            var agentInstanceContext = new AgentInstanceContext(statementContext, handle, null, null, auditProvider, instrumentationProvider);
 
             // assure variables
             statementContext.VariableManagementService.SetLocalVersion();
@@ -151,15 +144,13 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             var metadata = dataflow.OperatorMetadata.Get(operatorNum);
 
             // see if the operator is already provided by options
-            if (options.OperatorProvider != null) {
-                var operatorX = options.OperatorProvider.Provide(
-                    new EPDataFlowOperatorProviderContext(
-                        dataflow.DataflowName,
-                        metadata.OperatorName,
-                        operatorFactory));
-                if (operatorX != null) {
-                    return operatorX;
-                }
+            var operatorX = options.OperatorProvider?.Provide(
+                new EPDataFlowOperatorProviderContext(
+                    dataflow.DataflowName,
+                    metadata.OperatorName,
+                    operatorFactory));
+            if (operatorX != null) {
+                return operatorX;
             }
 
             IDictionary<string, object> additionalParameters = null;

@@ -6,13 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.@internal.epl.rowrecog.core;
 using com.espertech.esper.common.@internal.epl.rowrecog.nfa;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.rowrecog.state
@@ -20,7 +18,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
     public class RowRecogPartitionStateRepoScheduleStateImpl : RowRecogPartitionStateRepoScheduleState
     {
         private readonly RowRecogPartitionTerminationStateComparator terminationStateCompare;
-        private readonly OrderedDictionary<long, object> schedule = new OrderedDictionary<long, object>();
+        private readonly IOrderedDictionary<long, object> schedule = new OrderedListDictionary<long, object>();
 
         public RowRecogPartitionStateRepoScheduleStateImpl(
             RowRecogPartitionTerminationStateComparator terminationStateCompare)

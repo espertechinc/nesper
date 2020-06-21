@@ -17,6 +17,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
     {
         public bool IsFound { get; private set; }
 
+        public bool IsWalkDeclExprParam => true;
+
         public bool IsVisit(ExprNode exprNode)
         {
             return !IsFound;

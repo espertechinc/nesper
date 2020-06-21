@@ -24,14 +24,70 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ResultSetAggregateGroupedSortedMinMax());
-            execs.Add(new ResultSetAggregateMultipleOverlappingCategories());
-            execs.Add(new ResultSetAggregateMinByMaxByOverWindow());
-            execs.Add(new ResultSetAggregateNoAlias());
-            execs.Add(new ResultSetAggregateMultipleCriteriaSimple());
-            execs.Add(new ResultSetAggregateMultipleCriteria());
-            execs.Add(new ResultSetAggregateNoDataWindow());
+            WithGroupedSortedMinMax(execs);
+            WithMultipleOverlappingCategories(execs);
+            WithMinByMaxByOverWindow(execs);
+            WithNoAlias(execs);
+            WithMultipleCriteriaSimple(execs);
+            WithMultipleCriteria(execs);
+            WithNoDataWindow(execs);
+            WithInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNoDataWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateNoDataWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMultipleCriteria(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateMultipleCriteria());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMultipleCriteriaSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateMultipleCriteriaSimple());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNoAlias(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateNoAlias());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMinByMaxByOverWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateMinByMaxByOverWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMultipleOverlappingCategories(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateMultipleOverlappingCategories());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupedSortedMinMax(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateGroupedSortedMinMax());
             return execs;
         }
 
@@ -39,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var fields = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6" };
+            var fields = new[] {"c0", "c1", "c2", "c3", "c4", "c5", "c6"};
             var eventOne = MakeEvent("E1", 1, 1);
             env.SendEventBean(eventOne);
             EPAssertionUtil.AssertProps(
@@ -237,7 +293,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.UndeployAll();
 
                 // test join multirow
-                var fields = new [] { "c0" };
+                var fields = new[] {"c0"};
                 var joinMultirow =
                     "@Name('s0') select sorted(IntPrimitive desc) as c0 from SupportBean_S0#keepall, SupportBean#length(2)";
                 env.CompileDeploy(joinMultirow).AddListener("s0");
@@ -281,7 +337,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9" };
+                var fields = new[] {"c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9"};
                 var epl = "@Name('s0') select " +
                           "maxbyever(LongPrimitive) as c0, " +
                           "minbyever(LongPrimitive) as c1, " +
@@ -368,9 +424,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var props = env.Statement("s0").EventType.PropertyDescriptors;
-                Assert.AreEqual("maxby(IntPrimitive).TheString()", props[0].PropertyName);
+                Assert.AreEqual("maxby(IntPrimitive).TheString", props[0].PropertyName);
                 Assert.AreEqual("minby(IntPrimitive)", props[1].PropertyName);
-                Assert.AreEqual("maxbyever(IntPrimitive).TheString()", props[2].PropertyName);
+                Assert.AreEqual("maxbyever(IntPrimitive).TheString", props[2].PropertyName);
                 Assert.AreEqual("minbyever(IntPrimitive)", props[3].PropertyName);
                 Assert.AreEqual("sorted(IntPrimitive,TheString desc)", props[4].PropertyName);
 
@@ -382,7 +438,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7" };
+                var fields = new[] {"c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7"};
                 var epl = "@Name('s0') select " +
                           "maxbyever(IntPrimitive).LongPrimitive as c0," +
                           "maxbyever(TheString).LongPrimitive as c1," +
@@ -461,7 +517,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 string epl;
 
                 // test sorted multiple criteria
-                var fields = new [] { "c0", "c1", "c2", "c3" };
+                var fields = new[] {"c0", "c1", "c2", "c3"};
                 epl = "@Name('s0') select " +
                       "sorted(TheString desc, IntPrimitive desc) as c0," +
                       "sorted(TheString, IntPrimitive) as c1," +
@@ -525,7 +581,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.UndeployAll();
 
                 // test min/max
-                var fieldsTwo = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7" };
+                var fieldsTwo = new[] {"c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7"};
                 epl = "@Name('s0') select " +
                       "maxbyever(IntPrimitive, TheString).LongPrimitive as c0," +
                       "minbyever(IntPrimitive, TheString).LongPrimitive as c1," +
@@ -586,7 +642,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2", "c3" };
+                var fields = new[] {"c0", "c1", "c2", "c3"};
                 var epl = "@Name('s0') select " +
                           "maxbyever(IntPrimitive).TheString as c0, " +
                           "minbyever(IntPrimitive).TheString as c1, " +

@@ -13,25 +13,44 @@ namespace com.espertech.esper.common.client.annotation
     /// </summary>
     public enum HookType
     {
-        /// <summary>For use when installing a callback for converting SQL input parameters or column output values. </summary>
+        /// <summary>
+        /// For use when installing a callback for converting SQL input parameters or column output values.
+        /// </summary>
         SQLCOL,
 
-        /// <summary>For use when installing a callback for converting SQL row results to an object. </summary>
+        /// <summary>
+        /// For use when installing a callback for converting SQL row results to an object.
+        /// </summary>
         SQLROW,
 
-        /// <summary>For internal use, query planning reporting. </summary>
+        /// <summary>
+        /// For internal use, query planning reporting.
+        /// </summary>
         INTERNAL_QUERY_PLAN,
 
-        /// <summary>For internal use, group rollup plan reporting.</summary>
+        /// <summary>
+        /// For internal use, group rollup plan reporting.
+        /// </summary>
         INTERNAL_GROUPROLLUP_PLAN,
 
-        /// <summary>For internal use, aggregation level reporting.</summary>
+        /// <summary>
+        /// For internal use, aggregation level reporting.
+        /// </summary>
         INTERNAL_AGGLOCALLEVEL,
 
-        /// <summary>For internal use, pattern objects visibility.</summary>
+        /// <summary>
+        /// For internal use, pattern objects visibility.
+        /// </summary>
         INTERNAL_PATTERNCOMPILE,
 
-        /// <summary>For internal use, statement spec compiled reporting.</summary>
+        /// <summary>
+        /// For internal use, filter spec reporting.
+        /// </summary>
+        INTERNAL_FILTERSPEC,
+        
+        /// <summary>
+        /// For internal use, statement spec compiled reporting.
+        /// </summary>
         INTERNAL_COMPILE
     }
 }

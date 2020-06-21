@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// </summary>
         public RefCountedSet()
         {
-            _refSet = new Dictionary<TK, Int32>();
+            _refSet = new Dictionary<TK, int>();
         }
 
         public RefCountedSet(

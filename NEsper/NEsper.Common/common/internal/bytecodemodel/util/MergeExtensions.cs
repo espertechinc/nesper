@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using com.espertech.esper.common.@internal.util;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.util
 {
@@ -18,8 +13,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
         /// <returns></returns>
         public static ISet<Type> AddToSet(this ISet<Type> typeSet, Type type)
         {
-            if (type != null) {
-                typeSet.Add(type);
+            if ((type != null) && (typeSet.Add(type))) {
                 if (type.IsArray) {
                     AddToSet(typeSet, type.GetElementType());
                 }

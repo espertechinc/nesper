@@ -16,7 +16,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
-using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
@@ -49,20 +48,26 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             _field = field;
         }
 
+        public override object Get(EventBean obj)
+        {
+            var underlying = obj.Underlying;
+            return GetBeanProp(underlying);
+        }
+        
+        public object Get(
+            EventBean eventBean,
+            string mapKey)
+        {
+            return FieldGetterHelper.GetFieldMap(_field, eventBean.Underlying, mapKey);
+        }
         public object GetBeanProp(object @object)
         {
-            return GetBeanPropInternal(@object, _key);
+            return FieldGetterHelper.GetFieldMap(_field, @object, _key);
         }
 
         public bool IsBeanExistsProperty(object @object)
         {
             return true; // Property exists as the property is not dynamic (unchecked)
-        }
-
-        public override object Get(EventBean obj)
-        {
-            var underlying = obj.Underlying;
-            return GetBeanProp(underlying);
         }
 
         public override bool IsExistsProperty(EventBean eventBean)
@@ -112,13 +117,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return ConstantTrue();
         }
 
-        public object Get(
-            EventBean eventBean,
-            string mapKey)
-        {
-            return GetBeanPropInternal(eventBean.Underlying, mapKey);
-        }
-
         public CodegenExpression EventBeanGetMappedCodegen(
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope,
@@ -129,20 +127,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 GetBeanPropInternalCodegen(codegenMethodScope, codegenClassScope),
                 CastUnderlying(TargetType, beanExpression),
                 key);
-        }
-
-        public object GetBeanPropInternal(
-            object @object,
-            object key)
-        {
-            try {
-                var result = _field.GetValue(@object);
-                var resultMap = result.AsObjectDictionary();
-                return resultMap?.Get(key);
-            }
-            catch (InvalidCastException e) {
-                throw PropertyUtility.GetMismatchException(_field, @object, e);
-            }
         }
 
         private CodegenMethod GetBeanPropInternalCodegen(

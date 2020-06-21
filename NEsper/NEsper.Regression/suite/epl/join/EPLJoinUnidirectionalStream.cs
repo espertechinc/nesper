@@ -29,24 +29,150 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLJoinPatternUnidirectionalOuterJoinNoOn());
-            execs.Add(new EPLJoin2TableJoinGrouped());
-            execs.Add(new EPLJoin2TableJoinRowForAll());
-            execs.Add(new EPLJoin3TableOuterJoinVar1());
-            execs.Add(new EPLJoin3TableOuterJoinVar2());
-            execs.Add(new EPLJoinPatternJoin());
-            execs.Add(new EPLJoinPatternJoinOutputRate());
-            execs.Add(new EPLJoin3TableJoinVar1());
-            execs.Add(new EPLJoin3TableJoinVar2A());
-            execs.Add(new EPLJoin3TableJoinVar2B());
-            execs.Add(new EPLJoin3TableJoinVar3());
-            execs.Add(new EPLJoin2TableFullOuterJoin());
-            execs.Add(new EPLJoin2TableFullOuterJoinCompile());
-            execs.Add(new EPLJoin2TableFullOuterJoinOM());
-            execs.Add(new EPLJoin2TableFullOuterJoinBackwards());
-            execs.Add(new EPLJoin2TableJoin());
-            execs.Add(new EPLJoin2TableBackwards());
+            WithPatternUnidirectionalOuterJoinNoOn(execs);
+            With2TableJoinGrouped(execs);
+            With2TableJoinRowForAll(execs);
+            With3TableOuterJoinVar1(execs);
+            With3TableOuterJoinVar2(execs);
+            WithPatternJoin(execs);
+            WithPatternJoinOutputRate(execs);
+            With3TableJoinVar1(execs);
+            With3TableJoinVar2A(execs);
+            With3TableJoinVar2B(execs);
+            With3TableJoinVar3(execs);
+            With2TableFullOuterJoin(execs);
+            With2TableFullOuterJoinCompile(execs);
+            With2TableFullOuterJoinOM(execs);
+            With2TableFullOuterJoinBackwards(execs);
+            With2TableJoin(execs);
+            With2TableBackwards(execs);
+            WithInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLJoinInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With2TableBackwards(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoin2TableBackwards());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With2TableJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoin2TableJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With2TableFullOuterJoinBackwards(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoin2TableFullOuterJoinBackwards());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With2TableFullOuterJoinOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoin2TableFullOuterJoinOM());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With2TableFullOuterJoinCompile(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoin2TableFullOuterJoinCompile());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With2TableFullOuterJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoin2TableFullOuterJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With3TableJoinVar3(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoin3TableJoinVar3());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With3TableJoinVar2B(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoin3TableJoinVar2B());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With3TableJoinVar2A(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoin3TableJoinVar2A());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With3TableJoinVar1(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoin3TableJoinVar1());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPatternJoinOutputRate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinPatternJoinOutputRate());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPatternJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinPatternJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With3TableOuterJoinVar2(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoin3TableOuterJoinVar2());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With3TableOuterJoinVar1(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoin3TableOuterJoinVar1());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With2TableJoinRowForAll(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoin2TableJoinRowForAll());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With2TableJoinGrouped(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoin2TableJoinGrouped());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPatternUnidirectionalOuterJoinNoOn(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinPatternUnidirectionalOuterJoinNoOn());
             return execs;
         }
 
@@ -56,7 +182,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
             // send event, expect result
             SendEventMD(env, "E1", 1L);
-            var fields = new [] { "Symbol","Volume","TheString","IntPrimitive" };
+            var fields = new[] {"Symbol", "Volume", "TheString", "IntPrimitive"};
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
@@ -84,7 +210,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
             // send event, expect result
             SendEventMD(env, "E1", 1L);
-            var fields = new [] { "Symbol","Volume","TheString","IntPrimitive" };
+            var fields = new[] {"Symbol", "Volume", "TheString", "IntPrimitive"};
             Assert.IsFalse(env.Listener("s0").IsInvoked);
 
             SendEvent(env, "E1", 10);
@@ -126,7 +252,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             RegressionEnvironment env,
             long startTime)
         {
-            var fields = new [] { "c0", "c1" };
+            var fields = new[] {"c0", "c1"};
             env.AdvanceTime(startTime + 2000);
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
@@ -167,7 +293,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                       "from E1 unidirectional inner join E2#keepall on E1.id = E2.id group by E1.grp";
             env.CompileDeployWBusPublicType(epl, new RegressionPath());
             env.AddListener("s0");
-            var fields = new [] { "c0", "c1", "c2" };
+            var fields = new[] {"c0", "c1", "c2"};
 
             env.SendEventObjectArray(new object[] {"A", 100}, "E2");
             Assert.IsFalse(env.Listener("s0").IsInvoked);
@@ -189,7 +315,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         private static void Try3TableOuterJoin(RegressionEnvironment env)
         {
-            var fields = new [] { "S0.Id","S1.Id","S2.Id" };
+            var fields = new[] {"S0.Id", "S1.Id", "S2.Id"};
 
             env.SendEventBean(new SupportBean_S0(1, "E1"));
             EPAssertionUtil.AssertProps(
@@ -255,7 +381,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             Assert.IsFalse(env.Listener("s0").IsInvoked);
 
             env.SendEventBean(new SupportBean_S0(11, "E4"));
-            var fields = new [] { "S0.Id","S1.Id","S2.Id" };
+            var fields = new[] {"S0.Id", "S1.Id", "S2.Id"};
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
@@ -304,7 +430,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 // test 2-stream inner join
                 //
-                var fieldsIJ = new [] { "c0", "c1" };
+                var fieldsIJ = new[] {"c0", "c1"};
                 var stmtTextIJ = "@Name('s0') select sum(IntPrimitive) as c0, count(*) as c1 " +
                                  "from SupportBean_S0 unidirectional " +
                                  "inner join " +
@@ -335,7 +461,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 // test 3-stream inner join
                 //
-                var fields3IJ = new [] { "c0", "c1" };
+                var fields3IJ = new[] {"c0", "c1"};
                 var stmtText3IJ = "@Name('s0') select sum(IntPrimitive) as c0, count(*) as c1 " +
                                   "from " +
                                   "SupportBean_S0#keepall " +
@@ -365,7 +491,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 // test 3-stream full outer join
                 //
-                var fields3FOJ = new [] { "P00","P10","TheString" };
+                var fields3FOJ = new[] {"P00", "P10", "TheString"};
                 var stmtText3FOJ = "@Name('s0') select P00, P10, TheString " +
                                    "from " +
                                    "SupportBean_S0#keepall " +
@@ -419,7 +545,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 // test 3-stream full outer join with where-clause
                 //
-                var fields3FOJW = new [] { "P00","P10","TheString" };
+                var fields3FOJW = new[] {"P00", "P10", "TheString"};
                 var stmtText3FOJW = "@Name('s0') select P00, P10, TheString " +
                                     "from " +
                                     "SupportBean_S0#keepall as S0 " +
@@ -457,7 +583,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 // send event, expect result
                 SendEventMD(env, "E1", 1L);
-                var fields = new [] { "Symbol","cnt" };
+                var fields = new[] {"Symbol", "cnt"};
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
 
                 SendEvent(env, "E1", 10);
@@ -525,7 +651,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 // send event, expect result
                 SendEventMD(env, "E1", 1L);
-                var fields = new [] { "cnt" };
+                var fields = new[] {"cnt"};
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
 
                 SendEvent(env, "E1", 10);

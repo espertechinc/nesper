@@ -8,54 +8,49 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.runtime.@internal.kernel.service;
 
 namespace com.espertech.esper.runtime.@internal.kernel.thread
 {
-    using DataMap = IDictionary<string, object>;
+	/// <summary>
+	/// Inbound work unit processing a map event.
+	/// </summary>
+	public class InboundUnitSendMap : InboundUnitRunnable
+	{
+		private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-    /// <summary>
-    /// Inbound work unit processing a map event.
-    /// </summary>
-    public class InboundUnitSendMap : InboundUnitRunnable
-    {
-        private static readonly ILog log = LogManager.GetLogger(typeof(InboundUnitSendMap));
+		private readonly IDictionary<string, object> map;
+		private readonly string eventTypeName;
+		private readonly EPRuntimeEventProcessWrapped runtime;
+		private readonly EPServicesEvaluation services;
 
-        private readonly DataMap map;
-        private readonly string eventTypeName;
-        private readonly EPEventServiceImpl runtime;
+		public InboundUnitSendMap(
+			IDictionary<string, object> map,
+			string eventTypeName,
+			EPRuntimeEventProcessWrapped runtime,
+			EPServicesEvaluation services)
+		{
+			this.map = map;
+			this.eventTypeName = eventTypeName;
+			this.runtime = runtime;
+			this.services = services;
+		}
 
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="map">to send</param>
-        /// <param name="eventTypeName">type name</param>
-        /// <param name="runtime">to process</param>
-        public InboundUnitSendMap(
-            DataMap map,
-            string eventTypeName,
-            EPEventServiceImpl runtime)
-        {
-            this.eventTypeName = eventTypeName;
-            this.map = map;
-            this.runtime = runtime;
-        }
-
-        public void Run()
-        {
-            try {
-                EventBean eventBean = runtime.Services.EventTypeResolvingBeanFactory.AdapterForMap(map, eventTypeName);
-                runtime.ProcessWrappedEvent(eventBean);
-            }
-            catch (Exception e) {
-                runtime.Services.ExceptionHandlingService.HandleInboundPoolException(runtime.RuntimeURI, e, map);
-                log.Error("Unexpected error processing Map event: " + e.Message, e);
-            }
-        }
-    }
+		public void Run()
+		{
+			try {
+				EventBean eventBean = services.EventTypeResolvingBeanFactory.AdapterForMap(map, eventTypeName);
+				runtime.ProcessWrappedEvent(eventBean);
+			}
+			catch (Exception e) {
+				services.ExceptionHandlingService.HandleInboundPoolException(runtime.URI, e, map);
+				log.Error("Unexpected error processing Map event: " + e.Message, e);
+			}
+		}
+	}
 } // end of namespace

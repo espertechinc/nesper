@@ -12,13 +12,13 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.serde.compiletime.eventtype;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCodegen;
 
@@ -68,8 +68,17 @@ namespace com.espertech.esper.common.@internal.view.derived
             expressionX = validated[0];
             expressionY = validated[1];
 
-            additionalProps = StatViewAdditionalPropsForge.Make(validated, 2, parentEventType, streamNumber);
+            additionalProps = StatViewAdditionalPropsForge.Make(validated, 2, parentEventType, streamNumber, viewForgeEnv);
             eventType = RegressionLinestView.CreateEventType(additionalProps, viewForgeEnv, streamNumber);
+        }
+
+        public override IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
+        {
+            return SerdeEventTypeUtility.Plan(
+                eventType,
+                viewForgeEnv.StatementRawInfo,
+                viewForgeEnv.SerdeEventTypeRegistry,
+                viewForgeEnv.SerdeResolver);
         }
 
         internal override Type TypeOfFactory()

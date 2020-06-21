@@ -405,14 +405,11 @@ namespace com.espertech.esper.common.@internal.db.drivers
 
             // Determine if we have a SQLTimeoutAttribute specified within this context.  If so,
             // it must be applied to the command timeout.
-            if (contextAttributes != null)
+            var timeoutAttribute = (TimeoutAttribute) contextAttributes?.FirstOrDefault(
+                contextAttribute => contextAttribute is TimeoutAttribute);
+            if (timeoutAttribute != null)
             {
-                var timeoutAttribute = (TimeoutAttribute) contextAttributes.FirstOrDefault(
-                    contextAttribute => contextAttribute is TimeoutAttribute);
-                if (timeoutAttribute != null)
-                {
-                    dbCommandTimeout = timeoutAttribute.Value;
-                }
+                dbCommandTimeout = timeoutAttribute.Value;
             }
 
             // How do we convert from positional to underlying

@@ -19,9 +19,20 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
 {
     public class EventTableIndexMetadata
     {
-        public IDictionary<IndexMultiKey, EventTableIndexMetadataEntry> Indexes { get; } =
-            new Dictionary<IndexMultiKey, EventTableIndexMetadataEntry>();
+        private static int _gid = 0;
+        private int _id = _gid++;
+        public IDictionary<IndexMultiKey, EventTableIndexMetadataEntry> Indexes { get; }
 
+        public EventTableIndexMetadata()
+        {
+            Indexes = new Dictionary<IndexMultiKey, EventTableIndexMetadataEntry>();
+        }
+
+        public EventTableIndexMetadata(IDictionary<IndexMultiKey, EventTableIndexMetadataEntry> indexes)
+        {
+            Indexes = indexes;
+        }
+        
         public void AddIndexExplicit(
             bool isPrimary,
             IndexMultiKey indexMultiKey,
@@ -120,6 +131,12 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             entry?.AddReferringDeployment(deploymentId);
         }
 
+        public EventTableIndexMetadataEntry GetIndexEntryByName(string indexName) {
+            var entry = FindIndex(indexName);
+            return entry?.Value;
+        }
+
+        
         public IndexMultiKey GetIndexByName(string indexName)
         {
             var entry = FindIndex(indexName);
@@ -160,7 +177,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         private KeyValuePair<IndexMultiKey, EventTableIndexMetadataEntry>? FindIndex(string indexName)
         {
             foreach (var entry in Indexes) {
-                if (entry.Value.OptionalIndexName != null && entry.Value.OptionalIndexName.Equals(indexName)) {
+                if ((entry.Value.OptionalIndexName != null) && (entry.Value.OptionalIndexName == indexName)) {
                     return entry;
                 }
             }
@@ -184,6 +201,13 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
 
                 return uniques.ToArray();
             }
+        }
+        
+        public EventTableIndexMetadata Copy()
+        {
+            return new EventTableIndexMetadata(
+                new Dictionary<IndexMultiKey, EventTableIndexMetadataEntry>(
+                    Indexes));
         }
     }
 } // end of namespace

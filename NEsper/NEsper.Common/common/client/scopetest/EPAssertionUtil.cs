@@ -354,7 +354,7 @@ namespace com.espertech.esper.common.client.scopetest
 
             foreach (var anExpected in expected) {
                 if (anExpected is ICollection collection) {
-                    var containsExpected = transposeActual.Any(i => SmartEquals(i, anExpected));
+                    var containsExpected = transposeActual.Any(i => CompatExtensions.DeepEquals(i, anExpected));
                     ScopeTestHelper.AssertTrue("not found: " + collection.RenderAny(), containsExpected);
                 }
                 else {
@@ -377,10 +377,11 @@ namespace com.espertech.esper.common.client.scopetest
             if ((valueA is ICollection) && (valueB is ICollection)) {
                 var collectionA = ((ICollection) valueA).Cast<object>().ToList();
                 var collectionB = ((ICollection) valueB).Cast<object>().ToList();
-                return Collections.AreEqual(collectionA, collectionB);
+                return CompatExtensions.DeepEquals(collectionA, collectionB);
+                //return Collections.AreEqual(collectionA, collectionB);
             }
             else {
-                return Equals(valueA, valueB);
+                return CompatExtensions.DeepEquals(valueA, valueB);
             }
         }
 
@@ -860,12 +861,12 @@ namespace com.espertech.esper.common.client.scopetest
 
             // For each expected object find a received object
             var numMatches = 0;
-            var foundReceived = new bool[actual.Length];
+            var received = new bool[actual.Length];
             foreach (var expectedObject in expected) {
                 var found = false;
                 for (var i = 0; i < actual.Length; i++) {
                     // Ignore found received objects
-                    if (foundReceived[i]) {
+                    if (received[i]) {
                         continue;
                     }
 
@@ -873,7 +874,7 @@ namespace com.espertech.esper.common.client.scopetest
                     if (match) {
                         found = true;
                         numMatches++;
-                        foundReceived[i] = true;
+                        received[i] = true;
                         break;
                     }
                 }
@@ -904,12 +905,12 @@ namespace com.espertech.esper.common.client.scopetest
 
             // For each expected object find a received object
             var numMatches = 0;
-            var foundReceived = new bool[actual.Length];
+            var received = new bool[actual.Length];
             foreach (var expectedArr in expected) {
                 var found = false;
                 for (var i = 0; i < actual.Length; i++) {
                     // Ignore found received objects
-                    if (foundReceived[i]) {
+                    if (received[i]) {
                         continue;
                     }
 
@@ -918,7 +919,7 @@ namespace com.espertech.esper.common.client.scopetest
                         found = true;
                         numMatches++;
                         // Blank out received object so as to not match again
-                        foundReceived[i] = true;
+                        received[i] = true;
                         break;
                     }
                 }
@@ -1273,12 +1274,7 @@ namespace com.espertech.esper.common.client.scopetest
             EventBean[] events,
             IList<string> propertyNames)
         {
-            if (events == null) {
-                return null;
-            }
-
-            return events
-                .Select(ev => propertyNames.Select(ev.Get).ToArray())
+            return events?.Select(ev => propertyNames.Select(ev.Get).ToArray())
                 .ToArray();
         }
 
@@ -1432,13 +1428,34 @@ namespace com.espertech.esper.common.client.scopetest
                     "Object not an array but type '" + (array == null ? "null" : array.GetType().FullName) + "'");
             }
 
-            var size = asArray.Length;
-            var val = new object[size];
-            for (var i = 0; i < size; i++) {
-                val[i] = asArray.GetValue(i);
-            }
+            if (asArray.Rank == 1) {
+                var size = asArray.Length;
+                var val = new object[size];
+                for (var i = 0; i < size; i++) {
+                    val[i] = asArray.GetValue(i);
+                }
 
-            return val;
+                return val;
+            }
+            else if (asArray.Rank == 2) {
+                var elementType = asArray.GetType().GetElementType();
+                var numRows = asArray.GetLength(0);
+                var numCols = asArray.GetLength(1);
+                var val = new object[numRows];
+                for (var row = 0; row < numRows; row++) {
+                    var rowArray = Arrays.CreateInstanceChecked(elementType, numCols);
+                    for (var col = 0; col < numCols; col++) {
+                        rowArray.SetValue(asArray.GetValue(row, col), col);
+                    }
+
+                    val[row] = rowArray;
+                }
+
+                return val;
+            }
+            else {
+                throw new NotSupportedException("currently no support for rank > 2");
+            }
         }
 
         /// <summary>Assert that two property values are the same, allowing arrays as properties. </summary>

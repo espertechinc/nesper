@@ -9,7 +9,6 @@
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.compile;
-using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.view.access;
 
@@ -21,8 +20,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         private readonly StatementRawInfo _statementRawInfo;
         private readonly StreamTypeService _streamTypeService;
         private bool _aggregationFutureNameAlreadySet;
-        private bool _allowBindingConsumption;
         private bool _allowRollupFunctions;
+        private bool _allowBindingConsumption;
+        private bool _allowTableAggReset;
         private ContextCompileTimeDescriptor _contextDescriptor;
         private bool _disablePropertyExpressionEventCollCache;
         private string _intoTableName;
@@ -73,6 +73,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return this;
         }
 
+        public ExprValidationContextBuilder WithAllowTableAggReset(bool allowTableAggReset)
+        {
+            _allowTableAggReset = allowTableAggReset;
+            return this;
+        }
+
         public ExprValidationContextBuilder WithIntoTableName(string intoTableName)
         {
             _intoTableName = intoTableName;
@@ -112,6 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 _disablePropertyExpressionEventCollCache,
                 _allowRollupFunctions,
                 _allowBindingConsumption,
+                _allowTableAggReset,
                 _isResettingAggregations,
                 _intoTableName,
                 _isFilterExpression,

@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.runtime.@internal.deploymentlifesvc;
 
@@ -18,13 +20,15 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             DeploymentRecoveryService deploymentRecoveryService,
             ListenerRecoveryService listenerRecoveryService,
             StatementIdRecoveryService statementIdRecoveryService,
-            long? currentTimeAsRecovered)
+            long? currentTimeAsRecovered,
+            IDictionary<int, long> currentTimeStageAsRecovered)
         {
             RuntimeExtensionServices = runtimeExtensionServices;
             DeploymentRecoveryService = deploymentRecoveryService;
             ListenerRecoveryService = listenerRecoveryService;
             StatementIdRecoveryService = statementIdRecoveryService;
             CurrentTimeAsRecovered = currentTimeAsRecovered;
+            CurrentTimeStageAsRecovered = currentTimeStageAsRecovered;
         }
 
         public RuntimeExtensionServices RuntimeExtensionServices { get; }
@@ -36,6 +40,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         public StatementIdRecoveryService StatementIdRecoveryService { get; }
 
         public long? CurrentTimeAsRecovered { get; }
+
+        public IDictionary<int, long> CurrentTimeStageAsRecovered { get; }
 
         public void Destroy()
         {

@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.client.soda
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            ExpressionBase.RenderAggregation(writer, "count", false, this.Children);
+            RenderAggregation(writer, "count", false, Children);
         }
     }
 } // end of namespace

@@ -6,10 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -468,11 +466,11 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 
         void QJoinExecStrategy();
 
-        void AJoinExecStrategy(UniformPair<ISet<MultiKey<EventBean>>> joinSet);
+        void AJoinExecStrategy(UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>> joinSet);
 
         void QJoinCompositionStreamToWin();
 
-        void AJoinCompositionStreamToWin(ISet<MultiKey<EventBean>> newResults);
+        void AJoinCompositionStreamToWin(ISet<MultiKeyArrayOfKeys<EventBean>> newResults);
 
         void QJoinCompositionStepUpdIndex(
             int stream,
@@ -507,15 +505,15 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 
         void AJoinCompositionQueryStrategy();
 
-        void QJoinExecProcess(UniformPair<ISet<MultiKey<EventBean>>> joinSet);
+        void QJoinExecProcess(UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>> joinSet);
 
         void AJoinExecProcess();
 
         void QJoinCompositionWinToWin();
 
         void AJoinCompositionWinToWin(
-            ISet<MultiKey<EventBean>> newResults,
-            ISet<MultiKey<EventBean>> oldResults);
+            ISet<MultiKeyArrayOfKeys<EventBean>> newResults,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldResults);
 
         void QOutputProcessWCondition(
             EventBean[] newData,
@@ -534,8 +532,8 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         void AOutputRateConditionOutputNow(bool generate);
 
         void QOutputProcessWConditionJoin(
-            ISet<MultiKey<EventBean>> newEvents,
-            ISet<MultiKey<EventBean>> oldEvents);
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents);
 
         void AOutputProcessWConditionJoin(bool buffered);
 
@@ -659,13 +657,13 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         void QJoinExecFilter();
 
         void AJoinExecFilter(
-            ISet<MultiKey<EventBean>> newEvents,
-            ISet<MultiKey<EventBean>> oldEvents);
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents);
 
         void QJoinCompositionHistorical();
 
         void AJoinCompositionHistorical(
-            ISet<MultiKey<EventBean>> newResults,
-            ISet<MultiKey<EventBean>> oldResults);
+            ISet<MultiKeyArrayOfKeys<EventBean>> newResults,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldResults);
     }
 } // end of namespace

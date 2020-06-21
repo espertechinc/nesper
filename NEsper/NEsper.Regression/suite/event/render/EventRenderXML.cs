@@ -28,10 +28,38 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EventRenderRenderSimple());
-            execs.Add(new EventRenderMapAndNestedArray());
-            execs.Add(new EventRenderSQLDate());
+            WithRenderSimple(execs);
+            WithMapAndNestedArray(execs);
+            WithSQLDate(execs);
+            WithEnquote(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEnquote(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EventRenderEnquote());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSQLDate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventRenderSQLDate());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMapAndNestedArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventRenderMapAndNestedArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRenderSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventRenderRenderSimple());
             return execs;
         }
 

@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.util
             var childPathIsRelative = !child.IsAbsoluteUri;
             var childPathElements = ParsePathElements(child);
 
-            var result = new OrderedDictionary<int, KeyValuePair<Uri, V>>();
+            var result = new OrderedListDictionary<int, KeyValuePair<Uri, V>>();
             foreach (var entry in uris) {
                 var factoryUri = entry.Key;
 

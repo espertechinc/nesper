@@ -8,12 +8,12 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.agg.core;
-using com.espertech.esper.common.@internal.serde;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.core.AggregationServiceCodegenNames;
@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
     /// </summary>
     public class AggregationServiceGroupAllForge : AggregationServiceFactoryForgeWMethodGen
     {
-        private static readonly CodegenExpressionRef REF_ROW = new CodegenExpressionRef("row");
+        private static readonly CodegenExpressionMember MEMBER_ROW = Member("row");
 
         internal readonly AggregationRowStateForgeDesc rowStateDesc;
 
@@ -46,13 +46,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
             method.Block
                 .DeclareVar<AggregationRowFactory>(
                     "rowFactory",
-                    NewInstance(classNames.RowFactoryTop, Ref("this")))
-                .DeclareVar<DataInputOutputSerdeWCollation<AggregationRow>>(
+                    NewInstanceInner(classNames.RowFactoryTop, Ref("this")))
+                .DeclareVar<DataInputOutputSerde<AggregationRow>>(
                     "rowSerde",
-                    NewInstance(classNames.RowSerdeTop, Ref("this")))
+                    NewInstanceInner(classNames.RowSerdeTop, Ref("this")))
                 .DeclareVar<AggregationServiceFactory>(
                     "svcFactory",
-                    NewInstance(classNames.ServiceFactory, Ref("this")))
+                    NewInstanceInner(classNames.ServiceFactory, Ref("this")))
                 .MethodReturn(
                     ExprDotMethodChain(EPStatementInitServicesConstants.REF)
                         .Get(EPStatementInitServicesConstants.AGGREGATIONSERVICEFACTORYSERVICE)
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
             CodegenClassScope classScope,
             AggregationClassNames classNames)
         {
-            method.Block.MethodReturn(NewInstance(classNames.Service, Ref("o")));
+            method.Block.MethodReturn(NewInstanceInner(classNames.Service, Ref("o")));
         }
 
         public void RowCtorCodegen(AggregationRowCtorDesc rowCtorDesc)
@@ -83,8 +83,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
             CodegenClassScope classScope,
             AggregationClassNames classNames)
         {
-            explicitMembers.Add(new CodegenTypedParam(classNames.RowTop, REF_ROW.Ref));
-            ctor.Block.AssignRef(REF_ROW, NewInstance(classNames.RowTop, Ref("o")));
+            explicitMembers.Add(new CodegenTypedParam(classNames.RowTop, MEMBER_ROW.Ref));
+            ctor.Block.AssignRef(MEMBER_ROW, NewInstanceInner(classNames.RowTop, Ref("o")));
         }
 
         public void GetValueCodegen(
@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
         {
             method.Block.DebugStack();
             method.Block.MethodReturn(
-                ExprDotMethod(REF_ROW, "GetValue", REF_COLUMN, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
+                ExprDotMethod(MEMBER_ROW, "GetValue", REF_COLUMN, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
         }
 
         public void GetEventBeanCodegen(
@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
             CodegenNamedMethods namedMethods)
         {
             method.Block.MethodReturn(
-                ExprDotMethod(REF_ROW, "GetEventBean", REF_COLUMN, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
+                ExprDotMethod(MEMBER_ROW, "GetEventBean", REF_COLUMN, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
         }
 
         public void ApplyEnterCodegen(
@@ -120,7 +120,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
                         ConstantTrue(),
                         Constant(rowStateDesc.NumMethods),
                         Constant(rowStateDesc.NumAccess)))
-                .ExprDotMethod(REF_ROW, "ApplyEnter", REF_EPS, REF_EXPREVALCONTEXT)
+                .ExprDotMethod(MEMBER_ROW, "ApplyEnter", REF_EPS, REF_EXPREVALCONTEXT)
                 .Apply(Instblock(classScope, "aAggregationUngroupedApplyEnterLeave", ConstantTrue()));
         }
 
@@ -138,7 +138,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
                         ConstantFalse(),
                         Constant(rowStateDesc.NumMethods),
                         Constant(rowStateDesc.NumAccess)))
-                .ExprDotMethod(REF_ROW, "ApplyLeave", REF_EPS, REF_EXPREVALCONTEXT)
+                .ExprDotMethod(MEMBER_ROW, "ApplyLeave", REF_EPS, REF_EXPREVALCONTEXT)
                 .Apply(Instblock(classScope, "aAggregationUngroupedApplyEnterLeave", ConstantFalse()));
         }
 
@@ -166,7 +166,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(REF_ROW, "Clear");
+            method.Block.ExprDotMethod(MEMBER_ROW, "Clear");
         }
 
         public void GetCollectionScalarCodegen(
@@ -176,7 +176,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
         {
             method.Block.MethodReturn(
                 ExprDotMethod(
-                    REF_ROW,
+                    MEMBER_ROW,
                     "GetCollectionScalar",
                     REF_COLUMN,
                     REF_EPS,
@@ -191,7 +191,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
         {
             method.Block.MethodReturn(
                 ExprDotMethod(
-                    REF_ROW,
+                    MEMBER_ROW,
                     "GetCollectionOfEvents",
                     REF_COLUMN,
                     REF_EPS,
@@ -203,7 +203,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(REF_AGGVISITOR, "VisitAggregations", Constant(1), REF_ROW);
+            method.Block.ExprDotMethod(REF_AGGVISITOR, "VisitAggregations", Constant(1), MEMBER_ROW);
         }
 
         public void GetGroupKeysCodegen(
@@ -244,6 +244,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
             CodegenMethod method,
             int level)
         {
+        }
+
+        public void GetRowCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
+        {
+            method.Block.MethodReturn(MEMBER_ROW);
         }
     }
 } // end of namespace

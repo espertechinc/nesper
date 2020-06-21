@@ -32,8 +32,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         ExprEnumerationEval,
         ExprForge
     {
-        [NonSerialized] private EPType optionalEnumerationType;
-        [NonSerialized] private ExprEnumerationGivenEventForge optionalPropertyEnumEvaluator;
+        [NonSerialized] private EPType _optionalEnumerationType;
+        [NonSerialized] private ExprEnumerationGivenEventForge _optionalPropertyEnumEvaluator;
         private Type _evaluationType;
 
         public ExprTableAccessNodeSubprop(
@@ -52,11 +52,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         protected override string InstrumentationQName => "ExprTableSubproperty";
 
         protected override CodegenExpression[] InstrumentationQParams =>
-            new[] {Constant(tableMeta.TableName), Constant(SubpropName)};
+            new[] {
+                Constant(TableMeta.TableName), 
+                Constant(SubpropName)
+            };
 
         public string SubpropName { get; }
-
-        public ExprEnumerationGivenEventForge OptionalPropertyEnumEvaluator => optionalPropertyEnumEvaluator;
 
         public ICollection<EventBean> EvaluateGetROCollectionEvents(
             EventBean[] eventsPerStream,
@@ -88,16 +89,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices compileTimeServices)
         {
-            return EPTypeHelper.OptionalIsEventTypeColl(optionalEnumerationType);
+            return EPTypeHelper.OptionalIsEventTypeColl(_optionalEnumerationType);
         }
 
-        public Type ComponentTypeCollection => EPTypeHelper.OptionalIsComponentTypeColl(optionalEnumerationType);
+        public Type ComponentTypeCollection => EPTypeHelper.OptionalIsComponentTypeColl(_optionalEnumerationType);
 
         public EventType GetEventTypeSingle(
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices compileTimeServices)
         {
-            return EPTypeHelper.OptionalIsEventTypeSingle(optionalEnumerationType);
+            return EPTypeHelper.OptionalIsEventTypeSingle(_optionalEnumerationType);
         }
 
         public override ExprEvaluator ExprEvaluator => this;
@@ -108,15 +109,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
         public override ExprTableEvalStrategyFactoryForge TableAccessFactoryForge {
             get {
+                var tableMeta = TableMeta;
                 var column = tableMeta.Columns.Get(SubpropName);
                 var ungrouped = !tableMeta.IsKeyed;
-                var forge = new ExprTableEvalStrategyFactoryForge(tableMeta, groupKeyEvaluators);
+                var forge = new ExprTableEvalStrategyFactoryForge(tableMeta, GroupKeyEvaluators);
 
                 if (column is TableMetadataColumnPlain) {
                     var plain = (TableMetadataColumnPlain) column;
                     forge.PropertyIndex = plain.IndexPlain;
                     forge.StrategyEnum = ungrouped ? UNGROUPED_PLAINCOL : GROUPED_PLAINCOL;
-                    forge.OptionalEnumEval = optionalPropertyEnumEvaluator;
+                    forge.OptionalEnumEval = _optionalPropertyEnumEvaluator;
                 }
                 else {
                     var aggcol = (TableMetadataColumnAggregation) column;
@@ -130,6 +132,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
         protected override void ValidateBindingInternal(ExprValidationContext validationContext)
         {
+            var tableMeta = TableMeta;
             ValidateGroupKeys(tableMeta, validationContext);
             var column = ValidateSubpropertyGetCol(tableMeta, SubpropName);
             _evaluationType = tableMeta.PublicEventType.GetPropertyType(SubpropName);
@@ -141,18 +144,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
                         tableMeta.InternalEventType,
                         true,
                         true);
-                optionalEnumerationType = enumerationSource.ReturnType;
-                optionalPropertyEnumEvaluator = enumerationSource.EnumerationGivenEvent;
+                _optionalEnumerationType = enumerationSource.ReturnType;
+                _optionalPropertyEnumEvaluator = enumerationSource.EnumerationGivenEvent;
             }
             else {
                 var aggcol = (TableMetadataColumnAggregation) column;
-                optionalEnumerationType = aggcol.OptionalEnumerationType;
+                _optionalEnumerationType = aggcol.OptionalEnumerationType;
             }
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
-            ToPrecedenceFreeEPLInternal(writer, SubpropName);
+            ToPrecedenceFreeEPLInternal(writer, SubpropName, flags);
         }
 
         protected override bool EqualsNodeInternal(ExprTableAccessNode other)

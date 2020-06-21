@@ -6,10 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.@internal.context.aifactory.update;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.context.util
         /// <param name="writer">writes values to an event</param>
         /// <param name="wideners">for widening types to write</param>
         /// <param name="outputView">for indicating output</param>
-        /// <param name="agentInstanceLock">agent instance lock</param>
+        /// <param name="statementContext">the statement context</param>
         /// <param name="hasSubselect">indicator whether there are subselects</param>
         public InternalEventRouterEntry(
             int priority,
@@ -37,8 +37,9 @@ namespace com.espertech.esper.common.@internal.context.util
             ExprEvaluator[] assignments,
             EventBeanWriter writer,
             TypeWidener[] wideners,
+            InternalEventRouterWriter[] specialPropWriters,
             InternalRoutePreprocessView outputView,
-            IReaderWriterLock agentInstanceLock,
+            StatementContext statementContext,
             bool hasSubselect)
         {
             Priority = priority;
@@ -47,8 +48,9 @@ namespace com.espertech.esper.common.@internal.context.util
             Assignments = assignments;
             Writer = writer;
             Wideners = wideners;
+            SpecialPropWriters = specialPropWriters;
             OutputView = outputView;
-            AgentInstanceLock = agentInstanceLock;
+            StatementContext = statementContext;
             IsSubselect = hasSubselect;
         }
 
@@ -87,6 +89,8 @@ namespace com.espertech.esper.common.@internal.context.util
         /// </summary>
         /// <returns>wideners.</returns>
         public TypeWidener[] Wideners { get; }
+        
+        public InternalEventRouterWriter[] SpecialPropWriters { get; }
 
         /// <summary>
         ///     Returns the output view.
@@ -94,7 +98,7 @@ namespace com.espertech.esper.common.@internal.context.util
         /// <returns>output view</returns>
         public InternalRoutePreprocessView OutputView { get; }
 
-        public IReaderWriterLock AgentInstanceLock { get; }
+        public StatementContext StatementContext { get; }
 
         public bool IsSubselect { get; }
     }

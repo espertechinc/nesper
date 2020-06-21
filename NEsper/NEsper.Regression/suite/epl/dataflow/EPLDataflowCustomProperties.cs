@@ -16,7 +16,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -32,11 +31,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EPLDataflowInvalid());
-            execs.Add(new EPLDataflowCustomProps());
+WithInvalid(execs);
+WithCustomProps(execs);
             return execs;
         }
-
+public static IList<RegressionExecution> WithCustomProps(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowCustomProps());
+    return execs;
+}public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowInvalid());
+    return execs;
+}
         /// <summary>
         ///     - GraphSource always has output ports:
         ///     (A) Either as declared through @OutputTypes annotation
@@ -98,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     "  theDoubleTwo: 2," +
                     "  theFloatOne: 1f," +
                     "  theFloatTwo: 2," +
-                    "  theStringWithSetter: 'b'," +
+                    "  TheStringWithSetter: 'b'," +
                     "  theSystemProperty: systemProperties('test.variable')" +
                     "}");
                 Assert.AreEqual(1, MyOperatorOneForge.Operators.Count);

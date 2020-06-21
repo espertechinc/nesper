@@ -9,8 +9,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -27,23 +29,30 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
     /// </summary>
     public class EvalEveryDistinctForgeNode : EvalForgeNodeBase
     {
-        [NonSerialized] private MatchedEventConvertorForge convertor;
+        [NonSerialized] private MatchedEventConvertorForge _convertor;
 
-        private ExprNode expiryTimeExp;
-        private TimePeriodComputeForge timePeriodComputeForge;
+        private ExprNode _expiryTimeExp;
+        private TimePeriodComputeForge _timePeriodComputeForge;
+        private MultiKeyClassRef _distinctMultiKey;
 
         /// <summary>
         ///     Ctor.
         /// </summary>
+        /// <param name="attachPatternText">whether to attach EPL subexpression text</param>
         /// <param name="expressions">distinct-value expressions</param>
-        public EvalEveryDistinctForgeNode(IList<ExprNode> expressions)
+        public EvalEveryDistinctForgeNode(bool attachPatternText, IList<ExprNode> expressions) : base(attachPatternText)
         {
             Expressions = expressions;
         }
 
         public MatchedEventConvertorForge Convertor {
-            get => convertor;
-            set => convertor = value;
+            get => _convertor;
+            set => _convertor = value;
+        }
+
+        public MultiKeyClassRef DistinctMultiKey {
+            get => _distinctMultiKey;
+            set => _distinctMultiKey = value;
         }
 
         /// <summary>
@@ -79,6 +88,13 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
+            var distinctEval = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(
+                DistinctExpressions.ToArray(),
+                null,
+                _distinctMultiKey,
+                method,
+                classScope);
+
             method.Block
                 .SetProperty(
                     Ref("node"),
@@ -87,27 +103,25 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
                 .SetProperty(
                     Ref("node"),
                     "DistinctExpression",
-                    ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
-                        ExprNodeUtilityQuery.GetForges(
-                            ExprNodeUtilityQuery.ToArray(DistinctExpressions)),
-                        null,
-                        method,
-                        GetType(),
-                        classScope))
+                    distinctEval)
                 .SetProperty(
                     Ref("node"),
                     "DistinctTypes",
                     Constant(ExprNodeUtilityQuery.GetExprResultTypes(DistinctExpressions)))
                 .SetProperty(
                     Ref("node"),
+                    "DistinctSerde",
+                    _distinctMultiKey.GetExprMKSerde(method, classScope))
+                .SetProperty(
+                    Ref("node"),
                     "Convertor",
-                    convertor.MakeAnonymous(method, classScope))
+                    _convertor.MakeAnonymous(method, classScope))
                 .SetProperty(
                     Ref("node"),
                     "TimePeriodCompute",
-                    timePeriodComputeForge == null
+                    _timePeriodComputeForge == null
                         ? ConstantNull()
-                        : timePeriodComputeForge.MakeEvaluator(method, classScope));
+                        : _timePeriodComputeForge.MakeEvaluator(method, classScope));
         }
 
         public override void CollectSelfFilterAndSchedule(
@@ -128,27 +142,29 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
         /// <param name="convertor">convertor</param>
         public EvalEveryDistinctForgeNode SetConvertor(MatchedEventConvertorForge convertor)
         {
-            this.convertor = convertor;
+            this._convertor = convertor;
             return this;
         }
 
         public void SetDistinctExpressions(
             IList<ExprNode> distinctExpressions,
+            MultiKeyClassRef distincMultiKey,
             TimePeriodComputeForge timePeriodComputeForge,
             ExprNode expiryTimeExp)
         {
             DistinctExpressions = distinctExpressions;
-            this.timePeriodComputeForge = timePeriodComputeForge;
-            this.expiryTimeExp = expiryTimeExp;
+            this._distinctMultiKey = distincMultiKey;
+            this._timePeriodComputeForge = timePeriodComputeForge;
+            this._expiryTimeExp = expiryTimeExp;
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("every-distinct(");
             ExprNodeUtilityPrint.ToExpressionStringParameterList(DistinctExpressions, writer);
-            if (expiryTimeExp != null) {
+            if (_expiryTimeExp != null) {
                 writer.Write(",");
-                writer.Write(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(expiryTimeExp));
+                writer.Write(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(_expiryTimeExp));
             }
 
             writer.Write(") ");

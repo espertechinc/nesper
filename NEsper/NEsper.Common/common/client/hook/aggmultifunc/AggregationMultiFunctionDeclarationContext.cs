@@ -6,11 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client.configuration.compiler;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.hook.aggmultifunc
 {
@@ -24,9 +20,9 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
     /// </summary>
     public class AggregationMultiFunctionDeclarationContext
     {
-        private readonly string functionName;
-        private readonly bool distinct;
-        private ConfigurationCompilerPlugInAggregationMultiFunction configuration;
+        private readonly string _functionName;
+        private readonly bool _distinct;
+        private ConfigurationCompilerPlugInAggregationMultiFunction _configuration;
 
         /// <summary>
         /// Ctor.
@@ -39,9 +35,9 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
             bool distinct,
             ConfigurationCompilerPlugInAggregationMultiFunction configuration)
         {
-            this.functionName = functionName;
-            this.distinct = distinct;
-            this.configuration = configuration;
+            this._functionName = functionName;
+            this._distinct = distinct;
+            this._configuration = configuration;
         }
 
         /// <summary>
@@ -50,7 +46,7 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         /// <returns>distinct flag</returns>
         public bool IsDistinct()
         {
-            return distinct;
+            return _distinct;
         }
 
         /// <summary>
@@ -58,7 +54,7 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         /// </summary>
         /// <returns>function name</returns>
         public string FunctionName {
-            get => functionName;
+            get => _functionName;
         }
 
         /// <summary>
@@ -66,7 +62,7 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         /// </summary>
         /// <returns>configuration</returns>
         public ConfigurationCompilerPlugInAggregationMultiFunction Configuration {
-            get => configuration;
+            get => _configuration;
         }
     }
 } // end of namespace

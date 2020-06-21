@@ -12,7 +12,6 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.type;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
@@ -28,14 +27,70 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLJoinMapLeftJoinUnsortedProps());
-            execs.Add(new EPLJoinLeftJoin2SidesMulticolumn());
-            execs.Add(new EPLJoinLeftOuterJoinRootS0OM());
-            execs.Add(new EPLJoinLeftOuterJoinRootS0Compiled());
-            execs.Add(new EPLJoinLeftOuterJoinRootS0());
-            execs.Add(new EPLJoinRightOuterJoinS2RootS2());
-            execs.Add(new EPLJoinRightOuterJoinS1RootS1());
+            WithMapLeftJoinUnsortedProps(execs);
+            WithLeftJoin2SidesMulticolumn(execs);
+            WithLeftOuterJoinRootS0OM(execs);
+            WithLeftOuterJoinRootS0Compiled(execs);
+            WithLeftOuterJoinRootS0(execs);
+            WithRightOuterJoinS2RootS2(execs);
+            WithRightOuterJoinS1RootS1(execs);
+            WithInvalidMulticolumn(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalidMulticolumn(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLJoinInvalidMulticolumn());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRightOuterJoinS1RootS1(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinRightOuterJoinS1RootS1());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRightOuterJoinS2RootS2(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinRightOuterJoinS2RootS2());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLeftOuterJoinRootS0(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinLeftOuterJoinRootS0());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLeftOuterJoinRootS0Compiled(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinLeftOuterJoinRootS0Compiled());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLeftOuterJoinRootS0OM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinLeftOuterJoinRootS0OM());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLeftJoin2SidesMulticolumn(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinLeftJoin2SidesMulticolumn());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMapLeftJoinUnsortedProps(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinMapLeftJoinUnsortedProps());
             return execs;
         }
 
@@ -425,7 +480,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             var newEvents = env.Listener("s0").LastNewData;
             env.Listener("s0").Reset();
-            return ArrayHandlingUtil.GetUnderlyingEvents(newEvents, new[] { "S0", "S1", "S2" });
+            return ArrayHandlingUtil.GetUnderlyingEvents(newEvents, new[] {"S0", "S1", "S2"});
         }
 
         internal class EPLJoinMapLeftJoinUnsortedProps : RegressionExecution
@@ -493,7 +548,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "S0.Id"," S0.P00"," S0.P01"," S1.Id"," S1.P10"," S1.P11"," S2.Id"," S2.P20"," S2.P21" };
+                var fields = new[] {"S0.Id", " S0.P00", " S0.P01", " S1.Id", " S1.P10", " S1.P11", " S2.Id", " S2.P20", " S2.P21"};
 
                 var epl = "@Name('s0') select * from " +
                           "SupportBean_S0#length(1000) as S0 " +
@@ -658,7 +713,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Error validating outer-join expression: Outer join ON-clause columns must refer to properties of the same joined streams when using multiple columns in the on-clause");
+                    "Failed to validate outer-join expression: Outer join ON-clause columns must refer to properties of the same joined streams when using multiple columns in the on-clause");
 
                 epl = "@Name('s0') select * from " +
                       "SupportBean_S0#length(1000) as S0 " +
@@ -667,7 +722,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Error validating outer-join expression: Outer join ON-clause columns must refer to properties of the same joined streams when using multiple columns in the on-clause [");
+                    "Failed to validate outer-join expression: Outer join ON-clause columns must refer to properties of the same joined streams when using multiple columns in the on-clause [");
             }
         }
     }

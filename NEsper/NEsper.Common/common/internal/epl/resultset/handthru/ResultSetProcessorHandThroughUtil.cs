@@ -6,14 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.handthru
 {
@@ -69,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
         /// <returns>output events, one for each input event</returns>
         public static EventBean[] GetSelectEventsNoHavingHandThruJoin(
             SelectExprProcessor exprProcessor,
-            ISet<MultiKey<EventBean>> events,
+            ISet<MultiKeyArrayOfKeys<EventBean>> events,
             bool isNewData,
             bool isSynthesize,
             ExprEvaluatorContext agentInstanceContext)
@@ -82,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
 
             EventBean[] result = new EventBean[length];
             int count = 0;
-            foreach (MultiKey<EventBean> key in events)
+            foreach (MultiKeyArrayOfKeys<EventBean> key in events)
             {
                 EventBean[] eventsPerStream = key.Array;
                 result[count] = exprProcessor.Process(eventsPerStream, isNewData, isSynthesize, agentInstanceContext);

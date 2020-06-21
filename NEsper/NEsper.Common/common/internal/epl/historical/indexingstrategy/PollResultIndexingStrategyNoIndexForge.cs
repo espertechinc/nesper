@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
     /// </summary>
     public class PollResultIndexingStrategyNoIndexForge : PollResultIndexingStrategyForge
     {
-        public readonly static PollResultIndexingStrategyNoIndexForge INSTANCE =
+        public static readonly PollResultIndexingStrategyNoIndexForge INSTANCE =
             new PollResultIndexingStrategyNoIndexForge();
 
         private PollResultIndexingStrategyNoIndexForge()

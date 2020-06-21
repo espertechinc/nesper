@@ -6,15 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.@internal.context.activator;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.airegistry;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.subselect
 {
@@ -63,6 +59,13 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             bool recovery)
         {
             strategyFactory.Ready(statementContext, activator.EventType);
+        }
+
+        public void Ready(
+            SubSelectStrategyFactoryContext subselectFactoryContext,
+            bool recovery)
+        {
+            strategyFactory.Ready(subselectFactoryContext, activator.EventType);
         }
 
         public AIRegistryRequirementSubquery RegistryRequirements {

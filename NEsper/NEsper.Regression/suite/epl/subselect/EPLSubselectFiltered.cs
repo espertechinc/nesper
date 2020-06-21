@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
@@ -25,30 +26,222 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLSubselectHavingNoAggNoFilterNoWhere());
-            execs.Add(new EPLSubselectHavingNoAggWWhere());
-            execs.Add(new EPLSubselectHavingNoAggWFilterWWhere());
-            execs.Add(new EPLSubselectSameEventCompile());
-            execs.Add(new EPLSubselectSameEventOM());
-            execs.Add(new EPLSubselectSameEvent());
-            execs.Add(new EPLSubselectSelectSceneOne());
-            execs.Add(new EPLSubselectSelectWildcard());
-            execs.Add(new EPLSubselectSelectWildcardNoName());
-            execs.Add(new EPLSubselectWhereConstant());
-            execs.Add(new EPLSubselectWherePrevious());
-            execs.Add(new EPLSubselectWherePreviousOM());
-            execs.Add(new EPLSubselectWherePreviousCompile());
-            execs.Add(new EPLSubselectSelectWithWhereJoined());
-            execs.Add(new EPLSubselectSelectWhereJoined2Streams());
-            execs.Add(new EPLSubselectSelectWhereJoined3Streams());
-            execs.Add(new EPLSubselectSelectWhereJoined3SceneTwo());
-            execs.Add(new EPLSubselectSelectWhereJoined4Coercion());
-            execs.Add(new EPLSubselectSelectWhereJoined4BackCoercion());
-            execs.Add(new EPLSubselectSelectWithWhere2Subqery());
-            execs.Add(new EPLSubselectJoinFilteredOne());
-            execs.Add(new EPLSubselectJoinFilteredTwo());
-            execs.Add(new EPLSubselectSubselectMixMax());
+            WithHavingNoAggNoFilterNoWhere(execs);
+            WithHavingNoAggWWhere(execs);
+            WithHavingNoAggWFilterWWhere(execs);
+            WithSameEventCompile(execs);
+            WithSameEventOM(execs);
+            WithSameEvent(execs);
+            WithSelectSceneOne(execs);
+            WithSelectWildcard(execs);
+            WithSelectWildcardNoName(execs);
+            WithWhereConstant(execs);
+            WithWherePrevious(execs);
+            WithWherePreviousOM(execs);
+            WithWherePreviousCompile(execs);
+            WithSelectWithWhereJoined(execs);
+            WithSelectWhereJoined2Streams(execs);
+            WithSelectWhereJoined3Streams(execs);
+            WithSelectWhereJoined3SceneTwo(execs);
+            WithSelectWhereJoined4Coercion(execs);
+            WithSelectWhereJoined4BackCoercion(execs);
+            WithSelectWithWhere2Subqery(execs);
+            WithJoinFilteredOne(execs);
+            WithJoinFilteredTwo(execs);
+            WithSubselectMixMax(execs);
+            WithSubselectPrior(execs);
+            WithWhereClauseMultikeyWArrayPrimitive(execs);
+            WithWhereClauseMultikeyWArray2Field(execs);
+            WithWhereClauseMultikeyWArrayComposite(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWhereClauseMultikeyWArrayComposite(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectWhereClauseMultikeyWArrayComposite());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWhereClauseMultikeyWArray2Field(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectWhereClauseMultikeyWArray2Field());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWhereClauseMultikeyWArrayPrimitive(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectWhereClauseMultikeyWArrayPrimitive());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubselectPrior(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLSubselectSubselectPrior());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubselectMixMax(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectSubselectMixMax());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithJoinFilteredTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectJoinFilteredTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithJoinFilteredOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectJoinFilteredOne());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectWithWhere2Subqery(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectSelectWithWhere2Subqery());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectWhereJoined4BackCoercion(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectSelectWhereJoined4BackCoercion());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectWhereJoined4Coercion(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectSelectWhereJoined4Coercion());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectWhereJoined3SceneTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectSelectWhereJoined3SceneTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectWhereJoined3Streams(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectSelectWhereJoined3Streams());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectWhereJoined2Streams(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectSelectWhereJoined2Streams());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectWithWhereJoined(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectSelectWithWhereJoined());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWherePreviousCompile(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectWherePreviousCompile());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWherePreviousOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectWherePreviousOM());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWherePrevious(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectWherePrevious());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWhereConstant(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectWhereConstant());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectWildcardNoName(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectSelectWildcardNoName());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectWildcard(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectSelectWildcard());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectSelectSceneOne());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSameEvent(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectSameEvent());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSameEventOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectSameEventOM());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSameEventCompile(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectSameEventCompile());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithHavingNoAggWFilterWWhere(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectHavingNoAggWFilterWWhere());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithHavingNoAggWWhere(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectHavingNoAggWWhere());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithHavingNoAggNoFilterNoWhere(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectHavingNoAggNoFilterNoWhere());
             return execs;
         }
 
@@ -167,15 +360,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             env.SendEventBean(new SupportBean_S1(1));
             env.SendEventBean(new SupportBean_S0(0));
-            Assert.IsNull(env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+            Assert.IsNull(env.Listener("s0").AssertOneGetNewAndReset().Get("Value"));
 
             env.SendEventBean(new SupportBean_S1(2));
             env.SendEventBean(new SupportBean_S0(2));
-            Assert.AreEqual(1, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+            Assert.AreEqual(1, env.Listener("s0").AssertOneGetNewAndReset().Get("Value"));
 
             env.SendEventBean(new SupportBean_S1(3));
             env.SendEventBean(new SupportBean_S0(3));
-            Assert.AreEqual(2, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+            Assert.AreEqual(2, env.Listener("s0").AssertOneGetNewAndReset().Get("Value"));
         }
 
         private static void SendBean(
@@ -219,6 +412,138 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             long volume)
         {
             return new SupportMarketDataBean(symbol, price, volume, null);
+        }
+
+        private static void SendManyArray(
+            RegressionEnvironment env,
+            String id,
+            int[] ints,
+            int value)
+        {
+            env.SendEventBean(new SupportEventWithManyArray(id).WithIntOne(ints).WithValue(value));
+        }
+
+        private static void SendIntArrayAndAssert(
+            RegressionEnvironment env,
+            String id,
+            int[] array,
+            int value,
+            String expected)
+        {
+            env.SendEventBean(new SupportEventWithIntArray(id, array, value));
+            Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("Value"));
+        }
+
+        private static void SendIntArray(
+            RegressionEnvironment env,
+            String id,
+            int[] array)
+        {
+            env.SendEventBean(new SupportEventWithIntArray(id, array));
+        }
+
+        private static void SendManyArray(
+            RegressionEnvironment env,
+            String id,
+            int[] ints)
+        {
+            env.SendEventBean(new SupportEventWithManyArray(id).WithIntOne(ints));
+        }
+
+        private static void SendIntArrayAndAssert(
+            RegressionEnvironment env,
+            String id,
+            int[] array,
+            String expected)
+        {
+            env.SendEventBean(new SupportEventWithIntArray(id, array));
+            Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("Value"));
+        }
+
+        private static void SendManyArrayAndAssert(
+            RegressionEnvironment env,
+            String id,
+            int[] intOne,
+            int[] intTwo,
+            String expected)
+        {
+            env.SendEventBean(new SupportEventWithManyArray(id).WithIntOne(intOne).WithIntTwo(intTwo));
+            Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("Value"));
+        }
+
+        internal class EPLSubselectWhereClauseMultikeyWArrayComposite : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "@Name('s0') select (select Id from SupportEventWithManyArray#keepall as sm " +
+                             "where sm.IntOne = se.Array and sm.Value > se.Value) as Value from SupportEventWithIntArray as se";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendManyArray(env, "MA1", new int[] {1, 2}, 100);
+                SendManyArray(env, "MA2", new int[] {1, 2}, 200);
+                SendManyArray(env, "MA3", new int[] {1}, 300);
+                SendManyArray(env, "MA4", new int[] {1, 2}, 400);
+
+                env.Milestone(0);
+
+                SendIntArrayAndAssert(env, "IA2", new int[] {1, 2}, 250, "MA4");
+                SendIntArrayAndAssert(env, "IA3", new int[] {1, 2}, 0, null);
+                SendIntArrayAndAssert(env, "IA4", new int[] {1}, 299, "MA3");
+                SendIntArrayAndAssert(env, "IA5", new int[] {1, 2}, 500, null);
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class EPLSubselectWhereClauseMultikeyWArray2Field : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "@Name('s0') select (select Id from SupportEventWithManyArray#keepall as sm " +
+                             "where sm.IntOne = se.Array and sm.Value = se.Value) as Value from SupportEventWithIntArray as se";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendManyArray(env, "MA1", new int[] {1, 2}, 10);
+                SendManyArray(env, "MA2", new int[] {1, 2}, 11);
+                SendManyArray(env, "MA3", new int[] {1}, 12);
+
+                env.Milestone(0);
+
+                SendIntArrayAndAssert(env, "IA1", new int[] {1}, 12, "MA3");
+                SendIntArrayAndAssert(env, "IA2", new int[] {1, 2}, 11, "MA2");
+                SendIntArrayAndAssert(env, "IA3", new int[] {1, 2}, 10, "MA1");
+                SendIntArrayAndAssert(env, "IA4", new int[] {1}, 10, null);
+                SendIntArrayAndAssert(env, "IA5", new int[] {1, 2}, 12, null);
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class EPLSubselectWhereClauseMultikeyWArrayPrimitive : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl =
+                    "@Name('s0') select (select Id from SupportEventWithManyArray#keepall as sm where sm.IntOne = se.Array) as Value from SupportEventWithIntArray as se";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendManyArray(env, "MA1", new int[] {1, 2});
+                SendIntArrayAndAssert(env, "IA1", new int[] {1, 2}, "MA1");
+
+                SendManyArray(env, "MA2", new int[] {1, 2});
+                SendManyArray(env, "MA3", new int[] {1});
+                SendManyArray(env, "MA4", new int[] { });
+                SendManyArray(env, "MA5", null);
+
+                env.Milestone(0);
+
+                SendIntArrayAndAssert(env, "IA2", new int[] { }, "MA4");
+                SendIntArrayAndAssert(env, "IA3", new int[] {1}, "MA3");
+                SendIntArrayAndAssert(env, "IA4", null, "MA5");
+                SendIntArrayAndAssert(env, "IA5", new int[] {1, 2}, null);
+
+                env.UndeployAll();
+            }
         }
 
         internal class EPLSubselectSameEventCompile : RegressionExecution
@@ -394,7 +719,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select (select prev(1, Id) from SupportBean_S1#length(1000) where Id=S0.Id) as value from SupportBean_S0 as S0";
+                    "@Name('s0') select (select prev(1, Id) from SupportBean_S1#length(1000) where Id=S0.Id) as Value from SupportBean_S0 as S0";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 RunWherePrevious(env);
@@ -416,11 +741,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 var model = new EPStatementObjectModel();
                 model.FromClause = FromClause.Create(FilterStream.Create("SupportBean_S0", "S0"));
-                model.SelectClause = SelectClause.Create().Add(Expressions.Subquery(subquery), "value");
+                model.SelectClause = SelectClause.Create().Add(Expressions.Subquery(subquery), "Value");
                 model = env.CopyMayFail(model);
 
                 var stmtText =
-                    "select (select prev(1,Id) from SupportBean_S1#length(1000) where Id=S0.Id) as value from SupportBean_S0 as S0";
+                    "select (select prev(1,Id) from SupportBean_S1#length(1000) where Id=S0.Id) as Value from SupportBean_S0 as S0";
                 Assert.AreEqual(stmtText, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
@@ -437,7 +762,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select (select prev(1,Id) from SupportBean_S1#length(1000) where Id=S0.Id) as value from SupportBean_S0 as S0";
+                    "@Name('s0') select (select prev(1,Id) from SupportBean_S1#length(1000) where Id=S0.Id) as Value from SupportBean_S0 as S0";
                 env.EplToModelCompileDeploy(stmtText).AddListener("s0").Milestone(0);
 
                 RunWherePrevious(env);

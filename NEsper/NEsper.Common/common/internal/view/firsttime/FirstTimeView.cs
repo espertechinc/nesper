@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.view.firsttime
 {
     public class FirstTimeView : ViewSupport,
         DataWindowView,
-        AgentInstanceStopCallback
+        AgentInstanceMgmtCallback
     {
         private readonly AgentInstanceContext agentInstanceContext;
         private readonly FirstTimeViewFactory factory;
@@ -162,6 +162,10 @@ namespace com.espertech.esper.common.@internal.view.firsttime
                 ScheduleObjectType.view,
                 factory.ViewName);
             agentInstanceContext.StatementContext.SchedulingService.Add(afterTime, handle, scheduleSlot);
+        }
+
+        public void Transfer(AgentInstanceTransferServices services)
+        {
         }
     }
 } // end of namespace

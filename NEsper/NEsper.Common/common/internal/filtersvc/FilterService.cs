@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
 
 namespace com.espertech.esper.common.@internal.filtersvc
@@ -42,10 +43,12 @@ namespace com.espertech.esper.common.@internal.filtersvc
         /// </summary>
         /// <param name="theEvent">is the event to be matched against filters</param>
         /// <param name="matches">is a collection that is populated via add method with any handles for matching filters</param>
+        /// <param name="ctx"></param>
         /// <returns>filter current version</returns>
         long Evaluate(
             EventBean theEvent,
-            ICollection<FilterHandle> matches);
+            ICollection<FilterHandle> matches,
+            ExprEvaluatorContext ctx);
 
         /// <summary>
         ///     Finds matching filters to the event passed in and collects their associated callback method, for a particular
@@ -54,11 +57,13 @@ namespace com.espertech.esper.common.@internal.filtersvc
         /// <param name="theEvent">is the event to be matched against filters</param>
         /// <param name="matches">is a collection that is populated via add method with any handles for matching filters</param>
         /// <param name="statementId">statement for which to return results for</param>
+        /// <param name="ctx"></param>
         /// <returns>filter current version</returns>
         long Evaluate(
             EventBean theEvent,
             ICollection<FilterHandle> matches,
-            int statementId);
+            int statementId,
+            ExprEvaluatorContext ctx);
 
         /// <summary>
         ///     Add a filter for events as defined by the filter specification, and register a

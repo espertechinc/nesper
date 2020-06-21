@@ -13,14 +13,13 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.exception;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.filtersvc;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.mgr
 {
     public class ContextStatementEventEvaluatorDefault : ContextStatementEventEvaluator
     {
-        public readonly static ContextStatementEventEvaluatorDefault INSTANCE =
+        public static readonly ContextStatementEventEvaluatorDefault INSTANCE =
             new ContextStatementEventEvaluatorDefault();
 
         private ContextStatementEventEvaluatorDefault()
@@ -34,7 +33,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
         {
             // context was created - reevaluate for the given event
             ArrayDeque<FilterHandle> callbacks = new ArrayDeque<FilterHandle>(2);
-            agentInstanceContextCreate.FilterService.Evaluate(theEvent, callbacks); // evaluates for ALL statements
+            agentInstanceContextCreate.FilterService.Evaluate(theEvent, callbacks, agentInstanceContextCreate); // evaluates for ALL statements
             if (callbacks.IsEmpty()) {
                 return;
             }
@@ -60,7 +59,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
                 stmtCallbacks = new Dictionary<AgentInstance, object>();
             }
             else {
-                stmtCallbacks = new OrderedDictionary<AgentInstance, object>(AgentInstanceComparator.INSTANCE);
+                stmtCallbacks = new OrderedListDictionary<AgentInstance, object>(AgentInstanceComparator.INSTANCE);
             }
 
             // process all callbacks

@@ -22,8 +22,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="optionalAsName">the optional name</param>
         /// <param name="assignments">set-assignments</param>
         public OnTriggerWindowUpdateDesc(
-            String windowName,
-            String optionalAsName,
+            string windowName,
+            string optionalAsName,
             IList<OnTriggerSetAssignment> assignments)
             : base(windowName, optionalAsName, spec.OnTriggerType.ON_UPDATE, false)
         {

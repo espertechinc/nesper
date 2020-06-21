@@ -19,13 +19,12 @@ using com.espertech.esper.common.client.module;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.container;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.framework
 {
@@ -34,6 +33,8 @@ namespace com.espertech.esper.regressionlib.framework
         IContainer Container { get; }
 
         Configuration Configuration { get; }
+
+        EPCompiler Compiler { get; }
 
         bool IsHA { get; }
 
@@ -138,6 +139,10 @@ namespace com.espertech.esper.regressionlib.framework
             EPCompiled compiled,
             DeploymentOptions options);
 
+        RegressionEnvironment Rollout(
+            IList<EPDeploymentRolloutCompiled> items,
+            RolloutOptions options);
+
         string DeployGetId(EPCompiled compiled);
 
         RegressionEnvironment UndeployAll();
@@ -164,6 +169,10 @@ namespace com.espertech.esper.regressionlib.framework
             object @event,
             string typeName);
 
+        RegressionEnvironment SendEventBeanStage(
+            string stageUri,
+            object @event);
+
         RegressionEnvironment SendEventMap(
             IDictionary<string, object> values,
             string typeName);
@@ -176,7 +185,15 @@ namespace com.espertech.esper.regressionlib.framework
             GenericRecord theEvent,
             string typeName);
 
+        RegressionEnvironment SendEventJson(
+            string json,
+            string typeName);
+
         RegressionEnvironment AdvanceTime(long msec);
+
+        RegressionEnvironment AdvanceTimeStage(
+            string stageUri,
+            long msec);
 
         RegressionEnvironment AdvanceTimeSpan(long msec);
 
@@ -196,6 +213,10 @@ namespace com.espertech.esper.regressionlib.framework
 
         SupportListener Listener(string statementName);
 
+        SupportListener ListenerStage(
+            string stageUri,
+            string statementName);
+
         string DeploymentId(string statementName);
 
         RegressionEnvironment EplToModelCompileDeploy(string epl);
@@ -207,6 +228,8 @@ namespace com.espertech.esper.regressionlib.framework
         EPStatementObjectModel EplToModel(string epl);
 
         SupportListener ListenerNew();
+
+        EPStageService StageService { get; }
     }
 
     public static class RegressionEnvironmentExtensions
@@ -225,5 +248,13 @@ namespace com.espertech.esper.regressionlib.framework
                 //throw new AssertionException("Exception occurred during serialized copy", t);
             }
         }
+        
+        public static Configuration MinimalConfiguration(this RegressionEnvironment env)
+        {
+            var configuration = new Configuration();
+            configuration.Common.Scripting.Engines.AddAll(env.Configuration.Common.Scripting.Engines);
+            return configuration;
+        }
+
     }
 } // end of namespace

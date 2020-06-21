@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         public void PreloadAggregation(ResultSetProcessor resultSetProcessor)
         {
             var newEvents = joinSetComposer.StaticJoin();
-            ISet<MultiKey<EventBean>> oldEvents = new HashSet<MultiKey<EventBean>>();
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents = new HashSet<MultiKeyArrayOfKeys<EventBean>>();
             resultSetProcessor.ProcessJoinResult(newEvents, oldEvents, false);
         }
 

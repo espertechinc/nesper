@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.subselect;
 using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.previous;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.core
 {
@@ -25,7 +26,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
 
         protected StatementAgentInstanceFactoryResult(
             Viewable finalView,
-            AgentInstanceStopCallback stopCallback,
+            AgentInstanceMgmtCallback stopCallback,
             AgentInstanceContext agentInstanceContext,
             AggregationService optionalAggegationService,
             IDictionary<int, SubSelectFactoryResult> subselectStrategies,
@@ -33,7 +34,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             PreviousGetterStrategy[] previousGetterStrategies,
             RowRecogPreviousStrategy rowRecogPreviousStrategy,
             IDictionary<int, ExprTableEvalStrategy> tableAccessStrategies,
-            IList<StatementAgentInstancePreload> preloadList)
+            IList<StatementAgentInstancePreload> preloadList,
+            Runnable postContextMergeRunnable)
         {
             FinalView = finalView;
             StopCallback = stopCallback;
@@ -45,11 +47,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             RowRecogPreviousStrategy = rowRecogPreviousStrategy;
             TableAccessStrategies = tableAccessStrategies;
             this.preloadList = preloadList;
+            PostContextMergeRunnable = postContextMergeRunnable;
         }
+
+        public Runnable PostContextMergeRunnable { get; }
 
         public Viewable FinalView { get; }
 
-        public AgentInstanceStopCallback StopCallback { get; set; }
+        public AgentInstanceMgmtCallback StopCallback { get; set; }
 
         public AgentInstanceContext AgentInstanceContext { get; }
 

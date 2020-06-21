@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.exception;
 using com.espertech.esper.common.@internal.context.util;
@@ -18,14 +18,11 @@ using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.common.@internal.metrics.stmtmetrics;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.settings;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.diagnostics;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.compat.threading.threadlocal;
 using com.espertech.esper.runtime.@internal.metrics.instrumentation;
-using com.espertech.esper.runtime.@internal.metrics.stmtmetrics;
 
 namespace com.espertech.esper.runtime.@internal.namedwindow
 {

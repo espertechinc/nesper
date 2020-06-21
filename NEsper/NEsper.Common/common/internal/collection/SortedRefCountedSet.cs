@@ -9,6 +9,8 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.compat;
+
 namespace com.espertech.esper.common.@internal.collection
 {
     /// <summary>
@@ -17,41 +19,47 @@ namespace com.espertech.esper.common.@internal.collection
     ///     key is added, the reference counter increases. Each time a key is removed, the
     ///     reference counter decreases.
     /// </summary>
-    public class SortedRefCountedSet<K>
+    public class SortedRefCountedSet<TK>
     {
+        private readonly SortedList<TK, AtomicLong> _refSet;
+        private long _countPoints;
+
         /// <summary>
         ///     Constructor.
         /// </summary>
         public SortedRefCountedSet()
         {
-            CountPoints = 0;
-            RefSet = new SortedList<K, MutableInt>();
+            _countPoints = 0;
+            _refSet = new SortedList<TK, AtomicLong>();
         }
 
         /// <summary>
         ///     Gets the number of data points.
         /// </summary>
-        public long CountPoints { get; set; }
+        public long CountPoints {
+            get => _countPoints;
+            set => _countPoints = value;
+        }
 
         /// <summary>
         ///     Gets the ref set.
         /// </summary>
         /// <value>The ref set.</value>
-        public SortedList<K, MutableInt> RefSet { get; }
+        public SortedList<TK, AtomicLong> RefSet => _refSet;
 
         /// <summary> Returns the largest key value, or null if the collection is empty.</summary>
         /// <returns>
         ///     largest key value, null if none
         /// </returns>
 
-        public virtual K MaxValue => RefSet.Count != 0 ? RefSet.Keys[RefSet.Count - 1] : default(K);
+        public virtual TK MaxValue => _refSet.Count != 0 ? _refSet.Keys[RefSet.Count - 1] : default(TK);
 
         /// <summary> Returns the smallest key value, or null if the collection is empty.</summary>
         /// <returns>
         ///     smallest key value, default(K) if none
         /// </returns>
 
-        public virtual K MinValue => RefSet.Count != 0 ? RefSet.Keys[0] : default(K);
+        public virtual TK MinValue => _refSet.Count != 0 ? _refSet.Keys[0] : default(TK);
 
         /// <summary>
         ///     Add a key to the set. Add with a reference count of one if the key didn't exist in the set.
@@ -60,15 +68,15 @@ namespace com.espertech.esper.common.@internal.collection
         /// <param name="key">
         ///     to add
         /// </param>
-        public virtual void Add(K key)
+        public virtual void Add(TK key)
         {
-            MutableInt value;
-            if (!RefSet.TryGetValue(key, out value)) {
-                RefSet.Add(key, new MutableInt());
-                CountPoints++;
+            AtomicLong value;
+            if (!_refSet.TryGetValue(key, out value)) {
+                _refSet[key] = new AtomicLong(1);
+                _countPoints++;
             }
             else {
-                value.Value++;
+                value.IncrementAndGet();
             }
         }
 
@@ -78,12 +86,12 @@ namespace com.espertech.esper.common.@internal.collection
         /// <param name="key">The key.</param>
         /// <param name="numReferences">The num references.</param>
         public void Add(
-            K key,
+            TK key,
             int numReferences)
         {
-            MutableInt value;
-            if (!RefSet.TryGetValue(key, out value)) {
-                RefSet[key] = new MutableInt(numReferences);
+            AtomicLong value;
+            if (!_refSet.TryGetValue(key, out value)) {
+                _refSet[key] = new AtomicLong(numReferences);
                 return;
             }
 
@@ -95,8 +103,8 @@ namespace com.espertech.esper.common.@internal.collection
         /// </summary>
         public void Clear()
         {
-            RefSet.Clear();
-            CountPoints = 0;
+            _refSet.Clear();
+            _countPoints = 0;
         }
 
         /// <summary>
@@ -107,48 +115,21 @@ namespace com.espertech.esper.common.@internal.collection
         ///     to add
         /// </param>
         /// <throws>  IllegalStateException is a key is removed that wasn't added to the map </throws>
-        public virtual void Remove(K key)
+        public virtual void Remove(TK key)
         {
-            MutableInt value;
+            AtomicLong value;
 
-            if (!RefSet.TryGetValue(key, out value)) {
+            if (!_refSet.TryGetValue(key, out value)) {
                 // This could happen if a sort operation gets a remove stream that duplicates events.
                 // Generally points to an invalid combination of data windows.
                 // throw new IllegalStateException("Attempting to remove key from map that wasn't added");
                 return;
             }
 
-            --CountPoints;
-            if (value.Value == 1) {
-                RefSet.Remove(key);
-                return;
-            }
-
-            value.Value--;
-            //refSet[key] = value;
-        }
-
-        public sealed class MutableInt : IComparable
-        {
-            public int Value = 1;
-
-            public MutableInt()
-            {
-            }
-
-            public MutableInt(int initialValue)
-            {
-                Value = initialValue;
-            }
-
-            public int CompareTo(object obj)
-            {
-                var other = obj as MutableInt;
-                if (other == null) {
-                    throw new ArgumentException("invalid argument to comparison");
-                }
-
-                return Value.CompareTo(other.Value);
+            --_countPoints;
+            
+            if (value.DecrementAndGet() == 0) {
+                _refSet.Remove(key);
             }
         }
     }

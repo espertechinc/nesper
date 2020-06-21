@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -26,8 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
 {
     public abstract class AggregatorSumBase : AggregatorMethodWDistinctWFilterWValueBase
     {
-        internal readonly CodegenExpressionRef cnt;
-        internal readonly CodegenExpressionRef sum;
+        internal readonly CodegenExpressionMember cnt;
+        internal readonly CodegenExpressionMember sum;
         internal readonly Type sumType;
 
         public AggregatorSumBase(
@@ -37,18 +38,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             CodegenMemberCol membersColumnized,
             CodegenClassScope classScope,
             Type optionalDistinctValueType,
+            DataInputOutputSerdeForge optionalDistinctSerde,
             bool hasFilter,
             ExprNode optionalFilter,
             Type sumType)
-            : base(
-                factory,
-                col,
-                rowCtor,
-                membersColumnized,
-                classScope,
-                optionalDistinctValueType,
-                hasFilter,
-                optionalFilter)
+            : base(factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter)
         {
             cnt = membersColumnized.AddMember(col, typeof(long), "cnt");
             sum = membersColumnized.AddMember(col, sumType.GetPrimitiveType(), "sum");

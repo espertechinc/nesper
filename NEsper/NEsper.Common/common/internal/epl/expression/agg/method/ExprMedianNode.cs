@@ -37,7 +37,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             }
 
             var childType = ValidateNumericChildAllowFilter(HasFilter);
-            return new AggregationFactoryMethodMedian(this, childType);
+            var distinctSerde = isDistinct ? validationContext.SerdeResolver.SerdeForAggregationDistinct(childType, validationContext.StatementRawInfo) : null;
+            return new AggregationForgeFactoryMedian(this, childType, distinctSerde);
         }
 
         public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)

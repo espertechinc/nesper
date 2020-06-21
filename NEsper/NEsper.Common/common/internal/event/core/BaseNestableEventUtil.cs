@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.service;
+using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.@event.property;
 using com.espertech.esper.common.@internal.@event.util;
@@ -49,7 +50,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                 throw new ArgumentException("Invalid application type " + metadata.ApplicationType);
             }
 
-            IDictionary<string, object> verified = ResolvePropertyTypes(propertyTypes, eventTypeCompileTimeResolver);
+            IDictionary<string, object> verified = ResolvePropertyTypes(
+                propertyTypes, eventTypeCompileTimeResolver);
             return new MapEventType(
                 metadata,
                 verified,
@@ -130,11 +132,10 @@ namespace com.espertech.esper.common.@internal.@event.core
                     continue;
                 }
 
-                if (!(propertyType is string)) {
+                if (!(propertyType is string propertyTypeName)) {
                     throw MakeUnexpectedTypeException(propertyType.ToString(), propertyName);
                 }
 
-                var propertyTypeName = propertyType.ToString();
                 var isArray = EventTypeUtility.IsPropertyArray(propertyTypeName);
                 if (isArray) {
                     propertyTypeName = EventTypeUtility.GetPropertyRemoveArray(propertyTypeName);
@@ -178,7 +179,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 propertyTypeName +
                 "' for property '" +
                 propertyName +
-                "', expected Type or Dictionary or the name of a previously-declared Map or ObjectArray type");
+                "', expected Type or Dictionary or the name of a previously-declared event type");
         }
 
         public static IDictionary<string, object> CheckedCastUnderlyingMap(EventBean theEvent)
@@ -420,8 +421,6 @@ namespace com.espertech.esper.common.@internal.@event.core
             CodegenExpression @ref,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            EventType fragmentType,
             Type generator)
         {
             var method = CodegenLegoPropertyBeanOrUnd.From(
@@ -763,7 +762,44 @@ namespace com.espertech.esper.common.@internal.@event.core
                         codegenMethodScope,
                         codegenClassScope));
         }
-
+        
+        public static CodegenMethod GetBeanArrayValueExistsCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope,
+            BeanEventPropertyGetter nestedGetter,
+            int index)
+        {
+            // TBD - array comparisons that need to be fixed
+            
+            return codegenMethodScope
+                .MakeChild(typeof(bool), typeof(BaseNestableEventUtil), codegenClassScope)
+                .AddParam(typeof(object), "value")
+                .Block
+                .IfRefNullReturnFalse("value")
+                .IfConditionReturnConst(
+                    Not(ExprDotMethodChain(Ref("value")).Add("GetType").Get("IsArray")),
+                    false)
+                .DeclareVar<Array>("asArray", Cast(typeof(Array), Ref("value")))
+                .IfConditionReturnConst(
+                    Relational(
+                        ExprDotName(Ref("asArray"), "Length"),
+                        LE,
+                        Constant(index)),
+                    false)
+                .DeclareVar<object>(
+                    "arrayItem",
+                    ExprDotMethod(
+                        Ref("asArray"),
+                        "GetValue",
+                        Constant(index)))
+                .IfRefNullReturnFalse("arrayItem")
+                .MethodReturn(
+                    nestedGetter.UnderlyingExistsCodegen(
+                        Cast(nestedGetter.TargetType, Ref("arrayItem")),
+                        codegenMethodScope,
+                        codegenClassScope));
+        }
+        
         public static object GetArrayPropertyValue(
             EventBean[] wrapper,
             int index,
@@ -876,9 +912,15 @@ namespace com.espertech.esper.common.@internal.@event.core
             EventBean[] wrapper)
         {
             if (wrapper != null) {
-                var array = Array.CreateInstance(underlyingType, wrapper.Length);
+                var array = Arrays.CreateInstanceChecked(underlyingType, wrapper.Length);
                 for (var i = 0; i < wrapper.Length; i++) {
-                    array.SetValue(wrapper[i].Underlying, i);
+                    try {
+                        array.SetValue(wrapper[i].Underlying, i);
+                    }
+                    catch (InvalidCastException e) {
+                        Console.WriteLine("Exception: {0}", e);
+                        throw;
+                    }
                 }
 
                 return array;
@@ -947,49 +989,25 @@ namespace com.espertech.esper.common.@internal.@event.core
                 var boxedThis = ((Type) setOneType).GetBoxedType();
                 if (!boxedOther.Equals(boxedThis)) {
                     if (!TypeHelper.IsSubclassOrImplementsInterface(boxedOther, boxedThis)) {
-                        return new ExprValidationException(
-                            "Type by name '" +
-                            otherName +
-                            "' in property '" +
-                            propName +
-                            "' expected " +
-                            boxedThis.CleanName() +
-                            " but receives " +
-                            boxedOther.CleanName());
+                        return MakeExpectedReceivedException(otherName, propName, boxedThis, boxedOther);
                     }
                 }
-            }
-            else if (setTwoType is BeanEventType && setOneType is Type) {
-                var boxedOther = ((BeanEventType) setTwoType).UnderlyingType.GetBoxedType();
+            } else if ((setTwoType is EventType eventTypeTwo && IsNativeUnderlyingType(eventTypeTwo)) && 
+                       (setOneType is Type)) {
+                var boxedOther = eventTypeTwo.UnderlyingType.GetBoxedType();
                 var boxedThis = ((Type) setOneType).GetBoxedType();
                 if (!boxedOther.Equals(boxedThis)) {
-                    return new ExprValidationException(
-                        "Type by name '" +
-                        otherName +
-                        "' in property '" +
-                        propName +
-                        "' expected " +
-                        boxedThis.CleanName() +
-                        " but receives " +
-                        boxedOther.CleanName());
+                    return MakeExpectedReceivedException(otherName, propName, boxedThis, boxedOther);
                 }
             }
-            else if (setTwoType is EventType[] &&
-                     ((EventType[]) setTwoType)[0] is BeanEventType &&
-                     setOneType is Type &&
-                     ((Type) setOneType).IsArray) {
-                var boxedOther = ((EventType[]) setTwoType)[0].UnderlyingType.GetBoxedType();
-                var boxedThis = ((Type) setOneType).GetElementType().GetBoxedType();
+            else if (setTwoType is EventType[] eventTypeTwoArray &&
+                     IsNativeUnderlyingType(eventTypeTwoArray[0]) &&
+                     setOneType is Type setOneTypeType && 
+                     setOneTypeType.IsArray) {
+                var boxedOther = eventTypeTwoArray[0].UnderlyingType.GetBoxedType();
+                var boxedThis = setOneTypeType.GetElementType().GetBoxedType();
                 if (!boxedOther.Equals(boxedThis)) {
-                    return new ExprValidationException(
-                        "Type by name '" +
-                        otherName +
-                        "' in property '" +
-                        propName +
-                        "' expected " +
-                        boxedThis.CleanName() +
-                        " but receives " +
-                        boxedOther.CleanName());
+                    return MakeExpectedReceivedException(otherName, propName, boxedThis, boxedOther);
                 }
             }
             else if (setTwoType is Map && setOneType is Map) {
@@ -1067,6 +1085,23 @@ namespace com.espertech.esper.common.@internal.@event.core
             return null;
         }
 
+        private static ExprValidationException MakeExpectedReceivedException(
+            String otherName,
+            String propName,
+            Type boxedThis,
+            Type boxedOther)
+        {
+            return new ExprValidationException(
+                "Type by name '" +
+                otherName +
+                "' in property '" +
+                propName +
+                "' expected " +
+                boxedThis.CleanName() +
+                " but receives " +
+                boxedOther.CleanName());
+        }
+
         private static ExprValidationException GetMismatchMessageEventType(
             string otherName,
             string propName,
@@ -1120,6 +1155,16 @@ namespace com.espertech.esper.common.@internal.@event.core
             }
 
             return type.GetType().Name;
+        }
+        
+        private static bool IsNativeUnderlyingType(EventType eventType) {
+            if (eventType is BeanEventType) {
+                return true;
+            }
+            if (eventType is JsonEventType jsonEventType) {
+                return (jsonEventType.Detail.OptionalUnderlyingProvided != null);
+            }
+            return false;
         }
 
         public class MapIndexedPropPair

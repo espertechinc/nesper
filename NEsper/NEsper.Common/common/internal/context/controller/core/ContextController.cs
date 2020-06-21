@@ -12,6 +12,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.mgr;
+using com.espertech.esper.common.@internal.context.util;
 
 namespace com.espertech.esper.common.@internal.context.controller.core
 {
@@ -36,6 +37,11 @@ namespace com.espertech.esper.common.@internal.context.controller.core
             ContextPartitionSelector selector,
             ContextPartitionVisitor visitor,
             ContextPartitionSelector[] selectorPerLevel);
+
+        void Transfer(
+            IntSeqKey path,
+            bool transferChildContexts,
+            AgentInstanceTransferServices xfer);
 
         void Destroy();
     }

@@ -30,10 +30,38 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraInvalidAggMatchSingleFunc());
-            execs.Add(new InfraInvalidAggMatchMultiFunc());
-            execs.Add(new InfraInvalidAnnotations());
+            WithInvalidAggMatchSingleFunc(execs);
+            WithInvalidAggMatchMultiFunc(execs);
+            WithInvalidAnnotations(execs);
+            WithInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalidAnnotations(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraInvalidAnnotations());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalidAggMatchMultiFunc(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraInvalidAggMatchMultiFunc());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalidAggMatchSingleFunc(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraInvalidAggMatchSingleFunc());
             return execs;
         }
 
@@ -60,13 +88,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             }
             catch (EPCompileException ex) {
                 if (messageOrNull != null && messageOrNull.Length > 10) {
-                    if (!ex.Message.StartsWith(messageOrNull)) {
-                        log.Error("Unexpected exception", ex);
-                        Assert.Fail("\nExpected:" + messageOrNull + "\nReceived:" + ex.Message);
-                    }
+                    StringAssert.StartsWith(messageOrNull, ex.Message);
                 }
                 else {
-                    Assert.IsTrue(ex.Message.Contains("Incompatible aggregation function for table"));
+                    StringAssert.Contains("Incompatible aggregation function for table", ex.Message);
                 }
             }
 
@@ -89,6 +114,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "sum(double)",
                     false,
                     "sum(IntPrimitive)",
+                    "Error during compilation: " +
                     "Incompatible aggregation function for table 'var1' column 'value', expecting 'sum(double)' and received 'sum(IntPrimitive)': The required parameter type is System.Double and provided is System.Nullable<System.Int32> [");
                 TryInvalidAggMatch(
                     env,
@@ -96,6 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "sum(double)",
                     false,
                     "count(*)",
+                    "Error during compilation: " +
                     "Incompatible aggregation function for table 'var1' column 'value', expecting 'sum(double)' and received 'count(*)': The table declares 'sum(double)' and provided is 'count(*)'");
                 TryInvalidAggMatch(
                     env,
@@ -103,14 +130,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "sum(double)",
                     false,
                     "sum(DoublePrimitive, TheString='a')",
+                    "Error during compilation: " +
                     "Incompatible aggregation function for table 'var1' column 'value', expecting 'sum(double)' and received 'sum(DoublePrimitive,TheString=\"a\")': The aggregation declares no filter expression and provided is a filter expression [");
-                
+
                 TryInvalidAggMatch(
                     env,
                     "var1",
                     "sum(double, boolean)",
                     false,
                     "sum(DoublePrimitive)",
+                    "Error during compilation: " +
                     "Incompatible aggregation function for table 'var1' column 'value', expecting 'sum(double,boolean)' and received 'sum(DoublePrimitive)': The aggregation declares a filter expression and provided is no filter expression [");
 
                 // count
@@ -120,6 +149,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "count(*)",
                     false,
                     "sum(IntPrimitive)",
+                    "Error during compilation: " +
                     "Incompatible aggregation function for table 'var1' column 'value', expecting 'count(*)' and received 'sum(IntPrimitive)': The table declares 'count(*)' and provided is 'sum(IntPrimitive)'");
                 TryInvalidAggMatch(
                     env,
@@ -127,7 +157,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "count(*)",
                     false,
                     "count(distinct IntPrimitive)",
+                    "Error during compilation: " +
                     "Incompatible aggregation function for table 'var1' column 'value', expecting 'count(*)' and received 'count(distinct IntPrimitive)': The aggregation declares no distinct and provided is a distinct [");
+                
                 TryInvalidAggMatch(env, "var1", "count(*)", false, "count(distinct IntPrimitive, BoolPrimitive)", null);
                 TryInvalidAggMatch(env, "var1", "count(distinct int)", false, "count(distinct DoublePrimitive)", null);
                 TryInvalidAggMatch(
@@ -136,6 +168,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "count(int)",
                     false,
                     "count(*)",
+                    "Error during compilation: " +
                     "Incompatible aggregation function for table 'var1' column 'value', expecting 'count(int)' and received 'count(*)': The aggregation declares ignore nulls and provided is no ignore nulls [");
 
                 // avg
@@ -151,6 +184,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "max(int)",
                     false,
                     "min(IntPrimitive)",
+                    "Error during compilation: " +
                     "Incompatible aggregation function for table 'var1' column 'value', expecting 'max(int)' and received 'min(IntPrimitive)': The aggregation declares max and provided is min [");
                 TryInvalidAggMatch(env, "var1", "min(int)", false, "avg(IntPrimitive)", null);
                 TryInvalidAggMatch(env, "var1", "min(int)", false, "min(DoublePrimitive)", null);
@@ -160,6 +194,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "min(int)",
                     false,
                     "fmin(IntPrimitive, TheString='a')",
+                    "Error during compilation: " +
                     "Incompatible aggregation function for table 'var1' column 'value', expecting 'min(int)' and received 'min(IntPrimitive,TheString=\"a\")': The aggregation declares no filter expression and provided is a filter expression [");
 
                 // stddev
@@ -201,6 +236,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "nth(int, 10)",
                     false,
                     "nth(IntPrimitive, 11)",
+                    "Error during compilation: " +
                     "Incompatible aggregation function for table 'var1' column 'value', expecting 'nth(int,10)' and received 'nth(IntPrimitive,11)': The size is 10 and provided is 11 [");
                 TryInvalidAggMatch(env, "var1", "nth(int, 10)", false, "nth(DoublePrimitive, 10)", null);
 
@@ -212,6 +248,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "rate(20)",
                     false,
                     "rate(11)",
+                    "Error during compilation: " +
                     "Incompatible aggregation function for table 'var1' column 'value', expecting 'rate(20)' and received 'rate(11)': The interval-time is 20000 and provided is 11000 [");
 
                 // leaving
@@ -224,6 +261,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "myaggsingle()",
                     false,
                     "leaving()",
+                    "Error during compilation: " +
                     "Incompatible aggregation function for table 'var1' column 'value', expecting 'myaggsingle(*)' and received 'leaving(*)': The table declares 'myaggsingle(*)' and provided is 'leaving(*)'");
             }
         }
@@ -241,7 +279,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "window(*) @type(SupportBean)",
                     true,
                     "avg(IntPrimitive)",
-                    "Incompatible aggregation function for table 'var1' column 'value', expecting 'window(*)' and received 'avg(IntPrimitive)': The table declares 'window(*)' and provided is 'avg(IntPrimitive)'");
+                    "Error during compilation: " +
+                    "Incompatible aggregation function for table 'var1' column 'value', expecting 'window(*)' and received 'avg(IntPrimitive)': " +
+                    "The table declares 'window(*)' and provided is 'avg(IntPrimitive)'");
                 // window vs sorted
                 TryInvalidAggMatch(
                     env,
@@ -249,7 +289,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "window(*) @type(SupportBean)",
                     true,
                     "sorted(IntPrimitive)",
-                    "Failed to validate select-clause expression 'sorted(IntPrimitive)': When specifying into-table a sort expression cannot be provided [");
+                    "Error during compilation: " +
+                    "Failed to validate select-clause expression 'sorted(IntPrimitive)': " +
+                    "When specifying into-table a sort expression cannot be provided [");
                 // wrong type
                 TryInvalidAggMatch(
                     env,
@@ -257,7 +299,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "window(*) @type(SupportBean_S0)",
                     true,
                     "window(*)",
-                    "Incompatible aggregation function for table 'var1' column 'value', expecting 'window(*)' and received 'window(*)': The required event type is 'SupportBean_S0' and provided is 'SupportBean' [");
+                    "Error during compilation: " +
+                    "Incompatible aggregation function for table 'var1' column 'value', expecting 'window(*)' and received 'window(*)': " +
+                    "The required event type is 'SupportBean_S0' and provided is 'SupportBean' [");
 
                 // sorted
                 //
@@ -267,14 +311,18 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "sorted(IntPrimitive) @type(SupportBean)",
                     true,
                     "window(*)",
-                    "Incompatible aggregation function for table 'var1' column 'value', expecting 'sorted(IntPrimitive)' and received 'window(*)': The table declares 'sorted(IntPrimitive)' and provided is 'window(*)'");
+                    "Error during compilation: " +
+                    "Incompatible aggregation function for table 'var1' column 'value', expecting 'sorted(IntPrimitive)' and received 'window(*)': " +
+                    "The table declares 'sorted(IntPrimitive)' and provided is 'window(*)'");
                 TryInvalidAggMatch(
                     env,
                     "var1",
                     "sorted(Id) @type(SupportBean_S0)",
                     true,
                     "sorted(IntPrimitive)",
-                    "Failed to validate select-clause expression 'sorted(IntPrimitive)': When specifying into-table a sort expression cannot be provided [");
+                    "Error during compilation: " +
+                    "Failed to validate select-clause expression 'sorted(IntPrimitive)': " +
+                    "When specifying into-table a sort expression cannot be provided [");
 
                 // plug-in
                 //
@@ -284,7 +332,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "se1() @type(SupportBean)",
                     true,
                     "window(*)",
-                    "Incompatible aggregation function for table 'var1' column 'value', expecting 'se1(*)' and received 'window(*)': The table declares 'se1(*)' and provided is 'window(*)'");
+                    "Error during compilation: " +
+                    "Incompatible aggregation function for table 'var1' column 'value', expecting 'se1(*)' and received 'window(*)': " +
+                    "The table declares 'se1(*)' and provided is 'window(*)'");
             }
         }
 
@@ -379,12 +429,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env,
                     path,
                     "create table aggvar_invalid as (mywindow last(*)@type(SupportBean))",
-                    "skip");
+                    "Failed to validate table-column expression 'last(*)': For tables columns, the last aggregation function requires the 'window(*)' declaration");
                 TryInvalidCompile(
                     env,
                     path,
                     "create table aggvar_invalid as (mywindow window(sb.*)@type(SupportBean)",
-                    "skip");
+                    "Incorrect syntax near end-of-input expecting a closing parenthesis ')' but found EOF at line 1 column 71");
                 TryInvalidCompile(
                     env,
                     path,
@@ -416,11 +466,6 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 TryInvalidCompile(
                     env,
                     path,
-                    "create table abc as (arr int[] primary key)",
-                    "Column 'arr' may not be tagged as primary key, an array-typed column cannot become a primary key column [");
-                TryInvalidCompile(
-                    env,
-                    path,
                     "create table abc as (arr SupportBean primary key)",
                     "Column 'arr' may not be tagged as primary key, received unexpected event type 'SupportBean' [");
                 TryInvalidCompile(
@@ -448,7 +493,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     path,
                     "into table xxx select count(*) as total from SupportBean group by IntPrimitive",
                     "Invalid into-table clause: Failed to find table by name 'xxx' [");
-                
+
                 // group-by key type and count of group-by expressions
                 TryInvalidCompile(
                     env,
@@ -511,7 +556,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env,
                     path,
                     "select aggvar_grouped_string.total from SupportBean",
-                    "Failed to validate select-clause expression 'aggvar_grouped_string.total': Failed to resolve property 'aggvar_grouped_string.total' to a stream or nested property in a stream [");
+                    "Failed to validate select-clause expression 'aggvar_grouped_string.total': Failed to resolve property 'aggvar_grouped_string.total' to a stream or nested property in a stream");
                 TryInvalidCompile(
                     env,
                     path,
@@ -527,8 +572,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 TryInvalidCompile(
                     env,
                     path,
-                    "select dummy['a'] from SupportBean",
-                    "Failed to validate select-clause expression 'dummy[\"a\"]': Failed to resolve table name 'dummy' to a table");
+                    "select dummy[IntPrimitive] from SupportBean",
+                    "Failed to validate select-clause expression 'dummy[IntPrimitive]': Failed to resolve 'dummy' to a property, single-row function, aggregation function, script, stream or class name");
+
                 TryInvalidCompile(
                     env,
                     path,
@@ -549,11 +595,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     path,
                     "context MyOtherContext select aggvarctx.total from SupportBean",
                     "Failed to validate select-clause expression 'aggvarctx.total': Table by name 'aggvarctx' has been declared for context 'MyContext' and can only be used within the same context [context MyOtherContext select aggvarctx.total from SupportBean]");
+
                 TryInvalidCompile(
                     env,
                     path,
                     "select aggvar_grouped_int[0].a.b from SupportBean",
-                    "Invalid table expression 'aggvar_grouped_int[0].a.b [select aggvar_grouped_int[0].a.b from SupportBean]");
+                    "Failed to validate select-clause expression 'aggvar_grouped_int[0].a.b': A column 'a' could not be found for table 'aggvar_grouped_int'");
 
                 // invalid use in non-contextual evaluation
                 TryInvalidCompile(
@@ -563,11 +610,6 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "Failed to validate data window declaration: Error in view 'time', Invalid parameter expression 0 for Time view: Failed to validate view parameter expression 'aggvar_ungrouped.total seconds': Invalid use of table access expression, expression 'aggvar_ungrouped' is not allowed here");
                 // indexed property expression but not an aggregtion-type variable
                 env.CompileDeploy("create objectarray schema MyEvent(abc int[])");
-                TryInvalidCompile(
-                    env,
-                    path,
-                    "select abc[5*5] from SupportBean",
-                    "Failed to validate select-clause expression 'abc[5*5]': Failed to resolve table name 'abc' to a table");
                 // view use
                 TryInvalidCompile(
                     env,
@@ -585,17 +627,18 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     path,
                     "select * from aggvar_grouped_string[books]",
                     "Contained-event expressions are not supported with tables");
+
                 // join invalid
                 TryInvalidCompile(
                     env,
                     path,
                     "select aggvar_grouped_int[1].total.countMinSketchFrequency(TheString) from SupportBean",
-                    "Failed to validate select-clause expression 'aggvar_grouped_int[1].total.countMi...(62 chars)': Invalid combination of aggregation state and aggregation accessor [");
+                    "Failed to validate select-clause expression 'aggvar_grouped_int[1].total.countMi...(62 chars)': Failed to resolve method 'countMinSketchFrequency': Could not find enumeration method, date-time method, instance method or property named 'countMinSketchFrequency' in class 'System.Nullable<System.Int64>' with matching parameter number and expected parameter type(s) 'System.String' ");
                 TryInvalidCompile(
                     env,
                     path,
                     "select total.countMinSketchFrequency(TheString) from aggvar_grouped_int, SupportBean unidirectional",
-                    "Failed to validate select-clause expression 'total.countMinSketchFrequency(TheString)': Failed to validate method-chain expression 'total.countMinSketchFrequency(TheString)': Invalid combination of aggregation state and aggregation accessor [");
+                    "Failed to validate select-clause expression 'total.countMinSketchFrequency(TheString)': Failed to resolve method 'countMinSketchFrequency': Could not find");
                 // cannot be marked undirectional
                 TryInvalidCompile(
                     env,
@@ -619,7 +662,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env,
                     path,
                     "select * from aggvar_ungrouped " +
-                    "match_recognize ( measures a.TheString as a pattern (A) define A as true)",
+                    "match_recognize ( measures a.theString as a pattern (A) define A as true)",
                     "Tables cannot be used with match-recognize [");
                 // cannot be used in update-istream
                 TryInvalidCompile(

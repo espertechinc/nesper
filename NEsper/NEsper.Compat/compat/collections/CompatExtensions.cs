@@ -16,7 +16,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-using com.espertech.esper.compat.attributes;
 using com.espertech.esper.compat.magic;
 
 namespace com.espertech.esper.compat.collections
@@ -530,43 +529,127 @@ namespace com.espertech.esper.compat.collections
         ///     Does a deep equality test on a set of lists.  Order is assumed to be the same.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="pthis">The pthis.</param>
-        /// <param name="pthat">The pthat.</param>
+        /// <param name="lvalue">Left value.</param>
+        /// <param name="rvalue">Right value.</param>
         /// <returns></returns>
-        public static bool DeepEquals<T>(
-            this IList<T> pthis,
-            IList<T> pthat)
+        public static bool DeepEqualsWithType<T>(
+            IList<T> lvalue,
+            IList<T> rvalue)
         {
-            if (pthis == null && pthat == null) {
+            if (lvalue == null && rvalue == null) {
                 return true;
             }
 
-            if (pthis == null) {
-                return pthat.Count == 0;
-            }
-
-            if (pthat == null) {
-                return pthis.Count == 0;
-            }
-
-            if (pthis.Count != pthat.Count) {
+            if (lvalue == null || rvalue == null) {
                 return false;
             }
 
-            var thisEnum = pthis.GetEnumerator();
-            var thatEnum = pthat.GetEnumerator();
+            if (lvalue.Count != rvalue.Count) {
+                return false;
+            }
+
+            var lenum = lvalue.GetEnumerator();
+            var renum = rvalue.GetEnumerator();
 
             while (true) {
-                var thisHasMore = thisEnum.MoveNext();
-                var thatHasMore = thatEnum.MoveNext();
-                if (!thisHasMore || !thatHasMore) {
-                    return !thisHasMore && !thatHasMore;
+                var lmore = lenum.MoveNext();
+                var rmore = renum.MoveNext();
+                if (!lmore || !rmore) {
+                    return !lmore && !rmore;
                 }
 
-                if (!Equals(thisEnum.Current, thatEnum.Current)) {
+                if (!DeepEquals(lenum .Current, renum.Current)) {
                     return false;
                 }
             }
+        }
+
+        public static bool DeepEquals(
+            IEnumerable lvalue,
+            IEnumerable rvalue)
+        {
+            if (lvalue == null && rvalue == null) {
+                return true;
+            }
+
+            var lenum = lvalue.GetEnumerator();
+            var renum = rvalue.GetEnumerator();
+
+            while (true) {
+                var lmove = lenum.MoveNext();
+                var rmove = renum.MoveNext();
+                if (lmove != rmove) {
+                    return false;
+                } else if (!lmove) {
+                    return true;
+                }
+                else {
+                    var lsvalue = lenum.Current;
+                    var rsvalue = renum.Current;
+                    if (!DeepEquals(lsvalue, rsvalue)) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        public static bool DeepEquals(
+            Array lvalue,
+            Array rvalue)
+        {
+            if (lvalue == null && rvalue == null) {
+                return true;
+            }
+
+            if (lvalue == null || rvalue == null) {
+                return false;
+            }
+
+            if (lvalue.Length != rvalue.Length) {
+                return false;
+            }
+
+            var length = lvalue.Length;
+            for (var ii = 0; ii < length; ii++) {
+                var lsvalue = lvalue.GetValue(ii);
+                var rsvalue = rvalue.GetValue(ii);
+                if (!DeepEquals(lsvalue, rsvalue)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public static bool DeepEquals(
+            object lvalue,
+            object rvalue)
+        {
+            if (lvalue == rvalue) {
+                return true;
+            } 
+            
+            if (lvalue == null || rvalue == null) {
+                return false;
+            }
+
+            if (lvalue.GetType() != rvalue.GetType()) {
+                return false;
+            }
+
+            if (lvalue is Array lvalueArray) {
+                return DeepEquals(lvalueArray, (Array) rvalue);
+            }
+
+            if (lvalue is string) {
+                return Equals(lvalue, rvalue);
+            }
+
+            if (lvalue is IEnumerable lvalueEnum) {
+                return DeepEquals(lvalueEnum, (IEnumerable) rvalue);
+            }
+            
+            return Equals(lvalue, rvalue);
         }
 
         /// <summary>
@@ -1220,7 +1303,7 @@ namespace com.espertech.esper.compat.collections
                 return result;
             }
 
-            throw new ArgumentException("invalid value");
+            throw new ArgumentException($"invalid value of type \"{value.GetType().CleanName()}\"");
         }
 
         public static IDictionary<object, object> UnwrapDictionary(
@@ -1461,12 +1544,51 @@ namespace com.espertech.esper.compat.collections
             }
         }
 
+        public static int DeepHash(object value)
+        {
+            if (value == null) {
+                return 0;
+            }
+
+            if (value is Array array) {
+                var result = 0;
+                var length = array.Length;
+                for (var ii = 0; ii < length; ii++) {
+                    var subValue = array.GetValue(ii);
+                    if (subValue != null) {
+                        result *= 397;
+                        result ^= DeepHash(subValue);
+                    }
+                }
+
+                return result;
+            }
+
+            if (value is string stringValue) {
+                return stringValue.GetHashCode();
+            }
+            
+            if (value is IEnumerable enumerable) {
+                var result = 0;
+                foreach (var subValue in enumerable) {
+                    if (subValue != null) {
+                        result *= 397;
+                        result ^= DeepHash(subValue);
+                    }
+                }
+
+                return result;
+            }
+
+            return value.GetHashCode();
+        }
+
         public static int Hash(IEnumerable @values)
         {
             var result = 0;
             if (values != null) {
                 foreach (var item in values) {
-                    int itemHash = item?.GetHashCode() ?? 0;
+                    var itemHash = item?.GetHashCode() ?? 0;
                     result *= 397;
                     result ^= itemHash;
                 }
@@ -1479,10 +1601,10 @@ namespace com.espertech.esper.compat.collections
         {
             var result = 0;
             if (objects != null) {
-                for (int ii = 0; ii < objects.Length; ii++) {
+                for (var ii = 0; ii < objects.Length; ii++) {
                     var item = objects[ii];
                     if (item != null) {
-                        int itemHash = item.GetHashCode();
+                        var itemHash = item.GetHashCode();
                         result *= 397;
                         result ^= itemHash;
                     }
@@ -1515,7 +1637,9 @@ namespace com.espertech.esper.compat.collections
             stringBuilder.Append(", ");
             stringBuilder.AppendFormat(format, formatArgs);
 
-            Console.WriteLine(stringBuilder.ToString());
+            var stringResult = stringBuilder.ToString();
+
+            Console.WriteLine(stringResult);
         }
     }
 }

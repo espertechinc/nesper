@@ -24,9 +24,8 @@ namespace com.espertech.esper.regressionlib.support.bean
 
         public string Property { get; }
 
-        public string MyMethod()
-        {
-            return "abc";
-        }
+        public string GetProperty() => Property;
+        
+        public string MyMethod() => "abc";
     }
 } // end of namespace

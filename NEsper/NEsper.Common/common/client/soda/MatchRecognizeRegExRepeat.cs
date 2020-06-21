@@ -35,9 +35,9 @@ namespace com.espertech.esper.common.client.soda
             Expression high,
             Expression single)
         {
-            this.Low = low;
-            this.High = high;
-            this.Single = single;
+            Low = low;
+            High = high;
+            Single = single;
         }
 
         /// <summary>
@@ -77,16 +77,10 @@ namespace com.espertech.esper.common.client.soda
             }
             else
             {
-                if (Low != null)
-                {
-                    Low.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-                }
+                Low?.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
 
                 writer.Write(",");
-                if (High != null)
-                {
-                    High.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-                }
+                High?.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
 
             writer.Write("}");

@@ -10,7 +10,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -24,11 +23,46 @@ namespace com.espertech.esper.regressionlib.suite.view
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ViewExternallyTimedWindowSceneOne());
-            execs.Add(new ViewExternallyTimedBatchSceneTwo());
-            execs.Add(new ViewExternallyTimedWinSceneShort());
-            execs.Add(new ViewExternallyTimedTimedMonthScoped());
+            WithWindowSceneOne(execs);
+            WithBatchSceneTwo(execs);
+            WithWinSceneShort(execs);
+            WithTimedMonthScoped(execs);
+            WithWindowPrev(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWindowPrev(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ViewExternallyTimedWindowPrev());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimedMonthScoped(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewExternallyTimedTimedMonthScoped());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWinSceneShort(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewExternallyTimedWinSceneShort());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBatchSceneTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewExternallyTimedBatchSceneTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWindowSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewExternallyTimedWindowSceneOne());
             return execs;
         }
 
@@ -72,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "Symbol" };
+                var fields = new[] {"Symbol"};
                 var text = "@Name('s0') select irstream * from  SupportMarketDataBean#ext_timed(Volume, 1 sec)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
@@ -159,7 +193,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0" };
+                var fields = new[] {"c0"};
                 var epl =
                     "@Name('s0') select irstream TheString as c0 from SupportBean#ext_timed(LongPrimitive, 10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -272,7 +306,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendExtTimeEvent(env, DateTimeParsingFunctions.ParseDefaultMSec("2002-03-01T09:00:00.000"), "E3");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "TheString" },
+                    new[] {"TheString"},
                     new object[] {"E1"});
 
                 env.UndeployAll();

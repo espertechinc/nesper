@@ -9,7 +9,6 @@
 using System.Collections;
 using System.Collections.Generic;
 
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.compat.collections

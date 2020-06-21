@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
@@ -19,7 +18,8 @@ using com.espertech.esper.regressionlib.suite.epl.contained;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.bookexample;
 using com.espertech.esper.regressionlib.support.wordexample;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.suite.core;
 
 using NEsper.Avro.Util.Support;
 
@@ -70,12 +70,27 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, EPLContainedEventNested.Executions());
         }
 
-        [Test, RunInApplicationDomain]
-        public void TestEPLContainedEventSplitExpr()
-        {
-            RegressionRunner.Run(session, EPLContainedEventSplitExpr.Executions());
-        }
+        /// <summary>
+        /// Auto-test(s): EPLContainedEventSplitExpr
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLContainedEventSplitExpr.Executions());
+        /// </code>
+        /// </summary>
 
+        public class TestEPLContainedEventSplitExpr : AbstractTestBase
+        {
+            public TestEPLContainedEventSplitExpr() : base(Configure) { }
+
+            [Test, RunInApplicationDomain]
+            public void WithSingleRowSplitAndType() => RegressionRunner.Run(_session, EPLContainedEventSplitExpr.WithSingleRowSplitAndType());
+
+            [Test, RunInApplicationDomain]
+            public void WithSplitExprReturnsEventBean() => RegressionRunner.Run(_session, EPLContainedEventSplitExpr.WithSplitExprReturnsEventBean());
+
+            [Test, RunInApplicationDomain]
+            public void WithScriptContextValue() => RegressionRunner.Run(_session, EPLContainedEventSplitExpr.WithScriptContextValue());
+        }
+        
         private static void Configure(Configuration configuration)
         {
             foreach (var clazz in new Type[] {
@@ -88,7 +103,8 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 typeof(SupportObjectArrayEvent),
                 typeof(SupportCollectionEvent),
                 typeof(SupportResponseEvent),
-                typeof(SupportAvroArrayEvent)
+                typeof(SupportAvroArrayEvent),
+                typeof(SupportJsonArrayEvent)
             }) {
                 configuration.Common.AddEventType(clazz);
             }
@@ -98,29 +114,36 @@ namespace com.espertech.esper.regressionrun.suite.epl
             var outerMapDef = Collections.SingletonDataMap("i", "MyInnerMap[]");
             configuration.Common.AddEventType("MyOuterMap", outerMapDef);
 
-            var funcs = new [] { "splitSentence","splitSentenceBean","splitWord" };
+            var funcs = new [] { "SplitSentence","SplitSentenceBean","SplitWord" };
             for (var i = 0; i < funcs.Length; i++) {
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     string[] methods;
                     if (rep.IsObjectArrayEvent()) {
                         methods = new string[] {
-                            "splitSentenceMethodReturnObjectArray",
-                            "splitSentenceBeanMethodReturnObjectArray",
-                            "splitWordMethodReturnObjectArray"
+                            "SplitSentenceMethodReturnObjectArray",
+                            "SplitSentenceBeanMethodReturnObjectArray",
+                            "SplitWordMethodReturnObjectArray"
                         };
                     }
                     else if (rep.IsMapEvent()) {
                         methods = new string[] {
-                            "splitSentenceMethodReturnMap",
-                            "splitSentenceBeanMethodReturnMap",
-                            "splitWordMethodReturnMap"
+                            "SplitSentenceMethodReturnMap",
+                            "SplitSentenceBeanMethodReturnMap",
+                            "SplitWordMethodReturnMap"
                         };
                     }
                     else if (rep.IsAvroEvent()) {
                         methods = new string[] {
-                            "splitSentenceMethodReturnAvro",
-                            "splitSentenceBeanMethodReturnAvro",
-                            "splitWordMethodReturnAvro"
+                            "SplitSentenceMethodReturnAvro",
+                            "SplitSentenceBeanMethodReturnAvro",
+                            "SplitWordMethodReturnAvro"
+                        };
+                    }
+                    else if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
+                        methods = new string[] {
+                            "SplitSentenceMethodReturnJson",
+                            "SplitSentenceBeanMethodReturnJson",
+                            "SplitWordMethodReturnJson"
                         };
                     }
                     else {

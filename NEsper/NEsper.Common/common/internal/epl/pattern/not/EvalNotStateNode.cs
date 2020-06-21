@@ -112,9 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.not
             agentInstanceContext.InstrumentationProvider.QPatternNotQuit(evalNotNode.factoryNode);
             agentInstanceContext.AuditProvider.PatternInstance(false, evalNotNode.factoryNode, agentInstanceContext);
 
-            if (childNode != null) {
-                childNode.Quit();
-            }
+            childNode?.Quit();
 
             agentInstanceContext.InstrumentationProvider.APatternNotQuit();
         }
@@ -122,9 +120,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.not
         public override void Accept(EvalStateNodeVisitor visitor)
         {
             visitor.VisitNot(evalNotNode.FactoryNode, this);
-            if (childNode != null) {
-                childNode.Accept(visitor);
-            }
+            childNode?.Accept(visitor);
         }
 
         public override string ToString()

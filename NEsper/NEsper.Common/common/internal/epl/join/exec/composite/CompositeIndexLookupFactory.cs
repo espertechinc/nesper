@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.join.exec.util;
 
 namespace com.espertech.esper.common.@internal.epl.join.exec.composite
@@ -17,13 +18,14 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
     {
         public static CompositeIndexLookup Make(
             object[] keyValues,
+            MultiKeyFromObjectArray multiKeyTransform,
             RangeIndexLookupValue[] rangeValues,
             Type[] rangeCoercion)
         {
             // construct chain
             IList<CompositeIndexLookup> queries = new List<CompositeIndexLookup>();
             if (keyValues != null && keyValues.Length > 0) {
-                queries.Add(new CompositeIndexLookupKeyed(keyValues));
+                queries.Add(new CompositeIndexLookupKeyed(keyValues, multiKeyTransform));
             }
 
             for (int i = 0; i < rangeValues.Length; i++) {

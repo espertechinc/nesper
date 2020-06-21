@@ -24,21 +24,23 @@ namespace com.espertech.esper.common.@internal.util
             Configuration configs,
             AssignedType assignedType)
         {
-            // assigned type has priority
-            if (assignedType == AssignedType.OBJECTARRAY) {
-                return EventUnderlyingType.OBJECTARRAY;
-            }
+            switch (assignedType) {
+                // assigned type has priority
+                case AssignedType.OBJECTARRAY:
+                    return EventUnderlyingType.OBJECTARRAY;
 
-            if (assignedType == AssignedType.MAP) {
-                return EventUnderlyingType.MAP;
-            }
+                case AssignedType.MAP:
+                    return EventUnderlyingType.MAP;
 
-            if (assignedType == AssignedType.AVRO) {
-                return EventUnderlyingType.AVRO;
+                case AssignedType.AVRO:
+                    return EventUnderlyingType.AVRO;
+
+                case AssignedType.JSON:
+                    return EventUnderlyingType.JSON;
             }
 
             if (assignedType == AssignedType.VARIANT ||
-                assignedType != AssignedType.NONE) {
+                     assignedType != AssignedType.NONE) {
                 throw new IllegalStateException("Not handled by event representation: " + assignedType);
             }
 
@@ -46,36 +48,24 @@ namespace com.espertech.esper.common.@internal.util
             var annotation = AnnotationUtil.FindAnnotation(annotations, typeof(EventRepresentationAttribute));
             if (annotation != null) {
                 var eventRepresentation = (EventRepresentationAttribute) annotation;
-                if (eventRepresentation.Value == EventUnderlyingType.AVRO) {
-                    return EventUnderlyingType.AVRO;
-                }
-
-                if (eventRepresentation.Value == EventUnderlyingType.OBJECTARRAY) {
-                    return EventUnderlyingType.OBJECTARRAY;
-                }
-
-                if (eventRepresentation.Value == EventUnderlyingType.MAP) {
-                    return EventUnderlyingType.MAP;
-                }
-
-                throw new IllegalStateException("Unrecognized enum " + eventRepresentation.Value);
+                return eventRepresentation.Value switch {
+                    EventUnderlyingType.AVRO => EventUnderlyingType.AVRO,
+                    EventUnderlyingType.JSON => EventUnderlyingType.JSON,
+                    EventUnderlyingType.OBJECTARRAY => EventUnderlyingType.OBJECTARRAY,
+                    EventUnderlyingType.MAP => EventUnderlyingType.MAP,
+                    _ => throw new IllegalStateException("Unrecognized enum " + eventRepresentation.Value)
+                };
             }
 
             // use runtime-wide default
             var configured = configs.Common.EventMeta.DefaultEventRepresentation;
-            if (configured == EventUnderlyingType.OBJECTARRAY) {
-                return EventUnderlyingType.OBJECTARRAY;
-            }
-
-            if (configured == EventUnderlyingType.MAP) {
-                return EventUnderlyingType.MAP;
-            }
-
-            if (configured == EventUnderlyingType.AVRO) {
-                return EventUnderlyingType.AVRO;
-            }
-
-            return EventUnderlyingType.MAP;
+            return configured switch {
+                EventUnderlyingType.OBJECTARRAY => EventUnderlyingType.OBJECTARRAY,
+                EventUnderlyingType.MAP => EventUnderlyingType.MAP,
+                EventUnderlyingType.AVRO => EventUnderlyingType.AVRO,
+                EventUnderlyingType.JSON => EventUnderlyingType.JSON,
+                _ => EventUnderlyingType.MAP
+            };
         }
     }
 } // end of namespace

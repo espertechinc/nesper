@@ -8,6 +8,7 @@
 
 using System.IO;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.propertyparser;
 
 namespace com.espertech.esper.common.@internal.@event.property
@@ -16,7 +17,11 @@ namespace com.espertech.esper.common.@internal.@event.property
     {
         public static Property ParseAndWalkLaxToSimple(string propertyName)
         {
-            return PropertyParserNoDep.ParseAndWalkLaxToSimple(propertyName, false);
+            try {
+                return PropertyParserNoDep.ParseAndWalkLaxToSimple(propertyName, false);
+            } catch (PropertyAccessException) {
+                return new SimpleProperty(propertyName);
+            }
         }
 
         public static string UnescapeBacktickForProperty(string unescapedPropertyName)

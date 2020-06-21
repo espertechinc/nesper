@@ -8,11 +8,8 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
-using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -28,15 +25,78 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLOtherSingleOM());
-            execs.Add(new EPLOtherSingle());
-            execs.Add(new EPLOtherSingleInsertInto());
-            execs.Add(new EPLOtherJoinInsertInto());
-            execs.Add(new EPLOtherJoinNoCommonProperties());
-            execs.Add(new EPLOtherJoinCommonProperties());
-            execs.Add(new EPLOtherCombinedProperties());
-            execs.Add(new EPLOtherWildcardMapEvent());
+            WithSingleOM(execs);
+            WithSingle(execs);
+            WithSingleInsertInto(execs);
+            WithJoinInsertInto(execs);
+            WithJoinNoCommonProperties(execs);
+            WithJoinCommonProperties(execs);
+            WithCombinedProperties(execs);
+            WithWildcardMapEvent(execs);
+            WithInvalidRepeatedProperties(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalidRepeatedProperties(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLOtherInvalidRepeatedProperties());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWildcardMapEvent(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherWildcardMapEvent());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCombinedProperties(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherCombinedProperties());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithJoinCommonProperties(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherJoinCommonProperties());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithJoinNoCommonProperties(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherJoinNoCommonProperties());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithJoinInsertInto(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherJoinInsertInto());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSingleInsertInto(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherSingleInsertInto());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSingle(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherSingle());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSingleOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherSingleOM());
             return execs;
         }
 
@@ -218,13 +278,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var eventNameOne = typeof(SupportBeanSimple).Name;
-                var eventNameTwo = typeof(SupportMarketDataBean).Name;
                 var path = new RegressionPath();
-
-                var text = "@Name('insert') insert into SomeJoinEvent select *, MyString||MyString as concat from " +
-                           eventNameOne + "#length(5) as eventOne, " +
-                           eventNameTwo + "#length(5) as eventTwo";
+                var text = "@Name('insert') insert into SomeJoinEvent select *, MyString||MyString as concat " +
+                           "from SupportBeanSimple#length(5) as eventOne, SupportMarketDataBean#length(5) as eventTwo";
                 env.CompileDeploy(text, path).AddListener("insert");
 
                 var textTwo = "@Name('s0') select * from SomeJoinEvent#length(5)";
@@ -244,8 +300,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var eventNameOne = typeof(SupportBeanSimple).Name;
                 var eventNameTwo = typeof(SupportMarketDataBean).Name;
                 var text = "@Name('s0') select *, MyString||MyString as concat from " +
-                           eventNameOne + "#length(5) as eventOne, " +
-                           eventNameTwo + "#length(5) as eventTwo";
+                           eventNameOne +
+                           "#length(5) as eventOne, " +
+                           eventNameTwo +
+                           "#length(5) as eventTwo";
                 env.CompileDeploy(text).AddListener("s0");
 
                 AssertNoCommonProperties(env);

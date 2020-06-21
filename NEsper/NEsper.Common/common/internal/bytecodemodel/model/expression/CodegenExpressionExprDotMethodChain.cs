@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
@@ -67,6 +68,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         {
             _chain.Add(new CodegenChainMethodElement(method, methodTypeParameters, @params));
             return this;
+        }
+
+        public void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            consumer.Invoke(_expression);
+            foreach (var element in _chain) {
+                element.TraverseExpressions(consumer);
+            }
         }
     }
 } // end of namespace

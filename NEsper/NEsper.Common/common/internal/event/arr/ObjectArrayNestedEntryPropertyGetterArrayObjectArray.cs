@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.@internal.@event.arr
     public class ObjectArrayNestedEntryPropertyGetterArrayObjectArray : ObjectArrayNestedEntryPropertyGetterBase
     {
         private readonly ObjectArrayEventPropertyGetter getter;
-
         private readonly int index;
 
         public ObjectArrayNestedEntryPropertyGetterArrayObjectArray(
@@ -42,8 +41,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 value,
                 index,
                 getter,
-                fragmentType,
-                eventBeanTypedEventFactory);
+                FragmentType,
+                EventBeanTypedEventFactory);
         }
 
         public override bool HandleNestedValueExists(object value)

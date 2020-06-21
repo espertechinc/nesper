@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="isDistinct">true for distinct</param>
         public FirstEverProjectionExpression(bool isDistinct)
         {
-            this.distinct = isDistinct;
+            distinct = isDistinct;
         }
 
         /// <summary>
@@ -44,8 +44,8 @@ namespace com.espertech.esper.common.client.soda
             Expression expression,
             bool isDistinct)
         {
-            this.distinct = isDistinct;
-            this.Children.Add(expression);
+            distinct = isDistinct;
+            Children.Add(expression);
         }
 
         public override ExpressionPrecedenceEnum Precedence
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.client.soda
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            ExpressionBase.RenderAggregation(writer, "firstever", distinct, this.Children);
+            RenderAggregation(writer, "firstever", distinct, Children);
         }
 
         /// <summary>

@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
     {
         public StatementAgentInstanceFactoryCreateDataflowResult(
             Viewable finalView,
-            AgentInstanceStopCallback stopCallback,
+            AgentInstanceMgmtCallback stopCallback,
             AgentInstanceContext agentInstanceContext,
             DataflowDesc dataflow)
             : base(
@@ -26,12 +26,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 stopCallback,
                 agentInstanceContext,
                 null,
-                Collections.GetEmptyMap<int, SubSelectFactoryResult>(),
+                EmptyDictionary<int, SubSelectFactoryResult>.Instance,
                 null,
                 null,
                 null,
                 null,
-                Collections.GetEmptyList<StatementAgentInstancePreload>())
+                EmptyList<StatementAgentInstancePreload>.Instance,
+                null)
         {
             Dataflow = dataflow;
         }

@@ -10,15 +10,13 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.common.@internal.statement.thread;
-using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.@event.avro
 {
     /// <summary>
     ///     Event sender for avro-backed events.
     ///     <para />
-    ///     Allows sending only event objects of type GenericData.Record, does not check contents. Any other event object
+    ///     Allows sending only event objects of type GenericRecord, does not check contents. Any other event object
     ///     generates an error.
     /// </summary>
     public class EventSenderAvro : EventSender
@@ -61,11 +59,6 @@ namespace com.espertech.esper.common.@internal.@event.avro
 
         public void RouteEvent(object theEvent)
         {
-            if (!theEvent.GetType().IsArray) {
-                throw new EPException(
-                    "Unexpected event object of type " + theEvent.GetType().CleanName() + ", expected Object[]");
-            }
-
             var eventBean = eventBeanTypedEventFactory.AdapterForTypedAvro(theEvent, eventType);
             runtimeEventSender.RouteEventBean(eventBean);
         }

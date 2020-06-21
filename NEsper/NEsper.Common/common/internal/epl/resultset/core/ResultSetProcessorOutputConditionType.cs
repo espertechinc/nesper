@@ -12,8 +12,6 @@ using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.core
 {

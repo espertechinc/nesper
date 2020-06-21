@@ -8,12 +8,10 @@
 
 using System;
 
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.epl.agg.groupby;
 using com.espertech.esper.common.@internal.epl.agg.groupbylocal;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
-using com.espertech.esper.common.@internal.serde;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.agg.core
 {
@@ -23,24 +21,25 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             AggregationServiceFactory nonHAFactory,
             AggregationRowFactory rowFactory,
             AggregationUseFlags useFlags,
-            DataInputOutputSerdeWCollation<AggregationRow> serde);
+            DataInputOutputSerde<AggregationRow> serde);
 
         AggregationServiceFactory GroupBy(
             AggregationServiceFactory nonHAFactory,
             AggregationRowFactory rowFactory,
             AggregationUseFlags useFlags,
-            DataInputOutputSerdeWCollation<AggregationRow> serde,
+            DataInputOutputSerde<AggregationRow> serde,
             Type[] groupByTypes,
             AggSvcGroupByReclaimAgedEvalFuncFactory reclaimMaxAge,
             AggSvcGroupByReclaimAgedEvalFuncFactory reclaimFreq,
-            TimeAbacus timeAbacus);
+            TimeAbacus timeAbacus,
+            DataInputOutputSerde groupKeySerde);
 
         AggregationServiceFactory GroupByRollup(
             AggregationServiceFactory nonHAFactory,
             AggregationGroupByRollupDesc groupByRollupDesc,
             AggregationRowFactory rowFactory,
             AggregationUseFlags useFlags,
-            DataInputOutputSerdeWCollation<AggregationRow> serde,
+            DataInputOutputSerde<AggregationRow> serde,
             Type[] groupByTypes);
 
         AggregationServiceFactory GroupLocalGroupBy(

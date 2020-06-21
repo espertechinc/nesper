@@ -48,6 +48,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             bool isNewData,
             ExprEvaluatorContext context);
 
+        AggregationRow GetAggregationRow(
+            int agentInstanceId,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext);
+
         AggregationService GetContextPartitionAggregationService(int agentInstanceId);
 
         /// <summary>

@@ -15,8 +15,6 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
@@ -99,12 +97,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             get => false;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             string appendStr = "";
             foreach (ExprNode child in ChildNodes) {
                 writer.Write(appendStr);
-                child.ToEPL(writer, Precedence);
+                child.ToEPL(writer, Precedence, flags);
                 appendStr = " and ";
             }
         }

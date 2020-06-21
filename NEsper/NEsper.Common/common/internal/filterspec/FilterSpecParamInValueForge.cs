@@ -15,5 +15,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         Type ReturnType { get; }
 
         bool IsConstant { get; }
+        
+#if INHERITED
+        void ValueToString(StringBuilder @out);
+#endif
     }
 } // end of namespace

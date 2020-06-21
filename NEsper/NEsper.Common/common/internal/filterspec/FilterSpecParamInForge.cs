@@ -9,19 +9,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.magic;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+using static com.espertech.esper.common.@internal.compile.stage2.FilterSpecCompiler; // NEWLINE
 
 namespace com.espertech.esper.common.@internal.filterspec
 {
@@ -30,7 +31,7 @@ namespace com.espertech.esper.common.@internal.filterspec
     ///     <para />
     ///     The 'in' checks for a list of values.
     /// </summary>
-    public sealed class FilterSpecParamInForge : FilterSpecParamForge
+    public sealed partial class FilterSpecParamInForge : FilterSpecParamForge
     {
         private readonly FilterSpecParamInAdder[] _adders;
         private readonly bool _hasCollMapOrArray;
@@ -142,7 +143,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return false;
             }
 
-            if (!_listOfValues.ToArray().DeepEquals(other._listOfValues.ToArray())) {
+            if (!CompatExtensions.DeepEqualsWithType(_listOfValues, other._listOfValues)) {
                 return false;
             }
 
@@ -167,26 +168,27 @@ namespace com.espertech.esper.common.@internal.filterspec
                     "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
                 .DeclareVar<FilterOperator>(
-                    "op",
+                    "filterOperator",
                     EnumValue(typeof(FilterOperator), filterOperator.GetName()));
 
             var getFilterValue = new CodegenExpressionLambda(method.Block)
                 .WithParams(FilterSpecParam.GET_FILTER_VALUE_FP);
             var param = NewInstance<ProxyFilterSpecParam>(
                 Ref("lookupable"),
-                Ref("op"),
+                Ref("filterOperator"),
                 getFilterValue);
 
             //var param = NewAnonymousClass(
             //    method.Block,
             //    typeof(FilterSpecParam),
-            //    +++Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
+            //    +++Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("filterOperator")));
             //var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
             //    .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
             //param.AddMethod("GetFilterValue", getFilterValue);
 
+            CodegenExpression filterForValue;
             if (_inListConstantsOnly != null) {
-                getFilterValue.Block.BlockReturn(NewInstance<HashableMultiKey>(Constant(_inListConstantsOnly)));
+                filterForValue = NewInstance<HashableMultiKey>(Constant(_inListConstantsOnly));
             }
             else if (!_hasCollMapOrArray) {
                 getFilterValue.Block.DeclareVar<object[]>(
@@ -200,7 +202,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                         forge.MakeCodegen(classScope, method));
                 }
 
-                getFilterValue.Block.BlockReturn(NewInstance<HashableMultiKey>(Ref("values")));
+                filterForValue = NewInstance<HashableMultiKey>(Ref("values"));
             }
             else {
                 getFilterValue.Block.DeclareVar<ArrayDeque<object>>(
@@ -217,9 +219,12 @@ namespace com.espertech.esper.common.@internal.filterspec
                         .BlockEnd();
                 }
 
-                getFilterValue.Block.BlockReturn(
-                    NewInstance<HashableMultiKey>(ExprDotMethod(Ref("values"), "ToArray")));
+                filterForValue = NewInstance<HashableMultiKey>(ExprDotMethod(Ref("values"), "ToArray"));
             }
+
+            getFilterValue.Block
+                .DeclareVar<object>("val", filterForValue)
+                .BlockReturn(FilterValueSetParamImpl.CodegenNew(Ref("val")));
 
             method.Block.MethodReturn(param);
             return method;
@@ -253,73 +258,36 @@ namespace com.espertech.esper.common.@internal.filterspec
             return constants.ToArray();
         }
 
-        public class InValueAdderArray : FilterSpecParamInAdder
-        {
-            public static readonly InValueAdderArray INSTANCE = new InValueAdderArray();
-
-            private InValueAdderArray()
-            {
-            }
-
-            public void Add(
-                ICollection<object> constants,
-                object value)
-            {
-                var array = (Array) value;
-                var len = array.Length;
-                for (var i = 0; i < len; i++) {
-                    constants.Add(array.GetValue(i));
+        public override void ValueExprToString(StringBuilder @out, int indent) {
+            if (_inListConstantsOnly != null) {
+                @out.Append("constant values, ")
+                    .Append(_inListConstantsOnly.Length)
+                    .Append(" entries")
+                    .Append(NEWLINE);
+                for (int i = 0; i < _inListConstantsOnly.Length; i++) {
+                    @out.Append(Indent.CreateIndent(indent))
+                        .Append("value #")
+                        .Append(i)
+                        .Append(": ");
+                    FilterSpecParamConstantForge.ValueExprToString(@out, _inListConstantsOnly[i]);
+                    @out.Append(NEWLINE);
                 }
             }
-        }
 
-        public class InValueAdderMap : FilterSpecParamInAdder
-        {
-            public static readonly InValueAdderMap INSTANCE = new InValueAdderMap();
-
-            private InValueAdderMap()
-            {
-            }
-
-            public void Add(
-                ICollection<object> constants,
-                object value)
-            {
-                var map = value.AsObjectDictionary(MagicMarker.SingletonInstance);
-                constants.AddAll(map.Keys);
-            }
-        }
-
-        public class InValueAdderColl : FilterSpecParamInAdder
-        {
-            public static readonly InValueAdderColl INSTANCE = new InValueAdderColl();
-
-            private InValueAdderColl()
-            {
-            }
-
-            public void Add(
-                ICollection<object> constants,
-                object value)
-            {
-                var coll = value.UnwrapEnumerable<object>();
-                constants.AddAll(coll);
-            }
-        }
-
-        public class InValueAdderPlain : FilterSpecParamInAdder
-        {
-            public static readonly InValueAdderPlain INSTANCE = new InValueAdderPlain();
-
-            private InValueAdderPlain()
-            {
-            }
-
-            public void Add(
-                ICollection<object> constants,
-                object value)
-            {
-                constants.Add(value);
+            @out.Append("non-constant values, ")
+                .Append(_listOfValues.Count)
+                .Append(" entries")
+                .Append(NEWLINE);
+            
+            int valueIndex = 0;
+            foreach (FilterSpecParamInValueForge forge in _listOfValues) {
+                @out.Append(Indent.CreateIndent(indent))
+                    .Append("value #")
+                    .Append(valueIndex)
+                    .Append(": ");
+                forge.ValueToString(@out);
+                @out.Append(NEWLINE);
+                valueIndex++;
             }
         }
     }

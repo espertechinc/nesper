@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.time.eval;
@@ -20,8 +21,6 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
     /// </summary>
     public class EvalEveryDistinctFactoryNode : EvalFactoryNodeBase
     {
-        protected EvalFactoryNode childNode;
-
         public ExprEvaluator DistinctExpression { get; set; }
 
         public MatchedEventConvertor Convertor { get; set; }
@@ -32,18 +31,17 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
 
         public TimePeriodCompute TimePeriodCompute { get; set; }
 
-        public EvalFactoryNode ChildNode {
-            get => childNode;
-            set => childNode = value;
-        }
+        public EvalFactoryNode ChildNode { get; set; }
 
         public Type[] DistinctTypes { get; set; }
+        
+        public DataInputOutputSerde DistinctSerde { get; set; }
 
         public override EvalNode MakeEvalNode(
             PatternAgentInstanceContext agentInstanceContext,
             EvalNode parentNode)
         {
-            var child = EvalNodeUtil.MakeEvalNodeSingleChild(childNode, agentInstanceContext, parentNode);
+            var child = EvalNodeUtil.MakeEvalNodeSingleChild(ChildNode, agentInstanceContext, parentNode);
             return new EvalEveryDistinctNode(this, child, agentInstanceContext);
         }
 
@@ -56,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
         public override void Accept(EvalFactoryNodeVisitor visitor)
         {
             visitor.Visit(this);
-            childNode.Accept(visitor);
+            ChildNode.Accept(visitor);
         }
     }
 } // end of namespace

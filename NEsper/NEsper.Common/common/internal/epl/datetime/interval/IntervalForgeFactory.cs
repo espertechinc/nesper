@@ -16,11 +16,11 @@ using com.espertech.esper.common.@internal.epl.table.compiletime;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.interval
 {
-    public class IntervalForgeFactory : ForgeFactory
+    public class IntervalForgeFactory : DatetimeMethodProviderForgeFactory
     {
         public IntervalForge GetForge(
             StreamTypeService streamTypeService,
-            DateTimeMethodEnum method,
+            DatetimeMethodDesc method,
             string methodNameUsed,
             IList<ExprNode> parameters,
             TimeAbacus timeAbacus,

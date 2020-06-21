@@ -8,16 +8,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.@event;
-using com.espertech.esper.common.@internal.supportunit.util;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.container;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.common.@internal.@event.core
@@ -25,7 +23,7 @@ namespace com.espertech.esper.common.@internal.@event.core
     [TestFixture]
     public class TestEventBeanUtility : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestArrayOp()
         {
             var testEvent = MakeEventArray(new[] { "a1", "a2", "a3" });
@@ -42,7 +40,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             Console.Out.WriteLine(EventBeanUtility.PrintEvents(testEvent));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestArrayOpAdd()
         {
             var testEvent = MakeEventArray(new[] { "a1", "a2", "a3" });
@@ -57,7 +55,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                     EventBeanUtility.AddToArray(new[] { testEvent[0] }, Arrays.AsList(new EventBean[0])));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestFlattenList()
         {
             // test many arrays
@@ -86,7 +84,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             Assert.IsNull(events);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestFlatten()
         {
             // test many arrays
@@ -116,7 +114,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             Assert.IsNull(events);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestAppend()
         {
             var setOne = MakeEventArray(new[] { "a1", "a2" });
@@ -137,7 +135,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             Assert.AreEqual(setTwo[0], total[1]);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestToArray()
         {
             // Test list with 2 elements
@@ -163,7 +161,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             Assert.IsNull(array);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetPropertyArray()
         {
             // try 2 properties
@@ -177,22 +175,6 @@ namespace com.espertech.esper.common.@internal.@event.core
             // try no properties
             properties = EventBeanUtility.GetPropertyArray(theEvent, new EventPropertyGetter[0]);
             Assert.AreEqual(0, properties.Length);
-        }
-
-        [Test]
-        public void TestMultiKey()
-        {
-            // try 2 properties
-            var getters = MakeGetters();
-            var theEvent = SupportEventBeanFactory.CreateObject(supportEventTypeFactory, new SupportBean("a", 10));
-            var multikey = EventBeanUtility.GetMultiKey(theEvent, getters);
-            Assert.AreEqual(2, multikey.Keys.Length);
-            Assert.AreEqual("a", multikey.Keys[0]);
-            Assert.AreEqual(10, multikey.Keys[1]);
-
-            // try no properties
-            multikey = EventBeanUtility.GetMultiKey(theEvent, new EventPropertyGetter[0]);
-            Assert.AreEqual(0, multikey.Keys.Length);
         }
 
         private EventPropertyGetter[] MakeGetters()

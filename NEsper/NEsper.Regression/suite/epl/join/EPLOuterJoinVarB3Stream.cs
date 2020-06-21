@@ -23,9 +23,30 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLJoinOuterInnerJoinRootS0());
-            execs.Add(new EPLJoinOuterInnerJoinRootS1());
+            With0(execs);
+            With1(execs);
+            With2(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With2(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLJoinOuterInnerJoinRootS2());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With1(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinOuterInnerJoinRootS1());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With0(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinOuterInnerJoinRootS0());
             return execs;
         }
 
@@ -335,7 +356,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             var newEvents = env.Listener("s0").LastNewData;
             Assert.IsNotNull(newEvents, "no events received");
             env.Listener("s0").Reset();
-            return ArrayHandlingUtil.GetUnderlyingEvents(newEvents, new[] { "S0", "S1", "S2" });
+            return ArrayHandlingUtil.GetUnderlyingEvents(newEvents, new[] {"S0", "S1", "S2"});
         }
 
         internal class EPLJoinOuterInnerJoinRootS0 : RegressionExecution

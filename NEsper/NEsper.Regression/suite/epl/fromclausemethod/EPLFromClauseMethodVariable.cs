@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
@@ -56,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 TryInvalidCompile(
                     env,
                     "select * from method:MyConstantServiceVariable.FetchABean() as h0",
-                    "Method footprint does not match the number or type of expression parameters, expecting no parameters in method: Could not find enumeration method, date-time method or instance method named 'FetchABean' in class '" +
+                    "Method footprint does not match the number or type of expression parameters, expecting no parameters in method: Could not find enumeration method, date-time method, instance method or property named 'FetchABean' in class '" +
                     typeof(MyConstantServiceVariable).FullName +
                     "' taking no parameters (nearest match found was 'FetchABean' taking type(s) 'System.Int32') [");
 

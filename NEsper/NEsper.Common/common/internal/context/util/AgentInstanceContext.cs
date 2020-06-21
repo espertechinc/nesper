@@ -52,7 +52,6 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public AgentInstanceContext(
             StatementContext statementContext,
-            int agentInstanceId,
             EPStatementAgentInstanceHandle epStatementAgentInstanceHandle,
             AgentInstanceFilterProxy agentInstanceFilterProxy,
             MappedEventBean contextProperties,
@@ -61,12 +60,16 @@ namespace com.espertech.esper.common.@internal.context.util
         {
             StatementContext = statementContext;
             FilterVersionAfterAllocation = statementContext.FilterService.FiltersVersion;
-            AgentInstanceId = agentInstanceId;
             EpStatementAgentInstanceHandle = epStatementAgentInstanceHandle;
             AgentInstanceFilterProxy = agentInstanceFilterProxy;
             _contextProperties = contextProperties;
             AuditProvider = auditProvider;
             InstrumentationProvider = instrumentationProvider;
+        }
+
+        public virtual object FilterReboolConstant {
+            get => null;
+            set { }
         }
 
         public AgentInstanceFilterProxy AgentInstanceFilterProxy { get; }
@@ -103,11 +106,9 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public ViewFactoryService ViewFactoryService => StatementContext.ViewFactoryService;
 
-        public ResultSetProcessorHelperFactory ResultSetProcessorHelperFactory =>
-            StatementContext.ResultSetProcessorHelperFactory;
+        public ResultSetProcessorHelperFactory ResultSetProcessorHelperFactory => StatementContext.ResultSetProcessorHelperFactory;
 
-        public NamedWindowManagementService NamedWindowManagementService =>
-            StatementContext.NamedWindowManagementService;
+        public NamedWindowManagementService NamedWindowManagementService => StatementContext.NamedWindowManagementService;
 
         public StatementResourceService StatementResourceService => StatementContext.StatementResourceService;
 
@@ -115,13 +116,11 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public VariableManagementService VariableManagementService => StatementContext.VariableManagementService;
 
-        public StatementContextFilterEvalEnv StatementContextFilterEvalEnv =>
-            StatementContext.StatementContextFilterEvalEnv;
+        public StatementContextFilterEvalEnv StatementContextFilterEvalEnv => StatementContext.StatementContextFilterEvalEnv;
 
         public TableManagementService TableManagementService => StatementContext.TableManagementService;
 
-        public EventTypeResolvingBeanFactory EventTypeResolvingBeanFactory =>
-            StatementContext.EventTypeResolvingBeanFactory;
+        public EventTypeResolvingBeanFactory EventTypeResolvingBeanFactory => StatementContext.EventTypeResolvingBeanFactory;
 
         public EventTypeAvroHandler EventTypeAvroHandler => StatementContext.EventTypeAvroHandler;
 
@@ -133,15 +132,13 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public DatabaseConfigServiceRuntime DatabaseConfigService => StatementContext.DatabaseConfigService;
 
-        public EPRuntimeEventProcessWrapped EPRuntimeEventProcessWrapped =>
-            StatementContext.EPRuntimeEventProcessWrapped;
+        public EPRuntimeEventProcessWrapped EPRuntimeEventProcessWrapped => StatementContext.EPRuntimeEventProcessWrapped;
 
         public EventServiceSendEventCommon EPRuntimeSendEvent => StatementContext.EPRuntimeSendEvent;
 
         public EPRenderEventService EPRuntimeRenderEvent => StatementContext.EPRuntimeRenderEvent;
 
-        public DataFlowFilterServiceAdapter DataFlowFilterServiceAdapter =>
-            StatementContext.DataFlowFilterServiceAdapter;
+        public DataFlowFilterServiceAdapter DataFlowFilterServiceAdapter => StatementContext.DataFlowFilterServiceAdapter;
 
         public object Runtime => StatementContext.Runtime;
 
@@ -158,7 +155,7 @@ namespace com.espertech.esper.common.@internal.context.util
                 if (_statementContextCpPair == null) {
                     _statementContextCpPair = new StatementContextCPPair(
                         StatementContext.StatementId,
-                        AgentInstanceId,
+                        EpStatementAgentInstanceHandle.AgentInstanceId,
                         StatementContext);
                 }
 
@@ -166,17 +163,17 @@ namespace com.espertech.esper.common.@internal.context.util
             }
         }
 
-        public ICollection<AgentInstanceStopCallback> TerminationCallbackRO {
+        public ICollection<AgentInstanceMgmtCallback> TerminationCallbackRO {
             get {
                 if (_terminationCallbacks == null) {
-                    return Collections.GetEmptyList<AgentInstanceStopCallback>();
+                    return Collections.GetEmptyList<AgentInstanceMgmtCallback>();
                 }
 
-                if (_terminationCallbacks is ICollection<AgentInstanceStopCallback>) {
-                    return (ICollection<AgentInstanceStopCallback>) _terminationCallbacks;
+                if (_terminationCallbacks is ICollection<AgentInstanceMgmtCallback>) {
+                    return (ICollection<AgentInstanceMgmtCallback>) _terminationCallbacks;
                 }
 
-                return Collections.SingletonList((AgentInstanceStopCallback) _terminationCallbacks);
+                return Collections.SingletonList((AgentInstanceMgmtCallback) _terminationCallbacks);
             }
         }
 
@@ -184,10 +181,9 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public string RuntimeURI => StatementContext.RuntimeURI;
 
-        public int AgentInstanceId { get; }
+        public int AgentInstanceId => EpStatementAgentInstanceHandle.AgentInstanceId;
 
-        public IReaderWriterLock AgentInstanceLock =>
-            EpStatementAgentInstanceHandle.StatementAgentInstanceLock;
+        public IReaderWriterLock AgentInstanceLock => EpStatementAgentInstanceHandle.StatementAgentInstanceLock;
 
         public EventBeanService EventBeanService => StatementContext.EventBeanService;
 
@@ -201,8 +197,7 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public string DeploymentId => StatementContext.DeploymentId;
 
-        public ExpressionResultCacheService ExpressionResultCacheService =>
-            StatementContext.ExpressionResultCacheServiceSharable;
+        public ExpressionResultCacheService ExpressionResultCacheService => StatementContext.ExpressionResultCacheServiceSharable;
 
         public TableExprEvaluatorContext TableExprEvaluatorContext => StatementContext.TableExprEvaluatorContext;
 
@@ -223,33 +218,33 @@ namespace com.espertech.esper.common.@internal.context.util
         /// <summary>
         ///     Add a stop-callback.
         ///     Use to add a stop-callback other than already registered.
-        ///     This is generally not required by views that implement AgentInstanceStopCallback as
+        ///     This is generally not required by views that implement AgentInstanceMgmtCallback as
         ///     they gets stopped as part of normal processing.
         /// </summary>
         /// <param name="callback">to add</param>
-        public void AddTerminationCallback(AgentInstanceStopCallback callback)
+        public void AddTerminationCallback(AgentInstanceMgmtCallback callback)
         {
             if (_terminationCallbacks == null) {
                 _terminationCallbacks = callback;
             }
-            else if (_terminationCallbacks is ICollection<AgentInstanceStopCallback>) {
-                ((ICollection<AgentInstanceStopCallback>) _terminationCallbacks).Add(callback);
+            else if (_terminationCallbacks is ICollection<AgentInstanceMgmtCallback>) {
+                ((ICollection<AgentInstanceMgmtCallback>) _terminationCallbacks).Add(callback);
             }
             else {
-                var cb = (AgentInstanceStopCallback) _terminationCallbacks;
-                var q = new HashSet<AgentInstanceStopCallback>();
+                var cb = (AgentInstanceMgmtCallback) _terminationCallbacks;
+                var q = new HashSet<AgentInstanceMgmtCallback>();
                 q.Add(cb);
                 q.Add(callback);
                 _terminationCallbacks = q;
             }
         }
 
-        public void RemoveTerminationCallback(AgentInstanceStopCallback callback)
+        public void RemoveTerminationCallback(AgentInstanceMgmtCallback callback)
         {
             if (_terminationCallbacks == null) {
             }
-            else if (_terminationCallbacks is ICollection<AgentInstanceStopCallback>) {
-                ((ICollection<AgentInstanceStopCallback>) _terminationCallbacks).Remove(callback);
+            else if (_terminationCallbacks is ICollection<AgentInstanceMgmtCallback>) {
+                ((ICollection<AgentInstanceMgmtCallback>) _terminationCallbacks).Remove(callback);
             }
             else if (_terminationCallbacks == callback) {
                 _terminationCallbacks = null;

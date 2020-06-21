@@ -80,7 +80,5 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             EvalStateNode stateNode,
             MatchedEventMap beginState,
             ICollection<object> keySetCollection);
-
-        void VisitAudit();
     }
 } // end of namespace

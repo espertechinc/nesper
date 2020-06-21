@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,6 +17,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -61,7 +61,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public IList<CodegenExpressionRef> Environment { get; private set; } =
             Collections.GetEmptyList<CodegenExpressionRef>();
 
-        public bool IsOverride { get; set; }
+        public MemberModifier Modifiers { get; set; }
+
+        public bool IsOverride => Modifiers.IsOverride();
+
+        public bool IsVirtual => Modifiers.IsVirtual();
+
+        public bool IsStatic => Modifiers.IsStatic();
 
         public Type ReturnType { get; }
 
@@ -80,26 +86,45 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public ISet<string> DeepParameters { get; set; }
 
         public CodegenMethodWGraph AssignedMethod { get; set; }
-
-        public bool IsStatic { get; set; }
+        
+        public String AssignedProviderClassName { get; set;  }
 
         public CodegenMethod WithStatic(bool value)
         {
-            IsStatic = value;
+            Modifiers = Modifiers.EnableDisable(MemberModifier.STATIC, value);
             return this;
         }
 
-        public CodegenMethod WithOverride(bool isOverride = true)
+        public CodegenMethod WithVirtual()
         {
-            IsOverride = isOverride;
+            Modifiers = Modifiers
+                .Enable(MemberModifier.VIRTUAL)
+                .Disable(MemberModifier.OVERRIDE);
+            return this;
+        }
+        
+        public CodegenMethod WithOverride()
+        {
+            Modifiers = Modifiers
+                .Enable(MemberModifier.OVERRIDE)
+                .Disable(MemberModifier.VIRTUAL);
             return this;
         }
 
         public SyntaxTokenList GetModifiers()
         {
             var modifiers = TokenList();
+            
             if (IsStatic) {
                 modifiers.Add(Token(SyntaxKind.StaticKeyword));
+            }
+
+            if (IsOverride) {
+                modifiers.Add(Token(SyntaxKind.OverrideKeyword));
+            }
+
+            if (IsVirtual) {
+                modifiers.Add(Token(SyntaxKind.VirtualKeyword));
             }
 
             modifiers.Add(Token(SyntaxKind.PublicKeyword));
@@ -144,13 +169,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return AddChild(new CodegenMethod(returnType, null, generator, symbolProvider, env));
         }
 
-        public static CodegenMethod MakeParentNode<T>(
-            Type generator,
-            CodegenScope env)
-        {
-            return MakeMethod(typeof(T), generator, env);
-        }
-
         public static CodegenMethod MakeMethod(
             Type returnType,
             Type generator,
@@ -180,13 +198,40 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return new CodegenMethod(returnType, null, generator, symbolProvider, env);
         }
 
+        public static CodegenMethod MakeParentNode<T>(
+            Type generator,
+            CodegenScope env)
+        {
+            return MakeMethod(typeof(T), generator, env);
+        }
+
+        public static CodegenMethod MakeParentNode(
+            Type returnType,
+            Type generator,
+            CodegenScope env)
+        {
+            if (returnType == null) {
+                throw new ArgumentException("Invalid null return type");
+            }
+
+            return new CodegenMethod(returnType, null, generator, CodegenSymbolProviderEmpty.INSTANCE, env);
+        }
+
         public static CodegenMethod MakeParentNode(
             Type returnType,
             Type generator,
             CodegenSymbolProvider symbolProvider,
             CodegenScope env)
         {
-            return MakeParentNode(returnType.FullName, generator, symbolProvider, env);
+            if (returnType == null) {
+                throw new ArgumentException("Invalid null return type");
+            }
+
+            if (symbolProvider == null) {
+                throw new ArgumentException("No symbol provider");
+            }
+
+            return new CodegenMethod(returnType, null, generator, symbolProvider, env);
         }
 
         public static CodegenMethod MakeParentNode(
@@ -245,6 +290,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             foreach (var param in LocalParams) {
                 param.MergeClasses(classes);
             }
+        }
+        
+        public void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            Block.TraverseExpressions(consumer);
         }
 
         public CodegenMethod AddParam<T>(
@@ -358,6 +408,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public ICollection<CodegenExpressionLambda> GetLambdas()
         {
             return Block.Statements.OfType<CodegenExpressionLambda>().ToList();
+        }
+
+        public override string ToString()
+        {
+            return AssignedMethod == null
+                ? "CodegenMethod"
+                : "CodegenMethod{name=" + AssignedMethod.Name + "}";
         }
     }
 } // end of namespace

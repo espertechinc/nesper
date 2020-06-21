@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,7 +16,6 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
@@ -26,8 +26,11 @@ using com.espertech.esper.runtime.client.scopetest;
 using NEsper.Avro.Extensions;
 using NEsper.Avro.Util.Support;
 
+using Newtonsoft.Json.Linq;
+
 using NUnit.Framework;
 
+using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
 using static com.espertech.esper.regressionlib.support.util.SupportAdminUtil;
 
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
@@ -39,55 +42,153 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+            
+            WithOnMergeSimpleInsert(execs);
+            WithOnMergeMatchNoMatch(execs);
+            WithUpdateNestedEvent(execs);
+            WithOnMergeInsertStream(execs);
+            WithInsertOtherStream(execs);
+            WithMultiactionDeleteUpdate(execs);
+            WithUpdateOrderOfFields(execs);
+            WithInfraSubqueryNotMatched(execs);
+            WithPatternMultimatch(execs);
+            WithNoWhereClause(execs);
+            WithMultipleInsert(execs);
+            WithFlow(execs);
+            WithInnerTypeAndVariable(execs);
+            WithInvalid(execs);
+            WithInsertOnly(execs);
+            WithDeleteThenUpdate(execs);
+            WithPropertyEvalUpdate(execs);
+            WithPropertyEvalInsertNoMatch(execs);
+            WithPropertyEvalUpdate(execs);
+            WithSetArrayElementWithIndex(execs);
+            WithSetArrayElementWithIndexInvalid(execs);
+            
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithOnMergeSimpleInsert(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraOnMergeSimpleInsert(true));
             execs.Add(new InfraOnMergeSimpleInsert(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithOnMergeMatchNoMatch(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraOnMergeMatchNoMatch(true));
             execs.Add(new InfraOnMergeMatchNoMatch(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithUpdateNestedEvent(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraUpdateNestedEvent(true));
             execs.Add(new InfraUpdateNestedEvent(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithOnMergeInsertStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraOnMergeInsertStream(true));
             execs.Add(new InfraOnMergeInsertStream(false));
+            return execs;
+        }
 
-            foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+        public static IList<RegressionExecution> WithInsertOtherStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                 execs.Add(new InfraInsertOtherStream(true, rep));
                 execs.Add(new InfraInsertOtherStream(false, rep));
             }
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithMultiactionDeleteUpdate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraMultiactionDeleteUpdate(true));
             execs.Add(new InfraMultiactionDeleteUpdate(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithUpdateOrderOfFields(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraUpdateOrderOfFields(true));
             execs.Add(new InfraUpdateOrderOfFields(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithInfraSubqueryNotMatched(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraSubqueryNotMatched(true));
             execs.Add(new InfraSubqueryNotMatched(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithPatternMultimatch(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraPatternMultimatch(true));
             execs.Add(new InfraPatternMultimatch(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithNoWhereClause(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraNoWhereClause(true));
             execs.Add(new InfraNoWhereClause(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithMultipleInsert(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraMultipleInsert(true));
             execs.Add(new InfraMultipleInsert(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithFlow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraFlow(true));
             execs.Add(new InfraFlow(false));
+            return execs;
+        }
 
-            foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
-                if (rep != EventRepresentationChoice.AVRO) {
+        public static IList<RegressionExecution> WithInnerTypeAndVariable(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
+                if (!rep.IsAvroOrJsonEvent()) {
                     execs.Add(new InfraInnerTypeAndVariable(true, rep));
                     execs.Add(new InfraInnerTypeAndVariable(false, rep));
                 }
             }
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraInvalid(true));
             execs.Add(new InfraInvalid(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithInsertOnly(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             foreach (var namedWindow in new[] {true, false}) {
                 execs.Add(new InfraInsertOnly(namedWindow, true, false, false));
                 execs.Add(new InfraInsertOnly(namedWindow, false, false, false));
@@ -95,16 +196,44 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 execs.Add(new InfraInsertOnly(namedWindow, false, true, false));
                 execs.Add(new InfraInsertOnly(namedWindow, false, true, true));
             }
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithDeleteThenUpdate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraDeleteThenUpdate(true));
             execs.Add(new InfraDeleteThenUpdate(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithPropertyEvalInsertNoMatch(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraPropertyEvalInsertNoMatch(true));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPropertyEvalUpdate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraPropertyEvalUpdate(true));
             execs.Add(new InfraPropertyEvalUpdate(false));
-            
-            execs.Add(new InfraPropertyEvalInsertNoMatch(true));
-            execs.Add(new InfraPropertyEvalUpdate(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithSetArrayElementWithIndexInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraSetArrayElementWithIndexInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSetArrayElementWithIndex(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraSetArrayElementWithIndex(false, false));
+            execs.Add(new InfraSetArrayElementWithIndex(true, true));
             return execs;
         }
 
@@ -431,6 +560,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 record.Put("col2", innerRecord);
                 env.EventService.SendEventAvro(record, "MyEventSchema");
             }
+            else if (eventRepresentationEnum.IsJsonEvent()) {
+                var inner = new JObject(
+                    new JProperty("in1", col2in1),
+                    new JProperty("in2", col2in2));
+                var outer = new JObject(
+                    new JProperty("col1", col1),
+                    new JProperty("col2", inner));
+                env.EventService.SendEventJson(outer.ToString(), "MyEventSchema");
+            }
             else {
                 Assert.Fail();
             }
@@ -465,6 +603,157 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.SendEventMap(theEvent, "MyEvent");
             }
         }
+        
+        internal class InfraSetArrayElementWithIndex : RegressionExecution
+		{
+			private readonly bool soda;
+			private readonly bool namedWindow;
+
+			public InfraSetArrayElementWithIndex(
+				bool soda,
+				bool namedWindow)
+			{
+				this.soda = soda;
+				this.namedWindow = namedWindow;
+			}
+
+			public void Run(RegressionEnvironment env)
+			{
+				RunAssertionSetWithIndex(env, namedWindow, soda, "thearray[cnt]=1, thearray[IntPrimitive]=2", 0, 1, 2, 0);
+				RunAssertionSetWithIndex(env, namedWindow, soda, "cnt=cnt+1,thearray[cnt]=1", 1, 0, 1, 0);
+				RunAssertionSetWithIndex(env, namedWindow, soda, "cnt=cnt+1,thearray[cnt]=3,cnt=cnt+1,thearray[cnt]=4", 2, 0, 3, 4);
+				RunAssertionSetWithIndex(env, namedWindow, soda, "cnt=cnt+1,thearray[initial.cnt]=3", 1, 3, 0, 0);
+			}
+
+			private static void RunAssertionSetWithIndex(
+				RegressionEnvironment env,
+				bool namedWindow,
+				bool soda,
+				string setter,
+				int cntExpected,
+				params double[] thearrayExpected)
+			{
+				var path = new RegressionPath();
+				var eplCreate = namedWindow
+					? "@Name('create') create window MyInfra#keepall(cnt int, thearray double[primitive]);\n"
+					: "@Name('create') create table MyInfra(cnt int, thearray double[primitive]);\n";
+				eplCreate += "@priority(1) on SupportBean merge MyInfra when not matched then insert select 0 as cnt, new double[3] as thearray;\n";
+				env.CompileDeploy(eplCreate, path);
+
+				var epl = "on SupportBean update MyInfra set " + setter;
+				env.CompileDeploy(soda, epl, path);
+
+				env.SendEventBean(new SupportBean("E1", 1));
+				var @event = env.GetEnumerator("create").Advance();
+				EPAssertionUtil.AssertProps(@event, "cnt,thearray".SplitCsv(), new object[] {
+					cntExpected, thearrayExpected
+				});
+
+				env.UndeployAll();
+			}
+		}
+
+		internal class InfraSetArrayElementWithIndexInvalid : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var path = new RegressionPath();
+				var eplTable = "@Name('create') create table MyInfra(doublearray double[primitive], intarray int[primitive], notAnArray int)";
+				env.Compile(eplTable, path);
+
+				// invalid property
+                TryInvalidCompile(
+					env,
+					path,
+					"on SupportBean update MyInfra set c1[0]=1",
+					"Failed to validate assignment expression 'c1[0]=1': Property 'c1[0]' is not available for write access");
+				TryInvalidCompile(
+					env,
+					path,
+					"on SupportBean update MyInfra set c('a')=1",
+					"Failed to validate assignment expression 'c('a')=1': Property 'c('a')' is not available for write access");
+
+				// index expression is not Integer
+				TryInvalidCompile(
+					env,
+					path,
+					"on SupportBean update MyInfra set doublearray[null]=1",
+					"Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'null' returns 'null (any type)' for expression 'doublearray'");
+
+				// type incompatible cannot assign
+				TryInvalidCompile(
+					env,
+					path,
+					"on SupportBean update MyInfra set intarray[IntPrimitive]='x'",
+					"Failed to validate assignment expression 'intarray[IntPrimitive]=\"x\"': Invalid assignment to property 'intarray' component type 'System.Int32' from expression returning 'System.String'");
+				TryInvalidCompile(
+					env,
+					path,
+					"on SupportBean update MyInfra set intarray[IntPrimitive]=1L",
+					"Failed to validate assignment expression 'intarray[IntPrimitive]=1L': Invalid assignment to property 'intarray' component type 'System.Int32' from expression returning 'System.Int64'");
+
+				// not-an-array
+				TryInvalidCompile(
+					env,
+					path,
+					"on SupportBean update MyInfra set notAnArray[IntPrimitive]=1",
+					"Failed to validate assignment expression 'notAnArray[IntPrimitive]=1': Property 'notAnArray' is not an array");
+
+				// not found
+				TryInvalidCompile(
+					env,
+					path,
+					"on SupportBean update MyInfra set dummy[IntPrimitive]=1",
+					"Failed to validate assignment expression 'dummy[IntPrimitive]=1': Property 'dummy' could not be found");
+
+				// property found in updating-event
+				TryInvalidCompile(
+					env,
+					path,
+					"create schema UpdateEvent(dummy int[primitive]);\n" +
+					"on UpdateEvent update MyInfra set dummy[10]=1;\n",
+					"Failed to validate assignment expression 'dummy[10]=1': Property 'dummy[10]' is not available for write access");
+
+				TryInvalidCompile(
+					env,
+					path,
+					"create schema UpdateEvent(dummy int[primitive], position int);\n" +
+					"on UpdateEvent update MyInfra set dummy[position]=1;\n",
+					"Failed to validate assignment expression 'dummy[position]=1': Property 'dummy' could not be found");
+
+				path.Clear();
+
+				// runtime-behavior for index-overflow and null-array and null-index and
+				var epl = "@Name('create') create table MyInfra(doublearray double[primitive]);\n" +
+				          "@priority(1) on SupportBean merge MyInfra when not matched then insert select new double[3] as doublearray;\n" +
+				          "on SupportBean update MyInfra set doublearray[IntBoxed]=DoubleBoxed;\n";
+				env.CompileDeploy(epl);
+
+				// index returned is too large
+				try {
+					var sb = new SupportBean();
+					sb.IntBoxed = 10;
+					sb.DoubleBoxed = 10d;
+					env.SendEventBean(sb);
+					Assert.Fail();
+				}
+				catch (Exception ex) {
+					Assert.IsTrue(ex.Message.Contains("Array length 3 less than index 10 for property 'doublearray'"));
+				}
+
+				// index returned null
+				var sbIndexNull = new SupportBean();
+				sbIndexNull.DoubleBoxed = 10d;
+				env.SendEventBean(sbIndexNull);
+
+				// rhs returned null for array-of-primitive
+				var sbRHSNull = new SupportBean();
+				sbRHSNull.IntBoxed = 1;
+				env.SendEventBean(sbRHSNull);
+
+				env.UndeployAll();
+			}
+		}
 
         internal class InfraPropertyEvalInsertNoMatch : RegressionExecution
         {
@@ -1071,7 +1360,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 epl =
                     "on SupportBean_A merge MergeInfra as windowevent where Id = TheString when not matched and exists(select * from MergeInfra mw where mw.TheString = windowevent.TheString) is not null then insert into ABC select '1'";
-                SupportMessageAssertUtil.TryInvalidCompile(
+                TryInvalidCompile(
                     env,
                     path,
                     epl,
@@ -1079,14 +1368,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 epl = "on SupportBean_A as up merge ABCInfra as mv when not matched then insert (col) select 1";
                 if (namedWindow) {
-                    SupportMessageAssertUtil.TryInvalidCompile(
+                    TryInvalidCompile(
                         env,
                         path,
                         epl,
                         "Validation failed in when-not-matched (clause 1): Event type named 'ABCInfra' has already been declared with differing column name or type information: The property 'val' is not provided but required [on SupportBean_A as up merge ABCInfra as mv when not matched then insert (col) select 1]");
                 }
                 else {
-                    SupportMessageAssertUtil.TryInvalidCompile(
+                    TryInvalidCompile(
                         env,
                         path,
                         epl,
@@ -1095,7 +1384,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 epl =
                     "on SupportBean_A as up merge MergeInfra as mv where mv.BoolPrimitive=true when not matched then update set IntPrimitive = 1";
-                SupportMessageAssertUtil.TryInvalidCompile(
+                TryInvalidCompile(
                     env,
                     path,
                     epl,
@@ -1104,7 +1393,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 if (namedWindow) {
                     epl =
                         "on SupportBean_A as up merge MergeInfra as mv where mv.TheString=Id when matched then insert select *";
-                    SupportMessageAssertUtil.TryInvalidCompile(
+                    TryInvalidCompile(
                         env,
                         path,
                         epl,
@@ -1116,21 +1405,21 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 }
 
                 epl = "on SupportBean as up merge MergeInfra as mv";
-                SupportMessageAssertUtil.TryInvalidCompile(
+                TryInvalidCompile(
                     env,
                     path,
                     epl,
                     "Unexpected end-of-input at line 1 column 4");
 
                 epl = "on SupportBean as up merge MergeInfra as mv where a=b when matched";
-                SupportMessageAssertUtil.TryInvalidCompile(
+                TryInvalidCompile(
                     env,
                     path,
                     epl,
                     "Incorrect syntax near end-of-input ('matched' is a reserved keyword) expecting 'then' but found EOF at line 1 column 66 [");
 
                 epl = "on SupportBean as up merge MergeInfra as mv where a=b when matched and then delete";
-                SupportMessageAssertUtil.TryInvalidCompile(
+                TryInvalidCompile(
                     env,
                     path,
                     epl,
@@ -1138,7 +1427,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 epl =
                     "on SupportBean as up merge MergeInfra as mv where BoolPrimitive=true when not matched then insert select *";
-                SupportMessageAssertUtil.TryInvalidCompile(
+                TryInvalidCompile(
                     env,
                     path,
                     epl,
@@ -1146,7 +1435,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 epl =
                     "on SupportBean_A as up merge MergeInfra as mv where mv.BoolPrimitive=true when not matched then insert select IntPrimitive";
-                SupportMessageAssertUtil.TryInvalidCompile(
+                TryInvalidCompile(
                     env,
                     path,
                     epl,
@@ -1154,11 +1443,26 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 epl =
                     "on SupportBean_A as up merge MergeInfra as mv where mv.BoolPrimitive=true when not matched then insert select * where TheString = 'A'";
-                SupportMessageAssertUtil.TryInvalidCompile(
+                TryInvalidCompile(
                     env,
                     path,
                     epl,
                     "Failed to validate match where-clause expression 'TheString=\"A\"': Property named 'TheString' is not valid in any stream [on SupportBean_A as up merge MergeInfra as mv where mv.BoolPrimitive=true when not matched then insert select * where TheString = 'A']");
+
+                epl = "create variable int myvariable;\n" +
+                      "on SupportBean_A merge MergeInfra when matched then update set myvariable = 1;\n";
+                TryInvalidCompile(
+                    env,
+                    path,
+                    epl,
+                    "Left-hand-side does not allow variables for variable 'myvariable'");
+
+                epl = "on SupportBean_A merge MergeInfra when matched then update set TheString[1][2] = 1;\n";
+                TryInvalidCompile(
+                    env,
+                    path,
+                    epl,
+                    "Unrecognized left-hand-side assignment 'TheString[1][2]'");
 
                 env.UndeployAll();
 
@@ -1169,11 +1473,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy("create map schema SomeOther as (c1 int)", path);
                 env.CompileDeploy("create map schema MyEvent as (so SomeOther)", path);
 
-                SupportMessageAssertUtil.TryInvalidCompile(
+                TryInvalidCompile(
                     env,
                     path,
                     "on MyEvent as me update AInfra set c = me.so",
-                    "Invalid assignment to property 'c' event type 'Composite' from event type 'SomeOther' [on MyEvent as me update AInfra set c = me.so]");
+                    "Failed to validate assignment expression 'c=me.so': Invalid assignment to property 'c' event type 'Composite' from event type 'SomeOther' [on MyEvent as me update AInfra set c = me.so]");
 
                 env.UndeployAll();
             }
@@ -1195,17 +1499,18 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var schema = eventRepresentationEnum.GetAnnotationText() +
-                             " create schema MyInnerSchema(in1 string, in2 int);\n" +
-                             eventRepresentationEnum.GetAnnotationText() +
-                             " create schema MyEventSchema(col1 string, col2 MyInnerSchema)";
+                var schema =
+                    eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyInnerSchema>() +
+                    " create schema MyInnerSchema(in1 string, in2 int);\n" +
+                    eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyEventSchema>() +
+                    " create schema MyEventSchema(col1 string, col2 MyInnerSchema)";
                 env.CompileDeployWBusPublicType(schema, path);
 
                 var eplCreate = namedWindow
-                    ? eventRepresentationEnum.GetAnnotationText() +
+                    ? eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyInfraITV>() +
                       " create window MyInfraITV#keepall as (c1 string, c2 MyInnerSchema)"
-                    : eventRepresentationEnum.GetAnnotationText() +
-                      " create table MyInfraITV as (c1 string primary key, c2 MyInnerSchema)";
+                    : "create table MyInfraITV as (c1 string primary key, c2 MyInnerSchema)";
+                
                 env.CompileDeploy(eplCreate, path);
                 env.CompileDeploy("@Name('createvar') create variable boolean myvar", path);
 
@@ -1603,15 +1908,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public void Run(RegressionEnvironment env)
             {
-                var epl = eventRepresentationEnum.GetAnnotationText() +
+                var epl = eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyEvent>() +
                           " create schema MyEvent as (name string, value double);\n" +
                           (namedWindow
-                              ? eventRepresentationEnum.GetAnnotationText() +
+                              ? eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyEvent>() +
                                 " create window MyInfraIOS#unique(name) as MyEvent;\n"
                               : "create table MyInfraIOS (name string primary key, value double primary key);\n"
                           ) +
                           "insert into MyInfraIOS select * from MyEvent;\n" +
-                          eventRepresentationEnum.GetAnnotationText() +
+                          eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedInputEvent>() +
                           " create schema InputEvent as (col1 string, col2 double);\n" +
                           "\n" +
                           "on MyEvent as eme\n" +
@@ -1672,6 +1977,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     record.Put("value", value);
                     env.EventService.SendEventAvro(record, typeName);
                 }
+                else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
+                    env.EventService.SendEventJson(
+                        new JObject(new JProperty("name", name), new JProperty("value", value)).ToString(),
+                        typeName);
+                }
                 else {
                     Assert.Fail();
                 }
@@ -1692,6 +2002,31 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 RunUpdateNestedEvent(env, namedWindow, "map");
                 RunUpdateNestedEvent(env, namedWindow, "objectarray");
             }
+        }
+        
+        [Serializable] public class MyLocalJsonProvidedMyEvent {
+            public String name;
+            public double value;
+        }
+
+        [Serializable] public class MyLocalJsonProvidedInputEvent {
+            public String col1;
+            public double col2;
+        }
+
+        [Serializable] public class MyLocalJsonProvidedMyInnerSchema {
+            public String in1;
+            public int in2;
+        }
+
+        [Serializable] public class MyLocalJsonProvidedMyEventSchema {
+            public String col1;
+            public MyLocalJsonProvidedMyInnerSchema col2;
+        }
+
+        [Serializable] public class MyLocalJsonProvidedMyInfraITV {
+            public String c1;
+            public MyLocalJsonProvidedMyInnerSchema c2;
         }
     }
 } // end of namespace

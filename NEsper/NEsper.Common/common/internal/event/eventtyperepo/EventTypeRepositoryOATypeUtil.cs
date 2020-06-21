@@ -23,8 +23,6 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
-using static com.espertech.esper.common.@internal.@event.eventtyperepo.EventTypeRepositoryMapTypeUtil;
-
 namespace com.espertech.esper.common.@internal.@event.eventtyperepo
 {
     public class EventTypeRepositoryOATypeUtil
@@ -38,37 +36,25 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
             BeanEventTypeFactory beanEventTypeFactory,
             ImportService importService)
         {
-            // Add object-array in dependency order such that supertypes are added before subtypes
-            ICollection<string> dependentObjectArrayOrder;
-            try {
-                var typesReferences = ToTypesReferences(objectArrayTypeConfigurations);
-                dependentObjectArrayOrder = GraphUtil.GetTopDownOrder(typesReferences);
-            }
-            catch (GraphCircularDependencyException e) {
-                throw new ConfigurationException(
-                    "Error configuring event types, dependency graph between object array type names is circular: " +
-                    e.Message,
-                    e);
-            }
+            var creationOrder = EventTypeRepositoryUtil.GetCreationOrder(
+                EmptySet<string>.Instance,
+                nestableObjectArrayNames.Keys,
+                objectArrayTypeConfigurations);
 
-            dependentObjectArrayOrder.AddAll(nestableObjectArrayNames.Keys);
+            foreach (var objectArrayName in creationOrder) {
+                if (repo.GetTypeByName(objectArrayName) != null) {
+                    continue;
+                }
 
-            foreach (var objectArrayName in dependentObjectArrayOrder) {
                 var objectArrayConfig = objectArrayTypeConfigurations.Get(objectArrayName);
                 var propertyTypes = nestableObjectArrayNames.Get(objectArrayName);
                 propertyTypes = ResolveClassesForStringPropertyTypes(propertyTypes, importService);
-                var propertyTypesCompiled =
-                    EventTypeUtility.CompileMapTypeProperties(propertyTypes, repo);
+                var propertyTypesCompiled = EventTypeUtility.CompileMapTypeProperties(propertyTypes, repo);
 
-                AddNestableObjectArrayType(
-                    objectArrayName,
-                    propertyTypesCompiled,
-                    objectArrayConfig,
-                    beanEventTypeFactory,
-                    repo);
+                AddNestableObjectArrayType(objectArrayName, propertyTypesCompiled, objectArrayConfig, beanEventTypeFactory, repo);
             }
         }
-
+        
         private static void AddNestableObjectArrayType(
             string eventTypeName,
             IDictionary<string, object> propertyTypesMayHavePrimitive,
@@ -168,7 +154,7 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
                 }
 
                 if (isArray) {
-                    clazz = Array.CreateInstance(clazz, 0).GetType();
+                    clazz = clazz.MakeArrayType();
                 }
 
                 return clazz;

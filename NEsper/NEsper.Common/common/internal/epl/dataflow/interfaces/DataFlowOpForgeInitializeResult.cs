@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.interfaces
             TypeDescriptors = typeDescriptors;
         }
 
-        public StmtForgeMethodResult AdditionalForgables { get; set; }
+        public StmtForgeMethodResult AdditionalForgeables { get; set; }
 
         public GraphTypeDesc[] TypeDescriptors { get; set; }
     }

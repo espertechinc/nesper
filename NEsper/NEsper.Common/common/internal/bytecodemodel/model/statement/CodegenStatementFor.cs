@@ -13,6 +13,7 @@ using System.Text;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
@@ -20,11 +21,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
     public class CodegenStatementFor : CodegenStatementWBlockBase
     {
-        private readonly CodegenExpression increment;
-        private readonly CodegenExpression initialization;
-        private readonly string name;
-        private readonly CodegenExpression termination;
-        private readonly Type type;
+        private readonly CodegenExpression _increment;
+        private readonly CodegenExpression _initialization;
+        private readonly string _name;
+        private readonly CodegenExpression _termination;
+        private readonly Type _type;
 
         public CodegenStatementFor(
             CodegenBlock parent,
@@ -35,11 +36,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             CodegenExpression increment)
             : base(parent)
         {
-            this.type = type;
-            this.name = name;
-            this.initialization = initialization;
-            this.termination = termination;
-            this.increment = increment;
+            _type = type;
+            _name = name;
+            _initialization = initialization;
+            _termination = termination;
+            _increment = increment;
         }
 
         public CodegenBlock Block { get; set; }
@@ -51,13 +52,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             CodegenIndent indent)
         {
             builder.Append("for (");
-            AppendClassName(builder, type);
-            builder.Append(" ").Append(name).Append("=");
-            initialization.Render(builder, isInnerClass, level, indent);
+            AppendClassName(builder, _type);
+            builder.Append(" ").Append(_name).Append("=");
+            _initialization.Render(builder, isInnerClass, level, indent);
             builder.Append("; ");
-            termination.Render(builder, isInnerClass, level, indent);
+            _termination.Render(builder, isInnerClass, level, indent);
             builder.Append("; ");
-            increment.Render(builder, isInnerClass, level, indent);
+            _increment.Render(builder, isInnerClass, level, indent);
             builder.Append(") {\n");
             Block.Render(builder, isInnerClass, level + 1, indent);
             indent.Indent(builder, level);
@@ -67,9 +68,17 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         public override void MergeClasses(ISet<Type> classes)
         {
             Block.MergeClasses(classes);
-            initialization.MergeClasses(classes);
-            termination.MergeClasses(classes);
-            increment.MergeClasses(classes);
+            _initialization.MergeClasses(classes);
+            _termination.MergeClasses(classes);
+            _increment.MergeClasses(classes);
+        }
+
+        public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            Block.TraverseExpressions(consumer);
+            consumer.Invoke(_initialization);
+            consumer.Invoke(_termination);
+            consumer.Invoke(_increment);
         }
     }
 } // end of namespace

@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.dataflow.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
@@ -24,6 +25,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 "@Name('flow') create dataflow MyGraph " +
                 "DefaultSupportSourceOp -> outstream<SupportBean> {} " +
                 "DefaultSupportCaptureOp(outstream) {}");
+            Assert.AreEqual(StatementType.CREATE_DATAFLOW, env.Statement("flow").GetProperty(StatementProperty.STATEMENTTYPE));
+            Assert.AreEqual("MyGraph", env.Statement("flow").GetProperty(StatementProperty.CREATEOBJECTNAME));
+
 
             var source = new DefaultSupportSourceOp(new object[] {new SupportBean("E1", 1), new SupportBean("E2", 2)});
             var capture = new DefaultSupportCaptureOp();

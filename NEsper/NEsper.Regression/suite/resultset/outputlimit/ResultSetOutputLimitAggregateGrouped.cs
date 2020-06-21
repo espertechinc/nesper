@@ -1019,7 +1019,94 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.SendEventBean(bean);
         }
 
-        internal class ResultSetUnaggregatedOutputFirst : RegressionExecution
+        private class ResultSetOutputLastMultikeyWArray : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.AdvanceTime(0);
+                string[] fields = "TheString,LongPrimitive,IntPrimitive,thesum".SplitCsv();
+                string epl = "@Name('s0') select TheString, LongPrimitive, IntPrimitive, sum(IntPrimitive) as thesum from SupportBean#keepall " +
+                             "group by TheString, LongPrimitive output last every 1 seconds";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendBeanEvent(env, "A", 0, 10);
+                SendBeanEvent(env, "B", 1, 11);
+
+                env.Milestone(0);
+
+                SendBeanEvent(env, "A", 0, 12);
+                SendBeanEvent(env, "C", 0, 13);
+
+                env.AdvanceTime(1000);
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                    env.Listener("s0").GetAndResetLastNewData(),
+                    fields,
+                    new object[][] {
+                        new object[] {"B", 1L, 11, 11},
+                        new object[] {"A", 0L, 12, 22},
+                        new object[] {"C", 0L, 13, 13}
+                    });
+
+                SendBeanEvent(env, "A", 0, 14);
+
+                env.AdvanceTime(2000);
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                    env.Listener("s0").GetAndResetLastNewData(),
+                    fields,
+                    new object[][] {
+                        new object[] {"A", 0L, 14, 36}
+                    });
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetOutputAllMultikeyWArray : RegressionExecution
+           {
+               public void Run(RegressionEnvironment env)
+               {
+                   env.AdvanceTime(0);
+                   string[] fields = "TheString,LongPrimitive,IntPrimitive,thesum".SplitCsv();
+                   string epl = "@Name('s0') select TheString, LongPrimitive, IntPrimitive, sum(IntPrimitive) as thesum from SupportBean#keepall " +
+                                "group by TheString, LongPrimitive output all every 1 seconds";
+                   env.CompileDeploy(epl).AddListener("s0");
+
+                   SendBeanEvent(env, "A", 0, 10);
+                   SendBeanEvent(env, "B", 1, 11);
+
+                   env.Milestone(0);
+
+                   SendBeanEvent(env, "A", 0, 12);
+                   SendBeanEvent(env, "C", 0, 13);
+
+                   env.AdvanceTime(1000);
+                   EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                       env.Listener("s0").GetAndResetLastNewData(),
+                       fields,
+                       new object[][] {
+                           new object[] {"A", 0L, 10, 10},
+                           new object[] {"B", 1L, 11, 11},
+                           new object[] {"A", 0L, 12, 22},
+                           new object[] {"C", 0L, 13, 13}
+                       });
+
+                   SendBeanEvent(env, "A", 0, 14);
+
+                   env.AdvanceTime(2000);
+                   EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                       env.Listener("s0").GetAndResetLastNewData(),
+                       fields,
+                       new object[][] {
+                           new object[] {"A", 0L, 14, 36},
+                           new object[] {"B", 1L, 11, 11},
+                           new object[] {"C", 0L, 13, 13}
+                       });
+
+                   env.UndeployAll();
+               }
+           }
+
+           internal class ResultSetUnaggregatedOutputFirst : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {

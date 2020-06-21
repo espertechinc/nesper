@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -119,7 +118,7 @@ namespace com.espertech.esper.common.@internal.view.derived
                 }
 
                 if (viewFactory.additionalProps != null && newData.Length != 0) {
-                    var additionalEvals = viewFactory.additionalProps.GetAdditionalEvals();
+                    var additionalEvals = viewFactory.additionalProps.AdditionalEvals;
                     if (lastValuesEventNew == null) {
                         lastValuesEventNew = new object[additionalEvals.Length];
                     }
@@ -202,11 +201,7 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         private void AddProperties(IDictionary<string, object> newDataMap)
         {
-            if (viewFactory.additionalProps == null) {
-                return;
-            }
-
-            viewFactory.additionalProps.AddProperties(newDataMap, lastValuesEventNew);
+            viewFactory.additionalProps?.AddProperties(newDataMap, lastValuesEventNew);
         }
 
         public static EventType CreateEventType(

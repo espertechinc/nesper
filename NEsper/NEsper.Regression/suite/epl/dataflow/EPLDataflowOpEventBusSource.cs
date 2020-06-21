@@ -32,11 +32,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EPLDataflowAllTypes());
-            execs.Add(new EPLDataflowSchemaObjectArray());
+WithAllTypes(execs);
+WithSchemaObjectArray(execs);
             return execs;
         }
-
+public static IList<RegressionExecution> WithSchemaObjectArray(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowSchemaObjectArray());
+    return execs;
+}public static IList<RegressionExecution> WithAllTypes(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowAllTypes());
+    return execs;
+}
         private static void RunAssertionAllTypes(
             RegressionEnvironment env,
             string typeName,

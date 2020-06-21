@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.prev;
 using com.espertech.esper.compat.collections;
@@ -21,6 +20,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
     public class ExprNodePreviousVisitorWParent : ExprNodeVisitorWithParent
     {
         private IList<Pair<ExprNode, ExprPreviousNode>> _previous;
+
+        public bool IsWalkDeclExprParam => true;
 
         public bool IsVisit(ExprNode exprNode)
         {

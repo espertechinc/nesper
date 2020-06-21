@@ -11,12 +11,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.render;
 using com.espertech.esper.common.@internal.@event.render;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.magic;
 using com.espertech.esper.regressionlib.framework;
+
+using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
 
@@ -29,16 +33,86 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EventRenderRenderSimple());
-            execs.Add(new EventRenderMapAndNestedArray());
-            execs.Add(new EventRenderEmptyMap());
+            WithRenderSimple(execs);
+            WithMapAndNestedArray(execs);
+            WithEmptyMap(execs);
+            WithEnquote(execs);
+            WithJsonEventType(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithJsonEventType(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventRenderJsonEventType());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEnquote(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EventRenderEnquote());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEmptyMap(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventRenderEmptyMap());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMapAndNestedArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventRenderMapAndNestedArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRenderSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventRenderRenderSimple());
             return execs;
         }
 
         private static string RemoveNewline(string text)
         {
             return text.RegexReplaceAll("\\s\\s+|\\n|\\r", " ").Trim();
+        }
+
+
+        internal class EventRenderJsonEventType : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "@public @buseventtype create json schema MyJsonEvent(p0 string, p1 int);\n" +
+                             "@Name('s0') select * from MyJsonEvent#keepall;\n";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                var jobject = new JObject(
+                    new JProperty("p0", "abc"),
+                    new JProperty("p1", 10));
+                env.SendEventJson(jobject.ToString(), "MyJsonEvent");
+
+                string expected = "{\"p0\":\"abc\",\"p1\":10}";
+                string expectedWithTitle = "{\"thetitle\":{\"p0\":\"abc\",\"p1\":10}}";
+                EventBean @event = env.Statement("s0").First();
+
+                string result = env.Runtime.RenderEventService.RenderJSON("thetitle", @event);
+                Assert.AreEqual(expectedWithTitle, result);
+
+                result = env.Runtime.RenderEventService.RenderJSON("thetitle", @event);
+                Assert.AreEqual(expectedWithTitle, result);
+
+                JSONEventRenderer renderer = env.Runtime.RenderEventService.GetJSONRenderer(env.Statement("s0").EventType);
+                result = renderer.Render("thetitle", @event);
+                Assert.AreEqual(expectedWithTitle, result);
+                result = renderer.Render(@event);
+                Assert.AreEqual(expected, result);
+
+                env.UndeployAll();
+            }
         }
 
         internal class EventRenderRenderSimple : RegressionExecution

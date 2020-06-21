@@ -47,8 +47,14 @@ namespace com.espertech.esper.regressionlib
                 LogLevel.Info,
                 LogLevel.Fatal,
                 LoggerNLog.Console,
-                "com.espertech.esper.supportregression.execution.RegressionRunner");
+                "com.espertech.esper.regressionrun.runner.RegressionRunner");
 
+            logConfig.AddRule(
+                LogLevel.Warn,
+                LogLevel.Fatal,
+                LoggerNLog.Console,
+                "com.espertech.esper.regressionlib.support.multithread");
+            
             LoggerNLog.ResetConfig(logConfig);
             LoggerNLog.Register();
         }

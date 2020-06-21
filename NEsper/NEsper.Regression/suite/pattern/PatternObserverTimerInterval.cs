@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.patternassert;
@@ -26,14 +25,70 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new PatternOp());
-            execs.Add(new PatternIntervalSpec());
-            execs.Add(new PatternIntervalSpecVariables());
-            execs.Add(new PatternIntervalSpecExpression());
-            execs.Add(new PatternIntervalSpecExpressionWithProperty());
-            execs.Add(new PatternIntervalSpecPreparedStmt());
-            execs.Add(new PatternMonthScoped());
+            WithOp(execs);
+            WithIntervalSpec(execs);
+            WithIntervalSpecVariables(execs);
+            WithIntervalSpecExpression(execs);
+            WithIntervalSpecExpressionWithProperty(execs);
+            WithIntervalSpecPreparedStmt(execs);
+            WithMonthScoped(execs);
+            WithIntervalSpecExpressionWithPropertyArray(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIntervalSpecExpressionWithPropertyArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new PatternIntervalSpecExpressionWithPropertyArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMonthScoped(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternMonthScoped());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIntervalSpecPreparedStmt(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternIntervalSpecPreparedStmt());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIntervalSpecExpressionWithProperty(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternIntervalSpecExpressionWithProperty());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIntervalSpecExpression(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternIntervalSpecExpression());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIntervalSpecVariables(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternIntervalSpecVariables());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIntervalSpec(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternIntervalSpec());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOp(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternOp());
             return execs;
         }
 
@@ -74,7 +129,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 var text = "select * from pattern [timer:interval(1.999d)]";
                 var model = new EPStatementObjectModel();
-                model.Select(SelectClause.CreateWildcard());
+                model.SetSelect(SelectClause.CreateWildcard());
                 PatternExpr pattern = Patterns.TimerInterval(1.999d);
                 model.SetFrom(FromClause.Create(PatternStream.Create(pattern)));
                 model = env.CopyMayFail(model);
@@ -346,8 +401,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 SendTimer(15000, env);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a0Id","a1Id" },
-                    new [] { "E1","E2" });
+                    new[] {"a0Id", "a1Id"},
+                    new[] {"E1", "E2"});
 
                 env.UndeployAll();
             }

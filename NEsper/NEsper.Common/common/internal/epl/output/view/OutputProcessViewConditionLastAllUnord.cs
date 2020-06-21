@@ -99,8 +99,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         /// <param name="oldEvents">old events</param>
         /// <param name="exprEvaluatorContext">the evaluator context</param>
         public override void Process(
-            ISet<MultiKey<EventBean>> newEvents,
-            ISet<MultiKey<EventBean>> oldEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
@@ -207,7 +207,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 joinExecutionStrategy,
                 _resultSetProcessor,
                 parentView,
-                _parent.IsDistinct);
+                _parent.IsDistinct,
+                _parent.DistinctKeyGetter);
         }
 
         public override void Terminated()
@@ -229,8 +230,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             UniformPair<EventBean[]> newOldEvents)
         {
             if (_parent.IsDistinct && newOldEvents != null) {
-                newOldEvents.First = EventBeanUtility.GetDistinctByProp(newOldEvents.First, _parent.EventBeanReader);
-                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(newOldEvents.Second, _parent.EventBeanReader);
+                newOldEvents.First = EventBeanUtility.GetDistinctByProp(newOldEvents.First, _parent.DistinctKeyGetter);
+                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(newOldEvents.Second, _parent.DistinctKeyGetter);
             }
 
             if (doOutput) {

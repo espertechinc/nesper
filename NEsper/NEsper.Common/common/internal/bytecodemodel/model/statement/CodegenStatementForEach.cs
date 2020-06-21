@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
+using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
@@ -21,10 +22,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
     public class CodegenStatementForEach : CodegenStatementWBlockBase
     {
-        private readonly string @ref;
-        private readonly CodegenExpression target;
-        private readonly Type type;
-        private readonly bool useVar;
+        private readonly string _ref;
+        private readonly CodegenExpression _target;
+        private readonly Type _type;
+        private readonly bool _useVar;
 
         public CodegenStatementForEach(
             CodegenBlock parent,
@@ -33,10 +34,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             CodegenExpression target)
             : base(parent)
         {
-            this.useVar = false;
-            this.type = type;
-            this.@ref = @ref;
-            this.target = target;
+            _useVar = false;
+            _type = type;
+            _ref = @ref;
+            _target = target;
         }
 
         public CodegenStatementForEach(
@@ -45,10 +46,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             CodegenExpression target)
             : base(parent)
         {
-            this.useVar = true;
-            this.type = null;
-            this.@ref = @ref;
-            this.target = target;
+            _useVar = true;
+            _type = null;
+            _ref = @ref;
+            _target = target;
         }
 
         public CodegenBlock Block { get; set; }
@@ -60,15 +61,15 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             CodegenIndent indent)
         {
             builder.Append("foreach (");
-            if (useVar) {
+            if (_useVar) {
                 builder.Append("var");
             }
             else {
-                AppendClassName(builder, type);
+                AppendClassName(builder, _type);
             }
 
-            builder.Append(" ").Append(@ref).Append(" in ");
-            target.Render(builder, isInnerClass, level, indent);
+            builder.Append(" ").Append(_ref).Append(" in ");
+            _target.Render(builder, isInnerClass, level, indent);
             builder.Append(") {\n");
             Block.Render(builder, isInnerClass, level + 1, indent);
             indent.Indent(builder, level);
@@ -77,12 +78,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 
         public override void MergeClasses(ISet<Type> classes)
         {
-            if (!useVar) {
-                classes.AddToSet(type);
+            if (!_useVar) {
+                classes.AddToSet(_type);
             }
 
             Block.MergeClasses(classes);
-            target.MergeClasses(classes);
+            _target.MergeClasses(classes);
+        }
+        
+        public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            consumer.Invoke(_target);
+            Block.TraverseExpressions(consumer);
         }
     }
 } // end of namespace

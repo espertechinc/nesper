@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
     public class PluggableObjectEntry
@@ -18,7 +16,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
         public PluggableObjectEntry(
             PluggableObjectType type,
-            Object customConfigs)
+            object customConfigs)
         {
             PluggableType = type;
             CustomConfigs = customConfigs;

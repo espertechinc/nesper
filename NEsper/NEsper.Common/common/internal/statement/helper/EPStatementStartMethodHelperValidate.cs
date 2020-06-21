@@ -41,9 +41,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
 
             var visitorProps = new ExprNodeIdentifierCollectVisitor();
             foreach (var node in visitorSubselects.Subselects) {
-                if (node.StatementSpecCompiled.Raw.WhereClause != null) {
-                    node.StatementSpecCompiled.Raw.WhereClause.Accept(visitorProps);
-                }
+                node.StatementSpecCompiled.Raw.WhereClause?.Accept(visitorProps);
             }
 
             foreach (var node in visitorProps.ExprProperties) {
@@ -60,12 +58,14 @@ namespace com.espertech.esper.common.@internal.statement.helper
             StreamTypeService streamTypeService,
             string errorMsg,
             bool allowTableConsumption,
+            bool allowTableAggReset,
             StatementRawInfo raw,
             StatementCompileTimeServices compileTimeServices)
         {
             var validationContext = new ExprValidationContextBuilder(streamTypeService, raw, compileTimeServices)
-                .WithAllowBindingConsumption(allowTableConsumption)
-                .Build();
+                    .WithAllowBindingConsumption(allowTableConsumption)
+                    .WithAllowTableAggReset(allowTableAggReset)
+                    .Build();
             var validated = ExprNodeUtilityValidate.GetValidatedSubtree(exprNodeOrigin, exprNode, validationContext);
             ValidateNoAggregations(validated, errorMsg);
             return validated;
@@ -136,13 +136,14 @@ namespace com.espertech.esper.common.@internal.statement.helper
                     }
                 }
                 catch (ExprValidationException ex) {
-                    throw new ExprValidationException("Error validating expression: " + ex.Message, ex);
+                    throw new ExprValidationException("Failed to validate expression: " + ex.Message, ex);
                 }
             }
 
-            if (statementSpec.OutputLimitSpec != null &&
-                (statementSpec.OutputLimitSpec.WhenExpressionNode != null ||
-                 statementSpec.OutputLimitSpec.AndAfterTerminateExpr != null)) {
+            if ((statementSpec.OutputLimitSpec != null) && 
+                (statementSpec.OutputLimitSpec.WhenExpressionNode != null || 
+                 statementSpec.OutputLimitSpec.AndAfterTerminateExpr != null || 
+                 statementSpec.OutputLimitSpec.AndAfterTerminateThenExpressions != null)) {
                 // Validate where clause, initializing nodes to the stream ids used
                 EventType outputLimitType = OutputConditionExpressionTypeUtil.GetBuiltInEventType(
                     statementRawInfo.ModuleName,
@@ -203,12 +204,10 @@ namespace com.espertech.esper.common.@internal.statement.helper
                 }
 
                 // validate then-expression
-                ValidateThenSetAssignments(statementSpec.OutputLimitSpec.ThenExpressions, validationContext);
+                ValidateThenSetAssignments(statementSpec.OutputLimitSpec.ThenExpressions, validationContext, false);
 
                 // validate after-terminated then-expression
-                ValidateThenSetAssignments(
-                    statementSpec.OutputLimitSpec.AndAfterTerminateThenExpressions,
-                    validationContext);
+                ValidateThenSetAssignments(statementSpec.OutputLimitSpec.AndAfterTerminateThenExpressions, validationContext, false);
             }
 
             for (var outerJoinCount = 0; outerJoinCount < statementSpec.OuterJoinDescList.Count; outerJoinCount++) {
@@ -247,7 +246,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
                                 var message =
                                     "Outer join ON-clause columns must refer to properties of the same joined streams" +
                                     " when using multiple columns in the on-clause";
-                                throw new ExprValidationException("Error validating outer-join expression: " + message);
+                                throw new ExprValidationException("Failed to validate outer-join expression: " + message);
                             }
                         }
                     }
@@ -284,7 +283,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
                 ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.JOINON, equalsNode, validationContext);
             }
             catch (ExprValidationException ex) {
-                throw new ExprValidationException("Error validating outer-join expression: " + ex.Message, ex);
+                throw new ExprValidationException("Failed to validate outer-join expression: " + ex.Message, ex);
             }
 
             // Make sure we have left-hand-side and right-hand-side refering to different streams
@@ -292,7 +291,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
             var streamIdRight = rightNode.StreamId;
             if (streamIdLeft == streamIdRight) {
                 var message = "Outer join ON-clause cannot refer to properties of the same stream";
-                throw new ExprValidationException("Error validating outer-join expression: " + message);
+                throw new ExprValidationException("Failed to validate outer-join expression: " + message);
             }
 
             // Make sure one of the properties refers to the acutual stream currently being joined
@@ -301,7 +300,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
                 var message = "Outer join ON-clause must refer to at least one property of the joined stream" +
                               " for stream " +
                               expectedStreamJoined;
-                throw new ExprValidationException("Error validating outer-join expression: " + message);
+                throw new ExprValidationException("Failed to validate outer-join expression: " + message);
             }
 
             // Make sure neither of the streams refer to a 'future' stream
@@ -319,7 +318,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
                               " '" +
                               badPropertyName +
                               "', expecting the current or a prior stream scope";
-                throw new ExprValidationException("Error validating outer-join expression: " + message);
+                throw new ExprValidationException("Failed to validate outer-join expression: " + message);
             }
 
             return new UniformPair<int>(streamIdLeft, streamIdRight);
@@ -339,16 +338,15 @@ namespace com.espertech.esper.common.@internal.statement.helper
 
         private static void ValidateThenSetAssignments(
             IList<OnTriggerSetAssignment> assignments,
-            ExprValidationContext validationContext)
+            ExprValidationContext validationContext,
+            bool allowRHSAggregation)
         {
             if (assignments == null || assignments.IsEmpty()) {
                 return;
             }
 
             foreach (var assign in assignments) {
-                var node = ExprNodeUtilityValidate.GetValidatedAssignment(assign, validationContext);
-                assign.Expression = node;
-                ValidateNoAggregations(node, "An aggregate function may not appear in a OUTPUT LIMIT clause");
+                ExprNodeUtilityValidate.ValidateAssignment(true, ExprNodeOrigin.UPDATEASSIGN, assign, validationContext);
             }
         }
     }

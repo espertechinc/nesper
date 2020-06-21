@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.compiler.@internal.util
@@ -13,5 +14,10 @@ namespace com.espertech.esper.compiler.@internal.util
     public interface EPCompilerSPIExpression
     {
         ExprNode CompileValidate(string expression);
+
+        ExprNode CompileValidate(
+            string expression,
+            EventType[] eventTypes,
+            string[] streamNames);
     }
 } // end of namespace

@@ -8,137 +8,108 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionlib.support.util;
+using com.espertech.esper.regressionlib.support.expreval;
+
+using static com.espertech.esper.regressionlib.support.util.LambdaAssertionUtil;
 
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
-    public class ExprEnumTakeAndTakeLast
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            var execs = new List<RegressionExecution>();
-            execs.Add(new ExprEnumTakeEvents());
-            execs.Add(new ExprEnumTakeScalar());
-            return execs;
-        }
+	public class ExprEnumTakeAndTakeLast
+	{
 
-        internal class ExprEnumTakeEvents : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new [] { "val0","val1","val2","val3","val4","val5" };
-                var epl = "@Name('s0') select " +
-                          "Contained.take(2) as val0," +
-                          "Contained.take(1) as val1," +
-                          "Contained.take(0) as val2," +
-                          "Contained.take(-1) as val3," +
-                          "Contained.takeLast(2) as val4," +
-                          "Contained.takeLast(1) as val5" +
-                          " from SupportBean_ST0_Container";
-                env.CompileDeploy(epl).AddListener("s0");
+		public static ICollection<RegressionExecution> Executions()
+		{
+			List<RegressionExecution> execs = new List<RegressionExecution>();
+			execs.Add(new ExprEnumTakeEvents());
+			execs.Add(new ExprEnumTakeScalar());
+			return execs;
+		}
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fields,
-                    new[] {
-                        typeof(ICollection<object>),
-                        typeof(ICollection<object>), 
-                        typeof(ICollection<object>),
-                        typeof(ICollection<object>),
-                        typeof(ICollection<object>), 
-                        typeof(ICollection<object>)
-                    });
+		internal class ExprEnumTakeEvents : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
+				builder.WithExpression(fields[0], "Contained.take(2)");
+				builder.WithExpression(fields[1], "Contained.take(1)");
+				builder.WithExpression(fields[2], "Contained.take(0)");
+				builder.WithExpression(fields[3], "Contained.take(-1)");
+				builder.WithExpression(fields[4], "Contained.takeLast(2)");
+				builder.WithExpression(fields[5], "Contained.takeLast(1)");
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E2,2", "E3,3"));
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val0", "E1,E2");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val1", "E1");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val2", "");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val3", "");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val4", "E2,E3");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val5", "E3");
-                env.Listener("s0").Reset();
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E2,2"));
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val0", "E1,E2");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val1", "E1");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val2", "");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val3", "");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val4", "E1,E2");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val5", "E2");
-                env.Listener("s0").Reset();
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E2,2", "E3,3"))
+					.Verify("c0", val => AssertST0Id(val, "E1,E2"))
+					.Verify("c1", val => AssertST0Id(val, "E1"))
+					.Verify("c2", val => AssertST0Id(val, ""))
+					.Verify("c3", val => AssertST0Id(val, ""))
+					.Verify("c4", val => AssertST0Id(val, "E2,E3"))
+					.Verify("c5", val => AssertST0Id(val, "E3"));
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1"));
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val0", "E1");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val1", "E1");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val2", "");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val3", "");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val4", "E1");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val5", "E1");
-                env.Listener("s0").Reset();
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E2,2"))
+					.Verify("c0", val => AssertST0Id(val, "E1,E2"))
+					.Verify("c1", val => AssertST0Id(val, "E1"))
+					.Verify("c2", val => AssertST0Id(val, ""))
+					.Verify("c3", val => AssertST0Id(val, ""))
+					.Verify("c4", val => AssertST0Id(val, "E1,E2"))
+					.Verify("c5", val => AssertST0Id(val, "E2"));
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value());
-                foreach (var field in fields) {
-                    LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), field, "");
-                }
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1"))
+					.Verify("c0", val => AssertST0Id(val, "E1"))
+					.Verify("c1", val => AssertST0Id(val, "E1"))
+					.Verify("c2", val => AssertST0Id(val, ""))
+					.Verify("c3", val => AssertST0Id(val, ""))
+					.Verify("c4", val => AssertST0Id(val, "E1"))
+					.Verify("c5", val => AssertST0Id(val, "E1"));
 
-                env.Listener("s0").Reset();
+				SupportEvalAssertionBuilder assertionEmpty = builder.WithAssertion(SupportBean_ST0_Container.Make2Value());
+				foreach (string field in fields) {
+					assertionEmpty.Verify(field, val => AssertST0Id(val, ""));
+				}
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value(null));
-                foreach (var field in fields) {
-                    LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), field, null);
-                }
+				SupportEvalAssertionBuilder assertionNull = builder.WithAssertion(SupportBean_ST0_Container.Make2ValueNull());
+				foreach (string field in fields) {
+					assertionNull.Verify(field, val => AssertST0Id(val, null));
+				}
 
-                env.Listener("s0").Reset();
+				builder.Run(env);
+			}
+		}
 
-                env.UndeployAll();
-            }
-        }
+		internal class ExprEnumTakeScalar : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0,c1,c2,c3".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
+				builder.WithExpression(fields[0], "Strvals.take(2)");
+				builder.WithExpression(fields[1], "Strvals.take(1)");
+				builder.WithExpression(fields[2], "Strvals.takeLast(2)");
+				builder.WithExpression(fields[3], "Strvals.takeLast(1)");
 
-        internal class ExprEnumTakeScalar : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new [] { "val0","val1","val2","val3" };
-                var epl = "@Name('s0') select " +
-                          "Strvals.take(2) as val0," +
-                          "Strvals.take(1) as val1," +
-                          "Strvals.takeLast(2) as val2," +
-                          "Strvals.takeLast(1) as val3" +
-                          " from SupportCollection";
-                env.CompileDeploy(epl).AddListener("s0");
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fields,
-                    new[] {
-                        typeof(ICollection<object>),
-                        typeof(ICollection<object>), 
-                        typeof(ICollection<object>),
-                        typeof(ICollection<object>)
-                    });
+				builder.WithAssertion(SupportCollection.MakeString("E1,E2,E3"))
+					.Verify("c0", val => AssertValuesArrayScalar(val, "E1", "E2"))
+					.Verify("c1", val => AssertValuesArrayScalar(val, "E1"))
+					.Verify("c2", val => AssertValuesArrayScalar(val, "E2", "E3"))
+					.Verify("c3", val => AssertValuesArrayScalar(val, "E3"));
 
-                env.SendEventBean(SupportCollection.MakeString("E1,E2,E3"));
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val0", "E1", "E2");
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val1", "E1");
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val2", "E2", "E3");
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val3", "E3");
-                env.Listener("s0").Reset();
+				builder.WithAssertion(SupportCollection.MakeString("E1,E2"))
+					.Verify("c0", val => AssertValuesArrayScalar(val, "E1", "E2"))
+					.Verify("c1", val => AssertValuesArrayScalar(val, "E1"))
+					.Verify("c2", val => AssertValuesArrayScalar(val, "E1", "E2"))
+					.Verify("c3", val => AssertValuesArrayScalar(val, "E2"));
 
-                env.SendEventBean(SupportCollection.MakeString("E1,E2"));
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val0", "E1", "E2");
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val1", "E1");
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val2", "E1", "E2");
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val3", "E2");
-                env.Listener("s0").Reset();
+				AssertSingleAndEmptySupportColl(builder, fields);
 
-                LambdaAssertionUtil.AssertSingleAndEmptySupportColl(env, fields);
-
-                env.UndeployAll();
-            }
-        }
-    }
+				builder.Run(env);
+			}
+		}
+	}
 } // end of namespace

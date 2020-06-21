@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.view.core;
@@ -21,64 +22,29 @@ namespace com.espertech.esper.common.@internal.view.groupwin
     /// </summary>
     public class GroupByViewFactory : ViewFactory
     {
-        internal bool addingProperties; // when adding properties to the grouped-views output
-        internal ExprEvaluator[] criteriaEvals;
-        internal Type[] criteriaTypes;
-        internal EventType eventType;
-        internal ViewFactory[] groupeds;
-        internal bool isReclaimAged;
-        internal string[] propertyNames;
-        internal long reclaimFrequency;
-        internal long reclaimMaxAge;
+        public EventType EventType { get; set; }
 
-        public EventType EventType {
-            get => eventType;
-            set => eventType = value;
-        }
+        public bool IsReclaimAged { get; set; }
 
-        public bool IsReclaimAged {
-            get => isReclaimAged;
-            set => isReclaimAged = value;
-        }
+        public long ReclaimMaxAge { get; set; }
 
-        public long ReclaimMaxAge {
-            get => reclaimMaxAge;
-            set => reclaimMaxAge = value;
-        }
+        public long ReclaimFrequency { get; set; }
 
-        public long ReclaimFrequency {
-            get => reclaimFrequency;
-            set => reclaimFrequency = value;
-        }
+        public ExprEvaluator CriteriaEval { get; set; }
 
-        public ExprEvaluator[] CriteriaEvals {
-            get => criteriaEvals;
-            set => criteriaEvals = value;
-        }
+        public string[] PropertyNames { get; set; }
 
-        public string[] PropertyNames {
-            get => propertyNames;
-            set => propertyNames = value;
-        }
+        public ViewFactory[] Groupeds { get; set; }
 
-        public ViewFactory[] Groupeds {
-            get => groupeds;
-            set => groupeds = value;
-        }
+        public bool IsAddingProperties { get; set; }
 
-        public bool IsAddingProperties {
-            get => addingProperties;
-            set => addingProperties = value;
-        }
+        public Type[] CriteriaTypes { get; set; }
 
-        public Type[] CriteriaTypes {
-            get => criteriaTypes;
-            set => criteriaTypes = value;
-        }
+        public DataInputOutputSerde KeySerde { get; set; }
 
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            if (isReclaimAged) {
+            if (IsReclaimAged) {
                 return new GroupByViewReclaimAged(this, agentInstanceViewFactoryContext);
             }
 
@@ -91,11 +57,11 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             ViewFactoryContext viewFactoryContext,
             EPStatementInitServices services)
         {
-            if (groupeds == null) {
+            if (Groupeds == null) {
                 throw new IllegalStateException("Grouped views not provided");
             }
 
-            foreach (var grouped in groupeds) {
+            foreach (var grouped in Groupeds) {
                 grouped.Init(viewFactoryContext, services);
             }
         }

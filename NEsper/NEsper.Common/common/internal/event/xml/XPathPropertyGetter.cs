@@ -19,6 +19,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.xml;
 
@@ -464,7 +465,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     return null;
                 }
 
-                var array = Array.CreateInstance(optionalCastToType, nodeIterator.Count);
+                var array = Arrays.CreateInstanceChecked(optionalCastToType, nodeIterator.Count);
                 for (var i = 0; nodeIterator.MoveNext(); i++) {
                     var nodeCurrent = nodeIterator.Current;
                     object arrayItem = null;
@@ -493,7 +494,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
             if (result is XmlNodeList) {
                 var nodeList = (XmlNodeList) result;
-                var array = Array.CreateInstance(optionalCastToType, nodeList.Count);
+                var array = Arrays.CreateInstanceChecked(optionalCastToType, nodeList.Count);
 
                 for (var i = 0; i < nodeList.Count; i++) {
                     object arrayItem = null;

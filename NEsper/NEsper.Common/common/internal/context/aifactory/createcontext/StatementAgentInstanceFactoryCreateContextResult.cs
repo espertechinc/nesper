@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -19,8 +18,6 @@ using com.espertech.esper.common.@internal.epl.subselect;
 using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.previous;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
 {
@@ -30,7 +27,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
 
         public StatementAgentInstanceFactoryCreateContextResult(
             Viewable finalView,
-            AgentInstanceStopCallback stopCallback,
+            AgentInstanceMgmtCallback stopCallback,
             AgentInstanceContext agentInstanceContext,
             AggregationService optionalAggegationService,
             IDictionary<int, SubSelectFactoryResult> subselectStrategies,
@@ -50,7 +47,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                 previousGetterStrategies,
                 regexExprPreviousEvalStrategy,
                 tableAccessStrategies,
-                preloadList)
+                preloadList,
+                null)
 
         {
             this.contextManagerRealization = contextManagerRealization;

@@ -26,6 +26,8 @@ namespace com.espertech.esper.compat.io
 
         void WriteDecimal(decimal value);
 
+        void WriteChar(char value);
+
         void WriteUTF(string value);
 
         void Write(byte[] bytes, int offset, int length);

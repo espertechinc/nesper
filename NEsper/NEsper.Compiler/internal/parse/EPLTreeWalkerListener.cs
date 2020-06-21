@@ -14,9 +14,9 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.configuration.compiler;
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.client.soda;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage1.specmapper;
@@ -27,8 +27,8 @@ using com.espertech.esper.common.@internal.epl.agg.access.linear;
 using com.espertech.esper.common.@internal.epl.expression.agg.accessagg;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.agg.method;
+using com.espertech.esper.common.@internal.epl.expression.chain;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.epl.expression.declared.compiletime;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.expression.funcs;
 using com.espertech.esper.common.@internal.epl.expression.ops;
@@ -37,7 +37,6 @@ using com.espertech.esper.common.@internal.epl.expression.prior;
 using com.espertech.esper.common.@internal.epl.expression.subquery;
 using com.espertech.esper.common.@internal.epl.expression.table;
 using com.espertech.esper.common.@internal.epl.expression.time.node;
-using com.espertech.esper.common.@internal.epl.expression.variable;
 using com.espertech.esper.common.@internal.epl.historical.database.core;
 using com.espertech.esper.common.@internal.epl.pattern.and;
 using com.espertech.esper.common.@internal.epl.pattern.core;
@@ -52,14 +51,15 @@ using com.espertech.esper.common.@internal.epl.pattern.observer;
 using com.espertech.esper.common.@internal.epl.pattern.or;
 using com.espertech.esper.common.@internal.epl.rowrecog.core;
 using com.espertech.esper.common.@internal.epl.rowrecog.expr;
-using com.espertech.esper.common.@internal.epl.table.compiletime;
-using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.grammar.@internal.generated;
+
+using static com.espertech.esper.common.@internal.util.StringValue; // unescapeBacktick
+using static com.espertech.esper.compiler.@internal.parse.ASTChainableHelper; // processChainable
 
 namespace com.espertech.esper.compiler.@internal.parse
 {
@@ -69,50 +69,52 @@ namespace com.espertech.esper.compiler.@internal.parse
     /// </summary>
     public class EPLTreeWalkerListener : IEsperEPL2GrammarListener
     {
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private static readonly ISet<int> EVENT_FILTER_WALK_EXCEPTIONS_RECURSIVE = new HashSet<int>();
         private static readonly ISet<int> WHERE_CLAUSE_WALK_EXCEPTIONS_RECURSIVE = new HashSet<int>();
         private static readonly ISet<int> EVENT_PROPERTY_WALK_EXCEPTIONS_PARENT = new HashSet<int>();
         private static readonly ISet<int> SELECT_EXPRELE_WALK_EXCEPTIONS_RECURSIVE = new HashSet<int>();
 
-        private readonly IDictionary<ITree, object> astGOPNodeMap = new Dictionary<ITree, object>();
+        private readonly IDictionary<ITree, object> _astGOPNodeMap = new Dictionary<ITree, object>();
 
-        private readonly IDictionary<ITree, EvalForgeNode> astPatternNodeMap = new LinkedHashMap<ITree, EvalForgeNode>();
+        private readonly IDictionary<ITree, EvalForgeNode> _astPatternNodeMap = new LinkedHashMap<ITree, EvalForgeNode>();
 
-        private readonly IDictionary<ITree, RowRecogExprNode> astRowRegexNodeMap = new Dictionary<ITree, RowRecogExprNode>();
+        private readonly IDictionary<ITree, RowRecogExprNode> _astRowRegexNodeMap = new Dictionary<ITree, RowRecogExprNode>();
 
-        private readonly IDictionary<ITree, StatementSpecRaw> astStatementSpecMap = new Dictionary<ITree, StatementSpecRaw>();
-        private readonly SelectClauseStreamSelectorEnum defaultStreamSelector;
-        private readonly ExpressionDeclDesc expressionDeclarations;
-        private readonly StatementSpecMapEnv mapEnv;
+        private readonly IDictionary<ITree, StatementSpecRaw> _astStatementSpecMap = new Dictionary<ITree, StatementSpecRaw>();
+        private readonly SelectClauseStreamSelectorEnum _defaultStreamSelector;
+        private readonly ExpressionDeclDesc _expressionDeclarations;
+        private readonly StatementSpecMapEnv _mapEnv;
 
-        private readonly LazyAllocatedMap<ConfigurationCompilerPlugInAggregationMultiFunction, AggregationMultiFunctionForge> plugInAggregations = 
-            new LazyAllocatedMap<ConfigurationCompilerPlugInAggregationMultiFunction, AggregationMultiFunctionForge>();
+        private readonly LazyAllocatedMap<HashableMultiKey, AggregationMultiFunctionForge> _plugInAggregations = 
+            new LazyAllocatedMap<HashableMultiKey, AggregationMultiFunctionForge>();
 
-        private readonly IList<string> scriptBodies;
-        private readonly IList<ExpressionScriptProvided> scriptExpressions;
-        private readonly LinkedList<StatementStackItem> statementItemStack = new LinkedList<StatementStackItem>();
+        private readonly IList<string> _scriptBodies;
+        private readonly IList<string> _classBodies;
+        private readonly IList<string> _classProvidedList;
+        private readonly IList<ExpressionScriptProvided> _scriptExpressions;
+        private readonly LinkedList<StatementStackItem> _statementItemStack = new LinkedList<StatementStackItem>();
 
-        private readonly CommonTokenStream tokenStream;
+        private readonly CommonTokenStream _tokenStream;
 
         // private holding areas for accumulated info
-        private IDictionary<ITree, ExprNode> astExprNodeMap = new LinkedHashMap<ITree, ExprNode>();
-        private ContextCompileTimeDescriptor contextDescriptor;
+        private IDictionary<ITree, ExprNode> _astExprNodeMap = new LinkedHashMap<ITree, ExprNode>();
+        private ContextCompileTimeDescriptor _contextDescriptor;
 
-        private FilterSpecRaw filterSpec;
-        private IList<OnTriggerMergeAction> mergeActions;
-        private OnTriggerMergeActionInsert mergeInsertNoMatch;
-        private IList<OnTriggerMergeMatched> mergeMatcheds;
+        private FilterSpecRaw _filterSpec;
+        private IList<OnTriggerMergeAction> _mergeActions;
+        private OnTriggerMergeActionInsert _mergeInsertNoMatch;
+        private IList<OnTriggerMergeMatched> _mergeMatcheds;
 
-        private IDictionary<StatementSpecRaw, OnTriggerSplitStreamFromClause> onTriggerSplitPropertyEvals;
-        private PropertyEvalSpec propertyEvalSpec;
+        private IDictionary<StatementSpecRaw, OnTriggerSplitStreamFromClause> _onTriggerSplitPropertyEvals;
+        private PropertyEvalSpec _propertyEvalSpec;
 
-        private IList<SelectClauseElementRaw> propertySelectRaw;
+        private IList<SelectClauseElementRaw> _propertySelectRaw;
 
         // AST Walk result
-        private readonly IList<ExprSubstitutionNode> substitutionParamNodes = new List<ExprSubstitutionNode>();
-        private IList<ViewSpec> viewSpecs = new List<ViewSpec>();
+        private readonly IList<ExprSubstitutionNode> _substitutionParamNodes = new List<ExprSubstitutionNode>();
+        private IList<ViewSpec> _viewSpecs = new List<ViewSpec>();
 
         static EPLTreeWalkerListener()
         {
@@ -140,12 +142,14 @@ namespace com.espertech.esper.compiler.@internal.parse
         public EPLTreeWalkerListener(CommonTokenStream tokenStream,
                                      SelectClauseStreamSelectorEnum defaultStreamSelector,
                                      IList<string> scriptBodies,
+                                     IList<string> classBodies,
                                      StatementSpecMapEnv mapEnv)
         {
-            this.tokenStream = tokenStream;
-            this.mapEnv = mapEnv;
-            this.defaultStreamSelector = defaultStreamSelector;
-            this.scriptBodies = scriptBodies;
+            this._tokenStream = tokenStream;
+            this._mapEnv = mapEnv;
+            this._defaultStreamSelector = defaultStreamSelector;
+            this._scriptBodies = scriptBodies;
+            this._classBodies = classBodies;
 
             //if (defaultStreamSelector == null)
             //{
@@ -155,10 +159,12 @@ namespace com.espertech.esper.compiler.@internal.parse
             StatementSpec = new StatementSpecRaw(defaultStreamSelector);
 
             // statement-global items
-            expressionDeclarations = new ExpressionDeclDesc();
-            StatementSpec.ExpressionDeclDesc = expressionDeclarations;
-            scriptExpressions = new List<ExpressionScriptProvided>(1);
-            StatementSpec.ScriptExpressions = scriptExpressions;
+            _expressionDeclarations = new ExpressionDeclDesc();
+            StatementSpec.ExpressionDeclDesc = _expressionDeclarations;
+            _scriptExpressions = new List<ExpressionScriptProvided>(1);
+            _classProvidedList = new List<string>();
+            StatementSpec.ScriptExpressions = _scriptExpressions;
+            StatementSpec.ClassProvidedList = _classProvidedList;
         }
 
         public StatementSpecRaw StatementSpec { get; private set; }
@@ -167,10 +173,10 @@ namespace com.espertech.esper.compiler.@internal.parse
         {
             var contextName = ctx.i.Text;
             StatementSpec.OptionalContextName = contextName;
-            var contextDetail = mapEnv.ContextCompileTimeResolver.GetContextInfo(contextName);
+            var contextDetail = _mapEnv.ContextCompileTimeResolver.GetContextInfo(contextName);
             if (contextDetail != null)
             {
-                contextDescriptor = new ContextCompileTimeDescriptor(contextName, contextDetail.ContextModuleName, contextDetail.ContextVisibility, new ContextPropertyRegistry(contextDetail), contextDetail.ValidationInfos);
+                _contextDescriptor = new ContextCompileTimeDescriptor(contextName, contextDetail.ContextModuleName, contextDetail.ContextVisibility, new ContextPropertyRegistry(contextDetail), contextDetail.ValidationInfos);
             }
         }
 
@@ -198,7 +204,7 @@ namespace com.espertech.esper.compiler.@internal.parse
             }
             else if (ctx.inSubSelectQuery() != null)
             {
-                var currentSpec = astStatementSpecMap.Delete(ctx.inSubSelectQuery().subQueryExpr());
+                var currentSpec = _astStatementSpecMap.Delete(ctx.inSubSelectQuery().subQueryExpr());
                 exprNode = new ExprSubselectInNode(currentSpec, isNot);
             }
             else if (ctx.between != null)
@@ -231,7 +237,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                         break;
 
                     default:
-                        throw ASTWalkException.From("Encountered unrecognized node type " + ctx.r.Type, tokenStream, ctx);
+                        throw ASTWalkException.From("Encountered unrecognized node type " + ctx.r.Type, _tokenStream, ctx);
                 }
 
                 var isAll = ctx.g != null && ctx.g.Type == EsperEPL2GrammarLexer.ALL;
@@ -241,7 +247,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 {
                     if (ctx.subSelectGroupExpression() != null && !ctx.subSelectGroupExpression().IsEmpty())
                     {
-                        var currentSpec = astStatementSpecMap.Delete(ctx.subSelectGroupExpression()[0].subQueryExpr());
+                        var currentSpec = _astStatementSpecMap.Delete(ctx.subSelectGroupExpression()[0].subQueryExpr());
                         exprNode = new ExprSubselectAllSomeAnyNode(currentSpec, false, isAll, relationalOpEnum);
                     }
                     else
@@ -256,18 +262,13 @@ namespace com.espertech.esper.compiler.@internal.parse
             }
             else
             {
-                throw ASTWalkException.From("Encountered unrecognized relational op", tokenStream, ctx);
+                throw ASTWalkException.From("Encountered unrecognized relational op", _tokenStream, ctx);
             }
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(exprNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(exprNode, ctx, _astExprNodeMap);
             if (ctx.like != null && ctx.stringconstant() != null)
             {
                 exprNode.AddChildNode(new ExprConstantNodeImpl(ASTConstantHelper.Parse(ctx.stringconstant())));
             }
-        }
-
-        public void ExitLibFunction(EsperEPL2GrammarParser.LibFunctionContext ctx)
-        {
-            ASTLibFunctionHelper.HandleLibFunc(tokenStream, ctx, astExprNodeMap, plugInAggregations, expressionDeclarations, scriptExpressions, contextDescriptor, StatementSpec, mapEnv);
         }
 
         public void ExitMatchRecog(EsperEPL2GrammarParser.MatchRecogContext ctx)
@@ -275,7 +276,7 @@ namespace com.espertech.esper.compiler.@internal.parse
             var allMatches = ctx.matchRecogMatchesSelection() != null && ctx.matchRecogMatchesSelection().ALL() != null;
             if (ctx.matchRecogMatchesAfterSkip() != null)
             {
-                var skip = ASTMatchRecognizeHelper.ParseSkip(tokenStream, ctx.matchRecogMatchesAfterSkip());
+                var skip = ASTMatchRecognizeHelper.ParseSkip(_tokenStream, ctx.matchRecogMatchesAfterSkip());
                 StatementSpec.MatchRecognizeSpec.Skip.Skip = skip;
             }
 
@@ -283,9 +284,9 @@ namespace com.espertech.esper.compiler.@internal.parse
             {
                 if (!ctx.matchRecogMatchesInterval().i.Text.ToLowerInvariant().Equals("interval"))
                 {
-                    throw ASTWalkException.From("Invalid interval-clause within match-recognize, expecting keyword INTERVAL", tokenStream, ctx.matchRecogMatchesInterval());
+                    throw ASTWalkException.From("Invalid interval-clause within match-recognize, expecting keyword INTERVAL", _tokenStream, ctx.matchRecogMatchesInterval());
                 }
-                var expression = ASTExprHelper.ExprCollectSubNodes(ctx.matchRecogMatchesInterval().timePeriod(), 0, astExprNodeMap)[0];
+                var expression = ASTExprHelper.ExprCollectSubNodes(ctx.matchRecogMatchesInterval().timePeriod(), 0, _astExprNodeMap)[0];
                 var timePeriodExpr = (ExprTimePeriod) expression;
                 var orTerminated = ctx.matchRecogMatchesInterval().TERMINATED() != null;
                 StatementSpec.MatchRecognizeSpec.Interval = new MatchRecognizeInterval(timePeriodExpr, orTerminated);
@@ -300,29 +301,29 @@ namespace com.espertech.esper.compiler.@internal.parse
             {
                 StatementSpec.MatchRecognizeSpec = new MatchRecognizeSpec();
             }
-            var nodes = ASTExprHelper.ExprCollectSubNodes(ctx, 0, astExprNodeMap);
+            var nodes = ASTExprHelper.ExprCollectSubNodes(ctx, 0, _astExprNodeMap);
             StatementSpec.MatchRecognizeSpec.PartitionByExpressions.AddAll(nodes);
         }
 
         public void ExitMergeMatchedItem(EsperEPL2GrammarParser.MergeMatchedItemContext ctx)
         {
-            if (mergeActions == null)
+            if (_mergeActions == null)
             {
-                mergeActions = new List<OnTriggerMergeAction>();
+                _mergeActions = new List<OnTriggerMergeAction>();
             }
             ExprNode whereCond = null;
             if (ctx.whereClause() != null)
             {
-                whereCond = ASTExprHelper.ExprCollectSubNodes(ctx.whereClause(), 0, astExprNodeMap)[0];
+                whereCond = ASTExprHelper.ExprCollectSubNodes(ctx.whereClause(), 0, _astExprNodeMap)[0];
             }
             if (ctx.d != null)
             {
-                mergeActions.Add(new OnTriggerMergeActionDelete(whereCond));
+                _mergeActions.Add(new OnTriggerMergeActionDelete(whereCond));
             }
             if (ctx.u != null)
             {
-                var sets = ASTExprHelper.GetOnTriggerSetAssignments(ctx.onSetAssignmentList(), astExprNodeMap);
-                mergeActions.Add(new OnTriggerMergeActionUpdate(whereCond, sets));
+                var sets = ASTExprHelper.GetOnTriggerSetAssignments(ctx.onSetAssignmentList(), _astExprNodeMap);
+                _mergeActions.Add(new OnTriggerMergeActionUpdate(whereCond, sets));
             }
             if (ctx.mergeInsert() != null)
             {
@@ -343,7 +344,7 @@ namespace com.espertech.esper.compiler.@internal.parse
         public void ExitMatchRecogDefineItem(EsperEPL2GrammarParser.MatchRecogDefineItemContext ctx)
         {
             var first = ctx.i.Text;
-            var exprNode = ASTExprHelper.ExprCollectSubNodes(ctx, 0, astExprNodeMap)[0];
+            var exprNode = ASTExprHelper.ExprCollectSubNodes(ctx, 0, _astExprNodeMap)[0];
             StatementSpec.MatchRecognizeSpec.Defines.Add(new MatchRecognizeDefineItem(first, exprNode));
         }
 
@@ -352,26 +353,26 @@ namespace com.espertech.esper.compiler.@internal.parse
             IList<SelectClauseElementRaw> expressions = new List<SelectClauseElementRaw>(StatementSpec.SelectClauseSpec.SelectExprList);
             StatementSpec.SelectClauseSpec.SelectExprList.Clear();
             var columsList = ASTUtil.GetIdentList(ctx.columnList());
-            mergeInsertNoMatch = new OnTriggerMergeActionInsert(null, null, columsList, expressions);
+            _mergeInsertNoMatch = new OnTriggerMergeActionInsert(null, null, columsList, expressions);
         }
 
         public void ExitMergeUnmatchedItem(EsperEPL2GrammarParser.MergeUnmatchedItemContext ctx)
         {
-            if (mergeActions == null)
+            if (_mergeActions == null)
             {
-                mergeActions = new List<OnTriggerMergeAction>();
+                _mergeActions = new List<OnTriggerMergeAction>();
             }
             HandleMergeInsert(ctx.mergeInsert());
         }
 
         public void ExitHavingClause(EsperEPL2GrammarParser.HavingClauseContext ctx)
         {
-            if (astExprNodeMap.Count != 1)
+            if (_astExprNodeMap.Count != 1)
             {
                 throw new IllegalStateException("Having clause generated zero or more then one expression nodes");
             }
-            StatementSpec.HavingClause = ASTExprHelper.ExprCollectSubNodes(ctx, 0, astExprNodeMap)[0];
-            astExprNodeMap.Clear();
+            StatementSpec.HavingClause = ASTExprHelper.ExprCollectSubNodes(ctx, 0, _astExprNodeMap)[0];
+            _astExprNodeMap.Clear();
         }
 
         public void ExitMatchRecogMeasureItem(EsperEPL2GrammarParser.MatchRecogMeasureItemContext ctx)
@@ -380,7 +381,7 @@ namespace com.espertech.esper.compiler.@internal.parse
             {
                 StatementSpec.MatchRecognizeSpec = new MatchRecognizeSpec();
             }
-            var exprNode = ASTExprHelper.ExprCollectSubNodes(ctx, 0, astExprNodeMap)[0];
+            var exprNode = ASTExprHelper.ExprCollectSubNodes(ctx, 0, _astExprNodeMap)[0];
             var name = ctx.i?.Text;
             StatementSpec.MatchRecognizeSpec.AddMeasureItem(new MatchRecognizeMeasureItem(exprNode, name));
         }
@@ -389,11 +390,11 @@ namespace com.espertech.esper.compiler.@internal.parse
         {
             var objectNamespace = ctx.ns.Text;
             var objectName = ctx.a != null ? ctx.a.Text : ctx.nm.Text;
-            var obsParameters = ASTExprHelper.ExprCollectSubNodes(ctx, 2, astExprNodeMap);
+            var obsParameters = ASTExprHelper.ExprCollectSubNodes(ctx, 2, _astExprNodeMap);
 
             var observerSpec = new PatternObserverSpec(objectNamespace, objectName, obsParameters);
-            EvalForgeNode observerNode = new EvalObserverForgeNode(observerSpec);
-            ASTExprHelper.PatternCollectAddSubnodesAddParentNode(observerNode, ctx, astPatternNodeMap);
+            EvalForgeNode observerNode = new EvalObserverForgeNode(_mapEnv.IsAttachPatternText, observerSpec);
+            ASTExprHelper.PatternCollectAddSubnodesAddParentNode(observerNode, ctx, _astPatternNodeMap);
         }
 
         public void ExitMatchRecogPatternNested(EsperEPL2GrammarParser.MatchRecogPatternNestedContext ctx)
@@ -407,15 +408,15 @@ namespace com.espertech.esper.compiler.@internal.parse
             {
                 type = RowRecogNFATypeEnumExtensions.FromString(ctx.s.Text, null);
             }
-            var repeat = ASTMatchRecognizeHelper.WalkOptionalRepeat(ctx.matchRecogPatternRepeat(), astExprNodeMap);
+            var repeat = ASTMatchRecognizeHelper.WalkOptionalRepeat(ctx.matchRecogPatternRepeat(), _astExprNodeMap);
             var nestedNode = new RowRecogExprNodeNested(type, repeat);
-            ASTExprHelper.RegExCollectAddSubNodesAddParentNode(nestedNode, ctx, astRowRegexNodeMap);
+            ASTExprHelper.RegExCollectAddSubNodesAddParentNode(nestedNode, ctx, _astRowRegexNodeMap);
         }
 
         public void ExitMatchRecogPatternPermute(EsperEPL2GrammarParser.MatchRecogPatternPermuteContext ctx)
         {
             var permuteNode = new RowRecogExprNodePermute();
-            ASTExprHelper.RegExCollectAddSubNodesAddParentNode(permuteNode, ctx, astRowRegexNodeMap);
+            ASTExprHelper.RegExCollectAddSubNodesAddParentNode(permuteNode, ctx, _astRowRegexNodeMap);
         }
 
         public void ExitEvalOrExpression(EsperEPL2GrammarParser.EvalOrExpressionContext ctx)
@@ -425,13 +426,13 @@ namespace com.espertech.esper.compiler.@internal.parse
                 return;
             }
             var or = new ExprOrNode();
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(or, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(or, ctx, _astExprNodeMap);
         }
 
         public void ExitTimePeriod(EsperEPL2GrammarParser.TimePeriodContext ctx)
         {
-            var timeNode = ASTExprHelper.TimePeriodGetExprAllParams(ctx, astExprNodeMap, mapEnv.VariableCompileTimeResolver, StatementSpec, mapEnv.Configuration, mapEnv.ImportService.TimeAbacus);
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(timeNode, ctx, astExprNodeMap);
+            var timeNode = ASTExprHelper.TimePeriodGetExprAllParams(ctx, _astExprNodeMap, _mapEnv.VariableCompileTimeResolver, StatementSpec, _mapEnv.Configuration, _mapEnv.ImportService.TimeAbacus);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(timeNode, ctx, _astExprNodeMap);
         }
 
         public void ExitSelectionListElementExpr(EsperEPL2GrammarParser.SelectionListElementExprContext ctx)
@@ -439,17 +440,17 @@ namespace com.espertech.esper.compiler.@internal.parse
             ExprNode exprNode;
             if (ASTUtil.IsRecursiveParentRule(ctx, SELECT_EXPRELE_WALK_EXCEPTIONS_RECURSIVE))
             {
-                exprNode = ASTExprHelper.ExprCollectSubNodes(ctx, 0, astExprNodeMap)[0];
+                exprNode = ASTExprHelper.ExprCollectSubNodes(ctx, 0, _astExprNodeMap)[0];
             }
             else
             {
-                if (astExprNodeMap.Count > 1 || astExprNodeMap.IsEmpty())
+                if (_astExprNodeMap.Count > 1 || _astExprNodeMap.IsEmpty())
                 {
-                    throw ASTWalkException.From("Unexpected AST tree contains zero or more then 1 child element for root", tokenStream, ctx);
+                    throw ASTWalkException.From("Unexpected AST tree contains zero or more then 1 child element for root", _tokenStream, ctx);
                 }
 
-                exprNode = astExprNodeMap.Values.First();
-                astExprNodeMap.Clear();
+                exprNode = _astExprNodeMap.Values.First();
+                _astExprNodeMap.Clear();
             }
 
             // Get list element name
@@ -469,7 +470,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 }
                 else
                 {
-                    throw ASTWalkException.From("Failed to recognize select-expression annotation '" + annotation + "', expected 'eventbean'", tokenStream, ctx);
+                    throw ASTWalkException.From("Failed to recognize select-expression annotation '" + annotation + "', expected 'eventbean'", _tokenStream, ctx);
                 }
             }
 
@@ -485,12 +486,12 @@ namespace com.espertech.esper.compiler.@internal.parse
             }
 
             // for event streams we keep the filter spec around for use when the stream definition is completed
-            filterSpec = ASTFilterSpecHelper.WalkFilterSpec(ctx, propertyEvalSpec, astExprNodeMap);
+            _filterSpec = ASTFilterSpecHelper.WalkFilterSpec(ctx, _propertyEvalSpec, _astExprNodeMap);
 
             // set property eval to null
-            propertyEvalSpec = null;
+            _propertyEvalSpec = null;
 
-            astExprNodeMap.Clear();
+            _astExprNodeMap.Clear();
         }
 
         public void ExitMatchRecogPatternConcat(EsperEPL2GrammarParser.MatchRecogPatternConcatContext ctx)
@@ -500,7 +501,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 return;
             }
             var concatNode = new RowRecogExprNodeConcatenation();
-            ASTExprHelper.RegExCollectAddSubNodesAddParentNode(concatNode, ctx, astRowRegexNodeMap);
+            ASTExprHelper.RegExCollectAddSubNodesAddParentNode(concatNode, ctx, _astRowRegexNodeMap);
         }
 
         public void ExitNumberconstant(EsperEPL2GrammarParser.NumberconstantContext ctx)
@@ -511,12 +512,12 @@ namespace com.espertech.esper.compiler.@internal.parse
                 return;
             }
             ExprConstantNode constantNode = new ExprConstantNodeImpl(ASTConstantHelper.Parse(ctx));
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(constantNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(constantNode, ctx, _astExprNodeMap);
         }
 
         public void ExitMatchRecogPattern(EsperEPL2GrammarParser.MatchRecogPatternContext ctx)
         {
-            var exprNode = ASTExprHelper.RegExGetRemoveTopNode(ctx, astRowRegexNodeMap);
+            var exprNode = ASTExprHelper.RegExGetRemoveTopNode(ctx, _astRowRegexNodeMap);
             if (exprNode == null)
             {
                 throw new IllegalStateException("Expression node for AST node not found");
@@ -531,14 +532,14 @@ namespace com.espertech.esper.compiler.@internal.parse
             { // ignore pattern
                 return;
             }
-            if (astExprNodeMap.Count != 1)
+            if (_astExprNodeMap.Count != 1)
             {
                 throw new IllegalStateException("Where clause generated zero or more then one expression nodes");
             }
 
             // Just assign the single root ExprNode not consumed yet
-            StatementSpec.WhereClause = astExprNodeMap.Values.First();
-            astExprNodeMap.Clear();
+            StatementSpec.WhereClause = _astExprNodeMap.Values.First();
+            _astExprNodeMap.Clear();
         }
 
         public void ExitMatchRecogPatternAtom(EsperEPL2GrammarParser.MatchRecogPatternAtomContext ctx)
@@ -554,9 +555,9 @@ namespace com.espertech.esper.compiler.@internal.parse
                 type = RowRecogNFATypeEnumExtensions.FromString(ctx.s.Text, null);
             }
 
-            var repeat = ASTMatchRecognizeHelper.WalkOptionalRepeat(ctx.matchRecogPatternRepeat(), astExprNodeMap);
+            var repeat = ASTMatchRecognizeHelper.WalkOptionalRepeat(ctx.matchRecogPatternRepeat(), _astExprNodeMap);
             var item = new RowRecogExprNodeAtom(first, type, repeat);
-            ASTExprHelper.RegExCollectAddSubNodesAddParentNode(item, ctx, astRowRegexNodeMap);
+            ASTExprHelper.RegExCollectAddSubNodesAddParentNode(item, ctx, _astRowRegexNodeMap);
         }
 
         public void ExitUpdateExpr(EsperEPL2GrammarParser.UpdateExprContext ctx)
@@ -566,22 +567,22 @@ namespace com.espertech.esper.compiler.@internal.parse
             var streamSpec = new FilterStreamSpecRaw(new FilterSpecRaw(eventTypeName, new EmptyList<ExprNode>(), null), ViewSpec.EMPTY_VIEWSPEC_ARRAY, eventTypeName, StreamSpecOptions.DEFAULT);
             StatementSpec.StreamSpecs.Add(streamSpec);
             var optionalStreamName = ASTUtil.GetStreamNameUnescapedOptional(updctx.identOrTicked());
-            var assignments = ASTExprHelper.GetOnTriggerSetAssignments(updctx.onSetAssignmentList(), astExprNodeMap);
-            var whereClause = updctx.WHERE() != null ? ASTExprHelper.ExprCollectSubNodes(updctx.whereClause(), 0, astExprNodeMap)[0] : null;
+            var assignments = ASTExprHelper.GetOnTriggerSetAssignments(updctx.onSetAssignmentList(), _astExprNodeMap);
+            var whereClause = updctx.WHERE() != null ? ASTExprHelper.ExprCollectSubNodes(updctx.whereClause(), 0, _astExprNodeMap)[0] : null;
             StatementSpec.UpdateDesc = new UpdateDesc(optionalStreamName, assignments, whereClause);
         }
 
         public void ExitFrequencyOperand(EsperEPL2GrammarParser.FrequencyOperandContext ctx)
         {
             var exprNode = new ExprNumberSetFrequency();
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(exprNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(exprNode, ctx, _astExprNodeMap);
             ASTExprHelper.AddOptionalNumber(exprNode, ctx.number());
-            ASTExprHelper.AddOptionalSimpleProperty(exprNode, ctx.i, mapEnv.VariableCompileTimeResolver, StatementSpec);
+            ASTExprHelper.AddOptionalSimpleProperty(exprNode, ctx.i, _mapEnv.VariableCompileTimeResolver, StatementSpec);
         }
 
         public void ExitCreateDataflow(EsperEPL2GrammarParser.CreateDataflowContext ctx)
         {
-            var graphDesc = ASTGraphHelper.WalkCreateDataFlow(ctx, astGOPNodeMap, mapEnv.ImportService);
+            var graphDesc = ASTGraphHelper.WalkCreateDataFlow(ctx, _astGOPNodeMap, _mapEnv.ImportService);
             StatementSpec.CreateDataFlowDesc = graphDesc;
         }
 
@@ -639,7 +640,7 @@ namespace com.espertech.esper.compiler.@internal.parse
             ExprNode assignment = null;
             if (ctx.EQUALS() != null)
             {
-                assignment = ASTExprHelper.ExprCollectSubNodes(ctx.expression(), 0, astExprNodeMap)[0];
+                assignment = ASTExprHelper.ExprCollectSubNodes(ctx.expression(), 0, _astExprNodeMap)[0];
             }
 
             var desc = new CreateVariableDesc(variableType, variableName, assignment, constant);
@@ -654,19 +655,19 @@ namespace com.espertech.esper.compiler.@internal.parse
             StreamSpecRaw streamSpec;
             if (ctx.eventFilterExpression() != null)
             {
-                streamSpec = new FilterStreamSpecRaw(filterSpec, ViewSpec.EMPTY_VIEWSPEC_ARRAY, streamAsName, StreamSpecOptions.DEFAULT);
+                streamSpec = new FilterStreamSpecRaw(_filterSpec, ViewSpec.EMPTY_VIEWSPEC_ARRAY, streamAsName, StreamSpecOptions.DEFAULT);
             }
             else if (ctx.patternInclusionExpression() != null)
             {
-                if (astPatternNodeMap.Count > 1 || astPatternNodeMap.IsEmpty())
+                if (_astPatternNodeMap.Count > 1 || _astPatternNodeMap.IsEmpty())
                 {
                     throw ASTWalkException.From("Unexpected AST tree contains zero or more then 1 child elements for root");
                 }
                 // Get expression node sub-tree from the AST nodes placed so far
-                var evalNode = astPatternNodeMap.Values.First();
+                var evalNode = _astPatternNodeMap.Values.First();
                 var flags = GetPatternFlags(ctx.patternInclusionExpression().annotationEnum());
-                streamSpec = new PatternStreamSpecRaw(evalNode, ViewSpec.ToArray(viewSpecs), streamAsName, StreamSpecOptions.DEFAULT, flags.IsSuppressSameEventMatches, flags.IsDiscardPartialsOnMatch);
-                astPatternNodeMap.Clear();
+                streamSpec = new PatternStreamSpecRaw(evalNode, ViewSpec.ToArray(_viewSpecs), streamAsName, StreamSpecOptions.DEFAULT, flags.IsSuppressSameEventMatches, flags.IsDiscardPartialsOnMatch);
+                _astPatternNodeMap.Clear();
             }
             else
             {
@@ -677,49 +678,49 @@ namespace com.espertech.esper.compiler.@internal.parse
 
         public void ExitOnSelectInsertFromClause(EsperEPL2GrammarParser.OnSelectInsertFromClauseContext ctx)
         {
-            if (onTriggerSplitPropertyEvals == null)
+            if (_onTriggerSplitPropertyEvals == null)
             {
-                onTriggerSplitPropertyEvals = new Dictionary<StatementSpecRaw, OnTriggerSplitStreamFromClause>();
+                _onTriggerSplitPropertyEvals = new Dictionary<StatementSpecRaw, OnTriggerSplitStreamFromClause>();
             }
             var streamName = ASTUtil.GetStreamNameUnescapedOptional(ctx.identOrTicked());
-            onTriggerSplitPropertyEvals.Put(StatementSpec, new OnTriggerSplitStreamFromClause(propertyEvalSpec, streamName));
-            propertyEvalSpec = null;
+            _onTriggerSplitPropertyEvals.Put(StatementSpec, new OnTriggerSplitStreamFromClause(_propertyEvalSpec, streamName));
+            _propertyEvalSpec = null;
         }
 
         public void ExitPropertyExpressionAtomic(EsperEPL2GrammarParser.PropertyExpressionAtomicContext ctx)
         {
             // initialize if not set
-            if (propertyEvalSpec == null)
+            if (_propertyEvalSpec == null)
             {
-                propertyEvalSpec = new PropertyEvalSpec();
+                _propertyEvalSpec = new PropertyEvalSpec();
             }
 
             // get select clause
             var optionalSelectClause = new SelectClauseSpecRaw();
-            if (propertySelectRaw != null)
+            if (_propertySelectRaw != null)
             {
-                optionalSelectClause.SelectExprList.AddAll(propertySelectRaw);
-                propertySelectRaw = null;
+                optionalSelectClause.SelectExprList.AddAll(_propertySelectRaw);
+                _propertySelectRaw = null;
             }
 
             // get the splitter expression
-            var splitterExpression = ASTExprHelper.ExprCollectSubNodes(ctx.expression(0), 0, astExprNodeMap)[0];
+            var splitterExpression = ASTExprHelper.ExprCollectSubNodes(ctx.expression(0), 0, _astExprNodeMap)[0];
 
             // get where-clause, if any
-            var optionalWhereClause = ctx.where == null ? null : ASTExprHelper.ExprCollectSubNodes(ctx.where, 0, astExprNodeMap)[0];
+            var optionalWhereClause = ctx.where == null ? null : ASTExprHelper.ExprCollectSubNodes(ctx.where, 0, _astExprNodeMap)[0];
 
             var optionalAsName = ctx.n?.Text;
 
-            var splitterEventTypeName = ASTTypeExpressionAnnoHelper.ExpectMayTypeAnno(ctx.typeExpressionAnnotation(), tokenStream);
+            var splitterEventTypeName = ASTTypeExpressionAnnoHelper.ExpectMayTypeAnno(ctx.typeExpressionAnnotation(), _tokenStream);
             var atom = new PropertyEvalAtom(splitterExpression, splitterEventTypeName, optionalAsName, optionalSelectClause, optionalWhereClause);
-            propertyEvalSpec.Add(atom);
+            _propertyEvalSpec.Add(atom);
         }
 
         public void ExitFafUpdate(EsperEPL2GrammarParser.FafUpdateContext ctx)
         {
             HandleFAFNamedWindowStream(ctx.updateDetails().classIdentifier(), ctx.updateDetails().identOrTicked());
-            var assignments = ASTExprHelper.GetOnTriggerSetAssignments(ctx.updateDetails().onSetAssignmentList(), astExprNodeMap);
-            var whereClause = ctx.updateDetails().whereClause() == null ? null : ASTExprHelper.ExprCollectSubNodes(ctx.updateDetails().whereClause(), 0, astExprNodeMap)[0];
+            var assignments = ASTExprHelper.GetOnTriggerSetAssignments(ctx.updateDetails().onSetAssignmentList(), _astExprNodeMap);
+            var whereClause = ctx.updateDetails().whereClause() == null ? null : ASTExprHelper.ExprCollectSubNodes(ctx.updateDetails().whereClause(), 0, _astExprNodeMap)[0];
             StatementSpec.WhereClause = whereClause;
             StatementSpec.FireAndForgetSpec = new FireAndForgetSpecUpdate(assignments);
         }
@@ -747,11 +748,11 @@ namespace com.espertech.esper.compiler.@internal.parse
                     break;
 
                 default:
-                    throw ASTWalkException.From("Node type " + token + " not a recognized bit wise node type", tokenStream, ctx);
+                    throw ASTWalkException.From("Node type " + token + " not a recognized bit wise node type", _tokenStream, ctx);
             }
 
             var bwNode = new ExprBitWiseNode(bitWiseOpEnum);
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(bwNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(bwNode, ctx, _astExprNodeMap);
         }
 
         public void ExitEvalEqualsExpression(EsperEPL2GrammarParser.EvalEqualsExpressionContext ctx)
@@ -773,7 +774,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 IList<EsperEPL2GrammarParser.SubSelectGroupExpressionContext> subselect = ctx.subSelectGroupExpression();
                 if (subselect != null && !subselect.IsEmpty())
                 {
-                    var currentSpec = astStatementSpecMap.Delete(ctx.subSelectGroupExpression()[0].subQueryExpr());
+                    var currentSpec = _astStatementSpecMap.Delete(ctx.subSelectGroupExpression()[0].subQueryExpr());
                     exprNode = new ExprSubselectAllSomeAnyNode(currentSpec, isNot, isAll, null);
                 }
                 else
@@ -781,7 +782,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                     exprNode = new ExprEqualsAllAnyNode(isNot, isAll);
                 }
             }
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(exprNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(exprNode, ctx, _astExprNodeMap);
         }
 
         public void ExitGopConfig(EsperEPL2GrammarParser.GopConfigContext ctx)
@@ -791,24 +792,24 @@ namespace com.espertech.esper.compiler.@internal.parse
             {
                 if (ctx.expression() != null)
                 {
-                    value = ASTExprHelper.ExprCollectSubNodes(ctx, 0, astExprNodeMap)[0];
+                    value = ASTExprHelper.ExprCollectSubNodes(ctx, 0, _astExprNodeMap)[0];
                 }
                 else
                 {
                     if (ctx.jsonarray() != null)
                     {
-                        value = new ExprConstantNodeImpl(ASTJsonHelper.WalkArray(tokenStream, ctx.jsonarray()));
+                        value = new ExprConstantNodeImpl(ASTJsonHelper.WalkArray(_tokenStream, ctx.jsonarray()));
                     }
                     else
                     {
-                        value = new ExprConstantNodeImpl(ASTJsonHelper.WalkObject(tokenStream, ctx.jsonobject()));
+                        value = new ExprConstantNodeImpl(ASTJsonHelper.WalkObject(_tokenStream, ctx.jsonobject()));
                     }
-                    ASTExprHelper.ExprCollectSubNodes(ctx, 0, astExprNodeMap);
+                    ASTExprHelper.ExprCollectSubNodes(ctx, 0, _astExprNodeMap);
                 }
             }
             else
             {
-                var newSpec = new StatementSpecRaw(defaultStreamSelector);
+                var newSpec = new StatementSpecRaw(_defaultStreamSelector);
                 newSpec.Annotations.AddAll(StatementSpec.Annotations);
 
                 var existingSpec = StatementSpec;
@@ -818,7 +819,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 
                 StatementSpec = newSpec;
             }
-            astGOPNodeMap.Put(ctx, value);
+            _astGOPNodeMap.Put(ctx, value);
         }
 
         public void ExitCreateSelectionListElement(EsperEPL2GrammarParser.CreateSelectionListElementContext ctx)
@@ -829,7 +830,7 @@ namespace com.espertech.esper.compiler.@internal.parse
             }
             else
             {
-                var expr = ASTExprHelper.ExprCollectSubNodes(ctx, 0, astExprNodeMap)[0];
+                var expr = ASTExprHelper.ExprCollectSubNodes(ctx, 0, _astExprNodeMap)[0];
                 var asName = ctx.i?.Text;
                 StatementSpec.SelectClauseSpec.Add(new SelectClauseExprRawSpec(expr, asName, false));
             }
@@ -843,8 +844,12 @@ namespace com.espertech.esper.compiler.@internal.parse
 
         public void ExitConstant(EsperEPL2GrammarParser.ConstantContext ctx)
         {
-            ExprConstantNode constantNode = new ExprConstantNodeImpl(ASTConstantHelper.Parse(ctx.GetChild(0)));
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(constantNode, ctx, astExprNodeMap);
+            String stringConstant = null;
+            if (ctx.stringconstant() != null) {
+                stringConstant = ctx.stringconstant().GetText();
+            }
+            ExprConstantNode constantNode = new ExprConstantNodeImpl(ASTConstantHelper.Parse(ctx.GetChild(0)), stringConstant);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(constantNode, ctx, _astExprNodeMap);
         }
 
         public void ExitMergeMatched(EsperEPL2GrammarParser.MergeMatchedContext ctx)
@@ -859,7 +864,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 return;
             }
             ExprAndNode and = new ExprAndNodeImpl();
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(and, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(and, ctx, _astExprNodeMap);
         }
 
         public void ExitForExpr(EsperEPL2GrammarParser.ForExprContext ctx)
@@ -869,7 +874,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 StatementSpec.ForClauseSpec = new ForClauseSpec();
             }
             var ident = ctx.i.Text;
-            var expressions = ASTExprHelper.ExprCollectSubNodes(ctx, 0, astExprNodeMap);
+            var expressions = ASTExprHelper.ExprCollectSubNodes(ctx, 0, _astExprNodeMap);
             StatementSpec.ForClauseSpec.Clauses.Add(new ForClauseItemSpec(ident, expressions));
         }
 
@@ -881,16 +886,16 @@ namespace com.espertech.esper.compiler.@internal.parse
             }
             if (ctx.s != null)
             {
-                ExprNode node = ASTExprHelper.TimePeriodGetExprJustSeconds(ctx.expression(), astExprNodeMap, mapEnv.ImportService.TimeAbacus);
-                astExprNodeMap.Put(ctx, node);
+                ExprNode node = ASTExprHelper.TimePeriodGetExprJustSeconds(ctx.expression(), _astExprNodeMap, _mapEnv.ImportService.TimeAbacus);
+                _astExprNodeMap.Put(ctx, node);
             }
             else if (ctx.a != null || ctx.d != null)
             {
                 var isDescending = ctx.d != null;
-                var node = ASTExprHelper.ExprCollectSubNodes(ctx.expression(), 0, astExprNodeMap)[0];
+                var node = ASTExprHelper.ExprCollectSubNodes(ctx.expression(), 0, _astExprNodeMap)[0];
                 var exprNode = new ExprOrderedExpr(isDescending);
                 exprNode.AddChildNode(node);
-                astExprNodeMap.Put(ctx, exprNode);
+                _astExprNodeMap.Put(ctx, exprNode);
             }
         }
 
@@ -908,17 +913,17 @@ namespace com.espertech.esper.compiler.@internal.parse
             }
             else
             {
-                var exprNode = ASTExprHelper.ExprCollectSubNodes(ctx.expression(), 0, astExprNodeMap)[0];
+                var exprNode = ASTExprHelper.ExprCollectSubNodes(ctx.expression(), 0, _astExprNodeMap)[0];
                 var optionalName = ctx.keywordAllowedIdent() != null ? ctx.keywordAllowedIdent().GetText() : null;
                 raw = new SelectClauseExprRawSpec(exprNode, optionalName, false);
             }
 
             // Add as selection element
-            if (propertySelectRaw == null)
+            if (_propertySelectRaw == null)
             {
-                propertySelectRaw = new List<SelectClauseElementRaw>();
+                _propertySelectRaw = new List<SelectClauseElementRaw>();
             }
-            propertySelectRaw.Add(raw);
+            _propertySelectRaw.Add(raw);
         }
 
         public void ExitExpressionDecl(EsperEPL2GrammarParser.ExpressionDeclContext ctx)
@@ -928,29 +933,29 @@ namespace com.espertech.esper.compiler.@internal.parse
                 return;
             }
 
-            var pair = ASTExpressionDeclHelper.WalkExpressionDecl(ctx, scriptBodies, astExprNodeMap, tokenStream);
+            var pair = ASTExpressionDeclHelper.WalkExpressionDecl(ctx, _scriptBodies, _astExprNodeMap, _tokenStream);
             if (pair.First != null)
             {
-                expressionDeclarations.Add(pair.First);
+                _expressionDeclarations.Add(pair.First);
             }
             else
             {
-                scriptExpressions.Add(pair.Second);
+                _scriptExpressions.Add(pair.Second);
             }
         }
 
         public void ExitSubstitutionCanChain(EsperEPL2GrammarParser.SubstitutionCanChainContext ctx)
         {
-            if (ctx.chainedFunction() == null)
+            if (!ASTChainSpecHelper.HasChain(ctx.chainableElements()))
             {
                 return;
             }
-            var substitutionNode = (ExprSubstitutionNode) astExprNodeMap.Delete(ctx.substitution());
-            var chainSpec = ASTLibFunctionHelper.GetLibFuncChain(ctx.chainedFunction().libFunctionNoClass(), astExprNodeMap);
-            ExprDotNode exprNode = new ExprDotNodeImpl(chainSpec, mapEnv.Configuration.Compiler.Expression.IsDuckTyping,
-                    mapEnv.Configuration.Compiler.Expression.IsUdfCache);
+            var substitutionNode = (ExprSubstitutionNode) _astExprNodeMap.Delete(ctx.substitution());
+            var chainSpec = ASTChainSpecHelper.GetChainables(ctx.chainableElements(), _astExprNodeMap);
+            ExprDotNode exprNode = new ExprDotNodeImpl(chainSpec, _mapEnv.Configuration.Compiler.Expression.IsDuckTyping,
+                    _mapEnv.Configuration.Compiler.Expression.IsUdfCache);
             exprNode.AddChildNode(substitutionNode);
-            astExprNodeMap.Put(ctx, exprNode);
+            _astExprNodeMap.Put(ctx, exprNode);
         }
 
         public void ExitSubstitution(EsperEPL2GrammarParser.SubstitutionContext ctx)
@@ -965,28 +970,28 @@ namespace com.espertech.esper.compiler.@internal.parse
 
             var optionalType = ASTClassIdentifierHelper.Walk(ctx.classIdentifierWithDimensions());
             substitutionNode = new ExprSubstitutionNode(name, optionalType);
-            substitutionParamNodes.Add(substitutionNode);
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(substitutionNode, ctx, astExprNodeMap);
+            _substitutionParamNodes.Add(substitutionNode);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(substitutionNode, ctx, _astExprNodeMap);
         }
 
         public void ExitWeekDayOperator(EsperEPL2GrammarParser.WeekDayOperatorContext ctx)
         {
             var exprNode = new ExprNumberSetCronParam(CronOperatorEnum.WEEKDAY);
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(exprNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(exprNode, ctx, _astExprNodeMap);
             ASTExprHelper.AddOptionalNumber(exprNode, ctx.number());
-            ASTExprHelper.AddOptionalSimpleProperty(exprNode, ctx.i, mapEnv.VariableCompileTimeResolver, StatementSpec);
+            ASTExprHelper.AddOptionalSimpleProperty(exprNode, ctx.i, _mapEnv.VariableCompileTimeResolver, StatementSpec);
         }
 
         public void ExitLastWeekdayOperand(EsperEPL2GrammarParser.LastWeekdayOperandContext ctx)
         {
             var exprNode = new ExprNumberSetCronParam(CronOperatorEnum.LASTWEEKDAY);
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(exprNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(exprNode, ctx, _astExprNodeMap);
         }
 
         public void ExitGroupByListExpr(EsperEPL2GrammarParser.GroupByListExprContext ctx)
         {
-            ASTGroupByHelper.WalkGroupBy(ctx, astExprNodeMap, StatementSpec.GroupByExpressions);
-            astExprNodeMap.Clear();
+            ASTGroupByHelper.WalkGroupBy(ctx, _astExprNodeMap, StatementSpec.GroupByExpressions);
+            _astExprNodeMap.Clear();
         }
 
         public void ExitStreamSelector(EsperEPL2GrammarParser.StreamSelectorContext ctx)
@@ -1012,21 +1017,21 @@ namespace com.espertech.esper.compiler.@internal.parse
             // If the first subnode is a filter node, we have a filter stream specification
             if (ASTUtil.GetRuleIndexIfProvided(ctx.GetChild(0)) == EsperEPL2GrammarParser.RULE_eventFilterExpression)
             {
-                streamSpec = new FilterStreamSpecRaw(filterSpec, ViewSpec.ToArray(viewSpecs), streamName, options);
+                streamSpec = new FilterStreamSpecRaw(_filterSpec, ViewSpec.ToArray(_viewSpecs), streamName, options);
             }
             else if (ASTUtil.GetRuleIndexIfProvided(ctx.GetChild(0)) == EsperEPL2GrammarParser.RULE_patternInclusionExpression)
             {
-                if (astPatternNodeMap.Count > 1 || astPatternNodeMap.IsEmpty())
+                if (_astPatternNodeMap.Count > 1 || _astPatternNodeMap.IsEmpty())
                 {
                     throw ASTWalkException.From("Unexpected AST tree contains zero or more then 1 child elements for root");
                 }
                 var pctx = (EsperEPL2GrammarParser.PatternInclusionExpressionContext) ctx.GetChild(0);
 
                 // Get expression node sub-tree from the AST nodes placed so far
-                var evalNode = astPatternNodeMap.Values.First();
+                var evalNode = _astPatternNodeMap.Values.First();
                 var flags = GetPatternFlags(pctx.annotationEnum());
-                streamSpec = new PatternStreamSpecRaw(evalNode, ViewSpec.ToArray(viewSpecs), streamName, options, flags.IsSuppressSameEventMatches, flags.IsDiscardPartialsOnMatch);
-                astPatternNodeMap.Clear();
+                streamSpec = new PatternStreamSpecRaw(evalNode, ViewSpec.ToArray(_viewSpecs), streamName, options, flags.IsSuppressSameEventMatches, flags.IsDiscardPartialsOnMatch);
+                _astPatternNodeMap.Clear();
             }
             else if (ctx.databaseJoinExpression() != null)
             {
@@ -1062,7 +1067,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                         StatementSpecRaw raw;
                         try
                         {
-                            raw = mapEnv.CompilerServices.ParseWalk(toCompile, mapEnv);
+                            raw = _mapEnv.CompilerServices.ParseWalk(toCompile, _mapEnv);
                         }
                         catch (StatementSpecCompileException e)
                         {
@@ -1092,7 +1097,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 }
                 catch (PlaceholderParseException ex)
                 {
-                    log.Warn("Failed to parse SQL text '" + sqlWithParams + "' :" + ex.Message);
+                    Log.Warn("Failed to parse SQL text '" + sqlWithParams + "' :" + ex.Message);
                     // Let the view construction handle the validation
                 }
 
@@ -1103,7 +1108,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                     metadataSQL = StringValue.ParseString(sampleSQL.Trim());
                 }
 
-                streamSpec = new DBStatementStreamSpec(streamName, ViewSpec.ToArray(viewSpecs), dbName, sqlWithParams, metadataSQL);
+                streamSpec = new DBStatementStreamSpec(streamName, ViewSpec.ToArray(_viewSpecs), dbName, sqlWithParams, metadataSQL);
             }
             else if (ctx.methodJoinExpression() != null)
             {
@@ -1124,21 +1129,21 @@ namespace com.espertech.esper.compiler.@internal.parse
                     classNamePart = fullName.Substring(0, indexDot);
                     methodNamePart = fullName.Substring(indexDot + 1);
                 }
-                var exprNodes = ASTExprHelper.ExprCollectSubNodes(mthctx, 0, astExprNodeMap);
+                var exprNodes = ASTExprHelper.ExprCollectSubNodes(mthctx, 0, _astExprNodeMap);
 
-                if (mapEnv.VariableCompileTimeResolver.Resolve(classNamePart) != null)
+                if (_mapEnv.VariableCompileTimeResolver.Resolve(classNamePart) != null)
                 {
                     StatementSpec.ReferencedVariables.Add(classNamePart);
                 }
 
-                var eventTypeName = ASTTypeExpressionAnnoHelper.ExpectMayTypeAnno(ctx.methodJoinExpression().typeExpressionAnnotation(), tokenStream);
-                streamSpec = new MethodStreamSpec(streamName, ViewSpec.ToArray(viewSpecs), prefixIdent, classNamePart, methodNamePart, exprNodes, eventTypeName);
+                var eventTypeName = ASTTypeExpressionAnnoHelper.ExpectMayTypeAnno(ctx.methodJoinExpression().typeExpressionAnnotation(), _tokenStream);
+                streamSpec = new MethodStreamSpec(streamName, ViewSpec.ToArray(_viewSpecs), prefixIdent, classNamePart, methodNamePart, exprNodes, eventTypeName);
             }
             else
             {
-                throw ASTWalkException.From("Unexpected AST child node to stream expression", tokenStream, ctx);
+                throw ASTWalkException.From("Unexpected AST child node to stream expression", _tokenStream, ctx);
             }
-            viewSpecs.Clear();
+            _viewSpecs.Clear();
             StatementSpec.StreamSpecs.Add(streamSpec);
         }
 
@@ -1146,8 +1151,8 @@ namespace com.espertech.esper.compiler.@internal.parse
         {
             var objectNamespace = ctx.GetChild(0).GetText();
             var objectName = ctx.viewWParameters().GetChild(0).GetText();
-            var viewParameters = ASTExprHelper.ExprCollectSubNodes(ctx.viewWParameters(), 1, astExprNodeMap);
-            viewSpecs.Add(new ViewSpec(objectNamespace, objectName, viewParameters));
+            var viewParameters = ASTExprHelper.ExprCollectSubNodes(ctx.viewWParameters(), 1, _astExprNodeMap);
+            _viewSpecs.Add(new ViewSpec(objectNamespace, objectName, viewParameters));
         }
 
         public void ExitViewExpressionOptNamespace(EsperEPL2GrammarParser.ViewExpressionOptNamespaceContext ctx)
@@ -1158,8 +1163,8 @@ namespace com.espertech.esper.compiler.@internal.parse
             {
                 objectNamespace = ctx.ns.Text;
             }
-            var viewParameters = ASTExprHelper.ExprCollectSubNodes(ctx.viewWParameters(), 1, astExprNodeMap);
-            viewSpecs.Add(new ViewSpec(objectNamespace, objectName, viewParameters));
+            var viewParameters = ASTExprHelper.ExprCollectSubNodes(ctx.viewWParameters(), 1, _astExprNodeMap);
+            _viewSpecs.Add(new ViewSpec(objectNamespace, objectName, viewParameters));
         }
 
         public void ExitPatternFilterExpression(EsperEPL2GrammarParser.PatternFilterExpressionContext ctx)
@@ -1192,12 +1197,12 @@ namespace com.espertech.esper.compiler.@internal.parse
                 }
             }
 
-            var exprNodes = ASTExprHelper.ExprCollectSubNodes(ctx, 0, astExprNodeMap);
+            var exprNodes = ASTExprHelper.ExprCollectSubNodes(ctx, 0, _astExprNodeMap);
 
-            var rawFilterSpec = new FilterSpecRaw(eventName, exprNodes, propertyEvalSpec);
-            propertyEvalSpec = null;
-            var filterNode = new EvalFilterForgeNode(rawFilterSpec, optionalPatternTagName, consumption);
-            ASTExprHelper.PatternCollectAddSubnodesAddParentNode(filterNode, ctx, astPatternNodeMap);
+            var rawFilterSpec = new FilterSpecRaw(eventName, exprNodes, _propertyEvalSpec);
+            _propertyEvalSpec = null;
+            var filterNode = new EvalFilterForgeNode(_mapEnv.IsAttachPatternText, rawFilterSpec, optionalPatternTagName, consumption);
+            ASTExprHelper.PatternCollectAddSubnodesAddParentNode(filterNode, ctx, _astPatternNodeMap);
         }
 
         public void ExitOnSelectExpr(EsperEPL2GrammarParser.OnSelectExprContext ctx)
@@ -1207,7 +1212,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 
         public void ExitOutputLimit(EsperEPL2GrammarParser.OutputLimitContext ctx)
         {
-            var spec = ASTOutputLimitHelper.BuildOutputLimitSpec(tokenStream, ctx, astExprNodeMap);
+            var spec = ASTOutputLimitHelper.BuildOutputLimitSpec(_tokenStream, ctx, _astExprNodeMap);
             StatementSpec.OutputLimitSpec = spec;
             if (spec.VariableName != null)
             {
@@ -1218,7 +1223,7 @@ namespace com.espertech.esper.compiler.@internal.parse
         public void ExitNumericParameterList(EsperEPL2GrammarParser.NumericParameterListContext ctx)
         {
             var exprNode = new ExprNumberSetList();
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(exprNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(exprNode, ctx, _astExprNodeMap);
         }
 
         public void ExitCreateSchemaExpr(EsperEPL2GrammarParser.CreateSchemaExprContext ctx)
@@ -1230,14 +1235,14 @@ namespace com.espertech.esper.compiler.@internal.parse
         public void ExitLastOperator(EsperEPL2GrammarParser.LastOperatorContext ctx)
         {
             var exprNode = new ExprNumberSetCronParam(CronOperatorEnum.LASTDAY);
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(exprNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(exprNode, ctx, _astExprNodeMap);
             ASTExprHelper.AddOptionalNumber(exprNode, ctx.number());
-            ASTExprHelper.AddOptionalSimpleProperty(exprNode, ctx.i, mapEnv.VariableCompileTimeResolver, StatementSpec);
+            ASTExprHelper.AddOptionalSimpleProperty(exprNode, ctx.i, _mapEnv.VariableCompileTimeResolver, StatementSpec);
         }
 
         public void ExitCreateIndexExpr(EsperEPL2GrammarParser.CreateIndexExprContext ctx)
         {
-            var desc = ASTIndexHelper.Walk(ctx, astExprNodeMap);
+            var desc = ASTIndexHelper.Walk(ctx, _astExprNodeMap);
             StatementSpec.CreateIndexDesc = desc;
         }
 
@@ -1248,22 +1253,22 @@ namespace com.espertech.esper.compiler.@internal.parse
                 return;
             }
 
-            StatementSpec.Annotations.Add(ASTAnnotationHelper.Walk(ctx, mapEnv.ImportService));
-            astExprNodeMap.Clear();
+            StatementSpec.Annotations.Add(ASTAnnotationHelper.Walk(ctx, _mapEnv.ImportService));
+            _astExprNodeMap.Clear();
         }
 
         public void ExitCreateContextExpr(EsperEPL2GrammarParser.CreateContextExprContext ctx)
         {
-            var contextDesc = ASTContextHelper.WalkCreateContext(ctx, astExprNodeMap, astPatternNodeMap, propertyEvalSpec, filterSpec);
-            filterSpec = null;
-            propertyEvalSpec = null;
+            var contextDesc = ASTContextHelper.WalkCreateContext(ctx, _astExprNodeMap, _astPatternNodeMap, _propertyEvalSpec, _filterSpec);
+            _filterSpec = null;
+            _propertyEvalSpec = null;
             StatementSpec.CreateContextDesc = contextDesc;
         }
 
         public void ExitLastOperand(EsperEPL2GrammarParser.LastOperandContext ctx)
         {
             var exprNode = new ExprNumberSetCronParam(CronOperatorEnum.LASTDAY);
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(exprNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(exprNode, ctx, _astExprNodeMap);
         }
 
         public void ExitCreateWindowExpr(EsperEPL2GrammarParser.CreateWindowExprContext ctx)
@@ -1287,56 +1292,56 @@ namespace com.espertech.esper.compiler.@internal.parse
             ExprNode insertWhereExpr = null;
             if (isInsert && ctx.expression() != null)
             {
-                insertWhereExpr = ASTExprHelper.ExprCollectSubNodes(ctx.expression(), 0, astExprNodeMap)[0];
+                insertWhereExpr = ASTExprHelper.ExprCollectSubNodes(ctx.expression(), 0, _astExprNodeMap)[0];
             }
 
-            var desc = new CreateWindowDesc(windowName, viewSpecs, streamSpecOptions, isInsert, insertWhereExpr, columns, eventName);
+            var desc = new CreateWindowDesc(windowName, _viewSpecs, streamSpecOptions, isInsert, insertWhereExpr, columns, eventName);
             StatementSpec.CreateWindowDesc = desc;
         }
 
         public void ExitCreateExpressionExpr(EsperEPL2GrammarParser.CreateExpressionExprContext ctx)
         {
-            var pair = ASTExpressionDeclHelper.WalkExpressionDecl(ctx.expressionDecl(), scriptBodies, astExprNodeMap, tokenStream);
+            var pair = ASTExpressionDeclHelper.WalkExpressionDecl(ctx.expressionDecl(), _scriptBodies, _astExprNodeMap, _tokenStream);
             StatementSpec.CreateExpressionDesc = new CreateExpressionDesc(pair);
         }
 
         public void ExitRangeOperand(EsperEPL2GrammarParser.RangeOperandContext ctx)
         {
             var exprNode = new ExprNumberSetRange();
-            astExprNodeMap.Put(ctx, exprNode);
+            _astExprNodeMap.Put(ctx, exprNode);
             if (ctx.s1 != null)
             {
-                ASTExprHelper.ExprCollectAddSubNodes(exprNode, ctx.s1, astExprNodeMap);
+                ASTExprHelper.ExprCollectAddSubNodes(exprNode, ctx.s1, _astExprNodeMap);
             }
             ASTExprHelper.AddOptionalNumber(exprNode, ctx.n1);
-            ASTExprHelper.AddOptionalSimpleProperty(exprNode, ctx.i1, mapEnv.VariableCompileTimeResolver, StatementSpec);
+            ASTExprHelper.AddOptionalSimpleProperty(exprNode, ctx.i1, _mapEnv.VariableCompileTimeResolver, StatementSpec);
             if (ctx.s2 != null)
             {
-                ASTExprHelper.ExprCollectAddSubNodes(exprNode, ctx.s2, astExprNodeMap);
+                ASTExprHelper.ExprCollectAddSubNodes(exprNode, ctx.s2, _astExprNodeMap);
             }
             ASTExprHelper.AddOptionalNumber(exprNode, ctx.n2);
-            ASTExprHelper.AddOptionalSimpleProperty(exprNode, ctx.i2, mapEnv.VariableCompileTimeResolver, StatementSpec);
+            ASTExprHelper.AddOptionalSimpleProperty(exprNode, ctx.i2, _mapEnv.VariableCompileTimeResolver, StatementSpec);
         }
 
         public void ExitRowSubSelectExpression(EsperEPL2GrammarParser.RowSubSelectExpressionContext ctx)
         {
-            var statementSpec = astStatementSpecMap.Delete(ctx.subQueryExpr());
+            var statementSpec = _astStatementSpecMap.Delete(ctx.subQueryExpr());
             var subselectNode = new ExprSubselectRowNode(statementSpec);
-            if (ctx.chainedFunction() != null)
+            if (ASTChainSpecHelper.HasChain(ctx.chainableElements()))
             {
-                HandleChainedFunction(ctx, ctx.chainedFunction(), subselectNode);
+                HandleChainedFunction(ctx, ctx.chainableElements(), subselectNode);
             }
             else
             {
-                ASTExprHelper.ExprCollectAddSubNodesAddParentNode(subselectNode, ctx, astExprNodeMap);
+                ASTExprHelper.ExprCollectAddSubNodesAddParentNode(subselectNode, ctx, _astExprNodeMap);
             }
         }
 
         public void ExitUnaryExpression(EsperEPL2GrammarParser.UnaryExpressionContext ctx)
         {
-            if (ctx.inner != null && ctx.chainedFunction() != null)
+            if (ctx.inner != null && ASTChainSpecHelper.HasChain(ctx.chainableElements()))
             {
-                HandleChainedFunction(ctx, ctx.chainedFunction(), null);
+                HandleChainedFunction(ctx, ctx.chainableElements(), null);
             }
             if (ctx.NEWKW() != null && ctx.newAssign() != null)
             {
@@ -1345,12 +1350,12 @@ namespace com.espertech.esper.compiler.@internal.parse
                 IList<EsperEPL2GrammarParser.NewAssignContext> assigns = ctx.newAssign();
                 foreach (var assign in assigns)
                 {
-                    var property = ASTUtil.GetPropertyName(assign.eventProperty(), 0);
+                    String property = ASTUtil.GetPropertyName(assign.chainable(), 0);
                     columnNames.Add(property);
                     ExprNode expr;
                     if (assign.expression() != null)
                     {
-                        expr = ASTExprHelper.ExprCollectSubNodes(assign.expression(), 0, astExprNodeMap)[0];
+                        expr = ASTExprHelper.ExprCollectSubNodes(assign.expression(), 0, _astExprNodeMap)[0];
                     }
                     else
                     {
@@ -1358,21 +1363,22 @@ namespace com.espertech.esper.compiler.@internal.parse
                     }
                     expressions.Add(expr);
                 }
-                var columns = columnNames.ToArray();
+                var columns = columnNames.Select(UnescapeBacktick).ToArray();
                 var newNode = new ExprNewStructNode(columns);
                 newNode.AddChildNodes(expressions);
-                astExprNodeMap.Put(ctx, newNode);
+                _astExprNodeMap.Put(ctx, newNode);
             }
             if (ctx.NEWKW() != null && ctx.classIdentifier() != null)
             {
                 var classIdent = ASTUtil.UnescapeClassIdent(ctx.classIdentifier());
+                var numArrayDimensions = ctx.LBRACK().Length;
+
                 ExprNode exprNode;
-                ExprNode newNode = new ExprNewInstanceNode(classIdent);
-                if (ctx.chainedFunction() != null)
-                {
-                    var chainSpec = ASTLibFunctionHelper.GetLibFuncChain(ctx.chainedFunction().libFunctionNoClass(), astExprNodeMap);
-                    ExprDotNode dotNode = new ExprDotNodeImpl(chainSpec, mapEnv.Configuration.Compiler.Expression.IsDuckTyping,
-                            mapEnv.Configuration.Compiler.Expression.IsUdfCache);
+                ExprNode newNode = new ExprNewInstanceNode(classIdent, numArrayDimensions);
+                if (ASTChainSpecHelper.HasChain(ctx.chainableElements())) {
+                    IList<Chainable> chainSpec = ASTChainSpecHelper.GetChainables(ctx.chainableElements(), _astExprNodeMap);
+                    ExprDotNode dotNode = new ExprDotNodeImpl(chainSpec, _mapEnv.Configuration.Compiler.Expression.IsDuckTyping,
+                            _mapEnv.Configuration.Compiler.Expression.IsUdfCache);
                     dotNode.AddChildNode(newNode);
                     exprNode = dotNode;
                 }
@@ -1380,39 +1386,8 @@ namespace com.espertech.esper.compiler.@internal.parse
                 {
                     exprNode = newNode;
                 }
-                ASTExprHelper.ExprCollectAddSubNodes(newNode, ctx, astExprNodeMap);
-                astExprNodeMap.Put(ctx, exprNode);
-            }
-            if (ctx.b != null)
-            {
-                // handle "variable[xxx]"
-                var tableName = ctx.b.Text;
-                ExprNode exprNode;
-                ExprTableAccessNode tableNode;
-                if (ctx.chainedFunction() == null)
-                {
-                    tableNode = new ExprTableAccessNodeTopLevel(tableName);
-                    exprNode = tableNode;
-                }
-                else
-                {
-                    var chainSpec = ASTLibFunctionHelper.GetLibFuncChain(ctx.chainedFunction().libFunctionNoClass(), astExprNodeMap);
-                    var pair = ASTTableExprHelper.GetTableExprChainable(mapEnv.ImportService, plugInAggregations, tableName, chainSpec);
-                    tableNode = pair.First;
-                    if (pair.Second.IsEmpty())
-                    {
-                        exprNode = tableNode;
-                    }
-                    else
-                    {
-                        exprNode = new ExprDotNodeImpl(pair.Second, mapEnv.Configuration.Compiler.Expression.IsDuckTyping,
-                                mapEnv.Configuration.Compiler.Expression.IsUdfCache);
-                        exprNode.AddChildNode(tableNode);
-                    }
-                }
-                ASTExprHelper.ExprCollectAddSubNodesAddParentNode(tableNode, ctx, astExprNodeMap);
-                astExprNodeMap.Put(ctx, exprNode);
-                StatementSpec.TableExpressions.Add(tableNode);
+                ASTExprHelper.ExprCollectAddSubNodes(newNode, ctx, _astExprNodeMap);
+                _astExprNodeMap.Put(ctx, exprNode);
             }
         }
 
@@ -1440,7 +1415,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 }
                 else
                 {
-                    throw ASTWalkException.From("Encountered unrecognized token type " + ctx.s.Type, tokenStream, ctx);
+                    throw ASTWalkException.From("Encountered unrecognized token type " + ctx.s.Type, _tokenStream, ctx);
                 }
                 StatementSpec.SelectStreamDirEnum = selector;
             }
@@ -1454,7 +1429,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 return;
             }
             var concatNode = new ExprConcatNode();
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(concatNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(concatNode, ctx, _astExprNodeMap);
         }
 
         public void ExitSubSelectFilterExpr(EsperEPL2GrammarParser.SubSelectFilterExprContext ctx)
@@ -1463,8 +1438,8 @@ namespace com.espertech.esper.compiler.@internal.parse
             var isRetainUnion = ctx.ru != null;
             var isRetainIntersection = ctx.ri != null;
             var options = new StreamSpecOptions(false, isRetainUnion, isRetainIntersection);
-            StreamSpecRaw streamSpec = new FilterStreamSpecRaw(filterSpec, ViewSpec.ToArray(viewSpecs), streamName, options);
-            viewSpecs.Clear();
+            StreamSpecRaw streamSpec = new FilterStreamSpecRaw(_filterSpec, ViewSpec.ToArray(_viewSpecs), streamName, options);
+            _viewSpecs.Clear();
             StatementSpec.StreamSpecs.Add(streamSpec);
         }
 
@@ -1475,7 +1450,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 return;
             }
             var notNode = new ExprNotNode();
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(notNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(notNode, ctx, _astExprNodeMap);
         }
 
         public void ExitAdditiveExpression(EsperEPL2GrammarParser.AdditiveExpressionContext ctx)
@@ -1484,8 +1459,8 @@ namespace com.espertech.esper.compiler.@internal.parse
             {
                 return;
             }
-            var expr = ASTExprHelper.MathGetExpr(ctx, astExprNodeMap, mapEnv.Configuration);
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(expr, ctx, astExprNodeMap);
+            var expr = ASTExprHelper.MathGetExpr(ctx, _astExprNodeMap, _mapEnv.Configuration);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(expr, ctx, _astExprNodeMap);
         }
 
         public void ExitMultiplyExpression(EsperEPL2GrammarParser.MultiplyExpressionContext ctx)
@@ -1494,160 +1469,36 @@ namespace com.espertech.esper.compiler.@internal.parse
             {
                 return;
             }
-            var expr = ASTExprHelper.MathGetExpr(ctx, astExprNodeMap, mapEnv.Configuration);
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(expr, ctx, astExprNodeMap);
+            var expr = ASTExprHelper.MathGetExpr(ctx, _astExprNodeMap, _mapEnv.Configuration);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(expr, ctx, _astExprNodeMap);
         }
 
         public void ExitUnaryMinus(EsperEPL2GrammarParser.UnaryMinusContext ctx)
         {
             var mathNode = new ExprMathNode(MathArithTypeEnum.MULTIPLY, false, false);
             mathNode.AddChildNode(new ExprConstantNodeImpl(-1));
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(mathNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(mathNode, ctx, _astExprNodeMap);
         }
 
-        public void ExitEventProperty(EsperEPL2GrammarParser.EventPropertyContext ctx)
-        {
-            if (EVENT_PROPERTY_WALK_EXCEPTIONS_PARENT.Contains(ctx.Parent.RuleIndex))
-            {
+        public void ExitChainable(EsperEPL2GrammarParser.ChainableContext ctx) {
+            if (EVENT_PROPERTY_WALK_EXCEPTIONS_PARENT.Contains(ctx.Parent.RuleIndex)) {
                 return;
             }
-
-            if (ctx.ChildCount == 0)
-            {
+            if (ctx.ChildCount == 0) {
                 throw new IllegalStateException("Empty event property expression encountered");
             }
 
-            ExprNode exprNode;
-            string propertyName;
-
-            // The stream name may precede the event property name, but cannot be told apart from the property name:
-            //      s0.p1 could be a nested property, or could be stream 's0' and property 'p1'
-
-            // A single entry means this must be the property name.
-            // And a non-simple property means that it cannot be a stream name.
-
-            if (ctx.eventPropertyAtomic().Length == 1 || PropertyParserANTLR.IsNestedPropertyWithNonSimpleLead(ctx))
-            {
-                propertyName = ctx.GetText();
-                exprNode = new ExprIdentNodeImpl(propertyName);
-
-                var first = ctx.eventPropertyAtomic()[0];
-
-                // test table access expression
-                if (first.lb != null)
-                {
-                    var nameText = first.eventPropertyIdent().GetText();
-                    var tableX = mapEnv.TableCompileTimeResolver.Resolve(nameText);
-                    if (tableX != null)
-                    {
-                        ExprTableAccessNode tableNode;
-                        if (ctx.eventPropertyAtomic().Length == 1)
-                        {
-                            tableNode = new ExprTableAccessNodeTopLevel(tableX.TableName);
-                        }
-                        else if (ctx.eventPropertyAtomic().Length == 2)
-                        {
-                            string column = ctx.eventPropertyAtomic()[1].GetText();
-                            tableNode = new ExprTableAccessNodeSubprop(tableX.TableName, column);
-                        }
-                        else
-                        {
-                            throw ASTWalkException.From("Invalid table expression '" + tokenStream.GetText(ctx));
-                        }
-                        exprNode = tableNode;
-                        StatementSpec.TableExpressions.Add(tableNode);
-                        ASTExprHelper.AddOptionalNumber(tableNode, first.ni);
-                    }
-                }
-
-                // test script
-                if (first.lp != null)
-                {
-                    var ident = ASTUtil.EscapeDot(first.eventPropertyIdent().GetText());
-                    var key = StringValue.ParseString(first.s.Text);
-                    var @params = Collections.SingletonList<ExprNode>(new ExprConstantNodeImpl(key));
-                    var scriptNode = ExprDeclaredHelper.GetExistsScript(GetDefaultDialect(), ident, @params, scriptExpressions, mapEnv);
-                    if (scriptNode != null)
-                    {
-                        exprNode = scriptNode;
-                    }
-                }
-
-                var found = ExprDeclaredHelper
-                    .GetExistsDeclaredExpr(propertyName, new EmptyList<ExprNode>(), expressionDeclarations.Expressions, contextDescriptor, mapEnv);
-                if (found != null)
-                {
-                    exprNode = found.First;
-                    ASTLibFunctionHelper.AddMapContext(StatementSpec, found.Second);
-                }
-            }
-            else
-            {
-                // -=> this is more then one child node, and the first child node is a simple property
-                // we may have a stream name in the first simple property, or a nested property
-                // i.e. 's0.p0' could mean that the event has a nested property to 's0' of name 'p0', or 's0' is the stream name
-                var leadingIdentifier = ctx.GetChild(0).GetChild(0).GetText();
-                var streamOrNestedPropertyName = ASTUtil.EscapeDot(leadingIdentifier);
-                propertyName = ASTUtil.GetPropertyName(ctx, 2);
-
-                var tableNode = TableCompileTimeUtil.MapPropertyToTableNested(mapEnv.TableCompileTimeResolver, streamOrNestedPropertyName, propertyName);
-                var variableMetadataX = mapEnv.VariableCompileTimeResolver.Resolve(leadingIdentifier);
-                if (tableNode != null)
-                {
-                    if (tableNode.Second != null)
-                    {
-                        exprNode = tableNode.Second;
-                    }
-                    else
-                    {
-                        exprNode = tableNode.First;
-                    }
-                    StatementSpec.TableExpressions.Add(tableNode.First);
-                }
-                else if (variableMetadataX != null)
-                {
-                    exprNode = new ExprVariableNodeImpl(variableMetadataX, propertyName);
-                    var message = VariableUtil.CheckVariableContextName(StatementSpec.OptionalContextName, variableMetadataX);
-                    if (message != null)
-                    {
-                        throw ASTWalkException.From(message);
-                    }
-                    StatementSpec.ReferencedVariables.Add(variableMetadataX.VariableName);
-                }
-                else if (contextDescriptor != null && contextDescriptor.ContextPropertyRegistry.IsContextPropertyPrefix(streamOrNestedPropertyName))
-                {
-                    exprNode = new ExprContextPropertyNodeImpl(propertyName);
-                }
-                else
-                {
-                    exprNode = new ExprIdentNodeImpl(propertyName, streamOrNestedPropertyName);
-                }
-            }
-
-            // handle variable
-            var variableMetaData = mapEnv.VariableCompileTimeResolver.Resolve(propertyName);
-            if (variableMetaData != null)
-            {
-                exprNode = new ExprVariableNodeImpl(variableMetaData, null);
-                var message = VariableUtil.CheckVariableContextName(StatementSpec.OptionalContextName, variableMetaData);
-                if (message != null)
-                {
-                    throw ASTWalkException.From(message);
-                }
-                StatementSpec.ReferencedVariables.Add(variableMetaData.VariableName);
-            }
-
-            // handle table
-            var table = ASTTableExprHelper.CheckTableNameGetExprForProperty(mapEnv.TableCompileTimeResolver, propertyName);
-            if (table != null)
-            {
-                exprNode = table;
-                StatementSpec.TableExpressions.Add(table);
-            }
-
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(exprNode, ctx, astExprNodeMap);
+            ProcessChainable(
+                ctx,
+                _astExprNodeMap,
+                _contextDescriptor,
+                _mapEnv,
+                StatementSpec,
+                _expressionDeclarations,
+                _plugInAggregations,
+                _scriptExpressions);
         }
-
+        
         public void ExitOuterJoin(EsperEPL2GrammarParser.OuterJoinContext ctx)
         {
             OuterJoinType joinType;
@@ -1682,9 +1533,9 @@ namespace com.espertech.esper.compiler.@internal.parse
             if (ctx.outerJoinIdent() != null)
             {
                 IList<EsperEPL2GrammarParser.OuterJoinIdentPairContext> pairs = ctx.outerJoinIdent().outerJoinIdentPair();
-                IList<EsperEPL2GrammarParser.EventPropertyContext> props = pairs[0].eventProperty();
-                left = ValidateOuterJoinGetIdentNode(ASTExprHelper.ExprCollectSubNodes(props[0], 0, astExprNodeMap)[0]);
-                right = ValidateOuterJoinGetIdentNode(ASTExprHelper.ExprCollectSubNodes(props[1], 0, astExprNodeMap)[0]);
+                IList<EsperEPL2GrammarParser.ChainableContext> props = pairs[0].chainable();
+                left = ValidateOuterJoinGetIdentNode(ASTExprHelper.ExprCollectSubNodes(props[0], 0, _astExprNodeMap)[0]);
+                right = ValidateOuterJoinGetIdentNode(ASTExprHelper.ExprCollectSubNodes(props[1], 0, _astExprNodeMap)[0]);
 
                 if (pairs.Count > 1)
                 {
@@ -1692,9 +1543,9 @@ namespace com.espertech.esper.compiler.@internal.parse
                     var addRight = new List<ExprIdentNode>(pairs.Count - 1);
                     for (var i = 1; i < pairs.Count; i++)
                     {
-                        props = pairs[i].eventProperty();
-                        var moreLeft = ValidateOuterJoinGetIdentNode(ASTExprHelper.ExprCollectSubNodes(props[0], 0, astExprNodeMap)[0]);
-                        var moreRight = ValidateOuterJoinGetIdentNode(ASTExprHelper.ExprCollectSubNodes(props[1], 0, astExprNodeMap)[0]);
+                        props = pairs[i].chainable();
+                        var moreLeft = ValidateOuterJoinGetIdentNode(ASTExprHelper.ExprCollectSubNodes(props[0], 0, _astExprNodeMap)[0]);
+                        var moreRight = ValidateOuterJoinGetIdentNode(ASTExprHelper.ExprCollectSubNodes(props[1], 0, _astExprNodeMap)[0]);
                         addLeft.Add(moreLeft);
                         addRight.Add(moreRight);
                     }
@@ -1713,7 +1564,7 @@ namespace com.espertech.esper.compiler.@internal.parse
             {
                 var windowName = ctx.onMergeExpr().n.Text;
                 var asName = ASTUtil.GetStreamNameUnescapedOptional(ctx.onMergeExpr().identOrTicked());
-                var desc = new OnTriggerMergeDesc(windowName, asName, mergeInsertNoMatch, mergeMatcheds ?? new EmptyList<OnTriggerMergeMatched>());
+                var desc = new OnTriggerMergeDesc(windowName, asName, _mergeInsertNoMatch, _mergeMatcheds ?? new EmptyList<OnTriggerMergeMatched>());
                 StatementSpec.OnTriggerDesc = desc;
             }
             else if (ctx.onSetExpr() == null)
@@ -1725,7 +1576,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                     // get table and variable uses
                     ISet<ExprTableAccessNode> tables = new LinkedHashSet<ExprTableAccessNode>(StatementSpec.TableExpressions);
                     ISet<string> variables = new LinkedHashSet<string>(StatementSpec.ReferencedVariables);
-                    foreach (var item in statementItemStack)
+                    foreach (var item in _statementItemStack)
                     {
                         tables.AddAll(item.StatementSpec.TableExpressions);
                         variables.AddAll(item.StatementSpec.ReferencedVariables);
@@ -1733,15 +1584,15 @@ namespace com.espertech.esper.compiler.@internal.parse
 
                     // on the statement spec, the deepest spec is the outermost
                     var splitStreams = new List<OnTriggerSplitStream>();
-                    var statementSpecList = Enumerable.Reverse(statementItemStack).ToArray();
+                    var statementSpecList = Enumerable.Reverse(_statementItemStack).ToArray();
                     for (var ii = 1; ii < statementSpecList.Length ; ii++)
                     {
                         var raw = statementSpecList[ii].StatementSpec;
-                        var fromClauseInner = onTriggerSplitPropertyEvals?.Get(raw);
+                        var fromClauseInner = _onTriggerSplitPropertyEvals?.Get(raw);
                         splitStreams.Add(new OnTriggerSplitStream(raw.InsertIntoDesc, raw.SelectClauseSpec, fromClauseInner, raw.WhereClause));
                     }
 
-                    var fromClause = onTriggerSplitPropertyEvals?.Get(StatementSpec);
+                    var fromClause = _onTriggerSplitPropertyEvals?.Get(StatementSpec);
                     splitStreams.Add(new OnTriggerSplitStream(StatementSpec.InsertIntoDesc, StatementSpec.SelectClauseSpec, fromClause, StatementSpec.WhereClause));
                     if (!statementSpecList.IsEmpty())
                     {
@@ -1749,24 +1600,24 @@ namespace com.espertech.esper.compiler.@internal.parse
                         // very clear about this, instead they reference index 0, which is heavily dependent on
                         // how the stack is implemented.
                         
-                        StatementSpec = statementItemStack.Last.Value.StatementSpec;
+                        StatementSpec = _statementItemStack.Last.Value.StatementSpec;
                     }
                     var isFirst = ctx.outputClauseInsert() == null || ctx.outputClauseInsert().ALL() == null;
 
                     StatementSpec.OnTriggerDesc = new OnTriggerSplitStreamDesc(OnTriggerType.ON_SPLITSTREAM, isFirst, splitStreams);
                     StatementSpec.ReferencedVariables.AddAll(variables);
                     StatementSpec.TableExpressions.AddAll(tables);
-                    statementItemStack.Clear();
+                    _statementItemStack.Clear();
                 }
                 else if (ctx.onUpdateExpr() != null)
                 {
                     var assignments = ASTExprHelper.GetOnTriggerSetAssignments(
-                        ctx.onUpdateExpr().onSetAssignmentList(), astExprNodeMap);
+                        ctx.onUpdateExpr().onSetAssignmentList(), _astExprNodeMap);
                     StatementSpec.OnTriggerDesc = new OnTriggerWindowUpdateDesc(windowName.First, windowName.Second, assignments);
                     if (ctx.onUpdateExpr().whereClause() != null)
                     {
                         StatementSpec.WhereClause = ASTExprHelper.ExprCollectSubNodes(
-                            ctx.onUpdateExpr().whereClause(), 0, astExprNodeMap)[0];
+                            ctx.onUpdateExpr().whereClause(), 0, _astExprNodeMap)[0];
                     }
                 }
                 else
@@ -1778,7 +1629,7 @@ namespace com.espertech.esper.compiler.@internal.parse
             else
             {
                 var assignments = ASTExprHelper.GetOnTriggerSetAssignments(
-                    ctx.onSetExpr().onSetAssignmentList(), astExprNodeMap);
+                    ctx.onSetExpr().onSetAssignmentList(), _astExprNodeMap);
                 StatementSpec.OnTriggerDesc = new OnTriggerSetDesc(assignments);
             }
         }
@@ -1790,7 +1641,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 return;
             }
             var alterNode = new RowRecogExprNodeAlteration();
-            ASTExprHelper.RegExCollectAddSubNodesAddParentNode(alterNode, ctx, astRowRegexNodeMap);
+            ASTExprHelper.RegExCollectAddSubNodesAddParentNode(alterNode, ctx, _astRowRegexNodeMap);
         }
 
         public void ExitCaseExpression(EsperEPL2GrammarParser.CaseExpressionContext ctx)
@@ -1799,17 +1650,17 @@ namespace com.espertech.esper.compiler.@internal.parse
             {
                 return;
             }
-            if (astExprNodeMap.IsEmpty())
+            if (_astExprNodeMap.IsEmpty())
             {
-                throw ASTWalkException.From("Unexpected AST tree contains zero child element for case node", tokenStream, ctx);
+                throw ASTWalkException.From("Unexpected AST tree contains zero child element for case node", _tokenStream, ctx);
             }
-            if (astExprNodeMap.Count == 1)
+            if (_astExprNodeMap.Count == 1)
             {
-                throw ASTWalkException.From("AST tree does not contain at least when node for case node", tokenStream, ctx);
+                throw ASTWalkException.From("AST tree does not contain at least when node for case node", _tokenStream, ctx);
             }
 
             var caseNode = new ExprCaseNode(ctx.expression() != null);
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(caseNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(caseNode, ctx, _astExprNodeMap);
         }
 
         public void ExitRowLimit(EsperEPL2GrammarParser.RowLimitContext ctx)
@@ -1820,13 +1671,13 @@ namespace com.espertech.esper.compiler.@internal.parse
             {
                 StatementSpec.ReferencedVariables.Add(spec.OptionalOffsetVariable);
             }
-            astExprNodeMap.Clear();
+            _astExprNodeMap.Clear();
         }
 
         public void ExitOrderByListElement(EsperEPL2GrammarParser.OrderByListElementContext ctx)
         {
-            var exprNode = ASTExprHelper.ExprCollectSubNodes(ctx, 0, astExprNodeMap)[0];
-            astExprNodeMap.Clear();
+            var exprNode = ASTExprHelper.ExprCollectSubNodes(ctx, 0, _astExprNodeMap)[0];
+            _astExprNodeMap.Clear();
             var descending = ctx.d != null;
             StatementSpec.OrderByList.Add(new OrderByItem(exprNode, descending));
         }
@@ -1838,22 +1689,22 @@ namespace com.espertech.esper.compiler.@internal.parse
 
         public void ExitExistsSubSelectExpression(EsperEPL2GrammarParser.ExistsSubSelectExpressionContext ctx)
         {
-            var currentSpec = astStatementSpecMap.Delete(ctx.subQueryExpr());
+            var currentSpec = _astStatementSpecMap.Delete(ctx.subQueryExpr());
             ExprSubselectNode subselectNode = new ExprSubselectExistsNode(currentSpec);
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(subselectNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(subselectNode, ctx, _astExprNodeMap);
         }
 
         public void ExitArrayExpression(EsperEPL2GrammarParser.ArrayExpressionContext ctx)
         {
             var arrayNode = new ExprArrayNode();
-            if (ctx.chainedFunction() != null)
+            if (ASTChainSpecHelper.HasChain(ctx.chainableElements()))
             {
-                ASTExprHelper.ExprCollectAddSubNodesExpressionCtx(arrayNode, ctx.expression(), astExprNodeMap);
-                HandleChainedFunction(ctx, ctx.chainedFunction(), arrayNode);
+                ASTExprHelper.ExprCollectAddSubNodesExpressionCtx(arrayNode, ctx.expression(), _astExprNodeMap);
+                HandleChainedFunction(ctx, ctx.chainableElements(), arrayNode);
             }
             else
             {
-                ASTExprHelper.ExprCollectAddSubNodesAddParentNode(arrayNode, ctx, astExprNodeMap);
+                ASTExprHelper.ExprCollectAddSubNodesAddParentNode(arrayNode, ctx, _astExprNodeMap);
             }
         }
 
@@ -1869,7 +1720,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 if (ruleIndex == EsperEPL2GrammarParser.STAR || ruleIndex == EsperEPL2GrammarParser.RULE_expressionWithTime)
                 {
                     var exprNode = new ExprWildcardImpl();
-                    ASTExprHelper.ExprCollectAddSubNodesAddParentNode(exprNode, terminalNode, astExprNodeMap);
+                    ASTExprHelper.ExprCollectAddSubNodesAddParentNode(exprNode, terminalNode, _astExprNodeMap);
                 }
             }
         }
@@ -1880,8 +1731,8 @@ namespace com.espertech.esper.compiler.@internal.parse
             {
                 return;
             }
-            EvalForgeNode andNode = new EvalAndForgeNode();
-            ASTExprHelper.PatternCollectAddSubnodesAddParentNode(andNode, ctx, astPatternNodeMap);
+            EvalForgeNode andNode = new EvalAndForgeNode(_mapEnv.IsAttachPatternText);
+            ASTExprHelper.PatternCollectAddSubnodesAddParentNode(andNode, ctx, _astPatternNodeMap);
         }
 
         public void ExitFollowedByExpression(EsperEPL2GrammarParser.FollowedByExpressionContext ctx)
@@ -1895,7 +1746,7 @@ namespace com.espertech.esper.compiler.@internal.parse
             for (var i = 0; i < repeats.Count; i++) {
                 var repeat = repeats[i];
                 if (repeat.expression() != null) {
-                    maxExpressions[i] = ASTExprHelper.ExprCollectSubNodes(repeat.expression(), 0, astExprNodeMap)[0];
+                    maxExpressions[i] = ASTExprHelper.ExprCollectSubNodes(repeat.expression(), 0, _astExprNodeMap)[0];
                 }
             }
 
@@ -1905,8 +1756,8 @@ namespace com.espertech.esper.compiler.@internal.parse
                 expressions = maxExpressions; // can contain null elements as max/no-max can be mixed
             }
 
-            EvalForgeNode fbNode = new EvalFollowedByForgeNode(expressions);
-            ASTExprHelper.PatternCollectAddSubnodesAddParentNode(fbNode, ctx, astPatternNodeMap);
+            EvalForgeNode fbNode = new EvalFollowedByForgeNode(_mapEnv.IsAttachPatternText, expressions);
+            ASTExprHelper.PatternCollectAddSubnodesAddParentNode(fbNode, ctx, _astPatternNodeMap);
         }
 
         public void ExitOrExpression(EsperEPL2GrammarParser.OrExpressionContext ctx)
@@ -1915,8 +1766,8 @@ namespace com.espertech.esper.compiler.@internal.parse
             {
                 return;
             }
-            EvalForgeNode orNode = new EvalOrForgeNode();
-            ASTExprHelper.PatternCollectAddSubnodesAddParentNode(orNode, ctx, astPatternNodeMap);
+            EvalForgeNode orNode = new EvalOrForgeNode(_mapEnv.IsAttachPatternText);
+            ASTExprHelper.PatternCollectAddSubnodesAddParentNode(orNode, ctx, _astPatternNodeMap);
         }
 
         public void ExitQualifyExpression(EsperEPL2GrammarParser.QualifyExpressionContext ctx)
@@ -1928,28 +1779,28 @@ namespace com.espertech.esper.compiler.@internal.parse
             if (ctx.matchUntilRange() != null)
             {
                 var matchUntil = MakeMatchUntil(ctx.matchUntilRange(), false);
-                ASTExprHelper.PatternCollectAddSubnodesAddParentNode(matchUntil, ctx.guardPostFix(), astPatternNodeMap);
+                ASTExprHelper.PatternCollectAddSubnodesAddParentNode(matchUntil, ctx.guardPostFix(), _astPatternNodeMap);
             }
 
             EvalForgeNode theNode;
             if (ctx.e != null)
             {
-                theNode = new EvalEveryForgeNode();
+                theNode = new EvalEveryForgeNode(_mapEnv.IsAttachPatternText);
             }
             else if (ctx.n != null)
             {
-                theNode = new EvalNotForgeNode();
+                theNode = new EvalNotForgeNode(_mapEnv.IsAttachPatternText);
             }
             else if (ctx.d != null)
             {
-                var exprNodes = ASTExprHelper.ExprCollectSubNodes(ctx.distinctExpressionList(), 0, astExprNodeMap);
-                theNode = new EvalEveryDistinctForgeNode(exprNodes);
+                var exprNodes = ASTExprHelper.ExprCollectSubNodes(ctx.distinctExpressionList(), 0, _astExprNodeMap);
+                theNode = new EvalEveryDistinctForgeNode(_mapEnv.IsAttachPatternText, exprNodes);
             }
             else
             {
                 throw ASTWalkException.From("Failed to recognize node");
             }
-            ASTExprHelper.PatternCollectAddSubnodesAddParentNode(theNode, ctx, astPatternNodeMap);
+            ASTExprHelper.PatternCollectAddSubnodesAddParentNode(theNode, ctx, _astPatternNodeMap);
         }
 
         public void ExitMatchUntilExpression(EsperEPL2GrammarParser.MatchUntilExpressionContext ctx)
@@ -1965,9 +1816,9 @@ namespace com.espertech.esper.compiler.@internal.parse
             }
             else
             {
-                node = new EvalMatchUntilForgeNode(null, null, null);
+                node = new EvalMatchUntilForgeNode(_mapEnv.IsAttachPatternText, null, null, null);
             }
-            ASTExprHelper.PatternCollectAddSubnodesAddParentNode(node, ctx, astPatternNodeMap);
+            ASTExprHelper.PatternCollectAddSubnodesAddParentNode(node, ctx, _astPatternNodeMap);
         }
 
         public void ExitGuardPostFix(EsperEPL2GrammarParser.GuardPostFixContext ctx)
@@ -1987,64 +1838,64 @@ namespace com.espertech.esper.compiler.@internal.parse
             {
                 objectNamespace = ctx.guardWhereExpression().GetChild(0).GetText();
                 objectName = ctx.guardWhereExpression().GetChild(2).GetText();
-                obsParameters = ASTExprHelper.ExprCollectSubNodes(ctx.guardWhereExpression(), 3, astExprNodeMap);
+                obsParameters = ASTExprHelper.ExprCollectSubNodes(ctx.guardWhereExpression(), 3, _astExprNodeMap);
             }
             else
             {
                 objectNamespace = GuardEnum.WHILE_GUARD.GetNamespace();
                 objectName = GuardEnum.WHILE_GUARD.GetName();
-                obsParameters = ASTExprHelper.ExprCollectSubNodes(ctx.guardWhileExpression(), 1, astExprNodeMap);
+                obsParameters = ASTExprHelper.ExprCollectSubNodes(ctx.guardWhileExpression(), 1, _astExprNodeMap);
             }
 
             var guardSpec = new PatternGuardSpec(objectNamespace, objectName, obsParameters);
-            EvalForgeNode guardNode = new EvalGuardForgeNode(guardSpec);
-            ASTExprHelper.PatternCollectAddSubnodesAddParentNode(guardNode, ctx, astPatternNodeMap);
+            EvalForgeNode guardNode = new EvalGuardForgeNode(_mapEnv.IsAttachPatternText, guardSpec);
+            ASTExprHelper.PatternCollectAddSubnodesAddParentNode(guardNode, ctx, _astPatternNodeMap);
         }
 
         public void ExitBuiltin_coalesce(EsperEPL2GrammarParser.Builtin_coalesceContext ctx)
         {
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(new ExprCoalesceNode(), ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(new ExprCoalesceNode(), ctx, _astExprNodeMap);
         }
 
         public void ExitBuiltin_typeof(EsperEPL2GrammarParser.Builtin_typeofContext ctx)
         {
             var typeofNode = new ExprTypeofNode();
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(typeofNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(typeofNode, ctx, _astExprNodeMap);
         }
 
         public void ExitBuiltin_avedev(EsperEPL2GrammarParser.Builtin_avedevContext ctx)
         {
             ExprAggregateNode aggregateNode = new ExprAvedevNode(ctx.DISTINCT() != null);
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(aggregateNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(aggregateNode, ctx, _astExprNodeMap);
         }
 
         public void ExitBuiltin_prevcount(EsperEPL2GrammarParser.Builtin_prevcountContext ctx)
         {
             var previousNode = new ExprPreviousNode(ExprPreviousNodePreviousType.PREVCOUNT);
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(previousNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(previousNode, ctx, _astExprNodeMap);
         }
 
         public void ExitBuiltin_stddev(EsperEPL2GrammarParser.Builtin_stddevContext ctx)
         {
             ExprAggregateNode aggregateNode = new ExprStddevNode(ctx.DISTINCT() != null);
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(aggregateNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(aggregateNode, ctx, _astExprNodeMap);
         }
 
         public void ExitBuiltin_sum(EsperEPL2GrammarParser.Builtin_sumContext ctx)
         {
             ExprAggregateNode aggregateNode = new ExprSumNode(ctx.DISTINCT() != null);
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(aggregateNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(aggregateNode, ctx, _astExprNodeMap);
         }
 
         public void ExitBuiltin_exists(EsperEPL2GrammarParser.Builtin_existsContext ctx)
         {
             var existsNode = new ExprPropertyExistsNode();
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(existsNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(existsNode, ctx, _astExprNodeMap);
         }
 
         public void ExitBuiltin_prior(EsperEPL2GrammarParser.Builtin_priorContext ctx)
         {
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(new ExprPriorNode(), ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(new ExprPriorNode(), ctx, _astExprNodeMap);
             StatementSpec.HasPriorExpressions = true;
         }
 
@@ -2060,116 +1911,116 @@ namespace com.espertech.esper.compiler.@internal.parse
 
             var idents = classes.ToArray();
             var instanceofNode = new ExprInstanceofNode(idents);
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(instanceofNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(instanceofNode, ctx, _astExprNodeMap);
         }
 
         public void ExitBuiltin_currts(EsperEPL2GrammarParser.Builtin_currtsContext ctx)
         {
             var timeNode = new ExprTimestampNode();
-            if (ctx.chainedFunction() != null)
+            if (ASTChainSpecHelper.HasChain(ctx.chainableElements()))
             {
-                HandleChainedFunction(ctx, ctx.chainedFunction(), timeNode);
+                HandleChainedFunction(ctx, ctx.chainableElements(), timeNode);
             }
             else
             {
-                astExprNodeMap.Put(ctx, timeNode);
+                _astExprNodeMap.Put(ctx, timeNode);
             }
         }
 
         public void ExitBuiltin_median(EsperEPL2GrammarParser.Builtin_medianContext ctx)
         {
             ExprAggregateNode aggregateNode = new ExprMedianNode(ctx.DISTINCT() != null);
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(aggregateNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(aggregateNode, ctx, _astExprNodeMap);
         }
 
         public void ExitBuiltin_firstlastwindow(EsperEPL2GrammarParser.Builtin_firstlastwindowContext ctx)
         {
             var stateType = AggregationAccessorLinearTypeExtensions.FromString(ctx.firstLastWindowAggregation().q.Text);
             ExprNode expr = new ExprAggMultiFunctionLinearAccessNode(stateType);
-            ASTExprHelper.ExprCollectAddSubNodes(expr, ctx.firstLastWindowAggregation().expressionListWithNamed(), astExprNodeMap);
-            if (ctx.firstLastWindowAggregation().chainedFunction() != null)
+            ASTExprHelper.ExprCollectAddSubNodes(expr, ctx.firstLastWindowAggregation().expressionListWithNamed(), _astExprNodeMap);
+            if (ASTChainSpecHelper.HasChain(ctx.firstLastWindowAggregation().chainableElements()))
             {
-                HandleChainedFunction(ctx, ctx.firstLastWindowAggregation().chainedFunction(), expr);
+                HandleChainedFunction(ctx, ctx.firstLastWindowAggregation().chainableElements(), expr);
             }
             else
             {
-                astExprNodeMap.Put(ctx, expr);
+                _astExprNodeMap.Put(ctx, expr);
             }
         }
 
         public void ExitBuiltin_avg(EsperEPL2GrammarParser.Builtin_avgContext ctx)
         {
             ExprAggregateNode aggregateNode = new ExprAvgNode(ctx.DISTINCT() != null);
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(aggregateNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(aggregateNode, ctx, _astExprNodeMap);
         }
 
         public void ExitBuiltin_cast(EsperEPL2GrammarParser.Builtin_castContext ctx)
         {
             var classIdentifierWArray = ASTClassIdentifierHelper.Walk(ctx.classIdentifierWithDimensions());
             var castNode = new ExprCastNode(classIdentifierWArray);
-            if (ctx.chainedFunction() != null)
+            if (ASTChainSpecHelper.HasChain(ctx.chainableElements()))
             {
-                ASTExprHelper.ExprCollectAddSubNodes(castNode, ctx.expression(), astExprNodeMap);
-                ASTExprHelper.ExprCollectAddSingle(castNode, ctx.expressionNamedParameter(), astExprNodeMap);
-                HandleChainedFunction(ctx, ctx.chainedFunction(), castNode);
+                ASTExprHelper.ExprCollectAddSubNodes(castNode, ctx.expression(), _astExprNodeMap);
+                ASTExprHelper.ExprCollectAddSingle(castNode, ctx.expressionNamedParameter(), _astExprNodeMap);
+                HandleChainedFunction(ctx, ctx.chainableElements(), castNode);
             }
             else
             {
-                ASTExprHelper.ExprCollectAddSubNodesAddParentNode(castNode, ctx, astExprNodeMap);
+                ASTExprHelper.ExprCollectAddSubNodesAddParentNode(castNode, ctx, _astExprNodeMap);
             }
         }
 
         public void ExitBuiltin_cnt(EsperEPL2GrammarParser.Builtin_cntContext ctx)
         {
             ExprAggregateNode aggregateNode = new ExprCountNode(ctx.DISTINCT() != null);
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(aggregateNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(aggregateNode, ctx, _astExprNodeMap);
         }
 
         public void ExitBuiltin_prev(EsperEPL2GrammarParser.Builtin_prevContext ctx)
         {
             var previousNode = new ExprPreviousNode(ExprPreviousNodePreviousType.PREV);
-            if (ctx.chainedFunction() != null)
+            if (ASTChainSpecHelper.HasChain(ctx.chainableElements()))
             {
-                ASTExprHelper.ExprCollectAddSubNodesExpressionCtx(previousNode, ctx.expression(), astExprNodeMap);
-                HandleChainedFunction(ctx, ctx.chainedFunction(), previousNode);
+                ASTExprHelper.ExprCollectAddSubNodesExpressionCtx(previousNode, ctx.expression(), _astExprNodeMap);
+                HandleChainedFunction(ctx, ctx.chainableElements(), previousNode);
             }
             else
             {
-                ASTExprHelper.ExprCollectAddSubNodesAddParentNode(previousNode, ctx, astExprNodeMap);
+                ASTExprHelper.ExprCollectAddSubNodesAddParentNode(previousNode, ctx, _astExprNodeMap);
             }
         }
 
         public void ExitBuiltin_istream(EsperEPL2GrammarParser.Builtin_istreamContext ctx)
         {
             var istreamNode = new ExprIStreamNode();
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(istreamNode, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(istreamNode, ctx, _astExprNodeMap);
         }
 
         public void ExitBuiltin_prevwindow(EsperEPL2GrammarParser.Builtin_prevwindowContext ctx)
         {
             var previousNode = new ExprPreviousNode(ExprPreviousNodePreviousType.PREVWINDOW);
-            if (ctx.chainedFunction() != null)
+            if (ASTChainSpecHelper.HasChain(ctx.chainableElements()))
             {
-                ASTExprHelper.ExprCollectAddSubNodes(previousNode, ctx.expression(), astExprNodeMap);
-                HandleChainedFunction(ctx, ctx.chainedFunction(), previousNode);
+                ASTExprHelper.ExprCollectAddSubNodes(previousNode, ctx.expression(), _astExprNodeMap);
+                HandleChainedFunction(ctx, ctx.chainableElements(), previousNode);
             }
             else
             {
-                ASTExprHelper.ExprCollectAddSubNodesAddParentNode(previousNode, ctx, astExprNodeMap);
+                ASTExprHelper.ExprCollectAddSubNodesAddParentNode(previousNode, ctx, _astExprNodeMap);
             }
         }
 
         public void ExitBuiltin_prevtail(EsperEPL2GrammarParser.Builtin_prevtailContext ctx)
         {
             var previousNode = new ExprPreviousNode(ExprPreviousNodePreviousType.PREVTAIL);
-            if (ctx.chainedFunction() != null)
+            if (ASTChainSpecHelper.HasChain(ctx.chainableElements()))
             {
-                ASTExprHelper.ExprCollectAddSubNodesExpressionCtx(previousNode, ctx.expression(), astExprNodeMap);
-                HandleChainedFunction(ctx, ctx.chainedFunction(), previousNode);
+                ASTExprHelper.ExprCollectAddSubNodesExpressionCtx(previousNode, ctx.expression(), _astExprNodeMap);
+                HandleChainedFunction(ctx, ctx.chainableElements(), previousNode);
             }
             else
             {
-                ASTExprHelper.ExprCollectAddSubNodesAddParentNode(previousNode, ctx, astExprNodeMap);
+                ASTExprHelper.ExprCollectAddSubNodesAddParentNode(previousNode, ctx, _astExprNodeMap);
             }
         }
 
@@ -2178,7 +2029,7 @@ namespace com.espertech.esper.compiler.@internal.parse
             IList<EsperEPL2GrammarParser.ExpressionContext> valueExprs = ctx.expressionList().expression();
             foreach (var valueExpr in valueExprs)
             {
-                var expr = ASTExprHelper.ExprCollectSubNodes(valueExpr, 0, astExprNodeMap)[0];
+                var expr = ASTExprHelper.ExprCollectSubNodes(valueExpr, 0, _astExprNodeMap)[0];
                 StatementSpec.SelectClauseSpec.Add(new SelectClauseExprRawSpec(expr, null, false));
             }
             StatementSpec.FireAndForgetSpec = new FireAndForgetSpecInsert(true);
@@ -2186,12 +2037,12 @@ namespace com.espertech.esper.compiler.@internal.parse
 
         public void ExitBuiltin_grouping(EsperEPL2GrammarParser.Builtin_groupingContext ctx)
         {
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(new ExprGroupingNode(), ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(new ExprGroupingNode(), ctx, _astExprNodeMap);
         }
 
         public void ExitBuiltin_groupingid(EsperEPL2GrammarParser.Builtin_groupingidContext ctx)
         {
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(new ExprGroupingIdNode(), ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(new ExprGroupingIdNode(), ctx, _astExprNodeMap);
         }
 
         public void ExitIntoTableExpr(EsperEPL2GrammarParser.IntoTableExprContext ctx)
@@ -2206,35 +2057,55 @@ namespace com.espertech.esper.compiler.@internal.parse
 
             // obtain item declarations
             var cols = ASTTableHelper.GetColumns(
-                ctx.createTableColumnList().createTableColumn(), astExprNodeMap, mapEnv.ImportService);
+                ctx.createTableColumnList().createTableColumn(), _astExprNodeMap, _mapEnv);
             StatementSpec.CreateTableDesc = new CreateTableDesc(tableName, cols);
         }
 
         public void ExitJsonobject(EsperEPL2GrammarParser.JsonobjectContext ctx)
         {
-            var node = new ExprConstantNodeImpl(ASTJsonHelper.WalkObject(tokenStream, ctx));
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(node, ctx, astExprNodeMap);
+            var node = new ExprConstantNodeImpl(ASTJsonHelper.WalkObject(_tokenStream, ctx));
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(node, ctx, _astExprNodeMap);
         }
 
         public void ExitPropertyStreamSelector(EsperEPL2GrammarParser.PropertyStreamSelectorContext ctx)
         {
             var streamWildcard = ctx.s.Text;
             var node = new ExprStreamUnderlyingNodeImpl(streamWildcard, true);
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(node, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(node, ctx, _astExprNodeMap);
         }
 
         public void ExitExpressionNamedParameter(EsperEPL2GrammarParser.ExpressionNamedParameterContext ctx)
         {
             var named = new ExprNamedParameterNodeImpl(ctx.IDENT().GetText());
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(named, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(named, ctx, _astExprNodeMap);
         }
 
         public void ExitExpressionNamedParameterWithTime(EsperEPL2GrammarParser.ExpressionNamedParameterWithTimeContext ctx)
         {
             var named = new ExprNamedParameterNodeImpl(ctx.IDENT().GetText());
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(named, ctx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(named, ctx, _astExprNodeMap);
         }
 
+        public void ExitClassDecl(EsperEPL2GrammarParser.ClassDeclContext ctx) {
+            if (ctx.Parent.RuleIndex == EsperEPL2GrammarParser.RULE_createClassExpr) {
+                return;
+            }
+            String clazz = ASTExpressionDeclHelper.WalkClassDecl(_classBodies);
+            _classProvidedList.Add(clazz);
+        }
+
+        public void ExitCreateClassExpr(EsperEPL2GrammarParser.CreateClassExprContext ctx)
+        {
+            String classProvided = ASTExpressionDeclHelper.WalkClassDecl(_classBodies);
+            StatementSpec.CreateClassProvided = classProvided;
+        }
+
+        public void EnterCreateClassExpr(EsperEPL2GrammarParser.CreateClassExprContext ctx) {
+        }
+
+        public void EnterClassDecl(EsperEPL2GrammarParser.ClassDeclContext ctx) {
+        }
+        
         public void EnterContextExpr(EsperEPL2GrammarParser.ContextExprContext ctx)
         {
         }
@@ -2264,10 +2135,6 @@ namespace com.espertech.esper.compiler.@internal.parse
         }
 
         public void ExitPatternInclusionExpression(EsperEPL2GrammarParser.PatternInclusionExpressionContext ctx)
-        {
-        }
-
-        public void EnterLibFunction(EsperEPL2GrammarParser.LibFunctionContext ctx)
         {
         }
 
@@ -2467,14 +2334,6 @@ namespace com.espertech.esper.compiler.@internal.parse
         {
         }
 
-        public void EnterEventPropertyAtomic(EsperEPL2GrammarParser.EventPropertyAtomicContext ctx)
-        {
-        }
-
-        public void ExitEventPropertyAtomic(EsperEPL2GrammarParser.EventPropertyAtomicContext ctx)
-        {
-        }
-
         public void EnterSubSelectGroupExpression(EsperEPL2GrammarParser.SubSelectGroupExpressionContext ctx)
         {
         }
@@ -2663,14 +2522,6 @@ namespace com.espertech.esper.compiler.@internal.parse
         {
         }
 
-        public void EnterEventPropertyOrLibFunction(EsperEPL2GrammarParser.EventPropertyOrLibFunctionContext ctx)
-        {
-        }
-
-        public void ExitEventPropertyOrLibFunction(EsperEPL2GrammarParser.EventPropertyOrLibFunctionContext ctx)
-        {
-        }
-
         public void EnterCreateDataflow(EsperEPL2GrammarParser.CreateDataflowContext ctx)
         {
         }
@@ -2780,14 +2631,6 @@ namespace com.espertech.esper.compiler.@internal.parse
         }
 
         public void EnterBitWiseExpression(EsperEPL2GrammarParser.BitWiseExpressionContext ctx)
-        {
-        }
-
-        public void EnterChainedFunction(EsperEPL2GrammarParser.ChainedFunctionContext ctx)
-        {
-        }
-
-        public void ExitChainedFunction(EsperEPL2GrammarParser.ChainedFunctionContext ctx)
         {
         }
 
@@ -3095,14 +2938,6 @@ namespace com.espertech.esper.compiler.@internal.parse
         {
         }
 
-        public void EnterLibFunctionWithClass(EsperEPL2GrammarParser.LibFunctionWithClassContext ctx)
-        {
-        }
-
-        public void ExitLibFunctionWithClass(EsperEPL2GrammarParser.LibFunctionWithClassContext ctx)
-        {
-        }
-
         public void EnterStringconstant(EsperEPL2GrammarParser.StringconstantContext ctx)
         {
         }
@@ -3180,14 +3015,6 @@ namespace com.espertech.esper.compiler.@internal.parse
         }
 
         public void ExitCreateSchemaDef(EsperEPL2GrammarParser.CreateSchemaDefContext ctx)
-        {
-        }
-
-        public void EnterEventPropertyIdent(EsperEPL2GrammarParser.EventPropertyIdentContext ctx)
-        {
-        }
-
-        public void ExitEventPropertyIdent(EsperEPL2GrammarParser.EventPropertyIdentContext ctx)
         {
         }
 
@@ -3388,10 +3215,6 @@ namespace com.espertech.esper.compiler.@internal.parse
         }
 
         public void EnterAdditiveExpression(EsperEPL2GrammarParser.AdditiveExpressionContext ctx)
-        {
-        }
-
-        public void EnterEventProperty(EsperEPL2GrammarParser.EventPropertyContext ctx)
         {
         }
 
@@ -3691,14 +3514,6 @@ namespace com.espertech.esper.compiler.@internal.parse
         {
         }
 
-        public void EnterFuncIdentTop(EsperEPL2GrammarParser.FuncIdentTopContext ctx)
-        {
-        }
-
-        public void ExitFuncIdentTop(EsperEPL2GrammarParser.FuncIdentTopContext ctx)
-        {
-        }
-
         public void EnterBuiltin_avg(EsperEPL2GrammarParser.Builtin_avgContext ctx)
         {
         }
@@ -3780,14 +3595,6 @@ namespace com.espertech.esper.compiler.@internal.parse
         }
 
         public void EnterBuiltin_groupingid(EsperEPL2GrammarParser.Builtin_groupingidContext ctx)
-        {
-        }
-
-        public void EnterFuncIdentInner(EsperEPL2GrammarParser.FuncIdentInnerContext ctx)
-        {
-        }
-
-        public void ExitFuncIdentInner(EsperEPL2GrammarParser.FuncIdentInnerContext ctx)
         {
         }
 
@@ -3983,6 +3790,63 @@ namespace com.espertech.esper.compiler.@internal.parse
         {
         }
 
+        public void EnterCrontabLimitParameterSetList(EsperEPL2GrammarParser.CrontabLimitParameterSetListContext ctx) {
+        }
+
+        public void ExitCrontabLimitParameterSetList(EsperEPL2GrammarParser.CrontabLimitParameterSetListContext ctx) {
+        }
+
+        public void EnterChainable(EsperEPL2GrammarParser.ChainableContext ctx) {
+        }
+
+        public void EnterChainableRootWithOpt(EsperEPL2GrammarParser.ChainableRootWithOptContext ctx) {
+        }
+
+        public void ExitChainableRootWithOpt(EsperEPL2GrammarParser.ChainableRootWithOptContext ctx) {
+        }
+
+        public void EnterChainableAtomicWithOpt(EsperEPL2GrammarParser.ChainableAtomicWithOptContext ctx) {
+        }
+
+        public void ExitChainableAtomicWithOpt(EsperEPL2GrammarParser.ChainableAtomicWithOptContext ctx) {
+        }
+
+        public void EnterChainableAtomic(EsperEPL2GrammarParser.ChainableAtomicContext ctx) {
+        }
+
+        public void ExitChainableAtomic(EsperEPL2GrammarParser.ChainableAtomicContext ctx) {
+        }
+
+        public void EnterChainableArray(EsperEPL2GrammarParser.ChainableArrayContext ctx) {
+        }
+
+        public void ExitChainableArray(EsperEPL2GrammarParser.ChainableArrayContext ctx) {
+        }
+
+        public void EnterChainableWithArgs(EsperEPL2GrammarParser.ChainableWithArgsContext ctx) {
+        }
+
+        public void ExitChainableWithArgs(EsperEPL2GrammarParser.ChainableWithArgsContext ctx) {
+        }
+
+        public void EnterChainableIdent(EsperEPL2GrammarParser.ChainableIdentContext ctx) {
+        }
+
+        public void ExitChainableIdent(EsperEPL2GrammarParser.ChainableIdentContext ctx) {
+        }
+
+        public void EnterChainableElements(EsperEPL2GrammarParser.ChainableElementsContext ctx) {
+        }
+
+        public void ExitChainableElements(EsperEPL2GrammarParser.ChainableElementsContext ctx) {
+        }
+
+        public void EnterColumnListKeywordAllowed(EsperEPL2GrammarParser.ColumnListKeywordAllowedContext ctx) {
+        }
+
+        public void ExitColumnListKeywordAllowed(EsperEPL2GrammarParser.ColumnListKeywordAllowedContext ctx) {
+        }       
+
         /// <summary>
         /// Pushes a statement into the stack, creating a new empty statement to fill in.
         /// The leave node method for lookup statements pops from the stack.
@@ -3990,19 +3854,19 @@ namespace com.espertech.esper.compiler.@internal.parse
         /// </summary>
         private void PushStatementContext()
         {
-            statementItemStack.AddFirst(new StatementStackItem(StatementSpec, astExprNodeMap, viewSpecs));
+            _statementItemStack.AddFirst(new StatementStackItem(StatementSpec, _astExprNodeMap, _viewSpecs));
 
-            StatementSpec = new StatementSpecRaw(defaultStreamSelector);
-            astExprNodeMap = new Dictionary<ITree, ExprNode>();
-            viewSpecs = new List<ViewSpec>();
+            StatementSpec = new StatementSpecRaw(_defaultStreamSelector);
+            _astExprNodeMap = new Dictionary<ITree, ExprNode>();
+            _viewSpecs = new List<ViewSpec>();
         }
 
         private void PopStatementContext(IParseTree ctx)
         {
             var currentSpec = StatementSpec;
-            var stackItemNode = statementItemStack.First;
+            var stackItemNode = _statementItemStack.First;
             var stackItem = stackItemNode.Value;
-            statementItemStack.Remove(stackItemNode);
+            _statementItemStack.Remove(stackItemNode);
 
             StatementSpec = stackItem.StatementSpec;
             StatementSpec.TableExpressions.AddAll(currentSpec.TableExpressions);
@@ -4010,9 +3874,9 @@ namespace com.espertech.esper.compiler.@internal.parse
             {
                 StatementSpec.ReferencedVariables.Add(var);
             }
-            astExprNodeMap = stackItem.AstExprNodeMap;
-            viewSpecs = stackItem.ViewSpecs;
-            astStatementSpecMap.Put(ctx, currentSpec);
+            _astExprNodeMap = stackItem.AstExprNodeMap;
+            _viewSpecs = stackItem.ViewSpecs;
+            _astStatementSpecMap.Put(ctx, currentSpec);
         }
 
         private EvalForgeNode MakeMatchUntil(EsperEPL2GrammarParser.MatchUntilRangeContext range, bool hasUntil)
@@ -4023,22 +3887,22 @@ namespace com.espertech.esper.compiler.@internal.parse
 
             if (range.low != null && range.c1 != null && range.high == null)
             { // [expr:]
-                low = ASTExprHelper.ExprCollectSubNodes(range.low, 0, astExprNodeMap)[0];
+                low = ASTExprHelper.ExprCollectSubNodes(range.low, 0, _astExprNodeMap)[0];
             }
             else if (range.c2 != null && range.upper != null)
             { // [:expr]
-                high = ASTExprHelper.ExprCollectSubNodes(range.upper, 0, astExprNodeMap)[0];
+                high = ASTExprHelper.ExprCollectSubNodes(range.upper, 0, _astExprNodeMap)[0];
             }
             else if (range.low != null && range.c1 == null)
             { // [expr]
-                single = ASTExprHelper.ExprCollectSubNodes(range.low, 0, astExprNodeMap)[0];
+                single = ASTExprHelper.ExprCollectSubNodes(range.low, 0, _astExprNodeMap)[0];
             }
             else if (range.low != null)
             { // [expr:expr]
-                low = ASTExprHelper.ExprCollectSubNodes(range.low, 0, astExprNodeMap)[0];
-                high = ASTExprHelper.ExprCollectSubNodes(range.high, 0, astExprNodeMap)[0];
+                low = ASTExprHelper.ExprCollectSubNodes(range.low, 0, _astExprNodeMap)[0];
+                high = ASTExprHelper.ExprCollectSubNodes(range.high, 0, _astExprNodeMap)[0];
             }
-            return new EvalMatchUntilForgeNode(low, high, single);
+            return new EvalMatchUntilForgeNode(_mapEnv.IsAttachPatternText, low, high, single);
         }
 
         private PatternLevelAnnotationFlags GetPatternFlags(IList<EsperEPL2GrammarParser.AnnotationEnumContext> ctxList)
@@ -4048,7 +3912,7 @@ namespace com.espertech.esper.compiler.@internal.parse
             {
                 foreach (var ctx in ctxList)
                 {
-                    var desc = ASTAnnotationHelper.Walk(ctx, mapEnv.ImportService);
+                    var desc = ASTAnnotationHelper.Walk(ctx, _mapEnv.ImportService);
                     PatternLevelAnnotationUtil.ValidateSetFlags(flags, desc.Name);
                 }
             }
@@ -4082,22 +3946,22 @@ namespace com.espertech.esper.compiler.@internal.parse
 
         private string GetDefaultDialect()
         {
-            return mapEnv.Configuration.Compiler.Scripts.DefaultDialect;
+            return _mapEnv.Configuration.Compiler.Scripts.DefaultDialect;
         }
 
         private void HandleMergeMatchedUnmatched(EsperEPL2GrammarParser.ExpressionContext expression, bool b)
         {
-            if (mergeMatcheds == null)
+            if (_mergeMatcheds == null)
             {
-                mergeMatcheds = new List<OnTriggerMergeMatched>();
+                _mergeMatcheds = new List<OnTriggerMergeMatched>();
             }
             ExprNode filterSpec = null;
             if (expression != null)
             {
-                filterSpec = ASTExprHelper.ExprCollectSubNodes(expression, 0, astExprNodeMap)[0];
+                filterSpec = ASTExprHelper.ExprCollectSubNodes(expression, 0, _astExprNodeMap)[0];
             }
-            mergeMatcheds.Add(new OnTriggerMergeMatched(b, filterSpec, mergeActions));
-            mergeActions = null;
+            _mergeMatcheds.Add(new OnTriggerMergeMatched(b, filterSpec, _mergeActions));
+            _mergeActions = null;
         }
 
         private void HandleMergeInsert(EsperEPL2GrammarParser.MergeInsertContext mergeInsertContext)
@@ -4105,26 +3969,30 @@ namespace com.espertech.esper.compiler.@internal.parse
             ExprNode whereCond = null;
             if (mergeInsertContext.whereClause() != null)
             {
-                whereCond = ASTExprHelper.ExprCollectSubNodes(mergeInsertContext.whereClause(), 0, astExprNodeMap)[0];
+                whereCond = ASTExprHelper.ExprCollectSubNodes(mergeInsertContext.whereClause(), 0, _astExprNodeMap)[0];
             }
             List<SelectClauseElementRaw> expressions = new List<SelectClauseElementRaw>(StatementSpec.SelectClauseSpec.SelectExprList);
             StatementSpec.SelectClauseSpec.SelectExprList.Clear();
 
             var optionalInsertName = mergeInsertContext.classIdentifier() != null ? ASTUtil.UnescapeClassIdent(mergeInsertContext.classIdentifier()) : null;
             var columnsList = ASTUtil.GetIdentList(mergeInsertContext.columnList());
-            mergeActions.Add(new OnTriggerMergeActionInsert(whereCond, optionalInsertName, columnsList, expressions));
+            _mergeActions.Add(new OnTriggerMergeActionInsert(whereCond, optionalInsertName, columnsList, expressions));
         }
 
-        private void HandleChainedFunction(ParserRuleContext parentCtx, EsperEPL2GrammarParser.ChainedFunctionContext chainedCtx, ExprNode childExpression)
-        {
-            var chainSpec = ASTLibFunctionHelper.GetLibFuncChain(chainedCtx.libFunctionNoClass(), astExprNodeMap);
-            ExprDotNode dotNode = new ExprDotNodeImpl(chainSpec, mapEnv.Configuration.Compiler.Expression.IsDuckTyping,
-                    mapEnv.Configuration.Compiler.Expression.IsUdfCache);
+        private void HandleChainedFunction(ParserRuleContext parentCtx, EsperEPL2GrammarParser.ChainableElementsContext chainedCtx, ExprNode childExpression) {
+            IList<Chainable> chainSpec = ASTChainSpecHelper.GetChainables(chainedCtx, _astExprNodeMap);
+            if (chainSpec.IsEmpty()) {
+                _astExprNodeMap.Put(parentCtx, childExpression);
+                return;
+            }
+            
+            ExprDotNode dotNode = new ExprDotNodeImpl(chainSpec, _mapEnv.Configuration.Compiler.Expression.IsDuckTyping,
+                    _mapEnv.Configuration.Compiler.Expression.IsUdfCache);
             if (childExpression != null)
             {
                 dotNode.AddChildNode(childExpression);
             }
-            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(dotNode, parentCtx, astExprNodeMap);
+            ASTExprHelper.ExprCollectAddSubNodesAddParentNode(dotNode, parentCtx, _astExprNodeMap);
         }
 
         private void HandleFAFNamedWindowStream(EsperEPL2GrammarParser.ClassIdentifierContext node, EsperEPL2GrammarParser.IdentOrTickedContext asClause)
@@ -4132,17 +4000,17 @@ namespace com.espertech.esper.compiler.@internal.parse
             var windowName = ASTUtil.UnescapeClassIdent(node);
             var alias = ASTUtil.GetStreamNameUnescapedOptional(asClause);
             StatementSpec.StreamSpecs.Add(new FilterStreamSpecRaw(new FilterSpecRaw(
-                windowName, new EmptyList<ExprNode>(), null), ViewSpec.ToArray(viewSpecs), alias, StreamSpecOptions.DEFAULT));
+                windowName, new EmptyList<ExprNode>(), null), ViewSpec.ToArray(_viewSpecs), alias, StreamSpecOptions.DEFAULT));
         }
 
-        internal void End()
+        public void End()
         {
-            if (astExprNodeMap.Count > 1)
+            if (_astExprNodeMap.Count > 1)
             {
                 throw ASTWalkException.From("Unexpected AST tree contains left over child elements," +
                         " not all expression nodes have been removed from AST-to-expression nodes map");
             }
-            if (astPatternNodeMap.Count > 1)
+            if (_astPatternNodeMap.Count > 1)
             {
                 throw ASTWalkException.From("Unexpected AST tree contains left over child elements," +
                         " not all pattern nodes have been removed from AST-to-pattern nodes map");
@@ -4156,7 +4024,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 StatementSpec.FireAndForgetSpec = new FireAndForgetSpecInsert(false);
             }
 
-            StatementSpec.SubstitutionParameters = substitutionParamNodes;
+            StatementSpec.SubstitutionParameters = _substitutionParamNodes;
         }
 
         private ExprIdentNode ValidateOuterJoinGetIdentNode(ExprNode exprNode)

@@ -10,7 +10,6 @@ using System;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.compat;
@@ -52,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
                         return factory.method.Invoke(target, new object[] {lookupValues});
 
                     case MethodTargetStrategyStaticMethodInvokeType.MULTIKEY:
-                        return factory.method.Invoke(target, ((HashableMultiKey) lookupValues).Keys);
+                        return factory.method.Invoke(target, (object[]) lookupValues);
 
                     default:
                         throw new IllegalStateException("Unrecognized value for " + factory.invokeType);

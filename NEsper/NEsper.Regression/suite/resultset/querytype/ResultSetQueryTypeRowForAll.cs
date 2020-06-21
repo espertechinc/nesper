@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
@@ -27,18 +27,110 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ResultSetQueryTypeRowForAllSimple());
-            execs.Add(new ResultSetQueryTypeRowForAllSumMinMax());
-            execs.Add(new ResultSetQueryTypeRowForAllWWindowAgg());
-            execs.Add(new ResultSetQueryTypeRowForAllMinMaxWindowed());
-            execs.Add(new ResultSetQueryTypeSumOneView());
-            execs.Add(new ResultSetQueryTypeSumJoin());
-            execs.Add(new ResultSetQueryTypeAvgPerSym());
-            execs.Add(new ResultSetQueryTypeSelectStarStdGroupBy());
-            execs.Add(new ResultSetQueryTypeSelectExprGroupWin());
-            execs.Add(new ResultSetQueryTypeSelectAvgExprStdGroupBy());
-            execs.Add(new ResultSetQueryTypeSelectAvgStdGroupByUni());
+            WithRowForAllSimple(execs);
+            WithRowForAllSumMinMax(execs);
+            WithRowForAllWWindowAgg(execs);
+            WithRowForAllMinMaxWindowed(execs);
+            WithSumOneView(execs);
+            WithSumJoin(execs);
+            WithAvgPerSym(execs);
+            WithSelectStarStdGroupBy(execs);
+            WithSelectExprGroupWin(execs);
+            WithSelectAvgExprStdGroupBy(execs);
+            WithSelectAvgStdGroupByUni(execs);
+            WithRowForAllNamedWindowWindow(execs);
+            WithRowForAllStaticMethodDoubleNested(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRowForAllStaticMethodDoubleNested(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeRowForAllStaticMethodDoubleNested());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRowForAllNamedWindowWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ResultSetQueryTypeRowForAllNamedWindowWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectAvgStdGroupByUni(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeSelectAvgStdGroupByUni());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectAvgExprStdGroupBy(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeSelectAvgExprStdGroupBy());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectExprGroupWin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeSelectExprGroupWin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectStarStdGroupBy(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeSelectStarStdGroupBy());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAvgPerSym(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeAvgPerSym());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSumJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeSumJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSumOneView(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeSumOneView());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRowForAllMinMaxWindowed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeRowForAllMinMaxWindowed());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRowForAllWWindowAgg(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeRowForAllWWindowAgg());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRowForAllSumMinMax(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeRowForAllSumMinMax());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRowForAllSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeRowForAllSimple());
             return execs;
         }
 
@@ -169,11 +261,27 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             env.AdvanceTime(msec);
         }
 
+        public class ResultSetQueryTypeRowForAllStaticMethodDoubleNested : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    $"import {typeof(MyHelper).MaskTypeName()};\n" +
+                    "@Name('s0') select MyHelper.DoOuter(MyHelper.DoInner(last(TheString))) as c0 from SupportBean;\n";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                env.SendEventBean(new SupportBean("E1", 1));
+                Assert.AreEqual("oiE1io", env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+
+                env.UndeployAll();
+            }
+        }
+
         public class ResultSetQueryTypeRowForAllSumMinMax : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2", "c3" };
+                var fields = new[] {"c0", "c1", "c2", "c3"};
 
                 env.Milestone(0);
                 env.AdvanceTime(0);
@@ -235,7 +343,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
 
                 var epl = "@Name('s0') select irstream TheString as c0, sum(IntPrimitive) as c1," +
                           "window(*) as c2 from SupportBean.win:length(2)";
@@ -412,10 +520,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream " +
-                          "min(Price) as minPrice," +
-                          "max(Price) as maxPrice " +
-                          "from  SupportMarketDataBean#length(2)";
+                var epl =
+                    "@Name('s0') select irstream " +
+                    "min(Price) as minPrice," +
+                    "max(Price) as maxPrice " +
+                    "from SupportMarketDataBean#length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
@@ -638,7 +747,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
                 var epl = "create window ABCWin.win:keepall() as SupportBean;\n" +
                           "insert into ABCWin select * from SupportBean;\n" +
                           "on SupportBean_A delete from ABCWin where TheString = Id;\n" +
@@ -696,6 +805,19 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     new object[] {"E4", new[] {50, -1}});
 
                 env.UndeployAll();
+            }
+        }
+
+        public class MyHelper
+        {
+            public static string DoOuter(string value)
+            {
+                return "o" + value + "o";
+            }
+
+            public static string DoInner(string value)
+            {
+                return "i" + value + "i";
             }
         }
     }

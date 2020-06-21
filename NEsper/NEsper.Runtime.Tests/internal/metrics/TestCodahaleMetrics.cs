@@ -10,15 +10,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-using com.espertech.esper.common;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics;
 using com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics.core;
-using com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics.reporting;
-using NUnit.Framework;
 
-using Timer = com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics.core.Timer;
+using NUnit.Framework;
 
 namespace com.espertech.esper.runtime.@internal.metrics
 {

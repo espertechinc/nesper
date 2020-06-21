@@ -10,7 +10,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
@@ -21,17 +20,59 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
     public class EPLOuterInnerJoin4Stream
     {
         private static readonly string[] FIELDS =
-            new [] { "S0.Id"," S0.P00"," S1.Id"," S1.P10"," S2.Id"," S2.P20"," S3.Id"," S3.P30" };
+            new[] {"S0.Id", " S0.P00", " S1.Id", " S1.P10", " S2.Id", " S2.P20", " S3.Id", " S3.P30"};
 
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLJoinFullMiddleJoinVariantTwo());
-            execs.Add(new EPLJoinFullMiddleJoinVariantOne());
-            execs.Add(new EPLJoinFullSidedJoinVariantTwo());
-            execs.Add(new EPLJoinFullSidedJoinVariantOne());
-            execs.Add(new EPLJoinStarJoinVariantTwo());
+            WithFullMiddleJoinVariantTwo(execs);
+            WithFullMiddleJoinVariantOne(execs);
+            WithFullSidedJoinVariantTwo(execs);
+            WithFullSidedJoinVariantOne(execs);
+            WithStarJoinVariantTwo(execs);
+            WithStarJoinVariantOne(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStarJoinVariantOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLJoinStarJoinVariantOne());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStarJoinVariantTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinStarJoinVariantTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFullSidedJoinVariantOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinFullSidedJoinVariantOne());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFullSidedJoinVariantTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinFullSidedJoinVariantTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFullMiddleJoinVariantOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinFullMiddleJoinVariantOne());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFullMiddleJoinVariantTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinFullMiddleJoinVariantTwo());
             return execs;
         }
 
@@ -39,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             RegressionEnvironment env,
             string expression)
         {
-            var fields = new [] { "S0.Id"," S0.P00"," S1.Id"," S1.P10"," S2.Id"," S2.P20"," S3.Id"," S3.P30" };
+            var fields = new[] {"S0.Id", " S0.P00", " S1.Id", " S1.P10", " S2.Id", " S2.P20", " S3.Id", " S3.P30"};
 
             env.CompileDeployAddListenerMileZero(expression, "s0");
 

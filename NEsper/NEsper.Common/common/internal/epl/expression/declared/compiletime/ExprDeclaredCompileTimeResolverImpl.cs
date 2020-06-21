@@ -19,45 +19,48 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
 {
     public class ExprDeclaredCompileTimeResolverImpl : ExprDeclaredCompileTimeResolver
     {
-        private readonly string moduleName;
-        private readonly ICollection<string> moduleUses;
-        private readonly ExprDeclaredCompileTimeRegistry locals;
-        private readonly PathRegistry<string, ExpressionDeclItem> path;
-        private readonly ModuleDependenciesCompileTime moduleDependencies;
+        private readonly string _moduleName;
+        private readonly ICollection<string> _moduleUses;
+        private readonly ExprDeclaredCompileTimeRegistry _locals;
+        private readonly PathRegistry<string, ExpressionDeclItem> _path;
+        private readonly ModuleDependenciesCompileTime _moduleDependencies;
+        private readonly bool _isFireAndForget;
 
         public ExprDeclaredCompileTimeResolverImpl(
             string moduleName,
             ICollection<string> moduleUses,
             ExprDeclaredCompileTimeRegistry locals,
             PathRegistry<string, ExpressionDeclItem> path,
-            ModuleDependenciesCompileTime moduleDependencies)
+            ModuleDependenciesCompileTime moduleDependencies,
+            bool isFireAndForget)
         {
-            this.moduleName = moduleName;
-            this.moduleUses = moduleUses;
-            this.locals = locals;
-            this.path = path;
-            this.moduleDependencies = moduleDependencies;
+            this._moduleName = moduleName;
+            this._moduleUses = moduleUses;
+            this._locals = locals;
+            this._path = path;
+            this._moduleDependencies = moduleDependencies;
+            this._isFireAndForget = isFireAndForget;
         }
 
         public ExpressionDeclItem Resolve(string name)
         {
             // try self-originated protected types first
-            ExpressionDeclItem localExpr = locals.Expressions.Get(name);
+            ExpressionDeclItem localExpr = _locals.Expressions.Get(name);
             if (localExpr != null) {
                 return localExpr;
             }
 
             try {
-                var expression = path.GetAnyModuleExpectSingle(name, moduleUses);
+                var expression = _path.GetAnyModuleExpectSingle(name, _moduleUses);
                 if (expression != null) {
-                    if (!NameAccessModifierExtensions.Visible(
+                    if (!_isFireAndForget && !NameAccessModifierExtensions.Visible(
                         expression.First.Visibility,
                         expression.First.ModuleName,
-                        moduleName)) {
+                        _moduleName)) {
                         return null;
                     }
 
-                    moduleDependencies.AddPathExpression(name, expression.Second);
+                    _moduleDependencies.AddPathExpression(name, expression.Second);
                     return expression.First;
                 }
             }

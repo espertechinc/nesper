@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.@event.map
 {
     public class MapNestedEntryPropertyGetterPropertyProvidedDynamic : MapNestedEntryPropertyGetterBase
     {
-        private readonly EventPropertyGetter nestedGetter;
+        private readonly EventPropertyGetter _nestedGetter;
 
         public MapNestedEntryPropertyGetterPropertyProvidedDynamic(
             string propertyMap,
@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             EventPropertyGetter nestedGetter)
             : base(propertyMap, fragmentType, eventBeanTypedEventFactory)
         {
-            this.nestedGetter = nestedGetter;
+            this._nestedGetter = nestedGetter;
         }
 
         public override bool IsExistsProperty(EventBean eventBean)
@@ -39,15 +39,22 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public override object HandleNestedValue(object value)
         {
-            if (!(value is IDictionary<string, object>)) {
-                return null;
-            }
-
-            if (nestedGetter is MapEventPropertyGetter) {
-                return ((MapEventPropertyGetter) nestedGetter).GetMap((IDictionary<string, object>) value);
+            if ((value is IDictionary<string, object> mapValue) &&
+                (_nestedGetter is MapEventPropertyGetter mapEventPropertyGetter)) {
+                return mapEventPropertyGetter.GetMap(mapValue);
             }
 
             return null;
+        }
+
+        public override bool HandleNestedValueExists(object value)
+        {
+            if ((value is IDictionary<string, object> mapValue) &&
+                (_nestedGetter is MapEventPropertyGetter mapEventPropertyGetter)) {
+                return mapEventPropertyGetter.IsMapExistsProperty(mapValue);
+            }
+
+            return false;
         }
 
         private CodegenMethod HandleNestedValueCodegen(
@@ -61,9 +68,9 @@ namespace com.espertech.esper.common.@internal.@event.map
                     "value",
                     typeof(IDictionary<string, object>),
                     null);
-            if (nestedGetter is MapEventPropertyGetter) {
+            if (_nestedGetter is MapEventPropertyGetter eventPropertyGetter) {
                 return block.MethodReturn(
-                    ((MapEventPropertyGetter) nestedGetter).UnderlyingGetCodegen(
+                    eventPropertyGetter.UnderlyingGetCodegen(
                         Cast(typeof(IDictionary<string, object>), Ref("value")),
                         codegenMethodScope,
                         codegenClassScope));
@@ -72,15 +79,33 @@ namespace com.espertech.esper.common.@internal.@event.map
             return block.MethodReturn(ConstantNull());
         }
 
+        private CodegenMethod HandleNestedValueExistsCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            CodegenBlock block = codegenMethodScope
+                .MakeChild(typeof(bool), GetType(), codegenClassScope)
+                .AddParam(typeof(object), "value")
+                .Block
+                .IfRefNotTypeReturnConst("value", typeof(IDictionary<string, object>), false);
+            if (_nestedGetter is MapEventPropertyGetter eventPropertyGetter) {
+                return block
+                    .MethodReturn(
+                        eventPropertyGetter.UnderlyingExistsCodegen(
+                            Cast<IDictionary<string, object>>(Ref("value")),
+                            codegenMethodScope,
+                            codegenClassScope));
+            }
+
+            return block.MethodReturn(ConstantFalse());
+        }
+
         private bool IsExistsProperty(IDictionary<string, object> map)
         {
             var value = map.Get(propertyMap);
-            if (value == null || !(value is IDictionary<string, object>)) {
-                return false;
-            }
-
-            if (nestedGetter is MapEventPropertyGetter) {
-                return ((MapEventPropertyGetter) nestedGetter).IsMapExistsProperty((IDictionary<string, object>) value);
+            if ((value is IDictionary<string, object> mapValue) &&
+                (_nestedGetter is MapEventPropertyGetter eventPropertyGetter)) {
+                return eventPropertyGetter.IsMapExistsProperty(mapValue);
             }
 
             return false;
@@ -96,9 +121,9 @@ namespace com.espertech.esper.common.@internal.@event.map
                 .DeclareVar<object>("value", ExprDotMethod(Ref("map"), "Get", Constant(propertyMap)))
                 .IfRefNullReturnFalse("value")
                 .IfRefNotTypeReturnConst("value", typeof(IDictionary<string, object>), false);
-            if (nestedGetter is MapEventPropertyGetter) {
+            if (_nestedGetter is MapEventPropertyGetter eventPropertyGetter) {
                 return block.MethodReturn(
-                    ((MapEventPropertyGetter) nestedGetter).UnderlyingExistsCodegen(
+                    eventPropertyGetter.UnderlyingExistsCodegen(
                         Cast(typeof(IDictionary<string, object>), Ref("value")),
                         codegenMethodScope,
                         codegenClassScope));
@@ -118,6 +143,14 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(HandleNestedValueCodegen(codegenMethodScope, codegenClassScope), valueExpression);
+        }
+
+        public override CodegenExpression HandleNestedValueExistsCodegen(
+            CodegenExpression valueExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return LocalMethod(HandleNestedValueExistsCodegen(codegenMethodScope, codegenClassScope), valueExpression);
         }
 
         public override CodegenExpression HandleNestedValueFragmentCodegen(

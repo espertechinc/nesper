@@ -40,10 +40,10 @@ namespace com.espertech.esper.common.client.soda
             Expression expression,
             bool alias)
         {
-            this.Name = name;
-            this.ParameterNames = parameterNames;
-            this.Expression = expression;
-            this.IsAlias = alias;
+            Name = name;
+            ParameterNames = parameterNames;
+            Expression = expression;
+            IsAlias = alias;
         }
 
         /// <summary>
@@ -134,14 +134,11 @@ namespace com.espertech.esper.common.client.soda
 
                 if (ParameterNames != null && !ParameterNames.IsEmpty())
                 {
-                    writer.Write(" -> ");
+                    writer.Write(" => ");
                 }
             }
 
-            if (Expression != null)
-            {
-                Expression.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-            }
+            Expression?.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
 
             writer.Write("}");
         }

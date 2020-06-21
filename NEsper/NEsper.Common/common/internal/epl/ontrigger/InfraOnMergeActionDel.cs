@@ -6,15 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.ontrigger
 {
@@ -45,9 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             AgentInstanceContext agentInstanceContext)
         {
             tableStateInstance.DeleteEvent(matchingEvent);
-            if (changeHandlerRemoved != null) {
-                changeHandlerRemoved.Add(matchingEvent, eventsPerStream, false, agentInstanceContext);
-            }
+            changeHandlerRemoved?.Add(matchingEvent, eventsPerStream, false, agentInstanceContext);
         }
 
         public override string Name {

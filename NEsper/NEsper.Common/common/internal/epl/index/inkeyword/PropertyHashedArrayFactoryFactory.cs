@@ -9,26 +9,26 @@
 using System;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.epl.index.@base;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.index.inkeyword
 {
     public class PropertyHashedArrayFactoryFactory : EventTableFactoryFactory
     {
-        internal readonly int streamNum;
-        internal readonly string[] propertyNames;
-        internal readonly Type[] propertyTypes;
-        internal readonly bool unique;
-        internal readonly EventPropertyValueGetter[] propertyGetters;
-        internal readonly bool isFireAndForget;
+        private readonly int streamNum;
+        private readonly string[] propertyNames;
+        private readonly Type[] propertyTypes;
+        private readonly DataInputOutputSerde[] propertySerdes;
+        private readonly bool unique;
+        private readonly EventPropertyValueGetter[] propertyGetters;
+        private readonly bool isFireAndForget;
 
         public PropertyHashedArrayFactoryFactory(
             int streamNum,
             string[] propertyNames,
             Type[] propertyTypes,
+            DataInputOutputSerde[] propertySerdes,
             bool unique,
             EventPropertyValueGetter[] propertyGetters,
             bool isFireAndForget)
@@ -36,24 +36,24 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
             this.streamNum = streamNum;
             this.propertyNames = propertyNames;
             this.propertyTypes = propertyTypes;
+            this.propertySerdes = propertySerdes;
             this.unique = unique;
             this.propertyGetters = propertyGetters;
             this.isFireAndForget = isFireAndForget;
         }
 
-        public EventTableFactory Create(
-            EventType eventType,
-            StatementContext statementContext)
+        public EventTableFactory Create(EventType eventType, EventTableFactoryFactoryContext eventTableFactoryContext)
         {
-            return statementContext.EventTableIndexService.CreateInArray(
+            return eventTableFactoryContext.EventTableIndexService.CreateInArray(
                 streamNum,
                 eventType,
                 propertyNames,
                 propertyTypes,
+                propertySerdes,
                 unique,
                 propertyGetters,
                 isFireAndForget,
-                statementContext);
+                eventTableFactoryContext);
         }
     }
 } // end of namespace

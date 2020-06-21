@@ -8,7 +8,6 @@
 
 using System;
 
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading.locks;
 

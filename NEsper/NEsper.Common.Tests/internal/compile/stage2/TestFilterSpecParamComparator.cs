@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestCompareAll()
         {
             var sorted = new SortedSet<FilterOperator>(comparator);
@@ -45,13 +45,13 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             Assert.AreEqual(FilterOperator.EQUAL, sorted.First());
             Assert.AreEqual(FilterOperator.BOOLEAN_EXPRESSION, sorted.Last());
             Assert.AreEqual(
-                "[EQUAL, IS, IN_LIST_OF_VALUES, ADVANCED_INDEX, RANGE_OPEN, RANGE_HALF_OPEN, RANGE_HALF_CLOSED, RANGE_CLOSED, LESS, LESS_OR_EQUAL, GREATER_OR_EQUAL, GREATER, NOT_RANGE_CLOSED, NOT_RANGE_HALF_CLOSED, NOT_RANGE_HALF_OPEN, NOT_RANGE_OPEN, NOT_IN_LIST_OF_VALUES, NOT_EQUAL, IS_NOT, BOOLEAN_EXPRESSION]",
+                "[EQUAL, IS, IN_LIST_OF_VALUES, ADVANCED_INDEX, RANGE_OPEN, RANGE_HALF_OPEN, RANGE_HALF_CLOSED, RANGE_CLOSED, LESS, LESS_OR_EQUAL, GREATER_OR_EQUAL, GREATER, REBOOL, NOT_RANGE_CLOSED, NOT_RANGE_HALF_CLOSED, NOT_RANGE_HALF_OPEN, NOT_RANGE_OPEN, NOT_IN_LIST_OF_VALUES, NOT_EQUAL, IS_NOT, BOOLEAN_EXPRESSION]",
                 sorted.RenderAny());
 
             log.Debug(".testCompareAll " + sorted.RenderAny());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestCompareOneByOne()
         {
             var param1 = FilterOperator.EQUAL;

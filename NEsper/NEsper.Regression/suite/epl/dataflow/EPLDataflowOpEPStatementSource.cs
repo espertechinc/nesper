@@ -37,13 +37,33 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EPLDataflowAllTypes());
-            execs.Add(new EPLDataflowStmtNameDynamic());
-            execs.Add(new EPLDataflowStatementFilter());
-            execs.Add(new EPLDataflowInvalid());
+WithAllTypes(execs);
+WithStmtNameDynamic(execs);
+WithStatementFilter(execs);
+WithInvalid(execs);
             return execs;
         }
-
+public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowInvalid());
+    return execs;
+}public static IList<RegressionExecution> WithStatementFilter(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowStatementFilter());
+    return execs;
+}public static IList<RegressionExecution> WithStmtNameDynamic(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowStmtNameDynamic());
+    return execs;
+}public static IList<RegressionExecution> WithAllTypes(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowAllTypes());
+    return execs;
+}
         private static void RunAssertionStatementNameExists(
             RegressionEnvironment env,
             string typeName,

@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             string scriptName,
             string expression,
             string[] parameterNames,
-            ExprForge[] parameters,
+            ExprNode[] parameters,
             Type returnType,
             string defaultDialect)
         {
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 
         public string[] ParameterNames { get; }
 
-        public ExprForge[] Parameters { get; }
+        public ExprNode[] Parameters { get; }
 
         public Type ReturnType { get; }
 
@@ -82,6 +82,12 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                     ExprDotName(
                             EPStatementInitServicesConstants.REF,
                             EPStatementInitServicesConstants.IMPORTSERVICERUNTIME))
+                .SetProperty(
+                    Ref("sd"),
+                    "ScriptCompiler",
+                    ExprDotName(
+                        EPStatementInitServicesConstants.REF,
+                        EPStatementInitServicesConstants.SCRIPTCOMPILER))
                 .SetProperty(
                     Ref("sd"),
                     "Coercer",

@@ -150,12 +150,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             IList<ExprNode> children = ChildNodes;
             using (IEnumerator<ExprNode> enumerator = children.GetEnumerator()) {
                 if (IsLowEndpointIncluded && IsHighEndpointIncluded) {
-                    enumerator.Advance().ToEPL(writer, Precedence);
+                    enumerator.Advance().ToEPL(writer, Precedence, flags);
                     if (IsNotBetween) {
                         writer.Write(" not between ");
                     }
@@ -163,12 +165,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         writer.Write(" between ");
                     }
 
-                    enumerator.Advance().ToEPL(writer, Precedence);
+                    enumerator.Advance().ToEPL(writer, Precedence, flags);
                     writer.Write(" and ");
-                    enumerator.Advance().ToEPL(writer, Precedence);
+                    enumerator.Advance().ToEPL(writer, Precedence, flags);
                 }
                 else {
-                    enumerator.Advance().ToEPL(writer, Precedence);
+                    enumerator.Advance().ToEPL(writer, Precedence, flags);
                     writer.Write(" in ");
                     if (IsLowEndpointIncluded) {
                         writer.Write('[');
@@ -177,9 +179,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         writer.Write('(');
                     }
 
-                    enumerator.Advance().ToEPL(writer, Precedence);
+                    enumerator.Advance().ToEPL(writer, Precedence, flags);
                     writer.Write(':');
-                    enumerator.Advance().ToEPL(writer, Precedence);
+                    enumerator.Advance().ToEPL(writer, Precedence, flags);
                     if (IsHighEndpointIncluded) {
                         writer.Write(']');
                     }
@@ -325,11 +327,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     .IfCondition(Relational(ExprDotMethod(Ref("value"), "CompareTo", Ref("upper")), GT, Constant(0)))
                     .BlockReturn(ConstantFalse());
                 if (!_isLowIncluded) {
-                    block.IfCondition(ExprDotMethod(Ref("value"), "Equals", Ref("lower"))).BlockReturn(ConstantFalse());
+                    block.IfCondition(StaticMethod<object>("Equals", Ref("value"), Ref("lower"))).BlockReturn(ConstantFalse());
                 }
 
                 if (!_isHighIncluded) {
-                    block.IfCondition(ExprDotMethod(Ref("value"), "Equals", Ref("upper"))).BlockReturn(ConstantFalse());
+                    block.IfCondition(StaticMethod<object>("Equals", Ref("value"), Ref("upper"))).BlockReturn(ConstantFalse());
                 }
 
                 var method = block.MethodReturn(ConstantTrue());
@@ -656,9 +658,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     return false;
                 }
 
-                BigInteger valueD = _numberCoercerValue.CoerceBoxedBigInt(value);
-                BigInteger lowerD = _numberCoercerLower.CoerceBoxedBigInt(lower);
-                BigInteger upperD = _numberCoercerUpper.CoerceBoxedBigInt(upper);
+                var valueD = _numberCoercerValue.CoerceBoxedBigInt(value);
+                var lowerD = _numberCoercerLower.CoerceBoxedBigInt(lower);
+                var upperD = _numberCoercerUpper.CoerceBoxedBigInt(upper);
 
                 if (lowerD.CompareTo(upperD) > 0) {
                     var temp = upperD;
@@ -717,7 +719,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                             Relational(ExprDotMethod(Ref("value"), "CompareTo", Ref("upper")), LT, Constant(0)))
                         .BlockReturn(ConstantTrue());
                     if (_isHighIncluded) {
-                        ifValueGtLower.BlockReturn(ExprDotMethod(Ref("value"), "Equals", Ref("upper")));
+                        ifValueGtLower.BlockReturn(StaticMethod<object>("Equals", Ref("value"), Ref("upper")));
                     }
                     else {
                         ifValueGtLower.BlockReturn(ConstantFalse());
@@ -725,7 +727,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
                 CodegenMethod method;
                 if (_isLowIncluded) {
-                    method = block.MethodReturn(ExprDotMethod(Ref("value"), "Equals", Ref("lower")));
+                    method = block.MethodReturn(StaticMethod<object>("Equals", Ref("value"), Ref("lower")));
                 }
                 else {
                     method = block.MethodReturn(ConstantFalse());

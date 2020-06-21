@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.@event.property
         private EventBean theEvent;
         private BeanEventType eventType;
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetGetter()
         {
             int[] expected = {1, 2, 10, 20};
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.@event.property
                     supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetPropertyType()
         {
             Type[] expected = {typeof(int), typeof(int), typeof(int), typeof(int)};

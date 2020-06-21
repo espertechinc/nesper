@@ -15,27 +15,29 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     {
         void ToEPL(
             TextWriter writer,
-            ExprPrecedenceEnum parentPrecedence);
+            ExprPrecedenceEnum parentPrecedence,
+            ExprNodeRenderableFlags flags);
     }
 
     public class ProxyExprNodeRenderable : ExprNodeRenderable
     {
-        public Action<TextWriter, ExprPrecedenceEnum> ProcToEPL;
+        public Action<TextWriter, ExprPrecedenceEnum, ExprNodeRenderableFlags> ProcToEPL;
 
         public ProxyExprNodeRenderable()
         {
         }
 
-        public ProxyExprNodeRenderable(Action<TextWriter, ExprPrecedenceEnum> procToEpl)
+        public ProxyExprNodeRenderable(Action<TextWriter, ExprPrecedenceEnum, ExprNodeRenderableFlags> procToEpl)
         {
             ProcToEPL = procToEpl;
         }
 
         public void ToEPL(
             TextWriter writer,
-            ExprPrecedenceEnum parentPrecedence)
+            ExprPrecedenceEnum parentPrecedence,
+            ExprNodeRenderableFlags flags)
         {
-            ProcToEPL(writer, parentPrecedence);
+            ProcToEPL(writer, parentPrecedence, flags);
         }
     }
 } // end of namespace

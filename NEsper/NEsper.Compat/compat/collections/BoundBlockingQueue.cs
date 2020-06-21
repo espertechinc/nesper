@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.compat.collections
@@ -150,7 +149,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns></returns>
         public bool Pop(int maxTimeoutInMillis, out T item)
         {
-            long endTime = DateTimeHelper.CurrentTimeMillis + maxTimeoutInMillis;
+            var endTime = DateTimeHelper.CurrentTimeMillis + maxTimeoutInMillis;
 
             do {
                 using (_queueLock.Acquire()) {

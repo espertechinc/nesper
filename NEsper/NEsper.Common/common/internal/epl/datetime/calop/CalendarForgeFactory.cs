@@ -11,55 +11,49 @@ using System.Collections.Generic;
 using com.espertech.esper.common.@internal.epl.datetime.eval;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.datetime;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.calop
 {
-    public class CalendarForgeFactory : ForgeFactory
+    public class CalendarForgeFactory : DatetimeMethodProviderForgeFactory
     {
         public CalendarForge GetOp(
-            DateTimeMethodEnum method,
+            DatetimeMethodDesc desc,
             string methodNameUsed,
             IList<ExprNode> parameters,
             ExprForge[] forges)
         {
-            if (method == DateTimeMethodEnum.WITHTIME) {
-                return new CalendarWithTimeForge(forges[0], forges[1], forges[2], forges[3]);
-            }
+            DateTimeMethodEnum method = desc.DatetimeMethod;
+            switch (method) {
+                case DateTimeMethodEnum.WITHTIME:
+                    return new CalendarWithTimeForge(forges[0], forges[1], forges[2], forges[3]);
 
-            if (method == DateTimeMethodEnum.WITHDATE) {
-                return new CalendarWithDateForge(forges[0], forges[1], forges[2]);
-            }
+                case DateTimeMethodEnum.WITHDATE:
+                    return new CalendarWithDateForge(forges[0], forges[1], forges[2]);
 
-            if (method == DateTimeMethodEnum.PLUS || method == DateTimeMethodEnum.MINUS) {
-                return new CalendarPlusMinusForge(forges[0], method == DateTimeMethodEnum.MINUS ? -1 : 1);
-            }
+                case DateTimeMethodEnum.PLUS:
+                case DateTimeMethodEnum.MINUS:
+                    return new CalendarPlusMinusForge(forges[0], method == DateTimeMethodEnum.MINUS ? -1 : 1);
 
-            if (method == DateTimeMethodEnum.WITHMAX ||
-                method == DateTimeMethodEnum.WITHMIN ||
-                method == DateTimeMethodEnum.ROUNDCEILING ||
-                method == DateTimeMethodEnum.ROUNDFLOOR ||
-                method == DateTimeMethodEnum.ROUNDHALF ||
-                method == DateTimeMethodEnum.SET) {
-                DateTimeFieldEnum fieldNum = CalendarOpUtil.GetEnum(methodNameUsed, parameters[0]);
-                if (method == DateTimeMethodEnum.WITHMIN) {
-                    return new CalendarWithMinForge(fieldNum);
+                case DateTimeMethodEnum.WITHMAX:
+                case DateTimeMethodEnum.WITHMIN:
+                case DateTimeMethodEnum.ROUNDCEILING:
+                case DateTimeMethodEnum.ROUNDFLOOR:
+                case DateTimeMethodEnum.ROUNDHALF:
+                case DateTimeMethodEnum.SET: {
+                    var fieldNum = CalendarOpUtil.GetEnum(methodNameUsed, parameters[0]);
+                    return method switch {
+                        DateTimeMethodEnum.WITHMIN => new CalendarWithMinForge(fieldNum),
+                        DateTimeMethodEnum.ROUNDCEILING => new CalendarForgeRound(fieldNum, method),
+                        DateTimeMethodEnum.ROUNDFLOOR => new CalendarForgeRound(fieldNum, method),
+                        DateTimeMethodEnum.ROUNDHALF => new CalendarForgeRound(fieldNum, method),
+                        DateTimeMethodEnum.SET => new CalendarSetForge(fieldNum, forges[1]),
+                        _ => new CalendarWithMaxForge(fieldNum)
+                    };
                 }
 
-                if (method == DateTimeMethodEnum.ROUNDCEILING ||
-                    method == DateTimeMethodEnum.ROUNDFLOOR ||
-                    method == DateTimeMethodEnum.ROUNDHALF) {
-                    return new CalendarForgeRound(fieldNum, method);
-                }
-
-                if (method == DateTimeMethodEnum.SET) {
-                    return new CalendarSetForge(fieldNum, forges[1]);
-                }
-
-                return new CalendarWithMaxForge(fieldNum);
+                default:
+                    throw new IllegalStateException("Unrecognized calendar-op code '" + method + "'");
             }
-
-            throw new IllegalStateException("Unrecognized calendar-op code '" + method + "'");
         }
     }
 } // end of namespace

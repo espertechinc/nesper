@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.avro;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.eventtyperepo;
+using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.@event.xml;
 
@@ -89,6 +90,17 @@ namespace com.espertech.esper.common.@internal.@event.core
             return avroHandler.AdapterForTypeAvro(avroGenericDataDotRecord, type);
         }
 
+        public EventBean AdapterForJson(
+            string json,
+            string eventTypeName)
+        {
+            var type = eventTypeRepository.GetTypeByName(eventTypeName);
+            EventTypeUtility.ValidateTypeJson(eventTypeName, type);
+            var jsonEventType = (JsonEventType) type;
+            var underlying = jsonEventType.Parse(json);
+            return new JsonEventBean(underlying, type);
+        }
+        
         public static XmlNode GetXMLNodeFromDocument(XmlNode node)
         {
             var resultNode = node;

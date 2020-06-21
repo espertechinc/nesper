@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -107,11 +106,7 @@ namespace com.espertech.esper.common.client.dataflow.util
                 return resolvedFromProvider;
             }
 
-            if (optionalEvaluator == null) {
-                return null;
-            }
-
-            return (string) optionalEvaluator.Evaluate(null, true, context.AgentInstanceContext);
+            return (string) optionalEvaluator?.Evaluate(null, true, context.AgentInstanceContext);
         }
 
         /// <summary>
@@ -190,7 +185,7 @@ namespace com.espertech.esper.common.client.dataflow.util
 
             Type theClass;
             try {
-                theClass = context.AgentInstanceContext.ImportServiceRuntime.ResolveClass(className, false);
+                theClass = context.AgentInstanceContext.ImportServiceRuntime.ResolveClass(className, false, ExtensionClassEmpty.INSTANCE);
             }
             catch (ImportException e) {
                 throw new EPException("Failed to find class for parameter '" + name + "': " + e.Message, e);

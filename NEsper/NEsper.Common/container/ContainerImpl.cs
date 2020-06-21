@@ -7,8 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-using Castle.MicroKernel;
+
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 
@@ -59,7 +58,8 @@ namespace com.espertech.esper.container
         {
             return _container.Resolve<T>(name);
         }
-
+        
+#if false
         /// <summary>
         /// Resolves the specified arguments as anonymous type.
         /// </summary>
@@ -81,7 +81,8 @@ namespace com.espertech.esper.container
         {
             return _container.Resolve<T>(argumentsAsDictionary);
         }
-
+#endif
+        
         /// <summary>
         /// Returns true if an object by the given name is registered.
         /// </summary>

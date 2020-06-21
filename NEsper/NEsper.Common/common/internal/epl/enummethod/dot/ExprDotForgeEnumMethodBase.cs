@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,9 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-
-using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -28,54 +25,41 @@ using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 {
     public abstract class ExprDotForgeEnumMethodBase : ExprDotForgeEnumMethod,
         ExpressionResultCacheStackEntry
     {
-        internal bool cache;
-        internal int enumEvalNumRequiredEvents;
-        internal EnumForge enumForge;
+        private EnumMethodDesc _enumMethodDesc;
+        private string _enumMethodUsedName;
+        private int _streamCountIncoming;
+        private EPType _typeInfo;
 
-        internal EnumMethodEnum enumMethodEnum;
-        internal string enumMethodUsedName;
-        internal int streamCountIncoming;
-        internal EPType typeInfo;
-
-        public EnumMethodEnum EnumMethodEnum => enumMethodEnum;
+        public EnumForge EnumForge { get; set; }
+        public int EnumEvalNumRequiredEvents { get; set; }
+        public bool IsCache { get; set; }
 
         public void Visit(ExprDotEvalVisitor visitor)
         {
-            visitor.VisitEnumeration(enumMethodEnum.GetNameCamel());
+            visitor.VisitEnumeration(_enumMethodDesc.EnumMethodName);
         }
 
-        public ExprDotEval DotEvaluator => new ExprDotForgeEnumMethodEval(
-            this,
-            enumForge.EnumEvaluator,
-            cache,
-            enumEvalNumRequiredEvents);
+        public ExprDotEval DotEvaluator => new ExprDotForgeEnumMethodEval(this, EnumForge.EnumEvaluator, EnumEvalNumRequiredEvents);
 
         public CodegenExpression Codegen(
             CodegenExpression inner,
             Type innerType,
-            CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol,
-            CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope)
         {
-            return ExprDotForgeEnumMethodEval.Codegen(
-                this,
-                inner,
-                innerType,
-                codegenMethodScope,
-                exprSymbol,
-                codegenClassScope);
+            return ExprDotForgeEnumMethodEval.Codegen(this, inner, innerType, parent, symbols, classScope);
         }
 
         public void Init(
             int? streamOfProviderIfApplicable,
-            EnumMethodEnum enumMethodEnum,
+            EnumMethodDesc enumMethodDesc,
             string enumMethodUsedName,
             EPType typeInfo,
             IList<ExprNode> parameters,
@@ -85,9 +69,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             var eventTypeBean = typeInfo.GetEventTypeSingleValued();
             var collectionComponentType = typeInfo.GetClassMultiValued();
 
-            this.enumMethodEnum = enumMethodEnum;
-            this.enumMethodUsedName = enumMethodUsedName;
-            streamCountIncoming = validationContext.StreamTypeService.EventTypes.Length;
+            _enumMethodDesc = enumMethodDesc;
+            _enumMethodUsedName = enumMethodUsedName;
+            _streamCountIncoming = validationContext.StreamTypeService.EventTypes.Length;
 
             if (eventTypeColl == null && collectionComponentType == null && eventTypeBean == null) {
                 throw new ExprValidationException(
@@ -98,27 +82,24 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             }
 
             // compile parameter abstract for validation against available footprints
-            DotMethodFPProvided footprintProvided = DotMethodUtil.GetProvidedFootprint(parameters);
+            var footprintProvided = DotMethodUtil.GetProvidedFootprint(parameters);
 
             // validate parameters
             DotMethodInputTypeMatcher inputTypeMatcher = new ProxyDotMethodInputTypeMatcher {
-                ProcMatches = fp => {
-                    if (fp.Input == DotMethodFPInputEnum.EVENTCOLL &&
-                        eventTypeBean == null &&
-                        eventTypeColl == null) {
+                ProcMatches = footprint => {
+                    if (footprint.Input == DotMethodFPInputEnum.EVENTCOLL && eventTypeBean == null && eventTypeColl == null) {
                         return false;
                     }
 
-                    if (fp.Input == DotMethodFPInputEnum.SCALAR_ANY && collectionComponentType == null) {
+                    if (footprint.Input == DotMethodFPInputEnum.SCALAR_ANY && collectionComponentType == null) {
                         return false;
                     }
 
                     return true;
-                }
+                },
             };
-
-            DotMethodFP footprint = DotMethodUtil.ValidateParametersDetermineFootprint(
-                enumMethodEnum.GetFootprints(),
+            var footprint = DotMethodUtil.ValidateParametersDetermineFootprint(
+                enumMethodDesc.Footprints,
                 DotMethodTypeEnum.ENUM,
                 enumMethodUsedName,
                 footprintProvided,
@@ -131,7 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                               "' and " +
                               footprint.Parameters.Length +
                               "-parameter footprint, expecting collection of ";
-                var received = " as input, received " + EPTypeHelper.ToTypeDescriptive(typeInfo);
+                var received = " as input, received " + typeInfo.ToTypeDescriptive();
                 if (footprint.Input == DotMethodFPInputEnum.EVENTCOLL && eventTypeColl == null) {
                     throw new ExprValidationException(message + "events" + received);
                 }
@@ -149,99 +130,115 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             var enumCallStackHelper = validationContext.EnumMethodCallStackHelper;
             enumCallStackHelper.PushStack(this);
 
-            IList<ExprDotEvalParam> bodiesAndParameters = new List<ExprDotEvalParam>();
-            var count = 0;
-            var inputEventType = eventTypeBean == null ? eventTypeColl : eventTypeBean;
-            foreach (var node in parameters) {
-                var bodyAndParameter = GetBodyAndParameter(
+            try {
+                // initialize
+                var inputEventType = eventTypeBean ?? eventTypeColl;
+                Initialize(
+                    footprint,
+                    enumMethodDesc.EnumMethod,
                     enumMethodUsedName,
-                    count++,
-                    node,
                     inputEventType,
                     collectionComponentType,
-                    validationContext,
-                    bodiesAndParameters,
-                    footprint);
-                bodiesAndParameters.Add(bodyAndParameter);
-            }
+                    parameters,
+                    validationContext.StreamTypeService,
+                    validationContext.StatementRawInfo,
+                    validationContext.StatementCompileTimeService);
 
-            enumForge = GetEnumForge(
-                validationContext.StreamTypeService,
-                enumMethodUsedName,
-                bodiesAndParameters,
-                inputEventType, // TBD: collectionType, may not be applicable
-                collectionComponentType,
-                streamCountIncoming,
-                validationContext.IsDisablePropertyExpressionEventCollCache,
-                validationContext.StatementRawInfo,
-                validationContext.StatementCompileTimeService);
-            enumEvalNumRequiredEvents = enumForge.StreamNumSize;
+                // get-forge-desc-factory
+                var forgeDescFactory = GetForgeFactory(
+                    footprint,
+                    parameters,
+                    enumMethodDesc.EnumMethod,
+                    enumMethodUsedName,
+                    inputEventType,
+                    collectionComponentType,
+                    validationContext);
 
-            // determine the stream ids of event properties asked for in the evaluator(s)
-            var streamsRequired = new HashSet<int>();
-            var visitor = new ExprNodeIdentifierCollectVisitor();
-            foreach (var desc in bodiesAndParameters) {
-                desc.Body.Accept(visitor);
-                foreach (var ident in visitor.ExprProperties) {
-                    streamsRequired.Add(ident.StreamId);
+                // handle body and parameter list
+                var bodiesAndParameters = new List<ExprDotEvalParam>();
+                var count = 0;
+                foreach (var node in parameters) {
+                    var bodyAndParameter = GetBodyAndParameter(forgeDescFactory, enumMethodUsedName, count++, node, validationContext, footprint);
+                    bodiesAndParameters.Add(bodyAndParameter);
                 }
-            }
 
-            if (streamOfProviderIfApplicable != null) {
-                streamsRequired.Add(streamOfProviderIfApplicable.Value);
-            }
+                var forgeDesc = forgeDescFactory.MakeEnumForgeDesc(
+                    bodiesAndParameters,
+                    _streamCountIncoming,
+                    validationContext.StatementCompileTimeService);
+                EnumForge = forgeDesc.Forge;
+                _typeInfo = forgeDesc.Type;
+                EnumEvalNumRequiredEvents = EnumForge.StreamNumSize;
 
-            // We turn on caching if the stack is not empty (we are an inner lambda) and the dependency does not include the stream.
-            var isInner = !enumCallStackHelper.PopLambda();
-            if (isInner) {
-                // If none of the properties that the current lambda uses comes from the ultimate parent(s) or subsequent streams, then cache.
-                Deque<ExpressionResultCacheStackEntry> parents = enumCallStackHelper.GetStack();
-                var found = false;
-                foreach (var req in streamsRequired) {
-                    var first = (ExprDotForgeEnumMethodBase) parents.First;
-                    var parentIncoming = first.streamCountIncoming - 1;
-                    var selfAdded = streamCountIncoming; // the one we use ourselfs
-                    if (req > parentIncoming && req < selfAdded) {
-                        found = true;
+                // determine the stream ids of event properties asked for in the evaluator(s)
+                var streamsRequired = new HashSet<int?>();
+                var visitor = new ExprNodeIdentifierCollectVisitor();
+                foreach (var desc in bodiesAndParameters) {
+                    desc.Body.Accept(visitor);
+                    foreach (var ident in visitor.ExprProperties) {
+                        streamsRequired.Add(ident.StreamId);
                     }
                 }
 
-                cache = !found;
+                if (streamOfProviderIfApplicable != null) {
+                    streamsRequired.Add(streamOfProviderIfApplicable);
+                }
+
+                // We turn on caching if the stack is not empty (we are an inner lambda) and the dependency does not include the stream.
+                var isInner = !enumCallStackHelper.PopLambda();
+                if (isInner) {
+                    // If none of the properties that the current lambda uses comes from the ultimate parent(s) or subsequent streams, then cache.
+                    var parents = enumCallStackHelper.GetStack();
+                    var found = false;
+                    foreach (int req in streamsRequired) {
+                        var first = (ExprDotForgeEnumMethodBase) parents.First;
+                        var parentIncoming = first._streamCountIncoming - 1;
+                        var selfAdded = _streamCountIncoming; // the one we use ourselfs
+                        if (req > parentIncoming && req < selfAdded) {
+                            found = true;
+                        }
+                    }
+
+                    IsCache = !found;
+                }
+            }
+            catch (ExprValidationException) {
+                enumCallStackHelper.PopLambda();
+                throw;
             }
         }
 
-        public EPType TypeInfo {
-            get => typeInfo;
-            set => typeInfo = value;
+        public virtual void Initialize(
+            DotMethodFP footprint,
+            EnumMethodEnum enumMethod,
+            string enumMethodUsedName,
+            EventType inputEventType,
+            Type collectionComponentType,
+            IList<ExprNode> parameters,
+            StreamTypeService streamTypeService,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
+        {
+            // override as required
         }
 
-        public abstract EventType[] GetAddStreamTypes(
+        public abstract EnumForgeDescFactory GetForgeFactory(
+            DotMethodFP footprint,
+            IList<ExprNode> parameters,
+            EnumMethodEnum enumMethod,
             string enumMethodUsedName,
-            IList<string> goesToNames,
             EventType inputEventType,
             Type collectionComponentType,
-            IList<ExprDotEvalParam> bodiesAndParameters,
-            StatementRawInfo statementRawInfo,
-            StatementCompileTimeServices services);
+            ExprValidationContext validationContext);
 
-        public abstract EnumForge GetEnumForge(StreamTypeService streamTypeService,
-            string enumMethodUsedName,
-            IList<ExprDotEvalParam> bodiesAndParameters,
-            EventType inputEventType,
-            Type collectionComponentType,
-            int numStreamsIncoming,
-            bool disablePropertyExpressionEventCollCache,
-            StatementRawInfo statementRawInfo,
-            StatementCompileTimeServices services);
+        public EPType TypeInfo => _typeInfo;
 
         private ExprDotEvalParam GetBodyAndParameter(
+            EnumForgeDescFactory forgeDescFactory,
             string enumMethodUsedName,
             int parameterNum,
             ExprNode parameterNode,
-            EventType inputEventType,
-            Type collectionComponentType,
             ExprValidationContext validationContext,
-            IList<ExprDotEvalParam> priorParameters,
             DotMethodFP footprint)
         {
             // handle an expression that is a constant or other (not =>)
@@ -254,25 +251,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             var goesNode = (ExprLambdaGoesNode) parameterNode;
 
             // Get secondary
-            var additionalTypes = GetAddStreamTypes(
-                enumMethodUsedName,
-                goesNode.GoesToNames,
-                inputEventType,
-                collectionComponentType,
-                priorParameters,
-                validationContext.StatementRawInfo,
-                validationContext.StatementCompileTimeService);
-            string[] additionalStreamNames = goesNode.GoesToNames.ToArray();
+            var lambdaDesc = forgeDescFactory.GetLambdaStreamTypesForParameter(parameterNum);
+            string[] additionalStreamNames = lambdaDesc.StreamNames;
+            var additionalEventTypes = lambdaDesc.Types;
 
-            ValidateDuplicateStreamNames(validationContext.StreamTypeService.StreamNames, additionalStreamNames);
+            ValidateDuplicateStreamNames(validationContext.StreamTypeService.StreamNames, goesNode.GoesToNames);
 
             // add name and type to list of known types
             var addTypes = CollectionUtil.ArrayExpandAddElements<EventType>(
-                validationContext.StreamTypeService.EventTypes,
-                additionalTypes);
+                validationContext.StreamTypeService.EventTypes, additionalEventTypes);
             var addNames = CollectionUtil.ArrayExpandAddElements<string>(
-                validationContext.StreamTypeService.StreamNames,
-                additionalStreamNames);
+                validationContext.StreamTypeService.StreamNames, additionalStreamNames);
 
             var types = new StreamTypeServiceImpl(
                 addTypes,
@@ -285,24 +274,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             var filter = goesNode.ChildNodes[0];
             try {
                 var filterValidationContext = new ExprValidationContext(types, validationContext);
-                filter = ExprNodeUtilityValidate.GetValidatedSubtree(
-                    ExprNodeOrigin.DECLAREDEXPRBODY,
-                    filter,
-                    filterValidationContext);
+                filter = ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.DECLAREDEXPRBODY, filter, filterValidationContext);
             }
             catch (ExprValidationException ex) {
                 throw new ExprValidationException(
-                    "Error validating enumeration method '" +
-                    enumMethodUsedName +
-                    "' parameter " +
-                    parameterNum +
-                    ": " +
-                    ex.Message,
+                    "Failed to validate enumeration method '" + enumMethodUsedName + "' parameter " + parameterNum + ": " + ex.Message,
                     ex);
             }
 
             var filterForge = filter.Forge;
-            var expectedType = footprint.Parameters[parameterNum].Type;
+            var expectedType = footprint.Parameters[parameterNum].ParamType;
             // Lambda-methods don't use a specific expected return-type, so passing null for type is fine.
             EPLValidationUtil.ValidateParameterType(
                 enumMethodUsedName,
@@ -321,22 +302,21 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 filterForge,
                 numStreamsIncoming,
                 goesNode.GoesToNames,
-                additionalTypes);
+                lambdaDesc);
         }
 
         private void ValidateDuplicateStreamNames(
             string[] streamNames,
-            string[] additionalStreamNames)
+            IList<string> goesToNames)
         {
-            for (var added = 0; added < additionalStreamNames.Length; added++) {
+            for (var nameIdx = 0; nameIdx < goesToNames.Count; nameIdx++) {
                 for (var exist = 0; exist < streamNames.Length; exist++) {
-                    if (streamNames[exist] != null &&
-                        streamNames[exist]
-                            .Equals(additionalStreamNames[added], StringComparison.InvariantCultureIgnoreCase)) {
-                        var message = "Error validating enumeration method '" +
-                                      enumMethodUsedName +
+                    var currName = goesToNames[nameIdx];
+                    if (streamNames[exist] != null && string.Equals(streamNames[exist], currName, StringComparison.InvariantCultureIgnoreCase)) {
+                        var message = "Failed to validate enumeration method '" +
+                                      _enumMethodUsedName +
                                       "', the lambda-parameter name '" +
-                                      additionalStreamNames[added] +
+                                      goesToNames[nameIdx] +
                                       "' has already been declared in this context";
                         throw new ExprValidationException(message);
                     }
@@ -346,9 +326,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
         public override string ToString()
         {
-            return GetType().GetSimpleName() +
-                   " lambda=" +
-                   enumMethodEnum;
+            return $"{GetType().Name} lambda={_enumMethodDesc}";
         }
     }
 } // end of namespace

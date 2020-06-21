@@ -26,5 +26,12 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         void StartRecoverable(
             bool startRecoverable,
             MatchedEventMap beginState);
+
+        void Accept(EvalStateNodeVisitor visitor);
+    }
+
+    public static class EvalRootStateConstants
+    {
+        public static EvalRootState[] EMPTY_ARRAY = new EvalRootState[0];
     }
 } // end of namespace

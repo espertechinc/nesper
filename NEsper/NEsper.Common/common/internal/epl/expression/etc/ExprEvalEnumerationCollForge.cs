@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
@@ -15,6 +14,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.resultset.select.typable;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 
@@ -22,20 +22,20 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.expression.etc
 {
-    public class ExprEvalEnumerationCollForge : ExprForge
+    public class ExprEvalEnumerationCollForge : ExprForge, SelectExprProcessorTypableForge
     {
-        internal readonly ExprEnumerationForge enumerationForge;
-        private readonly EventType targetType;
-        private readonly bool firstRowOnly;
+        private readonly ExprEnumerationForge _enumerationForge;
+        private readonly EventType _targetType;
+        private readonly bool _firstRowOnly;
 
         public ExprEvalEnumerationCollForge(
             ExprEnumerationForge enumerationForge,
             EventType targetType,
             bool firstRowOnly)
         {
-            this.enumerationForge = enumerationForge;
-            this.targetType = targetType;
-            this.firstRowOnly = firstRowOnly;
+            this._enumerationForge = enumerationForge;
+            this._targetType = targetType;
+            this._firstRowOnly = firstRowOnly;
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -48,13 +48,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            if (firstRowOnly) {
+            if (_firstRowOnly) {
                 CodegenMethod firstMethodNode = codegenMethodScope
                     .MakeChild(typeof(EventBean), typeof(ExprEvalEnumerationCollForge), codegenClassScope);
                 firstMethodNode.Block
                     .DeclareVar<FlexCollection>(
                         "events",
-                        enumerationForge.EvaluateGetROCollectionEventsCodegen(
+                        _enumerationForge.EvaluateGetROCollectionEventsCodegen(
                             firstMethodNode,
                             exprSymbol,
                             codegenClassScope))
@@ -72,24 +72,30 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             methodNode.Block
                 .DeclareVar<FlexCollection>(
                     "events",
-                    FlexWrap(enumerationForge.EvaluateGetROCollectionEventsCodegen(methodNode, exprSymbol, codegenClassScope)))
+                    FlexWrap(_enumerationForge.EvaluateGetROCollectionEventsCodegen(methodNode, exprSymbol, codegenClassScope)))
                 .IfRefNullReturnNull("events")
                 .MethodReturn(ExprDotMethod(ExprDotName(Ref("events"), "EventBeanCollection"), "ToArray"));
             return LocalMethod(methodNode);
         }
 
+        public Type UnderlyingEvaluationType {
+            get {
+                return _firstRowOnly
+                    ? _targetType.UnderlyingType 
+                    : TypeHelper.GetArrayType(_targetType.UnderlyingType);
+            }
+        }
+
         public Type EvaluationType {
             get {
-                if (firstRowOnly) {
-                    return targetType.UnderlyingType;
-                }
-
-                return TypeHelper.GetArrayType(targetType.UnderlyingType);
+                return _firstRowOnly 
+                    ? typeof(EventBean)
+                    : typeof(EventBean[]);
             }
         }
 
         public ExprNodeRenderable ExprForgeRenderable {
-            get => enumerationForge.EnumForgeRenderable;
+            get => _enumerationForge.EnumForgeRenderable;
         }
 
         public ExprForgeConstantType ForgeConstantType {

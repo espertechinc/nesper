@@ -18,11 +18,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 {
     public class ExprEvalStreamNumEnumSingleForge : ExprForge
     {
-        private readonly ExprEnumerationForge enumeration;
+        private readonly ExprEnumerationForge _enumeration;
 
         public ExprEvalStreamNumEnumSingleForge(ExprEnumerationForge enumeration)
         {
-            this.enumeration = enumeration;
+            this._enumeration = enumeration;
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return enumeration.EvaluateGetEventBeanCodegen(codegenMethodScope, exprSymbol, codegenClassScope);
+            return _enumeration.EvaluateGetEventBeanCodegen(codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
         public ExprForgeConstantType ForgeConstantType {
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         }
 
         public ExprNodeRenderable ExprForgeRenderable {
-            get => enumeration.EnumForgeRenderable;
+            get => _enumeration.EnumForgeRenderable;
         }
     }
 } // end of namespace

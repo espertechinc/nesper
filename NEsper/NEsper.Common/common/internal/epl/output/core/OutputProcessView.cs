@@ -22,12 +22,12 @@ namespace com.espertech.esper.common.@internal.epl.output.core
 {
     public abstract class OutputProcessView : View,
         JoinSetIndicator,
-        AgentInstanceStopCallback,
+        AgentInstanceMgmtCallback,
         OutputProcessViewTerminable
     {
-        protected internal UpdateDispatchView child;
-        protected internal JoinExecutionStrategy joinExecutionStrategy;
-        protected internal Viewable parentView;
+        protected UpdateDispatchView child;
+        protected JoinExecutionStrategy joinExecutionStrategy;
+        protected Viewable parentView;
 
         public JoinExecutionStrategy JoinExecutionStrategy {
             get => joinExecutionStrategy;
@@ -61,9 +61,13 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             EventBean[] oldData);
 
         public abstract void Process(
-            ISet<MultiKey<EventBean>> newEvents,
-            ISet<MultiKey<EventBean>> oldEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents,
             ExprEvaluatorContext exprEvaluatorContext);
+
+        public virtual void Transfer(AgentInstanceTransferServices services)
+        {
+        }
 
         public abstract void Stop(AgentInstanceStopServices services);
         public abstract void Terminated();

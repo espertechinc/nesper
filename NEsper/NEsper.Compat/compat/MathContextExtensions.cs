@@ -61,5 +61,49 @@ namespace com.espertech.esper.compat
             }
         }
 
+        public static double? GetValueDivide(
+            this MathContext optionalMathContext,
+            double numerator,
+            long denominator)
+        {
+            if (denominator == 0) {
+                return null;
+            }
+
+            try {
+                if (optionalMathContext == null) {
+                    return numerator / denominator;
+                }
+
+                return optionalMathContext.Apply(numerator / denominator);
+            }
+            catch (ArithmeticException ex) {
+                Log.Error("Error computing avg aggregation result: " + ex.Message, ex);
+                return 0.0d;
+            }
+        }
+        
+        public static double? GetValueDivide(
+            this MathContext optionalMathContext,
+            double numerator,
+            double denominator)
+        {
+            if (denominator == 0) {
+                return null;
+            }
+
+            try {
+                if (optionalMathContext == null) {
+                    return numerator / denominator;
+                }
+
+                return optionalMathContext.Apply(numerator / denominator);
+            }
+            catch (ArithmeticException ex) {
+                Log.Error("Error computing avg aggregation result: " + ex.Message, ex);
+                return 0.0;
+            }
+        }
+
     }
 }

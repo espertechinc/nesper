@@ -14,20 +14,21 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
     public class CodegenStatementSynchronized : CodegenStatementWBlockBase
     {
-        private CodegenBlock block;
-        private readonly CodegenExpression expression;
+        private CodegenBlock _block;
+        private readonly CodegenExpression _expression;
 
         public CodegenStatementSynchronized(
             CodegenBlock parent,
             CodegenExpression expression)
             : base(parent)
         {
-            this.expression = expression;
+            _expression = expression;
         }
 
         public override void Render(
@@ -37,27 +38,33 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             CodegenIndent indent)
         {
             builder.Append("lock (");
-            expression.Render(builder, isInnerClass, level + 1, indent);
+            _expression.Render(builder, isInnerClass, level + 1, indent);
             builder.Append(") {\n");
-            block.Render(builder, isInnerClass, level + 1, indent);
+            _block.Render(builder, isInnerClass, level + 1, indent);
             indent.Indent(builder, level);
             builder.Append("}\n");
         }
 
         public override void MergeClasses(ISet<Type> classes)
         {
-            expression.MergeClasses(classes);
-            block.MergeClasses(classes);
+            _expression.MergeClasses(classes);
+            _block.MergeClasses(classes);
         }
 
         public CodegenBlock MakeBlock()
         {
-            if (block != null) {
+            if (_block != null) {
                 throw new IllegalStateException("Block already allocated");
             }
 
-            block = new CodegenBlock(this);
-            return block;
+            _block = new CodegenBlock(this);
+            return _block;
+        }
+        
+        public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            consumer.Invoke(_expression);
+            _block.TraverseExpressions(consumer);
         }
     }
 } // end of namespace

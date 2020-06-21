@@ -28,6 +28,8 @@ namespace com.espertech.esper.common.@internal.support
             return events;
         }
 
+        private int value;
+        
         public SupportBean_S0(int id)
         {
             Id = id;
@@ -86,7 +88,7 @@ namespace com.espertech.esper.common.@internal.support
         public string P02 { get; set; }
 
         public string P03 { get; set; }
-
+        
         public string GetP00()
         {
             return P00;

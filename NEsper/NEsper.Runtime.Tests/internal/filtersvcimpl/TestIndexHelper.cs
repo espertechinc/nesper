@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using com.espertech.esper.common;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
@@ -51,11 +51,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         private ExprFilterSpecLookupable MakeLookupable(string fieldName)
         {
-            return new ExprFilterSpecLookupable(
-                fieldName,
-                eventType.GetGetter(fieldName),
-                eventType.GetPropertyType(fieldName),
-                false);
+            SupportExprEventEvaluator eval = new SupportExprEventEvaluator(eventType.GetGetter(fieldName));
+            return new ExprFilterSpecLookupable(fieldName, eval, null, eventType.GetPropertyType(fieldName), false, null);
         }
 
         [Test, RunInApplicationDomain]

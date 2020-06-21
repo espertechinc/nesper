@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -21,7 +20,6 @@ using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.@event.core;
-using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -34,11 +32,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
     {
         private readonly string parameterPropertyEnd;
         private readonly string parameterPropertyStart;
-
         private readonly int parameterStreamNum;
 
         public IntervalForgeImpl(
-            DateTimeMethodEnum method,
+            DatetimeMethodDesc method,
             string methodNameUse,
             StreamTypeService streamTypeService,
             IList<ExprNode> expressions,
@@ -218,7 +215,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
         /// <param name="inputDesc">descriptor of what the input to this interval method is</param>
         public FilterExprAnalyzerDTIntervalAffector GetFilterDesc(
             EventType[] typesPerStream,
-            DateTimeMethodEnum currentMethod,
+            DatetimeMethodDesc currentMethod,
             IList<ExprNode> currentParameters,
             ExprDotNodeFilterAnalyzerInput inputDesc)
         {

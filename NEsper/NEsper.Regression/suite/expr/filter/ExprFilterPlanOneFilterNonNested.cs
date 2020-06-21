@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
     [TestFixture]
     public class ExprFilterPlanOneFilterNonNested
     {
-        public static IList<FilterTestMultiStmtExecution> Executions()
+        public static IList<FilterTestMultiStmtExecution> Executions(bool withStats)
         {
             IList<FilterTestMultiStmtPermutable> cases = new List<FilterTestMultiStmtPermutable>();
 
@@ -78,7 +78,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             return FilterTestMultiStmtRunner.ComputePermutations(
                 typeof(ExprFilterPlanOneFilterNonNested),
                 new PermutationSpec(true),
-                cases);
+                cases,
+                withStats);
         }
 
         public static string GetLocalValue(string value)

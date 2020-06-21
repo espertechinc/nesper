@@ -8,12 +8,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
+
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.@event.bean.core;
-using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.bean;
 using com.espertech.esper.compat;
@@ -46,7 +44,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             builder = new PropertyListBuilderExplicit(config);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestBuildPropList()
         {
             IList<PropertyStem> descList = builder.AssessProperties(typeof(SupportLegacyBean));
@@ -68,7 +66,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             //EPAssertionUtil.AssertEqualsAnyOrder(expected.ToArray(), descList.ToArray());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInvalid()
         {
             TryInvalidField("x", typeof(SupportBean));

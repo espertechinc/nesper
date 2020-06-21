@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
@@ -30,11 +31,62 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraFirstUnique());
-            execs.Add(new InfraStaggeredNamedWindow());
-            execs.Add(new InfraCoercionKeyMultiPropIndexes());
-            execs.Add(new InfraCoercionRangeMultiPropIndexes());
+            WithFirstUnique(execs);
+            WithStaggeredNamedWindow(execs);
+            WithCoercionKeyMultiPropIndexes(execs);
+            WithCoercionRangeMultiPropIndexes(execs);
+            WithCoercionKeyAndRangeMultiPropIndexes(execs);
+            WithNamedWindowSilentDeleteOnDelete(execs);
+            WithNamedWindowSilentDeleteOnDeleteMany(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedWindowSilentDeleteOnDeleteMany(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraNamedWindowSilentDeleteOnDeleteMany());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedWindowSilentDeleteOnDelete(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraNamedWindowSilentDeleteOnDelete());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCoercionKeyAndRangeMultiPropIndexes(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraCoercionKeyAndRangeMultiPropIndexes());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCoercionRangeMultiPropIndexes(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraCoercionRangeMultiPropIndexes());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCoercionKeyMultiPropIndexes(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraCoercionKeyMultiPropIndexes());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStaggeredNamedWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraStaggeredNamedWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFirstUnique(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraFirstUnique());
             return execs;
         }
 
@@ -81,14 +133,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             var path = new RegressionPath();
 
             // create window one
-            var stmtTextCreateOne = outputType.GetAnnotationText() +
+            var stmtTextCreateOne = outputType.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedSTAG>() +
                                     "@Name('createOne') create window MyWindowSTAG#keepall as select TheString as a1, IntPrimitive as b1 from SupportBean";
             env.CompileDeploy(stmtTextCreateOne, path).AddListener("createOne");
             Assert.AreEqual(0, GetCount(env, "createOne", "MyWindowSTAG"));
             Assert.IsTrue(outputType.MatchesClass(env.Statement("createOne").EventType.UnderlyingType));
 
             // create window two
-            var stmtTextCreateTwo = outputType.GetAnnotationText() +
+            var stmtTextCreateTwo = outputType.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedSTAGTwo>() +
                                     " @Name('createTwo') create window MyWindowSTAGTwo#keepall as select TheString as a2, IntPrimitive as b2 from SupportBean";
             env.CompileDeploy(stmtTextCreateTwo, path).AddListener("createTwo");
             Assert.AreEqual(0, GetCount(env, "createTwo", "MyWindowSTAGTwo"));
@@ -199,6 +251,90 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             return SupportInfraUtil.GetIndexCountNoContext(env, true, statementName, windowName);
         }
 
+        internal class InfraNamedWindowSilentDeleteOnDeleteMany : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl =
+                    "@Name('create') create window MyWindow#groupwin(TheString)#length(2) as SupportBean;\n" +
+                    "insert into MyWindow select * from SupportBean;\n" +
+                    "@Name('delete') @hint('silent_delete') on SupportBean_S0 delete from MyWindow;\n" +
+                    "@Name('count') select count(*) as cnt from MyWindow;\n";
+                env.CompileDeploy(epl).AddListener("create").AddListener("delete").AddListener("count");
+
+                env.SendEventBean(new SupportBean("A", 1));
+                env.SendEventBean(new SupportBean("A", 2));
+                env.SendEventBean(new SupportBean("B", 3));
+                env.SendEventBean(new SupportBean("B", 4));
+
+                Assert.AreEqual(4L, env.Listener("count").GetAndResetDataListsFlattened().First[3].Get("cnt"));
+                env.Listener("create").Reset();
+
+                env.SendEventBean(new SupportBean_S0(0));
+                Assert.AreEqual(0L, env.Listener("count").AssertOneGetNewAndReset().Get("cnt"));
+                EPAssertionUtil.AssertPropsPerRow(
+                    env.Listener("delete").GetAndResetLastNewData(),
+                    "TheString,IntPrimitive".SplitCsv(),
+                    new object[][] {
+                        new object[] {"A", 1}, new object[] {"A", 2}, new object[] {"B", 3}, new object[] {"B", 4}
+                    });
+                Assert.IsFalse(env.Listener("create").IsInvoked);
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class InfraNamedWindowSilentDeleteOnDelete : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl =
+                    "@Name('create') create window MyWindow#length(2) as SupportBean;\n" +
+                    "insert into MyWindow select * from SupportBean;\n" +
+                    "@Name('delete') @hint('silent_delete') on SupportBean_S0 delete from MyWindow where P00 = TheString;\n" +
+                    "@Name('count') select count(*) as cnt from MyWindow;\n";
+                env.CompileDeploy(epl).AddListener("create").AddListener("delete").AddListener("count");
+
+                env.SendEventBean(new SupportBean("E1", 1));
+                Assert.AreEqual(1L, env.Listener("count").AssertOneGetNewAndReset().Get("cnt"));
+                Assert.AreEqual("E1", env.Listener("create").AssertOneGetNewAndReset().Get("TheString"));
+
+                env.SendEventBean(new SupportBean_S0(0, "E1"));
+                Assert.AreEqual(0L, env.Listener("count").AssertOneGetNewAndReset().Get("cnt"));
+                Assert.AreEqual("E1", env.Listener("delete").AssertOneGetNewAndReset().Get("TheString"));
+                Assert.IsFalse(env.Listener("create").IsInvoked);
+
+                env.SendEventBean(new SupportBean("E2", 2));
+                Assert.AreEqual(1L, env.Listener("count").AssertOneGetNewAndReset().Get("cnt"));
+                Assert.AreEqual("E2", env.Listener("create").AssertOneGetNewAndReset().Get("TheString"));
+
+                env.SendEventBean(new SupportBean("E3", 3));
+                Assert.AreEqual(2L, env.Listener("count").AssertOneGetNewAndReset().Get("cnt"));
+                Assert.AreEqual("E3", env.Listener("create").AssertOneGetNewAndReset().Get("TheString"));
+
+                env.SendEventBean(new SupportBean("E4", 4));
+                Assert.AreEqual(2L, env.Listener("count").AssertOneGetNewAndReset().Get("cnt"));
+                EPAssertionUtil.AssertProps(env.Listener("create").AssertPairGetIRAndReset(), "TheString".SplitCsv(), new object[] {"E4"}, new object[] {"E2"});
+
+                env.SendEventBean(new SupportBean_S0(0, "E4"));
+                Assert.AreEqual(1L, env.Listener("count").AssertOneGetNewAndReset().Get("cnt"));
+                Assert.AreEqual("E4", env.Listener("delete").AssertOneGetNewAndReset().Get("TheString"));
+                Assert.IsFalse(env.Listener("create").IsInvoked);
+
+                env.SendEventBean(new SupportBean_S0(0, "E3"));
+                Assert.AreEqual(0L, env.Listener("count").AssertOneGetNewAndReset().Get("cnt"));
+                Assert.AreEqual("E3", env.Listener("delete").AssertOneGetNewAndReset().Get("TheString"));
+                Assert.IsFalse(env.Listener("create").IsInvoked);
+
+                env.SendEventBean(new SupportBean_S0(0, "EX"));
+                Assert.IsFalse(env.Listener("count").IsInvoked);
+                Assert.IsFalse(env.Listener("delete").IsInvoked);
+                Assert.IsFalse(env.Listener("create").IsInvoked);
+
+                env.UndeployAll();
+            }
+        }
+
         internal class InfraFirstUnique : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -236,7 +372,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     TryAssertionStaggered(env, rep);
                 }
             }
@@ -634,6 +770,20 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 env.UndeployAll();
             }
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedSTAG
+        {
+            public string a1;
+            public int b1;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedSTAGTwo
+        {
+            public string a2;
+            public int b2;
         }
     }
 } // end of namespace

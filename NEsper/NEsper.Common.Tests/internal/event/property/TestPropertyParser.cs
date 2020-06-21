@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using NUnit.Framework;
 
@@ -17,7 +16,7 @@ namespace com.espertech.esper.common.@internal.@event.property
     [TestFixture]
     public class TestPropertyParser : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestParse()
         {
             Property property = PropertyParser.ParseAndWalk("a", false);
@@ -44,7 +43,7 @@ namespace com.espertech.esper.common.@internal.@event.property
             Assert.AreEqual("a", ((DynamicSimpleProperty) property).PropertyNameAtomic);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestParseMapKey()
         {
             Assert.AreEqual("a", TryKey("a"));

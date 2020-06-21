@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.compat.collections;
@@ -18,7 +17,7 @@ namespace com.espertech.esper.common.@internal.collection
     [TestFixture]
     public class TestSingleObjectIterator : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestNext()
         {
             IEnumerator<string> enumerator = EnumerationHelper.Singleton("a");

@@ -12,7 +12,6 @@ using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.lookupplansubord;
-using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.view.core;
 
@@ -51,8 +50,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
         }
 
         protected internal static StreamJoinAnalysisResultCompileTime VerifyJoinViews(
-            StatementSpecCompiled statementSpec,
-            NamedWindowCompileTimeResolver namedWindowCompileTimeResolver)
+            StatementSpecCompiled statementSpec)
         {
             var streamSpecs = statementSpec.StreamSpecs;
             var analysisResult = new StreamJoinAnalysisResultCompileTime(streamSpecs.Length);
@@ -97,17 +95,25 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             var countProviderNonpolling = 0;
             for (var i = 0; i < statementSpec.StreamSpecs.Length; i++) {
                 var streamSpec = statementSpec.StreamSpecs[i];
-                if (streamSpec is MethodStreamSpec ||
-                    streamSpec is DBStatementStreamSpec ||
-                    streamSpec is TableQueryStreamSpec) {
-                    continue;
+                if (!IsPolling(statementSpec.StreamSpecs[i])) {
+                    countProviderNonpolling++;
                 }
-
-                countProviderNonpolling++;
             }
 
             // if there is only one stream providing data, the analysis is done
             if (countProviderNonpolling == 1) {
+                // set the non-polling stream as unidirectional if there is no data window
+                int nonPolling = 0;
+                for (int i = 0; i < statementSpec.StreamSpecs.Length; i++) {
+                    if (!IsPolling(statementSpec.StreamSpecs[i])) {
+                        nonPolling = i;
+                        break;
+                    }
+                }
+                if (statementSpec.StreamSpecs[nonPolling].ViewSpecs.Length == 0) {
+                    analysisResult.SetUnidirectionalInd(nonPolling);
+                }
+                
                 return analysisResult;
             }
             // there are multiple driving streams, verify the presence of a view for insert/remove stream
@@ -183,6 +189,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             }
 
             return analysisResult;
+        }
+
+        private static bool IsPolling(StreamSpecCompiled streamSpec)
+        {
+            return
+                streamSpec is MethodStreamSpec ||
+                streamSpec is DBStatementStreamSpec ||
+                streamSpec is TableQueryStreamSpec;
         }
 
         private static void VerifyJoinUnidirectional(

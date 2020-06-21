@@ -13,10 +13,9 @@ using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.@event;
-using com.espertech.esper.common.@internal.supportunit.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.container;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.common.@internal.@event.map
@@ -51,7 +50,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             eventBean = new MapEventBean(testValuesMap, eventType);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGet()
         {
             Assert.AreEqual(eventType, eventBean.EventType);
@@ -75,7 +74,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestCreateUnderlying()
         {
             SupportBean beanOne = new SupportBean();

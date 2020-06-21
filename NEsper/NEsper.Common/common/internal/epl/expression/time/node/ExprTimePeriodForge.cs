@@ -412,11 +412,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
 
         private int? GetInt(object evaluated)
         {
-            if (evaluated == null) {
-                return null;
-            }
-
-            return evaluated.AsInt32();
+            return evaluated?.AsInt32();
         }
 
         public ExprForge[] Forges => ExprNodeUtilityQuery.GetForges(ForgeRenderable.ChildNodes);

@@ -13,15 +13,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprEqualsAllAnyNodeForgeEvalAllNoColl : ExprEvaluator
     {
-        private readonly ExprEvaluator[] evaluators;
-        private readonly ExprEqualsAllAnyNodeForge forge;
+        private readonly ExprEvaluator[] _evaluators;
+        private readonly ExprEqualsAllAnyNodeForge _forge;
 
         public ExprEqualsAllAnyNodeForgeEvalAllNoColl(
             ExprEqualsAllAnyNodeForge forge,
             ExprEvaluator[] evaluators)
         {
-            this.forge = forge;
-            this.evaluators = evaluators;
+            this._forge = forge;
+            this._evaluators = evaluators;
         }
 
         public object Evaluate(
@@ -29,8 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var result = EvaluateInternal(eventsPerStream, isNewData, exprEvaluatorContext);
-            return result;
+            return EvaluateInternal(eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         private object EvaluateInternal(
@@ -38,15 +37,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var leftResult = evaluators[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var leftResult = _evaluators[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
             // coerce early if testing without collections
-            if (forge.IsMustCoerce && leftResult != null) {
-                leftResult = forge.Coercer.CoerceBoxed(leftResult);
+            if (_forge.IsMustCoerce && leftResult != null) {
+                leftResult = _forge.Coercer.CoerceBoxed(leftResult);
             }
 
             return CompareAll(
-                forge.ForgeRenderable.IsNot,
+                _forge.ForgeRenderable.IsNot,
                 leftResult,
                 eventsPerStream,
                 isNewData,
@@ -61,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var equalsMeansContinue = !isNot;
-            var len = evaluators.Length - 1;
+            var len = _evaluators.Length - 1;
             if (len > 0 && leftResult == null) {
                 return null;
             }
@@ -69,17 +68,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var hasNonNullRow = false;
             var hasNullRow = false;
             for (var i = 1; i <= len; i++) {
-                var rightResult = evaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                var rightResult = _evaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (rightResult != null) {
                     hasNonNullRow = true;
-                    if (!forge.IsMustCoerce) {
+                    if (!_forge.IsMustCoerce) {
                         if (equalsMeansContinue ^ leftResult.Equals(rightResult)) {
                             return false;
                         }
                     }
                     else {
-                        var right = forge.Coercer.CoerceBoxed(rightResult);
+                        var right = _forge.Coercer.CoerceBoxed(rightResult);
                         if (equalsMeansContinue ^ leftResult.Equals(right)) {
                             return false;
                         }

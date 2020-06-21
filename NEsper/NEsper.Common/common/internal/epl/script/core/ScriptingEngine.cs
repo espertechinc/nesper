@@ -8,7 +8,9 @@
 
 using System;
 
+using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.epl.script.core
 {
@@ -30,11 +32,20 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         string LanguagePrefix { get; }
 
         /// <summary>
+        /// Engine configuration.
+        /// </summary>
+        /// <param name="container"></param>
+        /// <param name="scriptingConfiguration"></param>
+        void Initialize(
+            IContainer container,
+            ConfigurationCommonScripting scriptingConfiguration);
+        
+        /// <summary>
         /// Compiles the code.
         /// </summary>
         /// <param name="expressionScript">The expression script.</param>
         /// <returns></returns>
-        Func<ScriptArgs, Object> Compile(ExpressionScriptProvided expressionScript);
+        Func<ScriptArgs, object> Compile(ExpressionScriptProvided expressionScript);
 
         /// <summary>
         /// Verifies the specified script.

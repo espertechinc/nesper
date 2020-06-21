@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.collection
         private FlushedEventBuffer buffer;
         private EventBean[] events;
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestFlow()
         {
             // test empty buffer

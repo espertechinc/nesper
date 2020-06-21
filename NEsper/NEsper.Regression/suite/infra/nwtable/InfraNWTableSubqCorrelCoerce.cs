@@ -21,17 +21,48 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            // named window tests
-            execs.Add(new InfraNWTableSubqCorrelCoerceSimple(true, false, false, false)); // no share
-            execs.Add(new InfraNWTableSubqCorrelCoerceSimple(true, false, false, true)); // no share create index
-            execs.Add(new InfraNWTableSubqCorrelCoerceSimple(true, true, false, false)); // share
-            execs.Add(new InfraNWTableSubqCorrelCoerceSimple(true, true, false, true)); // share create index
-            execs.Add(new InfraNWTableSubqCorrelCoerceSimple(true, true, true, false)); // disable share
-            execs.Add(new InfraNWTableSubqCorrelCoerceSimple(true, true, true, true)); // disable share create index
 
+            WithCoerceSimpleWithNamedWindowsNoShare(execs);
+            WithCoerceSimpleWithNamedWindowsShare(execs);
+            WithCoerceSimpleWithNamedWindowsDisableShare(execs);
+            WithCoerceSimpleWithTables(execs);
+            
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCoerceSimpleWithTables(IList<RegressionExecution> execs = null)
+        {
             // table tests
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraNWTableSubqCorrelCoerceSimple(false, false, false, false)); // table
             execs.Add(new InfraNWTableSubqCorrelCoerceSimple(false, false, false, true)); // table + create index
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCoerceSimpleWithNamedWindowsNoShare(IList<RegressionExecution> execs = null)
+        {
+            // named window tests
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraNWTableSubqCorrelCoerceSimple(true, false, false, false)); // no share
+            execs.Add(new InfraNWTableSubqCorrelCoerceSimple(true, false, false, true)); // no share create index
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCoerceSimpleWithNamedWindowsShare(IList<RegressionExecution> execs = null)
+        {
+            // named window tests
+            execs = execs ?? new List<RegressionExecution>();
+            //execs.Add(new InfraNWTableSubqCorrelCoerceSimple(true, true, false, false)); // share
+            execs.Add(new InfraNWTableSubqCorrelCoerceSimple(true, true, false, true)); // share create index
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCoerceSimpleWithNamedWindowsDisableShare(IList<RegressionExecution> execs = null)
+        {
+            // named window tests
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraNWTableSubqCorrelCoerceSimple(true, true, true, false)); // disable share
+            execs.Add(new InfraNWTableSubqCorrelCoerceSimple(true, true, true, true)); // disable share create index
             return execs;
         }
 

@@ -17,8 +17,6 @@ using com.espertech.esper.compat.collections;
 
 using Castle.DynamicProxy;
 
-using com.espertech.esper.common.@internal.epl.expression.core;
-
 namespace com.espertech.esper.common.@internal.epl.annotation
 {
     /// <summary>
@@ -42,8 +40,16 @@ namespace com.espertech.esper.common.@internal.epl.annotation
         {
             AnnotationClass = annotationClass;
             Attributes = attributes;
+            Underlying = null;
+            
+            var constructor = annotationClass.GetDefaultConstructor();
+            if (constructor != null) {
+                Underlying = constructor.Invoke(null);
+            }
         }
 
+        public object Underlying { get; }
+        
         public Type AnnotationClass { get; }
 
         public IDictionary<string, object> Attributes { get; }
@@ -56,6 +62,12 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                     var propertyName = methodName.Substring(4);
                     if (Attributes.TryGetValue(propertyName, out var propertyValue)) {
                         invocation.ReturnValue = propertyValue;
+                    }
+                    else if (Underlying != null) {
+                        invocation.ReturnValue = invocation.Method.Invoke(Underlying, null);
+                    }
+                    else {
+                        invocation.ReturnValue = TypeExtensions.GetDefaultValue(invocation.Method.ReturnType);
                     }
                 }
             }

@@ -36,5 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
         void Visit(
             ExprNode exprNode,
             ExprNode parentExprNode);
+
+        bool IsWalkDeclExprParam { get; }
     }
 }

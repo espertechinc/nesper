@@ -9,7 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.context;
-using com.espertech.esper.common.@internal.collection;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.airegistry;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.mgr;
@@ -40,6 +40,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             int nestingLevel,
             object partitionKey,
             ContextControllerStatementDesc optionalStatementDesc,
+            IDictionary<int, ContextControllerStatementDesc> statements,
             AgentInstanceContext agentInstanceContextStatement)
         {
             if (!forStatement) {
@@ -66,6 +67,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                 keyedSpec,
                 includePartitionKey,
                 optionalStatementDesc,
+                statements,
                 agentInstanceContextStatement);
         }
 
@@ -119,15 +121,14 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             IDictionary<string, object> props,
             object getterKey)
         {
-            if (getterKey is HashableMultiKey) {
-                var values = ((HashableMultiKey) getterKey).Keys;
-                for (var i = 0; i < values.Length; i++) {
-                    var propertyName = ContextPropertyEventType.PROP_CTX_KEY_PREFIX + (i + 1);
-                    props.Put(propertyName, values[i]);
+            if (getterKey is MultiKey values) {
+                for (int i = 0; i < values.NumKeys; i++) {
+                    string propertyName = ContextPropertyEventType.PROP_CTX_KEY_PREFIX + (i + 1);
+                    props[propertyName] = values.GetKey(i);
                 }
             }
             else {
-                props.Put(ContextPropertyEventType.PROP_CTX_KEY_PREFIX_SINGLE, getterKey);
+                props[ContextPropertyEventType.PROP_CTX_KEY_PREFIX_SINGLE] = getterKey;
             }
         }
     }

@@ -174,7 +174,6 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
             {
                 theIterator = parentView.GetEnumerator();
             }
-
             if (statementContext.EpStatementHandle.HasTableAccess)
             {
                 return new UnsafeEnumeratorWTableImpl<EventBean>(statementContext.TableExprEvaluatorContext, theIterator);
@@ -342,12 +341,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
 
         public object GetProperty(StatementProperty field)
         {
-            if (field == StatementProperty.STATEMENTTYPE)
-            {
-                return statementContext.StatementType;
-            }
-
-            return statementContext.StatementInformationals.Properties.Get(field);
+            return field switch {
+                StatementProperty.STATEMENTTYPE => statementContext.StatementType,
+                StatementProperty.CONTEXTNAME => statementContext.ContextRuntimeDescriptor?.ContextName,
+                StatementProperty.CONTEXTDEPLOYMENTID => statementContext.ContextRuntimeDescriptor?.ContextDeploymentId,
+                _ => statementContext.StatementInformationals.Properties.Get(field)
+            };
         }
 
         public void AddListenerWithReplay(UpdateListener listener)

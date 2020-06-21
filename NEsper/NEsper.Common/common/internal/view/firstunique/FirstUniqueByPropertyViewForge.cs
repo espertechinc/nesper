@@ -12,13 +12,12 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.multikey;
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
-
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCodegen;
 
 namespace com.espertech.esper.common.@internal.view.firstunique
 {
@@ -30,9 +29,10 @@ namespace com.espertech.esper.common.@internal.view.firstunique
         DataWindowViewForgeUniqueCandidate
     {
         public const string NAME = "First-Unique-By";
-        internal ExprNode[] criteriaExpressions;
 
-        internal IList<ExprNode> viewParameters;
+        private ExprNode[] criteriaExpressions;
+        private IList<ExprNode> viewParameters;
+        private MultiKeyClassRef multiKeyClassNames;
 
         public override string ViewName => NAME;
 
@@ -70,6 +70,13 @@ namespace com.espertech.esper.common.@internal.view.firstunique
             eventType = parentEventType;
         }
 
+        public override IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
+        {
+            MultiKeyPlan desc = MultiKeyPlanner.PlanMultiKey(criteriaExpressions, false, viewForgeEnv.StatementRawInfo, viewForgeEnv.SerdeResolver);
+            multiKeyClassNames = desc.ClassRef;
+            return desc.MultiKeyForgeables;
+        }
+
         internal override Type TypeOfFactory()
         {
             return typeof(FirstUniqueByPropertyViewFactory);
@@ -86,15 +93,7 @@ namespace com.espertech.esper.common.@internal.view.firstunique
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block
-                .SetProperty(
-                    factory,
-                    "CriteriaEvals",
-                    CodegenEvaluators(criteriaExpressions, method, GetType(), classScope))
-                .SetProperty(
-                    factory,
-                    "CriteriaTypes",
-                    Constant(ExprNodeUtilityQuery.GetExprResultTypes(criteriaExpressions)));
+            ViewMultiKeyHelper.Assign(criteriaExpressions, multiKeyClassNames, method, factory, symbols, classScope);
         }
     }
 } // end of namespace

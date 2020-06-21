@@ -6,14 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.expression.variable;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.visitor
@@ -30,6 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
         {
             this.variableCompileTimeResolver = variableCompileTimeResolver;
         }
+
+        public bool IsWalkDeclExprParam => true;
 
         public bool IsVisit(ExprNode exprNode)
         {

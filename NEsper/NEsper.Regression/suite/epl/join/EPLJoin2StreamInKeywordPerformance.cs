@@ -26,8 +26,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLJoinInKeywordSingleIndexLookup());
+            WithSingleIndexLookup(execs);
+            WithMultiIndexLookup(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMultiIndexLookup(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLJoinInKeywordMultiIndexLookup());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSingleIndexLookup(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinInKeywordSingleIndexLookup());
             return execs;
         }
 
@@ -38,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var epl =
                     "@Name('s0') select IntPrimitive as val from SupportBean#keepall sb, SupportBean_S0 S0 unidirectional " +
                     "where sb.TheString in (S0.P00, S0.P01)";
-                var fields = new [] { "val" };
+                var fields = new[] {"val"};
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 for (var i = 0; i < 10000; i++) {
@@ -69,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var epl =
                     "@Name('s0') select Id as val from SupportBean_S0#keepall S0, SupportBean sb unidirectional " +
                     "where sb.TheString in (S0.P00, S0.P01)";
-                var fields = new [] { "val" };
+                var fields = new[] {"val"};
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 for (var i = 0; i < 10000; i++) {

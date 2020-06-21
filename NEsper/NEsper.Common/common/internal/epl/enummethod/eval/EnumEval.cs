@@ -21,4 +21,33 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             bool isNewData,
             ExprEvaluatorContext context);
     }
+
+    public delegate object EnumEvalFunc(
+        EventBean[] eventsLambda,
+        ICollection<object> enumcoll,
+        bool isNewData,
+        ExprEvaluatorContext context);
+
+    public class ProxyEnumEval : EnumEval
+    {
+        public EnumEvalFunc ProcEvaluateEnumMethod { get; set; }
+
+        public ProxyEnumEval(EnumEvalFunc procEvaluateEnumMethod)
+        {
+            ProcEvaluateEnumMethod = procEvaluateEnumMethod;
+        }
+
+        public ProxyEnumEval()
+        {
+        }
+
+        public object EvaluateEnumMethod(
+            EventBean[] eventsLambda,
+            ICollection<object> enumcoll,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return ProcEvaluateEnumMethod.Invoke(eventsLambda, enumcoll, isNewData, context);
+        }
+    }
 } // end of namespace

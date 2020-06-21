@@ -84,7 +84,7 @@ namespace com.espertech.esper.compat.collections
         public T this[int index]
         {
             get => m_subList[index];
-            set { m_subList[index] = value; }
+            set => m_subList[index] = value;
         }
 
         ///<summary>

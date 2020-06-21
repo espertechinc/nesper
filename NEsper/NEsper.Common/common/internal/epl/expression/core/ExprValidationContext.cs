@@ -7,19 +7,22 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.compile;
+using com.espertech.esper.common.@internal.epl.classprovided.compiletime;
 using com.espertech.esper.common.@internal.epl.enummethod.compile;
-using com.espertech.esper.common.@internal.epl.script.compiletime;
 using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.serde.compiletime.eventtype;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.view.access;
 using com.espertech.esper.container;
@@ -30,6 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     {
         private readonly ContextCompileTimeDescriptor contextDescriptor;
         private readonly string intoTableName;
+        private readonly List<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>(2);
 
         public ExprValidationContext(
             StreamTypeService streamTypeService,
@@ -41,6 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 ctx.IsDisablePropertyExpressionEventCollCache,
                 ctx.IsAllowRollupFunctions,
                 ctx.IsAllowBindingConsumption,
+                ctx.IsAllowTableAggReset,
                 ctx.IsResettingAggregations,
                 ctx.intoTableName,
                 ctx.IsFilterExpression,
@@ -58,6 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             bool disablePropertyExpressionEventCollCache,
             bool allowRollupFunctions,
             bool allowBindingConsumption,
+            bool allowTableAggReset,
             bool isUnidirectionalJoin,
             string intoTableName,
             bool isFilterExpression,
@@ -72,6 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             IsDisablePropertyExpressionEventCollCache = disablePropertyExpressionEventCollCache;
             IsAllowRollupFunctions = allowRollupFunctions;
             IsAllowBindingConsumption = allowBindingConsumption;
+            IsAllowTableAggReset = allowTableAggReset;
             IsResettingAggregations = isUnidirectionalJoin;
             this.intoTableName = intoTableName;
             IsFilterExpression = isFilterExpression;
@@ -94,11 +101,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public bool IsFilterExpression { get; }
 
-        public ScriptServiceCompileTime ScriptService =>
-            StatementCompileTimeService.ScriptServiceCompileTime;
-
         public ImportServiceCompileTime ImportService =>
             StatementCompileTimeService.ImportServiceCompileTime;
+        
+        public ClassProvidedExtension ClassProvidedExtension =>
+            StatementCompileTimeService.ClassProvidedExtension;
+
+        public ScriptCompiler ScriptCompiler =>
+            StatementCompileTimeService.ScriptCompiler;
 
         public VariableCompileTimeResolver VariableCompileTimeResolver =>
             StatementCompileTimeService.VariableCompileTimeResolver;
@@ -126,8 +136,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public bool IsAllowBindingConsumption { get; }
 
-        public EnumMethodCallStackHelperImpl EnumMethodCallStackHelper =>
-            StatementCompileTimeService.EnumMethodCallStackHelper;
+        public EnumMethodCallStackHelperImpl EnumMethodCallStackHelper => StatementCompileTimeService.EnumMethodCallStackHelper;
 
         public bool IsAggregationFutureNameAlreadySet { get; }
 
@@ -138,5 +147,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public EventBeanTypedEventFactory EventBeanTypedEventFactory => EventBeanTypedEventFactoryCompileTime.INSTANCE;
 
         public string ModuleName => StatementRawInfo.ModuleName;
+        
+        public SerdeCompileTimeResolver SerdeResolver => StatementCompileTimeService.SerdeResolver;
+
+        public SerdeEventTypeCompileTimeRegistry SerdeEventTypeRegistry => StatementCompileTimeService.SerdeEventTypeRegistry;
+
+        public IList<StmtClassForgeableFactory> AdditionalForgeables => additionalForgeables;
+
+        public bool IsAllowTableAggReset { get; }
     }
 } // end of namespace

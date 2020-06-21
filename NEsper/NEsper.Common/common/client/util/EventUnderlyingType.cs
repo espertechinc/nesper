@@ -29,32 +29,48 @@ namespace com.espertech.esper.common.client.util
         MAP,
 
         /// <summary>
-        ///     Event representation is Avro (GenericData.Record).
+        ///     Event representation is Avro (GenericRecord).
         /// </summary>
-        AVRO
+        AVRO,
+        
+        /// <summary>
+        /// Event representation is JSON with underlying generation.
+        /// </summary>
+        JSON
     }
 
     public static class EventUnderlyingTypeExtensions
     {
-        private static readonly string OA_TYPE_NAME = typeof(object[]).FullName;
-        private static readonly string MAP_TYPE_NAME = typeof(IDictionary<string, object>).FullName;
-        private static readonly string AVRO_TYPE_NAME = AvroConstantsNoDep.GENERIC_RECORD_CLASSNAME;
-
         /// <summary>
         ///     Returns the class name of the default underlying type.
         /// </summary>
         /// <returns>default underlying type class name</returns>
         public static string GetUnderlyingClassName(this EventUnderlyingType underlyingType)
         {
+            return underlyingType switch {
+                EventUnderlyingType.OBJECTARRAY => typeof(object[]).FullName,
+                EventUnderlyingType.MAP => typeof(IDictionary<string, object>).FullName,
+                EventUnderlyingType.AVRO => AvroConstantsNoDep.GENERIC_RECORD_CLASSNAME,
+                EventUnderlyingType.JSON => typeof(object).FullName,
+                _ => throw new ArgumentException("invalid value", nameof(underlyingType))
+            };
+        }
+
+        /// <summary>
+        ///     Returns the class name of the default underlying type.
+        /// </summary>
+        /// <returns>default underlying type</returns>
+        public static Type GetUnderlyingClass(this EventUnderlyingType underlyingType)
+        {
             switch (underlyingType) {
                 case EventUnderlyingType.OBJECTARRAY:
-                    return OA_TYPE_NAME;
-
+                    return typeof(object[]);
                 case EventUnderlyingType.MAP:
-                    return MAP_TYPE_NAME;
-
+                    return typeof(IDictionary<string, object>);
                 case EventUnderlyingType.AVRO:
-                    return AVRO_TYPE_NAME;
+                    return null;
+                case EventUnderlyingType.JSON:
+                    return typeof(object);
             }
 
             throw new ArgumentException("invalid value", nameof(underlyingType));

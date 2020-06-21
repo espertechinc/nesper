@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.patternassert;
@@ -27,10 +26,38 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new PatternOperatorAndSimple());
-            execs.Add(new PatternOperatorAndWHarness());
-            execs.Add(new PatternOperatorAndWithEveryAndTerminationOptimization());
+            WithSimple(execs);
+            WithWHarness(execs);
+            WithWithEveryAndTerminationOptimization(execs);
+            WithNotDefaultTrue(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNotDefaultTrue(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new PatternOperatorAndNotDefaultTrue());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWithEveryAndTerminationOptimization(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternOperatorAndWithEveryAndTerminationOptimization());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWHarness(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternOperatorAndWHarness());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternOperatorAndSimple());
             return execs;
         }
 
@@ -46,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
 
                 var epl =
                     "@Name('s0') select a.TheString as c0, b.TheString as c1 from pattern [a=SupportBean(IntPrimitive=0) and b=SupportBean(IntPrimitive=1)]";
@@ -119,7 +146,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean_B("B_last"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.Id","b.Id" },
+                    new[] {"a.Id", "b.Id"},
                     new object[] {"A1", "B_last"});
 
                 env.UndeployAll();

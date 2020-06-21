@@ -19,8 +19,8 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 {
     public abstract class ContextControllerKeyed : ContextControllerBase
     {
-        internal readonly ContextControllerKeyedFactory factory;
-        protected EventBean lastTerminatingEvent;
+        private readonly ContextControllerKeyedFactory factory;
+        private EventBean lastTerminatingEvent;
 
         public ContextControllerKeyed(
             ContextManagerRealization realization,
@@ -32,9 +32,16 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 
         public AgentInstanceContext AgentInstanceContextCreate => realization.AgentInstanceContextCreate;
 
+        public ContextControllerKeyedFactory KeyedFactory => factory;
+
         public override ContextControllerFactory Factory => factory;
 
         public override ContextManagerRealization Realization => realization;
+
+        public EventBean LastTerminatingEvent {
+            get => lastTerminatingEvent;
+            set => lastTerminatingEvent = value;
+        }
 
         protected abstract void VisitPartitions(
             IntSeqKey path,
@@ -57,7 +64,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                 }
 
                 foreach (var key in partitioned.PartitionKeys) {
-                    var keyForLookup = key.Length == 1 ? key[0] : new HashableMultiKey(key);
+                    var keyForLookup = factory.KeyedSpec.MultiKeyFromObjectArray.From(key);
                     var subpathOrCPId = GetSubpathOrCPId(path, keyForLookup);
                     if (subpathOrCPId != -1) {
                         realization.ContextPartitionRecursiveVisit(
@@ -84,7 +91,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                             identifier.ContextPartitionId = subpathOrCPId;
                         }
 
-                        var keys = key is HashableMultiKey ? ((HashableMultiKey) key).Keys : new[] {key};
+                        var keys = ContextControllerKeyedUtil.UnpackKey(key);
                         identifier.Keys = keys;
                         if (filtered.Filter(identifier)) {
                             realization.ContextPartitionRecursiveVisit(

@@ -8,6 +8,8 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.epl.expression.chain;
+
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     public class ExprNodeUtilityModify
@@ -42,12 +44,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public static void ReplaceChainChildNode(
             ExprNode nodeToReplace,
             ExprNode newNode,
-            IList<ExprChainedSpec> chainSpec)
+            IList<Chainable> chainSpec)
         {
-            foreach (var chained in chainSpec) {
-                var index = chained.Parameters.IndexOf(nodeToReplace);
+            foreach (Chainable chained in chainSpec) {
+                var parametersOrEmpty = chained.GetParametersOrEmpty();
+                var index = parametersOrEmpty.IndexOf(nodeToReplace);
                 if (index != -1) {
-                    chained.Parameters[index] = newNode;
+                    parametersOrEmpty[index] = newNode;
                 }
             }
         }

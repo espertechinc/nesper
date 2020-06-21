@@ -13,7 +13,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
     [TestFixture]
     public class TestTimePeriodComputeConstGivenDelta : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestComputeDelta()
         {
             TimePeriodComputeConstGivenDeltaEval delta500 = new TimePeriodComputeConstGivenDeltaEval(500);

@@ -46,8 +46,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 value,
                 index,
                 getter,
-                eventBeanTypedEventFactory,
-                fragmentType);
+                EventBeanTypedEventFactory,
+                FragmentType);
         }
 
         public override bool HandleNestedValueExists(object value)
@@ -80,8 +80,6 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 refName,
                 codegenMethodScope,
                 codegenClassScope,
-                eventBeanTypedEventFactory,
-                fragmentType,
                 GetType());
         }
 
@@ -96,8 +94,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 refName,
                 codegenMethodScope,
                 codegenClassScope,
-                eventBeanTypedEventFactory,
-                fragmentType,
+                EventBeanTypedEventFactory,
+                FragmentType,
                 GetType());
         }
     }

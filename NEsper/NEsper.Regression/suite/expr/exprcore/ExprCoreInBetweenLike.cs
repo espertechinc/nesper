@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using System.Numerics;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
@@ -361,32 +360,38 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, true});
+                    false,
+                    true);
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(new[] {10, 1, 30}));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {true, false});
+                    true,
+                    false);
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(new[] {30}, new long?[] {20L, 1L}));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {true, false});
+                    true,
+                    false);
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(new int[] { }, new long?[] {null, 1L}));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {true, false});
+                    true,
+                    false);
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(null, new long?[] {1L, 100L}));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {true, false});
+                    true,
+                    false);
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(null, new long?[] {0L, 100L}));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, true});
+                    false,
+                    true);
 
                 env.UndeployAll();
             }
@@ -408,31 +413,36 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, true});
+                    false,
+                    true);
                 
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(true, new[] {10, 20, 1}, null));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {true, false});
+                    true,
+                    false);
                 
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(true, new[] {30}, new long?[] {20L, 1L}));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, true});
+                    false,
+                    true);
                 
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(true, new int[] { }, new long?[] {null, 1L}));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, true});
+                    false,
+                    true);
                 
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(true, null, new long?[] {1L, 100L}));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, true});
+                    false,
+                    true);
 
                 env.UndeployAll();
             }
@@ -455,29 +465,34 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, true});
+                    false,
+                    true);
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(false, new[] {10, 20, 1}, null));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {true, false});
+                    true,
+                    false);
                 
                 
-                SendArrayCollMap(env, new SupportBeanArrayCollMap(false, new int[] {30}, new long?[] {20L, 1L}));
+                SendArrayCollMap(env, new SupportBeanArrayCollMap(false, new[] {30}, new long?[] {20L, 1L}));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, true});
+                    false,
+                    true);
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(false, new int[] { }, new long?[] {null, 1L}));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, true});
+                    false,
+                    true);
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(false, null, new long?[] {1L, 100L}));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, true});
+                    false,
+                    true);
 
                 env.UndeployAll();
             }
@@ -496,12 +511,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {true, false});
+                    true,
+                    false);
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(2L, null, new long?[0], new int[0]));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, true});
+                    false,
+                    true);
 
                 SendArrayCollMap(
                     env,
@@ -509,7 +526,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {true, false});
+                    true,
+                    false);
 
                 SendArrayCollMap(
                     env,
@@ -517,12 +535,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, true});
+                    false,
+                    true);
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(-1L, new[] {1}, null, new int[] { }));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {true, false});
+                    true,
+                    false);
 
                 env.UndeployAll();
             }
@@ -541,22 +561,26 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, false});
+                    false,
+                    false);
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(new object[] {1, 2}));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {true, true});
+                    true,
+                    true);
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(new object[] {1d, 2L}));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, false});
+                    false,
+                    false);
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(new object[] {null, 2}));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {null, true});
+                    null,
+                    true);
 
                 env.UndeployAll();
             }
@@ -575,7 +599,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {true, false});
+                    true,
+                    false);
 
                 env.UndeployAll();
             }
@@ -679,31 +704,46 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, false, false, false});
+                    false,
+                    false,
+                    false,
+                    false);
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {true, true, false, false});
+                    true,
+                    true,
+                    false,
+                    false);
 
                 env.SendEventBean(new SupportBean("E2", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {true, true, true, true});
+                    true,
+                    true,
+                    true,
+                    true);
 
                 env.SendEventBean(new SupportBean("E3", 3));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {true, true, false, false});
+                    true,
+                    true,
+                    false,
+                    false);
 
                 env.SendEventBean(new SupportBean("E4", 4));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, false, false, false});
+                    false,
+                    false,
+                    false,
+                    false);
 
                 env.UndeployAll();
             }
@@ -892,31 +932,66 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, false, false, false, true, true, true, true});
+                    false,
+                    false,
+                    false,
+                    false,
+                    true,
+                    true,
+                    true,
+                    true);
 
                 env.SendEventBean(new SupportBean("E1", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, true, true, false, true, false, false, true});
+                    false,
+                    true,
+                    true,
+                    false,
+                    true,
+                    false,
+                    false,
+                    true);
 
                 env.SendEventBean(new SupportBean("E1", 3));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {true, true, true, true, false, false, false, false});
+                    true,
+                    true,
+                    true,
+                    true,
+                    false,
+                    false,
+                    false,
+                    false);
 
                 env.SendEventBean(new SupportBean("E1", 4));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, true, false, true, true, false, true, false});
+                    false,
+                    true,
+                    false,
+                    true,
+                    true,
+                    false,
+                    true,
+                    false);
 
                 env.SendEventBean(new SupportBean("E1", 5));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, false, false, false, true, true, true, true});
+                    false,
+                    false,
+                    false,
+                    false,
+                    true,
+                    true,
+                    true,
+                    true);
 
                 env.UndeployAll();
 
@@ -930,7 +1005,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 EPAssertionUtil.AssertProps(
                     env.Listener("s1").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {true, true});
+                    true,
+                    true);
 
                 env.UndeployAll();
 
@@ -943,25 +1019,25 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 EPAssertionUtil.AssertProps(
                     env.Listener("s2").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false});
+                    false);
 
                 env.SendEventBean(new SupportBean("b", 5));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s2").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {true});
+                    true);
 
                 env.SendEventBean(new SupportBean("c", 5));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s2").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {true});
+                    true);
 
                 env.SendEventBean(new SupportBean("d", 5));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s2").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false});
+                    false);
 
                 env.UndeployAll();
             }

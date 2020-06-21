@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             else {
                 var innerEntry = parent.Get(sortable);
                 if (innerEntry == null) {
-                    innerEntry = new CompositeIndexEntry(new OrderedDictionary<object, CompositeIndexEntry>());
+                    innerEntry = new CompositeIndexEntry(new OrderedListDictionary<object, CompositeIndexEntry>());
                     parent.Put(sortable, innerEntry);
                 }
                 else {

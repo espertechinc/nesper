@@ -19,7 +19,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             TryInvalidCompile(
                 env,
                 "expression abc [10] select * from SupportBean",
-                "Failed to obtain script runtime for dialect 'dummy' for script 'abc' [expression abc [10] select * from SupportBean]");
+                "Failed to obtain script engine for dialect 'dummy' for script 'abc' [expression abc [10] select * from SupportBean]");
         }
     }
 } // end of namespace

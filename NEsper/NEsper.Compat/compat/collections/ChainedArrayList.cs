@@ -67,7 +67,7 @@ namespace com.espertech.esper.compat.collections
         {
             for (var curr = _chainHead; curr != null; curr = curr.Next)
             {
-                for (int ii = 0; ii < curr.Index; ii++)
+                for (var ii = 0; ii < curr.Index; ii++)
                 {
                     action.Invoke(curr.Value[ii]);
                 }
@@ -121,7 +121,7 @@ namespace com.espertech.esper.compat.collections
         {
             for (var curr = _chainHead; curr != null; curr = curr.Next)
             {
-                for (int ii = 0; ii < curr.Index; ii++)
+                for (var ii = 0; ii < curr.Index; ii++)
                 {
                     if (Equals(item, curr.Value[ii]))
                     {
@@ -137,7 +137,7 @@ namespace com.espertech.esper.compat.collections
         {
             for (var curr = _chainHead; curr != null; curr = curr.Next)
             {
-                for (int ii = 0; ii < curr.Index; ii++)
+                for (var ii = 0; ii < curr.Index; ii++)
                 {
                     array[arrayIndex++] = curr.Value[ii];
                 }

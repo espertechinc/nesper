@@ -9,7 +9,6 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -21,21 +20,16 @@ namespace com.espertech.esper.common.@internal.compile.stage2
     /// </summary>
     public class FilterSpecParaForgeMap
     {
-        private readonly IDictionary<ExprNode, FilterSpecParamForge> exprNodes;
-        private readonly IDictionary<FilterSpecParamForge, ExprNode> specParams;
+        private readonly IDictionary<ExprNode, FilterSpecPlanPathTripletForge> exprNodes;
+        private readonly IDictionary<FilterSpecPlanPathTripletForge, ExprNode> specParams;
 
         /// <summary>
         ///     Ctor.
         /// </summary>
         public FilterSpecParaForgeMap()
         {
-#if false
-            exprNodes = new LinkedHashMap<ExprNode, FilterSpecParamForge>();
-            specParams = new LinkedHashMap<FilterSpecParamForge, ExprNode>();
-#else
-            exprNodes = new HashMap<ExprNode, FilterSpecParamForge>();
-            specParams = new HashMap<FilterSpecParamForge, ExprNode>();
-#endif
+            exprNodes = new HashMap<ExprNode, FilterSpecPlanPathTripletForge>();
+            specParams = new HashMap<FilterSpecPlanPathTripletForge, ExprNode>();
         }
 
         /// <summary>
@@ -59,7 +53,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         ///     Returns all filter parameters.
         /// </summary>
         /// <value>filter parameters</value>
-        public ICollection<FilterSpecParamForge> FilterParams => specParams.Keys;
+        public ICollection<FilterSpecPlanPathTripletForge> Triplets => specParams.Keys;
 
         /// <summary>
         ///     Add a node and filter param.
@@ -68,7 +62,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         /// <param name="param">is null if the expression node has not optimized form</param>
         public void Put(
             ExprNode exprNode,
-            FilterSpecParamForge param)
+            FilterSpecPlanPathTripletForge param)
         {
             exprNodes.Put(exprNode, param);
             if (param != null) {
@@ -90,7 +84,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         public void RemoveNode(ExprNode node)
         {
-            FilterSpecParamForge param = exprNodes.Delete(node);
+            FilterSpecPlanPathTripletForge param = exprNodes.Delete(node);
             if (param != null) {
                 specParams.Remove(param);
             }
@@ -101,7 +95,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         /// </summary>
         /// <param name="param">is the parameter to remove</param>
         /// <returns>expression node removed</returns>
-        public ExprNode RemoveEntry(FilterSpecParamForge param)
+        public ExprNode RemoveEntry(FilterSpecPlanPathTripletForge param)
         {
             var exprNode = specParams.Get(param);
             if (exprNode == null) {
@@ -118,7 +112,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         ///     Remove a filter parameter leaving the expression node in place.
         /// </summary>
         /// <param name="param">filter parameter to remove</param>
-        public void RemoveValue(FilterSpecParamForge param)
+        public void RemoveValue(FilterSpecPlanPathTripletForge param)
         {
             var exprNode = specParams.Get(param);
             if (exprNode == null) {

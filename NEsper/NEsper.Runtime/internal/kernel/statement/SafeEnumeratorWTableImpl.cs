@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using com.espertech.esper.common.@internal.context.util;
+
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.compat.threading.locks;
 

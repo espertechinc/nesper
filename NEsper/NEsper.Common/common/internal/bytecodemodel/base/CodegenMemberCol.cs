@@ -16,10 +16,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 {
     public class CodegenMemberCol
     {
-        public IDictionary<CodegenExpressionRefWCol, Type> Members { get; } =
-            new LinkedHashMap<CodegenExpressionRefWCol, Type>();
+        public IDictionary<CodegenExpressionMemberWCol, Type> Members { get; } =
+            new LinkedHashMap<CodegenExpressionMemberWCol, Type>();
 
-        public CodegenExpressionRef AddMember(
+        public CodegenExpressionMember AddMember(
             int column,
             Type type,
             string name)
@@ -28,9 +28,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 throw new ArgumentException("Null type");
             }
 
-            var @ref = new CodegenExpressionRefWCol(name, column);
-            Members.Put(@ref, type);
-            return @ref;
+            var member = new CodegenExpressionMemberWCol(name, column);
+            Members.Put(member, type);
+            return member;
         }
     }
 } // end of namespace

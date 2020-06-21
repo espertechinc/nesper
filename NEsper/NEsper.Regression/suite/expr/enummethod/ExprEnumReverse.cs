@@ -8,86 +8,73 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
+using com.espertech.esper.regressionlib.support.expreval;
 using com.espertech.esper.regressionlib.support.util;
+
+using static com.espertech.esper.regressionlib.support.util.LambdaAssertionUtil;
 
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
-    public class ExprEnumReverse
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            var execs = new List<RegressionExecution>();
-            execs.Add(new ExprEnumReverseEvents());
-            execs.Add(new ExprEnumReverseScalar());
-            return execs;
-        }
+	public class ExprEnumReverse
+	{
 
-        internal class ExprEnumReverseEvents : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select Contained.reverse() as val from SupportBean_ST0_Container";
-                env.CompileDeploy(epl).AddListener("s0");
+		public static ICollection<RegressionExecution> Executions()
+		{
+			List<RegressionExecution> execs = new List<RegressionExecution>();
+			execs.Add(new ExprEnumReverseEvents());
+			execs.Add(new ExprEnumReverseScalar());
+			return execs;
+		}
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    new [] { "val" },
-                    new[] {typeof(ICollection<object>)});
+		internal class ExprEnumReverseEvents : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
+				builder.WithExpression(fields[0], "Contained.reverse()");
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E2,9", "E3,1"));
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val", "E3,E2,E1");
-                env.Listener("s0").Reset();
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value("E2,9", "E1,1"));
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val", "E1,E2");
-                env.Listener("s0").Reset();
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E2,9", "E3,1"))
+					.Verify("c0", val => AssertST0Id(val, "E3,E2,E1"));
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1"));
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val", "E1");
-                env.Listener("s0").Reset();
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E2,9", "E1,1"))
+					.Verify("c0", val => AssertST0Id(val, "E1,E2"));
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value(null));
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val", null);
-                env.Listener("s0").Reset();
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1"))
+					.Verify("c0", val => AssertST0Id(val, "E1"));
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value());
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val", "");
-                env.Listener("s0").Reset();
+				builder.WithAssertion(SupportBean_ST0_Container.Make2ValueNull())
+					.Verify("c0", val => AssertST0Id(val, null));
 
-                env.UndeployAll();
-            }
-        }
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value())
+					.Verify("c0", val => AssertST0Id(val, ""));
 
-        internal class ExprEnumReverseScalar : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new [] { "val0" };
-                var eplFragment = "@Name('s0') select " +
-                                  "Strvals.reverse() as val0 " +
-                                  "from SupportCollection";
-                env.CompileDeploy(eplFragment).AddListener("s0");
+				builder.Run(env);
+			}
+		}
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fields,
-                    new[] {
-                        typeof(ICollection<object>), 
-                        typeof(ICollection<object>)
-                    });
+		internal class ExprEnumReverseScalar : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
+				builder.WithExpression(fields[0], "Strvals.reverse()");
 
-                env.SendEventBean(SupportCollection.MakeString("E2,E1,E5,E4"));
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val0", "E4", "E5", "E1", "E2");
-                env.Listener("s0").Reset();
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
 
-                LambdaAssertionUtil.AssertSingleAndEmptySupportColl(env, fields);
+				builder.WithAssertion(SupportCollection.MakeString("E2,E1,E5,E4"))
+					.Verify("c0", val => AssertValuesArrayScalar(val, "E4", "E5", "E1", "E2"));
 
-                env.UndeployAll();
-            }
-        }
-    }
+				LambdaAssertionUtil.AssertSingleAndEmptySupportColl(builder, fields);
+
+				builder.Run(env);
+			}
+		}
+	}
 } // end of namespace

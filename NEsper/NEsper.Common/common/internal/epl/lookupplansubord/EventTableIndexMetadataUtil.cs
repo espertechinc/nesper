@@ -42,11 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                 unique.Add(optionalViewUniqueness);
             }
 
-            if (unique == null) {
-                return null;
-            }
-
-            return unique.ToArray();
+            return unique?.ToArray();
         }
     }
 } // end of namespace

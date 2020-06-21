@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -47,6 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
             execs.Add(new EventVariantInsertWrap());
             execs.Add(new EventVariantSingleStreamWrap());
             execs.Add(new EventVariantWildcardJoin());
+            execs.Add(new EventVariantWithLateCreateSchema());
             return execs;
         }
 
@@ -129,6 +129,39 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
         public static object PreProcessEvent(object o)
         {
             return new SupportBean("E2", 0);
+        }
+
+        internal class EventVariantWithLateCreateSchema : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RegressionPath path = new RegressionPath();
+                env.CompileDeploy("create variant schema MyVariants as *", path);
+                env.CompileDeploy("@Name('out') select * from MyVariants#length(10)", path);
+                env.CompileDeploy("@public @buseventtype create map schema SomeEventOne as (id string)", path);
+                env.CompileDeploy("@public @buseventtype create objectarray schema SomeEventTwo as (id string)", path);
+                env.CompileDeploy("insert into MyVariants select * from SomeEventOne", path);
+                env.CompileDeploy("insert into MyVariants select * from SomeEventTwo", path);
+
+                env.SendEventMap(Collections.SingletonDataMap("id", "E1"), "SomeEventOne");
+                env.SendEventObjectArray(new object[] {"E2"}, "SomeEventTwo");
+                env.SendEventMap(Collections.SingletonDataMap("id", "E3"), "SomeEventOne");
+                env.SendEventObjectArray(new object[] {"E4"}, "SomeEventTwo");
+
+                env.Milestone(0);
+
+                EPAssertionUtil.AssertPropsPerRow(
+                    env.GetEnumerator("out"),
+                    "id".SplitCsv(),
+                    new object[][] {
+                        new object[] {"E1"},
+                        new object[] {"E2"},
+                        new object[] {"E3"},
+                        new object[] {"E4"}
+                    });
+
+                env.UndeployAll();
+            }
         }
 
         internal class EventVariantWildcardJoin : RegressionExecution

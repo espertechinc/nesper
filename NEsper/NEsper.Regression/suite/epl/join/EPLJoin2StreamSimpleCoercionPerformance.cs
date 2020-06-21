@@ -21,8 +21,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLJoinPerformanceCoercionForward());
+            WithForward(execs);
+            WithBack(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBack(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLJoinPerformanceCoercionBack());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithForward(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinPerformanceCoercionForward());
             return execs;
         }
 
@@ -47,7 +61,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                            "SupportBean(TheString='B')#length(1000000) as B" +
                            " where A.LongBoxed=B.IntPrimitive";
                 env.CompileDeployAddListenerMileZero(stmt, "s0");
-
                 // preload
                 for (var i = 0; i < 10000; i++) {
                     env.SendEventBean(MakeSupportEvent("A", 0, i));
@@ -62,7 +75,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 var endTime = PerformanceObserver.MilliTime;
                 var delta = endTime - startTime;
-
                 env.UndeployAll();
                 Assert.That(delta, Is.LessThan(1500), "Failed perf test, delta=" + delta);
             }
@@ -77,7 +89,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                            "SupportBean(TheString='B')#length(1000000) as B" +
                            " where A.IntPrimitive=B.LongBoxed";
                 env.CompileDeployAddListenerMileZero(stmt, "s0");
-
                 // preload
                 for (var i = 0; i < 10000; i++) {
                     env.SendEventBean(MakeSupportEvent("A", i, 0));
@@ -92,7 +103,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 var endTime = PerformanceObserver.MilliTime;
                 var delta = endTime - startTime;
-
                 env.UndeployAll();
                 Assert.That(delta, Is.LessThan(1500), "Failed perf test, delta=" + delta);
             }

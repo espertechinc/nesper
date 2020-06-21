@@ -44,11 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
                 var key = evaluator.Evaluate(eventsPerStream, true, context);
 
                 var events = idx.Lookup(key);
-                if (events != null) {
-                    return events.GetEnumerator();
-                }
-
-                return null;
+                return events?.GetEnumerator();
             }
 
             return index[0].GetEnumerator();

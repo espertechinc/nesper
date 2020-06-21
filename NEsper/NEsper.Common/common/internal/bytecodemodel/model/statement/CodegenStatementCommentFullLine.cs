@@ -10,25 +10,32 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.compat.function;
+
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
     public class CodegenStatementCommentFullLine : CodegenStatementBase
     {
-        private readonly string comment;
+        private readonly string _comment;
 
         public CodegenStatementCommentFullLine(string comment)
         {
-            this.comment = comment;
+            _comment = comment;
         }
 
         public override void RenderStatement(
             StringBuilder builder,
             bool isInnerClass)
         {
-            builder.Append("// ").Append(comment);
+            builder.Append("// ").Append(_comment);
         }
 
         public override void MergeClasses(ISet<Type> classes)
+        {
+        }
+
+        public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
         }
     }

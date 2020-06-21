@@ -144,7 +144,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             // Map to hold per level of the node (1 to N depth) of node a list of nodes, if any
             // exist at that level
             var nodesPerLevel =
-                new OrderedDictionary<int, IList<BaseAssemblyNodeFactory>>();
+                new OrderedListDictionary<int, IList<BaseAssemblyNodeFactory>>();
 
             // Recursively enter all aggregate functions and their level into map
             RecursiveAggregateEnter(topNode, nodesPerLevel, 1);

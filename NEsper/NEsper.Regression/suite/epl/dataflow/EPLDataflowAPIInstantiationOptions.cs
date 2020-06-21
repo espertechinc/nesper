@@ -28,11 +28,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EPLDataflowParameterInjectionCallback());
-            execs.Add(new EPLDataflowOperatorInjectionCallback());
+WithParameterInjectionCallback(execs);
+WithOperatorInjectionCallback(execs);
             return execs;
         }
-
+public static IList<RegressionExecution> WithOperatorInjectionCallback(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowOperatorInjectionCallback());
+    return execs;
+}public static IList<RegressionExecution> WithParameterInjectionCallback(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowParameterInjectionCallback());
+    return execs;
+}
         internal class EPLDataflowParameterInjectionCallback : RegressionExecution
         {
             public void Run(RegressionEnvironment env)

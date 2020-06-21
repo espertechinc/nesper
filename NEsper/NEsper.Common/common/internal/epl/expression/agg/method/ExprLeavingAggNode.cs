@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                 throw MakeExceptionExpectedParamNum(0, 0);
             }
 
-            return new AggregationFactoryMethodLeaving(this);
+            return new AggregationForgeFactoryLeaving(this);
         }
 
         public override string AggregationFunctionName {

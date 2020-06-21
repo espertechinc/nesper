@@ -145,9 +145,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
         public void Destroy()
         {
             _mgmt.Clear();
-            if (_optionalHashes != null) {
-                _optionalHashes.Clear();
-            }
+            _optionalHashes?.Clear();
         }
 
         private ICollection<int> MgmtInfoToIds(MgmtInfo mgmtInfo)

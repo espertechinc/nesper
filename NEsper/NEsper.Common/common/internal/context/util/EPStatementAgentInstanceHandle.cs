@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.@internal.statement.multimatch;
 using com.espertech.esper.compat.threading.locks;
 
@@ -94,9 +92,7 @@ namespace com.espertech.esper.common.@internal.context.util
         /// </summary>
         public void InternalDispatch()
         {
-            if (OptionalDispatchable != null) {
-                OptionalDispatchable.Execute();
-            }
+            OptionalDispatchable?.Execute();
         }
 
         public override string ToString()

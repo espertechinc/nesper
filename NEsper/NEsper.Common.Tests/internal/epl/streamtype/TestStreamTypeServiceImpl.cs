@@ -6,14 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.bean;
-using com.espertech.esper.common.@internal.supportunit.@event;
-using com.espertech.esper.common.@internal.supportunit.util;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.container;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.common.@internal.epl.streamtype
@@ -51,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
             serviceRequireStreamName = new StreamTypeServiceImpl(streamTypes, true, true);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResolveByStreamAndPropNameInOne()
         {
             TryResolveByStreamAndPropNameInOne(serviceRegular);
@@ -59,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
             TryResolveByStreamAndPropNameInOne(serviceRequireStreamName);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResolveByPropertyName()
         {
             TryResolveByPropertyName(serviceRegular);
@@ -77,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestResolveByStreamAndPropNameBoth()
         {
             TryResolveByStreamAndPropNameBoth(serviceRegular);

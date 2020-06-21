@@ -8,7 +8,9 @@
 
 namespace com.espertech.esper.common.client.context
 {
-    /// <summary>Interface for classes representing a selector for navigating, querying or selecting among context partitions. </summary>
+    /// <summary>
+    /// Interface for classes representing a selector for navigating, querying or selecting among context partitions.
+    /// </summary>
     public interface ContextPartitionSelector
     {
     }

@@ -15,7 +15,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -64,7 +63,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             this.classScope = classScope;
 
             method = parent.MakeChild(returnType, originator, classScope);
-            method.Block.DeclareVar(returnType, refName, NewInstance(returnType));
+            method.Block.DeclareVar(returnType, refName, NewInstanceInner(returnType));
         }
 
         public SAIFFInitializeBuilder EventtypesMayNull(
@@ -232,13 +231,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
 
         public CodegenExpression Build()
         {
+            return LocalMethod(BuildMethod());
+        }
+
+        public CodegenMethod BuildMethod()
+        {
             if (closed) {
                 throw new IllegalStateException("Builder already completed build");
             }
 
             closed = true;
             method.Block.MethodReturn(Ref(refName));
-            return LocalMethod(method);
+            return method;
         }
     }
 } // end of namespace

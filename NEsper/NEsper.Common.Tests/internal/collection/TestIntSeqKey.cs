@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.IsTrue(Arrays.AreEqual(expected, result));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestAddToEnd()
         {
             AssertArray(_eight.AddToEnd(99).AsIntArray(), 29, 30, 31, 32, 33, 34, 35, 36, 99);
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.collection
             AssertArray(_zero.AddToEnd(99).AsIntArray(), 99);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestAsIntArray()
         {
             AssertArray(_eight.AsIntArray(), 29, 30, 31, 32, 33, 34, 35, 36);
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.collection
             AssertArray(_zero.AsIntArray());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestIsParent()
         {
             Assert.IsTrue(_zero.IsParentTo(_one));
@@ -182,7 +182,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.IsFalse(_seven.IsParentTo(new IntSeqKeyMany(new[] { 22, 23, 24, 25, 26, 27, 28, 0, 0 })));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestLast()
         {
             Assert.AreEqual(36, _eight.Last);
@@ -196,7 +196,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.That(() => _zero.Last, Throws.InstanceOf<UnsupportedOperationException>());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestLength()
         {
             Assert.AreEqual(8, _eight.Length);
@@ -210,7 +210,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.AreEqual(0, _zero.Length);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestReadWrite()
         {
             Writer<IntSeqKeyOne> writerOne = IntSeqKeyOne.Write;
@@ -236,7 +236,7 @@ namespace com.espertech.esper.common.@internal.collection
             AssertReadWrite(_eight, writerMany, IntSeqKeyMany.Read);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestRemoveFromEnd()
         {
             AssertArray(_eight.RemoveFromEnd().AsIntArray(), 29, 30, 31, 32, 33, 34, 35);

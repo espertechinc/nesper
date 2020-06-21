@@ -13,7 +13,6 @@ using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.client.variable;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -52,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 catch (VariableValueException ex) {
                     Assert.AreEqual(
                         "Variable 'vars0_A' of declared event type 'SupportBean_S0' underlying type '" +
-                        typeof(SupportBean_S0).Name +
+                        typeof(SupportBean_S0).FullName +
                         "' cannot be assigned a value of type '" +
                         typeof(SupportBean_S1).Name +
                         "'",
@@ -62,8 +61,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryInvalidCompile(
                     env,
                     "on SupportBean_S0 arrival set vars1_A = arrival",
-                    "Variable 'vars1_A' of declared event type '" +
-                    typeof(SupportBean_S1).Name +
+                    "Failed to validate assignment expression 'vars1_A=arrival': Variable 'vars1_A' of declared event type '" +
+                    typeof(SupportBean_S1).FullName +
                     "' underlying type '" +
                     typeof(SupportBean_S1).Name +
                     "' cannot be assigned a value of type '" +
@@ -73,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryInvalidCompile(
                     env,
                     "on SupportBean_S0 arrival set vars0_A = 1",
-                    "Variable 'vars0_A' of declared event type 'SupportBean_S0' underlying type '" +
+                    "Failed to validate assignment expression 'vars0_A=1': Variable 'vars0_A' of declared event type 'SupportBean_S0' underlying type '" +
                     typeof(SupportBean_S0).Name +
                     "' cannot be assigned a value of type 'Int32'");
             }

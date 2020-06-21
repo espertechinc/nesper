@@ -67,9 +67,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             if (data is XYWHRectangleWValue) {
                 consumer.Invoke(((XYWHRectangleWValue) data).Value);
             }
-            else if (data is XYWHRectangleMultiType) {
-                XYWHRectangleMultiType multiType = (XYWHRectangleMultiType) data;
-                if (multiType.Multityped is ICollection<object>) {
+            else {
+                XYWHRectangleMultiType multiType = data as XYWHRectangleMultiType;
+                if (multiType?.Multityped is ICollection<object>) {
                     ICollection<object> collection = (ICollection<object>) multiType.Multityped;
                     foreach (object datapoint in collection) {
                         Visit(datapoint, consumer);

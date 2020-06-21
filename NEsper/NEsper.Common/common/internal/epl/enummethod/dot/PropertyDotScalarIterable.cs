@@ -21,7 +21,6 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
@@ -248,9 +247,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             get => this;
         }
 
-        public void ToEPL(
-            TextWriter writer,
-            ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(this.GetType().GetSimpleName());
         }

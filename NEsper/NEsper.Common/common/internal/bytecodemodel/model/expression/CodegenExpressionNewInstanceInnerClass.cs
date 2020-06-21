@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.bytecodemodel.util;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
@@ -23,7 +25,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             string innerName,
             CodegenExpression[] @params)
         {
-            _innerName = innerName;
+            _innerName = innerName.CodeInclusionTypeName();
             _params = @params;
         }
 
@@ -33,14 +35,24 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             int level,
             CodegenIndent indent)
         {
-            builder.Append("new ").Append(_innerName).Append("(");
+            builder
+                .Append("new ")
+                .Append(_innerName)
+                .Append("(");
+            
             CodegenExpressionBuilder.RenderExpressions(builder, _params, isInnerClass);
+
             builder.Append(")");
         }
 
         public void MergeClasses(ISet<Type> classes)
         {
             CodegenExpressionBuilder.MergeClassesExpressions(classes, _params);
+        }
+
+        public void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            CodegenExpressionBuilder.TraverseMultiple(_params, consumer);
         }
     }
 } // end of namespace

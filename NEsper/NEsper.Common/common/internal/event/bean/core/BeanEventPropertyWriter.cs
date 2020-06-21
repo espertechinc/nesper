@@ -54,17 +54,17 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public CodegenExpression WriteCodegen(
             CodegenExpression assigned,
-            CodegenExpression und,
+            CodegenExpression underlying,
             CodegenExpression target,
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
             var writeMember = _writerMember;
             if (writeMember is MethodInfo writeMethod) {
-                return ExprDotMethod(und, writeMethod.Name, assigned);
+                return ExprDotMethod(underlying, writeMethod.Name, assigned);
             }
             else if (writeMember is PropertyInfo writeProperty) {
-                return SetProperty(und, writeProperty.Name, assigned);
+                return SetProperty(underlying, writeProperty.Name, assigned);
             }
             else {
                 throw new IllegalStateException("writeMember of invalid type");

@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.rowrecog.nfa;
 using com.espertech.esper.compat.collections;
@@ -30,11 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
             var index = multimatchStreamNumToVariable[stream];
             var multiMatches = state.OptionalMultiMatches[index];
-            if (multiMatches == null) {
-                return null;
-            }
 
-            return multiMatches.GetShrinkEventArray();
+            return multiMatches?.GetShrinkEventArray();
         }
 
         protected internal static string PrintStates(

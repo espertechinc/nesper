@@ -13,7 +13,6 @@ using com.espertech.esper.common.@internal.epl.historical.datacache;
 using com.espertech.esper.common.@internal.epl.historical.indexingstrategy;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.view.core;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.threadlocal;
 
 namespace com.espertech.esper.common.@internal.epl.historical.common
@@ -22,7 +21,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
     ///     Interface for views that poll data based on information from other streams.
     /// </summary>
     public interface HistoricalEventViewable : Viewable,
-        AgentInstanceStopCallback
+        AgentInstanceMgmtCallback
     {
 #if INHERITED
         EventType EventType { get; }

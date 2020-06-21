@@ -54,8 +54,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         /// <param name="isSynthesize">set to true to indicate that synthetic events are required for an iterator result set</param>
         /// <returns>pair of new events and old events</returns>
         UniformPair<EventBean[]> ProcessJoinResult(
-            ISet<MultiKey<EventBean>> newEvents,
-            ISet<MultiKey<EventBean>> oldEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents,
             bool isSynthesize);
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         /// </summary>
         /// <param name="joinSet">is the join result set</param>
         /// <returns>iterator over join results</returns>
-        IEnumerator<EventBean> GetEnumerator(ISet<MultiKey<EventBean>> joinSet);
+        IEnumerator<EventBean> GetEnumerator(ISet<MultiKeyArrayOfKeys<EventBean>> joinSet);
 
         /// <summary>
         ///     Clear out current state.
@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         /// <param name="generateSynthetic">flag to indicate whether synthetic events must be generated</param>
         /// <returns>results for dispatch</returns>
         UniformPair<EventBean[]> ProcessOutputLimitedJoin(
-            IList<UniformPair<ISet<MultiKey<EventBean>>>> joinEventsSet,
+            IList<UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>> joinEventsSet,
             bool generateSynthetic);
 
         /// <summary>
@@ -105,8 +105,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             EventBean[] oldData);
 
         void ApplyJoinResult(
-            ISet<MultiKey<EventBean>> newEvents,
-            ISet<MultiKey<EventBean>> oldEvents);
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents);
 
         void ProcessOutputLimitedLastAllNonBufferedView(
             EventBean[] newData,
@@ -114,8 +114,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             bool isGenerateSynthetic);
 
         void ProcessOutputLimitedLastAllNonBufferedJoin(
-            ISet<MultiKey<EventBean>> newEvents,
-            ISet<MultiKey<EventBean>> oldEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents,
             bool isGenerateSynthetic);
 
         UniformPair<EventBean[]> ContinueOutputLimitedLastAllNonBufferedView(bool isSynthesize);

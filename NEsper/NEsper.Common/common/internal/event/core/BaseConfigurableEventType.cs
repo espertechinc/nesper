@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -110,11 +109,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         public EventPropertyGetterMappedSPI GetGetterMappedSPI(string mappedProperty)
         {
             var getter = GetGetter(mappedProperty);
-            if (getter is EventPropertyGetterMappedSPI) {
-                return (EventPropertyGetterMappedSPI) getter;
-            }
-
-            return null;
+            return getter as EventPropertyGetterMappedSPI;
         }
 
         public EventPropertyGetterIndexedSPI GetGetterIndexedSPI(string propertyName)
@@ -178,13 +173,12 @@ namespace com.espertech.esper.common.@internal.@event.core
             return GetGetterIndexed(indexedPropertyName);
         }
 
-        public abstract EventType[] SuperTypes { get; }
+        public abstract IList<EventType> SuperTypes { get; }
         public abstract IEnumerable<EventType> DeepSuperTypes { get; }
         public abstract ICollection<EventType> DeepSuperTypesCollection { get; }
         public abstract string StartTimestampPropertyName { get; }
         public abstract string EndTimestampPropertyName { get; }
         public abstract EventPropertyDescriptor[] WriteableProperties { get; }
-        public abstract EventBeanReader Reader { get; }
         public abstract EventPropertyWriterSPI GetWriter(string propertyName);
         public abstract EventPropertyDescriptor GetWritableProperty(string propertyName);
         public abstract EventBeanCopyMethodForge GetCopyMethodForge(string[] properties);

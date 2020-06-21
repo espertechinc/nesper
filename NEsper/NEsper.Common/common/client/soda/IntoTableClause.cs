@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="tableName">table name</param>
         public IntoTableClause(string tableName)
         {
-            this.TableName = tableName;
+            TableName = tableName;
         }
 
         /// <summary>

@@ -25,13 +25,62 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new PatternOp());
-            execs.Add(new PatternInterval10Min());
-            execs.Add(new PatternInterval10MinVariable());
-            execs.Add(new PatternIntervalPrepared());
-            execs.Add(new PatternWithinFromExpression());
-            execs.Add(new PatternPatternNotFollowedBy());
+            WithOp(execs);
+            WithInterval10Min(execs);
+            WithInterval10MinVariable(execs);
+            WithIntervalPrepared(execs);
+            WithWithinFromExpression(execs);
+            WithPatternNotFollowedBy(execs);
+            WithWithinMayMaxMonthScoped(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWithinMayMaxMonthScoped(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new PatternWithinMayMaxMonthScoped());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPatternNotFollowedBy(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternPatternNotFollowedBy());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWithinFromExpression(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternWithinFromExpression());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIntervalPrepared(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternIntervalPrepared());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInterval10MinVariable(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternInterval10MinVariable());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInterval10Min(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternInterval10Min());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOp(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternOp());
             return execs;
         }
 
@@ -123,7 +172,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 var text = "select * from pattern [b=SupportBean_B(Id=\"B3\") where timer:within(10.001d)]";
                 var model = new EPStatementObjectModel();
-                model.Select(SelectClause.CreateWildcard());
+                model.SetSelect(SelectClause.CreateWildcard());
                 model = env.CopyMayFail(model);
                 Expression filter = Expressions.Eq("Id", "B3");
                 PatternExpr pattern = Patterns.TimerWithin(

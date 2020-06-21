@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.compat;
@@ -31,8 +30,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             // i.e. we are looking for "a!=5 and a!=6"  to transform to "a not in (5,6)" which can match faster
             // considering that "a not in (5,6) and a not in (7,8)" is "a not in (5, 6, 7, 8)" therefore
             // we need to consolidate until there is no more work to do
-            var mapOfParams =
-                new Dictionary<Pair<ExprFilterSpecLookupableForge, FilterOperator>, IList<FilterSpecParamForge>>();
+            var mapOfParams = new Dictionary<Pair<ExprFilterSpecLookupableForge, FilterOperator>, IList<FilterSpecPlanPathTripletForge>>();
 
             bool haveConsolidated;
             do {
@@ -40,18 +38,18 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 mapOfParams.Clear();
 
                 // sort into buckets of propertyName + filterOperator combination
-                foreach (var currentParam in filterParamExprMap.FilterParams) {
-                    var lookupable = currentParam.Lookupable;
-                    var op = currentParam.FilterOperator;
+                foreach (var currentTriplet in filterParamExprMap.Triplets) {
+                    var lookupable = currentTriplet.Param.Lookupable;
+                    var op = currentTriplet.Param.FilterOperator;
                     var key = new Pair<ExprFilterSpecLookupableForge, FilterOperator>(lookupable, op);
 
                     var existingParam = mapOfParams.Get(key);
                     if (existingParam == null) {
-                        existingParam = new List<FilterSpecParamForge>();
+                        existingParam = new List<FilterSpecPlanPathTripletForge>();
                         mapOfParams.Put(key, existingParam);
                     }
 
-                    existingParam.Add(currentParam);
+                    existingParam.Add(currentTriplet);
                 }
 
                 foreach (var entry in mapOfParams.Values) {
@@ -65,11 +63,11 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         // remove duplicate propertyName + filterOperator items making a judgement to optimize or simply remove the optimized form
         private static void Consolidate(
-            IList<FilterSpecParamForge> items,
+            IList<FilterSpecPlanPathTripletForge> items,
             FilterSpecParaForgeMap filterParamExprMap,
             string statementName)
         {
-            var op = items[0].FilterOperator;
+            var op = items[0].Param.FilterOperator;
             if (op == FilterOperator.NOT_EQUAL) {
                 HandleConsolidateNotEqual(items, filterParamExprMap, statementName);
             }
@@ -85,14 +83,15 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         // consolidate "val != 3 and val != 4 and val != 5"
         // to "val not in (3, 4, 5)"
         private static void HandleConsolidateNotEqual(
-            IList<FilterSpecParamForge> parameters,
+            IList<FilterSpecPlanPathTripletForge> parameters,
             FilterSpecParaForgeMap filterParamExprMap,
             string statementName)
         {
             IList<FilterSpecParamInValueForge> values = new List<FilterSpecParamInValueForge>();
 
             ExprNode lastNotEqualsExprNode = null;
-            foreach (var paramForge in parameters) {
+            foreach (FilterSpecPlanPathTripletForge triplet in parameters) {
+                FilterSpecParamForge paramForge = triplet.Param;
                 if (paramForge is FilterSpecParamConstantForge) {
                     var constantParam = (FilterSpecParamConstantForge) paramForge;
                     var constant = constantParam.FilterConstant;
@@ -123,14 +122,13 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     throw new ArgumentException("Unknown filter parameter:" + paramForge);
                 }
 
-                lastNotEqualsExprNode = filterParamExprMap.RemoveEntry(paramForge);
+                lastNotEqualsExprNode = filterParamExprMap.RemoveEntry(triplet);
             }
 
-            var param = new FilterSpecParamInForge(
-                parameters[0].Lookupable,
-                FilterOperator.NOT_IN_LIST_OF_VALUES,
-                values);
-            filterParamExprMap.Put(lastNotEqualsExprNode, param);
+            FilterSpecParamInForge param = new FilterSpecParamInForge(
+                parameters[0].Param.Lookupable, FilterOperator.NOT_IN_LIST_OF_VALUES, values);
+            FilterSpecPlanPathTripletForge tripletForge = new FilterSpecPlanPathTripletForge(param, null);
+            filterParamExprMap.Put(lastNotEqualsExprNode, tripletForge);
         }
     }
 } // end of namespace

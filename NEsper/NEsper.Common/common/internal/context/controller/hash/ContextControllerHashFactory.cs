@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 {
     public class ContextControllerHashFactory : ContextControllerFactoryBase
     {
-        protected internal ContextControllerDetailHash hashSpec;
+        private ContextControllerDetailHash hashSpec;
 
         public ContextControllerDetailHash HashSpec {
             get => hashSpec;
@@ -41,6 +41,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             int nestingLevel,
             object partitionKey,
             ContextControllerStatementDesc optionalStatementDesc,
+            IDictionary<int, ContextControllerStatementDesc> statements,
             AgentInstanceContext agentInstanceContextStatement)
         {
             // determine whether create-named-window

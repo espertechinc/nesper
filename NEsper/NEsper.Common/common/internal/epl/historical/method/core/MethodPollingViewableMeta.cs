@@ -13,7 +13,6 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.historical.method.poll;
 using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.historical.method.core
 {

@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="numericParameter">the frequency value</param>
         public CrontabFrequencyExpression(Expression numericParameter)
         {
-            this.Children.Add(numericParameter);
+            Children.Add(numericParameter);
         }
 
         public override ExpressionPrecedenceEnum Precedence
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.client.soda
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("*/");
-            this.Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+            Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
         }
     }
 } // end of namespace

@@ -16,19 +16,23 @@ namespace com.espertech.esper.common.@internal.epl.annotation
         private readonly string _name;
         private readonly Type _type;
         private readonly object _defaultValue;
+        private readonly bool _isRequired;
 
         /// <summary>Ctor. </summary>
         /// <param name="name">name of attribute</param>
         /// <param name="type">attribute type</param>
         /// <param name="defaultValue">default value, if any is specified</param>
+        /// <param name="isRequired">indicates if the value is required</param>
         public AnnotationAttribute(
             string name,
             Type type,
-            object defaultValue)
+            object defaultValue,
+            bool isRequired)
         {
             _name = name;
             _type = type;
             _defaultValue = defaultValue;
+            _isRequired = isRequired;
         }
 
         /// <summary>Returns attribute name. </summary>
@@ -42,5 +46,10 @@ namespace com.espertech.esper.common.@internal.epl.annotation
         /// <summary>Returns default value of annotation. </summary>
         /// <value>default value</value>
         public object DefaultValue => _defaultValue;
+
+        /// <summary>
+        /// Returns true if this attribute value must be specified.
+        /// </summary>
+        public bool IsRequired => _isRequired;
     }
 }

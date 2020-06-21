@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
@@ -16,7 +18,7 @@ namespace com.espertech.esper.common.@internal.util
     /// </summary>
     public class TypeWidenerBoxedNumeric : TypeWidenerSPI
     {
-        private readonly Coercer coercer;
+        private readonly Coercer _coercer;
 
         /// <summary>
         /// Ctor.
@@ -24,12 +26,16 @@ namespace com.espertech.esper.common.@internal.util
         /// <param name="coercer">the coercer</param>
         public TypeWidenerBoxedNumeric(Coercer coercer)
         {
-            this.coercer = coercer;
+            _coercer = coercer;
+        }
+
+        public Type WidenResultType {
+            get => _coercer.ReturnType;
         }
 
         public object Widen(object input)
         {
-            return coercer.CoerceBoxed(input);
+            return _coercer.CoerceBoxed(input);
         }
 
         public CodegenExpression WidenCodegen(
@@ -37,7 +43,7 @@ namespace com.espertech.esper.common.@internal.util
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return coercer.CoerceCodegen(expression, typeof(object));
+            return _coercer.CoerceCodegen(expression, typeof(object));
         }
     }
 } // end of namespace

@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.compile;
@@ -19,17 +18,19 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 {
     public class FilterSpecCompilerArgs
     {
+        public readonly IDictionary<string, Pair<EventType, string>> taggedEventTypes;
         public readonly IDictionary<string, Pair<EventType, string>> arrayEventTypes;
+        public readonly ISet<string> allTagNamesOrdered;
+
         public readonly StatementCompileTimeServices compileTimeServices;
         public readonly ContextCompileTimeDescriptor contextDescriptor;
         public readonly StatementRawInfo statementRawInfo;
         public readonly StreamTypeService streamTypeService;
-
-        public readonly IDictionary<string, Pair<EventType, string>> taggedEventTypes;
-
+        
         public FilterSpecCompilerArgs(
             IDictionary<string, Pair<EventType, string>> taggedEventTypes,
             IDictionary<string, Pair<EventType, string>> arrayEventTypes,
+            ISet<string> allTagNamesOrdered,
             StreamTypeService streamTypeService,
             ContextCompileTimeDescriptor contextDescriptor,
             StatementRawInfo statementRawInfo,
@@ -37,6 +38,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         {
             this.taggedEventTypes = taggedEventTypes;
             this.arrayEventTypes = arrayEventTypes;
+            this.allTagNamesOrdered = allTagNamesOrdered;
             this.streamTypeService = streamTypeService;
             this.contextDescriptor = contextDescriptor;
             this.statementRawInfo = statementRawInfo;

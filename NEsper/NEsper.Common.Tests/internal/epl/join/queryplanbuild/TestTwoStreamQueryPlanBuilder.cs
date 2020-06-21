@@ -13,10 +13,8 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.@join.querygraph;
 using com.espertech.esper.common.@internal.epl.@join.queryplan;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.common.@internal.supportunit.@event;
-using com.espertech.esper.common.@internal.supportunit.util;
 using com.espertech.esper.common.@internal.type;
-using com.espertech.esper.container;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
@@ -50,22 +48,24 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             return new ExprIdentNodeImpl(typesPerStream[stream], p, stream);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestBuildNoOuter()
         {
             var graph = MakeQueryGraph();
-            var spec = TwoStreamQueryPlanBuilder.Build(typesPerStream, graph, null, new StreamJoinAnalysisResultCompileTime(2));
+            var specDesc = TwoStreamQueryPlanBuilder.Build(typesPerStream, graph, null, new StreamJoinAnalysisResultCompileTime(2), null);
+            var spec = specDesc.Forge;
 
             EPAssertionUtil.AssertEqualsExactOrder(new[] { "P01", "P02" }, spec.IndexSpecs[0].IndexProps[0]);
             EPAssertionUtil.AssertEqualsExactOrder(new[] { "P11", "P12" }, spec.IndexSpecs[1].IndexProps[0]);
             Assert.AreEqual(2, spec.ExecNodeSpecs.Length);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestBuildOuter()
         {
             var graph = MakeQueryGraph();
-            var spec = TwoStreamQueryPlanBuilder.Build(typesPerStream, graph, OuterJoinType.LEFT, new StreamJoinAnalysisResultCompileTime(2));
+            var specDesc = TwoStreamQueryPlanBuilder.Build(typesPerStream, graph, OuterJoinType.LEFT, new StreamJoinAnalysisResultCompileTime(2), null);
+            var spec = specDesc.Forge;
 
             EPAssertionUtil.AssertEqualsExactOrder(new[] { "P01", "P02" }, spec.IndexSpecs[0].IndexProps[0]);
             EPAssertionUtil.AssertEqualsExactOrder(new[] { "P11", "P12" }, spec.IndexSpecs[1].IndexProps[0]);

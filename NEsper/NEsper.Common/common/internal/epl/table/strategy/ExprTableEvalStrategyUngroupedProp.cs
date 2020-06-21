@@ -10,7 +10,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.@event.core;
 
 namespace com.espertech.esper.common.@internal.epl.table.strategy
 {
@@ -28,12 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            ObjectArrayBackedEventBean row = LockTableReadAndGet(exprEvaluatorContext);
-            if (row == null) {
-                return null;
-            }
+            var row = LockTableReadAndGet(exprEvaluatorContext);
 
-            return row.Properties[factory.PropertyIndex];
+            return row?.Properties[Factory.PropertyIndex];
         }
 
         public override ICollection<EventBean> EvaluateGetROCollectionEvents(
@@ -41,12 +37,12 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            ObjectArrayBackedEventBean row = LockTableReadAndGet(context);
+            var row = LockTableReadAndGet(context);
             if (row == null) {
                 return null;
             }
 
-            return factory.OptionalEnumEval.EvaluateEventGetROCollectionEvents(row, context);
+            return Factory.OptionalEnumEval.EvaluateEventGetROCollectionEvents(row, context);
         }
 
         public override EventBean EvaluateGetEventBean(
@@ -54,12 +50,12 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            ObjectArrayBackedEventBean row = LockTableReadAndGet(context);
+            var row = LockTableReadAndGet(context);
             if (row == null) {
                 return null;
             }
 
-            return factory.OptionalEnumEval.EvaluateEventGetEventBean(row, context);
+            return Factory.OptionalEnumEval.EvaluateEventGetEventBean(row, context);
         }
 
         public override ICollection<object> EvaluateGetROCollectionScalar(
@@ -67,12 +63,12 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            ObjectArrayBackedEventBean row = LockTableReadAndGet(context);
+            var row = LockTableReadAndGet(context);
             if (row == null) {
                 return null;
             }
 
-            return factory.OptionalEnumEval.EvaluateEventGetROCollectionScalar(row, context);
+            return Factory.OptionalEnumEval.EvaluateEventGetROCollectionScalar(row, context);
         }
 
         public override object[] EvaluateTypableSingle(

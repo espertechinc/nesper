@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -27,7 +26,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
     /// </summary>
     public class IntersectDefaultView : ViewSupport,
         LastPostObserver,
-        AgentInstanceStopCallback,
+        AgentInstanceMgmtCallback,
         DataWindowView,
         ViewDataVisitableContainer,
         IntersectViewMarker
@@ -59,9 +58,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
         public void Stop(AgentInstanceStopServices services)
         {
             foreach (var view in views) {
-                if (view is AgentInstanceStopCallback) {
-                    ((AgentInstanceStopCallback) view).Stop(services);
-                }
+                (view as AgentInstanceMgmtCallback)?.Stop(services);
             }
         }
 
@@ -220,6 +217,10 @@ namespace com.espertech.esper.common.@internal.view.intersect
             for (var i = 0; i < views.Length; i++) {
                 viewDataVisitor.VisitContained(i, views[i]);
             }
+        }
+        
+        public void Transfer(AgentInstanceTransferServices services)
+        {
         }
     }
 } // end of namespace

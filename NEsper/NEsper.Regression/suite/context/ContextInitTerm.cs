@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,6 +19,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.context;
 using com.espertech.esper.regressionlib.support.filter;
 using com.espertech.esper.regressionlib.support.util;
@@ -31,34 +33,246 @@ namespace com.espertech.esper.regressionlib.suite.context
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ContextInitTermNoTerminationCondition());
-            execs.Add(new ContextStartEndNoTerminationCondition());
-            execs.Add(new ContextStartEndAfterZeroInitiatedNow());
-            execs.Add(new ContextStartEndEndSameEventAsAnalyzed());
-            execs.Add(new ContextInitTermContextPartitionSelection());
-            execs.Add(new ContextInitTermFilterInitiatedFilterAllTerminated());
-            execs.Add(new ContextInitTermFilterInitiatedFilterTerminatedCorrelatedOutputSnapshot());
-            execs.Add(new ContextInitTermFilterAndAfter1Min());
-            execs.Add(new ContextInitTermFilterAndPattern());
-            execs.Add(new ContextInitTermPatternAndAfter1Min());
-            execs.Add(new ContextInitTermScheduleFilterResources());
-            execs.Add(new ContextInitTermPatternIntervalZeroInitiatedNow());
-            execs.Add(new ContextInitTermPatternInclusion());
-            execs.Add(new ContextInitTermPatternInitiatedStraightSelect());
-            execs.Add(new ContextInitTermFilterInitiatedStraightEquals());
-            execs.Add(new ContextInitTermFilterAllOperators());
-            execs.Add(new ContextInitTermFilterBooleanOperator());
-            execs.Add(new ContextInitTermTerminateTwoContextSameTime());
-            execs.Add(new ContextInitTermOutputSnapshotWhenTerminated());
-            execs.Add(new ContextInitTermOutputAllEvery2AndTerminated());
-            execs.Add(new ContextInitTermOutputWhenExprWhenTerminatedCondition());
-            execs.Add(new ContextInitTermOutputOnlyWhenTerminatedCondition());
-            execs.Add(new ContextInitTermOutputOnlyWhenSetAndWhenTerminatedSet());
-            execs.Add(new ContextInitTermOutputOnlyWhenTerminatedThenSet());
-            execs.Add(new ContextInitTermCrontab());
-            execs.Add(new ContextStartEndStartNowCalMonthScoped());
-            execs.Add(new ContextInitTermAggregationGrouped());
+            WithInitTermNoTerminationCondition(execs);
+            WithStartEndNoTerminationCondition(execs);
+            WithStartEndAfterZeroInitiatedNow(execs);
+            WithStartEndEndSameEventAsAnalyzed(execs);
+            WithInitTermContextPartitionSelection(execs);
+            WithInitTermFilterInitiatedFilterAllTerminated(execs);
+            WithInitTermFilterInitiatedFilterTerminatedCorrelatedOutputSnapshot(execs);
+            WithInitTermFilterAndAfter1Min(execs);
+            WithInitTermFilterAndPattern(execs);
+            WithInitTermPatternAndAfter1Min(execs);
+            WithInitTermScheduleFilterResources(execs);
+            WithInitTermPatternIntervalZeroInitiatedNow(execs);
+            WithInitTermPatternInclusion(execs);
+            WithInitTermPatternInitiatedStraightSelect(execs);
+            WithInitTermFilterInitiatedStraightEquals(execs);
+            WithInitTermFilterAllOperators(execs);
+            WithInitTermFilterBooleanOperator(execs);
+            WithInitTermTerminateTwoContextSameTime(execs);
+            WithInitTermOutputSnapshotWhenTerminated(execs);
+            WithInitTermOutputAllEvery2AndTerminated(execs);
+            WithInitTermOutputWhenExprWhenTerminatedCondition(execs);
+            WithInitTermOutputOnlyWhenTerminatedCondition(execs);
+            WithInitTermOutputOnlyWhenSetAndWhenTerminatedSet(execs);
+            WithInitTermOutputOnlyWhenTerminatedThenSet(execs);
+            WithInitTermCrontab(execs);
+            WithStartEndStartNowCalMonthScoped(execs);
+            WithInitTermAggregationGrouped(execs);
+            WithInitTermPrevPrior(execs);
+            WithStartEndPatternCorrelated(execs);
+            WithInitTermPatternCorrelated(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermPatternCorrelated(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermPatternCorrelated());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStartEndPatternCorrelated(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextStartEndPatternCorrelated());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermPrevPrior(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ContextInitTermPrevPrior());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermAggregationGrouped(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermAggregationGrouped());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStartEndStartNowCalMonthScoped(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextStartEndStartNowCalMonthScoped());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermCrontab(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermCrontab());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermOutputOnlyWhenTerminatedThenSet(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermOutputOnlyWhenTerminatedThenSet());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermOutputOnlyWhenSetAndWhenTerminatedSet(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermOutputOnlyWhenSetAndWhenTerminatedSet());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermOutputOnlyWhenTerminatedCondition(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermOutputOnlyWhenTerminatedCondition());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermOutputWhenExprWhenTerminatedCondition(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermOutputWhenExprWhenTerminatedCondition());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermOutputAllEvery2AndTerminated(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermOutputAllEvery2AndTerminated());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermOutputSnapshotWhenTerminated(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermOutputSnapshotWhenTerminated());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermTerminateTwoContextSameTime(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermTerminateTwoContextSameTime());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermFilterBooleanOperator(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermFilterBooleanOperator());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermFilterAllOperators(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermFilterAllOperators());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermFilterInitiatedStraightEquals(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermFilterInitiatedStraightEquals());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermPatternInitiatedStraightSelect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermPatternInitiatedStraightSelect());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermPatternInclusion(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermPatternInclusion());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermPatternIntervalZeroInitiatedNow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermPatternIntervalZeroInitiatedNow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermScheduleFilterResources(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermScheduleFilterResources());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermPatternAndAfter1Min(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermPatternAndAfter1Min());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermFilterAndPattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermFilterAndPattern());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermFilterAndAfter1Min(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermFilterAndAfter1Min());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermFilterInitiatedFilterTerminatedCorrelatedOutputSnapshot(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermFilterInitiatedFilterTerminatedCorrelatedOutputSnapshot());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermFilterInitiatedFilterAllTerminated(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermFilterInitiatedFilterAllTerminated());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermContextPartitionSelection(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermContextPartitionSelection());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStartEndEndSameEventAsAnalyzed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextStartEndEndSameEventAsAnalyzed());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStartEndAfterZeroInitiatedNow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextStartEndAfterZeroInitiatedNow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStartEndNoTerminationCondition(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextStartEndNoTerminationCondition());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInitTermNoTerminationCondition(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermNoTerminationCondition());
             return execs;
         }
 
@@ -82,6 +296,9 @@ namespace com.espertech.esper.regressionlib.suite.context
             Assert.AreEqual(
                 StatementType.CREATE_CONTEXT,
                 env.Statement("ctx").GetProperty(StatementProperty.STATEMENTTYPE));
+            Assert.AreEqual(
+                "SupportBeanInstanceCtx",
+                env.Statement("ctx").GetProperty(StatementProperty.CREATEOBJECTNAME));
 
             env.MilestoneInc(milestone);
 
@@ -187,6 +404,101 @@ namespace com.espertech.esper.regressionlib.suite.context
             env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(time) - minus);
         }
 
+        internal class ContextStartEndPatternCorrelated : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                String epl = "create context MyContext\n" +
+                             "start pattern [a=SupportBean_S0 or b=SupportBean_S1]\n" +
+                             "end pattern [SupportBean_S2(Id=a.Id) or SupportBean_S3(Id=b.Id)];\n" +
+                             "@Name('s0') context MyContext select * from SupportBean";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                env.SendEventBean(new SupportBean_S1(100));
+                SendAssertSB(env, true);
+                env.SendEventBean(new SupportBean_S2(100));
+                SendAssertSB(env, true);
+                env.SendEventBean(new SupportBean_S3(101));
+                SendAssertSB(env, true);
+                env.SendEventBean(new SupportBean_S3(100));
+                SendAssertSB(env, false);
+
+                env.SendEventBean(new SupportBean_S0(200));
+                SendAssertSB(env, true);
+                env.SendEventBean(new SupportBean_S2(201));
+                env.SendEventBean(new SupportBean_S3(200));
+                SendAssertSB(env, true);
+                env.SendEventBean(new SupportBean_S2(200));
+                SendAssertSB(env, false);
+
+                env.UndeployAll();
+            }
+
+            private void SendAssertSB(
+                RegressionEnvironment env,
+                bool received)
+            {
+                env.SendEventBean(new SupportBean());
+                Assert.AreEqual(received, env.Listener("s0").IsInvokedAndReset());
+            }
+        }
+
+        internal class ContextInitTermPatternCorrelated : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+
+                // Sample alternative epl without pattern is:
+                //   create context ACtx
+                //   initiated by SupportBean(intPrimitive = 0) as a
+                //   terminated by SupportBean(theString=a.theString, intPrimitive = 1);
+                //   @name('s0') context ACtx select * from SupportBean_S0(P00=context.a.theString);
+
+                String epl = "create context ACtx\n" +
+                             "initiated by pattern[every a=SupportBean(IntPrimitive = 0)]\n" +
+                             "terminated by pattern[SupportBean(TheString=a.TheString, IntPrimitive = 1)];\n" +
+                             "@Name('s0') context ACtx select * from SupportBean_S0(P00=context.a.TheString);\n";
+
+                env.CompileDeploy(epl).AddListener("s0");
+
+                env.SendEventBean(new SupportBean("G1", 0));
+                SendAssertS0(env, "G1", true);
+                SendAssertS0(env, "X", false);
+
+                env.Milestone(0);
+
+                SendAssertS0(env, "G1", true);
+                SendAssertS0(env, "X", false);
+                env.SendEventBean(new SupportBean("G1", 1));
+                SendAssertS0(env, "G1", false);
+
+                env.Milestone(1);
+
+                env.SendEventBean(new SupportBean("G2", 0));
+                SendAssertS0(env, "G1", false);
+                SendAssertS0(env, "G2", true);
+
+                env.Milestone(0);
+
+                SendAssertS0(env, "G2", true);
+                SendAssertS0(env, "X", false);
+                env.SendEventBean(new SupportBean("G2", 1));
+                SendAssertS0(env, "G1", false);
+                SendAssertS0(env, "G2", false);
+
+                env.UndeployAll();
+            }
+
+            private void SendAssertS0(
+                RegressionEnvironment env,
+                String p00,
+                bool received)
+            {
+                env.SendEventBean(new SupportBean_S0(1, p00));
+                Assert.AreEqual(received, env.Listener("s0").IsInvokedAndReset());
+            }
+        }
+
         internal class ContextInitTermNoTerminationCondition : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -213,7 +525,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fieldsOne = new [] { "c0", "c1" };
+                var fieldsOne = new[] {"c0", "c1"};
                 var path = new RegressionPath();
                 env.AdvanceTime(0);
 
@@ -254,7 +566,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fieldsOne = new [] { "c0", "c1" };
+                var fieldsOne = new[] {"c0", "c1"};
 
                 // test initiated-by pattern with immediate start
                 env.AdvanceTime(120000);
@@ -286,7 +598,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.UndeployAll();
                 Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env));
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
             }
         }
 
@@ -294,7 +606,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "TheString","IntPrimitive" };
+                var fields = new[] {"TheString", "IntPrimitive"};
                 var path = new RegressionPath();
                 env.AdvanceTime(0);
 
@@ -401,7 +713,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 string epl;
 
                 // same event terminates - not included
-                fields = new [] { "c1","c2","c3","c4" };
+                fields = new[] {"c1", "c2", "c3", "c4"};
                 env.CompileDeploy(
                     "create context MyCtx as " +
                     "start SupportBean " +
@@ -435,7 +747,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.Milestone(3);
 
                 // same event terminates - included
-                fields = new [] { "c1","c2","c3","c4" };
+                fields = new[] {"c1", "c2", "c3", "c4"};
                 epl = "create schema MyCtxTerminate(TheString string);\n" +
                       "create context MyCtx as start SupportBean end MyCtxTerminate;\n" +
                       "@Name('s0') context MyCtx " +
@@ -476,7 +788,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2", "c3" };
+                var fields = new[] {"c0", "c1", "c2", "c3"};
                 env.AdvanceTime(0);
                 var path = new RegressionPath();
                 var milestone = new AtomicLong();
@@ -591,7 +903,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c1" };
+                var fields = new[] {"c1"};
                 var epl = "create context MyContext as " +
                           "initiated by SupportBean_S0 " +
                           "terminated by SupportBean_S1;\n" +
@@ -659,7 +971,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "terminated by SupportBean_S1(P10 = S0.P00)",
                     path);
 
-                var fields = new [] { "c1","c2" };
+                var fields = new[] {"c1", "c2"};
                 env.CompileDeploy(
                     "@Name('s0') context EveryNowAndThen select context.S0.P00 as c1, sum(IntPrimitive) as c2 " +
                     "from SupportBean#keepall output snapshot when terminated",
@@ -734,7 +1046,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var eplGrouped =
                     "@Name('S1') context CtxInitiated select TheString as c1, sum(IntPrimitive) as c2, context.sb0.P00 as c3 from SupportBean;\n";
                 env.CompileDeploy(eplContext + eplGrouped).AddListener("S1");
-                var fields = new [] { "c1","c2","c3" };
+                var fields = new[] {"c1", "c2", "c3"};
 
                 env.SendEventBean(new SupportBean("G1", 1));
                 Assert.IsFalse(env.Listener("S1").GetAndClearIsInvoked());
@@ -792,7 +1104,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 SendTimeEvent(env, "2002-05-1T8:00:00.000");
-                var fields = new [] { "Id" };
+                var fields = new[] {"Id"};
 
                 var eplContext = "@Name('CTX') create context CtxInitiated " +
                                  "initiated by SupportBean sb " +
@@ -874,7 +1186,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                                  "terminated after 1 minute";
                 env.CompileDeploy(eplContext, path);
 
-                var fields = new [] { "c1","c2","c3","c4" };
+                var fields = new[] {"c1", "c2", "c3", "c4"};
                 var eplGrouped = "@Name('S1') context CtxInitiated " +
                                  "select TheString as c1, sum(IntPrimitive) as c2, context.S0.P00 as c3, context.S1.P10 as c4 from SupportBean";
                 env.CompileDeploy(eplGrouped, path).AddListener("S1");
@@ -948,29 +1260,29 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.CompileDeploy("context EverySupportBean select * from SupportBean_S0#time(2 min) sb0", path);
                 Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env));
-                Assert.AreEqual(1, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(1, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.Milestone(0);
 
                 env.SendEventBean(new SupportBean("E1", 0));
                 Assert.AreEqual(1, SupportScheduleHelper.ScheduleCountOverall(env));
-                Assert.AreEqual(2, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(2, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.Milestone(1);
 
                 env.SendEventBean(new SupportBean_S0(0, "S0_1"));
                 Assert.AreEqual(2, SupportScheduleHelper.ScheduleCountOverall(env));
-                Assert.AreEqual(2, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(2, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.Milestone(2);
 
                 SendTimeEvent(env, "2002-05-1T08:01:00.000");
                 Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env));
-                Assert.AreEqual(1, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(1, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.UndeployAll();
                 Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env));
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
             }
         }
 
@@ -986,7 +1298,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                              "terminated after 1 minutes";
                 env.CompileDeploy(eplCtx, path);
 
-                var fields = new [] { "c1","c2","c3" };
+                var fields = new[] {"c1", "c2", "c3"};
                 env.CompileDeploy(
                     "@Name('s0') context EverySupportBean " +
                     "select context.a.Id as c1, context.b.Id as c2, TheString as c3 from SupportBean",
@@ -1037,7 +1349,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                              "terminated after 1 minutes";
                 env.CompileDeploy(ctxEPL, path);
 
-                var fields = new [] { "c1" };
+                var fields = new[] {"c1"};
                 env.CompileDeploy(
                     "@Name('s0') context EverySupportBean select sum(LongPrimitive) as c1 from SupportBean(IntPrimitive = context.sb.IntPrimitive)",
                     path);
@@ -1230,7 +1542,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                         new object[] {11, false}, new object[] {10, true}, new object[] {9, false},
                         new object[] {8, false}
                     });
-
+                
                 TryOperator(
                     env,
                     path,
@@ -1288,7 +1600,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     milestone,
                     "IntBoxed is not context.sb.Id",
                     new[] {new object[] {10, false}, new object[] {9, true}, new object[] {null, true}});
-
+                
                 // try coercion
                 TryOperator(
                     env,
@@ -1363,11 +1675,10 @@ namespace com.espertech.esper.regressionlib.suite.context
                 for (var i = 0; i < testdata.Length; i++) {
                     var bean = new SupportBean();
                     var testValue = testdata[i][0];
-                    if (testValue is int?) {
-                        bean.IntBoxed = (int?) testValue;
-                    }
-                    else {
-                        bean.ShortBoxed = (short?) testValue;
+                    if (testValue.IsInt16()) {
+                        bean.ShortBoxed = testValue.AsBoxedInt16();
+                    } else {
+                        bean.IntBoxed = testValue.AsBoxedInt32();
                     }
 
                     var expected = (bool) testdata[i][1];
@@ -1393,7 +1704,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.Milestone(0);
 
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
                 env.CompileDeploy(
                     "@Name('s0') context EverySupportBean " +
                     "select TheString as c0,IntPrimitive as c1,context.sb.P00 as c2 " +
@@ -1456,7 +1767,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                                  "terminated after 1 minute";
                 env.CompileDeploy(eplContext, path);
 
-                var fields = new [] { "c1","c2","c3" };
+                var fields = new[] {"c1", "c2", "c3"};
                 var eplGrouped =
                     "@Name('s0') context CtxInitiated select TheString as c1, sum(IntPrimitive) as c2, context.sb0.P00 as c3 from SupportBean";
                 env.CompileDeploy(eplGrouped, path).AddListener("s0");
@@ -1523,7 +1834,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c1" };
+                var fields = new[] {"c1"};
                 var path = new RegressionPath();
                 SendTimeEvent(env, "2002-05-1T08:00:00.000");
 
@@ -1625,7 +1936,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
 
                 // test when-terminated and every 2 events output all with group by
-                var fields = new [] { "c1","c2" };
+                var fields = new[] {"c1", "c2"};
                 env.CompileDeploy(
                     "@Name('s0') context EveryMinute " +
                     "select TheString as c1, sum(IntPrimitive) as c2 from SupportBean group by TheString output all every 2 events and when terminated order by TheString asc",
@@ -1716,7 +2027,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
 
                 // test when-terminated and every 2 events output all with group by
-                var fields = new [] { "c0" };
+                var fields = new[] {"c0"};
                 var epl = "@Name('s0') context EveryMinute " +
                           "select TheString as c0 from SupportBean output when count_insert>1 and when terminated and count_insert>0";
                 env.CompileDeploy(epl, path).AddListener("s0");
@@ -1781,7 +2092,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
 
                 // test when-terminated and every 2 events output all with group by
-                var fields = new [] { "c0" };
+                var fields = new[] {"c0"};
                 var epl = "@Name('s0') context EveryMinute " +
                           "select TheString as c0 from SupportBean output when terminated and count_insert > 0";
                 env.CompileDeploy(epl, path);
@@ -1859,7 +2170,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0" };
+                var fields = new[] {"c0"};
                 SendTimeEvent(env, "2002-05-1T08:00:00.000");
                 var path = new RegressionPath();
 
@@ -1907,7 +2218,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "terminated after 3 min",
                     path);
 
-                var fields = new [] { "c1","c2" };
+                var fields = new[] {"c1", "c2"};
                 env.CompileDeploy(
                     "@Name('s0') @IterableUnbound context EveryMinute select TheString as c1, sum(IntPrimitive) as c2 from SupportBean",
                     path);
@@ -1918,7 +2229,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.SendEventBean(new SupportBean("E1", 10));
 
                 Assert.IsFalse(env.Listener("s0").GetAndClearIsInvoked());
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 0);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
@@ -1930,12 +2241,12 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SendTimeEvent(env, "2002-05-1T08:01:00.000");
                 env.Milestone(1);
 
-                Assert.AreEqual(1, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(1, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 1);
 
                 env.SendEventBean(new SupportBean("E2", 5));
 
-                expected = new [] {new object[] {"E2", 5}};
+                expected = new[] {new object[] {"E2", 5}};
                 EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").GetAndResetLastNewData(), fields, expected);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
@@ -1947,7 +2258,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.Milestone(2);
 
-                Assert.AreEqual(1, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(1, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 1);
 
                 env.SendEventBean(new SupportBean("E3", 6));
@@ -1967,7 +2278,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.Milestone(4);
 
-                Assert.AreEqual(2, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(2, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 2);
 
                 env.SendEventBean(new SupportBean("E4", 7));
@@ -1983,7 +2294,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.Milestone(5);
 
-                Assert.AreEqual(2, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(2, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 2);
 
                 env.SendEventBean(new SupportBean("E5", 8));
@@ -2000,7 +2311,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.Milestone(6);
 
-                Assert.AreEqual(3, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(3, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 3);
 
                 env.SendEventBean(new SupportBean("E6", 9));
@@ -2017,7 +2328,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.Milestone(7);
 
-                Assert.AreEqual(3, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(3, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 3);
                 env.SendEventBean(new SupportBean("E7", 10));
                 expected = new[] {
@@ -2036,7 +2347,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.Milestone(8);
 
-                Assert.AreEqual(3, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(3, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 3);
                 env.SendEventBean(new SupportBean("E8", 11));
                 expected = new[] {new object[] {"E8", 30}, new object[] {"E8", 21}, new object[] {"E8", 11}};
@@ -2111,7 +2422,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
                 var epl = "create schema SummedEvent(grp string, key string, value int);\n" +
                           "create schema InitEvent(grp string);\n" +
                           "create schema TermEvent(grp string);\n";
@@ -2250,7 +2561,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Name('ctx') create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)",
                     path);
 
-                var fields = new [] { "col1","col2","col3","col4","col5" };
+                var fields = new[] {"col1", "col2", "col3", "col4", "col5"};
                 env.CompileDeploy(
                     "@Name('s0') context NineToFive " +
                     "select prev(TheString) as col1, prevwindow(sb) as col2, prevtail(TheString) as col3, prior(1, TheString) as col4, sum(IntPrimitive) as col5 " +

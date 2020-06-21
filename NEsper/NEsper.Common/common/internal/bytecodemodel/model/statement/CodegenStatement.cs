@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
@@ -23,5 +25,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             CodegenIndent indent);
 
         void MergeClasses(ISet<Type> classes);
+        
+        void TraverseExpressions(Consumer<CodegenExpression> consumer);
     }
 } // end of namespace

@@ -8,15 +8,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionUtil;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
@@ -24,6 +21,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
     {
         private readonly Type _type;
 
+        public CodegenExpressionDefault()
+        {
+            _type = null;
+        }
+        
         public CodegenExpressionDefault(Type type)
         {
             _type = type;
@@ -35,9 +37,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             int level,
             CodegenIndent indent)
         {
-            builder.Append("default(");
-            builder.Append(_type.CleanName());
-            builder.Append(")");
+            builder.Append("default");
+            if (_type != null) {
+                builder.Append("(");
+                builder.Append(_type.CleanName());
+                builder.Append(")");
+            }
         }
 
         public void MergeClasses(ISet<Type> classes)
@@ -46,6 +51,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 return;
             }
             classes.AddToSet(_type);
+        }
+        
+        public void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
         }
     }
 } // end of namespace

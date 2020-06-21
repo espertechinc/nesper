@@ -31,15 +31,78 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLOtherChainedParameterized());
-            execs.Add(new EPLOtherStreamFunction());
-            execs.Add(new EPLOtherInstanceMethodOuterJoin());
-            execs.Add(new EPLOtherInstanceMethodStatic());
-            execs.Add(new EPLOtherStreamInstanceMethodAliased());
-            execs.Add(new EPLOtherStreamInstanceMethodNoAlias());
-            execs.Add(new EPLOtherJoinStreamSelectNoWildcard());
-            execs.Add(new EPLOtherPatternStreamSelectNoWildcard());
+            WithChainedParameterized(execs);
+            WithStreamFunction(execs);
+            WithInstanceMethodOuterJoin(execs);
+            WithInstanceMethodStatic(execs);
+            WithStreamInstanceMethodAliased(execs);
+            WithStreamInstanceMethodNoAlias(execs);
+            WithJoinStreamSelectNoWildcard(execs);
+            WithPatternStreamSelectNoWildcard(execs);
+            WithInvalidSelect(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalidSelect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLOtherInvalidSelect());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPatternStreamSelectNoWildcard(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherPatternStreamSelectNoWildcard());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithJoinStreamSelectNoWildcard(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherJoinStreamSelectNoWildcard());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStreamInstanceMethodNoAlias(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherStreamInstanceMethodNoAlias());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStreamInstanceMethodAliased(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherStreamInstanceMethodAliased());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInstanceMethodStatic(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherInstanceMethodStatic());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInstanceMethodOuterJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherInstanceMethodOuterJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStreamFunction(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherStreamFunction());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithChainedParameterized(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherChainedParameterized());
             return execs;
         }
 
@@ -96,7 +159,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var prefix = "@Name('s0') select * from SupportMarketDataBean as S0 where " +
-                             typeof(SupportStaticMethodLib).Name;
+                             typeof(SupportStaticMethodLib).FullName;
                 TryAssertionStreamFunction(env, prefix + ".VolumeGreaterZero(S0)");
                 TryAssertionStreamFunction(env, prefix + ".VolumeGreaterZero(*)");
                 TryAssertionStreamFunction(env, prefix + ".VolumeGreaterZeroEventBean(S0)");
@@ -233,7 +296,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new MyTestEvent(10));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "c0", "c1" },
+                    new[] {"c0", "c1"},
                     new object[] {10, 10});
 
                 env.UndeployAll();
@@ -330,7 +393,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 TryInvalidCompile(
                     env,
                     "select S0.abc() from SupportBean as S0",
-                    "Failed to validate select-clause expression 'S0.abc()': Failed to solve 'abc' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'abc': Could not find enumeration method, date-time method or instance method named 'abc' in class '" +
+                    "Failed to validate select-clause expression 'S0.abc()': Failed to solve 'abc' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'abc': Could not find enumeration method, date-time method, instance method or property named 'abc' in class '" +
                     typeof(SupportBean).MaskTypeName() +
                     "' taking no parameters [");
 

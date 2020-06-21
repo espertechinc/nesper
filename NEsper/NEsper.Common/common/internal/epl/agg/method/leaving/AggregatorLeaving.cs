@@ -21,16 +21,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.leaving
 {
     public class AggregatorLeaving : AggregatorMethod
     {
-        private readonly AggregationFactoryMethodLeaving factory;
-        private readonly CodegenExpressionRef leaving;
+        private readonly AggregationForgeFactoryLeaving _factory;
+        private readonly CodegenExpressionMember _leaving;
 
         public AggregatorLeaving(
-            AggregationFactoryMethodLeaving factory,
+            AggregationForgeFactoryLeaving factory,
             int col,
             CodegenMemberCol membersColumnized)
         {
-            this.factory = factory;
-            leaving = membersColumnized.AddMember(col, typeof(bool), "leaving");
+            _factory = factory;
+            _leaving = membersColumnized.AddMember(col, typeof(bool), "leaving");
         }
 
         public void ApplyEvalEnterCodegen(
@@ -47,15 +47,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.leaving
             ExprForge[] forges,
             CodegenClassScope classScope)
         {
-            if (factory.AggregationExpression.PositionalParams.Length > 0) {
+            if (_factory.AggregationExpression.PositionalParams.Length > 0) {
                 PrefixWithFilterCheck(
-                    factory.AggregationExpression.PositionalParams[0].Forge,
+                    _factory.AggregationExpression.PositionalParams[0].Forge,
                     method,
                     symbols,
                     classScope);
             }
 
-            method.Block.AssignRef(leaving, ConstantTrue());
+            method.Block.AssignRef(_leaving, ConstantTrue());
         }
 
         public void ApplyTableEnterCodegen(
@@ -72,21 +72,21 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.leaving
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.AssignRef(leaving, ConstantTrue());
+            method.Block.AssignRef(_leaving, ConstantTrue());
         }
 
         public void ClearCodegen(
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.AssignRef(leaving, ConstantFalse());
+            method.Block.AssignRef(_leaving, ConstantFalse());
         }
 
         public void GetValueCodegen(
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.MethodReturn(leaving);
+            method.Block.MethodReturn(_leaving);
         }
 
         public void WriteCodegen(
@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.leaving
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.Apply(WriteBoolean(output, row, leaving));
+            method.Block.Apply(WriteBoolean(output, row, _leaving));
         }
 
         public void ReadCodegen(
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.leaving
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.Apply(ReadBoolean(row, leaving, input));
+            method.Block.Apply(ReadBoolean(row, _leaving, input));
         }
     }
 } // end of namespace

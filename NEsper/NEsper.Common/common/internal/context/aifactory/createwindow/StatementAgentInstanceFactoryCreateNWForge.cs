@@ -6,12 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
-using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.activator;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
@@ -20,8 +18,6 @@ using com.espertech.esper.common.@internal.epl.namedwindow.core;
 using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.view.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -103,7 +99,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                 .SetProperty(
                     Ref("saiff"),
                     "ResultSetProcessorFactoryProvider",
-                    NewInstance(
+                    NewInstanceInner(
                         resultSetProcessorProviderClassName,
                         symbols.GetAddInitSvc(method),
                         Ref("statementFields")))

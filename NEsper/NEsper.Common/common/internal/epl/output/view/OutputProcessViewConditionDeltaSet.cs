@@ -17,13 +17,13 @@ namespace com.espertech.esper.common.@internal.epl.output.view
     {
         int NumChangesetRows { get; }
 
-        IList<UniformPair<ISet<MultiKey<EventBean>>>> JoinEventsSet { get; }
+        IList<UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>> JoinEventsSet { get; }
 
         IList<UniformPair<EventBean[]>> ViewEventsSet { get; }
 
         void AddView(UniformPair<EventBean[]> events);
 
-        void AddJoin(UniformPair<ISet<MultiKey<EventBean>>> events);
+        void AddJoin(UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>> events);
 
         void Clear();
 

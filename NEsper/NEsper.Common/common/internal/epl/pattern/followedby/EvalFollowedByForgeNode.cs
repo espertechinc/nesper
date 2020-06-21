@@ -27,7 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
     /// </summary>
     public class EvalFollowedByForgeNode : EvalForgeNodeBase
     {
-        public EvalFollowedByForgeNode(IList<ExprNode> optionalMaxExpressions)
+        public EvalFollowedByForgeNode(bool attachPatternText, IList<ExprNode> optionalMaxExpressions)
+            : base(attachPatternText)
         {
             OptionalMaxExpressions = optionalMaxExpressions;
         }

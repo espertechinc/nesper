@@ -15,7 +15,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.join.analyze;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.core
@@ -25,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         private readonly string propertyName;
         private readonly string statementName;
 
-        protected internal ExprDotNodeForgePropertyExpr(
+        internal ExprDotNodeForgePropertyExpr(
             ExprDotNodeImpl parent,
             string statementName,
             string propertyName,
@@ -81,6 +80,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public override ExprNodeRenderable ExprForgeRenderable => Parent;
 
+        public override bool IsLocalInlinedClass {
+            get => false;
+        }
+        
         public override CodegenExpression EvaluateCodegenUninstrumented(
             Type requiredType,
             CodegenMethodScope codegenMethodScope,

@@ -19,60 +19,50 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
-    public class ExprCoreCurrentEvaluationContext
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            var execs = new List<RegressionExecution>();
-            execs.Add(new ExprCoreCurrentEvalCtx(false));
-            execs.Add(new ExprCoreCurrentEvalCtx(true));
-            return execs;
-        }
+	public class ExprCoreCurrentEvaluationContext {
+	    public static ICollection<RegressionExecution> Executions() {
+	        var execs = new List<RegressionExecution>();
+	        execs.Add(new ExprCoreCurrentEvalCtx(false));
+	        execs.Add(new ExprCoreCurrentEvalCtx(true));
+	        return execs;
+	    }
 
-        private static void SendTimer(
-            RegressionEnvironment env,
-            long timeInMSec)
-        {
-            env.AdvanceTime(timeInMSec);
-        }
+	    private class ExprCoreCurrentEvalCtx : RegressionExecution {
+	        private readonly bool soda;
 
-        internal class ExprCoreCurrentEvalCtx : RegressionExecution
-        {
-            private readonly bool soda;
+	        public ExprCoreCurrentEvalCtx(bool soda) {
+	            this.soda = soda;
+	        }
 
-            public ExprCoreCurrentEvalCtx(bool soda)
-            {
-                this.soda = soda;
-            }
+	        public void Run(RegressionEnvironment env) {
+	            SendTimer(env, 0);
 
-            public void Run(RegressionEnvironment env)
-            {
-                SendTimer(env, 0);
+	            var epl = "@Name('s0') select " +
+	                      "current_evaluation_context() as c0, " +
+	                      "current_evaluation_context(), " +
+	                      "current_evaluation_context().GetRuntimeURI() as c2 from SupportBean";
+	            var resolver = new StatementUserObjectOption(_ => "my_user_object");
+	            var arguments = new CompilerArguments(new Configuration());
+	            arguments.Options.StatementUserObject = resolver;
+	            var compiled = env.Compile(soda, epl, arguments);
+	            env.Deploy(compiled).AddListener("s0").Milestone(0);
+	            Assert.AreEqual(typeof(EPLExpressionEvaluationContext), env.Statement("s0").EventType.GetPropertyType("current_evaluation_context()"));
 
-                var epl = "@Name('s0') select " +
-                          "current_evaluation_context() as c0, " +
-                          "current_evaluation_context(), " +
-                          "current_evaluation_context().GetRuntimeURI() as c2 from SupportBean";
-                StatementUserObjectOption resolver = _ => "my_user_object";
-                var arguments = new CompilerArguments(new Configuration());
-                arguments.Options.StatementUserObject = resolver;
-                var compiled = env.Compile(soda, epl, arguments);
-                env.Deploy(compiled).AddListener("s0").Milestone(0);
-                Assert.AreEqual(
-                    typeof(EPLExpressionEvaluationContext),
-                    env.Statement("s0").EventType.GetPropertyType("current_evaluation_context()"));
+	            env.SendEventBean(new SupportBean());
+	            var @event = env.Listener("s0").AssertOneGetNewAndReset();
+	            var ctx = (EPLExpressionEvaluationContext) @event.Get("c0");
+	            Assert.AreEqual(env.RuntimeURI, ctx.RuntimeURI);
+	            Assert.AreEqual(env.Statement("s0").Name, ctx.StatementName);
+	            Assert.AreEqual(-1, ctx.ContextPartitionId);
+	            Assert.AreEqual("my_user_object", ctx.StatementUserObject);
+	            Assert.AreEqual(env.RuntimeURI, @event.Get("c2"));
 
-                env.SendEventBean(new SupportBean());
-                var @event = env.Listener("s0").AssertOneGetNewAndReset();
-                var ctx = (EPLExpressionEvaluationContext) @event.Get("c0");
-                Assert.AreEqual(env.RuntimeURI, ctx.RuntimeURI);
-                Assert.AreEqual(env.Statement("s0").Name, ctx.StatementName);
-                Assert.AreEqual(-1, ctx.ContextPartitionId);
-                Assert.AreEqual("my_user_object", ctx.StatementUserObject);
-                Assert.AreEqual(env.RuntimeURI, @event.Get("c2"));
+	            env.UndeployAll();
+	        }
+	    }
 
-                env.UndeployAll();
-            }
-        }
-    }
+	    private static void SendTimer(RegressionEnvironment env, long timeInMSec) {
+	        env.AdvanceTime(timeInMSec);
+	    }
+	}
 } // end of namespace

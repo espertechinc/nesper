@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Text;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -44,7 +46,8 @@ namespace com.espertech.esper.common.@internal.filterspec
             CodegenMethodScope parent)
         {
             var getterSPI = ((EventTypeSPI) _eventType).GetGetterSPI(_resultEventProperty);
-            var method = parent.MakeChild(typeof(object), GetType(), classScope).AddParam(GET_FILTER_VALUE_FP);
+            var method = parent.MakeChild(typeof(object), GetType(), classScope)
+				.AddParam(GET_FILTER_VALUE_FP);
             method.Block
                 .DeclareVar<EventBean[]>(
                     "events",
@@ -112,6 +115,13 @@ namespace com.espertech.esper.common.@internal.filterspec
         public override int GetHashCode()
         {
             return _resultEventProperty.GetHashCode();
+        }
+        
+        public void ValueToString(StringBuilder @out)
+        {
+            @out.Append("indexed event property '")
+                .Append(_resultEventProperty)
+                .Append("'");
         }
     }
 } // end of namespace

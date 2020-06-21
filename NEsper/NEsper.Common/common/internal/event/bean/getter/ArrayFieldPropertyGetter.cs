@@ -15,12 +15,10 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
-using com.espertech.esper.common.@internal.@event.util;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
-    CodegenRelational;
 
 namespace com.espertech.esper.common.@internal.@event.bean.getter
 {
@@ -55,7 +53,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 
         public object GetBeanProp(object @object)
         {
-            return GetBeanPropInternal(@object, _index);
+            return FieldGetterHelper.GetFieldArray(_field, @object, _index);
         }
 
         public bool IsBeanExistsProperty(object @object)
@@ -119,24 +117,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             EventBean eventBean,
             int index)
         {
-            return GetBeanPropInternal(eventBean.Underlying, index);
-        }
-
-        private object GetBeanPropInternal(
-            object @object,
-            int index)
-        {
-            try {
-                var value = (Array) _field.GetValue(@object);
-                if (value.Length <= index) {
-                    return null;
-                }
-
-                return value.GetValue(index);
-            }
-            catch (InvalidCastException e) {
-                throw PropertyUtility.GetMismatchException(_field, @object, e);
-            }
+            return FieldGetterHelper.GetFieldArray(_field, eventBean.Underlying, index);
         }
 
         private CodegenMethod GetBeanPropInternalCodegen(
@@ -148,11 +129,16 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 .AddParam(TargetType, "@object")
                 .AddParam(typeof(int), "index")
                 .Block
-                .DeclareVar(_field.FieldType, "value", ExprDotName(Ref("@object"), _field.Name))
-                .IfConditionReturnConst(
-                    Relational(ExprDotName(Ref("value"), "Length"), LE, Ref("index")),
-                    null)
-                .MethodReturn(Cast(BeanPropType, ArrayAtIndex(Ref("value"), Ref("index"))));
+                //.DeclareVar(_field.FieldType, "value", ExprDotName(Ref("@object"), _field.Name))
+                .DeclareVar<Array>("value", ExprDotName(Ref("@object"), _field.Name))
+                .MethodReturn(
+                    Cast(
+                        BeanPropType,
+                        StaticMethod(
+                            typeof(CollectionUtil),
+                            "ArrayValueAtIndex",
+                            Cast<Array>(Ref("value")),
+                            Ref("index"))));
         }
 
         public override string ToString()

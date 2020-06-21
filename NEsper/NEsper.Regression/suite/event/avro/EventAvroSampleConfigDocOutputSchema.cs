@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System.Xml;
-
 using Avro;
 using Avro.Generic;
 
@@ -35,9 +33,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
                       "select 1 as carId, 'abc' as carType from SupportBean";
             env.CompileDeploy(epl);
             var schema = (Schema) ((AvroSchemaEventType) env.Statement("s0").EventType).Schema;
+            var schemaJson = schema.ToJsonObject();
             Assert.AreEqual(
                 "{\"type\":\"record\",\"name\":\"stmt0_out0\",\"fields\":[{\"name\":\"carId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.string\":\"string\"}}]}",
-                schema.ToJsonObject().ToString(Newtonsoft.Json.Formatting.None));
+                schemaJson.ToString(Newtonsoft.Json.Formatting.None));
             env.UndeployAll();
 
             // schema to-string Avro

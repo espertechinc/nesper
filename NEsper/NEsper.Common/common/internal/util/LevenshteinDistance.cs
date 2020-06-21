@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.util
     public class LevenshteinDistance
     {
         /// <summary>Make 3 characters an acceptable distance for reporting. </summary>
-        public readonly static int ACCEPTABLE_DISTANCE = 3;
+        public static readonly int ACCEPTABLE_DISTANCE = 3;
 
         /// <summary>
         /// Compute the distance between two strins using the Levenshtein algorithm, including a case-insensitive string comparison.

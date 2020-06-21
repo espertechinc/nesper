@@ -78,9 +78,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
                 output.WriteInt(topMap.Count);
                 foreach (var entry in topMap) {
                     output.WriteLong(entry.Key);
-                    if (entry.Value is ByteBuffer) {
+                    if (entry.Value is ByteBuffer byteBuffer) {
                         output.WriteInt(1);
-                        WriteBytes(output, (ByteBuffer) entry.Value);
+                        WriteBytes(output, byteBuffer);
                     }
                     else {
                         var q = (Deque<ByteBuffer>) entry.Value;
@@ -124,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             if (hasTopk) {
                 var topkMax = input.ReadInt();
 
-                var topMap = new OrderedDictionary<long, object>(
+                var topMap = new OrderedListDictionary<long, object>(
                     Comparers.Default<long>().Inverse());
                 var refMap = new Dictionary<ByteBuffer, long>();
                 var numRows = input.ReadInt();

@@ -6,9 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client.configuration.compiler;
 using com.espertech.esper.common.client.hook.aggfunc;
 using com.espertech.esper.common.client.hook.aggmultifunc;
+using com.espertech.esper.common.client.util;
+using com.espertech.esper.common.@internal.epl.classprovided.compiletime;
 using com.espertech.esper.common.@internal.epl.expression.agg.accessagg;
 using com.espertech.esper.common.@internal.epl.expression.agg.method;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -24,11 +28,11 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             ImportServiceCompileTime importService,
             bool distinct,
             string functionName,
-            LazyAllocatedMap<ConfigurationCompilerPlugInAggregationMultiFunction, AggregationMultiFunctionForge>
-                plugInAggregations)
+            LazyAllocatedMap<HashableMultiKey, AggregationMultiFunctionForge> plugInAggregations,
+            ClassProvidedExtension classProvidedExtension)
         {
             try {
-                AggregationFunctionForge aggregationFactory = importService.ResolveAggregationFunction(functionName);
+                AggregationFunctionForge aggregationFactory = importService.ResolveAggregationFunction(functionName, classProvidedExtension);
                 return new ExprPlugInAggNode(distinct, aggregationFactory, functionName);
             }
             catch (ImportUndefinedException) {
@@ -39,20 +43,26 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             }
 
             // try plug-in aggregation multi-function
-            ConfigurationCompilerPlugInAggregationMultiFunction config =
-                importService.ResolveAggregationMultiFunction(functionName);
-            if (config != null) {
-                AggregationMultiFunctionForge factory = plugInAggregations.Map.Get(config);
+            Pair<ConfigurationCompilerPlugInAggregationMultiFunction, Type> configPair = importService
+                .ResolveAggregationMultiFunction(functionName, classProvidedExtension);
+            if (configPair != null) {
+                HashableMultiKey multiKey = new HashableMultiKey(configPair.First.FunctionNames);
+                AggregationMultiFunctionForge factory = plugInAggregations.Map.Get(multiKey);
                 if (factory == null) {
-                    factory = (AggregationMultiFunctionForge) TypeHelper.Instantiate<AggregationMultiFunctionForge>(
-                        config.MultiFunctionForgeClassName,
-                        importService.ClassForNameProvider);
-                    plugInAggregations.Map.Put(config, factory);
+                    if (configPair.Second != null) {
+                        factory = (AggregationMultiFunctionForge) TypeHelper.Instantiate<AggregationMultiFunctionForge>(
+                            configPair.Second);
+                    } else {
+                        factory = (AggregationMultiFunctionForge) TypeHelper.Instantiate<AggregationMultiFunctionForge>(
+                            configPair.First.MultiFunctionForgeClassName, importService.ClassForNameProvider);
+                    }
+                    plugInAggregations.Map[multiKey] = factory;
                 }
-
-                factory.AddAggregationFunction(
-                    new AggregationMultiFunctionDeclarationContext(functionName.ToLowerInvariant(), distinct, config));
-                return new ExprPlugInMultiFunctionAggNode(distinct, config, factory, functionName);
+                factory.AddAggregationFunction(new AggregationMultiFunctionDeclarationContext(
+                    functionName.ToLowerInvariant(),
+                    distinct,
+                    configPair.First));
+                return new ExprPlugInMultiFunctionAggNode(distinct, configPair.First, factory, functionName);
             }
 
             // try built-in expanded set of aggregation functions

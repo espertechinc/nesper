@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -48,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
 
             providerCtor.Block.AssignRef(
                 memberOrderByFactory,
-                NewInstance(CLASSNAME_ORDERBYPROCESSORFACTORY, Ref("this")));
+                NewInstanceInner(CLASSNAME_ORDERBYPROCESSORFACTORY, Ref("this")));
         }
 
         private static void MakeFactory(
@@ -63,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                     typeof(OrderByProcessorCompiler),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
-                .AddParam(typeof(AgentInstanceContext), REF_AGENTINSTANCECONTEXT.Ref);
+                .AddParam(typeof(AgentInstanceContext), MEMBER_AGENTINSTANCECONTEXT.Ref);
             forge.InstantiateCodegen(instantiateMethod, classScope);
             
             var ctorParams = Collections.SingletonList(new CodegenTypedParam(providerClassName, "o"));

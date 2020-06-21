@@ -54,11 +54,12 @@ namespace com.espertech.esper.common.@internal.settings
 
         public Type ResolveClass(
             string className,
-            bool forAnnotation)
+            bool forAnnotation,
+            ExtensionClass extension)
         {
             Type clazz;
             try {
-                clazz = ResolveClassInternal(className, false, forAnnotation);
+                clazz = ResolveClassInternal(className, false, forAnnotation, extension);
             }
             catch (TypeLoadException e) {
                 throw MakeClassNotFoundEx(className, e);
@@ -103,11 +104,11 @@ namespace com.espertech.esper.common.@internal.settings
                     }
                 }
 
-                if (clazz == null) {
-                    throw MakeClassNotFoundEx(fullyQualClassName, ex);
+                if (clazz != null) {
+                    return clazz;
                 }
-
-                return clazz;
+                
+                return ResolveClass(fullyQualClassName, false, ExtensionClassEmpty.INSTANCE);
             }
         }
 
@@ -116,11 +117,12 @@ namespace com.espertech.esper.common.@internal.settings
             string methodName,
             Type[] paramTypes,
             bool[] allowEventBeanType,
-            bool[] allowEventBeanCollType)
+            bool[] allowEventBeanCollType,
+            ExtensionClass extension)
         {
             Type clazz;
             try {
-                clazz = ResolveClassInternal(className, false, false);
+                clazz = ResolveClassInternal(className, false, false, extension);
             }
             catch (TypeLoadException e) {
                 throw new ImportException(
@@ -166,7 +168,12 @@ namespace com.espertech.esper.common.@internal.settings
             }
             catch (MethodResolverNoSuchMethodException e) {
                 var method = MethodResolver.ResolveExtensionMethod(
-                    clazz, methodName, paramTypes, true, allowEventBeanType, allowEventBeanType);
+                    clazz,
+                    methodName,
+                    paramTypes,
+                    true,
+                    allowEventBeanType,
+                    allowEventBeanType);
                 if (method == null) {
                     throw Convert(clazz, methodName, paramTypes, e, true);
                 }
@@ -203,27 +210,39 @@ namespace com.espertech.esper.common.@internal.settings
         /// <param name="className">is the class name to find</param>
         /// <param name="requireAnnotation">whether the class must be an annotation</param>
         /// <param name="forAnnotationUse">whether resolving class for use with annotations</param>
+        /// <param name="extension">for additional classes</param>
         /// <returns>class</returns>
-        /// <throws>ClassNotFoundException if the class cannot be loaded</throws>
+        /// <throws>TypeLoadException if the class cannot be loaded</throws>
         protected Type ResolveClassInternal(
             string className,
             bool requireAnnotation,
-            bool forAnnotationUse)
+            bool forAnnotationUse,
+            ExtensionClass extension)
         {
             if (forAnnotationUse) {
                 switch (className.ToLowerInvariant()) {
                     case "private":
+                    case "privateattribute":
                         return typeof(PrivateAttribute);
 
                     case "protected":
+                    case "protectedattribute":
                         return typeof(ProtectedAttribute);
 
                     case "public":
+                    case "publicattribute":
                         return typeof(PublicAttribute);
 
                     case "buseventtype":
+                    case "buseventtypeattribute":
                         return typeof(BusEventTypeAttribute);
                 }
+            }
+            
+            // attempt extension classes i.e. classes part of epl or otherwise not in classpath
+            var clazzExtension = extension.FindClassByName(className);
+            if (clazzExtension != null) {
+                return clazzExtension;
             }
 
             // Attempt to retrieve the class with the name as-is
@@ -276,6 +295,11 @@ namespace com.espertech.esper.common.@internal.settings
                         return clazz;
                     }
                 } // class not found with this import
+
+                // clazz = ClassForNameProvider.ClassForName();
+                // if ((clazz != null) && (!requireAnnotation || clazz.IsAttribute())) {
+                //     return clazz;
+                // }
             }
 
 #if false
@@ -401,27 +425,17 @@ namespace com.espertech.esper.common.@internal.settings
             var expected = TypeHelper.GetParameterAsString(paramTypes);
             var message = "Could not find ";
             if (!isInstance) {
-                message += "static ";
+                message += "static method ";
             }
             else {
-                message += "enumeration method, date-time method or instance ";
+                message += "enumeration method, date-time method, instance method or property ";
             }
 
             if (paramTypes.Length > 0) {
-                message += "method named '" +
-                           methodName +
-                           "' in class '" +
-                           clazz.CleanName() +
-                           "' with matching parameter number and expected parameter type(s) '" +
-                           expected +
-                           "'";
+                message += $"named '{methodName}' in class '{clazz.CleanName()}' with matching parameter number and expected parameter type(s) '{expected}'";
             }
             else {
-                message += "method named '" +
-                           methodName +
-                           "' in class '" +
-                           clazz.CleanName() +
-                           "' taking no parameters";
+                message += $"named '{methodName}' in class '{clazz.CleanName()}' taking no parameters";
             }
 
             if (e.NearestMissMethod != null) {

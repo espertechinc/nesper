@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.adder
 {
     public class TimePeriodAdderMSec : TimePeriodAdder
     {
-        public readonly static TimePeriodAdderMSec INSTANCE = new TimePeriodAdderMSec();
+        public static readonly TimePeriodAdderMSec INSTANCE = new TimePeriodAdderMSec();
 
         public double Compute(double value)
         {

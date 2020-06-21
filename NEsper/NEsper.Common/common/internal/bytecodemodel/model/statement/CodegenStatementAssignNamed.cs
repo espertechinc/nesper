@@ -12,34 +12,42 @@ using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
     public class CodegenStatementAssignNamed : CodegenStatementBase
     {
-        private readonly CodegenExpression assignment;
-        private readonly string @ref;
+        private readonly CodegenExpression _assignment;
+        private readonly CodegenExpression _lhs;
 
         public CodegenStatementAssignNamed(
-            string @ref,
+            CodegenExpression lhs,
             CodegenExpression assignment)
         {
-            this.@ref = @ref;
-
-            this.assignment = assignment ?? throw new ArgumentException("Assignment not provided");
+            _lhs = lhs;
+            _assignment = assignment ?? throw new ArgumentException("Assignment not provided");
         }
 
         public override void RenderStatement(
             StringBuilder builder,
             bool isInnerClass)
         {
-            builder.Append(@ref).Append("=");
-            assignment.Render(builder, isInnerClass, 1, new CodegenIndent(true));
+            var codegenIndent = new CodegenIndent(true);
+            _lhs.Render(builder, isInnerClass, 1, codegenIndent);
+            builder.Append('=');
+            _assignment.Render(builder, isInnerClass, 1, codegenIndent);
         }
 
         public override void MergeClasses(ISet<Type> classes)
         {
-            assignment.MergeClasses(classes);
+            _assignment.MergeClasses(classes);
+        }
+        
+        public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            consumer.Invoke(_lhs);
+            consumer.Invoke(_assignment);
         }
     }
 } // end of namespace

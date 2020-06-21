@@ -16,8 +16,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             int streamNum,
             string propertyName)
         {
-            this.StreamNum = streamNum;
-            this.PropertyName = propertyName;
+            StreamNum = streamNum;
+            PropertyName = propertyName;
             if (propertyName == null) {
                 throw new ArgumentException("Property name is null");
             }
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 return false;
             if (ReferenceEquals(this, obj))
                 return true;
-            if (obj.GetType() != this.GetType())
+            if (obj.GetType() != GetType())
                 return false;
             return Equals((ExprNodePropOrStreamPropDesc) obj);
         }

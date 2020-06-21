@@ -14,11 +14,10 @@ using com.espertech.esper.common.@internal.epl.@join.analyze;
 using com.espertech.esper.common.@internal.epl.@join.querygraph;
 using com.espertech.esper.common.@internal.epl.@join.queryplan;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.common.@internal.supportunit.@event;
 using com.espertech.esper.common.@internal.supportunit.util;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.container;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
@@ -45,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             Assert.AreEqual(2, plan.ExecNodeSpecs.Length);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetPlan()
         {
             OuterJoinDesc[] descList = {
@@ -66,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 true,
                 null,
                 null);
-            AssertPlan(plan);
+            AssertPlan(plan.Forge);
 
             plan = QueryPlanBuilder.GetPlan(
                 typesPerStream,
@@ -80,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 true,
                 null,
                 null);
-            AssertPlan(plan);
+            AssertPlan(plan.Forge);
 
             FilterExprAnalyzer.Analyze(SupportExprNodeFactory.GetInstance(container).MakeEqualsNode(), queryGraph, false);
             plan = QueryPlanBuilder.GetPlan(
@@ -95,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 true,
                 null,
                 null);
-            AssertPlan(plan);
+            AssertPlan(plan.Forge);
 
             plan = QueryPlanBuilder.GetPlan(
                 typesPerStream,
@@ -109,7 +108,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 true,
                 null,
                 null);
-            AssertPlan(plan);
+            AssertPlan(plan.Forge);
         }
     }
 } // end of namespace

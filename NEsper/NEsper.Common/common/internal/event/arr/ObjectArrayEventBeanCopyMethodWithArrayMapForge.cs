@@ -13,7 +13,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -25,19 +24,16 @@ namespace com.espertech.esper.common.@internal.@event.arr
     public class ObjectArrayEventBeanCopyMethodWithArrayMapForge : EventBeanCopyMethodForge
     {
         private readonly int[] arrayIndexes;
-        private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
         private readonly ObjectArrayEventType eventType;
         private readonly int[] mapIndexes;
 
         public ObjectArrayEventBeanCopyMethodWithArrayMapForge(
             ObjectArrayEventType eventType,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory,
             ISet<string> mapPropertiesToCopy,
             ISet<string> arrayPropertiesToCopy,
             IDictionary<string, int> propertiesIndexes)
         {
             this.eventType = eventType;
-            this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
 
             ISet<int> mapIndexesToCopy = new HashSet<int>();
             foreach (var prop in mapPropertiesToCopy) {

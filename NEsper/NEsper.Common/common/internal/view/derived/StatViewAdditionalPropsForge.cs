@@ -14,6 +14,8 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
+using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -22,15 +24,17 @@ using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUt
 namespace com.espertech.esper.common.@internal.view.derived
 {
     public class StatViewAdditionalPropsForge
-    {
+    {  
         private StatViewAdditionalPropsForge(
             string[] additionalProps,
             ExprNode[] additionalEvals,
-            Type[] additionalTypes)
+            Type[] additionalTypes,
+            DataInputOutputSerdeForge[] additionalSerdes)
         {
             AdditionalProps = additionalProps;
             AdditionalEvals = additionalEvals;
             AdditionalTypes = additionalTypes;
+            AdditionalSerdes = additionalSerdes;
         }
 
         public string[] AdditionalProps { get; }
@@ -39,11 +43,14 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         public Type[] AdditionalTypes { get; }
 
+        public DataInputOutputSerdeForge[] AdditionalSerdes { get; }
+
         public static StatViewAdditionalPropsForge Make(
             ExprNode[] validated,
             int startIndex,
             EventType parentEventType,
-            int streamNumber)
+            int streamNumber,
+            ViewForgeEnv viewForgeEnv)
         {
             if (validated.Length <= startIndex) {
                 return null;
@@ -52,6 +59,8 @@ namespace com.espertech.esper.common.@internal.view.derived
             IList<string> additionalProps = new List<string>();
             IList<ExprNode> lastValueForges = new List<ExprNode>();
             IList<Type> lastValueTypes = new List<Type>();
+            IList<DataInputOutputSerdeForge> lastSerdes = new List<DataInputOutputSerdeForge>();
+
             var copyAllProperties = false;
 
             for (var i = startIndex; i < validated.Length; i++) {
@@ -60,8 +69,10 @@ namespace com.espertech.esper.common.@internal.view.derived
                 }
                 else {
                     additionalProps.Add(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(validated[i]));
-                    lastValueTypes.Add(validated[i].Forge.EvaluationType);
+                    var evalType = validated[i].Forge.EvaluationType;
+                    lastValueTypes.Add(evalType);
                     lastValueForges.Add(validated[i]);
+                    lastSerdes.Add(viewForgeEnv.SerdeResolver.SerdeForDerivedViewAddProp(evalType, viewForgeEnv.StatementRawInfo));
                 }
             }
 
@@ -76,13 +87,15 @@ namespace com.espertech.esper.common.@internal.view.derived
                     lastValueForges.Add(
                         new ExprIdentNodeImpl(parentEventType, propertyDescriptor.PropertyName, streamNumber));
                     lastValueTypes.Add(type);
+                    lastSerdes.Add(viewForgeEnv.SerdeResolver.SerdeForDerivedViewAddProp(type, viewForgeEnv.StatementRawInfo));
                 }
             }
 
             var addPropsArr = additionalProps.ToArray();
             var valueExprArr = lastValueForges.ToArray();
             var typeArr = lastValueTypes.ToArray();
-            return new StatViewAdditionalPropsForge(addPropsArr, valueExprArr, typeArr);
+            var additionalForges = lastSerdes.ToArray();
+            return new StatViewAdditionalPropsForge(addPropsArr, valueExprArr, typeArr, additionalForges);
         }
 
         public static void AddCheckDupProperties(
@@ -113,8 +126,9 @@ namespace com.espertech.esper.common.@internal.view.derived
         {
             return NewInstance<StatViewAdditionalPropsEval>(
                 Constant(AdditionalProps),
-                CodegenEvaluators(AdditionalEvals, method, GetType(), classScope),
-                Constant(AdditionalTypes));
+                CodegenEvaluators(AdditionalEvals, method, this.GetType(), classScope),
+                Constant(AdditionalTypes),
+                DataInputOutputSerdeForgeExtensions.CodegenArray(AdditionalSerdes, method, classScope, null));
         }
     }
 } // end of namespace

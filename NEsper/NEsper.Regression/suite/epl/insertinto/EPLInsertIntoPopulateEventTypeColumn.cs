@@ -6,12 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
@@ -26,12 +26,48 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLInsertIntoTypableSubquery());
-            execs.Add(new EPLInsertIntoTypableNewOperatorDocSample());
-            execs.Add(new EPLInsertIntoTypableAndCaseNew(EventRepresentationChoice.MAP));
-            execs.Add(new EPLInsertIntoTypableAndCaseNew(EventRepresentationChoice.ARRAY));
-            execs.Add(new EPLInsertIntoInvalid());
+            WithTypableSubquery(execs);
+            WithTypableNewOperatorDocSample(execs);
+            WithTypableAndCaseNew(execs);
+            WithInvalid(execs);
+            WithEnumerationSubquery(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEnumerationSubquery(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoEnumerationSubquery());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTypableAndCaseNew(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoTypableAndCaseNew(EventRepresentationChoice.MAP));
+            execs.Add(new EPLInsertIntoTypableAndCaseNew(EventRepresentationChoice.OBJECTARRAY));
+            execs.Add(new EPLInsertIntoTypableAndCaseNew(EventRepresentationChoice.JSON));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTypableNewOperatorDocSample(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoTypableNewOperatorDocSample());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTypableSubquery(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoTypableSubquery());
             return execs;
         }
 
@@ -70,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.CompileDeploy("create " + typeType + " schema EventZero(e0_0 string, e0_1 string)", path);
             env.CompileDeploy("create " + typeType + " schema EventOne(ez EventZero)", path);
 
-            var fields = new [] { "ez.e0_0","ez.e0_1" };
+            var fields = new[] {"ez.e0_0", "ez.e0_1"};
             env.CompileDeploy(
                     "@Name('s0') insert into EventOne select " +
                     "(select P00 as e0_0, P01 as e0_1 from SupportBean_S0#lastevent" +
@@ -108,7 +144,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.CompileDeploy("create " + typeType + " schema EventZero(e0_0 string, e0_1 string)", path);
             env.CompileDeploy("create " + typeType + " schema EventOne(e1_0 string, ez EventZero[])", path);
 
-            var fields = new [] { "e1_0","ez[0].e0_0","ez[0].e0_1","ez[1].e0_0","ez[1].e0_1" };
+            var fields = new[] {"e1_0", "ez[0].e0_0", "ez[0].e0_1", "ez[1].e0_0", "ez[1].e0_1"};
             env.CompileDeploy(
                     "@Name('s0')" +
                     "expression thequery {" +
@@ -148,7 +184,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.CompileDeploy("create " + typeType + " schema EventZero(e0_0 string, e0_1 string)", path);
             env.CompileDeploy("create " + typeType + " schema EventOne(ez EventZero[])", path);
 
-            var fields = new [] { "e0_0" };
+            var fields = new[] {"e0_0"};
             env.CompileDeploy(
                     "@Name('s0') insert into EventOne select " +
                     "(select P00 as e0_0, P01 as e0_1 from SupportBean_S0#keepall where Id between 10 and 20) as ez " +
@@ -182,7 +218,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             var path = new RegressionPath();
             env.CompileDeploy("create " + typeType + " schema EventOne(sbarr SupportBean_S0[])", path);
 
-            var fields = new [] { "P00" };
+            var fields = new[] {"P00"};
             env.CompileDeploy(
                     "@Name('s0') insert into EventOne select " +
                     "(select * from SupportBean_S0#keepall " +
@@ -219,7 +255,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             var path = new RegressionPath();
             env.CompileDeploy("create " + typeType + " schema EventOne(sb SupportBean_S0)", path);
 
-            var fields = new [] { "sb.P00" };
+            var fields = new[] {"sb.P00"};
             env.CompileDeploy(
                     "@Name('s0') insert into EventOne select " +
                     "(select * from SupportBean_S0#length(2) " +
@@ -241,9 +277,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 Assert.AreEqual("x2", received);
             }
             else {
-                if (!received.Equals("x1") && !received.Equals("x2")) {
-                    Assert.Fail();
-                }
+                Assert.IsNull(received); // this should not take the first event and according to SQL standard returns null
             }
 
             env.UndeployAll();
@@ -266,7 +300,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
             EPAssertionUtil.AssertProps(
                 @event,
-                new [] { "OrderId","items[0].name","items[0].Price" },
+                new[] {"OrderId", "items[0].name", "items[0].Price"},
                 new object[] {"001", "i1", 10d});
 
             var underlying = (EventBean[]) @event.Get("items");
@@ -336,14 +370,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy(
-                    "create " + representation.GetOutputTypeCreateSchemaName() + " schema Nested(p0 string, p1 int)",
-                    path);
-                env.CompileDeploy(
-                    "create " + representation.GetOutputTypeCreateSchemaName() + " schema OuterType(n0 Nested)",
-                    path);
+                env.CompileDeploy(representation.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedNested>() + "create schema Nested(p0 string, p1 int)", path);
+                env.CompileDeploy(representation.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedOuterType>() + "create schema OuterType(n0 Nested)", path);
 
-                var fields = new [] { "n0.p0","n0.p1" };
+                var fields = new[] {"n0.p0", "n0.p1"};
                 env.CompileDeploy(
                         "@Name('out') " +
                         "expression computeNested {\n" +
@@ -388,7 +418,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     path,
                     "insert into TypeOne select (select * from SupportBean_S0#keepall) as sbs from SupportBean_S1",
                     "Incompatible type detected attempting to insert into column 'sbs' type '" +
-                    typeof(SupportBean).Name +
+                    typeof(SupportBean).FullName +
                     "' compared to selected type 'SupportBean_S0'");
 
                 env.CompileDeploy("create schema TypeTwo(sbs SupportBean)", path);
@@ -397,7 +427,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     path,
                     "insert into TypeTwo select (select * from SupportBean_S0#keepall) as sbs from SupportBean_S1",
                     "Incompatible type detected attempting to insert into column 'sbs' type '" +
-                    typeof(SupportBean).Name +
+                    typeof(SupportBean).FullName +
                     "' compared to selected type 'SupportBean_S0'");
 
                 // typable - selected column type is incompatible
@@ -416,6 +446,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 env.UndeployAll();
             }
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedNested
+        {
+            public String p0;
+            public int p1;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedOuterType
+        {
+            public MyLocalJsonProvidedNested n0;
         }
     }
 } // end of namespace

@@ -8,7 +8,6 @@
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
@@ -62,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.CompileDeploy(epl, path);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
                 env.GetEnumerator("s0"),
-                new [] { "pKey0","pkey1","c0" },
+                new[] {"pKey0", "pkey1", "c0"},
                 new[] {new object[] {"E1", 10, 100L}, new object[] {"E2", 20, 200L}});
             env.UndeployModuleContaining("s0");
         }
@@ -92,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             for (var i = 0; i < 2; i++) {
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("s0"),
-                    new [] { "pKey0","thecnt" },
+                    new[] {"pKey0", "thecnt"},
                     new[] {new object[] {"E1", 2L}, new object[] {"E2", 2L}});
             }
 
@@ -111,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             for (var i = 0; i < 2; i++) {
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("s0"),
-                    new [] { "pKey0","thecnt" },
+                    new[] {"pKey0", "thecnt"},
                     new[] {new object[] {"E1", 1L}, new object[] {"E2", 1L}});
             }
 
@@ -130,7 +129,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             for (var i = 0; i < 2; i++) {
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("s0"),
-                    new [] { "pKey0","pkey1","thecnt" },
+                    new[] {"pKey0", "pkey1", "thecnt"},
                     new[] {new object[] {"E1", 10, 1L}, new object[] {"E2", 20, 1L}});
             }
 
@@ -149,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             for (var i = 0; i < 2; i++) {
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("s0"),
-                    new [] { "pKey0","pkey1","thecnt" },
+                    new[] {"pKey0", "pkey1", "thecnt"},
                     new[] {
                         new object[] {"E1", 10, 1L},
                         new object[] {"E2", 20, 1L},

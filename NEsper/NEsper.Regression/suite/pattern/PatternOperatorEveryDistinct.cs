@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
 
@@ -25,22 +26,142 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new PatternEveryDistinctSimple());
-            execs.Add(new PatternEveryDistinctWTime());
-            execs.Add(new PatternExpireSeenBeforeKey());
-            execs.Add(new PatternEveryDistinctOverFilter());
-            execs.Add(new PatternRepeatOverDistinct());
-            execs.Add(new PatternTimerWithinOverDistinct());
-            execs.Add(new PatternEveryDistinctOverRepeat());
-            execs.Add(new PatternEveryDistinctOverTimerWithin());
-            execs.Add(new PatternEveryDistinctOverAnd());
-            execs.Add(new PatternEveryDistinctOverOr());
-            execs.Add(new PatternEveryDistinctOverNot());
-            execs.Add(new PatternEveryDistinctOverFollowedBy());
-            execs.Add(new PatternEveryDistinctWithinFollowedBy());
-            execs.Add(new PatternFollowedByWithDistinct());
-            execs.Add(new PatternInvalid());
+            WithEveryDistinctSimple(execs);
+            WithEveryDistinctWTime(execs);
+            WithExpireSeenBeforeKey(execs);
+            WithEveryDistinctOverFilter(execs);
+            WithRepeatOverDistinct(execs);
+            WithTimerWithinOverDistinct(execs);
+            WithEveryDistinctOverRepeat(execs);
+            WithEveryDistinctOverTimerWithin(execs);
+            WithEveryDistinctOverAnd(execs);
+            WithEveryDistinctOverOr(execs);
+            WithEveryDistinctOverNot(execs);
+            WithEveryDistinctOverFollowedBy(execs);
+            WithEveryDistinctWithinFollowedBy(execs);
+            WithFollowedByWithDistinct(execs);
+            WithInvalid(execs);
+            WithMonthScoped(execs);
+            WithEveryDistinctMultikeyWArray(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEveryDistinctMultikeyWArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternEveryDistinctMultikeyWArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMonthScoped(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new PatternMonthScoped());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFollowedByWithDistinct(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternFollowedByWithDistinct());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEveryDistinctWithinFollowedBy(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternEveryDistinctWithinFollowedBy());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEveryDistinctOverFollowedBy(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternEveryDistinctOverFollowedBy());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEveryDistinctOverNot(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternEveryDistinctOverNot());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEveryDistinctOverOr(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternEveryDistinctOverOr());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEveryDistinctOverAnd(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternEveryDistinctOverAnd());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEveryDistinctOverTimerWithin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternEveryDistinctOverTimerWithin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEveryDistinctOverRepeat(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternEveryDistinctOverRepeat());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimerWithinOverDistinct(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternTimerWithinOverDistinct());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRepeatOverDistinct(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternRepeatOverDistinct());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEveryDistinctOverFilter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternEveryDistinctOverFilter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithExpireSeenBeforeKey(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternExpireSeenBeforeKey());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEveryDistinctWTime(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternEveryDistinctWTime());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEveryDistinctSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternEveryDistinctSimple());
             return execs;
         }
 
@@ -81,11 +202,45 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             env.SendEventBean(new SupportBean(@string, 0));
         }
 
+        public class PatternEveryDistinctMultikeyWArray : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.CompileDeploy("@Name('s0') select * from pattern[every-distinct(a.Array) a=SupportEventWithIntArray]");
+                env.AddListener("s0");
+
+                SendAssertReceived(env, "E1", new int[] {1, 2}, true);
+                SendAssertReceived(env, "E2", new int[] {1, 2}, false);
+                SendAssertReceived(env, "E3", new int[] {1}, true);
+                SendAssertReceived(env, "E4", new int[] { }, true);
+                SendAssertReceived(env, "E5", null, true);
+
+                env.Milestone(0);
+
+                SendAssertReceived(env, "E10", new int[] {1, 2}, false);
+                SendAssertReceived(env, "E11", new int[] {1}, false);
+                SendAssertReceived(env, "E12", new int[] { }, false);
+                SendAssertReceived(env, "E13", null, false);
+
+                env.UndeployAll();
+            }
+
+            private void SendAssertReceived(
+                RegressionEnvironment env,
+                string id,
+                int[] array,
+                bool received)
+            {
+                env.SendEventBean(new SupportEventWithIntArray(id, array));
+                Assert.AreEqual(received, env.Listener("s0").GetAndClearIsInvoked());
+            }
+        }
+
         public class PatternEveryDistinctSimple : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0" };
+                var fields = new[] {"c0"};
 
                 var epl =
                     "@Name('s0') select a.TheString as c0 from pattern [every-distinct(a.TheString) a=SupportBean]";
@@ -136,7 +291,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0" };
+                var fields = new[] {"c0"};
 
                 env.AdvanceTime(0);
                 var epl =
@@ -215,7 +370,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("A1", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString" },
+                    new[] {"a.TheString"},
                     new object[] {"A1"});
 
                 env.Milestone(1);
@@ -228,7 +383,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("A3", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString" },
+                    new[] {"a.TheString"},
                     new object[] {"A3"});
 
                 env.Milestone(3);
@@ -244,12 +399,12 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("A4", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString" },
+                    new[] {"a.TheString"},
                     new object[] {"A4"});
                 env.SendEventBean(new SupportBean("A5", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString" },
+                    new[] {"a.TheString"},
                     new object[] {"A5"});
 
                 env.Milestone(5);
@@ -265,7 +420,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("A7", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString" },
+                    new[] {"a.TheString"},
                     new object[] {"A7"});
 
                 env.UndeployAll();
@@ -597,7 +752,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B1", 10));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString","b.TheString" },
+                    new[] {"a.TheString", "b.TheString"},
                     new object[] {"A1", "B1"});
 
                 env.MilestoneInc(milestone);
@@ -613,14 +768,14 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B3", 10));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString","b.TheString" },
+                    new[] {"a.TheString", "b.TheString"},
                     new object[] {"A3", "B3"});
 
                 env.SendEventBean(new SupportBean("A4", 1));
                 env.SendEventBean(new SupportBean("B4", 20));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString","b.TheString" },
+                    new[] {"a.TheString", "b.TheString"},
                     new object[] {"A4", "B4"});
 
                 env.MilestoneInc(milestone);
@@ -635,7 +790,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B6", 20));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString","b.TheString" },
+                    new[] {"a.TheString", "b.TheString"},
                     new object[] {"A6", "B6"});
 
                 env.MilestoneInc(milestone);
@@ -675,7 +830,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("A1", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString","b.TheString" },
+                    new[] {"a.TheString", "b.TheString"},
                     new object[] {"A1", null});
 
                 env.MilestoneInc(milestone);
@@ -683,7 +838,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B1", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString","b.TheString" },
+                    new[] {"a.TheString", "b.TheString"},
                     new object[] {null, "B1"});
 
                 env.MilestoneInc(milestone);
@@ -699,7 +854,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B4", 3));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString","b.TheString" },
+                    new[] {"a.TheString", "b.TheString"},
                     new object[] {null, "B4"});
 
                 env.MilestoneInc(milestone);
@@ -707,7 +862,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B5", 4));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString","b.TheString" },
+                    new[] {"a.TheString", "b.TheString"},
                     new object[] {null, "B5"});
 
                 env.MilestoneInc(milestone);
@@ -748,7 +903,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("A1", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString" },
+                    new[] {"a.TheString"},
                     new object[] {"A1"});
 
                 env.MilestoneInc(milestone);
@@ -761,7 +916,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("A3", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString" },
+                    new[] {"a.TheString"},
                     new object[] {"A3"});
 
                 env.MilestoneInc(milestone);
@@ -774,7 +929,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("A4", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString" },
+                    new[] {"a.TheString"},
                     new object[] {"A4"});
 
                 env.MilestoneInc(milestone);
@@ -815,7 +970,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B1", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString","b.TheString" },
+                    new[] {"a.TheString", "b.TheString"},
                     new object[] {"A1", "B1"});
 
                 env.MilestoneInc(milestone);
@@ -839,7 +994,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B4", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString","b.TheString" },
+                    new[] {"a.TheString", "b.TheString"},
                     new object[] {"A4", "B4"});
 
                 env.SendEventBean(new SupportBean("A5", 3));
@@ -880,7 +1035,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B2", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString","b.TheString" },
+                    new[] {"a.TheString", "b.TheString"},
                     new object[] {"A1", "B2"});
 
                 env.MilestoneInc(milestone);
@@ -895,7 +1050,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B3", 3));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString","b.TheString" },
+                    new[] {"a.TheString", "b.TheString"},
                     new object[] {"A3", "B3"});
 
                 env.MilestoneInc(milestone);
@@ -908,7 +1063,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B5", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString","b.TheString" },
+                    new[] {"a.TheString", "b.TheString"},
                     new object[] {"A2", "B5"});
 
                 env.SendEventBean(new SupportBean("A5", 2));
@@ -921,7 +1076,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B7", 4));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString","b.TheString" },
+                    new[] {"a.TheString", "b.TheString"},
                     new object[] {"A6", "B7"});
 
                 env.UndeployAll();
@@ -959,12 +1114,12 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B1", 0));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString","b.TheString" },
+                    new[] {"a.TheString", "b.TheString"},
                     new object[] {"A1", "B1"});
                 env.SendEventBean(new SupportBean("B2", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString","b.TheString" },
+                    new[] {"a.TheString", "b.TheString"},
                     new object[] {"A1", "B2"});
 
                 env.MilestoneInc(milestone);
@@ -979,7 +1134,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B4", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString","b.TheString" },
+                    new[] {"a.TheString", "b.TheString"},
                     new object[] {"A1", "B4"});
 
                 env.MilestoneInc(milestone);
@@ -988,7 +1143,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("B5", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.TheString","b.TheString" },
+                    new[] {"a.TheString", "b.TheString"},
                     new object[] {"A3", "B5"});
 
                 env.MilestoneInc(milestone);
@@ -1002,7 +1157,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var events = env.Listener("s0").GetAndResetLastNewData();
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     events,
-                    new [] { "a.TheString","b.TheString" },
+                    new[] {"a.TheString", "b.TheString"},
                     new[] {
                         new object[] {"A1", "B7"},
                         new object[] {"A3", "B7"}
@@ -1037,7 +1192,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "a.TheString","a.IntPrimitive" };
+                var fields = new[] {"a.TheString", "a.IntPrimitive"};
 
                 SendCurrentTime(env, "2002-02-01T09:00:00.000");
                 var epl = "@Name('s0') select * from pattern [every-distinct(TheString, 1 month) a=SupportBean]";

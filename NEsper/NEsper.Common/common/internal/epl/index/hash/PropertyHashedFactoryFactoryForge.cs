@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.join.queryplan;
@@ -28,7 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
         private readonly CoercionDesc hashCoercionDesc;
         private readonly string[] indexedProps;
         private readonly bool unique;
-
+        private readonly MultiKeyClassRef multiKeyClassRef;
+        
         public PropertyHashedFactoryFactoryForge(
             int indexedStreamNum,
             int? subqueryNum,
@@ -36,13 +38,15 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             string[] indexedProps,
             EventType eventType,
             bool unique,
-            CoercionDesc hashCoercionDesc)
+            CoercionDesc hashCoercionDesc,
+            MultiKeyClassRef multiKeyClassRef)
             : base(indexedStreamNum, subqueryNum, isFireAndForget)
         {
             this.indexedProps = indexedProps;
             this.eventType = eventType;
             this.unique = unique;
             this.hashCoercionDesc = hashCoercionDesc;
+            this.multiKeyClassRef = multiKeyClassRef;
         }
 
         public override Type EventTableClass =>
@@ -64,15 +68,19 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             @params.Add(Constant(unique));
             var propertyTypes = EventTypeUtility.GetPropertyTypes(eventType, indexedProps);
             var getters = EventTypeUtility.GetGetters(eventType, indexedProps);
-            var getter = EventTypeUtility.CodegenGetterMayMultiKeyWCoerce(
+            var getter = MultiKeyCodegen.CodegenGetterMayMultiKey(
                 eventType,
                 getters,
                 propertyTypes,
                 hashCoercionDesc.CoercionTypes,
+                multiKeyClassRef,
                 method,
-                GetType(),
                 classScope);
+
             @params.Add(getter);
+            @params.Add(ConstantNull()); // no fire-and-forget transform for subqueries
+            @params.Add(multiKeyClassRef.GetExprMKSerde(method, classScope));
+
             return @params;
         }
 

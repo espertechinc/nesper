@@ -59,7 +59,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                 }
             }
             catch (Exception ex) {
-                log.Error("Error in thread " + threadNum, ex);
+                Console.WriteLine("Error in thread " + threadNum, ex);
                 return false;
             }
 

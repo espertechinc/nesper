@@ -23,8 +23,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         MOSTFREQUENT,
         LEASTFREQUENT,
         SELECTFROM,
-        FIRST,
-        LAST,
+        ARRAYOF,
+        FIRSTOF,
+        LASTOF,
         MINBY,
         MAXBY,
         TAKE,
@@ -33,13 +34,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         TAKEWHILELAST,
         ORDERBY,
         ORDERBYDESC,
-        DISTINCT,
+        DISTINCTOF,
         WHERE,
         UNION,
         EXCEPT,
         INTERSECT,
         REVERSE,
-        NOOP,
-        SEQUENCE_EQUAL
+        ESPERINTERNALNOOP,
+        SEQUENCEEQUAL,
+        PLUGIN
     }
 } // end of namespace

@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 
@@ -15,7 +13,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.adder
 {
     public class TimePeriodAdderSecond : TimePeriodAdder
     {
-        public readonly static TimePeriodAdderSecond INSTANCE = new TimePeriodAdderSecond();
+        public static readonly TimePeriodAdderSecond INSTANCE = new TimePeriodAdderSecond();
 
         public double Compute(double value)
         {

@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
@@ -30,25 +31,167 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+            WithTableAccessCoreUnGroupedWindowAndSum(execs);
+            WithIntegerIndexedPropertyLookAlike(execs);
+            WithFilterBehavior(execs);
+            WithExprSelectClauseRenderingUnnamedCol(execs);
+            WithTopLevelReadGrouped2Keys(execs);
+            WithTopLevelReadUnGrouped(execs);
+            WithExpressionAliasAndDecl(execs);
+            WithGroupedTwoKeyNoContext(execs);
+            WithGroupedThreeKeyNoContext(execs);
+            WithGroupedSingleKeyNoContext(execs);
+            WithUngroupedWContext(execs);
+            WithOrderOfAggregationsAndPush(execs);
+            WithMultiStmtContributing(execs);
+            WithGroupedMixedMethodAndAccess(execs);
+            WithNamedWindowAndFireAndForget(execs);
+            WithSubquery(execs);
+            WithOnMergeExpressions(execs);
+            WithTableAccessCoreSplitStream(execs);
+            WithTableAccessMultikeyWArrayOneArrayKey(execs);
+            WithTableAccessMultikeyWArrayTwoArrayKey(execs);
 
-            execs.Add(new InfraTableAccessCoreUnGroupedWindowAndSum());
-            execs.Add(new InfraIntegerIndexedPropertyLookAlike());
-            execs.Add(new InfraFilterBehavior());
-            execs.Add(new InfraExprSelectClauseRenderingUnnamedCol());
-            execs.Add(new InfraTopLevelReadGrouped2Keys());
-            execs.Add(new InfraTopLevelReadUnGrouped());
-            execs.Add(new InfraExpressionAliasAndDecl());
-            execs.Add(new InfraGroupedTwoKeyNoContext());
-            execs.Add(new InfraGroupedThreeKeyNoContext());
-            execs.Add(new InfraGroupedSingleKeyNoContext());
-            execs.Add(new InfraUngroupedWContext());
-            execs.Add(new InfraOrderOfAggregationsAndPush());
-            execs.Add(new InfraMultiStmtContributing());
-            execs.Add(new InfraGroupedMixedMethodAndAccess());
-            execs.Add(new InfraNamedWindowAndFireAndForget());
-            execs.Add(new InfraSubquery());
-            execs.Add(new InfraOnMergeExpressions());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTableAccessMultikeyWArrayTwoArrayKey(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraTableAccessMultikeyWArrayTwoArrayKey());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTableAccessMultikeyWArrayOneArrayKey(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraTableAccessMultikeyWArrayOneArrayKey());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTableAccessCoreSplitStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraTableAccessCoreSplitStream());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOnMergeExpressions(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraOnMergeExpressions());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubquery(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraSubquery());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedWindowAndFireAndForget(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraNamedWindowAndFireAndForget());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupedMixedMethodAndAccess(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraGroupedMixedMethodAndAccess());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMultiStmtContributing(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraMultiStmtContributing());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOrderOfAggregationsAndPush(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraOrderOfAggregationsAndPush());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUngroupedWContext(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraUngroupedWContext());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupedSingleKeyNoContext(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraGroupedSingleKeyNoContext());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupedThreeKeyNoContext(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraGroupedThreeKeyNoContext());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupedTwoKeyNoContext(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraGroupedTwoKeyNoContext());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithExpressionAliasAndDecl(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraExpressionAliasAndDecl());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTopLevelReadUnGrouped(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraTopLevelReadUnGrouped());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTopLevelReadGrouped2Keys(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraTopLevelReadGrouped2Keys());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithExprSelectClauseRenderingUnnamedCol(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraExprSelectClauseRenderingUnnamedCol());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFilterBehavior(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraFilterBehavior());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIntegerIndexedPropertyLookAlike(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraIntegerIndexedPropertyLookAlike());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTableAccessCoreUnGroupedWindowAndSum(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraTableAccessCoreUnGroupedWindowAndSum());
             return execs;
         }
 
@@ -82,7 +225,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                             "varMyAgg[P00].c3 as c3" +
                             " from SupportBean_S0";
             env.CompileDeploy(soda, eplSelect, path).AddListener("s0");
-            var fields = new [] { "c0", "c1", "c2", "c3" };
+            var fields = new[] {"c0", "c1", "c2", "c3"};
 
             var eventType = env.Statement("s0").EventType;
             Assert.AreEqual(typeof(long?), eventType.GetPropertyType("c0"));
@@ -135,10 +278,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             SendEventsAndAssert(env, "C", 30, "A", 21);
             SendEventsAndAssert(env, "D", 40, "C", 30);
 
-            var fields = new [] { "c0", "c1" };
+            var fields = new[] {"c0", "c1"};
             int[] expected = {21, 41, 30, 40};
             var count = 0;
-            foreach (var p00 in new [] { "A","B","C","D" }) {
+            foreach (var p00 in new[] {"A", "B", "C", "D"}) {
                 env.SendEventBean(new SupportBean_S0(0, p00));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -161,7 +304,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             string p00,
             int total)
         {
-            var fields = new [] { "c0", "c1" };
+            var fields = new[] {"c0", "c1"};
             env.SendEventBean(new SupportBean(theString, intPrimitive));
             env.SendEventBean(new SupportBean_S0(0, p00));
             EPAssertionUtil.AssertProps(
@@ -260,7 +403,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                              ")";
             env.CompileDeploy(eplDeclare, path);
 
-            var fieldsTable = new [] { "sumint","sumlong","mywindow","mysort" };
+            var fieldsTable = new[] {"sumint", "sumlong", "mywindow", "mysort"};
             var eplSelect = "@Name('into') into table varaggOOA select " +
                             "sum(LongPrimitive) as sumlong, " +
                             "sum(IntPrimitive) as sumint, " +
@@ -270,7 +413,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                             (ungrouped ? "" : "group by TheString ");
             env.CompileDeploy(eplSelect, path).AddListener("into");
 
-            var fieldsSelect = new [] { "c0", "c1", "c2", "c3" };
+            var fieldsSelect = new[] {"c0", "c1", "c2", "c3"};
             var groupKey = ungrouped ? "" : "['E1']";
             env.CompileDeploy(
                     "@Name('s0') select " +
@@ -346,6 +489,106 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.UndeployAll();
         }
 
+        internal class InfraTableAccessMultikeyWArrayTwoArrayKey : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "create table MyTable(k1 int[primitive] primary key, k2 int[primitive] primary key, value int);\n" +
+                             "insert into MyTable select IntOne as k1, IntTwo as k2, Value as value from SupportEventWithManyArray(Id = 'I');\n" +
+                             "@Name('s0') select MyTable[IntOne, IntTwo].value as c0 from SupportEventWithManyArray(Id = 'Q');\n" +
+                             "@Name('s1') select MyTable.keys() as keys from SupportBean;\n";
+                env.CompileDeploy(epl).AddListener("s0").AddListener("s1");
+
+                SendManyArrayI(env, new int[] {1, 2}, new int[] {1, 2}, 10);
+                SendManyArrayI(env, new int[] {1, 3}, new int[] {1, 1}, 20);
+                SendManyArrayI(env, new int[] {1, 2}, new int[] {1, 1}, 30);
+
+                env.Milestone(0);
+
+                SendManyArrayQAssert(env, new int[] {1, 2}, new int[] {1, 2}, 10);
+                SendManyArrayQAssert(env, new int[] {1, 2}, new int[] {1, 1}, 30);
+                SendManyArrayQAssert(env, new int[] {1, 3}, new int[] {1, 1}, 20);
+                SendManyArrayQAssert(env, new int[] {1, 2}, new int[] {1, 2, 2}, null);
+
+                env.SendEventBean(new SupportBean());
+                object[] keys = (object[]) env.Listener("s1").AssertOneGetNewAndReset().Get("keys");
+                EPAssertionUtil.AssertEqualsAnyOrder(
+                    keys,
+                    new object[] {
+                        new object[] {new int[] {1, 2}, new int[] {1, 2}},
+                        new object[] {new int[] {1, 3}, new int[] {1, 1}},
+                        new object[] {new int[] {1, 2}, new int[] {1, 1}},
+                    });
+
+                env.UndeployAll();
+            }
+
+            private void SendManyArrayQAssert(
+                RegressionEnvironment env,
+                int[] arrayOne,
+                int[] arrayTwo,
+                int? expected)
+            {
+                env.SendEventBean(new SupportEventWithManyArray("Q").WithIntOne(arrayOne).WithIntTwo(arrayTwo));
+                Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+            }
+
+            private void SendManyArrayI(
+                RegressionEnvironment env,
+                int[] arrayOne,
+                int[] arrayTwo,
+                int value)
+            {
+                env.SendEventBean(new SupportEventWithManyArray("I").WithIntOne(arrayOne).WithIntTwo(arrayTwo).WithValue(value));
+            }
+        }
+
+        internal class InfraTableAccessMultikeyWArrayOneArrayKey : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "create table MyTable(k int[primitive] primary key, value int);\n" +
+                             "insert into MyTable select IntOne as k, Value as value from SupportEventWithManyArray(Id = 'I');\n" +
+                             "@Name('s0') select MyTable[IntOne].value as c0 from SupportEventWithManyArray(Id = 'Q');\n" +
+                             "@Name('s1') select MyTable.keys() as keys from SupportBean;\n";
+                env.CompileDeploy(epl).AddListener("s0").AddListener("s1");
+
+                SendManyArrayI(env, new int[] {1, 2}, 10);
+                SendManyArrayI(env, new int[] {2, 1}, 20);
+                SendManyArrayI(env, new int[] {1, 2, 1}, 30);
+
+                env.Milestone(0);
+
+                SendManyArrayQAssert(env, new int[] {1, 2}, 10);
+                SendManyArrayQAssert(env, new int[] {1, 2, 1}, 30);
+                SendManyArrayQAssert(env, new int[] {2, 1}, 20);
+                SendManyArrayQAssert(env, new int[] {1, 2, 2}, null);
+
+                env.SendEventBean(new SupportBean());
+                object[] keys = (object[]) env.Listener("s1").AssertOneGetNewAndReset().Get("keys");
+                EPAssertionUtil.AssertEqualsAnyOrder(keys, new object[] {new int[] {2, 1}, new int[] {1, 2}, new int[] {1, 2, 1}});
+
+                env.UndeployAll();
+            }
+
+            private void SendManyArrayQAssert(
+                RegressionEnvironment env,
+                int[] arrayOne,
+                int? expected)
+            {
+                env.SendEventBean(new SupportEventWithManyArray("Q").WithIntOne(arrayOne));
+                Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+            }
+
+            private void SendManyArrayI(
+                RegressionEnvironment env,
+                int[] arrayOne,
+                int value)
+            {
+                env.SendEventBean(new SupportEventWithManyArray("I").WithIntOne(arrayOne).WithValue(value));
+            }
+        }
+
         internal class InfraIntegerIndexedPropertyLookAlike : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -365,6 +608,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 Assert.AreEqual(
                     StatementType.CREATE_TABLE,
                     env.Statement("infra").GetProperty(StatementProperty.STATEMENTTYPE));
+                Assert.AreEqual(
+                    "varaggIIP",
+                    env.Statement("infra").GetProperty(StatementProperty.CREATEOBJECTNAME));
 
                 var eplInto =
                     "into table varaggIIP select window(*) as myevents from SupportBean#length(3) group by IntPrimitive";
@@ -442,6 +688,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     new object[] {"varaggESC[P00].theEvents.last(*)", typeof(SupportBean)},
                     new object[] {"varaggESC[P00].theEvents.window(*).take(1)", typeof(ICollection<object>)}
                 };
+
                 SupportEventTypeAssertionUtil.AssertEventTypeProperties(
                     expectedAggType,
                     env.Statement("s0").EventType,
@@ -495,7 +742,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 object[] e1 = {10, "G1", 100};
                 env.SendEventObjectArray(e1, "MyEventOA");
 
-                var fieldsInner = new [] { "Thewindow","Thetotal" };
+                var fieldsInner = new[] {"Thewindow", "Thetotal"};
                 env.SendEventBean(new SupportBean_S0(10, "G1"));
                 EPAssertionUtil.AssertPropsMap(
                     (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("Val0"),
@@ -541,7 +788,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean_S0(0));
                 EPAssertionUtil.AssertProps(
                     env.Listener("i1").AssertOneGetNewAndReset(),
-                    new [] { "Val0.Thewindow","Val0.Thetotal" },
+                    new[] {"Val0.Thewindow", "Val0.Thetotal"},
                     new object[] {new[] {e2, e3}, 500});
 
                 env.UndeployAll();
@@ -581,7 +828,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.SendEventObjectArray(e1, "MyEventOATLRU");
 
-                var fieldsInner = new [] { "Thewindow","Thetotal" };
+                var fieldsInner = new[] {"Thewindow", "Thetotal"};
                 env.SendEventBean(new SupportBean_S0(0));
                 EPAssertionUtil.AssertPropsMap(
                     (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("Val0"),
@@ -623,7 +870,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean_S0(2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "Val0.Thewindow","Val0.Thetotal" },
+                    new[] {"Val0.Thewindow", "Val0.Thetotal"},
                     new object[] {new[] {e2, e3}, 50});
 
                 env.UndeployAll();
@@ -664,7 +911,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean_S0(0, "E2"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "c0" },
+                    new[] {"c0"},
                     new object[] {2});
 
                 env.UndeployAll();
@@ -689,7 +936,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean_S0(0, "E2"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "c0" },
+                    new[] {"c0"},
                     new object[] {2});
 
                 env.UndeployAll();
@@ -758,7 +1005,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 MakeSendBean(env, "E1", 10, 100);
 
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
                 env.SendEventBean(new SupportBean_S0(10, "E1"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -796,7 +1043,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                               "from SupportBean group by TheString, IntPrimitive, LongPrimitive";
                 env.CompileDeploy(eplBind, path);
 
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
                 var eplUse =
                     "@Name('s0') select varTotalG3K[P00, Id, 100L].total as c0, varTotalG3K[P00, Id, 100L].cnt as c1 from SupportBean_S0";
                 env.CompileDeploy(eplUse, path).AddListener("s0");
@@ -929,7 +1176,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 string c0,
                 int total)
             {
-                var fields = new [] { "c0","total" };
+                var fields = new[] {"c0", "total"};
                 EPAssertionUtil.AssertProps(
                     listener.AssertOneGetNewAndReset(),
                     fields,
@@ -955,7 +1202,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                                  ")";
                 env.CompileDeploy(eplDeclare, path);
 
-                var fieldsSelect = new [] { "c0", "c1", "c2", "c3", "c4", "c5" };
+                var fieldsSelect = new[] {"c0", "c1", "c2", "c3", "c4", "c5"};
                 var eplSelectUngrouped = "@Name('s0') select varaggMSC.s0sum as c0, varaggMSC.s0cnt as c1," +
                                          "varaggMSC.s0win as c2, varaggMSC.s1sum as c3, varaggMSC.s1cnt as c4," +
                                          "varaggMSC.s1win as c5 from SupportBean";
@@ -965,13 +1212,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "varaggMSC[TheString].s1win as c5 from SupportBean";
                 env.CompileDeploy(grouped ? eplSelectGrouped : eplSelectUngrouped, path).AddListener("s0");
 
-                var fieldsOne = new [] { "s0sum","s0cnt","s0win" };
+                var fieldsOne = new[] {"s0sum", "s0cnt", "s0win"};
                 var eplBindOne =
                     "@Name('s1') into table varaggMSC select sum(Id) as s0sum, count(*) as s0cnt, window(*) as s0win from SupportBean_S0#length(2) " +
                     (grouped ? "group by P00" : "");
                 env.CompileDeploy(eplBindOne, path).AddListener("s1");
 
-                var fieldsTwo = new [] { "s1sum","s1cnt","s1win" };
+                var fieldsTwo = new[] {"s1sum", "s1cnt", "s1win"};
                 var eplBindTwo =
                     "@Name('s2') into table varaggMSC select sum(Id) as s1sum, count(*) as s1cnt, window(*) as s1win from SupportBean_S1#length(2) " +
                     (grouped ? "group by P10" : "");
@@ -1123,7 +1370,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     path);
                 EPAssertionUtil.AssertProps(
                     resultInsert.Array[0],
-                    new [] { "TheString","IntPrimitive" },
+                    new[] {"TheString", "IntPrimitive"},
                     new object[] {"A", 20});
 
                 env.UndeployAll();
@@ -1248,7 +1495,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.Milestone(0);
 
-                var fieldsInner = new [] { "Thewindow","Thetotal" };
+                var fieldsInner = new[] {"Thewindow", "Thetotal"};
                 env.SendEventBean(new SupportBean_S0(0));
                 EPAssertionUtil.AssertPropsMap(
                     (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("Val0"),

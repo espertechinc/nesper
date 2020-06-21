@@ -8,9 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 using NUnit.Framework;
 
 namespace com.espertech.esper.common.@internal.epl.join.rep
@@ -30,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
             emptyIterator = CreateSingleCursor(null);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestNext()
         {
             Assert.That(filledIterator.MoveNext(), Is.True);
@@ -43,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
             //Assert.That(() => emptyIterator.Current, Throws.InstanceOf<NoSuchElementException>());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestHasNext()
         {
             Assert.That(filledIterator.MoveNext(), Is.True);

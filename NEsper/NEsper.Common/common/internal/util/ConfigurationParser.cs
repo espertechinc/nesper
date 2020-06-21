@@ -112,6 +112,6 @@ namespace com.espertech.esper.common.@internal.util
             }
         }
 
-        private readonly static ILog Log = LogManager.GetLogger(typeof(ConfigurationParser));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ConfigurationParser));
     }
 } // end of namespace

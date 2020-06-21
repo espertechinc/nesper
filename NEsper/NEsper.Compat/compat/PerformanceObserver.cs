@@ -10,67 +10,25 @@ namespace com.espertech.esper.compat
 {
     public class PerformanceObserver
     {
-        public static long NanoTime
-        {
-            get
-            {
-#if MONO
-                return PerformanceObserverMono.NanoTime;
-#else
-                return PerformanceObserverWin.NanoTime;
-#endif
-            }
-        }
+        public static long NanoTime => PerformanceObserverCore.NanoTime;
 
-        public static long MicroTime
-        {
-            get
-            {
-#if MONO
-                return PerformanceObserverMono.MicroTime;
-#else
-                return PerformanceObserverWin.MicroTime;
-#endif
-            }
-        }
+        public static long MicroTime => PerformanceObserverCore.MicroTime;
 
-        public static long MilliTime
-        {
-            get
-            {
-#if MONO
-                return PerformanceObserverMono.MilliTime;
-#else
-                return PerformanceObserverWin.MilliTime;
-#endif
-            }
-        }
+        public static long MilliTime => PerformanceObserverCore.MilliTime;
 
         public static long TimeNano( Runnable r )
         {
-#if MONO
-            return PerformanceObserverMono.TimeNano(r);
-#else
-            return PerformanceObserverWin.TimeNano(r);
-#endif
+            return PerformanceObserverCore.TimeNano(r);
         }
 
         public static long TimeMicro(Runnable r)
         {
-#if MONO
-            return PerformanceObserverMono.TimeMicro(r);
-#else
-            return PerformanceObserverWin.TimeMicro(r);
-#endif
+            return PerformanceObserverCore.TimeMicro(r);
         }
 
         public static long TimeMillis(Runnable r)
         {
-#if MONO
-            return PerformanceObserverMono.TimeMillis(r);
-#else
-            return PerformanceObserverWin.TimeMillis(r);
-#endif
+            return PerformanceObserverCore.TimeMillis(r);
         }
 
         public static long GetTimeMillis()

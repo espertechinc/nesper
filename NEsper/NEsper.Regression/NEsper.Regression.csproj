@@ -26,19 +26,19 @@
     <PackageReference Include="NUnit" Version="3.10.1" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'!='netstandard2.1'">
+  <ItemGroup Condition="'$(TargetFramework)'!='netcoreapp3.1'">
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
   </ItemGroup>
 
   <!--
-  <ItemGroup Condition="'$(TargetFramework)'!='netstandard2.1'">
+  <ItemGroup Condition="'$(TargetFramework)'!='netcoreapp3.1'">
     <ProjectReference Include="..\NEsper.Scripting.ClearScript\NEsper.Scripting.ClearScript.csproj" />
   </ItemGroup>
   -->
 
   <ItemGroup>
-    <ProjectReference Include="..\..\NEsper.Avro\NEsper.Avro.csproj" />
+    <ProjectReference Include="..\..\NEsper.Avro\NEsper.Avro\NEsper.Avro.csproj" />
     <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj" />
     <ProjectReference Include="..\NEsper.Compat\NEsper.Compat.csproj" />
     <ProjectReference Include="..\NEsper.Compiler\NEsper.Compiler.csproj" />

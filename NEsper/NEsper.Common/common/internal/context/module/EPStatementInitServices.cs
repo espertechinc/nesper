@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -23,6 +24,7 @@ using com.espertech.esper.common.@internal.epl.namedwindow.core;
 using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
+using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
@@ -32,7 +34,6 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.path;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.schedule;
-using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.statement.resource;
 using com.espertech.esper.common.@internal.util;
@@ -61,9 +62,9 @@ namespace com.espertech.esper.common.@internal.context.module
 
         ContextServiceFactory ContextServiceFactory { get; }
 
-        DataInputOutputSerdeProvider DataInputOutputSerdeProvider { get; }
-
         ImportServiceRuntime ImportServiceRuntime { get; }
+        
+        ScriptCompiler ScriptCompiler { get; }
 
         RuntimeSettingsService RuntimeSettingsService { get; }
 
@@ -127,7 +128,9 @@ namespace com.espertech.esper.common.@internal.context.module
 
         void ActivateNamedWindow(string name);
 
-        void ActivateVariable(string name);
+        void ActivateVariable(
+            string name,
+            DataInputOutputSerde serde);
 
         void ActivateContext(
             string name,
@@ -144,8 +147,9 @@ namespace com.espertech.esper.common.@internal.context.module
     {
         public const string AGGREGATIONSERVICEFACTORYSERVICE = "AggregationServiceFactoryService";
         public const string CONTEXTSERVICEFACTORY = "ContextServiceFactory";
-        public const string DATAINPUTOUTPUTSERDEPROVIDER = "DataInputOutputSerdeProvider";
+        //public const string DATAINPUTOUTPUTSERDEPROVIDER = "DataInputOutputSerdeProvider";
         public const string IMPORTSERVICERUNTIME = "ImportServiceRuntime";
+        public const string SCRIPTCOMPILER = "ScriptCompiler";
         public const string RUNTIMESETTINGSSERVICE = "RuntimeSettingsService";
         public const string EVENTBEANTYPEDEVENTFACTORY = "EventBeanTypedEventFactory";
         public const string EVENTTABLEINDEXSERVICE = "EventTableIndexService";

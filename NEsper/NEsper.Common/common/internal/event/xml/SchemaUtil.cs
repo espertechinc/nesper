@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 var simple = (SchemaElementSimple) item;
                 var returnType = ToReturnType(simple.SimpleType, simple.TypeName);
                 if (simple.IsArray) {
-                    returnType = Array.CreateInstance(returnType, 0).GetType();
+                    returnType = returnType.MakeArrayType();
                 }
 
                 return returnType;

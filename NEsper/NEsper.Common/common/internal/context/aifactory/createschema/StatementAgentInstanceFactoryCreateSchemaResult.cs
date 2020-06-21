@@ -18,19 +18,20 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
     {
         public StatementAgentInstanceFactoryCreateSchemaResult(
             Viewable finalView,
-            AgentInstanceStopCallback stopCallback,
+            AgentInstanceMgmtCallback stopCallback,
             AgentInstanceContext agentInstanceContext)
             : base(
                 finalView,
                 stopCallback,
                 agentInstanceContext,
                 null,
-                new EmptyDictionary<int, SubSelectFactoryResult>(),
+                EmptyDictionary<int, SubSelectFactoryResult>.Instance,
                 null,
                 null,
                 null,
                 null,
-                new EmptyList<StatementAgentInstancePreload>())
+                EmptyList<StatementAgentInstancePreload>.Instance,
+                null)
         {
         }
     }

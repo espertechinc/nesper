@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
         public int DeclaredExprValueCacheSize { get; set; } = 1;
 
         /// <summary>
-        ///     Returns false (the default) if the runtimedoes not consider statement priority and preemptive instructions,
+        ///     Returns false (the default) if the runtime does not consider statement priority and preemptive instructions,
         ///     or true to enable priority-based statement execution order.
         /// </summary>
         /// <value>false by default to indicate unprioritized statement execution</value>

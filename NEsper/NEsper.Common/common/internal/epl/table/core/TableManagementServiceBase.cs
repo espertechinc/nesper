@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
-using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.table.core
@@ -67,11 +66,6 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         }
 
         public abstract Table AllocateTable(TableMetaData metadata);
-
-        public abstract TableSerdes GetTableSerdes<T>(
-            Table table,
-            DataInputOutputSerdeWCollation<T> aggregationSerde,
-            StatementContext statementContext);
 
         public abstract TableInstance AllocateTableInstance(
             Table table,

@@ -116,7 +116,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 typeof(PropertyDotEventCollectionForge),
                 codegenClassScope);
             methodNode.Block
-                .IfRefNullReturnNull(symbols.GetAddEvent(methodNode))
+                .IfNullReturnNull(symbols.GetAddEvent(methodNode))
                 .MethodReturn(
                     CodegenEvaluateInternal(
                         symbols.GetAddEvent(methodNode),
@@ -283,9 +283,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             return LocalMethod(methodNode, @event);
         }
 
-        public void ToEPL(
-            TextWriter writer,
-            ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(GetType().GetSimpleName());
         }

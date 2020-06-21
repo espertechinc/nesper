@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="isDistinct">true if distinct</param>
         public MaxProjectionExpression(bool isDistinct)
         {
-            this.distinct = isDistinct;
+            distinct = isDistinct;
         }
 
         /// <summary>
@@ -45,8 +45,8 @@ namespace com.espertech.esper.common.client.soda
             bool isDistinct,
             bool isEver)
         {
-            this.distinct = isDistinct;
-            this.ever = isEver;
+            distinct = isDistinct;
+            ever = isEver;
         }
 
         /// <summary>
@@ -58,8 +58,8 @@ namespace com.espertech.esper.common.client.soda
             Expression expression,
             bool isDistinct)
         {
-            this.distinct = isDistinct;
-            this.Children.Add(expression);
+            distinct = isDistinct;
+            Children.Add(expression);
         }
 
         public override ExpressionPrecedenceEnum Precedence
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.client.soda
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             string name;
-            if (this.Children.Count > 1)
+            if (Children.Count > 1)
             {
                 name = "fmax";
             }
@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.client.soda
                 }
             }
 
-            ExpressionBase.RenderAggregation(writer, name, distinct, this.Children);
+            RenderAggregation(writer, name, distinct, Children);
         }
 
         /// <summary>

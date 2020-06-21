@@ -389,6 +389,42 @@ namespace com.espertech.esper.common.@internal.util
                    type == typeof(int?);
         }
 
+        public static bool IsInt64(this Type type)
+        {
+            return type == typeof(long) ||
+                   type == typeof(long?);
+        }
+
+        public static bool IsInt16(this Type type)
+        {
+            return type == typeof(short) ||
+                   type == typeof(short?);
+        }
+
+        public static bool IsDecimal(this Type type)
+        {
+            return type == typeof(decimal) ||
+                   type == typeof(decimal?);
+        }
+
+        public static bool IsDouble(this Type type)
+        {
+            return type == typeof(double) ||
+                   type == typeof(double?);
+        }
+
+        public static bool IsSingle(this Type type)
+        {
+            return type == typeof(float) ||
+                   type == typeof(float?);
+        }
+
+        public static bool IsBigInteger(this Type type)
+        {
+            return type == typeof(BigInteger) ||
+                   type == typeof(BigInteger?);
+        }
+
         /// <summary>
         ///     Determines whether the specified type is integral.
         /// </summary>
@@ -521,18 +557,6 @@ namespace com.espertech.esper.common.@internal.util
         public static bool IsNumber(this object value)
         {
             return value != null && IsNumeric(value.GetType());
-        }
-
-        public static bool IsDecimal(this Type type)
-        {
-            return type == typeof(decimal) ||
-                   type == typeof(decimal?);
-        }
-
-        public static bool IsBigInteger(this Type type)
-        {
-            return type == typeof(BigInteger) ||
-                   type == typeof(BigInteger?);
         }
 
         /// <summary>
@@ -856,6 +880,11 @@ namespace com.espertech.esper.common.@internal.util
                 return GetArithmaticCoercionType(typeOne, typeTwo);
             }
 
+            if (IsArray(typeOne) && IsArray(typeTwo))
+            {
+                return typeof(Array);
+            }
+            
             if (!IsBuiltinDataType(typeOne) && !IsBuiltinDataType(typeTwo) && typeOne != typeTwo)
             {
                 return typeof(object);
@@ -1362,31 +1391,16 @@ namespace com.espertech.esper.common.@internal.util
             return type.FullName;
         }
 
-        /// <summary>
-        ///     Returns the boxed class for the given type name, recognizing all primitive and abbreviations,
-        ///     uppercase and lowercase.
-        ///     <para />
-        ///     Recognizes "int" as System.Int32 and "strIng" as System.String, and "Integer" as System.Int32,
-        ///     and so on.
-        /// </summary>
-        /// <param name="typeName">is the name to recognize</param>
-        /// <param name="classForNameProvider">the class for name provider</param>
-        /// <param name="boxed">if set to <c>true</c> [boxed].</param>
-        /// <param name="throwOnError">if set to <c>true</c> [throw on error].</param>
-        /// <returns>
-        ///     class
-        /// </returns>
-        /// <throws>EventAdapterException is throw if the class cannot be identified</throws>
-        public static Type GetTypeForSimpleName(
+        public static Type GetTypeForBuiltin(
             string typeName,
-            ClassForNameProvider classForNameProvider,
-            bool boxed = false,
-            bool throwOnError = false)
+            bool boxed = false)
         {
             typeName = typeName.Trim();
 
-            switch (typeName.ToLower())
-            {
+            switch (typeName.ToLower()) {
+                case "object":
+                    return typeof(object);
+                
                 case "string":
                 case "varchar":
                 case "varchar2":
@@ -1494,6 +1508,37 @@ namespace com.espertech.esper.common.@internal.util
                     return typeof(IDictionary<string, object>);
             }
 
+            return null;
+        }
+
+        /// <summary>
+        ///     Returns the boxed class for the given type name, recognizing all primitive and abbreviations,
+        ///     uppercase and lowercase.
+        ///     <para />
+        ///     Recognizes "int" as System.Int32 and "strIng" as System.String, and "Integer" as System.Int32,
+        ///     and so on.
+        /// </summary>
+        /// <param name="typeName">is the name to recognize</param>
+        /// <param name="classForNameProvider">the class for name provider</param>
+        /// <param name="boxed">if set to <c>true</c> [boxed].</param>
+        /// <param name="throwOnError">if set to <c>true</c> [throw on error].</param>
+        /// <returns>
+        ///     class
+        /// </returns>
+        /// <throws>EventAdapterException is throw if the class cannot be identified</throws>
+        public static Type GetTypeForSimpleName(
+            string typeName,
+            ClassForNameProvider classForNameProvider,
+            bool boxed = false,
+            bool throwOnError = false)
+        {
+            typeName = typeName.Trim();
+
+            var builtin = GetTypeForBuiltin(typeName, boxed);
+            if (builtin != null) {
+                return builtin;
+            }
+            
             if (classForNameProvider != null)
             {
                 try {
@@ -1966,11 +2011,12 @@ namespace com.espertech.esper.common.@internal.util
                     }
 
                     var genericTypeArgs = identifiers
-                        .Select(
-                            genericArg => {
+                        .Select(_ => _.GetText())
+                        .Select(_ => {
                                 // TBD: Consider the need for handling escaped arguments.  In ASTUtil, there is some handling for unescaping these
-                                // values.  We need to move the content into NESper.Grammar so that it is usable across multiple projects.
-                                return ResolveType(genericArg.GetText(), assemblySearchPath, throwOnError);
+                                // values.  We need to move the content into NEsper.Grammar so that it is usable across multiple projects.
+                                var result = GetTypeForBuiltin(_, false);
+                                return result != null ? result : ResolveType(_, assemblySearchPath, throwOnError);
                             })
                         .ToArray();
 
@@ -2481,63 +2527,55 @@ namespace com.espertech.esper.common.@internal.util
         /// </returns>
         public static bool IsFragmentableType(this Type propertyType)
         {
-            if (propertyType == null)
-            {
+            if (propertyType == null) {
                 return false;
             }
 
-            if (propertyType.IsArray)
-            {
+            if (propertyType.IsArray) {
                 return IsFragmentableType(propertyType.GetElementType());
             }
 
-            if (propertyType.IsNullable())
-            {
+            if (propertyType.IsNullable()) {
                 propertyType = Nullable.GetUnderlyingType(propertyType);
             }
 
-            if (IsBuiltinDataType(propertyType))
-            {
+            if (IsBuiltinDataType(propertyType)) {
                 return false;
             }
 
-            if (propertyType.IsEnum)
-            {
+            if (propertyType.IsEnum) {
                 return false;
             }
 
-            if (propertyType.IsGenericDictionary())
-            {
+            if (propertyType.IsGenericDictionary()) {
                 return false;
             }
 
-            if (propertyType == typeof(XmlNode))
-            {
+            if (propertyType == typeof(XmlNode)) {
                 return false;
             }
 
-            if (propertyType == typeof(XmlNodeList))
-            {
+            if (propertyType == typeof(XmlNodeList)) {
                 return false;
             }
 
-            if (propertyType == typeof(object))
-            {
+            if (propertyType == typeof(object)) {
                 return false;
             }
 
-            if (propertyType == typeof(DateTimeOffset))
-            {
+            if (propertyType == typeof(DateTimeEx)) {
                 return false;
             }
 
-            if (propertyType == typeof(DateTime))
-            {
+            if (propertyType == typeof(DateTimeOffset)) {
                 return false;
             }
 
-            if (propertyType.FullName == AvroConstantsNoDep.GENERIC_RECORD_CLASSNAME)
-            {
+            if (propertyType == typeof(DateTime)) {
+                return false;
+            }
+
+            if (propertyType.FullName == AvroConstantsNoDep.GENERIC_RECORD_CLASSNAME) {
                 return false;
             }
 
@@ -2856,7 +2894,7 @@ namespace com.espertech.esper.common.@internal.util
 
         public static Type GetArrayType(Type resultType)
         {
-            return Array.CreateInstance(resultType, 0).GetType();
+            return resultType.MakeArrayType();
         }
 
         public static Type GetArrayType(
@@ -3154,6 +3192,27 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             return value;
+        }
+
+        public static bool IsObjectCollectionCompatible(this object value)
+        {
+            if (value == null) {
+                return false;
+            }
+
+            if (value is ICollection<object>) {
+                return true;
+            }
+
+            if (value.GetType().IsGenericCollection()) {
+                return true;
+            }
+
+            if (value is ICollection) {
+                return true;
+            }
+
+            return false;
         }
 
         public static ICollection<object> AsObjectCollection(this object value)
@@ -3493,6 +3552,15 @@ namespace com.espertech.esper.common.@internal.util
             var targetBoxed = target.GetBoxedType();
             var providedBoxed = provided.GetBoxedType();
             return targetBoxed == providedBoxed || IsSubclassOrImplementsInterface(providedBoxed, targetBoxed);
+        }
+
+        public static Type GetArrayComponentTypeInnermost(Type clazz)
+        {
+            if (clazz.IsArray) {
+                return GetArrayComponentTypeInnermost(clazz.GetElementType());
+            }
+
+            return clazz;
         }
 
         /// <summary>

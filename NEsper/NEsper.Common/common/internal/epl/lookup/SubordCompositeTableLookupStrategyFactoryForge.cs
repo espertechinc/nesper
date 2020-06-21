@@ -12,6 +12,7 @@ using System.Linq;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.join.querygraph;
@@ -30,7 +31,8 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         private readonly Type[] _coercionRangeTypes;
         private readonly IList<SubordPropHashKeyForge> _hashKeys;
         private readonly Type[] _hashTypes;
-        private readonly bool isNWOnTrigger;
+        private readonly MultiKeyClassRef _hashMultikeyClasses;
+        private readonly bool _isNWOnTrigger;
         private readonly int _numStreams;
         private readonly IList<SubordPropRangeKeyForge> _rangeProps;
 
@@ -39,15 +41,17 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             int numStreams,
             IList<SubordPropHashKeyForge> keyExpr,
             Type[] coercionKeyTypes,
+            MultiKeyClassRef hashMultikeyClasses,
             IList<SubordPropRangeKeyForge> rangeProps,
             Type[] coercionRangeTypes)
         {
-            this.isNWOnTrigger = isNWOnTrigger;
-            this._numStreams = numStreams;
+            _isNWOnTrigger = isNWOnTrigger;
+            _numStreams = numStreams;
             _hashKeys = keyExpr;
             _hashTypes = coercionKeyTypes;
-            this._rangeProps = rangeProps;
-            this._coercionRangeTypes = coercionRangeTypes;
+            _rangeProps = rangeProps;
+            _coercionRangeTypes = coercionRangeTypes;
+            _hashMultikeyClasses = hashMultikeyClasses;
         }
 
         public string ToQueryPlan()
@@ -71,12 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
                 }
 
                 expressions.AddAll(ExprNodeUtilityPrint.ToExpressionStringsMinPrecedence(forges));
-                hashEval = ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
-                    forges,
-                    _hashTypes,
-                    method,
-                    GetType(),
-                    classScope);
+                hashEval = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(forges, _hashTypes, _hashMultikeyClasses, method, classScope);
             }
 
             method.Block.DeclareVar<QueryGraphValueEntryRange[]>(
@@ -94,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
 
             method.Block.MethodReturn(
                 NewInstance<SubordCompositeTableLookupStrategyFactory>(
-                    Constant(isNWOnTrigger),
+                    Constant(_isNWOnTrigger),
                     Constant(_numStreams),
                     Constant(expressions.ToArray()),
                     hashEval,

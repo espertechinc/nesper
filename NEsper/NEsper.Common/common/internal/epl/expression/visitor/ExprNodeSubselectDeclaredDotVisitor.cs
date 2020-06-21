@@ -29,6 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
             ChainedExpressionsDot = new List<ExprDotNode>(4);
             DeclaredExpressions = new List<ExprDeclaredNode>(1);
         }
+        
+        public bool IsWalkDeclExprParam => true;
 
         /// <summary>
         ///     Returns a list of lookup expression nodes.

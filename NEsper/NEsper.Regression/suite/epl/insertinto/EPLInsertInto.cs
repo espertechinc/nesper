@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.json.util;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
@@ -21,6 +22,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 using com.espertech.esper.compat.magic;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
@@ -29,6 +31,8 @@ using com.espertech.esper.runtime.client.scopetest;
 
 using NEsper.Avro.Extensions;
 using NEsper.Avro.Util.Support;
+
+using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
 
@@ -45,29 +49,198 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLInsertIntoAssertionWildcardRecast());
-            execs.Add(new EPLInsertIntoJoinWildcard());
-            execs.Add(new EPLInsertIntoWithOutputLimitAndSort());
-            execs.Add(new EPLInsertIntoStaggeredWithWildcard());
-            execs.Add(new EPLInsertIntoInsertFromPattern());
-            execs.Add(new EPLInsertIntoInsertIntoPlusPattern());
-            execs.Add(new EPLInsertIntoNullType());
-            execs.Add(new EPLInsertIntoChain());
-            execs.Add(new EPLInsertIntoMultiBeanToMulti());
-            execs.Add(new EPLInsertIntoSingleBeanToMulti());
-            execs.Add(new EPLInsertIntoProvidePartitialCols());
-            execs.Add(new EPLInsertIntoRStreamOMToStmt());
-            execs.Add(new EPLInsertIntoNamedColsOMToStmt());
-            execs.Add(new EPLInsertIntoNamedColsEPLToOMStmt());
-            execs.Add(new EPLInsertIntoNamedColsSimple());
-            execs.Add(new EPLInsertIntoNamedColsStateless());
-            execs.Add(new EPLInsertIntoNamedColsWildcard());
-            execs.Add(new EPLInsertIntoNamedColsJoin());
-            execs.Add(new EPLInsertIntoNamedColsJoinWildcard());
-            execs.Add(new EPLInsertIntoUnnamedSimple());
-            execs.Add(new EPLInsertIntoUnnamedWildcard());
-            execs.Add(new EPLInsertIntoUnnamedJoin());
+            WithAssertionWildcardRecast(execs);
+            WithJoinWildcard(execs);
+            WithWithOutputLimitAndSort(execs);
+            WithStaggeredWithWildcard(execs);
+            WithInsertFromPattern(execs);
+            WithInsertIntoPlusPattern(execs);
+            WithNullType(execs);
+            WithChain(execs);
+            WithMultiBeanToMulti(execs);
+            WithSingleBeanToMulti(execs);
+            WithProvidePartitialCols(execs);
+            WithRStreamOMToStmt(execs);
+            WithNamedColsOMToStmt(execs);
+            WithNamedColsEPLToOMStmt(execs);
+            WithNamedColsSimple(execs);
+            WithNamedColsStateless(execs);
+            WithNamedColsWildcard(execs);
+            WithNamedColsJoin(execs);
+            WithNamedColsJoinWildcard(execs);
+            WithUnnamedSimple(execs);
+            WithUnnamedWildcard(execs);
+            WithUnnamedJoin(execs);
+            WithTypeMismatchInvalid(execs);
+            WithEventRepresentationsSimple(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEventRepresentationsSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoEventRepresentationsSimple());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTypeMismatchInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoTypeMismatchInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUnnamedJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoUnnamedJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUnnamedWildcard(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoUnnamedWildcard());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUnnamedSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoUnnamedSimple());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedColsJoinWildcard(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoNamedColsJoinWildcard());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedColsJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoNamedColsJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedColsWildcard(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoNamedColsWildcard());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedColsStateless(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoNamedColsStateless());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedColsSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoNamedColsSimple());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedColsEPLToOMStmt(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoNamedColsEPLToOMStmt());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedColsOMToStmt(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoNamedColsOMToStmt());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRStreamOMToStmt(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoRStreamOMToStmt());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithProvidePartitialCols(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoProvidePartitialCols());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSingleBeanToMulti(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoSingleBeanToMulti());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMultiBeanToMulti(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoMultiBeanToMulti());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithChain(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoChain());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNullType(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoNullType());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInsertIntoPlusPattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoInsertIntoPlusPattern());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInsertFromPattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoInsertFromPattern());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStaggeredWithWildcard(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoStaggeredWithWildcard());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWithOutputLimitAndSort(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoWithOutputLimitAndSort());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithJoinWildcard(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoJoinWildcard());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAssertionWildcardRecast(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoAssertionWildcardRecast());
             return execs;
         }
 
@@ -223,8 +396,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             Assert.AreEqual(2, listener.LastNewData[0].EventType.PropertyNames.Length);
             Assert.IsTrue(listener.LastNewData[0].EventType.IsProperty("S0"));
             Assert.IsTrue(listener.LastNewData[0].EventType.IsProperty("S1"));
-            Assert.AreSame(eventS0, listener.LastNewData[0].Get("S0"));
-            Assert.AreSame(eventS1, listener.LastNewData[0].Get("S1"));
+            if (rep != null && (rep.Value.IsJsonEvent() || rep.Value.IsJsonProvidedClassEvent())) {
+                Assert.AreEqual(
+                    listener.LastNewData[0].Get("S0").ToString().RemoveWhitespace(),
+                    eventS0.ToString().RemoveWhitespace());
+                Assert.AreEqual(
+                    listener.LastNewData[0].Get("S1").ToString().RemoveWhitespace(),
+                    eventS1.ToString().RemoveWhitespace());
+            }
+            else {
+                Assert.AreSame(eventS0, listener.LastNewData[0].Get("S0"));
+                Assert.AreSame(eventS1, listener.LastNewData[0].Get("S1"));
+            }
+
             Assert.IsTrue(rep == null || rep.Value.MatchesClass(listener.LastNewData[0].Underlying.GetType()));
         }
 
@@ -234,24 +418,46 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             EventRepresentationChoice? rep)
         {
             string schema;
+
             if (bean) {
-                schema = "@Name('schema1') create schema S0 as " + typeof(SupportBean).FullName + ";\n" +
-                         "@Name('schema2') create schema S1 as " + typeof(SupportBean_A).FullName + ";\n";
+                schema = "@Name('schema1') create schema S0 as " +
+                         typeof(SupportBean).FullName +
+                         ";\n" +
+                         "@Name('schema2') create schema S1 as " +
+                         typeof(SupportBean_A).FullName +
+                         ";\n";
             }
             else if (rep == null) {
                 throw new ArgumentException(nameof(rep));
             }
             else if (rep.Value.IsMapEvent()) {
+                Console.WriteLine($"Rep = {rep.Value}");
                 schema = "@Name('schema1') create map schema S0 as (TheString string);\n" +
                          "@Name('schema2') create map schema S1 as (Id string);\n";
             }
             else if (rep.Value.IsObjectArrayEvent()) {
+                Console.WriteLine($"Rep = {rep.Value}");
                 schema = "@Name('schema1') create objectarray schema S0 as (TheString string);\n" +
                          "@Name('schema2') create objectarray schema S1 as (Id string);\n";
             }
             else if (rep.Value.IsAvroEvent()) {
+                Console.WriteLine($"Rep = {rep.Value}");
                 schema = "@Name('schema1') create avro schema S0 as (TheString string);\n" +
                          "@Name('schema2') create avro schema S1 as (Id string);\n";
+            }
+            else if (rep.Value.IsJsonEvent()) {
+                Console.WriteLine($"Rep = {rep.Value}");
+                schema = "@Name('schema1') create json schema S0 as (TheString string);\n" +
+                         "@Name('schema2') create json schema S1 as (Id string);\n";
+            }
+            else if (rep.Value.IsJsonProvidedClassEvent()) {
+                Console.WriteLine($"Rep = {rep.Value}");
+                schema = "@Name('schema1') @JsonSchema(ClassName='" +
+                         typeof(MyLocalJsonProvidedS0).FullName +
+                         "') create json schema S0 as ();\n" +
+                         "@Name('schema2') @JsonSchema(ClassName='" +
+                         typeof(MyLocalJsonProvidedS1).FullName +
+                         "') create json schema S1 as ();\n";
             }
             else {
                 schema = null;
@@ -262,13 +468,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.CompileDeployWBusPublicType(schema, path);
 
             var textOne = "@Name('s1') " +
-                          (bean ? "" : rep.Value.GetAnnotationText()) +
+                          (bean ? "" : rep.Value.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedJoin>()) +
                           "insert into event2 select * " +
                           "from S0#length(100) as S0, S1#length(5) as S1 " +
                           "where S0.TheString = S1.Id";
             env.CompileDeploy(textOne, path).AddListener("s1");
 
-            var annoText = bean ? "" : rep.Value.GetAnnotationText();
+            var annoText = bean ? "" : rep.Value.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedJoin>();
             var textTwo = $"@Name('s2') {annoText} select * from event2#length(10)";
             env.CompileDeploy(textTwo, path).AddListener("s2");
 
@@ -296,6 +502,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 theEvent.Put("Id", "myId");
                 eventS1 = theEvent;
                 env.SendEventAvro(theEvent, "S1");
+            }
+            else if (rep.Value.IsJsonEvent() || rep.Value.IsJsonProvidedClassEvent()) {
+                var @object = new JObject();
+                @object.Add("Id", "myId");
+                eventS1 = @object.ToString();
+                env.SendEventJson((string) eventS1, "S1");
             }
             else {
                 throw new ArgumentException();
@@ -325,12 +537,39 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 eventS0 = theEvent;
                 env.SendEventAvro(theEvent, "S0");
             }
+            else if (rep.Value.IsJsonEvent() || rep.Value.IsJsonProvidedClassEvent()) {
+                var @object = new JObject();
+                @object.Add("TheString", "myId");
+                eventS0 = @object.ToString();
+                env.SendEventJson((string) eventS0, "S0");
+            }
             else {
                 throw new ArgumentException();
             }
 
             AssertJoinWildcard(rep, env.Listener("s1"), eventS0, eventS1);
             AssertJoinWildcard(rep, env.Listener("s2"), eventS0, eventS1);
+
+            env.UndeployAll();
+        }
+
+        private static void TryAssertionRepresentationSimple(
+            RegressionEnvironment env,
+            EventRepresentationChoice rep,
+            IDictionary<EventRepresentationChoice, Consumer<object>> assertions)
+        {
+            var epl = rep.GetAnnotationTextWJsonProvided<MyLocalJsonProvided>() +
+                      " insert into SomeStream select TheString, IntPrimitive from SupportBean;\n" +
+                      "@Name('s0') select * from SomeStream;\n";
+            env.CompileDeploy(epl).AddListener("s0");
+
+            env.SendEventBean(new SupportBean("E1", 10));
+            var assertion = assertions.Get(rep);
+            if (assertion == null) {
+                Assert.Fail("No assertion provided for type " + rep);
+            }
+
+            assertion.Invoke(env.Listener("s0").AssertOneGetNewAndReset().Underlying);
 
             env.UndeployAll();
         }
@@ -364,9 +603,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 schemaEPL = "create schema SourceSchema as " + TypeHelper.MaskTypeName<MyP0P1EventSource>();
             }
             else {
-                schemaEPL = "create " +
-                            sourceType.Value.GetOutputTypeCreateSchemaName() +
-                            " schema SourceSchema as (p0 string, p1 int)";
+                schemaEPL = sourceType.Value.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedSourceSchema>() +
+                            "create schema SourceSchema as (P0 string, P1 int)";
             }
 
             var path = new RegressionPath();
@@ -376,15 +614,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             if (targetBean) {
                 var eventTargetType = TypeHelper.MaskTypeName<MyP0P1EventTarget>();
                 env.CompileDeploy(
-                    $"create schema TargetSchema as {eventTargetType}", path);
+                    $"create schema TargetSchema as {eventTargetType}",
+                    path);
             }
             else {
-                var outputTypeCreateSchemaName = targetType?.GetOutputTypeCreateSchemaName();
                 env.CompileDeploy(
-                    $"create {outputTypeCreateSchemaName} schema TargetContainedSchema as (c0 int)",
+                    targetType.Value.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedTargetContainedSchema>() +
+                    "create schema TargetContainedSchema as (C0 int)",
                     path);
                 env.CompileDeploy(
-                    $"create {outputTypeCreateSchemaName} schema TargetSchema (p0 string, p1 int, c0 TargetContainedSchema)",
+                    targetType.Value.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedTargetSchema>() +
+                    "create schema TargetSchema (P0 string, P1 int, C0 TargetContainedSchema)",
                     path);
             }
 
@@ -398,8 +638,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             }
             else if (sourceType.Value.IsMapEvent()) {
                 IDictionary<string, object> map = new Dictionary<string, object>();
-                map.Put("p0", "a");
-                map.Put("p1", 10);
+                map.Put("P0", "a");
+                map.Put("P1", 10);
                 env.SendEventMap(map, "SourceSchema");
             }
             else if (sourceType.Value.IsObjectArrayEvent()) {
@@ -408,23 +648,24 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             else if (sourceType.Value.IsAvroEvent()) {
                 var schema = SchemaBuilder.Record(
                     "schema",
-                    TypeBuilder.RequiredString("p0"),
-                    TypeBuilder.RequiredString("p1"),
-                    TypeBuilder.RequiredString("c0"));
+                    TypeBuilder.RequiredString("P0"),
+                    TypeBuilder.RequiredString("P1"),
+                    TypeBuilder.RequiredString("C0"));
                 var record = new GenericRecord(schema);
-                record.Put("p0", "a");
-                record.Put("p1", 10);
+                record.Put("P0", "a");
+                record.Put("P1", 10);
                 env.SendEventAvro(record, "SourceSchema");
+            }
+            else if (sourceType.Value.IsJsonEvent() || sourceType.Value.IsJsonProvidedClassEvent()) {
+                env.SendEventJson("{\"P0\": \"a\", \"P1\": 10}", "SourceSchema");
             }
             else {
                 Assert.Fail();
             }
 
             // assert
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                new [] { "p0","p1","c0" },
-                new object[] {"a", 10, null});
+            var @event = env.Listener("s0").AssertOneGetNewAndReset();
+            EPAssertionUtil.AssertProps(@event, "P0,P1,C0".SplitCsv(), new object[] {"a", 10, null});
 
             env.UndeployAll();
         }
@@ -432,6 +673,49 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         private static SupportMarketDataBean MakeMarketDataEvent(string symbol)
         {
             return new SupportMarketDataBean(symbol, 0, 0L, null);
+        }
+
+        internal class EPLInsertIntoEventRepresentationsSimple : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                IDictionary<EventRepresentationChoice, Consumer<object>> assertions = new Dictionary<EventRepresentationChoice, Consumer<object>>();
+                assertions.Put(
+                    EventRepresentationChoice.OBJECTARRAY,
+                    und => { EPAssertionUtil.AssertEqualsExactOrder(new object[] {"E1", 10}, (object[]) und); });
+                Consumer<object> mapAssertion = und => EPAssertionUtil.AssertPropsMap(
+                    und.AsStringDictionary(),
+                    "TheString,IntPrimitive".SplitCsv(),
+                    "E1",
+                    10);
+                assertions.Put(EventRepresentationChoice.MAP, mapAssertion);
+                assertions.Put(EventRepresentationChoice.DEFAULT, mapAssertion);
+                assertions.Put(
+                    EventRepresentationChoice.AVRO,
+                    und => {
+                        var rec = (GenericRecord) und;
+                        Assert.AreEqual("E1", rec.Get("TheString"));
+                        Assert.AreEqual(10, rec.Get("IntPrimitive"));
+                    });
+                assertions.Put(
+                    EventRepresentationChoice.JSON,
+                    und => {
+                        var rec = (JsonEventObject) und;
+                        Assert.AreEqual("E1", rec.Get("TheString"));
+                        Assert.AreEqual(10, rec.Get("IntPrimitive"));
+                    });
+                assertions.Put(
+                    EventRepresentationChoice.JSONCLASSPROVIDED,
+                    und => {
+                        var rec = (MyLocalJsonProvided) und;
+                        Assert.AreEqual("E1", rec.TheString);
+                        Assert.AreEqual(10, rec.IntPrimitive);
+                    });
+
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
+                    TryAssertionRepresentationSimple(env, rep, assertions);
+                }
+            }
         }
 
         internal class EPLInsertIntoRStreamOMToStmt : RegressionExecution
@@ -717,7 +1001,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 // bean to OA/Map/bean
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     TryAssertionWildcardRecast(env, true, null, false, rep);
                 }
 
@@ -737,22 +1021,33 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 TryAssertionWildcardRecast(
                     env,
                     false,
-                    EventRepresentationChoice.ARRAY,
+                    EventRepresentationChoice.OBJECTARRAY,
                     false,
-                    EventRepresentationChoice.ARRAY);
+                    EventRepresentationChoice.OBJECTARRAY);
                 TryAssertionWildcardRecast(
                     env,
                     false,
-                    EventRepresentationChoice.ARRAY,
+                    EventRepresentationChoice.OBJECTARRAY,
                     false,
                     EventRepresentationChoice.MAP);
                 TryAssertionWildcardRecast(
                     env,
                     false,
-                    EventRepresentationChoice.ARRAY,
+                    EventRepresentationChoice.OBJECTARRAY,
                     false,
                     EventRepresentationChoice.AVRO);
-                TryAssertionWildcardRecast(env, false, EventRepresentationChoice.ARRAY, true, null);
+                TryAssertionWildcardRecast(
+                    env,
+                    false,
+                    EventRepresentationChoice.OBJECTARRAY,
+                    false,
+                    EventRepresentationChoice.JSON);
+                TryAssertionWildcardRecast(
+                    env,
+                    false,
+                    EventRepresentationChoice.OBJECTARRAY,
+                    true,
+                    null);
 
                 // Map
                 TryAssertionWildcardRecast(
@@ -760,7 +1055,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     false,
                     EventRepresentationChoice.MAP,
                     false,
-                    EventRepresentationChoice.ARRAY);
+                    EventRepresentationChoice.OBJECTARRAY);
                 TryAssertionWildcardRecast(
                     env,
                     false,
@@ -773,7 +1068,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     EventRepresentationChoice.MAP,
                     false,
                     EventRepresentationChoice.AVRO);
-                TryAssertionWildcardRecast(env, false, EventRepresentationChoice.MAP, true, null);
+                TryAssertionWildcardRecast(
+                    env,
+                    false,
+                    EventRepresentationChoice.MAP,
+                    false,
+                    EventRepresentationChoice.JSON);
+                TryAssertionWildcardRecast(
+                    env,
+                    false,
+                    EventRepresentationChoice.MAP,
+                    true,
+                    null);
 
                 // Avro
                 TryAssertionWildcardRecast(
@@ -781,7 +1087,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     false,
                     EventRepresentationChoice.AVRO,
                     false,
-                    EventRepresentationChoice.ARRAY);
+                    EventRepresentationChoice.OBJECTARRAY);
                 TryAssertionWildcardRecast(
                     env,
                     false,
@@ -794,7 +1100,82 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     EventRepresentationChoice.AVRO,
                     false,
                     EventRepresentationChoice.AVRO);
-                TryAssertionWildcardRecast(env, false, EventRepresentationChoice.AVRO, true, null);
+                TryAssertionWildcardRecast(
+                    env,
+                    false,
+                    EventRepresentationChoice.AVRO,
+                    false,
+                    EventRepresentationChoice.JSON);
+                TryAssertionWildcardRecast(
+                    env,
+                    false,
+                    EventRepresentationChoice.AVRO,
+                    true,
+                    null);
+
+                // Json
+                TryAssertionWildcardRecast(
+                    env,
+                    false,
+                    EventRepresentationChoice.JSON,
+                    false,
+                    EventRepresentationChoice.OBJECTARRAY);
+                TryAssertionWildcardRecast(
+                    env,
+                    false,
+                    EventRepresentationChoice.JSON,
+                    false,
+                    EventRepresentationChoice.MAP);
+                TryAssertionWildcardRecast(
+                    env,
+                    false,
+                    EventRepresentationChoice.JSON,
+                    false,
+                    EventRepresentationChoice.AVRO);
+                TryAssertionWildcardRecast(
+                    env,
+                    false,
+                    EventRepresentationChoice.JSON,
+                    false,
+                    EventRepresentationChoice.JSON);
+                TryAssertionWildcardRecast(
+                    env,
+                    false,
+                    EventRepresentationChoice.JSON,
+                    true,
+                    null);
+
+                // Json-Provided-Class
+                TryAssertionWildcardRecast(
+                    env,
+                    false,
+                    EventRepresentationChoice.JSONCLASSPROVIDED,
+                    false,
+                    EventRepresentationChoice.OBJECTARRAY);
+                TryAssertionWildcardRecast(
+                    env,
+                    false,
+                    EventRepresentationChoice.JSONCLASSPROVIDED,
+                    false,
+                    EventRepresentationChoice.MAP);
+                TryAssertionWildcardRecast(
+                    env,
+                    false,
+                    EventRepresentationChoice.JSONCLASSPROVIDED,
+                    false,
+                    EventRepresentationChoice.AVRO);
+                TryAssertionWildcardRecast(
+                    env,
+                    false,
+                    EventRepresentationChoice.JSONCLASSPROVIDED,
+                    false,
+                    EventRepresentationChoice.JSONCLASSPROVIDED);
+                TryAssertionWildcardRecast(
+                    env,
+                    false,
+                    EventRepresentationChoice.JSONCLASSPROVIDED,
+                    true,
+                    null);
             }
         }
 
@@ -804,7 +1185,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 TryAssertionJoinWildcard(env, true, null);
 
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     TryAssertionJoinWildcard(env, false, rep);
                 }
             }
@@ -816,10 +1197,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var path = new RegressionPath();
 
-                var fields = new [] { "p0","p1" };
+                var fields = new[] {"P0", "P1"};
                 var epl =
-                    "insert into AStream (p0, p1) select IntPrimitive as somename, TheString from SupportBean(IntPrimitive between 0 and 10);\n" +
-                    "insert into AStream (p0) select IntPrimitive as somename from SupportBean(IntPrimitive > 10);\n" +
+                    "insert into AStream (P0, P1) select IntPrimitive as somename, TheString from SupportBean(IntPrimitive between 0 and 10);\n" +
+                    "insert into AStream (P0) select IntPrimitive as somename from SupportBean(IntPrimitive > 10);\n" +
                     "@Name('s0') select * from AStream;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
@@ -1071,8 +1452,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 P1 = p1;
             }
 
-            [PropertyName("p0")] public string P0 { get; }
-            [PropertyName("p1")] public int P1 { get; }
+            [PropertyName("P0")]
+            public string P0 { get; }
+
+            [PropertyName("P1")]
+            public int P1 { get; }
         }
 
         public class MyP0P1EventTarget
@@ -1091,9 +1475,68 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 C0 = c0;
             }
 
-            [PropertyName("p0")] public string P0 { get; set; }
-            [PropertyName("p1")] public int P1 { get; set; }
-            [PropertyName("c0")] public object C0 { get; set; }
+            public string P0 { get; set; }
+
+            public int P1 { get; set; }
+
+            public object C0 { get; set; }
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvided
+        {
+            public string TheString;
+            public int? IntPrimitive;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedS0
+        {
+            public string TheString;
+
+            public override string ToString()
+            {
+                return "{\"TheString\":\"" + TheString + "\"}";
+            }
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedS1
+        {
+            public string Id;
+
+            public override string ToString()
+            {
+                return "{\"Id\":\"" + Id + "\"}";
+            }
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedJoin
+        {
+            public MyLocalJsonProvidedS0 S0;
+            public MyLocalJsonProvidedS1 S1;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedSourceSchema
+        {
+            public string P0;
+            public int P1;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedTargetContainedSchema
+        {
+            public int C0;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedTargetSchema
+        {
+            public string P0;
+            public int P1;
+            public MyLocalJsonProvidedTargetContainedSchema C0;
         }
     }
 } // end of namespace

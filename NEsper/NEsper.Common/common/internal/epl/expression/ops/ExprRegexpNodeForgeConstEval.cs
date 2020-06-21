@@ -26,15 +26,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     [Serializable]
     public class ExprRegexpNodeForgeConstEval : ExprEvaluator
     {
-        private readonly ExprRegexpNodeForgeConst forge;
-        private readonly ExprEvaluator lhsEval;
+        private readonly ExprRegexpNodeForgeConst _forge;
+        private readonly ExprEvaluator _lhsEval;
 
         internal ExprRegexpNodeForgeConstEval(
             ExprRegexpNodeForgeConst forge,
             ExprEvaluator lhsEval)
         {
-            this.forge = forge;
-            this.lhsEval = lhsEval;
+            this._forge = forge;
+            this._lhsEval = lhsEval;
         }
 
         public object Evaluate(
@@ -42,17 +42,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var value = lhsEval.Evaluate(eventsPerStream, isNewData, context);
+            var value = _lhsEval.Evaluate(eventsPerStream, isNewData, context);
             if (value == null) {
                 return null;
             }
 
-            if (forge.IsNumericValue) {
+            if (_forge.IsNumericValue) {
                 value = value.RenderAny();
             }
 
             var stringValue = (string) value;
-            var result = forge.ForgeRenderable.IsNot ^ forge.Pattern.IsMatch(stringValue); //Matches();
+            var result = _forge.ForgeRenderable.IsNot ^ _forge.Pattern.IsMatch(stringValue); //Matches();
             return result;
         }
 
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpression mPattern = codegenClassScope.AddDefaultFieldUnshared<Regex>(true, forge.PatternInit);
+            var mPattern = codegenClassScope.AddDefaultFieldUnshared<Regex>(true, forge.PatternInit);
             var methodNode = codegenMethodScope.MakeChild(
                 typeof(bool?),
                 typeof(ExprRegexpNodeForgeConstEval),

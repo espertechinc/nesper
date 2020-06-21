@@ -33,10 +33,38 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraFrequencyAndTopk());
-            execs.Add(new InfraDocSamples());
-            execs.Add(new InfraNonStringType());
+            WithFrequencyAndTopk(execs);
+            WithDocSamples(execs);
+            WithNonStringType(execs);
+            WithInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNonStringType(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraNonStringType());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDocSamples(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraDocSamples());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFrequencyAndTopk(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraFrequencyAndTopk());
             return execs;
         }
 
@@ -267,8 +295,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 TryInvalidCompile(
                     env,
                     path,
-                    "create table MyTable(cms countMinSketch({EpsOfTotalCount:'a'}))",
-                    "Failed to validate table-column expression 'countMinSketch({\"EpsOfTotalCount\"=\"a\"})': Property 'EpsOfTotalCount' expects an System.Nullable<System.Double> but receives a value of type System.String [");
+                    "create table MyTable(cms countMinSketch({epsOfTotalCount:'a'}))",
+                    "Failed to validate table-column expression 'countMinSketch({\"epsOfTotalCount\"=\"a\"})': Property 'epsOfTotalCount' expects an System.Nullable<System.Double> but receives a value of type System.String [");
                 TryInvalidCompile(
                     env,
                     path,
@@ -310,12 +338,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env,
                     path,
                     "into table MyCMS select countMinSketchFrequency(TheString) as wordcms from SupportBean",
-                    "Failed to validate select-clause expression 'countMinSketchFrequency(TheString)': Count-min-sketch aggregation function 'countMinSketchFrequency' requires the use of a table-access expression [");
+                    "Failed to validate select-clause expression 'countMinSketchFrequency(TheString)': Unknown single-row function, aggregation function or mapped or indexed property named 'countMinSketchFrequency' could not be resolved ");
                 TryInvalidCompile(
                     env,
                     path,
                     "select countMinSketchFrequency() from SupportBean",
-                    "Failed to validate select-clause expression 'countMinSketchFrequency()': Count-min-sketch aggregation function 'countMinSketchFrequency' requires the use of a table-access expression");
+                    "Failed to validate select-clause expression 'countMinSketchFrequency()': Unknown single-row function, expression declaration, script or aggregation function named 'countMinSketchFrequency' could not be resolved");
 
                 // invalid "countMinSketchTopk" declarations
                 //
@@ -323,7 +351,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env,
                     path,
                     "select countMinSketchTopk() from SupportBean",
-                    "Failed to validate select-clause expression 'countMinSketchTopk()': Count-min-sketch aggregation function 'countMinSketchTopk' requires the use of a table-access expression");
+                    "Failed to validate select-clause expression 'countMinSketchTopk()': Unknown single-row function, expression declaration, script or aggregation function named 'countMinSketchTopk' could not be resolved");
                 TryInvalidCompile(
                     env,
                     path,

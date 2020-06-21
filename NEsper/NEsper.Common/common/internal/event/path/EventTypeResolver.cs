@@ -8,22 +8,28 @@
 
 using System;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.@internal.@event.bean.core;
+using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.serde.runtime.@event;
 
 namespace com.espertech.esper.common.@internal.@event.path
 {
     public interface EventTypeResolver
     {
-        EventType Resolve(EventTypeMetadata metadata);
+        EventTypeSPI Resolve(EventTypeMetadata metadata);
 
-        BeanEventType ResolvePrivateBean(Type clazz);
+        BeanEventType ResolvePrivateBean(
+            Type clazz,
+            bool publicFields);
+        
+        EventSerdeFactory GetEventSerdeFactory();
     }
 
     public class EventTypeResolverConstants
     {
         public const string RESOLVE_METHOD = "Resolve";
         public const string RESOLVE_PRIVATE_BEAN_METHOD = "ResolvePrivateBean";
+        public const string GETEVENTSERDEFACTORY = "GetEventSerdeFactory";
     }
 } // end of namespace

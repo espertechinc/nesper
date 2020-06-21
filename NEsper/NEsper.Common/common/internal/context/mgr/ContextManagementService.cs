@@ -32,7 +32,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
         void StoppedStatement(
             string deploymentIdCreateContext,
             string contextName,
-            ContextControllerStatementDesc statement);
+            int statementId,
+            string statementName,
+            string statementDeploymentId);
 
         ContextManager GetContextManager(
             string deploymentIdCreateContext,

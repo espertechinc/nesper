@@ -10,8 +10,11 @@ using System.Collections.Generic;
 using System.Xml;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.fireandforget;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
@@ -29,14 +32,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
 
                 using (var xmlStreamTwo = resourceManager.GetResourceAsStream("regression/mediaOrderTwo.xml")) {
                     var eventDocTwo = SupportXML.GetDocument(xmlStreamTwo);
-
-                    IList<RegressionExecution> execs = new List<RegressionExecution>();
+                    
+                    var execs = new List<RegressionExecution>();
                     execs.Add(new EPLContainedExample(eventDocOne));
                     execs.Add(new EPLContainedSolutionPattern());
                     execs.Add(new EPLContainedJoinSelfJoin(eventDocOne, eventDocTwo));
                     execs.Add(new EPLContainedJoinSelfLeftOuterJoin(eventDocOne, eventDocTwo));
                     execs.Add(new EPLContainedJoinSelfFullOuterJoin(eventDocOne, eventDocTwo));
-
+                    execs.Add(new EPLContainedSolutionPatternFinancial());
                     return execs;
                 }
             }
@@ -50,6 +53,122 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             for (var i = 0; i < rows.Length; i++) {
                 // System.out.println(renderer.render("event#" + i, rows[i]));
                 renderer.Render("event#" + i, rows[i]);
+            }
+        }
+
+        internal class EPLContainedSolutionPatternFinancial : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                // Could have also used a mapping event however here we uses fire-and-forget to load the mapping instead:
+                //   @public @buseventtype create schema MappingEvent(foreignSymbol string, localSymbol string);
+                //   on MappingEvent merge Mapping insert select foreignSymbol, localSymbol;
+                // The events are:
+                //   MappingEvent={foreignSymbol="ABC", localSymbol="123"}
+                //   MappingEvent={foreignSymbol="DEF", localSymbol="456"}
+                //   MappingEvent={foreignSymbol="GHI", localSymbol="789"}
+                //   MappingEvent={foreignSymbol="JKL", localSymbol="666"}
+                //   ForeignSymbols={companies={{symbol='ABC', value=500}, {symbol='DEF', value=300}, {symbol='JKL', value=400}}}
+                //   LocalSymbols={companies={{symbol='123', value=600}, {symbol='456', value=100}, {symbol='789', value=200}}}
+                var path = new RegressionPath();
+                var epl =
+                    "create schema Symbol(symbol string, value double);\n" +
+                    "@public @buseventtype create schema ForeignSymbols(companies Symbol[]);\n" +
+                    "@public @buseventtype create schema LocalSymbols(companies Symbol[]);\n" +
+                    "\n" +
+                    "create table Mapping(foreignSymbol string primary key, localSymbol string primary key);\n" +
+                    "create index MappingIndexForeignSymbol on Mapping(foreignSymbol);\n" +
+                    "create index MappingIndexLocalSymbol on Mapping(localSymbol);\n" +
+                    "\n" +
+                    "insert into SymbolsPair select * from ForeignSymbols#lastevent as foreign, LocalSymbols#lastevent as local;\n" +
+                    "on SymbolsPair\n" +
+                    "  insert into SymbolsPairBeginEvent select null\n" +
+                    "  insert into ForeignSymbolRow select * from [foreign.companies]\n" +
+                    "  insert into LocalSymbolRow select * from [local.companies]\n" +
+                    "  insert into SymbolsPairOutputEvent select null" +
+                    "  insert into SymbolsPairEndEvent select null" +
+                    "  output all;\n" +
+                    "\n" +
+                    "create context SymbolsPairContext start SymbolsPairBeginEvent end SymbolsPairEndEvent;\n" +
+                    "context SymbolsPairContext create table Result(foreignSymbol string primary key, localSymbol string primary key, value double);\n" +
+                    "\n" +
+                    "context SymbolsPairContext on ForeignSymbolRow as fsr merge Result as result where result.foreignSymbol = fsr.symbol\n" +
+                    "  when not matched then insert select fsr.symbol as foreignSymbol,\n" +
+                    "    (select localSymbol from Mapping as mapping where mapping.foreignSymbol = fsr.symbol) as localSymbol, fsr.value as value\n" +
+                    "  when matched and fsr.value > result.value then update set value = fsr.value;\n" +
+                    "\n" +
+                    "context SymbolsPairContext on LocalSymbolRow as lsr merge Result as result where result.localSymbol = lsr.symbol\n" +
+                    "  when not matched then insert select (select foreignSymbol from Mapping as mapping where mapping.localSymbol = lsr.symbol) as foreignSymbol," +
+                    "    lsr.symbol as localSymbol, lsr.value as value\n" +
+                    "  when matched and lsr.value > result.value then update set value = lsr.value;\n" +
+                    "\n" +
+                    "@Name('out') context SymbolsPairContext on SymbolsPairOutputEvent select foreignSymbol, localSymbol, value from Result order by foreignSymbol asc;\n";
+                env.CompileDeploy(epl, path).AddListener("out");
+
+                // load mapping table
+                var compiledFAF = env.CompileFAF("insert into Mapping select ?::string as foreignSymbol, ?::string as localSymbol", path);
+                var preparedFAF = env.Runtime.FireAndForgetService.PrepareQueryWithParameters(compiledFAF);
+                LoadMapping(env, preparedFAF, "ABC", "123");
+                LoadMapping(env, preparedFAF, "DEF", "456");
+                LoadMapping(env, preparedFAF, "GHI", "789");
+                LoadMapping(env, preparedFAF, "JKL", "666");
+
+                SendForeignSymbols(env, "ABC=500,DEF=300,JKL=400");
+                SendLocalSymbols(env, "123=600,456=100,789=200");
+
+                var results = env.Listener("out").GetAndResetLastNewData();
+                EPAssertionUtil.AssertPropsPerRow(
+                    results,
+                    "foreignSymbol,localSymbol,value".SplitCsv(),
+                    new object[][] {
+                        new object[] {"ABC", "123", 600d}, 
+                        new object[] {"DEF", "456", 300d}, 
+                        new object[] {"GHI", "789", 200d}, 
+                        new object[] {"JKL", "666", 400d}
+                    });
+
+                env.UndeployAll();
+            }
+
+            private void SendForeignSymbols(
+                RegressionEnvironment env,
+                string symbolCsv)
+            {
+                var companies = ParseSymbols(symbolCsv);
+                env.SendEventMap(Collections.SingletonDataMap("companies", companies), "ForeignSymbols");
+            }
+
+            private void SendLocalSymbols(
+                RegressionEnvironment env,
+                string symbolCsv)
+            {
+                var companies = ParseSymbols(symbolCsv);
+                env.SendEventMap(Collections.SingletonDataMap("companies", companies), "LocalSymbols");
+            }
+
+            private IDictionary<string, object>[] ParseSymbols(string symbolCsv)
+            {
+                var pairs = symbolCsv.SplitCsv();
+                var companies = new IDictionary<string, object>[pairs.Length];
+                for (var i = 0; i < pairs.Length; i++) {
+                    var nameAndValue = pairs[i].Split('=');
+                    var symbol = nameAndValue[0];
+                    var value = double.Parse(nameAndValue[1]);
+                    companies[i] = CollectionUtil.BuildMap("symbol", symbol, "value", value);
+                }
+
+                return companies;
+            }
+
+            private void LoadMapping(
+                RegressionEnvironment env,
+                EPFireAndForgetPreparedQueryParameterized preparedFAF,
+                string foreignSymbol,
+                string localSymbol)
+            {
+                preparedFAF.SetObject(1, foreignSymbol);
+                preparedFAF.SetObject(2, localSymbol);
+                env.Runtime.FireAndForgetService.ExecuteQuery(preparedFAF);
             }
         }
 

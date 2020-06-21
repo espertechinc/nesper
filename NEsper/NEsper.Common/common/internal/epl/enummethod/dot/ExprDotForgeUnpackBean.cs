@@ -15,8 +15,6 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.rettype;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -38,29 +36,25 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (target == null) {
-                return null;
-            }
-
             EventBean theEvent = (EventBean) target;
-            return theEvent.Underlying;
+            return theEvent?.Underlying;
         }
 
         public CodegenExpression Codegen(
             CodegenExpression inner,
             Type innerType,
-            CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol,
-            CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope)
         {
             Type resultType = EPTypeHelper.GetCodegenReturnType(returnType);
-            CodegenMethod methodNode = codegenMethodScope
-                .MakeChild(resultType, typeof(ExprDotForgeUnpackBean), codegenClassScope)
+            CodegenMethod methodNode = parent
+                .MakeChild(resultType, typeof(ExprDotForgeUnpackBean), classScope)
                 .AddParam(innerType, "target");
 
             methodNode.Block
                 .IfRefNullReturnNull("target")
-                .MethodReturn(Cast(resultType, ExprDotUnderlying(Cast(typeof(EventBean), Ref("target")))));
+                .MethodReturn(FlexCast(resultType, ExprDotUnderlying(Cast(typeof(EventBean), Ref("target")))));
             return LocalMethod(methodNode, inner);
         }
 

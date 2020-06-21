@@ -35,45 +35,133 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         {
             var execs = new List<RegressionExecution>();
             
-            execs.Add(new InfraOnSelectIndexSimple(true));
-            execs.Add(new InfraOnSelectIndexSimple(false));
+            WithSelectIndexSimple(execs);
+            WithOnSelectIndexChoice(execs);
+            WithWindowAgg(execs);
+            WithSelectAggregationHavingStreamWildcard(execs);
+            WithPatternTimedSelect(execs);
+            WithInvalid(execs);
+            WithSelectCondition(execs);
+            WithSelectJoinColumnsLimit(execs);
+            WithSelectAggregation(execs);
+            WithSelectAggregationCorrelated(execs);
+            WithSelectAggregationGrouping(execs);
+            WithSelectCorrelationDelete(execs);
+            WithPatternCorrelation(execs);
+            WithOnSelectMultikeyWArray(execs);
 
-            execs.Add(new InfraOnSelectIndexChoice(true));
-            execs.Add(new InfraOnSelectIndexChoice(false));
-            
-            execs.Add(new InfraWindowAgg(true));
-            execs.Add(new InfraWindowAgg(false));
+            return execs;
+        }
 
-            execs.Add(new InfraSelectAggregationHavingStreamWildcard(true));
-            execs.Add(new InfraSelectAggregationHavingStreamWildcard(false));
+        public static IList<RegressionExecution> WithOnSelectMultikeyWArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraOnSelectMultikeyWArray(true));
+            execs.Add(new InfraOnSelectMultikeyWArray(false));
+            return execs;
+        }
 
-            execs.Add(new InfraPatternTimedSelect(true));
-            execs.Add(new InfraPatternTimedSelect(false));
-
-            execs.Add(new InfraInvalid(true));
-            execs.Add(new InfraInvalid(false));
-
-            execs.Add(new InfraSelectCondition(true));
-            execs.Add(new InfraSelectCondition(false));
-
-            execs.Add(new InfraSelectJoinColumnsLimit(true));
-            execs.Add(new InfraSelectJoinColumnsLimit(false));
-
-            execs.Add(new InfraSelectAggregation(true));
-            execs.Add(new InfraSelectAggregation(false));
-
-            execs.Add(new InfraSelectAggregationCorrelated(true));
-            execs.Add(new InfraSelectAggregationCorrelated(false));
-
-            execs.Add(new InfraSelectAggregationGrouping(true));
-            execs.Add(new InfraSelectAggregationGrouping(false));
-
-            execs.Add(new InfraSelectCorrelationDelete(true));
-            execs.Add(new InfraSelectCorrelationDelete(false));
-
+        public static IList<RegressionExecution> WithPatternCorrelation(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraPatternCorrelation(true));
             execs.Add(new InfraPatternCorrelation(false));
+            return execs;
+        }
 
+        public static IList<RegressionExecution> WithSelectCorrelationDelete(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraSelectCorrelationDelete(true));
+            execs.Add(new InfraSelectCorrelationDelete(false));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectAggregationGrouping(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraSelectAggregationGrouping(true));
+            execs.Add(new InfraSelectAggregationGrouping(false));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectAggregationCorrelated(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraSelectAggregationCorrelated(true));
+            execs.Add(new InfraSelectAggregationCorrelated(false));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectAggregation(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraSelectAggregation(true));
+            execs.Add(new InfraSelectAggregation(false));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectJoinColumnsLimit(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraSelectJoinColumnsLimit(true));
+            execs.Add(new InfraSelectJoinColumnsLimit(false));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectCondition(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraSelectCondition(true));
+            execs.Add(new InfraSelectCondition(false));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraInvalid(true));
+            execs.Add(new InfraInvalid(false));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPatternTimedSelect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraPatternTimedSelect(true));
+            execs.Add(new InfraPatternTimedSelect(false));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectAggregationHavingStreamWildcard(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraSelectAggregationHavingStreamWildcard(true));
+            execs.Add(new InfraSelectAggregationHavingStreamWildcard(false));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWindowAgg(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraWindowAgg(true));
+            execs.Add(new InfraWindowAgg(false));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOnSelectIndexChoice(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraOnSelectIndexChoice(true));
+            execs.Add(new InfraOnSelectIndexChoice(false));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectIndexSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraOnSelectIndexSimple(true));
+            execs.Add(new InfraOnSelectIndexSimple(false));
             return execs;
         }
 
@@ -838,7 +926,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     "on SupportBean_A select * from MyInfraInvalid where sum(IntPrimitive) > 100",
-                    "Error validating expression: An aggregate function may not appear in a WHERE clause (use the HAVING clause) [");
+                    "Failed to validate expression: An aggregate function may not appear in a WHERE clause (use the HAVING clause) [");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
@@ -855,6 +943,55 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.UndeployAll();
             }
         }
+
+        internal class InfraOnSelectMultikeyWArray : RegressionExecution
+        {
+            private readonly bool namedWindow;
+
+            public InfraOnSelectMultikeyWArray(bool namedWindow)
+            {
+                this.namedWindow = namedWindow;
+            }
+
+            public void Run(RegressionEnvironment env)
+            {
+                string[] fields = new string[] {"a", "b"};
+                RegressionPath path = new RegressionPath();
+
+                string stmtTextCreate = namedWindow
+                    ? "@Name('create') create window MyInfraPC#keepall as (id string, array int[], value int)"
+                    : "@Name('create') create table MyInfraPC(id string primary key, array int[], value int)";
+                env.CompileDeploy(stmtTextCreate, path);
+
+                string stmtTextSelect = "@Name('s0') on SupportBean select array, sum(value) as thesum from MyInfraPC group by array";
+                env.CompileDeploy(stmtTextSelect, path).AddListener("s0");
+
+                env.CompileExecuteFAF("insert into MyInfraPC values('E1', {1, 2}, 10)", path);
+                env.CompileExecuteFAF("insert into MyInfraPC values('E2', {1, 2}, 11)", path);
+
+                env.Milestone(0);
+
+                env.SendEventBean(new SupportBean());
+                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "thesum".SplitCsv(), new object[] {21});
+
+                env.CompileExecuteFAF("insert into MyInfraPC values('E3', {1, 2}, 21)", path);
+                env.CompileExecuteFAF("insert into MyInfraPC values('E4', {1}, 22)", path);
+
+                env.Milestone(1);
+
+                env.SendEventBean(new SupportBean());
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                    env.Listener("s0").GetAndResetLastNewData(),
+                    "thesum".SplitCsv(),
+                    new object[][] {
+                        new object[] {42},
+                        new object[] {22}
+                    });
+
+                env.UndeployAll();
+            }
+        }
+        
 
         internal class InfraPatternTimedSelect : RegressionExecution
         {

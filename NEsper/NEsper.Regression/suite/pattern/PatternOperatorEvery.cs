@@ -10,7 +10,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.patternassert;
 
@@ -23,12 +22,54 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new PatternEverySimple());
-            execs.Add(new PatternOp());
-            execs.Add(new PatternEveryWithAnd());
-            execs.Add(new PatternEveryFollowedByWithin());
-            execs.Add(new PatternEveryAndNot());
+            WithEverySimple(execs);
+            WithOp(execs);
+            WithEveryWithAnd(execs);
+            WithEveryFollowedByWithin(execs);
+            WithEveryAndNot(execs);
+            WithEveryFollowedBy(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEveryFollowedBy(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new PatternEveryFollowedBy());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEveryAndNot(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternEveryAndNot());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEveryFollowedByWithin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternEveryFollowedByWithin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEveryWithAnd(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternEveryWithAnd());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOp(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternOp());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEverySimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternEverySimple());
             return execs;
         }
 
@@ -44,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0" };
+                var fields = new[] {"c0"};
 
                 var epl = "@Name('s0') select a.TheString as c0 from pattern [every a=SupportBean]";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -98,7 +139,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
 
                 var epl = "@Name('s0') select a.TheString as c0, a.IntPrimitive as c1, b.IntPrimitive as c2 " +
                           "from pattern [every a=SupportBean -> b=SupportBean(TheString=a.TheString)]";
@@ -132,7 +173,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
 
                 env.AdvanceTime(0);
                 var epl = "@Name('s0') select a.TheString as c0, a.IntPrimitive as c1, b.IntPrimitive as c2 " +
@@ -173,7 +214,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
 
                 var epl =
                     "@Name('s0') select a.TheString as c0, b.TheString as c1 from pattern [every (a=SupportBean(IntPrimitive>0) and b=SupportBean(IntPrimitive<0))]";

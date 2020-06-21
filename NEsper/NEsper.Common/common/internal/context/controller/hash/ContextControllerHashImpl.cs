@@ -96,8 +96,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             EventBean theEvent,
             IntSeqKey controllerPath)
         {
-            int value = item.Lookupable.Getter.Get(theEvent).AsInt32();
-
+            int value = item.Lookupable.Eval.Eval(theEvent, realization.AgentInstanceContextCreate).AsInt32();
             if (hashSvc.HashHasSeenPartition(controllerPath, value)) {
                 return;
             }
@@ -137,6 +136,23 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
         public override void Destroy()
         {
             hashSvc.Destroy();
+        }
+        
+        
+        public override void Transfer(IntSeqKey path, bool transferChildContexts, AgentInstanceTransferServices xfer) {
+            if (!factory.HashSpec.IsPreallocate) {
+                ContextControllerFilterEntry[] filterEntries = hashSvc.MgmtGetFilters(path);
+                ContextControllerDetailHashItem[] hashItems = factory.HashSpec.Items;
+                for (int i = 0; i < hashItems.Length; i++) {
+                    filterEntries[i].Transfer(hashItems[i].FilterSpecActivatable, xfer);
+                }
+            }
+
+            if (!transferChildContexts) {
+                return;
+            }
+
+            VisitPartitions(path, (hash, subpathOrCPId) => realization.TransferRecursive(path, subpathOrCPId, this, xfer));
         }
     }
 } // end of namespace

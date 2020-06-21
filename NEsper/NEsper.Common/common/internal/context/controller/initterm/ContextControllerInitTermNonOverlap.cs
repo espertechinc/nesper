@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 
             if (!currentlyRunning) {
                 initTermSvc.MgmtUpdSetStartCondition(path, startCondition);
-                var isTriggeringEventMatchesFilter = startCondition.Activate(optionalTriggeringEvent, null);
+                var isTriggeringEventMatchesFilter = startCondition.Activate(optionalTriggeringEvent, null, optionalTriggeringPattern);
                 if (isTriggeringEventMatchesFilter) {
                     RangeNotificationStart(path, optionalTriggeringEvent, null, null, null);
                 }
@@ -161,7 +161,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                     this,
                     true);
                 if (!startCondition.IsImmediate) {
-                    startCondition.Activate(optionalTriggeringEvent, null);
+                    startCondition.Activate(optionalTriggeringEvent, null, optionalTriggeringPattern);
                     initTermSvc.MgmtUpdSetStartCondition(controllerPath, startCondition);
                 }
                 else {

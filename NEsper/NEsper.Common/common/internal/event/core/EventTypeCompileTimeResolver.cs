@@ -24,6 +24,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         private readonly string moduleName;
         private readonly ICollection<string> moduleUses;
         private readonly EventTypeRepositoryImpl publics;
+        private readonly bool isFireAndForget;
 
         public EventTypeCompileTimeResolver(
             string moduleName,
@@ -31,7 +32,8 @@ namespace com.espertech.esper.common.@internal.@event.core
             EventTypeCompileTimeRegistry locals,
             EventTypeRepositoryImpl publics,
             PathRegistry<string, EventType> path,
-            ModuleDependenciesCompileTime moduleDependencies)
+            ModuleDependenciesCompileTime moduleDependencies,
+            bool isFireAndForget)
         {
             this.moduleName = moduleName;
             this.moduleUses = moduleUses;
@@ -39,6 +41,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             this.publics = publics;
             Path = path;
             this.moduleDependencies = moduleDependencies;
+            this.isFireAndForget = isFireAndForget;
         }
 
         public PathRegistry<string, EventType> Path { get; }
@@ -75,10 +78,11 @@ namespace com.espertech.esper.common.@internal.@event.core
                     return null;
                 }
 
-                if (!NameAccessModifierExtensions.Visible(
-                    typeAndModule.First.Metadata.AccessModifier,
-                    typeAndModule.Second,
-                    moduleName)) {
+                if (!isFireAndForget &&
+                    !NameAccessModifierExtensions.Visible(
+                        typeAndModule.First.Metadata.AccessModifier,
+                        typeAndModule.Second,
+                        moduleName)) {
                     return null;
                 }
 

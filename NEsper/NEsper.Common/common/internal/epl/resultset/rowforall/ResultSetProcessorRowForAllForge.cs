@@ -17,7 +17,6 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
@@ -82,13 +81,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                 "AggregationService",
                 typeof(ResultSetProcessorRowForAll),
                 classScope,
-                node => node.GetterBlock.BlockReturn(REF_AGGREGATIONSVC));
+                node => node.GetterBlock.BlockReturn(MEMBER_AGGREGATIONSVC));
             instance.Properties.AddProperty(
                 typeof(ExprEvaluatorContext),
                 "ExprEvaluatorContext",
                 typeof(ResultSetProcessorRowForAll),
                 classScope,
-                node => node.GetterBlock.BlockReturn(REF_AGENTINSTANCECONTEXT));
+                node => node.GetterBlock.BlockReturn(MEMBER_AGENTINSTANCECONTEXT));
             instance.Properties.AddProperty(
                 typeof(bool),
                 "IsSelectRStream",

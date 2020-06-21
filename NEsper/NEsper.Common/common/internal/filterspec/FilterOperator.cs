@@ -86,6 +86,9 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         /// <summary> Advanced-index</summary>
         ADVANCED_INDEX,
+        
+        /// <summary>Reusable boolean expression filter operator.</summary>
+        REBOOL,
 
         /// <summary> Boolean expression filter operator</summary>
         BOOLEAN_EXPRESSION
@@ -175,88 +178,41 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public static string GetTextualOp(this FilterOperator op)
         {
-            switch (op) {
-                case FilterOperator.EQUAL:
-                    return "=";
-
-                case FilterOperator.NOT_EQUAL:
-                    return "!=";
-
-                case FilterOperator.IS:
-                    return "is";
-
-                case FilterOperator.IS_NOT:
-                    return "is not";
-
-                case FilterOperator.LESS:
-                    return "<";
-
-                case FilterOperator.LESS_OR_EQUAL:
-                    return "<=";
-
-                case FilterOperator.GREATER_OR_EQUAL:
-                    return ">=";
-
-                case FilterOperator.GREATER:
-                    return ">";
-
-                case FilterOperator.RANGE_OPEN:
-                    return ": return(,)";
-
-                case FilterOperator.RANGE_CLOSED:
-                    return "[,]";
-
-                case FilterOperator.RANGE_HALF_OPEN:
-                    return "[,)";
-
-                case FilterOperator.RANGE_HALF_CLOSED:
-                    return ": return(,]";
-
-                case FilterOperator.NOT_RANGE_OPEN:
-                    return "-: return(,)";
-
-                case FilterOperator.NOT_RANGE_CLOSED:
-                    return "-[,]";
-
-                case FilterOperator.NOT_RANGE_HALF_OPEN:
-                    return "-[,)";
-
-                case FilterOperator.NOT_RANGE_HALF_CLOSED:
-                    return "-: return(,]";
-
-                case FilterOperator.IN_LIST_OF_VALUES:
-                    return "in";
-
-                case FilterOperator.NOT_IN_LIST_OF_VALUES:
-                    return "!in";
-
-                case FilterOperator.ADVANCED_INDEX:
-                    return "ai";
-
-                case FilterOperator.BOOLEAN_EXPRESSION:
-                    return "boolean_expr";
-            }
-
-            throw new ArgumentException();
+            return op switch {
+                FilterOperator.EQUAL => "=",
+                FilterOperator.NOT_EQUAL => "!=",
+                FilterOperator.IS => "is",
+                FilterOperator.IS_NOT => "is not",
+                FilterOperator.LESS => "<",
+                FilterOperator.LESS_OR_EQUAL => "<=",
+                FilterOperator.GREATER_OR_EQUAL => ">=",
+                FilterOperator.GREATER => ">",
+                FilterOperator.RANGE_OPEN => ": return(,)",
+                FilterOperator.RANGE_CLOSED => "[,]",
+                FilterOperator.RANGE_HALF_OPEN => "[,)",
+                FilterOperator.RANGE_HALF_CLOSED => ": return(,]",
+                FilterOperator.NOT_RANGE_OPEN => "-: return(,)",
+                FilterOperator.NOT_RANGE_CLOSED => "-[,]",
+                FilterOperator.NOT_RANGE_HALF_OPEN => "-[,)",
+                FilterOperator.NOT_RANGE_HALF_CLOSED => "-: return(,]",
+                FilterOperator.IN_LIST_OF_VALUES => "in",
+                FilterOperator.NOT_IN_LIST_OF_VALUES => "!in",
+                FilterOperator.ADVANCED_INDEX => "ai",
+                FilterOperator.REBOOL => "rebool",
+                FilterOperator.BOOLEAN_EXPRESSION => "boolean_expr",
+                _ => throw new ArgumentException()
+            };
         }
 
         public static FilterOperator ReversedRelationalOp(this FilterOperator op)
         {
-            switch (op) {
-                case FilterOperator.LESS:
-                    return FilterOperator.GREATER;
-
-                case FilterOperator.LESS_OR_EQUAL:
-                    return FilterOperator.GREATER_OR_EQUAL;
-
-                case FilterOperator.GREATER:
-                    return FilterOperator.LESS;
-
-                case FilterOperator.GREATER_OR_EQUAL:
-                    return FilterOperator.LESS_OR_EQUAL;
-            }
-
-            throw new ArgumentException("Not a relational operator: " + op);
+            return op switch {
+                FilterOperator.LESS => FilterOperator.GREATER,
+                FilterOperator.LESS_OR_EQUAL => FilterOperator.GREATER_OR_EQUAL,
+                FilterOperator.GREATER => FilterOperator.LESS,
+                FilterOperator.GREATER_OR_EQUAL => FilterOperator.LESS_OR_EQUAL,
+                _ => throw new ArgumentException("Not a relational operator: " + op)
+            };
         }
     }
 }

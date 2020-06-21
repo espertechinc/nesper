@@ -9,13 +9,14 @@
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.airegistry;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.table.core;
-using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading.locks;
@@ -28,37 +29,71 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private AggregationRowFactory _aggregationRowFactory;
-        private DataInputOutputSerdeWCollation<AggregationRow> _aggregationSerde;
+        private DataInputOutputSerde<AggregationRow> _aggregationSerde;
         private TableMetadataInternalEventToPublic _eventToPublic;
         private EventPropertyValueGetter _primaryKeyGetter;
+        private DataInputOutputSerde _primaryKeySerde;
+        private MultiKeyFromObjectArray _primaryKeyObjectArrayTransform;
+        private MultiKeyFromMultiKey _primaryKeyIntoTableTransform;
+        private DataInputOutputSerde[] _propertyForges;
+        
         private Table _table;
         private string _tableName;
+        private EventType _publicEventType;
 
         public TableMetadataInternalEventToPublic EventToPublic {
+            get => _eventToPublic;
             set => _eventToPublic = value;
         }
 
         public string TableName {
+            get => _tableName;
             set => _tableName = value;
         }
 
         public EventType PublicEventType {
-            set => StatementEventType = value;
+            get => _publicEventType;
+            set => _publicEventType = value;
         }
 
         public AggregationRowFactory AggregationRowFactory {
+            get => _aggregationRowFactory;
             set => _aggregationRowFactory = value;
         }
 
-        public DataInputOutputSerdeWCollation<AggregationRow> AggregationSerde {
+        public DataInputOutputSerde<AggregationRow> AggregationSerde {
+            get => _aggregationSerde;
             set => _aggregationSerde = value;
         }
 
         public EventPropertyValueGetter PrimaryKeyGetter {
+            get => _primaryKeyGetter;
             set => _primaryKeyGetter = value;
         }
 
-        public EventType StatementEventType { get; private set; }
+        public DataInputOutputSerde PrimaryKeySerde {
+            get => _primaryKeySerde;
+            set => _primaryKeySerde = value;
+        }
+
+        public MultiKeyFromObjectArray PrimaryKeyObjectArrayTransform {
+            get => _primaryKeyObjectArrayTransform;
+            set => _primaryKeyObjectArrayTransform = value;
+        }
+
+        public MultiKeyFromMultiKey PrimaryKeyIntoTableTransform {
+            get => _primaryKeyIntoTableTransform;
+            set => _primaryKeyIntoTableTransform = value;
+        }
+
+        public DataInputOutputSerde[] PropertyForges {
+            get => _propertyForges;
+            set => _propertyForges = value;
+        }
+
+        public EventType StatementEventType {
+            get => _publicEventType;
+        }
 
         public void StatementCreate(StatementContext statementContext)
         {
@@ -81,7 +116,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                 agentInstanceContext.TableManagementService.AllocateTableInstance(_table, agentInstanceContext);
             var finalView = new TableInstanceViewable(_table, tableState);
 
-            AgentInstanceStopCallback stop = new ProxyAgentInstanceStopCallback {
+            AgentInstanceMgmtCallback stop = new ProxyAgentInstanceMgmtCallback {
                 ProcStop = services => {
                     var instance = _table.GetTableInstance(agentInstanceContext.AgentInstanceId);
                     if (instance == null) {
@@ -122,9 +157,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             _table.StatementContextCreateTable = statementContext;
             _table.EventToPublic = _eventToPublic;
             _table.AggregationRowFactory = _aggregationRowFactory;
-            _table.TableSerdes =
-                statementContext.TableManagementService.GetTableSerdes(_table, _aggregationSerde, statementContext);
+            _table.TableSerdes = new TableSerdes(_propertyForges, _aggregationSerde);
             _table.PrimaryKeyGetter = _primaryKeyGetter;
+            _table.PrimaryKeySerde = _primaryKeySerde;
+            _table.PrimaryKeyObjectArrayTransform = _primaryKeyObjectArrayTransform;
+            _table.PrimaryKeyIntoTableTransform = _primaryKeyIntoTableTransform;
+
             _table.TableReady();
         }
     }

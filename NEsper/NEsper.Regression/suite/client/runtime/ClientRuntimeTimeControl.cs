@@ -21,8 +21,22 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new ClientRuntimeSendTimeSpan());
+            WithSendTimeSpan(execs);
+            WithNextScheduledTime(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNextScheduledTime(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientRuntimeNextScheduledTime());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSendTimeSpan(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientRuntimeSendTimeSpan());
             return execs;
         }
 

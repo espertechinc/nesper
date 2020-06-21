@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.collection
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGen()
         {
             Assert.AreEqual(29, CountEnumeration(new int[] { 1, 2, 3, 4, 5, 6 }));

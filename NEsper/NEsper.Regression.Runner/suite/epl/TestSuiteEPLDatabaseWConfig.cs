@@ -8,11 +8,10 @@
 
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.suite.epl.database;
 using com.espertech.esper.regressionlib.support.util;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 
 using NUnit.Framework;
 

@@ -8,107 +8,85 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
+using com.espertech.esper.regressionlib.support.expreval;
 using com.espertech.esper.regressionlib.support.util;
+
 
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
-    public class ExprEnumAggregate
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            var execs = new List<RegressionExecution>();
-            execs.Add(new ExprEnumAggregateEvents());
-            execs.Add(new ExprEnumAggregateScalar());
-            return execs;
-        }
+	public class ExprEnumAggregate
+	{
 
-        internal class ExprEnumAggregateEvents : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                string[] fields = {"val0", "val1", "val2"};
-                var eplFragment = "@Name('s0') select " +
-                                  "Contained.aggregate(0, (result, item) -> result + item.P00) as val0, " +
-                                  "Contained.aggregate('', (result, item) -> result || ', ' || item.Id) as val1, " +
-                                  "Contained.aggregate('', (result, item) -> result || (case when result='' then '' else ',' end) || item.Id) as val2 " +
-                                  " from SupportBean_ST0_Container";
-                env.CompileDeploy(eplFragment).AddListener("s0");
+		public static ICollection<RegressionExecution> Executions()
+		{
+			List<RegressionExecution> execs = new List<RegressionExecution>();
+			execs.Add(new ExprEnumAggregateEvents());
+			execs.Add(new ExprEnumAggregateScalar());
+			return execs;
+		}
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fields,
-                    new[] {typeof(int?), typeof(string), typeof(string)});
+		internal class ExprEnumAggregateEvents : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0,c1,c2,c3,c4".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
+				builder.WithExpression(fields[0], "Contained.aggregate(0, (result, item) => result + item.P00)");
+				builder.WithExpression(fields[1], "Contained.aggregate('', (result, item) => result || ', ' || item.Id)");
+				builder.WithExpression(fields[2], "Contained.aggregate('', (result, item) => result || (case when result='' then '' else ',' end) || item.Id)");
+				builder.WithExpression(fields[3], "Contained.aggregate(0, (result, item, i) => result + item.P00 + i*10)");
+				builder.WithExpression(fields[4], "Contained.aggregate(0, (result, item, i, s) => result + item.P00 + i*10 + s*100)");
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,12", "E2,11", "E2,2"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {25, ", E1, E2, E2", "E1,E2,E2"});
+				builder.WithStatementConsumer(
+					stmt => LambdaAssertionUtil.AssertTypes(
+						stmt.EventType,
+						fields,
+						new[] {typeof(int?), typeof(string), typeof(string), typeof(int?), typeof(int?)}));
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value(null));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {null, null, null});
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,12", "E2,11", "E2,2"))
+					.Expect(fields, 25, ", E1, E2, E2", "E1,E2,E2", 12 + 21 + 22, 312 + 321 + 322);
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value());
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {0, "", ""});
+				builder.WithAssertion(SupportBean_ST0_Container.Make2ValueNull())
+					.Expect(fields, null, null, null, null, null);
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,12"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {12, ", E1", "E1"});
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value(new string[0]))
+					.Expect(fields, 0, "", "", 0, 0);
 
-                env.UndeployAll();
-            }
-        }
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,12"))
+					.Expect(fields, 12, ", E1", "E1", 12, 112);
 
-        internal class ExprEnumAggregateScalar : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new [] { "val0" };
-                var eplFragment = "@Name('s0') select " +
-                                  "Strvals.aggregate('', (result, item) -> result || '+' || item) as val0 " +
-                                  "from SupportCollection";
-                env.CompileDeploy(eplFragment).AddListener("s0");
+				builder.Run(env);
+			}
+		}
 
-                LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new[] {typeof(string)});
+		internal class ExprEnumAggregateScalar : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0,c1,c2".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
+				builder.WithExpression(fields[0], "Strvals.aggregate('', (result, item) => result || '+' || item)");
+				builder.WithExpression(fields[1], "Strvals.aggregate('', (result, item, i) => result || '+' || item || '_' || Convert.ToString(i))");
+				builder.WithExpression(
+					fields[2],
+					"Strvals.aggregate('', (result, item, i, s) => result || '+' || item || '_' || Convert.ToString(i) || '_' || Convert.ToString(s))");
 
-                env.SendEventBean(SupportCollection.MakeString("E1,E2,E3"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"+E1+E2+E3"});
+				builder.WithStatementConsumer(stmt => LambdaAssertionUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(string)));
 
-                env.SendEventBean(SupportCollection.MakeString("E1"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"+E1"});
+				builder.WithAssertion(SupportCollection.MakeString("E1,E2,E3"))
+					.Expect(fields, "+E1+E2+E3", "+E1_0+E2_1+E3_2", "+E1_0_3+E2_1_3+E3_2_3");
 
-                env.SendEventBean(SupportCollection.MakeString(""));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {""});
+				builder.WithAssertion(SupportCollection.MakeString("E1")).Expect(fields, "+E1", "+E1_0", "+E1_0_1");
 
-                env.SendEventBean(SupportCollection.MakeString(null));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {null});
+				builder.WithAssertion(SupportCollection.MakeString("")).Expect(fields, "", "", "");
 
-                env.UndeployAll();
-            }
-        }
-    }
+				builder.WithAssertion(SupportCollection.MakeString(null)).Expect(fields, null, null, null);
+
+				builder.Run(env);
+			}
+		}
+	}
 } // end of namespace

@@ -14,7 +14,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.suite.pattern;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.client;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 
 using NUnit.Framework;
 
@@ -58,6 +58,15 @@ namespace com.espertech.esper.regressionrun.suite.pattern
             RegressionSession session = RegressionRunner.Session();
             session.Configuration.Common.TimeSource.TimeUnit = TimeUnit.MICROSECONDS;
             RegressionRunner.Run(session, new PatternMicrosecondResolution(true));
+            session.Destroy();
+        }
+
+        [Test]
+        public void TestPatternMicrosecondResolutionCrontab()
+        {
+            RegressionSession session = RegressionRunner.Session();
+            session.Configuration.Common.TimeSource.TimeUnit = TimeUnit.MICROSECONDS;
+            RegressionRunner.Run(session, new PatternMicrosecondResolutionCrontab());
             session.Destroy();
         }
 

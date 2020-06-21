@@ -39,12 +39,8 @@ namespace com.espertech.esper.common.@internal.@event.map
         {
             var eventBean = map.Get(_propertyName);
 
-            if (eventBean == null) {
-                return null;
-            }
-
             var theEvent = (EventBean) eventBean;
-            return theEvent.Underlying;
+            return theEvent?.Underlying;
         }
 
         public bool IsMapExistsProperty(IDictionary<string, object> map)

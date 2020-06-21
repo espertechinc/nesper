@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.framework
                 Assert.Fail();
             }
             catch (EPCompileException ex) {
-                 AssertMessage(ex, message);
+                AssertMessage(ex, message);
             }
         }
 
@@ -66,14 +66,6 @@ namespace com.espertech.esper.regressionlib.framework
                 Assert.Fail();
             }
             catch (EPCompileException ex) {
-#if false
-                for (Exception eq = ex; eq != null ; eq = eq.InnerException)
-                {
-                    Console.WriteLine("{0}[>>]: {1}", eq.GetType().Name, eq.Message);
-                    Console.WriteLine(eq.StackTrace);
-                }
-#endif
-
                 AssertMessage(ex, message);
             }
         }
@@ -99,19 +91,21 @@ namespace com.espertech.esper.regressionlib.framework
                 return; // skip message validation
             }
 
-
+            var exceptionMessage = ex.Message;
+            if (exceptionMessage.StartsWith("Error during compilation: ")) {
+                message = "Error during compilation: " + message;
+            }
+            
             try {
-                StringAssert.StartsWith(message, ex.Message);
+                StringAssert.StartsWith(message, exceptionMessage);
             }
             catch {
-                Console.WriteLine("Underlying Exception: " + ex.GetType().FullName + " => " + ex.Message);
-                Console.WriteLine(ex.StackTrace);
-                ex = ex.InnerException;
-
-                while (ex != null) {
-                    Console.WriteLine("--" + ex.GetType().FullName + " => " + ex.Message);
+                for (;ex != null; ex = ex.InnerException) {
+                    Console.WriteLine();
+                    Console.WriteLine("Exception: " + ex.GetType().FullName);
+                    Console.WriteLine("Message: " + exceptionMessage);
+                    Console.WriteLine("StackTrace:");
                     Console.WriteLine(ex.StackTrace);
-                    ex = ex.InnerException;
                 }
 
                 throw;
@@ -293,7 +287,7 @@ namespace com.espertech.esper.regressionlib.framework
         {
             var args = new CompilerArguments(env.Configuration);
             args.Path.AddAll(path.Compileds);
-            EPCompilerProvider.Compiler.CompileQuery(epl, args);
+            env.Compiler.CompileQuery(epl, args);
         }
     }
 } // end of namespace

@@ -19,18 +19,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 {
     public class ExprEvalWithTypeWidener : ExprForge
     {
-        private readonly TypeWidenerSPI widener;
-        private readonly ExprNode validated;
-        private readonly Type targetType;
+        private readonly TypeWidenerSPI _widener;
+        private readonly ExprNode _validated;
+        private readonly Type _targetType;
 
         public ExprEvalWithTypeWidener(
             TypeWidenerSPI widener,
             ExprNode validated,
             Type targetType)
         {
-            this.widener = widener;
-            this.validated = validated;
-            this.targetType = targetType;
+            this._widener = widener;
+            this._validated = validated;
+            this._targetType = targetType;
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -43,16 +43,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpression inner = validated.Forge.EvaluateCodegen(
-                validated.Forge.EvaluationType,
+            CodegenExpression inner = _validated.Forge.EvaluateCodegen(
+                _validated.Forge.EvaluationType,
                 codegenMethodScope,
                 exprSymbol,
                 codegenClassScope);
-            return widener.WidenCodegen(inner, codegenMethodScope, codegenClassScope);
+            return _widener.WidenCodegen(inner, codegenMethodScope, codegenClassScope);
         }
 
         public Type EvaluationType {
-            get => targetType;
+            get => _targetType;
         }
 
         public ExprForgeConstantType ForgeConstantType {
@@ -61,13 +61,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
         public ExprNodeRenderable ExprForgeRenderable {
             get {
-                return new ProxyExprNodeRenderable() {
-                    ProcToEPL = (
-                        writer,
-                        parentPrecedence) => {
-                        writer.Write(typeof(ExprEvalWithTypeWidener).Name);
-                    },
-                };
+                return new ProxyExprNodeRenderable((writer, parentPrecedence, flags) => {
+                    writer.Write(typeof(ExprEvalWithTypeWidener).Name);
+                });
             }
         }
     }

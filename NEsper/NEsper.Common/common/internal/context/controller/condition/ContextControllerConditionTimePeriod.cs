@@ -6,15 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.schedule;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.controller.condition
 {
@@ -46,7 +44,8 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
 
         public bool Activate(
             EventBean optionalTriggeringEvent,
-            ContextControllerEndConditionMatchEventProvider endConditionMatchEventProvider)
+            ContextControllerEndConditionMatchEventProvider endConditionMatchEventProvider,
+            IDictionary<string, object> optionalTriggeringPattern)
         {
             ScheduleHandleCallback scheduleCallback = new ProxyScheduleHandleCallback() {
                 ProcScheduledTrigger = () => {
@@ -95,6 +94,10 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             }
 
             scheduleHandle = null;
+        }
+
+        public void Transfer(AgentInstanceTransferServices xfer)
+        {
         }
 
         public bool IsImmediate {

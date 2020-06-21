@@ -15,6 +15,7 @@ using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
@@ -36,7 +37,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             "${PREFIX} create window MyWindow#keepall as SupportBean;\n" +
             "${PREFIX} create table MyTable as (c count(*));\n" +
             "${PREFIX} create expression MyExpr { 1 };\n" +
-            "${PREFIX} create expression double myscript(intvalue) [0];\n";
+            "${PREFIX} create expression double myscript(intvalue) [0];\n" +
+            "${PREFIX} create inlined_class \"\"\" namespace ${NAMESPACE} { public class MyClass { public static string DoIt() { return \"def\"; } } }\"\"\";\n";
 
         private const string USER_EPL =
             "select 1 from MySchema;\n" +
@@ -45,111 +47,147 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             "on SupportBean update MyWindow set TheString = 'a';\n" +
             "into table MyTable select count(*) as c from SupportBean;\n" +
             "select MyExpr() from SupportBean;\n" +
-            "select myscript(1) from SupportBean;\n";
+            "select myscript(1) from SupportBean;\n" +
+            "select ${NAMESPACE}.MyClass.DoIt() from SupportBean;\n";
 
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new ClientVisibilityNamedWindowSimple());
-            execs.Add(new ClientVisibilityAmbiguousPathWithPreconfigured());
-            execs.Add(new ClientVisibilityDefaultPrivate());
-            execs.Add(new ClientVisibilityAnnotationPrivate());
-            execs.Add(new ClientVisibilityAnnotationProtected());
-            execs.Add(new ClientVisibilityAnnotationPublic());
-            execs.Add(new ClientVisibilityModuleNameOption());
-            execs.Add(new ClientVisibilityAnnotationSendable());
-            execs.Add(new ClientVisibilityAnnotationInvalid());
-            execs.Add(new ClientVisibilityAmbiguousTwoPath());
+            WithNamedWindowSimple(execs);
+            WithAmbiguousPathWithPreconfigured(execs);
+            WithDefaultPrivate(execs);
+            WithAnnotationPrivate(execs);
+            WithAnnotationProtected(execs);
+            WithAnnotationPublic(execs);
+            WithModuleNameOption(execs);
+            WithAnnotationBusEventType(execs);
+            WithAnnotationInvalid(execs);
+            WithAmbiguousTwoPath(execs);
+            WithDisambiguateWithUses(execs);
+            WithBusRequiresPublic(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBusRequiresPublic(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientVisibilityBusRequiresPublic());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDisambiguateWithUses(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientVisibilityDisambiguateWithUses());
             return execs;
         }
 
-        private static void TryInvalidNotVisible(
-            RegressionEnvironment env,
-            EPCompiled compiled)
+        public static IList<RegressionExecution> WithAmbiguousTwoPath(IList<RegressionExecution> execs = null)
         {
-            var path = new RegressionPath();
-            path.Add(compiled);
-            TryInvalidCompile(
-                env,
-                path,
-                "select 1 from MySchema",
-                "Failed to resolve event type, named window or table by name 'MySchema'");
-            TryInvalidCompile(
-                env,
-                path,
-                "select abc from SupportBean",
-                "Failed to validate select-clause expression 'abc': Property named 'abc' is not valid in any stream");
-            TryInvalidCompile(
-                env,
-                path,
-                "context MyContext select * from SupportBean",
-                "Context by name 'MyContext' could not be found");
-            TryInvalidCompile(
-                env,
-                path,
-                "on SupportBean update MyWindow set TheString = 'a'",
-                "A named window or table 'MyWindow' has not been declared");
-            TryInvalidCompile(
-                env,
-                path,
-                "into table MyTable select count(*) as c from SupportBean",
-                "Invalid into-table clause: Failed to find table by name 'MyTable'");
-            TryInvalidCompile(
-                env,
-                path,
-                "select MyExpr() from SupportBean",
-                "Failed to validate select-clause expression 'MyExpr': Unknown single-row function, expression declaration, script or aggregation function named 'MyExpr' could not be resolved");
-            TryInvalidCompile(
-                env,
-                path,
-                "select myscript(1) from SupportBean",
-                "Failed to validate select-clause expression 'myscript(1)': Unknown single-row function, aggregation function or mapped or indexed property named 'myscript' could not be resolved");
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientVisibilityAmbiguousTwoPath());
+            return execs;
         }
 
-        private static void RunAssertionDisambiguate(
-            RegressionEnvironment env,
-            string firstEpl,
-            string secondEpl,
-            string useEpl,
-            Runnable assertion)
+        public static IList<RegressionExecution> WithAnnotationInvalid(IList<RegressionExecution> execs = null)
         {
-            var first = env.Compile("module a;\n @public " + firstEpl + "\n");
-            var second = env.Compile("module b;\n @public " + secondEpl + "\n");
-            env.Deploy(first);
-            env.Deploy(second);
-
-            var path = new RegressionPath();
-            path.Add(first);
-            path.Add(second);
-            env.CompileDeploy("uses b;\n @Name('s0') " + useEpl + "\n", path).AddListener("s0");
-
-            assertion.Invoke();
-
-            env.UndeployAll();
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientVisibilityAnnotationInvalid());
+            return execs;
         }
 
-        private static void RunAssertionOptionModuleName(
-            RegressionEnvironment env,
-            string epl)
+        public static IList<RegressionExecution> WithAnnotationBusEventType(IList<RegressionExecution> execs = null)
         {
-            EPCompiled compiledBoth;
-            try {
-                var args = new CompilerArguments(env.Configuration);
-                args.Options.SetModuleName(ctx => "abc");
-                compiledBoth = EPCompilerProvider.Compiler.Compile(epl, args);
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientVisibilityAnnotationBusEventType());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithModuleNameOption(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientVisibilityModuleNameOption());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAnnotationPublic(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientVisibilityAnnotationPublic());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAnnotationProtected(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientVisibilityAnnotationProtected());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAnnotationPrivate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientVisibilityAnnotationPrivate());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDefaultPrivate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientVisibilityDefaultPrivate());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAmbiguousPathWithPreconfigured(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientVisibilityAmbiguousPathWithPreconfigured());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedWindowSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientVisibilityNamedWindowSimple());
+            return execs;
+        }
+
+        private class ClientVisibilityBusRequiresPublic : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var message = "Event type 'ABC' with bus-visibility requires the public access modifier for the event type";
+                TryInvalidCompile(env, "@Private @BusEventType create schema ABC()", message);
+                TryInvalidCompile(env, "@BusEventType create schema ABC()", message);
+
+                TryInvalidCompileWConfigure(
+                    env,
+                    config => config.Compiler.ByteCode.BusModifierEventType = EventTypeBusModifier.BUS,
+                    "@private create schema ABC()",
+                    message);
+                TryInvalidCompileWConfigure(
+                    env,
+                    config => config.Compiler.ByteCode.BusModifierEventType = EventTypeBusModifier.BUS,
+                    "@protected create schema ABC()",
+                    message);
+
+                foreach (var modifier in new[] {
+                    NameAccessModifier.INTERNAL,
+                    NameAccessModifier.PRIVATE
+                }) {
+                    TryInvalidCompileWConfigure(
+                        env,
+                        config => {
+                            config.Compiler.ByteCode.BusModifierEventType = EventTypeBusModifier.BUS;
+                            config.Compiler.ByteCode.AccessModifierEventType = modifier;
+                        },
+                        "create schema ABC()",
+                        message);
+                }
             }
-            catch (EPCompileException ex) {
-                throw new EPException(ex);
-            }
-
-            var deployed = SupportCompileDeployUtil.Deploy(compiledBoth, env.Runtime);
-            Assert.AreEqual("abc", deployed.ModuleName); // Option-provided module-name wins
-
-            env.UndeployAll();
         }
 
-        internal class ClientVisibilityDisambiguateWithUses : RegressionExecution
+        private class ClientVisibilityDisambiguateWithUses : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -196,8 +234,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
                 RunAssertionDisambiguate(
                     env,
-                    "create expression double myscript() [0];",
-                    "create expression string myscript() ['z'];",
+                    "create expression double myscript() [return 0];",
+                    "create expression string myscript() [return 'z'];",
                     "select myscript() as c0 from SupportBean",
                     () => {
                         env.SendEventBean(new SupportBean());
@@ -210,10 +248,26 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     "create schema MySchema as (p1 string);",
                     "select p1 from MySchema",
                     () => { });
+
+// The CLR does not allow us to have multiple classes in the same AppDomain.  Unfortunately, this
+// test does not currently represent a case that can occur.
+#if NOT_APPLICABLE
+                RunAssertionDisambiguate(
+                    env,
+                    "create inlined_class \"\"\" public class MyClass { " +
+                    "public static string DoIt() { return \"abc\"; } }\"\"\";\n",
+                    "create inlined_class \"\"\" public class MyClass { " +
+                    "public static string DoIt() { return \"def\"; } }\"\"\";\n",
+                    "select MyClass.DoIt() as c0 from SupportBean",
+                    () => {
+                        env.SendEventBean(new SupportBean());
+                        Assert.AreEqual("def", env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+                    });
+#endif
             }
         }
 
-        internal class ClientVisibilityAnnotationInvalid : RegressionExecution
+        private class ClientVisibilityAnnotationInvalid : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -232,27 +286,21 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             }
         }
 
-        internal class ClientVisibilityAnnotationSendable : RegressionExecution
+        private class ClientVisibilityAnnotationBusEventType : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                        "@Public @BusEventType create schema MyEvent(p0 string);\n" +
+                        "@public @BusEventType create schema MyEvent(p0 string);\n" +
                         "@Name('s0') select * from MyEvent;\n")
                     .AddListener("s0");
-                env.SendEventMap(Collections.EmptyDataMap, "MyEvent");
+                env.SendEventMap(EmptyDictionary<string, object>.Instance, "MyEvent");
                 Assert.IsTrue(env.Listener("s0").IsInvoked);
                 env.UndeployAll();
-
-                env.Compile("@protected @BusEventType create schema MyEvent(p0 string)");
-
-                var message = "Event type 'MyEvent' with bus-visibility requires protected or public access modifiers";
-                TryInvalidCompile(env, "@Private @BusEventType create schema MyEvent(p0 string)", message);
-                TryInvalidCompile(env, "@BusEventType create schema MyEvent(p0 string)", message);
             }
         }
 
-        internal class ClientVisibilityModuleNameOption : RegressionExecution
+        private class ClientVisibilityModuleNameOption : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -261,59 +309,87 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             }
         }
 
-        internal class ClientVisibilityAnnotationProtected : RegressionExecution
+        private class ClientVisibilityAnnotationProtected : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "module a.b.c;\n" + CREATE_EPL.Replace("${PREFIX}", "@protected");
+                var namespc = NamespaceGenerator.Create();
+                var createEPL = CREATE_EPL
+                    .Replace("${PREFIX}", "@protected")
+                    .Replace("${NAMESPACE}", namespc);
+
+                var epl = "module a.b.c;\n" + createEPL;
                 var compiled = env.Compile(epl);
                 TryInvalidNotVisible(env, compiled);
 
+                var userEPL = USER_EPL.Replace("${NAMESPACE}", namespc);
                 var path = new RegressionPath();
                 path.Add(compiled);
-                env.Compile("module a.b.c;\n" + USER_EPL, path);
+                env.Compile("module a.b.c;\n" + userEPL, path);
 
-                TryInvalidCompile(env, path, "module a.b.d;\n" + USER_EPL, FIRST_MESSAGE);
+                TryInvalidCompile(env, path, "module a.b.d;\n" + userEPL, FIRST_MESSAGE);
             }
         }
 
-        internal class ClientVisibilityAnnotationPublic : RegressionExecution
+        private class ClientVisibilityAnnotationPublic : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "module a.b.c;\n" + CREATE_EPL.Replace("${PREFIX}", "@public");
+                var namespc = NamespaceGenerator.Create();
+                var createEPL = CREATE_EPL
+                    .Replace("${PREFIX}", "@public")
+                    .Replace("${NAMESPACE}", namespc);
+
+                var epl = "module a.b.c;\n" + createEPL.Replace("${PREFIX}", "@public");
                 var compiled = env.Compile(epl);
 
+                var userEPL = USER_EPL.Replace("${NAMESPACE}", namespc);
                 var path = new RegressionPath();
                 path.Add(compiled);
-                env.Compile("module x;\n" + USER_EPL, path);
+                env.Compile("module x;\n" + userEPL, path);
             }
         }
 
-        internal class ClientVisibilityDefaultPrivate : RegressionExecution
+        private class ClientVisibilityDefaultPrivate : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = CREATE_EPL.Replace("${PREFIX}", "");
+                var namespc = NamespaceGenerator.Create();
+                var createEPL = CREATE_EPL
+                    .Replace("${PREFIX}", "")
+                    .Replace("${NAMESPACE}", namespc);
+
+                var epl = createEPL;
                 var compiled = env.Compile(epl);
                 TryInvalidNotVisible(env, compiled);
 
-                epl = epl + USER_EPL;
+                namespc = NamespaceGenerator.Create();
+                epl = CREATE_EPL
+                    .Replace("${PREFIX}", "")
+                    .Replace("${NAMESPACE}", namespc);
+                var userEPL = USER_EPL.Replace("${NAMESPACE}", namespc);
+                epl = epl + userEPL;
                 env.CompileDeploy(epl).UndeployAll();
             }
         }
 
-        internal class ClientVisibilityAnnotationPrivate : RegressionExecution
+        private class ClientVisibilityAnnotationPrivate : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = CREATE_EPL.Replace("${PREFIX}", "@private") + USER_EPL;
+                var namespc = NamespaceGenerator.Create();
+                var createEPL = CREATE_EPL
+                    .Replace("${PREFIX}", "@private")
+                    .Replace("${NAMESPACE}", namespc);
+                var userEPL = USER_EPL.Replace("${NAMESPACE}", namespc);
+
+                var epl = createEPL + userEPL;
                 var compiled = env.Compile(epl);
                 TryInvalidNotVisible(env, compiled);
             }
         }
 
-        internal class ClientVisibilityAmbiguousTwoPath : RegressionExecution
+        private class ClientVisibilityAmbiguousTwoPath : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -323,7 +399,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                                 "create window MyWindow#keepall as SupportBean;\n" +
                                 "create table MyTable as (c count(*));\n" +
                                 "create expression MyExpr { 1 };\n" +
-                                "create expression double myscript(stringvalue) [0];\n";
+                                "create expression double myscript(stringvalue) [0];\n" +
+                                "create inlined_class \"\"\" public class MyClass { public static string DoIt() { return \"def\"; } }\"\"\";\n";
 
                 var modOne = env.Compile("module one;\n " + commonEPL, new RegressionPath());
                 var modTwo = env.Compile("module two;\n " + commonEPL, new RegressionPath());
@@ -366,28 +443,32 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     path,
                     "select myscript('a') from SupportBean",
                     "The script by name 'myscript' is ambiguous as it exists for multiple modules: A script by name 'myscript (1 parameters)' is exported by multiple modules");
+                TryInvalidCompile(
+                    env,
+                    path,
+                    "select MyClass.DoIt() from SupportBean",
+                    "Failed to validate select-clause expression 'MyClass.DoIt()': The application-inlined class by name 'MyClass' is ambiguous as it exists for multiple modules: An application-inlined class by name 'MyClass' is exported by multiple modules");
             }
         }
 
-        internal class ClientVisibilityAmbiguousPathWithPreconfigured : RegressionExecution
+        private class ClientVisibilityAmbiguousPathWithPreconfigured : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-
-                var args = new CompilerArguments(new Configuration());
+                var args = new CompilerArguments(env.MinimalConfiguration());
                 args.Options
-                    .SetAccessModifierVariable(ctx => NameAccessModifier.PUBLIC)
-                    .SetAccessModifierEventType(ctx => NameAccessModifier.PUBLIC);
+                    .SetAccessModifierVariable(_ => NameAccessModifier.PUBLIC)
+                    .SetAccessModifierEventType(_ => NameAccessModifier.PUBLIC);
                 EPCompiled compiled;
                 try {
-                    compiled = EPCompilerProvider.Compiler.Compile(
+                    compiled = env.Compiler.Compile(
                         "create variable int preconfigured_variable;\n" +
                         "create schema SupportBean_S1 as (p0 string);\n",
                         args);
                 }
                 catch (EPCompileException e) {
-                    throw new EPException(e);
+                    throw new EPRuntimeException(e);
                 }
 
                 path.Add(compiled);
@@ -405,9 +486,9 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             }
         }
 
-        internal class ClientVisibilityNamedWindowSimple : RegressionExecution
+        private class ClientVisibilityNamedWindowSimple : RegressionExecution
         {
-            private readonly string[] fields = new [] { "c0", "c1" };
+            string[] fields = "c0,c1".SplitCsv();
 
             public void Run(RegressionEnvironment env)
             {
@@ -418,39 +499,134 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
                 var compiledInsert = env.Compile(
                     "insert into MyWindow select * from SupportBean",
-                    new CompilerArguments(new Configuration()).SetPath(new CompilerPath().Add(compiledCreate)));
+                    new CompilerArguments(env.MinimalConfiguration()).SetPath(new CompilerPath().Add(compiledCreate)));
                 env.Deploy(compiledInsert);
 
                 var compiledSelect = env.Compile(
                     "@Name('s0') select TheString as c0, sum(IntPrimitive) as c1 from MyWindow;\n",
-                    new CompilerArguments(new Configuration()).SetPath(new CompilerPath().Add(compiledCreate)));
+                    new CompilerArguments(env.MinimalConfiguration()).SetPath(new CompilerPath().Add(compiledCreate)));
                 env.Deploy(compiledSelect).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E1", 10});
+                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {"E1", 10});
 
                 env.SendEventBean(new SupportBean("E2", 20));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E2", 30});
+                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {"E2", 30});
 
                 env.SendEventBean(new SupportBean("E3", 25));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E3", 45});
+                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {"E3", 45});
 
                 env.SendEventBean(new SupportBean("E4", 26));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E4", 51});
+                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {"E4", 51});
 
                 env.UndeployAll();
+            }
+        }
+
+        private static void TryInvalidNotVisible(
+            RegressionEnvironment env,
+            EPCompiled compiled)
+        {
+            var path = new RegressionPath();
+            path.Add(compiled);
+            TryInvalidCompile(
+                env,
+                path,
+                "select 1 from MySchema",
+                "Failed to resolve event type, named window or table by name 'MySchema'");
+            TryInvalidCompile(
+                env,
+                path,
+                "select abc from SupportBean",
+                "Failed to validate select-clause expression 'abc': Property named 'abc' is not valid in any stream");
+            TryInvalidCompile(
+                env,
+                path,
+                "context MyContext select * from SupportBean",
+                "Context by name 'MyContext' could not be found");
+            TryInvalidCompile(
+                env,
+                path,
+                "on SupportBean update MyWindow set TheString = 'a'",
+                "A named window or table 'MyWindow' has not been declared");
+            TryInvalidCompile(
+                env,
+                path,
+                "into table MyTable select count(*) as c from SupportBean",
+                "Invalid into-table clause: Failed to find table by name 'MyTable'");
+            TryInvalidCompile(
+                env,
+                path,
+                "select MyExpr() from SupportBean",
+                "Failed to validate select-clause expression 'MyExpr()': Unknown single-row function, expression declaration, script or aggregation function named 'MyExpr' could not be resolved");
+            TryInvalidCompile(
+                env,
+                path,
+                "select myscript(1) from SupportBean",
+                "Failed to validate select-clause expression 'myscript(1)': Unknown single-row function, aggregation function or mapped or indexed property named 'myscript' could not be resolved");
+            TryInvalidCompile(
+                env,
+                path,
+                "select MyClassX.DoIt() from SupportBean",
+                "Failed to validate select-clause expression 'MyClassX.DoIt()': Failed to resolve 'MyClassX.DoIt' to a property, single-row function, aggregation function, script, stream or class name");
+        }
+
+        private static void RunAssertionDisambiguate(
+            RegressionEnvironment env,
+            string firstEpl,
+            string secondEpl,
+            string useEpl,
+            Runnable assertion)
+        {
+            var first = env.Compile("module a;\n @public " + firstEpl + "\n");
+            var second = env.Compile("module b;\n @public " + secondEpl + "\n");
+            env.Deploy(first);
+            env.Deploy(second);
+
+            var path = new RegressionPath();
+            path.Add(first);
+            path.Add(second);
+            env.CompileDeploy("uses b;\n @name('s0') " + useEpl + "\n", path).AddListener("s0");
+
+            assertion.Invoke();
+
+            env.UndeployAll();
+        }
+
+        private static void RunAssertionOptionModuleName(
+            RegressionEnvironment env,
+            string epl)
+        {
+            EPCompiled compiledBoth;
+            try {
+                var args = new CompilerArguments(env.Configuration);
+                args.Options.ModuleName = ctx => "abc";
+                compiledBoth = env.Compiler.Compile(epl, args);
+            }
+            catch (EPCompileException ex) {
+                throw new EPRuntimeException(ex);
+            }
+
+            var deployed = SupportCompileDeployUtil.Deploy(compiledBoth, env.Runtime);
+            Assert.AreEqual("abc", deployed.ModuleName); // Option-provided module-name wins
+
+            env.UndeployAll();
+        }
+
+        private static void TryInvalidCompileWConfigure(
+            RegressionEnvironment env,
+            Consumer<Configuration> configurer,
+            string epl,
+            string message)
+        {
+            try {
+                var configuration = env.MinimalConfiguration();
+                configurer.Invoke(configuration);
+                var args = new CompilerArguments(configuration);
+                env.Compiler.Compile(epl, args);
+            }
+            catch (EPCompileException ex) {
+                SupportMessageAssertUtil.AssertMessage(ex, message);
             }
         }
     }

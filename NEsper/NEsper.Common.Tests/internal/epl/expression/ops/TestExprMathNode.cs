@@ -12,7 +12,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.util;
 using com.espertech.esper.common.@internal.type;
-using com.espertech.esper.container;
 
 using NUnit.Framework;
 
@@ -42,14 +41,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return mathNode;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEqualsNode()
         {
             Assert.IsTrue(arithNode.EqualsNode(arithNode, false));
             Assert.IsFalse(arithNode.EqualsNode(new ExprMathNode(MathArithTypeEnum.DIVIDE, false, false), false));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEvaluate()
         {
             arithNode.AddChildNode(new SupportExprNode(10));
@@ -67,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.IsNull(arithNode.Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetType()
         {
             arithNode.AddChildNode(new SupportExprNode(typeof(double?)));
@@ -76,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.AreEqual(typeof(double?), arithNode.Forge.EvaluationType);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestToExpressionString()
         {
             // Build (5*(4-2)), not the same as 5*4-2
@@ -91,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.AreEqual("5*(4-2)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(arithNode));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestValidate()
         {
             // Must have exactly 2 subnodes

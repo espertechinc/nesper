@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     is the maximum number of seconds before a method invocation result is considered stale
         ///     (also known as time-to-live)
         /// </param>
-        /// <param name="purgeIntervalSeconds">is the interval at which the runtimepurges stale data from the cache</param>
+        /// <param name="purgeIntervalSeconds">is the interval at which the runtime purges stale data from the cache</param>
         public void SetExpiryTimeCache(
             double maxAgeSeconds,
             double purgeIntervalSeconds)
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     is the maximum number of seconds before a method invocation result is considered stale
         ///     (also known as time-to-live)
         /// </param>
-        /// <param name="purgeIntervalSeconds">is the interval at which the runtimepurges stale data from the cache</param>
+        /// <param name="purgeIntervalSeconds">is the interval at which the runtime purges stale data from the cache</param>
         /// <param name="cacheReferenceType">specifies the reference type to use</param>
         public void SetExpiryTimeCache(
             double maxAgeSeconds,

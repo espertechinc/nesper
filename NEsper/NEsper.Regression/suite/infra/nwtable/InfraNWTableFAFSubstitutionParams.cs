@@ -149,7 +149,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             try {
                 var args = new CompilerArguments(env.Configuration);
                 args.Path.AddAll(path.Compileds);
-                EPCompilerProvider.Compiler.CompileQuery(faf, args);
+                env.Compiler.CompileQuery(faf, args);
                 Assert.Fail();
             }
             catch (EPCompileException ex) {

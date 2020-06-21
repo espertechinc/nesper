@@ -8,7 +8,7 @@
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.epl.script;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 
 using NUnit.Framework;
 
@@ -24,6 +24,16 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session.Configuration.Common.AddEventType(typeof(SupportBean));
             session.Configuration.Compiler.Scripts.DefaultDialect = "dummy";
             RegressionRunner.Run(session, new EPLScriptExpressionConfiguration());
+            session.Destroy();
+        }
+        
+        [Test, RunInApplicationDomain]
+        public void testEPLScriptExpressionDisable()
+        {
+            RegressionSession session = RegressionRunner.Session();
+            session.Configuration.Common.AddEventType<SupportBean>();
+            session.Configuration.Compiler.Scripts.IsEnabled = false;
+            RegressionRunner.Run(session, new EPLScriptExpressionDisable());
             session.Destroy();
         }
     }

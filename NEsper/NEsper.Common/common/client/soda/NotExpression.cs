@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="inner">is the expression to negate</param>
         public NotExpression(Expression inner)
         {
-            this.AddChild(inner);
+            AddChild(inner);
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.client.soda
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("not ");
-            this.Children[0].ToEPL(writer, Precedence);
+            Children[0].ToEPL(writer, Precedence);
         }
     }
 } // end of namespace

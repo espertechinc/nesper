@@ -19,6 +19,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public static string GetClassName(Type clazz)
+        {
+            var stringBuilder = new StringBuilder();
+            AppendClassName(stringBuilder, clazz);
+            return stringBuilder.ToString();
+        }
         public static StringBuilder AppendClassName(
             StringBuilder builder,
             Type clazz)
@@ -58,15 +64,30 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             }
 
             if (clazz.IsArray) {
+                if (clazz.IsNested) {
+                    AppendClassName(builder, clazz.DeclaringType);
+                    builder.Append('.');
+                }
+                
                 AppendClassName(builder, clazz.GetElementType());
                 builder.Append("[]");
                 return builder;
             }
 
             if (clazz.IsGenericTypeDefinition) {
+                if (clazz.IsNested) {
+                    AppendClassName(builder, clazz.DeclaringType);
+                    builder.Append('.');
+                }
+                
                 var nameWithoutArgCount = clazz.Name.Substring(0, clazz.Name.IndexOf('`'));
                 builder.Append(nameWithoutArgCount);
             } else if (clazz.IsGenericType) {
+                if (clazz.IsNested) {
+                    AppendClassName(builder, clazz.DeclaringType);
+                    builder.Append('.');
+                }
+                
                 var delimiter = "";
                 var nameWithoutArgCount = clazz.Name.Substring(0, clazz.Name.IndexOf('`'));
 

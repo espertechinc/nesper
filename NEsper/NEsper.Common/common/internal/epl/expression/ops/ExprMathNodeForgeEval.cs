@@ -6,13 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -21,18 +18,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprMathNodeForgeEval : ExprEvaluator
     {
-        private readonly ExprEvaluator evaluatorLeft;
-        private readonly ExprEvaluator evaluatorRight;
-        private readonly ExprMathNodeForge forge;
+        private readonly ExprEvaluator _evaluatorLeft;
+        private readonly ExprEvaluator _evaluatorRight;
+        private readonly ExprMathNodeForge _forge;
 
         public ExprMathNodeForgeEval(
             ExprMathNodeForge forge,
             ExprEvaluator evaluatorLeft,
             ExprEvaluator evaluatorRight)
         {
-            this.forge = forge;
-            this.evaluatorLeft = evaluatorLeft;
-            this.evaluatorRight = evaluatorRight;
+            this._forge = forge;
+            this._evaluatorLeft = evaluatorLeft;
+            this._evaluatorRight = evaluatorRight;
         }
 
         public object Evaluate(
@@ -40,17 +37,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var left = evaluatorLeft.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var left = _evaluatorLeft.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (left == null) {
                 return null;
             }
 
-            var right = evaluatorRight.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var right = _evaluatorRight.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (right == null) {
                 return null;
             }
 
-            return forge.ArithTypeEnumComputer.Compute(left, right);
+            return _forge.ArithTypeEnumComputer.Compute(left, right);
         }
 
         public static CodegenMethod Codegen(

@@ -7,23 +7,17 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.client
 {
+    [Serializable]
     public class EPNotSerializableException : EPRuntimeException
     {
-        private Type classType;
-
-        public Type ClassType => classType;
-
         public EPNotSerializableException(Type classType)
             : base("class is not serializable")
         {
-            this.classType = classType;
+            ClassType = classType;
         }
 
         public EPNotSerializableException(
@@ -31,7 +25,15 @@ namespace com.espertech.esper.common.client
             Type classType)
             : base("class is not serializable", cause)
         {
-            this.classType = classType;
+            ClassType = classType;
         }
+
+        protected EPNotSerializableException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        {
+        }
+
+        public Type ClassType { get; }
     }
 }

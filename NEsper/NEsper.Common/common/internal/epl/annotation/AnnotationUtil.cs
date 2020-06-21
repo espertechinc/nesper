@@ -14,7 +14,6 @@ using System.Reflection;
 
 using Castle.DynamicProxy;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -27,6 +26,7 @@ using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.attributes;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
@@ -175,7 +175,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             ISet<string> requiredAttributes = new HashSet<string>();
             foreach (var annotationAttribute in annotationAttributeLists) {
                 allAttributes.Add(annotationAttribute.Name);
-                if (annotationAttribute.DefaultValue != null) {
+                if (annotationAttribute.IsRequired) {
                     requiredAttributes.Add(annotationAttribute.Name);
                 }
             }
@@ -198,9 +198,12 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                     }
                 }
 
-                var valueProvided = pairFound == null ? null : pairFound.Second;
+                var valueProvided = pairFound?.Second;
                 var value = GetFinalValue(annotationClass, annotationAttribute, valueProvided, importService);
-                properties.Put(attributeName, value);
+                if (value != null) {
+                    properties.Put(attributeName, value);
+                }
+
                 providedValues.Remove(attributeName);
                 requiredAttributes.Remove(attributeName);
             }
@@ -247,7 +250,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             ImportServiceCompileTime importService)
         {
             if (value == null) {
-                if (annotationAttribute.DefaultValue == null) {
+                if (annotationAttribute.DefaultValue == null && annotationAttribute.IsRequired) {
                     throw new AnnotationException(
                         "Annotation '" +
                         annotationClass.GetSimpleName() +
@@ -255,7 +258,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                         annotationAttribute.Name +
                         "'");
                 }
-
+                
                 return annotationAttribute.DefaultValue;
             }
 
@@ -338,7 +341,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             }
 
             var componentType = annotationAttribute.AnnotationType.GetElementType();
-            var array = Array.CreateInstance(componentType, valueAsArray.Length);
+            var array = Arrays.CreateInstanceChecked(componentType, valueAsArray.Length);
 
             for (var i = 0; i < valueAsArray.Length; i++) {
                 var arrayValue = valueAsArray.GetValue(i);
@@ -397,16 +400,6 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             //return GetDefaultValue(propertyInfo.PropertyType);
         }
 
-        public static object GetDefaultValue(Type t)
-        {
-            if (t.IsValueType && Nullable.GetUnderlyingType(t) == null) {
-                return Activator.CreateInstance(t);
-            }
-            else {
-                return null;
-            }
-        }
-
         private static IList<AnnotationAttribute> GetAttributes(Type annotationClass)
         {
             var props = new List<AnnotationAttribute>();
@@ -420,10 +413,17 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             foreach (var clazzProperty in clazzProperties
                 .Where(c => c.DeclaringType != typeof(Attribute))
                 .Where(c => c.CanRead)) {
+
+                var isRequired = clazzProperty
+                    .GetCustomAttributes()
+                    .OfType<RequiredAttribute>()
+                    .Any();
+                
                 var annotationAttribute = new AnnotationAttribute(
                     clazzProperty.Name,
                     clazzProperty.PropertyType,
-                    GetDefaultValue(clazzProperty));
+                    GetDefaultValue(clazzProperty),
+                    isRequired);
 
                 props.Add(annotationAttribute);
             }
@@ -463,6 +463,19 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             return props;
         }
 
+        public static bool HasAnnotation<T>(Attribute[] annotations)
+            where T : Attribute
+        {
+            return FindAnnotation(annotations, typeof(T)) != null;
+        }
+
+        public static bool HasAnnotation(
+            Attribute[] annotations,
+            Type annotationClass)
+        {
+            return FindAnnotation(annotations, annotationClass) != null;
+        }
+        
         public static Attribute FindAnnotation(
             Attribute[] annotations,
             Type annotationClass)
@@ -478,6 +491,18 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             foreach (var anno in annotations) {
                 if (TypeHelper.IsSubclassOrImplementsInterface(anno.GetType(), annotationClass)) {
                     return anno;
+                }
+
+                if (anno is IProxyTargetAccessor proxyTargetAccessor) {
+                    var interceptor = proxyTargetAccessor.GetInterceptors()[0] as EPLAnnotationInvocationHandler;
+                    if (interceptor != null) {
+                        var declaredClass = interceptor.AnnotationClass;
+                        var declaredAttributes = declaredClass.GetCustomAttributes(true).OfType<Attribute>().ToArray();
+                        var depthSearch = FindAnnotation(declaredAttributes, annotationClass);
+                        if (depthSearch != null) {
+                            return depthSearch;
+                        }
+                    }
                 }
             }
 
@@ -644,6 +669,26 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                 return NewInstance<AnnotationBusEventType>();
             }
 
+            if (annotation is JsonSchemaAttribute jsonSchema) {
+                return NewInstance<AnnotationJsonSchema>(Constant(jsonSchema.Dynamic), Constant(jsonSchema.ClassName));
+            }
+
+            if (annotation is JsonSchemaFieldAttribute jsonSchemaField) {
+                return NewInstance<AnnotationJsonSchemaField>(Constant(jsonSchemaField.Name), Constant(jsonSchemaField.Adapter));
+            }
+
+            if (annotation is XMLSchemaAttribute xmlSchema) {
+                return AnnotationXMLSchema.ToExpression(xmlSchema, parent, codegenClassScope);
+            }
+
+            if (annotation is XMLSchemaNamespacePrefixAttribute schemaNamespacePrefix) {
+                return AnnotationXMLSchemaNamespacePrefix.ToExpression(schemaNamespacePrefix, parent, codegenClassScope);
+            }
+
+            if (annotation is XMLSchemaFieldAttribute xmlSchemaField) {
+                return AnnotationXMLSchemaField.ToExpression(xmlSchemaField, parent, codegenClassScope);
+            }
+            
             if (annotation.GetType().Namespace == RootNamespace) {
                 throw new IllegalStateException(
                     "Unrecognized annotation residing in the '" +
@@ -702,7 +747,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                     }
                     else
                     {
-                        valueExpression = Cast(
+                        valueExpression = FlexCast(
                             property.PropertyType, 
                             MakeAnnotation((Attribute) value, methodNode, codegenClassScope));
                     }

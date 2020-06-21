@@ -16,6 +16,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
     {
         public IList<ExprStreamRefNode> Referenced { get; } = new List<ExprStreamRefNode>();
 
+        public bool IsWalkDeclExprParam => true;
+
         public bool IsVisit(ExprNode exprNode)
         {
             return true;

@@ -12,7 +12,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.common.@internal.collection;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
@@ -30,43 +30,36 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
         public static CodegenMethod ComputeMultiKeyCodegen(
             int idNumber,
-            ExprForge[] partitionForges,
+            ExprNode[] partitionForges,
+            MultiKeyClassRef optionalMultiKey,
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
             var exprSymbol = new ExprForgeCodegenSymbol(true, null);
             Consumer<CodegenMethod> code = method => {
-                if (partitionForges.Length == 1) {
-                    CodegenExpression expression = partitionForges[0]
+                if (optionalMultiKey == null || optionalMultiKey.ClassNameMK == null) {
+                    var expression = partitionForges[0].Forge.EvaluateCodegen(typeof(object), method, exprSymbol, classScope);
+                    exprSymbol.DerivedSymbolsCodegen(method, method.Block, classScope);
+                    method.Block.MethodReturn(expression);
+                    return;
+                }
+                
+                var expressions = new CodegenExpression[partitionForges.Length];
+                for (var i = 0; i < partitionForges.Length; i++) {
+                    expressions[i] = partitionForges[i].Forge
                         .EvaluateCodegen(
                             typeof(object),
                             method,
                             exprSymbol,
                             classScope);
-                    exprSymbol.DerivedSymbolsCodegen(method, method.Block, classScope);
-                    method.Block.MethodReturn(expression);
                 }
-                else {
-                    var expressions = new CodegenExpression[partitionForges.Length];
-                    for (var i = 0; i < partitionForges.Length; i++) {
-                        expressions[i] = partitionForges[i]
-                            .EvaluateCodegen(
-                                typeof(object),
-                                method,
-                                exprSymbol,
-                                classScope);
-                    }
 
-                    exprSymbol.DerivedSymbolsCodegen(method, method.Block, classScope);
-                    method.Block.DeclareVar<object[]>(
-                        "keys",
-                        NewArrayByLength(typeof(object), Constant(partitionForges.Length)));
-                    for (var i = 0; i < expressions.Length; i++) {
-                        method.Block.AssignArrayElement("keys", Constant(i), expressions[i]);
-                    }
+                var instance = optionalMultiKey.ClassNameMK.Type != null
+                    ? NewInstance(optionalMultiKey.ClassNameMK.Type, expressions)
+                    : NewInstanceInner(optionalMultiKey.ClassNameMK.Name, expressions);
 
-                    method.Block.MethodReturn(NewInstance<HashableMultiKey>(Ref("keys")));
-                }
+                exprSymbol.DerivedSymbolsCodegen(method, method.Block, classScope);
+                method.Block.MethodReturn(instance);
             };
 
             return namedMethods.AddMethodWithSymbols(

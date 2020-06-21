@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             }
 
             return new SortedDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>>(
-                EPStatementAgentInstanceHandleComparator.INSTANCE);
+                EPStatementAgentInstanceHandleComparer.INSTANCE);
         }
     }
 } // end of namespace

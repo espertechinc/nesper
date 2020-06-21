@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -76,6 +77,11 @@ namespace com.espertech.esper.common.@internal.filterspec
         public override int GetHashCode()
         {
             return Constant != null ? Constant.GetHashCode() : 0;
+        }
+
+        public void ValueToString(StringBuilder @out)
+        {
+            FilterSpecParamConstantForge.ValueExprToString(@out, Constant);
         }
     }
 } // end of namespace

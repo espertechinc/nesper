@@ -22,15 +22,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
         public void Run(RegressionEnvironment env)
         {
             // Regular algorithm to find separated luggage and new owner.
-            var theEvent = LocationReportFactory.MakeLarge();
-            var separatedLuggage = LocationReportFactory.FindSeparatedLuggage(theEvent);
-
-            foreach (var item in separatedLuggage) {
-                //log.info("Luggage that are separated (dist>20): " + item);
-                var newOwner = LocationReportFactory.FindPotentialNewOwner(theEvent, item);
-                //log.info("Found new owner " + newOwner);
-            }
-
             var epl = "@Name('s0') " +
                       "expression lostLuggage {" +
                       "  lr => lr.Items.where(l -> l.Type='L' and " +

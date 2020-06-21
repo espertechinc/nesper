@@ -14,7 +14,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -70,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return ExprNewStructNodeForgeEval.Codegen(this, codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
-        public Type EvaluationType => typeof(IDictionary<string, object>);
+        public Type EvaluationType => typeof(IDictionary<object, object>);
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 

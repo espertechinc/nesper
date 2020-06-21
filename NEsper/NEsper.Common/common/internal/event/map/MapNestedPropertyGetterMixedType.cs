@@ -330,7 +330,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                     blockBean.IfElse()
                         .DeclareVar<IDictionary<string, object>>(
                             "resultMap", StaticMethod(typeof(CompatExtensions), "AsStringDictionary", Ref("result")))
-                        .IfRefNullReturnNull(Ref("resultMap"))
+                        .IfNullReturnNull(Ref("resultMap"))
                         .AssignRef(
                             "result",
                             getter.UnderlyingGetCodegen(

@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
@@ -23,10 +24,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             CasterParserComputer
         {
             internal readonly string format;
+            internal readonly DateFormat dateFormat;
 
             public StringWStaticFormatComputer(string format)
             {
                 this.format = format;
+                this.dateFormat = DateTimeFormat.For(format);
             }
 
             public object Compute(

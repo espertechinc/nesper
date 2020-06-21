@@ -15,7 +15,7 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
     public class SupportReferenceCountedMapForge : AggregationMultiFunctionForge
     {
         private static readonly AggregationMultiFunctionStateKey SHARED_STATE_KEY =
-            new ProxyAggregationMultiFunctionStateKey();
+            new InertAggregationMultiFunctionStateKey();
 
         public void AddAggregationFunction(AggregationMultiFunctionDeclarationContext declarationContext)
         {

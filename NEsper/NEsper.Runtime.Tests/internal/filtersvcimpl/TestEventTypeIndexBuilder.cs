@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.common;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.filtersvc;
@@ -44,7 +43,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 container.RWLockManager());
 
             eventTypeIndex = new EventTypeIndex(lockFactory);
-            indexBuilder = new EventTypeIndexBuilder(eventTypeIndex, true);
+            indexBuilder = new EventTypeIndexBuilder(eventTypeIndex);
 
             typeOne = supportEventTypeFactory.CreateBeanType(typeof(SupportBean));
             typeTwo = supportEventTypeFactory.CreateBeanType(typeof(SupportBeanSimple));

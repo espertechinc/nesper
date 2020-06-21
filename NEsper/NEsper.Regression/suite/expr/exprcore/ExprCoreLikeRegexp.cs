@@ -8,13 +8,14 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionlib.support.expreval;
 
 using NUnit.Framework;
 
@@ -22,353 +23,358 @@ using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUti
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
-    public class ExprCoreLikeRegexp
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            var executions = new List<RegressionExecution>();
-            executions.Add(new ExprCoreLikeWConstants());
-            executions.Add(new ExprCoreLikeWExprs());
-            executions.Add(new ExprCoreRegexpWConstants());
-            executions.Add(new ExprCoreRegexpWExprs());
-            executions.Add(new ExprCoreLikeRegexStringAndNull());
-            executions.Add(new ExprCoreLikeRegExInvalid());
-            executions.Add(new ExprCoreLikeRegexEscapedChar());
-            executions.Add(new ExprCoreLikeRegexStringAndNullOM());
-            executions.Add(new ExprCoreRegexStringAndNullCompile());
-            executions.Add(new ExprCoreLikeRegexNumericAndNull());
-            return executions;
-        }
+	public class ExprCoreLikeRegexp
+	{
+		public static ICollection<RegressionExecution> Executions()
+		{
+			var execs = new List<RegressionExecution>();
+WithLikeWConstants(execs);
+WithLikeWExprs(execs);
+WithRegexpWConstants(execs);
+WithRegexpWExprs(execs);
+WithLikeRegexStringAndNull(execs);
+WithLikeRegexInvalid(execs);
+WithLikeRegexEscapedChar(execs);
+WithLikeRegexStringAndNullOM(execs);
+WithRegexStringAndNullCompile(execs);
+WithLikeRegexNumericAndNull(execs);
+			return execs;
+		}
+public static IList<RegressionExecution> WithLikeRegexNumericAndNull(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprCoreLikeRegexNumericAndNull());
+    return execs;
+}public static IList<RegressionExecution> WithRegexStringAndNullCompile(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprCoreRegexStringAndNullCompile());
+    return execs;
+}public static IList<RegressionExecution> WithLikeRegexStringAndNullOM(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprCoreLikeRegexStringAndNullOM());
+    return execs;
+}public static IList<RegressionExecution> WithLikeRegexEscapedChar(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprCoreLikeRegexEscapedChar());
+    return execs;
+}public static IList<RegressionExecution> WithLikeRegexInvalid(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprCoreLikeRegexInvalid());
+    return execs;
+}public static IList<RegressionExecution> WithLikeRegexStringAndNull(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprCoreLikeRegexStringAndNull());
+    return execs;
+}public static IList<RegressionExecution> WithRegexpWExprs(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprCoreRegexpWExprs());
+    return execs;
+}public static IList<RegressionExecution> WithRegexpWConstants(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprCoreRegexpWConstants());
+    return execs;
+}public static IList<RegressionExecution> WithLikeWExprs(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprCoreLikeWExprs());
+    return execs;
+}public static IList<RegressionExecution> WithLikeWConstants(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new ExprCoreLikeWConstants());
+    return execs;
+}
+		private class ExprCoreLikeWConstants : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var fields = "c0,c1".SplitCsv();
+				var builder = new SupportEvalBuilder("SupportBean")
+					.WithExpressions(fields, "TheString like 'A%'", "IntPrimitive like '1%'");
+				builder.WithAssertion(new SupportBean("Bxx", 0)).Expect(fields, false, false);
+				builder.WithAssertion(new SupportBean("Ayyy", 100)).Expect(fields, true, true);
+				builder.Run(env);
+				env.UndeployAll();
+			}
+		}
 
-        private static void RunLikeRegexStringAndNull(RegressionEnvironment env)
-        {
-            SendS0Event(env, -1, "a", "b", "c", "d");
-            AssertReceived(
-                env,
-                new[] {new object[] {"r1", false}, new object[] {"r2", false}, new object[] {"r3", false}});
+		private class ExprCoreLikeWExprs : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var fields = "c0,c1".SplitCsv();
+				var builder = new SupportEvalBuilder("SupportBean_S0")
+					.WithExpressions(fields, "P00 like P01", "Id like P02");
 
-            SendS0Event(env, -1, null, "b", null, "d");
-            AssertReceived(
-                env,
-                new[] {new object[] {"r1", null}, new object[] {"r2", null}, new object[] {"r3", null}});
+				builder.WithAssertion(new SupportBean_S0(413, "%XXaXX", "%a%", "%1%", null)).Expect(fields, true, true);
+				builder.WithAssertion(new SupportBean_S0(413, "%XXcXX", "%b%", "%2%", null)).Expect(fields, false, false);
+				builder.WithAssertion(new SupportBean_S0(413, "%XXcXX", "%c%", "%3%", null)).Expect(fields, true, true);
 
-            SendS0Event(env, -1, "a", null, "c", null);
-            AssertReceived(
-                env,
-                new[] {new object[] {"r1", null}, new object[] {"r2", null}, new object[] {"r3", null}});
+				builder.Run(env);
+				env.UndeployAll();
+			}
+		}
 
-            SendS0Event(env, -1, null, null, null, null);
-            AssertReceived(
-                env,
-                new[] {new object[] {"r1", null}, new object[] {"r2", null}, new object[] {"r3", null}});
+		private class ExprCoreRegexpWConstants : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var fields = "c0,c1".SplitCsv();
+				var builder = new SupportEvalBuilder("SupportBean")
+					.WithExpressions(fields, "TheString regexp '.*Jack.*'", "IntPrimitive regexp '.*1.*'");
 
-            SendS0Event(env, -1, "abcdef", "%de_", "a", "[a-c]");
-            AssertReceived(
-                env,
-                new[] {new object[] {"r1", true}, new object[] {"r2", true}, new object[] {"r3", true}});
+				builder.WithAssertion(new SupportBean("Joe", 0)).Expect(fields, false, false);
+				builder.WithAssertion(new SupportBean("TheJackWhite", 100)).Expect(fields, true, true);
 
-            SendS0Event(env, -1, "abcdef", "b%de_", "d", "[a-c]");
-            AssertReceived(
-                env,
-                new[] {new object[] {"r1", false}, new object[] {"r2", false}, new object[] {"r3", false}});
+				builder.Run(env);
+				env.UndeployAll();
+			}
+		}
 
-            SendS0Event(env, -1, "!adex", "!%de_", "", ".");
-            AssertReceived(
-                env,
-                new[] {new object[] {"r1", true}, new object[] {"r2", false}, new object[] {"r3", false}});
+		private class ExprCoreRegexpWExprs : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var fields = "c0,c1".SplitCsv();
+				var builder = new SupportEvalBuilder("SupportBean_S0")
+					.WithExpressions(fields, "P00 regexp P01", "Id regexp P02");
 
-            SendS0Event(env, -1, "%dex", "!%de_", "a", ".");
-            AssertReceived(
-                env,
-                new[] {new object[] {"r1", false}, new object[] {"r2", true}, new object[] {"r3", true}});
-        }
+				builder.WithAssertion(new SupportBean_S0(413, "XXAXX", ".*A.*", ".*1.*", null)).Expect(fields, true, true);
+				builder.WithAssertion(new SupportBean_S0(413, "XXaXX", ".*B.*", ".*2.*", null)).Expect(fields, false, false);
+				builder.WithAssertion(new SupportBean_S0(413, "XXCXX", ".*C.*", ".*3.*", null)).Expect(fields, true, true);
 
-        private static void SendS0Event(
-            RegressionEnvironment env,
-            int id,
-            string p00,
-            string p01,
-            string p02,
-            string p03)
-        {
-            var bean = new SupportBean_S0(id, p00, p01, p02, p03);
-            env.SendEventBean(bean);
-        }
+				builder.Run(env);
+				env.UndeployAll();
+			}
+		}
 
-        private static void AssertReceived(
-            RegressionEnvironment env,
-            object[][] objects)
-        {
-            var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            foreach (var @object in objects) {
-                var key = (string) @object[0];
-                var result = @object[1];
-                Assert.AreEqual(result, theEvent.Get(key), "key=" + key + " result=" + result);
-            }
-        }
+		private class ExprCoreLikeRegexStringAndNull : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var epl = "@Name('s0') select P00 like P01 as r1, " +
+				          " P00 like P01 escape \"!\" as r2," +
+				          " P02 regexp P03 as r3 " +
+				          " from SupportBean_S0";
+				env.CompileDeploy(epl).AddListener("s0");
 
-        private static void TryInvalidExpr(
-            RegressionEnvironment env,
-            string expr)
-        {
-            var statement = "select " + expr + " from " + typeof(SupportBean).FullName;
-            TryInvalidCompile(env, statement, "skip");
-        }
+				RunLikeRegexStringAndNull(env);
 
-        private static void SendSupportBeanEvent(
-            RegressionEnvironment env,
-            int? intBoxed,
-            double? doubleBoxed)
-        {
-            var bean = new SupportBean();
-            bean.IntBoxed = intBoxed;
-            bean.DoubleBoxed = doubleBoxed;
-            env.SendEventBean(bean);
-        }
+				env.UndeployAll();
+			}
+		}
 
-        internal class ExprCoreLikeWConstants : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select TheString like 'A%' as c0, IntPrimitive like '1%' as c1 from SupportBean";
-                env.CompileDeploy(epl).AddListener("s0");
+		private class ExprCoreLikeRegexInvalid : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				TryInvalidExpr(env, "IntPrimitive like 'a' escape null");
+				TryInvalidExpr(env, "IntPrimitive like BoolPrimitive");
+				TryInvalidExpr(env, "BoolPrimitive like string");
+				TryInvalidExpr(env, "string like string escape IntPrimitive");
 
-                env.SendEventBean(new SupportBean("Bxx", 0));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "c0", "c1" },
-                    new object[] {false, false});
+				TryInvalidExpr(env, "IntPrimitive regexp doublePrimitve");
+				TryInvalidExpr(env, "IntPrimitive regexp BoolPrimitive");
+				TryInvalidExpr(env, "BoolPrimitive regexp string");
+				TryInvalidExpr(env, "string regexp IntPrimitive");
+				
+				TryInvalidCompile(
+					env,
+					"select TheString regexp \"*any*\" from SupportBean",
+					"Failed to validate select-clause expression 'TheString regexp \"*any*\"': Failed to compile regex pattern '*any*': parsing \"*any*\" - Quantifier {x,y} following nothing.");
+			}
+		}
 
-                env.SendEventBean(new SupportBean("Ayyy", 100));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "c0", "c1" },
-                    new object[] {true, true});
+		private class ExprCoreLikeRegexEscapedChar : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var fields = "c0".SplitCsv();
+				var builder = new SupportEvalBuilder("SupportBean_S0")
+					.WithExpressions(fields, "P00 regexp '\\\\w*-ABC'");
 
-                env.UndeployAll();
-            }
-        }
+				builder.WithAssertion(new SupportBean_S0(-1, "TBT-ABC")).Expect(fields, true);
+				builder.WithAssertion(new SupportBean_S0(-1, "TBT-BC")).Expect(fields, false);
 
-        internal class ExprCoreLikeWExprs : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select P00 like P01 as c0, Id like P02 as c1 from SupportBean_S0";
-                env.CompileDeploy(epl).AddListener("s0");
+				builder.Run(env);
+				env.UndeployAll();
+			}
+		}
 
-                SendS0Event(env, 413, "%XXaXX", "%a%", "%1%", null);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "c0", "c1" },
-                    new object[] {true, true});
+		private class ExprCoreLikeRegexStringAndNullOM : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var stmtText = "@Name('s0') select P00 like P01 as r1, " +
+				               "P00 like P01 escape \"!\" as r2, " +
+				               "P02 regexp P03 as r3 " +
+				               "from SupportBean_S0";
 
-                SendS0Event(env, 413, "%XXcXX", "%b%", "%2%", null);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "c0", "c1" },
-                    new object[] {false, false});
+				var model = new EPStatementObjectModel();
+				model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
+				model.SelectClause = SelectClause.Create()
+					.Add(Expressions.Like(Expressions.Property("P00"), Expressions.Property("P01")), "r1")
+					.Add(Expressions.Like(Expressions.Property("P00"), Expressions.Property("P01"), Expressions.Constant("!")), "r2")
+					.Add(Expressions.Regexp(Expressions.Property("P02"), Expressions.Property("P03")), "r3");
 
-                SendS0Event(env, 413, "%XXcXX", "%c%", "%3%", null);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "c0", "c1" },
-                    new object[] {true, true});
+				model.FromClause = FromClause.Create(FilterStream.Create("SupportBean_S0"));
+				model = SerializableObjectCopier.GetInstance(env.Container).Copy(model);
+				Assert.AreEqual(stmtText, model.ToEPL());
 
-                env.UndeployAll();
-            }
-        }
+				var compiled = env.Compile(model, new CompilerArguments(env.Configuration));
+				env.Deploy(compiled).AddListener("s0").Milestone(0);
 
-        internal class ExprCoreRegexpWConstants : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl =
-                    "@Name('s0') select TheString regexp '.*Jack.*' as c0, IntPrimitive regexp '.*1.*' as c1 from SupportBean";
-                env.CompileDeploy(epl).AddListener("s0");
+				RunLikeRegexStringAndNull(env);
 
-                env.SendEventBean(new SupportBean("Joe", 0));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "c0", "c1" },
-                    new object[] {false, false});
+				env.UndeployAll();
+			}
+		}
 
-                env.SendEventBean(new SupportBean("TheJackWhite", 100));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "c0", "c1" },
-                    new object[] {true, true});
+		private class ExprCoreRegexStringAndNullCompile : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var epl = "@Name('s0') select P00 like P01 as r1, " +
+				          "P00 like P01 escape \"!\" as r2, " +
+				          "P02 regexp P03 as r3 " +
+				          "from SupportBean_S0";
 
-                env.UndeployAll();
-            }
-        }
+				var model = env.EplToModel(epl);
+				model = SerializableObjectCopier.GetInstance(env.Container).Copy(model);
+				Assert.AreEqual(epl, model.ToEPL());
 
-        internal class ExprCoreRegexpWExprs : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select P00 regexp P01 as c0, Id regexp P02 as c1 from SupportBean_S0";
-                env.CompileDeploy(epl).AddListener("s0");
+				var compiled = env.Compile(model, new CompilerArguments(env.Configuration));
+				env.Deploy(compiled).AddListener("s0").Milestone(0);
 
-                SendS0Event(env, 413, "XXAXX", ".*A.*", ".*1.*", null);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "c0", "c1" },
-                    new object[] {true, true});
+				RunLikeRegexStringAndNull(env);
 
-                SendS0Event(env, 413, "XXaXX", ".*B.*", ".*2.*", null);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "c0", "c1" },
-                    new object[] {false, false});
+				env.UndeployAll();
+			}
+		}
 
-                SendS0Event(env, 413, "XXCXX", ".*C.*", ".*3.*", null);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "c0", "c1" },
-                    new object[] {true, true});
+		private class ExprCoreLikeRegexNumericAndNull : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var fields = "c0,c1".SplitCsv();
+				var builder = new SupportEvalBuilder("SupportBean")
+					.WithExpressions(fields, "IntBoxed like '%01%'", "DoubleBoxed regexp '[0-9][0-9].[0-9]d'");
 
-                env.UndeployAll();
-            }
-        }
+				builder.WithAssertion(MakeSupportBeanEvent(101, 1.1)).Expect(fields, true, false);
+				builder.WithAssertion(MakeSupportBeanEvent(102, 11d)).Expect(fields, false, true);
+				builder.WithAssertion(MakeSupportBeanEvent(null, null)).Expect(fields, null, null);
 
-        internal class ExprCoreLikeRegexStringAndNull : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select P00 like P01 as r1, " +
-                          " P00 like P01 escape \"!\" as r2," +
-                          " P02 regexp P03 as r3 " +
-                          " from SupportBean_S0";
-                env.CompileDeploy(epl).AddListener("s0");
+				builder.Run(env);
+				env.UndeployAll();
+			}
+		}
 
-                RunLikeRegexStringAndNull(env);
+		private static void RunLikeRegexStringAndNull(RegressionEnvironment env)
+		{
+			SendS0Event(env, -1, "a", "b", "c", "d");
+			AssertReceived(env, new[] {
+				new object[] {"r1", false},
+				new object[] {"r2", false}, 
+				new object[] {"r3", false}
+			});
 
-                env.UndeployAll();
-            }
-        }
+			SendS0Event(env, -1, null, "b", null, "d");
+			AssertReceived(env, new[] {
+				new object[] {"r1", null},
+				new object[] {"r2", null},
+				new object[] {"r3", null}
+			});
 
-        internal class ExprCoreLikeRegExInvalid : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                TryInvalidExpr(env, "IntPrimitive like 'a' escape null");
-                TryInvalidExpr(env, "IntPrimitive like BoolPrimitive");
-                TryInvalidExpr(env, "BoolPrimitive like string");
-                TryInvalidExpr(env, "string like string escape IntPrimitive");
+			SendS0Event(env, -1, "a", null, "c", null);
+			AssertReceived(env, new[] {
+				new object[] {"r1", null},
+				new object[] {"r2", null},
+				new object[] {"r3", null}
+			});
 
-                TryInvalidExpr(env, "IntPrimitive regexp doublePrimitve");
-                TryInvalidExpr(env, "IntPrimitive regexp BoolPrimitive");
-                TryInvalidExpr(env, "BoolPrimitive regexp string");
-                TryInvalidExpr(env, "string regexp IntPrimitive");
+			SendS0Event(env, -1, null, null, null, null);
+			AssertReceived(env, new[] {
+				new object[] {"r1", null},
+				new object[] {"r2", null},
+				new object[] {"r3", null}
+			});
 
-                TryInvalidCompile(
-                    env,
-                    "select TheString regexp \"*any*\" from SupportBean",
-                    "Failed to validate select-clause expression 'TheString regexp \"*any*\"': Error compiling regex pattern '*any*': parsing \"*any*\" - Quantifier {x,y} following nothing.");
-            }
-        }
+			SendS0Event(env, -1, "abcdef", "%de_", "a", "[a-c]");
+			AssertReceived(env, new[] {
+				new object[] {"r1", true},
+				new object[] {"r2", true},
+				new object[] {"r3", true}
+			});
 
-        internal class ExprCoreLikeRegexEscapedChar : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select P00 regexp '\\\\w*-ABC' as result from SupportBean_S0";
-                env.CompileDeploy(epl).AddListener("s0");
+			SendS0Event(env, -1, "abcdef", "b%de_", "d", "[a-c]");
+			AssertReceived(env, new[] {
+				new object[] {"r1", false}, 
+				new object[] {"r2", false},
+				new object[] {"r3", false}
+			});
 
-                env.SendEventBean(new SupportBean_S0(-1, "TBT-ABC"));
-                Assert.IsTrue((bool) env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
+			SendS0Event(env, -1, "!adex", "!%de_", "", ".");
+			AssertReceived(env, new[] {
+				new object[] {"r1", true}, 
+				new object[] {"r2", false},
+				new object[] {"r3", false}
+			});
 
-                env.SendEventBean(new SupportBean_S0(-1, "TBT-BC"));
-                Assert.IsFalse((bool) env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
+			SendS0Event(env, -1, "%dex", "!%de_", "a", ".");
+			AssertReceived(env, new[] {
+				new object[] {"r1", false},
+				new object[] {"r2", true}, 
+				new object[] {"r3", true}
+			});
+		}
 
-                env.UndeployAll();
-            }
-        }
+		private static void SendS0Event(
+			RegressionEnvironment env,
+			int id,
+			string p00,
+			string p01,
+			string p02,
+			string p03)
+		{
+			var bean = new SupportBean_S0(id, p00, p01, p02, p03);
+			env.SendEventBean(bean);
+		}
 
-        internal class ExprCoreLikeRegexStringAndNullOM : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var stmtText = "@Name('s0') select P00 like P01 as r1, " +
-                               "P00 like P01 escape \"!\" as r2, " +
-                               "P02 regexp P03 as r3 " +
-                               "from SupportBean_S0";
+		private static void AssertReceived(
+			RegressionEnvironment env,
+			object[][] objects)
+		{
+			var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
+			foreach (var @object in objects) {
+				var key = (string) @object[0];
+				var result = @object[1];
+				Assert.AreEqual(result, theEvent.Get(key), "key=" + key + " result=" + result);
+			}
+		}
 
-                var model = new EPStatementObjectModel();
-                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
-                model.SelectClause = SelectClause.Create()
-                    .Add(Expressions.Like(Expressions.Property("P00"), Expressions.Property("P01")), "r1")
-                    .Add(
-                        Expressions.Like(
-                            Expressions.Property("P00"),
-                            Expressions.Property("P01"),
-                            Expressions.Constant("!")),
-                        "r2")
-                    .Add(Expressions.Regexp(Expressions.Property("P02"), Expressions.Property("P03")), "r3");
+		private static void TryInvalidExpr(
+			RegressionEnvironment env,
+			string expr)
+		{
+			var statement = "select " + expr + " from SupportBean";
+			TryInvalidCompile(env, statement, "skip");
+		}
 
-                model.FromClause = FromClause.Create(FilterStream.Create("SupportBean_S0"));
-                model = env.CopyMayFail(model);
-                Assert.AreEqual(stmtText, model.ToEPL());
-
-                var compiled = env.Compile(model, new CompilerArguments(env.Configuration));
-                env.Deploy(compiled).AddListener("s0").Milestone(0);
-
-                RunLikeRegexStringAndNull(env);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ExprCoreRegexStringAndNullCompile : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select P00 like P01 as r1, " +
-                          "P00 like P01 escape \"!\" as r2, " +
-                          "P02 regexp P03 as r3 " +
-                          "from SupportBean_S0";
-
-                var model = env.EplToModel(epl);
-                model = env.CopyMayFail(model);
-                Assert.AreEqual(epl, model.ToEPL());
-
-                var compiled = env.Compile(model, new CompilerArguments(env.Configuration));
-                env.Deploy(compiled).AddListener("s0").Milestone(0);
-
-                RunLikeRegexStringAndNull(env);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ExprCoreLikeRegexNumericAndNull : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select" +
-                          " IntBoxed like '%01%' as r1, " +
-                          " DoubleBoxed regexp '[0-9][0-9]\\.[0-9]' as r2 " +
-                          " from " + typeof(SupportBean).Name;
-
-                env.CompileDeploy(epl).AddListener("s0");
-
-                SendSupportBeanEvent(env, 101, 1.1);
-                AssertReceived(
-                    env,
-                    new[] {new object[] {"r1", true}, new object[] {"r2", false}});
-
-                SendSupportBeanEvent(env, 102, 11d);
-                AssertReceived(
-                    env,
-                    new[] {new object[] {"r1", false}, new object[] {"r2", true}});
-
-                SendSupportBeanEvent(env, null, null);
-                AssertReceived(
-                    env,
-                    new[] {new object[] {"r1", null}, new object[] {"r2", null}});
-
-                env.UndeployAll();
-            }
-        }
-    }
+		private static SupportBean MakeSupportBeanEvent(
+			int? intBoxed,
+			double? doubleBoxed)
+		{
+			var bean = new SupportBean();
+			bean.IntBoxed = intBoxed;
+			bean.DoubleBoxed = doubleBoxed;
+			return bean;
+		}
+	}
 } // end of namespace

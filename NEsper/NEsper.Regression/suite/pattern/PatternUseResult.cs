@@ -30,12 +30,54 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new PatternNumeric());
-            execs.Add(new PatternObjectId());
-            execs.Add(new PatternFollowedByFilter());
-            execs.Add(new PatternPatternTypeCacheForRepeat());
-            execs.Add(new PatternBooleanExprRemoveConsiderTag());
+            WithNumeric(execs);
+            WithObjectId(execs);
+            WithFollowedByFilter(execs);
+            WithPatternTypeCacheForRepeat(execs);
+            WithBooleanExprRemoveConsiderTag(execs);
+            WithBooleanExprRemoveConsiderArrayTag(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBooleanExprRemoveConsiderArrayTag(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new PatternBooleanExprRemoveConsiderArrayTag());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBooleanExprRemoveConsiderTag(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternBooleanExprRemoveConsiderTag());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPatternTypeCacheForRepeat(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternPatternTypeCacheForRepeat());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFollowedByFilter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternFollowedByFilter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithObjectId(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternObjectId());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNumeric(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternNumeric());
             return execs;
         }
 
@@ -46,14 +88,14 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             int numFiltersRemaining)
         {
             env.SendEventBean(new SupportBean_A(id));
-            var fields = new [] { "c0" };
+            var fields = new[] {"c0"};
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
                 new object[] {intPrimitiveExpected});
             Assert.AreEqual(
                 numFiltersRemaining,
-                SupportFilterHelper.GetFilterCount(env.Statement("s0"), "SupportBean_A"));
+                SupportFilterServiceHelper.GetFilterSvcCount(env.Statement("s0"), "SupportBean_A"));
         }
 
         private static void SendBeanAMiss(

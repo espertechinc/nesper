@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.introspect;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.@event.variant;
 using com.espertech.esper.common.@internal.@event.xml;
@@ -71,5 +72,15 @@ namespace com.espertech.esper.common.@internal.@event.eventtypefactory
         VariantEventType CreateVariant(
             EventTypeMetadata metadata,
             VariantSpec spec);
+
+        JsonEventType CreateJson(
+            EventTypeMetadata metadata,
+            IDictionary<string, object> properties,
+            string[] superTypes,
+            string startTimestampPropertyName,
+            string endTimestampPropertyName,
+            BeanEventTypeFactory beanEventTypeFactory,
+            EventTypeNameResolver eventTypeNameResolver,
+            JsonEventTypeDetail detail);
     }
 } // end of namespace

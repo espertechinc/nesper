@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
     {
         private TimeAbacus abacus = TimeAbacusMilliseconds.INSTANCE;
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestDeltaFor()
         {
             Assert.AreEqual(0, abacus.DeltaForSecondsNumber(0));

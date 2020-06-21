@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.IO;
 
 using com.espertech.esper.compat;
 
@@ -15,21 +14,9 @@ namespace com.espertech.esper.common.@internal.util
 {
     public class ClassLoaderDefault : ClassLoader
     {
-        private IResourceManager _resourceManager;
-
-        public ClassLoaderDefault(IResourceManager resourceManager)
+        public Type GetClass(string typeName)
         {
-            _resourceManager = resourceManager;
-        }
-
-        public Stream GetResourceAsStream(string resourceName)
-        {
-            return _resourceManager.GetResourceAsStream(resourceName);
-        }
-
-        public Type GetClass(string className)
-        {
-            return TypeHelper.ResolveType(className, true);
+            return TypeHelper.ResolveType(typeName, true);
         }
     }
 }

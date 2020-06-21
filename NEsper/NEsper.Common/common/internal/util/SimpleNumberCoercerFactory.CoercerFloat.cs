@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.util
                 return value.AsFloat();
             }
 
-            public Type ReturnType => typeof(float?);
+            public Type ReturnType => typeof(float);
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,

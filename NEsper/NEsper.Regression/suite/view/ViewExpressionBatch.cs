@@ -25,19 +25,110 @@ namespace com.espertech.esper.regressionlib.suite.view
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ViewExpressionBatchNewestEventOldestEvent());
-            execs.Add(new ViewExpressionBatchLengthBatch());
-            execs.Add(new ViewExpressionBatchTimeBatch());
-            execs.Add(new ViewExpressionBatchUDFBuiltin());
-            execs.Add(new ViewExpressionBatchInvalid());
-            execs.Add(new ViewExpressionBatchPrev());
-            execs.Add(new ViewExpressionBatchEventPropBatch());
-            execs.Add(new ViewExpressionBatchAggregationUngrouped());
-            execs.Add(new ViewExpressionBatchAggregationWGroupwin());
-            execs.Add(new ViewExpressionBatchAggregationOnDelete());
-            execs.Add(new ViewExpressionBatchNamedWindowDelete());
-            execs.Add(new ViewExpressionBatchDynamicTimeBatch());
+            WithNewestEventOldestEvent(execs);
+            WithLengthBatch(execs);
+            WithTimeBatch(execs);
+            WithUDFBuiltin(execs);
+            WithInvalid(execs);
+            WithPrev(execs);
+            WithEventPropBatch(execs);
+            WithAggregationUngrouped(execs);
+            WithAggregationWGroupwin(execs);
+            WithAggregationOnDelete(execs);
+            WithNamedWindowDelete(execs);
+            WithDynamicTimeBatch(execs);
+            WithVariableBatch(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithVariableBatch(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ViewExpressionBatchVariableBatch());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDynamicTimeBatch(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewExpressionBatchDynamicTimeBatch());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedWindowDelete(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewExpressionBatchNamedWindowDelete());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAggregationOnDelete(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewExpressionBatchAggregationOnDelete());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAggregationWGroupwin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewExpressionBatchAggregationWGroupwin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAggregationUngrouped(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewExpressionBatchAggregationUngrouped());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEventPropBatch(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewExpressionBatchEventPropBatch());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPrev(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewExpressionBatchPrev());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewExpressionBatchInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUDFBuiltin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewExpressionBatchUDFBuiltin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimeBatch(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewExpressionBatchTimeBatch());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLengthBatch(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewExpressionBatchLengthBatch());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNewestEventOldestEvent(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewExpressionBatchNewestEventOldestEvent());
             return execs;
         }
 

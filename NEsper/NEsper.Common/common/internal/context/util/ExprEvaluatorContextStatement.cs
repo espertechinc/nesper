@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.metrics.audit;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.schedule;
+using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading.locks;
 
@@ -23,7 +24,7 @@ namespace com.espertech.esper.common.@internal.context.util
     public class ExprEvaluatorContextStatement : ExprEvaluatorContext
     {
         private readonly bool allowTableAccess;
-        protected internal readonly StatementContext statementContext;
+        private readonly StatementContext statementContext;
 
         public ExprEvaluatorContextStatement(
             StatementContext statementContext,
@@ -32,6 +33,12 @@ namespace com.espertech.esper.common.@internal.context.util
             this.statementContext = statementContext;
             this.allowTableAccess = allowTableAccess;
         }
+        
+        public virtual object FilterReboolConstant
+        {
+            get => null;
+            set { }
+        }
 
         /// <summary>
         ///     Returns the time provider.
@@ -39,8 +46,7 @@ namespace com.espertech.esper.common.@internal.context.util
         /// <returns>time provider</returns>
         public TimeProvider TimeProvider => statementContext.TimeProvider;
 
-        public ExpressionResultCacheService ExpressionResultCacheService =>
-            statementContext.ExpressionResultCacheServiceSharable;
+        public ExpressionResultCacheService ExpressionResultCacheService => statementContext.ExpressionResultCacheServiceSharable;
 
         public int AgentInstanceId => -1;
 
@@ -58,8 +64,7 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public EventBeanService EventBeanService => statementContext.EventBeanService;
 
-        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext =>
-            statementContext.AllocateAgentInstanceScriptContext;
+        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext => statementContext.AllocateAgentInstanceScriptContext;
 
         public AuditProvider AuditProvider => AuditProviderDefault.INSTANCE;
 
@@ -67,6 +72,8 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public IReaderWriterLock AgentInstanceLock =>
             throw new UnsupportedOperationException("Agent-instance lock not available");
+
+        public ExceptionHandlingService ExceptionHandlingService => statementContext.ExceptionHandlingService;
 
         public TableExprEvaluatorContext TableExprEvaluatorContext {
             get {

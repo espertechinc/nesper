@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -18,7 +17,6 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
 using com.espertech.esper.common.@internal.epl.variable.core;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -39,11 +37,13 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
         /// </summary>
         /// <param name="whenExpressionNode">the expression to evaluate, returning true when to output</param>
         /// <param name="assignments">is the optional then-clause variable assignments, or null or empty if none</param>
+        /// <param name="statementName">the statement name</param>
         /// <param name="services">services</param>
         /// <throws>ExprValidationException when validation fails</throws>
         public OutputConditionPolledExpressionFactoryForge(
             ExprNode whenExpressionNode,
             IList<OnTriggerSetAssignment> assignments,
+            string statementName,
             StatementCompileTimeServices services)
         {
             this.whenExpressionNode = whenExpressionNode.Forge;
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             }
 
             if (assignments != null) {
-                variableReadWritePackage = new VariableReadWritePackageForge(assignments, services);
+                variableReadWritePackage = new VariableReadWritePackageForge(assignments, statementName, services);
             }
             else {
                 variableReadWritePackage = null;

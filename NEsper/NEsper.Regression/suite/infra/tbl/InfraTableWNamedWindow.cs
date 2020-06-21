@@ -8,7 +8,6 @@
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
@@ -31,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "@Name('s0') on SupportBean_S0 select TheString, varagg[P00].total as c0 from MyWindow where TheString = P00",
                     path)
                 .AddListener("s0");
-            var fields = new [] { "TheString","c0" };
+            var fields = new[] {"TheString", "c0"};
 
             env.SendEventBean(new SupportBean("E1", 10));
 

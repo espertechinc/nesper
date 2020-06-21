@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.client.util
     {
         /// <summary>
         ///     Returns an array of types that the agent can handle, for validation purposes.
-        ///     For example, an agent that accepts byte-array type values should return "new Class[] {String.class}".
+        ///     For example, an agent that accepts byte-array type values should return "new Class[] {typeof(string)}".
         ///     Interfaces and supertype classes can also be part of the class array.
         /// </summary>
         /// <value>class array of acceptable type</value>

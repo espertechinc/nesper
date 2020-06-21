@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.compiler.client.option;
 using com.espertech.esper.regressionlib.framework;
@@ -22,42 +23,32 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new ClientCompileUserObjectDifferentTypes());
+            WithDifferentTypes(execs);
+            WithResolveContextInfo(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithResolveContextInfo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientCompileUserObjectResolveContextInfo());
             return execs;
         }
 
-        private static void AssertUserObject(
-            RegressionEnvironment env,
-            object userObject)
+        public static IList<RegressionExecution> WithDifferentTypes(IList<RegressionExecution> execs = null)
         {
-            var args = new CompilerArguments(env.Configuration);
-            args.Options.StatementUserObject = _ => userObject;
-            var compiled = env.Compile("@Name('s0') select * from SupportBean", args);
-            env.Deploy(compiled);
-            var received = env.Statement("s0").UserObjectCompileTime;
-            if (received == null) {
-                Assert.IsNull(userObject);
-            }
-            else if (received.GetType() == typeof(int[])) {
-                CollectionAssert.AreEquivalent(
-                    (int[]) received,
-                    (int[]) userObject);
-            }
-            else {
-                Assert.AreEqual(userObject, env.Statement("s0").UserObjectCompileTime);
-            }
-
-            env.UndeployAll();
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileUserObjectDifferentTypes());
+            return execs;
         }
 
-        internal class ClientCompileUserObjectResolveContextInfo : RegressionExecution
+        private class ClientCompileUserObjectResolveContextInfo : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 MyUserObjectResolver.Contexts.Clear();
                 var args = new CompilerArguments(env.Configuration);
-                args.Options.StatementUserObject = new MyUserObjectResolver().GetValue;
+                args.Options.StatementUserObject = (new MyUserObjectResolver()).GetValue;
                 var epl = "@Name('s0') select * from SupportBean";
                 env.Compile(epl, args);
 
@@ -70,19 +61,41 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             }
         }
 
-        internal class ClientCompileUserObjectDifferentTypes : RegressionExecution
+        private class ClientCompileUserObjectDifferentTypes : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 AssertUserObject(env, "ABC");
-                AssertUserObject(env, new[] {1, 2, 3});
+                AssertUserObject(env, new int[] {1, 2, 3});
                 AssertUserObject(env, null);
                 AssertUserObject(env, new MyUserObject("hello"));
             }
         }
 
+        private static void AssertUserObject(
+            RegressionEnvironment env,
+            object userObject)
+        {
+            var args = new CompilerArguments(env.Configuration);
+            args.Options.SetStatementUserObject(_ => userObject);
+            var compiled = env.Compile("@Name('s0') select * from SupportBean", args);
+            env.Deploy(compiled);
+            var received = env.Statement("s0").UserObjectCompileTime;
+            if (received == null) {
+                Assert.IsNull(userObject);
+            }
+            else if (received.GetType() == typeof(int[])) {
+                Assert.IsTrue(Arrays.AreEqual((int[]) received, (int[]) userObject));
+            }
+            else {
+                Assert.AreEqual(userObject, env.Statement("s0").UserObjectCompileTime);
+            }
+
+            env.UndeployAll();
+        }
+
         [Serializable]
-        internal class MyUserObject
+        private class MyUserObject
         {
             private string id;
 
@@ -100,34 +113,43 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 set => id = value;
             }
 
-            public override bool Equals(object o)
+            protected bool Equals(MyUserObject other)
             {
-                if (this == o) {
-                    return true;
-                }
+                return id == other.id;
+            }
 
-                if (o == null || GetType() != o.GetType()) {
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) {
                     return false;
                 }
 
-                var that = (MyUserObject) o;
+                if (ReferenceEquals(this, obj)) {
+                    return true;
+                }
 
-                return id.Equals(that.id);
+                if (obj.GetType() != this.GetType()) {
+                    return false;
+                }
+
+                return Equals((MyUserObject) obj);
             }
 
             public override int GetHashCode()
             {
-                return id.GetHashCode();
+                return (id != null ? id.GetHashCode() : 0);
             }
         }
 
-        internal class MyUserObjectResolver
+        private class MyUserObjectResolver
         {
-            public static IList<StatementUserObjectContext> Contexts { get; } = new List<StatementUserObjectContext>();
+            private static IList<StatementUserObjectContext> contexts = new List<StatementUserObjectContext>();
+
+            public static IList<StatementUserObjectContext> Contexts => contexts;
 
             public object GetValue(StatementUserObjectContext env)
             {
-                Contexts.Add(env);
+                contexts.Add(env);
                 return null;
             }
         }

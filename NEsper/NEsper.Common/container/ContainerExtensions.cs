@@ -12,7 +12,6 @@ using System.Reflection;
 
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.locks;
 using Castle.Windsor;
 using com.espertech.esper.compat.function;

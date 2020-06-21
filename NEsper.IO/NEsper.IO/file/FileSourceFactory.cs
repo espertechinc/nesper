@@ -26,11 +26,6 @@ namespace com.espertech.esperio.file
 		public DataFlowOperator Operator(DataFlowOpInitializeContext context)
 		{
 			var container = context.Container;
-			var classpathFileFlag = DataFlowParameterResolution.ResolveWithDefault(
-				"classpathFile",
-				ClasspathFile,
-				false,
-				context);
 			var adapterInputSourceValue = DataFlowParameterResolution.ResolveOptionalInstance<AdapterInputSource>(
 				"adapterInputSource",
 				AdapterInputSource,
@@ -43,12 +38,7 @@ namespace com.espertech.esperio.file
 
 			if (adapterInputSourceValue == null) {
 				if (fileName != null) {
-					if (classpathFileFlag) {
-						adapterInputSourceValue = new AdapterInputSource(container, fileName);
-					}
-					else {
-						adapterInputSourceValue = new AdapterInputSource(container, new FileInfo(fileName));
-					}
+					adapterInputSourceValue = new AdapterInputSource(container, new FileInfo(fileName));
 				}
 				else {
 					throw new EPException("Failed to find required parameter, either the file or the adapterInputSource parameter is required");
@@ -59,17 +49,17 @@ namespace com.espertech.esperio.file
 			switch (formatValue) {
 				case null:
 				case "csv": {
-					var hasHeaderLineFlag = DataFlowParameterResolution.ResolveWithDefault<bool>(
+					var hasHeaderLineFlag = DataFlowParameterResolution.ResolveWithDefault<bool?>(
 						"hasHeaderLine",
 						HasHeaderLine,
 						false,
 						context);
-					var hasTitleLineFlag = DataFlowParameterResolution.ResolveWithDefault<bool>(
+					var hasTitleLineFlag = DataFlowParameterResolution.ResolveWithDefault<bool?>(
 						"hasTitleLine",
 						HasTitleLine,
 						false,
 						context);
-					int? numLoopsValue = DataFlowParameterResolution.ResolveWithDefault<int?>(
+					var numLoopsValue = DataFlowParameterResolution.ResolveWithDefault<int?>(
 						"numLoops",
 						NumLoops,
 						null,
@@ -83,8 +73,8 @@ namespace com.espertech.esperio.file
 						this,
 						context,
 						adapterInputSourceValue,
-						hasHeaderLineFlag,
-						hasTitleLineFlag,
+						hasHeaderLineFlag ?? false,
+						hasTitleLineFlag ?? false,
 						numLoopsValue,
 						PropertyNames,
 						dateFormatValue);
@@ -102,8 +92,6 @@ namespace com.espertech.esperio.file
 		}
 
 		public ExprEvaluator File { get; set; }
-
-		public ExprEvaluator ClasspathFile { get; set; }
 
 		public ExprEvaluator HasHeaderLine { get; set; }
 

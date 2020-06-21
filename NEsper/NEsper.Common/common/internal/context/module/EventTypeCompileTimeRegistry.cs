@@ -12,8 +12,9 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.eventtyperepo;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.module
@@ -31,6 +32,12 @@ namespace com.espertech.esper.common.@internal.context.module
 
         public void NewType(EventType type)
         {
+            try {
+                EventTypeUtility.ValidateModifiers(type.Name, type.Metadata.BusModifier, type.Metadata.AccessModifier);
+            } catch (ExprValidationException e) {
+                throw new ArgumentException(e.Message, e);
+            }
+            
             if (type.Metadata.AccessModifier == NameAccessModifier.PRECONFIGURED) {
                 if (type.Metadata.ApplicationType != EventTypeApplicationType.XML) {
                     throw new ArgumentException("Preconfigured-visibility is not allowed here");
@@ -44,6 +51,7 @@ namespace com.espertech.esper.common.@internal.context.module
             }
 
             if (type.Metadata.AccessModifier == NameAccessModifier.PRIVATE ||
+                type.Metadata.AccessModifier == NameAccessModifier.INTERNAL ||
                 type.Metadata.AccessModifier == NameAccessModifier.PUBLIC) {
                 _moduleTypesAdded.Put(type.Name, type);
             }

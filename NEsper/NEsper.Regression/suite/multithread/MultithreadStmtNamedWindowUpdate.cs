@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -55,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 path);
 
             // send primer events, initialize totals
-            IDictionary<HashableMultiKey, UpdateTotals> totals = new Dictionary<HashableMultiKey, UpdateTotals>();
+            IDictionary<Pair<string, int>, UpdateTotals> totals = new Dictionary<Pair<string, int>, UpdateTotals>();
             for (var i = 0; i < NUM_STRINGS; i++) {
                 for (var j = 0; j < NUM_INTS; j++) {
                     var primer = new SupportBean(Convert.ToString(i), j);
@@ -64,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     primer.DoublePrimitive = 0;
 
                     env.SendEventBean(primer);
-                    var key = new HashableMultiKey(primer.TheString, primer.IntPrimitive);
+                    var key = new Pair<string, int>(primer.TheString, primer.IntPrimitive);
                     totals.Put(key, new UpdateTotals(0, 0));
                 }
             }
@@ -97,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
                 deltaCumulative += result.Delta;
                 foreach (var item in result.Updates) {
-                    var key = new HashableMultiKey(item.TheString, item.Intval);
+                    var key = new Pair<string, int>(item.TheString, item.Intval);
                     var total = totals.Get(key);
                     if (total == null) {
                         throw new EPException("Totals not found for key " + key);
@@ -113,7 +112,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             Assert.AreEqual(rows.Length, totals.Count);
             long totalUpdates = 0;
             foreach (var row in rows) {
-                var total = totals.Get(new HashableMultiKey(row.Get("TheString"), row.Get("IntPrimitive")));
+                var key = new Pair<string, int>((string) row.Get("TheString"), row.Get("IntPrimitive").AsInt32());
+                var total = totals.Get(key);
                 Assert.AreEqual(total.Num, row.Get("IntBoxed"));
                 Assert.AreEqual(total.Sum, row.Get("DoublePrimitive"));
                 totalUpdates += total.Num;

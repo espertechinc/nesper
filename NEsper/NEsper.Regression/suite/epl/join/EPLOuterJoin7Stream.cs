@@ -23,14 +23,70 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLJoinKeyPerStream());
-            execs.Add(new EPLJoinRootS0());
-            execs.Add(new EPLJoinRootS1());
-            execs.Add(new EPLJoinRootS2());
-            execs.Add(new EPLJoinRootS3());
-            execs.Add(new EPLJoinRootS4());
-            execs.Add(new EPLJoinRootS5());
+            WithKeyPerStream(execs);
+            WithRootS0(execs);
+            WithRootS1(execs);
+            WithRootS2(execs);
+            WithRootS3(execs);
+            WithRootS4(execs);
+            WithRootS5(execs);
+            WithRootS6(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRootS6(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLJoinRootS6());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRootS5(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinRootS5());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRootS4(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinRootS4());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRootS3(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinRootS3());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRootS2(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinRootS2());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRootS1(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinRootS1());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRootS0(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinRootS0());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithKeyPerStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinKeyPerStream());
             return execs;
         }
 

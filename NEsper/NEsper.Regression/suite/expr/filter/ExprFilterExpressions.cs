@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
@@ -20,7 +19,7 @@ using com.espertech.esper.regressionlib.support.multistmtassert;
 
 using NUnit.Framework;
 
-using SupportBean = com.espertech.esper.common.@internal.support.SupportBean; 
+using SupportBean = com.espertech.esper.common.@internal.support.SupportBean;
 using SupportEnum = com.espertech.esper.common.@internal.support.SupportEnum;
 using SupportEnumHelper = com.espertech.esper.common.@internal.support.SupportEnumHelper;
 using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
@@ -575,7 +574,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.CompileDeploy("@Name('s3') select * from SupportBean where TheString = 'A' or IntPrimitive != 0")
                     .AddListener("s3");
                 env.MilestoneInc(milestone);
-                stmts = new [] { "s0","s1","s2","s3" };
+                stmts = new[] {"s0", "s1", "s2", "s3"};
 
                 SendSupportBean(env, new SupportBean(null, 0));
                 AssertListeners(env, stmts, new[] {false, false, false, false});
@@ -598,7 +597,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.UndeployAll();
 
                 // test equals&selection
-                var fields = new [] { "val0","val1","val2","val3","val4","val5" };
+                var fields = new[] {"val0", "val1", "val2", "val3", "val4", "val5"};
                 epl = "@Name('s0') select " +
                       "TheString != 'A' as val0, " +
                       "TheString != 'A' or IntPrimitive != 0 as val1, " +
@@ -660,7 +659,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         "@Name('s3') select * from SupportBean where TheString is not null or IntPrimitive != 0")
                     .AddListener("s3");
                 env.MilestoneInc(milestone);
-                stmts = new [] { "s0","s1","s2","s3" };
+                stmts = new[] {"s0", "s1", "s2", "s3"};
 
                 SendSupportBean(env, new SupportBean(null, 0));
                 AssertListeners(env, stmts, new[] {true, true, false, false});
@@ -721,7 +720,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.CompileDeploy("@Name('s4') select * from SupportBean where TheString != null").AddListener("s4");
                 env.CompileDeploy("@Name('s5') select * from SupportBean(TheString != null)").AddListener("s5");
                 env.MilestoneInc(milestone);
-                stmts = new [] { "s0","s1","s2","s3","s4","s5" };
+                stmts = new[] {"s0", "s1", "s2", "s3", "s4", "s5"};
 
                 SendSupportBean(env, new SupportBean(null, 0));
                 AssertListeners(env, stmts, new[] {true, false, false, false, false, false});
@@ -732,7 +731,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.UndeployAll();
 
                 // select constants
-                fields = new [] { "val0","val1","val2","val3" };
+                fields = new[] {"val0", "val1", "val2", "val3"};
                 env.CompileDeploy(
                         "@Name('s0') select " +
                         "2 != null as val0," +
@@ -1205,7 +1204,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
                     new int?[] {2, 1, 3, null, 1, null, null},
                     new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new[] {false, false, true, false, false, false, false});
+                    new[] {false, false, true, false, true, false, false});
             }
         }
 

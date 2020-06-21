@@ -12,6 +12,6 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
 {
     public interface ContextControllerConditionCrontab
     {
-        ScheduleSpec Schedule { get; }
+        ScheduleSpec[] Schedules { get; }
     }
 } // end of namespace

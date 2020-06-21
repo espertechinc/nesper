@@ -9,9 +9,13 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using com.espertech.esper.common.@internal.compile.multikey;
+using com.espertech.esper.common.@internal.compile.stage2;
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
 {
@@ -20,30 +24,31 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
     /// </summary>
     public class AggregationGroupByLocalGroupByAnalyzer
     {
-        public static AggregationLocalGroupByPlanForge Analyze(
+        public static AggregationLocalGroupByPlanDesc Analyze(
             ExprForge[][] methodForges,
             AggregationForgeFactory[] methodFactories,
             AggregationStateFactoryForge[] accessAggregations,
             AggregationGroupByLocalGroupDesc localGroupDesc,
             ExprNode[] groupByExpressions,
+            MultiKeyClassRef groupByMultiKey,
             AggregationAccessorSlotPairForge[] accessors,
-            ImportService importService,
-            bool fireAndForget,
-            string statementName)
+            StatementRawInfo raw,
+            SerdeCompileTimeResolver serdeResolver)
         {
             if (groupByExpressions == null) {
                 groupByExpressions = ExprNodeUtilityQuery.EMPTY_EXPR_ARRAY;
             }
 
             var columns = new AggregationLocalGroupByColumnForge[localGroupDesc.NumColumns];
-            IList<AggregationLocalGroupByLevelForge> levelsList = new List<AggregationLocalGroupByLevelForge>();
+            var levelsList = new List<AggregationLocalGroupByLevelForge>();
             AggregationLocalGroupByLevelForge optionalTopLevel = null;
+            var additionalForgeables = new List<StmtClassForgeableFactory>();
 
             // determine optional top level (level number is -1)
             for (var i = 0; i < localGroupDesc.Levels.Length; i++) {
                 var levelDesc = localGroupDesc.Levels[i];
                 if (levelDesc.PartitionExpr.Length == 0) {
-                    optionalTopLevel = GetLevel(
+                    AggregationGroupByLocalGroupLevelDesc top = GetLevel(
                         -1,
                         levelDesc,
                         methodForges,
@@ -52,9 +57,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                         columns,
                         groupByExpressions.Length == 0,
                         accessors,
-                        importService,
-                        fireAndForget,
-                        statementName);
+                        groupByExpressions,
+                        groupByMultiKey,
+                        raw,
+                        serdeResolver);
+                    optionalTopLevel = top.Forge;
+                    additionalForgeables.AddRange(top.AdditionalForgeables);
                 }
             }
 
@@ -70,8 +78,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                                      ExprNodeUtilityCompare.DeepEqualsIgnoreDupAndOrder(
                                          groupByExpressions,
                                          levelDesc.PartitionExpr);
+
                 if (isDefaultLevel) {
-                    var level = GetLevel(
+                    AggregationGroupByLocalGroupLevelDesc level = GetLevel(
                         0,
                         levelDesc,
                         methodForges,
@@ -80,10 +89,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                         columns,
                         isDefaultLevel,
                         accessors,
-                        importService,
-                        fireAndForget,
-                        statementName);
-                    levelsList.Add(level);
+                        groupByExpressions,
+                        groupByMultiKey,
+                        raw,
+                        serdeResolver);
+                    additionalForgeables.AddRange(level.AdditionalForgeables);
+                    levelsList.Add(level.Forge);
                     levelNumber++;
                     break;
                 }
@@ -104,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                     continue;
                 }
 
-                var level = GetLevel(
+                AggregationGroupByLocalGroupLevelDesc level = GetLevel(
                     levelNumber,
                     levelDesc,
                     methodForges,
@@ -113,10 +124,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                     columns,
                     isDefaultLevel,
                     accessors,
-                    importService,
-                    fireAndForget,
-                    statementName);
-                levelsList.Add(level);
+                    groupByExpressions,
+                    groupByMultiKey,
+                    raw,
+                    serdeResolver);
+                levelsList.Add(level.Forge);
+                additionalForgeables.AddRange(level.AdditionalForgeables);
                 levelNumber++;
             }
 
@@ -134,11 +147,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             }
 
             AggregationLocalGroupByLevelForge[] levels = levelsList.ToArray();
-            return new AggregationLocalGroupByPlanForge(numMethods, numAccesses, columns, optionalTopLevel, levels);
+            AggregationLocalGroupByPlanForge forge = new AggregationLocalGroupByPlanForge(numMethods, numAccesses, columns, optionalTopLevel, levels);
+            return new AggregationLocalGroupByPlanDesc(forge, additionalForgeables);
         }
 
         // Obtain those method and state factories for each level
-        private static AggregationLocalGroupByLevelForge GetLevel(
+        private static AggregationGroupByLocalGroupLevelDesc GetLevel(
             int levelNumber,
             AggregationGroupByLocalGroupLevel level,
             ExprForge[][] methodForgesAll,
@@ -147,12 +161,19 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             AggregationLocalGroupByColumnForge[] columns,
             bool defaultLevel,
             AggregationAccessorSlotPairForge[] accessors,
-            ImportService importService,
-            bool isFireAndForget,
-            string statementName)
+            ExprNode[] groupByExpressions,
+            MultiKeyClassRef optionalGroupByMultiKey,
+            StatementRawInfo raw,
+            SerdeCompileTimeResolver serdeResolver)
         {
             var partitionExpr = level.PartitionExpr;
-            ExprForge[] partitionForges = ExprNodeUtilityQuery.GetForges(partitionExpr);
+            MultiKeyPlan multiKeyPlan;
+            if (defaultLevel && optionalGroupByMultiKey != null) { // use default multi-key that is already generated
+                multiKeyPlan = new MultiKeyPlan(EmptyList<StmtClassForgeableFactory>.Instance, optionalGroupByMultiKey);
+                partitionExpr = groupByExpressions;
+            } else {
+                multiKeyPlan = MultiKeyPlanner.PlanMultiKey(partitionExpr, false, raw, serdeResolver);
+            }
 
             IList<ExprForge[]> methodForges = new List<ExprForge[]>();
             IList<AggregationForgeFactory> methodFactories = new List<AggregationForgeFactory>();
@@ -186,19 +207,26 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
 
                 columns[column] = new AggregationLocalGroupByColumnForge(
                     defaultLevel,
-                    partitionForges,
+                    partitionExpr,
                     methodOffset,
                     methodAgg,
                     pair,
                     levelNumber);
             }
 
-            return new AggregationLocalGroupByLevelForge(
+            var forge = new AggregationLocalGroupByLevelForge(
                 methodForges.ToArray(),
                 methodFactories.ToArray(),
                 stateFactories.ToArray(),
-                partitionForges,
+                partitionExpr,
+                multiKeyPlan.ClassRef,
                 defaultLevel);
+
+            // NOTE: The original code tests for multiKeyPlan being null, but if it was null it would have caused
+            // a null pointer exception on the previous statement since it dereferences ClassRef.
+            var additionalForgeables = multiKeyPlan?.MultiKeyForgeables ?? EmptyList<StmtClassForgeableFactory>.Instance;
+            
+            return new AggregationGroupByLocalGroupLevelDesc(forge, additionalForgeables);
         }
     }
 } // end of namespace

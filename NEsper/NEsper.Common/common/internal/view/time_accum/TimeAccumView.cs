@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.view.time_accum
     /// </summary>
     public class TimeAccumView : ViewSupport,
         DataWindowView,
-        AgentInstanceStopCallback
+        AgentInstanceMgmtCallback
     {
         private readonly AgentInstanceContext agentInstanceContext;
 
@@ -151,9 +151,7 @@ namespace com.espertech.esper.common.@internal.view.time_accum
             }
 
             // forward insert stream to child views
-            if (viewUpdatedCollection != null) {
-                viewUpdatedCollection.Update(newData, null);
-            }
+            viewUpdatedCollection?.Update(newData, null);
 
             // update child views
             if (Child != null) {
@@ -191,9 +189,7 @@ namespace com.espertech.esper.common.@internal.view.time_accum
                 }
 
                 // Post old data
-                if (viewUpdatedCollection != null) {
-                    viewUpdatedCollection.Update(null, oldData);
-                }
+                viewUpdatedCollection?.Update(null, oldData);
 
                 if (oldData != null) {
                     agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, null, oldData);
@@ -208,6 +204,10 @@ namespace com.espertech.esper.common.@internal.view.time_accum
         public override string ToString()
         {
             return GetType().Name;
+        }
+        
+        public void Transfer(AgentInstanceTransferServices services)
+        {
         }
     }
 } // end of namespace

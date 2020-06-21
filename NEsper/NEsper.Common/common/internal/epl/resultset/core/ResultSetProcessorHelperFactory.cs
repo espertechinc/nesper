@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -31,6 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
     {
         ResultSetProcessorRowPerGroupUnboundHelper MakeRSRowPerGroupUnboundGroupRep(
             Type[] groupKeyTypes,
+            DataInputOutputSerde serde,
             EventType eventType,
             AgentInstanceContext agentInstanceContext);
 
@@ -39,7 +41,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             Type[] groupKeyTypes,
             OutputConditionPolledFactory optionalOutputFirstConditionFactory,
             AggregationGroupByRollupDesc optionalGroupByRollupDesc,
-            int optionalRollupLevel);
+            int optionalRollupLevel,
+            DataInputOutputSerde serde);
 
         OutputProcessViewConditionDeltaSet MakeOutputConditionChangeSet(
             EventType[] eventTypes,
@@ -99,46 +102,51 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         ResultSetProcessorGroupedOutputAllGroupReps MakeRSGroupedOutputAllNoOpt(
             AgentInstanceContext agentInstanceContext,
             Type[] groupKeyTypes,
+            DataInputOutputSerde serde,
             EventType[] eventTypes);
 
         ResultSetProcessorRowPerGroupOutputAllHelper MakeRSRowPerGroupOutputAllOpt(
             AgentInstanceContext agentInstanceContext,
-            ResultSetProcessorRowPerGroup resultSetProcessorRowPerGroup,
+            ResultSetProcessorRowPerGroup processor,
             Type[] groupKeyTypes,
+            DataInputOutputSerde serde,
             EventType[] eventTypes);
 
         ResultSetProcessorRowPerGroupOutputLastHelper MakeRSRowPerGroupOutputLastOpt(
             AgentInstanceContext agentInstanceContext,
-            ResultSetProcessorRowPerGroup resultSetProcessorRowPerGroup,
+            ResultSetProcessorRowPerGroup processor,
             Type[] groupKeyTypes,
+            DataInputOutputSerde serde,
             EventType[] eventTypes);
 
         ResultSetProcessorAggregateGroupedOutputAllHelper MakeRSAggregateGroupedOutputAll(
             AgentInstanceContext agentInstanceContext,
-            ResultSetProcessorAggregateGrouped resultSetProcessorAggregateGrouped,
+            ResultSetProcessorAggregateGrouped processor,
             Type[] groupKeyTypes,
+            DataInputOutputSerde serde,
             EventType[] eventTypes);
 
         ResultSetProcessorAggregateGroupedOutputLastHelper MakeRSAggregateGroupedOutputLastOpt(
             AgentInstanceContext agentInstanceContext,
-            ResultSetProcessorAggregateGrouped resultSetProcessorAggregateGrouped,
-            Type[] groupKeyTypes);
+            ResultSetProcessorAggregateGrouped processor,
+            Type[] groupKeyTypes,
+            DataInputOutputSerde serde);
 
         ResultSetProcessorRowPerGroupRollupOutputLastHelper MakeRSRowPerGroupRollupLast(
             AgentInstanceContext agentInstanceContext,
-            ResultSetProcessorRowPerGroupRollup resultSetProcessorRowPerGroupRollup,
+            ResultSetProcessorRowPerGroupRollup processor,
             Type[] groupKeyTypes,
             EventType[] eventTypes);
 
         ResultSetProcessorRowPerGroupRollupOutputAllHelper MakeRSRowPerGroupRollupAll(
             AgentInstanceContext agentInstanceContext,
-            ResultSetProcessorRowPerGroupRollup resultSetProcessorRowPerGroupRollup,
+            ResultSetProcessorRowPerGroupRollup processor,
             Type[] groupKeyTypes,
             EventType[] eventTypes);
 
         ResultSetProcessorRowPerGroupRollupUnboundHelper MakeRSRowPerGroupRollupSnapshotUnbound(
             AgentInstanceContext agentInstanceContext,
-            ResultSetProcessorRowPerGroupRollup resultSetProcessorRowPerGroupRollup,
+            ResultSetProcessorRowPerGroupRollup processor,
             Type[] groupKeyTypes,
             int numStreams,
             EventType[] eventTypes);

@@ -12,8 +12,11 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.multikey;
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
 
@@ -31,29 +34,14 @@ namespace com.espertech.esper.common.@internal.view.rank
     {
         private const string NAME = "Rank";
 
-        /// <summary>
-        ///     The flags defining the ascending or descending sort order.
-        /// </summary>
-        private bool[] isDescendingValues;
-
-        /// <summary>
-        ///     The sort window size.
-        /// </summary>
-        private ExprForge sizeForge;
-
-        /// <summary>
-        ///     The sort-by expressions.
-        /// </summary>
-        private ExprNode[] sortCriteriaExpressions;
-
-        /// <summary>
-        ///     The unique-by expressions.
-        /// </summary>
-        private ExprNode[] uniqueCriteriaExpressions;
-
-        private bool useCollatorSort;
-
         private IList<ExprNode> viewParameters;
+        private ExprNode[] criteriaExpressions;
+        private ExprNode[] sortCriteriaExpressions;
+        private bool[] isDescendingValues;
+        private ExprForge sizeForge;
+        private bool useCollatorSort;
+        private MultiKeyClassRef multiKeyClassNames;
+        private DataInputOutputSerdeForge[] sortSerdes;
 
         public override string ViewName => NAME;
 
@@ -125,8 +113,8 @@ namespace com.espertech.esper.common.@internal.view.rank
             sizeForge = ViewForgeSupport.ValidateSizeParam(ViewName, validated[indexNumericSize], indexNumericSize);
 
             // compile unique expressions
-            uniqueCriteriaExpressions = new ExprNode[indexNumericSize];
-            Array.Copy(validated, 0, uniqueCriteriaExpressions, 0, indexNumericSize);
+            criteriaExpressions = new ExprNode[indexNumericSize];
+            Array.Copy(validated, 0, criteriaExpressions, 0, indexNumericSize);
 
             // compile sort expressions
             sortCriteriaExpressions = new ExprNode[validated.Length - indexNumericSize - 1];
@@ -144,6 +132,21 @@ namespace com.espertech.esper.common.@internal.view.rank
 
                 count++;
             }
+
+            sortSerdes = viewForgeEnv.SerdeResolver.SerdeForDataWindowSortCriteria(
+                ExprNodeUtilityQuery.GetExprResultTypes(sortCriteriaExpressions),
+                viewForgeEnv.StatementRawInfo);
+        }
+
+        public override IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
+        {
+            MultiKeyPlan desc = MultiKeyPlanner.PlanMultiKey(
+                criteriaExpressions,
+                false,
+                viewForgeEnv.StatementRawInfo,
+                viewForgeEnv.StatementCompileTimeServices.SerdeResolver);
+            multiKeyClassNames = desc.ClassRef;
+            return desc.MultiKeyForgeables;
         }
 
         internal override Type TypeOfFactory()
@@ -163,7 +166,10 @@ namespace com.espertech.esper.common.@internal.view.rank
             CodegenClassScope classScope)
         {
             method.Block
-                .SetProperty(factory, "SizeEvaluator", CodegenEvaluator(sizeForge, method, GetType(), classScope))
+                .SetProperty(
+                    factory,
+                    "SizeEvaluator",
+                    CodegenEvaluator(sizeForge, method, GetType(), classScope))
                 .SetProperty(
                     factory,
                     "SortCriteriaEvaluators",
@@ -172,16 +178,19 @@ namespace com.espertech.esper.common.@internal.view.rank
                     factory,
                     "SortCriteriaTypes",
                     Constant(ExprNodeUtilityQuery.GetExprResultTypes(sortCriteriaExpressions)))
-                .SetProperty(factory, "IsDescendingValues", Constant(isDescendingValues))
-                .SetProperty(factory, "IsUseCollatorSort", Constant(useCollatorSort))
                 .SetProperty(
                     factory,
-                    "UniqueEvaluators",
-                    CodegenEvaluators(uniqueCriteriaExpressions, method, GetType(), classScope))
+                    "IsDescendingValues",
+                    Constant(isDescendingValues))
                 .SetProperty(
                     factory,
-                    "UniqueTypes",
-                    Constant(ExprNodeUtilityQuery.GetExprResultTypes(uniqueCriteriaExpressions)));
+                    "IsUseCollatorSort",
+                    Constant(useCollatorSort))
+                .SetProperty(
+                    factory,
+                    "SortSerdes",
+                    DataInputOutputSerdeForgeExtensions.CodegenArray(sortSerdes, method, classScope, null));
+            ViewMultiKeyHelper.Assign(criteriaExpressions, multiKeyClassNames, method, factory, symbols, classScope);
         }
     }
 } // end of namespace

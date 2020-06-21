@@ -24,11 +24,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         ExprEvaluator,
         ExprNodeRenderable
     {
-        private readonly string functionName;
+        private readonly string _functionName;
 
         public ExprEvalMethodContext(string functionName)
         {
-            this.functionName = functionName;
+            this._functionName = functionName;
         }
 
         public object Evaluate(
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                     null,
                     -1,
                     null,
-                    functionName,
+                    _functionName,
                     null,
                     null);
             }
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 context.StatementName,
                 context.AgentInstanceId,
                 context.RuntimeURI,
-                functionName,
+                _functionName,
                 context.UserObjectCompileTime,
                 null);
         }
@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
             var stmtName = ExprDotName(refExprEvalCtx, "StatementName");
             var cpid = ExprDotName(refExprEvalCtx, "AgentInstanceId");
-            var runtimeURI = ExprDotName(refExprEvalCtx, "RuntimeURI");
+            var runtimeUri = ExprDotName(refExprEvalCtx, "RuntimeURI");
             var userObject = ExprDotName(refExprEvalCtx, "UserObjectCompileTime");
             var eventBeanSvc = ExprDotName(refExprEvalCtx, "EventBeanService");
             methodNode.Block
@@ -83,15 +83,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                         ConstantNull(),
                         Constant(-1),
                         ConstantNull(),
-                        Constant(functionName),
+                        Constant(_functionName),
                         ConstantNull(),
                         ConstantNull()))
                 .MethodReturn(
                     NewInstance<EPLMethodInvocationContext>(
                         stmtName,
                         cpid,
-                        runtimeURI,
-                        Constant(functionName),
+                        runtimeUri,
+                        Constant(_functionName),
                         userObject,
                         eventBeanSvc));
             return LocalMethod(methodNode);
@@ -101,9 +101,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
         public ExprNodeRenderable ExprForgeRenderable => this;
 
-        public void ToEPL(
-            TextWriter writer,
-            ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(typeof(ExprEvalMethodContext).Name);
         }

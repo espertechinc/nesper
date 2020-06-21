@@ -15,9 +15,9 @@ namespace com.espertech.esper.common.@internal.filterspec
     public class FilterSpecParamAdvancedIndexQuadTreeMXCIF : FilterSpecParam
     {
         public FilterSpecParamAdvancedIndexQuadTreeMXCIF(
-            ExprFilterSpecLookupable lookupable,
+            ExprFilterSpecLookupable lkupable,
             FilterOperator filterOperator)
-            : base(lookupable, filterOperator)
+            : base(lkupable, filterOperator)
         {
         }
 
@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public FilterSpecParamFilterForEvalDouble HeightEval { get; set; }
 
-        public override object GetFilterValue(
+        public override FilterValueSetParam GetFilterValue(
             MatchedEventMap matchedEvents,
             ExprEvaluatorContext exprEvaluatorContext,
             StatementContextFilterEvalEnv filterEvalEnv)
@@ -38,7 +38,9 @@ namespace com.espertech.esper.common.@internal.filterspec
             var y = YEval.GetFilterValueDouble(matchedEvents, exprEvaluatorContext, filterEvalEnv);
             var width = WidthEval.GetFilterValueDouble(matchedEvents, exprEvaluatorContext, filterEvalEnv);
             var height = HeightEval.GetFilterValueDouble(matchedEvents, exprEvaluatorContext, filterEvalEnv);
-            return new XYWHRectangle(x, y, width, height);
+            var rectangle = new XYWHRectangle(x, y, width, height);
+            var lookupable = lkupable.Make(matchedEvents, exprEvaluatorContext);
+            return new FilterValueSetParamImpl(lookupable, FilterOperator, rectangle);
         }
 
         protected bool Equals(FilterSpecParamAdvancedIndexQuadTreeMXCIF other)

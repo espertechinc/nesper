@@ -28,12 +28,27 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EPLDataflowAllTypes());
-            execs.Add(new EPLDataflowBeacon());
-            execs.Add(new EPLDataflowSendEventDynamicType());
+WithAllTypes(execs);
+WithBeacon(execs);
+WithSendEventDynamicType(execs);
             return execs;
         }
-
+public static IList<RegressionExecution> WithSendEventDynamicType(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowSendEventDynamicType());
+    return execs;
+}public static IList<RegressionExecution> WithBeacon(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowBeacon());
+    return execs;
+}public static IList<RegressionExecution> WithAllTypes(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowAllTypes());
+    return execs;
+}
         private static void RunAssertionAllTypes(
             RegressionEnvironment env,
             string typeName,

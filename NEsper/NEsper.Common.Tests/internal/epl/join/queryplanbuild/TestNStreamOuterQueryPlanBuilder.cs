@@ -17,7 +17,7 @@ using com.espertech.esper.common.@internal.supportunit.util;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.container;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             return result;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGraphOuterJoins()
         {
             var descList = new OuterJoinDesc[2];
@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestRecursiveBuild()
         {
             var streamNum = 2;
@@ -147,7 +147,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             );
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestVerifyJoinedPerStream()
         {
             // stream relationships not filled

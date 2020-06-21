@@ -11,6 +11,7 @@ using System.Numerics;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -34,7 +35,7 @@ namespace com.espertech.esper.common.@internal.util
 
             public BigInteger CoerceBoxedBigInt(object numToCoerce)
             {
-                return (BigInteger) numToCoerce;
+                return numToCoerce.AsBigInteger();
             }
 
             public object CoerceBoxed(object value)
@@ -42,7 +43,7 @@ namespace com.espertech.esper.common.@internal.util
                 return value;
             }
 
-            public Type ReturnType => typeof(BigInteger);
+            public Type ReturnType => typeof(BigInteger?);
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,

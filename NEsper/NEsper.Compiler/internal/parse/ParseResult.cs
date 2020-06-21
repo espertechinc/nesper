@@ -24,16 +24,19 @@ namespace com.espertech.esper.compiler.@internal.parse
         /// <param name="expressionWithoutAnnotations">expression text no annotations, or null if same</param>
         /// <param name="scripts">script list</param>
         /// <param name="tokenStream">tokens</param>
+        /// <param name="classes">class list</param>
         public ParseResult(
             ITree tree,
             string expressionWithoutAnnotations,
             CommonTokenStream tokenStream,
-            IList<string> scripts)
+            IList<string> scripts,
+            IList<string> classes)
         {
             Tree = tree;
             ExpressionWithoutAnnotations = expressionWithoutAnnotations;
             TokenStream = tokenStream;
             Scripts = scripts;
+            Classes = classes;
         }
 
         /// <summary>
@@ -51,5 +54,7 @@ namespace com.espertech.esper.compiler.@internal.parse
         public CommonTokenStream TokenStream { get; }
 
         public IList<string> Scripts { get; }
+        
+        public IList<string> Classes { get; }
     }
 } // end of namespace

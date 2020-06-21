@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -26,16 +25,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprRelationalOpAllAnyNodeForgeEval : ExprEvaluator
     {
-        private readonly ExprEvaluator[] evaluators;
+        private readonly ExprEvaluator[] _evaluators;
 
-        private readonly ExprRelationalOpAllAnyNodeForge forge;
+        private readonly ExprRelationalOpAllAnyNodeForge _forge;
 
         public ExprRelationalOpAllAnyNodeForgeEval(
             ExprRelationalOpAllAnyNodeForge forge,
             ExprEvaluator[] evaluators)
         {
-            this.forge = forge;
-            this.evaluators = evaluators;
+            this._forge = forge;
+            this._evaluators = evaluators;
         }
 
         public object Evaluate(
@@ -43,8 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var result = EvaluateInternal(eventsPerStream, isNewData, exprEvaluatorContext);
-            return result;
+            return EvaluateInternal(eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         private bool? EvaluateInternal(
@@ -52,20 +50,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (evaluators.Length == 1) {
+            if (_evaluators.Length == 1) {
                 return false;
             }
 
-            var isAll = forge.ForgeRenderable.IsAll;
-            RelationalOpEnumComputer computer = forge.Computer;
-            var valueLeft = evaluators[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-            var len = evaluators.Length - 1;
+            var isAll = _forge.ForgeRenderable.IsAll;
+            RelationalOpEnumComputer computer = _forge.Computer;
+            var valueLeft = _evaluators[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var len = _evaluators.Length - 1;
 
-            if (forge.IsCollectionOrArray) {
+            if (_forge.IsCollectionOrArray) {
                 var hasNonNullRow = false;
                 var hasRows = false;
                 for (var i = 1; i <= len; i++) {
-                    var valueRight = evaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                    var valueRight = _evaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                     if (valueRight == null) {
                         continue;
@@ -199,7 +197,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 var hasNonNullRow = false;
                 var hasRows = false;
                 for (var i = 1; i <= len; i++) {
-                    var valueRight = evaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                    var valueRight = _evaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                     hasRows = true;
 
                     if (valueRight != null) {

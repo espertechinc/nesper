@@ -69,7 +69,9 @@ namespace com.espertech.esper.common.@internal.supportunit.util
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
         }
 

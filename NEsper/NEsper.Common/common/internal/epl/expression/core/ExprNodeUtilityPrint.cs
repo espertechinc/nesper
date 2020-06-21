@@ -12,7 +12,7 @@ using System.IO;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.compat.collections;
+using com.espertech.esper.common.@internal.epl.expression.chain;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             var expressions = new string[nodes.Length];
             for (var i = 0; i < expressions.Length; i++) {
                 var writer = new StringWriter();
-                nodes[i].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+                nodes[i].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, ExprNodeRenderableFlags.DEFAULTFLAGS);
                 expressions[i] = writer.ToString();
             }
 
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             var delimiter = "";
             foreach (var node in nodes) {
                 writer.Write(delimiter);
-                node.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+                node.ToEPL(writer, ExprPrecedenceEnum.MINIMUM, ExprNodeRenderableFlags.DEFAULTFLAGS);
                 delimiter = ",";
             }
         }
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             var texts = new string[expressions.Length];
             for (var i = 0; i < expressions.Length; i++) {
                 var writer = new StringWriter();
-                expressions[i].ExprForgeRenderable.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+                expressions[i].ExprForgeRenderable.ToEPL(writer, ExprPrecedenceEnum.MINIMUM, ExprNodeRenderableFlags.DEFAULTFLAGS);
                 texts[i] = writer.ToString();
             }
 
@@ -77,20 +77,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public static string ToExpressionStringMinPrecedence(ExprForge expression)
         {
             var writer = new StringWriter();
-            expression.ExprForgeRenderable.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+            expression.ExprForgeRenderable.ToEPL(writer, ExprPrecedenceEnum.MINIMUM, ExprNodeRenderableFlags.DEFAULTFLAGS);
             return writer.ToString();
         }
 
-        public static string PrintEvaluators(ExprEvaluator[] evaluators)
-        {
+        public static String ToExpressionStringMinPrecedence(ExprNode expression, ExprNodeRenderableFlags flags) {
             var writer = new StringWriter();
-            var delimiter = "";
-            foreach (var evaluator in evaluators) {
-                writer.Write(delimiter);
-                writer.Write(evaluator.GetType().Name);
-                delimiter = ", ";
-            }
-
+            expression.ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
             return writer.ToString();
         }
 
@@ -98,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
             try {
                 var writer = new StringWriter();
-                node.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+                node.ToEPL(writer, ExprPrecedenceEnum.MINIMUM, ExprNodeRenderableFlags.DEFAULTFLAGS);
                 return writer.ToString();
             }
             catch (EPException) {
@@ -164,7 +157,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprNode node,
             TextWriter buffer)
         {
-            node.ToEPL(buffer, ExprPrecedenceEnum.MINIMUM);
+            node.ToEPL(buffer, ExprPrecedenceEnum.MINIMUM, ExprNodeRenderableFlags.DEFAULTFLAGS);
         }
 
         public static void ToExpressionStringIncludeParen(
@@ -177,7 +170,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         }
 
         public static void ToExpressionString(
-            IList<ExprChainedSpec> chainSpec,
+            IList<Chainable> chainSpec,
             TextWriter buffer,
             bool prefixDot,
             string functionName)
@@ -187,23 +180,36 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 delimiterOuter = ".";
             }
 
-            var isFirst = true;
-            foreach (var element in chainSpec) {
-                buffer.Write(delimiterOuter);
-                if (functionName != null) {
-                    buffer.Write(functionName);
-                }
-                else {
-                    buffer.Write(element.Name);
+            foreach (Chainable element in chainSpec) {
+                if (element.IsDistinct) {
+                    buffer.Write("distinct ");
                 }
 
-                // the first item without dot-prefix and empty parameters should not be appended with parenthesis
-                if (!isFirst || prefixDot || !element.Parameters.IsEmpty()) {
-                    ToExpressionStringIncludeParen(element.Parameters, buffer);
+                if (element is ChainableArray array) {
+                    buffer.Write("[");
+                    ToExpressionStringParameterList(array.Indexes, buffer);
+                    buffer.Write("]");
+                }
+                else {
+                    buffer.Write(delimiterOuter);
+                    if (functionName != null) {
+                        buffer.Write(functionName);
+                    }
+                    else {
+                        String name = element.GetRootNameOrEmptyString();
+                        buffer.Write(name);
+                    }
+
+                    if (element is ChainableCall call) {
+                        ToExpressionStringIncludeParen(call.Parameters, buffer);
+                    }
+                }
+
+                if (element.IsOptional) {
+                    buffer.Write("?");
                 }
 
                 delimiterOuter = ".";
-                isFirst = false;
             }
         }
     }

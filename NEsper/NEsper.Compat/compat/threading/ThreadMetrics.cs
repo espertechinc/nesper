@@ -24,10 +24,7 @@ namespace com.espertech.esper.compat.threading
         /// Gets the # of times locks have been acquired by this thread.
         /// </summary>
         /// <value>The locks acquired.</value>
-        public static long LocksAcquired
-        {
-            get { return _locksAcquired; }
-        }
+        public static long LocksAcquired => _locksAcquired;
 
         /// <summary>
         /// Increments the # of times locks have been acquired.

@@ -69,20 +69,20 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                 return;
             }
 
-            var ifChild = method.Block.IfCondition(NotEqualsNull(REF_CHILD));
+            var ifChild = method.Block.IfCondition(NotEqualsNull(MEMBER_CHILD));
 
             var ifResultNotNull = ifChild.IfRefNotNull("newOldEvents");
             var ifPairHasData = ifResultNotNull.IfCondition(
                 Or(
                     NotEqualsNull(ExprDotName(Ref("newOldEvents"), "First")),
                     NotEqualsNull(ExprDotName(Ref("newOldEvents"), "Second"))));
-            ifPairHasData.ExprDotMethod(REF_CHILD, "NewResult", Ref("newOldEvents"))
+            ifPairHasData.ExprDotMethod(MEMBER_CHILD, "NewResult", Ref("newOldEvents"))
                 .IfElseIf(And(EqualsNull(Ref("newData")), EqualsNull(Ref("oldData"))))
-                .ExprDotMethod(REF_CHILD, "NewResult", Ref("newOldEvents"));
+                .ExprDotMethod(MEMBER_CHILD, "NewResult", Ref("newOldEvents"));
 
             var ifResultNull = ifResultNotNull.IfElse();
             ifResultNull.IfCondition(And(EqualsNull(Ref("newData")), EqualsNull(Ref("oldData"))))
-                .ExprDotMethod(REF_CHILD, "NewResult", Ref("newOldEvents"))
+                .ExprDotMethod(MEMBER_CHILD, "NewResult", Ref("newOldEvents"))
                 .BlockEnd()
                 .BlockEnd()
                 .Apply(Instblock(classScope, "aOutputProcessNonBuffered"));
@@ -115,9 +115,9 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                             NotEqualsNull(ExprDotName(Ref("newOldEvents"), "First")),
                             NotEqualsNull(ExprDotName(Ref("newOldEvents"), "Second"))));
                 ifPairHasData
-                    .ExprDotMethod(REF_CHILD, "NewResult", Ref("newOldEvents"))
+                    .ExprDotMethod(MEMBER_CHILD, "NewResult", Ref("newOldEvents"))
                     .IfElseIf(And(EqualsNull(Ref("newData")), EqualsNull(Ref("oldData"))))
-                    .ExprDotMethod(REF_CHILD, "NewResult", Ref("newOldEvents"));
+                    .ExprDotMethod(MEMBER_CHILD, "NewResult", Ref("newOldEvents"));
             }
 
             method.Block.Apply(Instblock(classScope, "aOutputProcessNonBufferedJoin"));
@@ -134,7 +134,8 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                     Ref(NAME_JOINEXECSTRATEGY),
                     Ref(NAME_RESULTSETPROCESSOR),
                     Ref(NAME_PARENTVIEW),
-                    Constant(false)));
+                    Constant(false),
+                    Constant(null)));
         }
 
         public void CollectSchedules(IList<ScheduleHandleCallbackProvider> scheduleHandleCallbackProviders)
@@ -149,10 +150,10 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             method.Block
                 .DeclareVar<bool>(
                     "isGenerateSynthetic",
-                    ExprDotName(Ref("o." + NAME_STATEMENTRESULTSVC), "IsMakeSynthetic"))
+                    ExprDotName(Member("o." + NAME_STATEMENTRESULTSVC), "IsMakeSynthetic"))
                 .DeclareVar<bool>(
                     "isGenerateNatural",
-                    ExprDotName(Ref("o." + NAME_STATEMENTRESULTSVC), "IsMakeNatural"))
+                    ExprDotName(Member("o." + NAME_STATEMENTRESULTSVC), "IsMakeNatural"))
                 .DeclareVar<UniformPair<EventBean[]>>(
                     "newOldEvents",
                     ExprDotMethod(

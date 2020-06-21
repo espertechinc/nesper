@@ -10,9 +10,7 @@ using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.locks;
-using com.espertech.esper.container;
 
 using static com.espertech.esper.common.@internal.context.util.StatementAgentInstanceLockConstants;
 

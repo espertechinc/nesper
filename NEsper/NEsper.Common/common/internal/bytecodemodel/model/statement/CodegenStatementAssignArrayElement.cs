@@ -12,23 +12,24 @@ using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
     public class CodegenStatementAssignArrayElement : CodegenStatementBase
     {
-        private readonly CodegenExpression array;
-        private readonly CodegenExpression expression;
-        private readonly CodegenExpression index;
+        private readonly CodegenExpression _array;
+        private readonly CodegenExpression _expression;
+        private readonly CodegenExpression _index;
 
         public CodegenStatementAssignArrayElement(
             CodegenExpression array,
             CodegenExpression index,
             CodegenExpression expression)
         {
-            this.array = array;
-            this.index = index;
-            this.expression = expression;
+            _array = array;
+            _index = index;
+            _expression = expression;
         }
 
         public override void RenderStatement(
@@ -36,18 +37,25 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             bool isInnerClass)
         {
             var indent = new CodegenIndent(true);
-            array.Render(builder, isInnerClass, 1, indent);
+            _array.Render(builder, isInnerClass, 1, indent);
             builder.Append("[");
-            index.Render(builder, isInnerClass, 1, indent);
+            _index.Render(builder, isInnerClass, 1, indent);
             builder.Append("]=");
-            expression.Render(builder, isInnerClass, 1, indent);
+            _expression.Render(builder, isInnerClass, 1, indent);
         }
 
         public override void MergeClasses(ISet<Type> classes)
         {
-            array.MergeClasses(classes);
-            index.MergeClasses(classes);
-            expression.MergeClasses(classes);
+            _array.MergeClasses(classes);
+            _index.MergeClasses(classes);
+            _expression.MergeClasses(classes);
+        }
+
+        public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            consumer.Invoke(_array);
+            consumer.Invoke(_index);
+            consumer.Invoke(_expression);
         }
     }
 } // end of namespace

@@ -18,9 +18,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 {
     public class AggregationStateSorted
     {
-        public int Size { get; set; }
+        public int Count { get; set; }
 
-        public OrderedDictionary<object, object> Sorted { get; set; }
+        public IOrderedDictionary<object, object> Sorted { get; set; }
 
         public EventBean FirstValue {
             get {
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
         public ICollection<EventBean> CollectionReadOnly()
         {
-            return new AggregationStateSortedWrappingCollection(Sorted, Size);
+            return new AggregationStateSortedWrappingCollection(Sorted, Count);
         }
     }
 } // end of namespace

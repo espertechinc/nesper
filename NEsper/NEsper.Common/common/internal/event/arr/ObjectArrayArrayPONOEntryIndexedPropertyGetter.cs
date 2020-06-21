@@ -14,10 +14,9 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.bean.getter;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
-    CodegenRelational;
 
 namespace com.espertech.esper.common.@internal.@event.arr
 {
@@ -51,7 +50,17 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return GetArrayValue(array, propertyIndex, index);
         }
 
+        public object GetObjectArray(Array array)
+        {
+            return GetArrayValue(array, propertyIndex, index);
+        }
+
         public bool IsObjectArrayExistsProperty(object[] array)
+        {
+            return array.Length > index;
+        }
+
+        public bool IsObjectArrayExistsProperty(Array array)
         {
             return array.Length > index;
         }
@@ -73,7 +82,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         public override bool IsExistsProperty(EventBean eventBean)
         {
             var array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
-            return array.Length > index;
+            return CollectionUtil.ArrayExistsAtIndex((Array) array[propertyIndex], index);
         }
 
         public override CodegenExpression EventBeanGetCodegen(
@@ -82,7 +91,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(typeof(object[]), beanExpression),
+                CastUnderlying(typeof(Array), beanExpression),
                 codegenMethodScope,
                 codegenClassScope);
         }
@@ -93,7 +102,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
-                CastUnderlying(typeof(object[]), beanExpression),
+                CastUnderlying(typeof(Array), beanExpression),
                 codegenMethodScope,
                 codegenClassScope);
         }
@@ -116,7 +125,12 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return Relational(ArrayLength(underlyingExpression), GT, Constant(index));
+            return StaticMethod(
+                typeof(CollectionUtil),
+                "ArrayExistsAtIndex",
+                Cast<Array>(ExprDotMethod(underlyingExpression, "GetValue", Constant(propertyIndex))),
+                //Cast<Array>(ArrayAtIndex(underlyingExpression, Constant(propertyIndex))),
+                Constant(index));
         }
 
         public CodegenExpression EventBeanGetIndexedCodegen(
@@ -128,18 +142,18 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return StaticMethod(
                 GetType(),
                 "GetArrayValue",
-                CastUnderlying(typeof(object[]), beanExpression),
+                CastUnderlying(typeof(Array), beanExpression),
                 Constant(propertyIndex),
                 key);
         }
 
         public static object GetArrayValue(
-            object[] array,
+            Array array,
             int propertyIndex,
             int index)
         {
             // If the oa does not contain the key, this is allowed and represented as null
-            var value = array[propertyIndex];
+            var value = array.GetValue(propertyIndex);
             return BaseNestableEventUtil.GetBNArrayValueAtIndexWithNullCheck(value, index);
         }
     }

@@ -35,8 +35,8 @@ namespace com.espertech.esper.compat
         /// <value>The label.</value>
         public string Label
         {
-            get { return _label; }
-            set { _label = value; }
+            get => _label;
+            set => _label = value;
         }
 
         /// <summary>

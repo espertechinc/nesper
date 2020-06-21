@@ -27,6 +27,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
     {
         public override PatternExpressionPrecedenceEnum Precedence => PatternExpressionPrecedenceEnum.UNARY;
 
+        public EvalEveryForgeNode(bool attachPatternText) : base(attachPatternText)
+        {
+        }
+
         public override string ToString()
         {
             return "EvalEveryNode children=" + ChildNodes.Count;

@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.common.@internal.support;
@@ -56,7 +55,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             IList<FilterHandle> matchesList = new List<FilterHandle>();
 
             // Invoke match
-            testIndex.MatchEvent(testEventBean, matchesList);
+            testIndex.MatchEvent(testEventBean, matchesList, null);
 
             Assert.AreEqual(1, matchesList.Count);
             Assert.AreEqual(filterCallback, matchesList[0]);

@@ -10,7 +10,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.funcs;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.util;
-using com.espertech.esper.container;
 
 using NUnit.Framework;
 
@@ -27,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         private ExprNotNode notNode;
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEqualsNode()
         {
             Assert.IsTrue(notNode.EqualsNode(notNode, false));
@@ -36,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.IsTrue(notNode.EqualsNode(new ExprNotNode(), false));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEvaluate()
         {
             notNode.AddChildNode(new SupportBoolExprNode(true));
@@ -49,20 +48,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.IsTrue((bool) notNode.Evaluate(null, false, null));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetType()
         {
             Assert.AreEqual(typeof(bool?), notNode.EvaluationType);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestToExpressionString()
         {
             notNode.AddChildNode(new SupportExprNode(true));
             Assert.AreEqual("not true", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(notNode));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestValidate()
         {
             // fails with zero expressions

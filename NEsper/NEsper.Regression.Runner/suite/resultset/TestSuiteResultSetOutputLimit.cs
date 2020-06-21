@@ -14,7 +14,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.resultset.outputlimit;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.extend.aggfunc;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 
 using NUnit.Framework;
 
@@ -137,7 +137,9 @@ namespace com.espertech.esper.regressionrun.suite.resultset
                 typeof(SupportBean_ST0),
                 typeof(SupportBean_A),
                 typeof(SupportScheduleSimpleEvent),
-                typeof(SupportBeanString)})
+                typeof(SupportBeanString),
+                typeof(SupportEventWithIntArray)
+            })
             {
                 configuration.Common.AddEventType(clazz);
             }

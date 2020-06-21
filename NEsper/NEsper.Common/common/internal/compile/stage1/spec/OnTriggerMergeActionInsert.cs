@@ -22,8 +22,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
         public OnTriggerMergeActionInsert(
             ExprNode optionalWhereClause,
-            String optionalStreamName,
-            IList<String> columns,
+            string optionalStreamName,
+            IList<string> columns,
             IList<SelectClauseElementRaw> selectClause)
             : base(optionalWhereClause)
         {

@@ -35,57 +35,57 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private ViewableActivatorFilter activator;
-        private EventType asEventType;
-        private ExprEvaluator insertFromFilter;
-        private NamedWindow insertFromNamedWindow;
-        private string namedWindowName;
-        private ResultSetProcessorFactoryProvider resultSetProcessorFactoryProvider;
-        private ViewFactory[] viewFactories;
+        private ViewableActivatorFilter _activator;
+        private EventType _asEventType;
+        private ExprEvaluator _insertFromFilter;
+        private NamedWindow _insertFromNamedWindow;
+        private string _namedWindowName;
+        private ResultSetProcessorFactoryProvider _resultSetProcessorFactoryProvider;
+        private ViewFactory[] _viewFactories;
 
         public ViewableActivatorFilter Activator {
-            set => activator = value;
+            set => _activator = value;
         }
 
         public string NamedWindowName {
-            set => namedWindowName = value;
+            set => _namedWindowName = value;
         }
 
         public ViewFactory[] ViewFactories {
-            set => viewFactories = value;
+            set => _viewFactories = value;
         }
 
         public NamedWindow InsertFromNamedWindow {
-            set => insertFromNamedWindow = value;
+            set => _insertFromNamedWindow = value;
         }
 
         public ExprEvaluator InsertFromFilter {
-            set => insertFromFilter = value;
+            set => _insertFromFilter = value;
         }
 
         public EventType AsEventType {
-            set => asEventType = value;
+            set => _asEventType = value;
         }
 
         public ResultSetProcessorFactoryProvider ResultSetProcessorFactoryProvider {
-            set => resultSetProcessorFactoryProvider = value;
+            set => _resultSetProcessorFactoryProvider = value;
         }
 
         public bool[] PriorFlagPerStream => null;
 
-        public string AsEventTypeName => asEventType == null ? null : asEventType.Name;
+        public string AsEventTypeName => _asEventType == null ? null : _asEventType.Name;
 
-        public EventType StatementEventType => activator.EventType;
+        public EventType StatementEventType => _activator.EventType;
 
         public void StatementCreate(StatementContext statementContext)
         {
             // The filter lookupables for the as-type apply to this type, when used with contexts, as contexts generated filters for types
-            if (statementContext.ContextRuntimeDescriptor != null && asEventType != null) {
+            if (statementContext.ContextRuntimeDescriptor != null && _asEventType != null) {
                 var namedWindow = statementContext.NamedWindowManagementService.GetNamedWindow(
                     statementContext.DeploymentId,
-                    namedWindowName);
+                    _namedWindowName);
                 statementContext.FilterSharedLookupableRepository.ApplyLookupableFromType(
-                    asEventType,
+                    _asEventType,
                     namedWindow.RootView.EventType,
                     statementContext.StatementId);
             }
@@ -93,13 +93,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 
         public void StatementDestroy(StatementContext statementContext)
         {
-            if (viewFactories[0] is VirtualDWViewFactory) {
-                ((VirtualDWViewFactory) viewFactories[0]).Destroy();
-            }
+            (_viewFactories[0] as VirtualDWViewFactory)?.Destroy();
 
             statementContext.NamedWindowManagementService.DestroyNamedWindow(
                 statementContext.DeploymentId,
-                namedWindowName);
+                _namedWindowName);
         }
 
         public void StatementDestroyPreconditions(StatementContext statementContext)
@@ -110,7 +108,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             AgentInstanceContext agentInstanceContext,
             bool isRecoveringResilient)
         {
-            IList<AgentInstanceStopCallback> stopCallbacks = new List<AgentInstanceStopCallback>();
+            IList<AgentInstanceMgmtCallback> stopCallbacks = new List<AgentInstanceMgmtCallback>();
 
             //String windowName = statementSpec.getCreateWindowDesc().getWindowName();
             Viewable finalView;
@@ -121,16 +119,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 
             try {
                 // Register interest
-                viewableActivationResult = activator.Activate(agentInstanceContext, false, isRecoveringResilient);
+                viewableActivationResult = _activator.Activate(agentInstanceContext, false, isRecoveringResilient);
                 stopCallbacks.Add(viewableActivationResult.StopCallback);
                 eventStreamParentViewable = viewableActivationResult.Viewable;
 
                 // Obtain processor for this named window
                 var namedWindow = agentInstanceContext.NamedWindowManagementService.GetNamedWindow(
                     agentInstanceContext.DeploymentId,
-                    namedWindowName);
+                    _namedWindowName);
                 if (namedWindow == null) {
-                    throw new EPRuntimeException("Failed to obtain named window '" + namedWindowName + "'");
+                    throw new EPRuntimeException("Failed to obtain named window '" + _namedWindowName + "'");
                 }
 
                 // Allocate processor instance
@@ -141,7 +139,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                 var viewFactoryChainContext =
                     new AgentInstanceViewFactoryChainContext(agentInstanceContext, true, null, null);
                 var viewables = ViewFactoryUtil.Materialize(
-                    viewFactories,
+                    _viewFactories,
                     eventStreamParentViewable,
                     viewFactoryChainContext,
                     stopCallbacks);
@@ -153,47 +151,22 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                 finalView = viewables.Last;
 
                 // If this is a virtual data window implementation, bind it to the context for easy lookup
-                AgentInstanceStopCallback envStopCallback = null;
+                AgentInstanceMgmtCallback envStopCallback = null;
                 if (finalView is VirtualDWView) {
-                    var objectName = "/virtualdw/" + namedWindowName;
-                    var virtualDWView = (VirtualDWView) finalView;
+                    var objectName = "/virtualdw/" + _namedWindowName;
+                    var virtualDwView = (VirtualDWView) finalView;
                     try {
-                        agentInstanceContext.RuntimeEnvContext.Bind(objectName, virtualDWView.VirtualDataWindow);
+                        agentInstanceContext.RuntimeEnvContext.Bind(objectName, virtualDwView.VirtualDataWindow);
                     }
                     catch (NamingException e) {
                         throw new ViewProcessingException("Invalid name for adding to context:" + e.Message, e);
                     }
 
-                    envStopCallback = new ProxyAgentInstanceStopCallback {
-                        ProcStop = stopServices => {
-                            try {
-                                virtualDWView.Destroy();
-                                stopServices.AgentInstanceContext.RuntimeEnvContext.Unbind(objectName);
-                            }
-                            catch (NamingException) {
-                            }
-                        }
-                    };
+                    envStopCallback = new CreateNWVirtualDWMgmtCallback(virtualDwView, objectName);
                 }
 
-                var environmentStopCallback = envStopCallback;
-
                 // destroy the instance
-                AgentInstanceStopCallback allInOneStopMethod = new ProxyAgentInstanceStopCallback {
-                    ProcStop = services => {
-                        var instance = namedWindow.GetNamedWindowInstance(agentInstanceContext);
-                        if (instance == null) {
-                            Log.Warn("Named window processor by name '" + namedWindowName + "' has not been found");
-                        }
-                        else {
-                            instance.Destroy();
-                        }
-
-                        if (environmentStopCallback != null) {
-                            environmentStopCallback.Stop(services);
-                        }
-                    }
-                };
+                AgentInstanceMgmtCallback allInOneStopMethod = new CreateNWAllInOneMgmtCallback(namedWindow, envStopCallback);
                 stopCallbacks.Add(allInOneStopMethod);
 
                 // Attach tail view
@@ -204,7 +177,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 
                 // Attach output view
                 var pair = StatementAgentInstanceFactoryUtil.StartResultSetAndAggregation(
-                    resultSetProcessorFactoryProvider,
+                    _resultSetProcessorFactoryProvider,
                     agentInstanceContext,
                     false,
                     null);
@@ -214,7 +187,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                 finalView = @out;
 
                 // Handle insert case
-                if (insertFromNamedWindow != null && !isRecoveringResilient) {
+                if (_insertFromNamedWindow != null && !isRecoveringResilient) {
                     HandleInsertFrom(agentInstanceContext, namedWindowInstance);
                 }
             }
@@ -228,7 +201,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             }
 
             var stopCallback = AgentInstanceUtil.FinalizeSafeStopCallbacks(stopCallbacks);
-            return new StatementAgentInstanceFactoryCreateNWResult(
+            return new StatementAgentInstanceFactoryCreateNwResult(
                 finalView,
                 stopCallback,
                 agentInstanceContext,
@@ -254,7 +227,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
         {
             var namedWindow = statementContext.NamedWindowManagementService.GetNamedWindow(
                 statementContext.DeploymentId,
-                namedWindowName);
+                _namedWindowName);
             namedWindow.StatementContext = statementContext;
         }
 
@@ -262,13 +235,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             AgentInstanceContext agentInstanceContext,
             NamedWindowInstance processorInstance)
         {
-            var sourceWindowInstances = insertFromNamedWindow.GetNamedWindowInstance(agentInstanceContext);
+            var sourceWindowInstances = _insertFromNamedWindow.GetNamedWindowInstance(agentInstanceContext);
             IList<EventBean> events = new List<EventBean>();
-            if (insertFromFilter != null) {
+            if (_insertFromFilter != null) {
                 var eventsPerStream = new EventBean[1];
                 foreach (var candidate in sourceWindowInstances.TailViewInstance) {
                     eventsPerStream[0] = candidate;
-                    var result = insertFromFilter.Evaluate(eventsPerStream, true, agentInstanceContext);
+                    var result = _insertFromFilter.Evaluate(eventsPerStream, true, agentInstanceContext);
                     if (result == null || false.Equals(result)) {
                         continue;
                     }
@@ -290,6 +263,66 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                     agentInstanceContext.EventBeanTypedEventFactory,
                     agentInstanceContext.EventTypeAvroHandler);
                 processorInstance.RootViewInstance.Update(convertedEvents, null);
+            }
+        }
+
+        public class CreateNWVirtualDWMgmtCallback : AgentInstanceMgmtCallback
+        {
+            private readonly VirtualDWView _virtualDwView;
+            private readonly String _objectName;
+
+            public CreateNWVirtualDWMgmtCallback(
+                VirtualDWView virtualDWView,
+                String objectName)
+            {
+                _virtualDwView = virtualDWView;
+                _objectName = objectName;
+            }
+
+            public void Stop(AgentInstanceStopServices stopServices)
+            {
+                try {
+                    _virtualDwView.Destroy();
+                    stopServices.AgentInstanceContext.RuntimeEnvContext.Unbind(_objectName);
+                }
+                catch (NamingException) {
+                }
+            }
+
+            public void Transfer(AgentInstanceTransferServices services)
+            {
+            }
+        }
+
+        public class CreateNWAllInOneMgmtCallback : AgentInstanceMgmtCallback
+        {
+            private readonly NamedWindow _namedWindow;
+            private readonly AgentInstanceMgmtCallback _optionalEnvStopCallback;
+
+            public CreateNWAllInOneMgmtCallback(
+                NamedWindow namedWindow,
+                AgentInstanceMgmtCallback optionalEnvStopCallback)
+            {
+                _namedWindow = namedWindow;
+                _optionalEnvStopCallback = optionalEnvStopCallback;
+            }
+
+            public void Stop(AgentInstanceStopServices services)
+            {
+                var instance = _namedWindow.GetNamedWindowInstance(services.AgentInstanceContext);
+                if (instance == null) {
+                    Log.Warn("Named window processor by name '" + _namedWindow.Name + "' has not been found");
+                }
+                else {
+                    instance.Destroy();
+                }
+
+                _optionalEnvStopCallback?.Stop(services);
+            }
+
+            public void Transfer(AgentInstanceTransferServices services)
+            {
+                // no action required
             }
         }
     }

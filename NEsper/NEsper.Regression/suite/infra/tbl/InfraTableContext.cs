@@ -10,7 +10,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -25,9 +24,30 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraPartitioned());
-            execs.Add(new InfraNonOverlapping());
+            WithPartitioned(execs);
+            WithNonOverlapping(execs);
+            WithTableContextInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTableContextInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraTableContextInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNonOverlapping(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraNonOverlapping());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPartitioned(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraPartitioned());
             return execs;
         }
 
@@ -87,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean_S0(-1)); // terminated
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    new [] { "c0", "c1" },
+                    new[] {"c0", "c1"},
                     new[] {
                         new object[] {"E1", 110},
                         new object[] {"E2", 20}
@@ -105,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean_S0(-1)); // terminated
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    new [] { "c0", "c1" },
+                    new[] {"c0", "c1"},
                     new[] {
                         new object[] {"E1", 30},
                         new object[] {"E3", 100}

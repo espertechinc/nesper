@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\src\Espertech\NEsper-master\NEsper\grammar\EsperEPL2Grammar.g4 by ANTLR 4.7.1
+// Generated from C:\Src\Espertech\NEsper-8.5.0\NEsper\grammar\EsperEPL2Grammar.g4 by ANTLR 4.7.1
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -54,6 +54,12 @@ public interface IEsperEPL2GrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitStartJsonValueRule([NotNull] EsperEPL2GrammarParser.StartJsonValueRuleContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.classDecl"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitClassDecl([NotNull] EsperEPL2GrammarParser.ClassDeclContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.expressionDecl"/>.
 	/// </summary>
@@ -475,6 +481,12 @@ public interface IEsperEPL2GrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitCreateExpressionExpr([NotNull] EsperEPL2GrammarParser.CreateExpressionExprContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.createClassExpr"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitCreateClassExpr([NotNull] EsperEPL2GrammarParser.CreateClassExprContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.createContextDetail"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -576,6 +588,12 @@ public interface IEsperEPL2GrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitColumnList([NotNull] EsperEPL2GrammarParser.ColumnListContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.columnListKeywordAllowed"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitColumnListKeywordAllowed([NotNull] EsperEPL2GrammarParser.ColumnListKeywordAllowedContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.fromClause"/>.
 	/// </summary>
@@ -787,6 +805,12 @@ public interface IEsperEPL2GrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitRowLimit([NotNull] EsperEPL2GrammarParser.RowLimitContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.crontabLimitParameterSetList"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitCrontabLimitParameterSetList([NotNull] EsperEPL2GrammarParser.CrontabLimitParameterSetListContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.crontabLimitParameterSet"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -997,12 +1021,6 @@ public interface IEsperEPL2GrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitSubstitutionCanChain([NotNull] EsperEPL2GrammarParser.SubstitutionCanChainContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainedFunction"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitChainedFunction([NotNull] EsperEPL2GrammarParser.ChainedFunctionContext context);
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.newAssign"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
@@ -1198,41 +1216,11 @@ public interface IEsperEPL2GrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitFirstLastWindowAggregation([NotNull] EsperEPL2GrammarParser.FirstLastWindowAggregationContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.eventPropertyOrLibFunction"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitEventPropertyOrLibFunction([NotNull] EsperEPL2GrammarParser.EventPropertyOrLibFunctionContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.libFunction"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitLibFunction([NotNull] EsperEPL2GrammarParser.LibFunctionContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.libFunctionWithClass"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitLibFunctionWithClass([NotNull] EsperEPL2GrammarParser.LibFunctionWithClassContext context);
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.libFunctionNoClass"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	Result VisitLibFunctionNoClass([NotNull] EsperEPL2GrammarParser.LibFunctionNoClassContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.funcIdentTop"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitFuncIdentTop([NotNull] EsperEPL2GrammarParser.FuncIdentTopContext context);
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.funcIdentInner"/>.
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	Result VisitFuncIdentInner([NotNull] EsperEPL2GrammarParser.FuncIdentInnerContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.funcIdentChained"/>.
 	/// </summary>
@@ -1552,23 +1540,53 @@ public interface IEsperEPL2GrammarVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitNumericListParameter([NotNull] EsperEPL2GrammarParser.NumericListParameterContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.eventProperty"/>.
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainable"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitEventProperty([NotNull] EsperEPL2GrammarParser.EventPropertyContext context);
+	Result VisitChainable([NotNull] EsperEPL2GrammarParser.ChainableContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.eventPropertyAtomic"/>.
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableRootWithOpt"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitEventPropertyAtomic([NotNull] EsperEPL2GrammarParser.EventPropertyAtomicContext context);
+	Result VisitChainableRootWithOpt([NotNull] EsperEPL2GrammarParser.ChainableRootWithOptContext context);
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.eventPropertyIdent"/>.
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableElements"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	Result VisitEventPropertyIdent([NotNull] EsperEPL2GrammarParser.EventPropertyIdentContext context);
+	Result VisitChainableElements([NotNull] EsperEPL2GrammarParser.ChainableElementsContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableAtomicWithOpt"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitChainableAtomicWithOpt([NotNull] EsperEPL2GrammarParser.ChainableAtomicWithOptContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableAtomic"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitChainableAtomic([NotNull] EsperEPL2GrammarParser.ChainableAtomicContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableArray"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitChainableArray([NotNull] EsperEPL2GrammarParser.ChainableArrayContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableWithArgs"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitChainableWithArgs([NotNull] EsperEPL2GrammarParser.ChainableWithArgsContext context);
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableIdent"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitChainableIdent([NotNull] EsperEPL2GrammarParser.ChainableIdentContext context);
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.identOrTicked"/>.
 	/// </summary>

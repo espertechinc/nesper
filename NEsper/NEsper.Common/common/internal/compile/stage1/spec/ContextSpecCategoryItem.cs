@@ -8,11 +8,11 @@
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.controller.category;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.filterspec;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
         public string Name { get; }
 
-        public FilterSpecParamForge[][] CompiledFilterParam { get; set; }
+        public FilterSpecPlanForge FilterPlan { get; set; }
 
         public CodegenMethod MakeCodegen(
             CodegenClassScope classScope,
@@ -42,10 +42,11 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 .AddParam(typeof(EventType), SAIFFInitializeSymbolWEventType.REF_EVENTTYPE.Ref)
                 .AddParam(typeof(EPStatementInitServices), SAIFFInitializeSymbol.REF_STMTINITSVC.Ref);
 
-            var makeFilter = FilterSpecParamForge.MakeParamArrayArrayCodegen(CompiledFilterParam, classScope, method);
+            CodegenMethod makeFilter = FilterPlan.CodegenWithEventType(method, classScope);
+
             method.Block
-                .DeclareVar<FilterSpecParam[][]>(
-                    "parameters",
+                .DeclareVar<FilterSpecPlan>(
+                    "filterPlan",
                     LocalMethod(
                         makeFilter,
                         SAIFFInitializeSymbolWEventType.REF_EVENTTYPE,
@@ -53,7 +54,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 .DeclareVar<ContextControllerDetailCategoryItem>(
                     "item",
                     NewInstance(typeof(ContextControllerDetailCategoryItem)))
-                .SetProperty(Ref("item"), "CompiledFilterParam", Ref("parameters"))
+                .SetProperty(Ref("item"), "FilterPlan", Ref("filterPlan"))
                 .SetProperty(Ref("item"), "Name", Constant(Name))
                 .MethodReturn(Ref("item"));
             return method;

@@ -8,10 +8,9 @@
 
 using System;
 
-using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.serde;
 
 namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
 {
@@ -19,26 +18,30 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
     {
         public AggregationLocalGroupByLevel(
             AggregationRowFactory rowFactory,
-            DataInputOutputSerdeWCollation<AggregationRow> rowSerde,
+            DataInputOutputSerde<AggregationRow> rowSerde,
             Type[] groupKeyTypes,
             ExprEvaluator groupKeyEval,
-            bool isDefaultLevel)
+            bool isDefaultLevel,
+            DataInputOutputSerde keySerde)
         {
             RowFactory = rowFactory;
             RowSerde = rowSerde;
             GroupKeyTypes = groupKeyTypes;
             GroupKeyEval = groupKeyEval;
             IsDefaultLevel = isDefaultLevel;
+            KeySerde = keySerde;
         }
 
         public AggregationRowFactory RowFactory { get; }
 
-        public DataInputOutputSerdeWCollation<AggregationRow> RowSerde { get; }
+        public DataInputOutputSerde<AggregationRow> RowSerde { get; }
 
         public Type[] GroupKeyTypes { get; }
 
         public ExprEvaluator GroupKeyEval { get; }
 
         public bool IsDefaultLevel { get; }
+        
+        public DataInputOutputSerde KeySerde { get; }
     }
 } // end of namespace

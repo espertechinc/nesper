@@ -116,10 +116,7 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPL(TextWriter writer)
         {
             writer.Write("create");
-            if (TypeDefinition != null)
-            {
-                TypeDefinition.Value.Write(writer);
-            }
+            TypeDefinition?.Write(writer);
 
             writer.Write(" schema ");
             writer.Write(SchemaName);

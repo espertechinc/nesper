@@ -365,67 +365,6 @@ namespace com.espertech.esper.common.@internal.@event.core
             return keyValues;
         }
 
-        /// <summary>
-        ///     Returns Multikey instance for given event and getters.
-        /// </summary>
-        /// <param name="theEvent">event to get property values from</param>
-        /// <param name="propertyGetters">getters for access to properties</param>
-        /// <returns>MultiKey with property values</returns>
-        public static HashableMultiKey GetMultiKey(
-            EventBean theEvent,
-            EventPropertyGetter[] propertyGetters)
-        {
-            var keyValues = GetPropertyArray(theEvent, propertyGetters);
-            return new HashableMultiKey(keyValues);
-        }
-
-        public static HashableMultiKey GetMultiKey(
-            EventBean theEvent,
-            EventPropertyGetter[] propertyGetters,
-            Type[] coercionTypes)
-        {
-            var keyValues = GetPropertyArray(theEvent, propertyGetters);
-            if (coercionTypes == null) {
-                return new HashableMultiKey(keyValues);
-            }
-
-            for (var i = 0; i < coercionTypes.Length; i++) {
-                var key = keyValues[i];
-                if (key != null && key.GetType() != coercionTypes[i]) {
-                    if (key.IsNumber()) {
-                        key = TypeHelper.CoerceBoxed(key, coercionTypes[i]);
-                        keyValues[i] = key;
-                    }
-                }
-            }
-
-            return new HashableMultiKey(keyValues);
-        }
-
-        public static HashableMultiKey GetMultiKey(
-            EventBean[] eventsPerStream,
-            ExprEvaluator[] evaluators,
-            ExprEvaluatorContext context,
-            Type[] coercionTypes)
-        {
-            var keyValues = GetPropertyArray(eventsPerStream, evaluators, context);
-            if (coercionTypes == null) {
-                return new HashableMultiKey(keyValues);
-            }
-
-            for (var i = 0; i < coercionTypes.Length; i++) {
-                var key = keyValues[i];
-                if (key != null && key.GetType() != coercionTypes[i]) {
-                    if (key.IsNumber()) {
-                        key = TypeHelper.CoerceBoxed(key, coercionTypes[i]);
-                        keyValues[i] = key;
-                    }
-                }
-            }
-
-            return new HashableMultiKey(keyValues);
-        }
-
         private static object[] GetPropertyArray(
             EventBean[] eventsPerStream,
             ExprEvaluator[] evaluators,
@@ -551,21 +490,21 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// </summary>
         /// <param name="joinPostings">is the list</param>
         /// <returns>is the consolidate sets</returns>
-        public static UniformPair<ISet<MultiKey<EventBean>>> FlattenBatchJoin(
-            IList<UniformPair<ISet<MultiKey<EventBean>>>> joinPostings)
+        public static UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>> FlattenBatchJoin(
+            IList<UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>> joinPostings)
         {
             if (joinPostings.IsEmpty()) {
-                return new UniformPair<ISet<MultiKey<EventBean>>>(null, null);
+                return new UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>(null, null);
             }
 
             if (joinPostings.Count == 1) {
-                return new UniformPair<ISet<MultiKey<EventBean>>>(
+                return new UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>(
                     joinPostings[0].First,
                     joinPostings[0].Second);
             }
 
-            ISet<MultiKey<EventBean>> newEvents = new LinkedHashSet<MultiKey<EventBean>>();
-            ISet<MultiKey<EventBean>> oldEvents = new LinkedHashSet<MultiKey<EventBean>>();
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
 
             foreach (var pair in joinPostings) {
                 var newData = pair.First;
@@ -580,7 +519,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 }
             }
 
-            return new UniformPair<ISet<MultiKey<EventBean>>>(newEvents, oldEvents);
+            return new UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>(newEvents, oldEvents);
         }
 
         /// <summary>
@@ -626,11 +565,13 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <param name="propertyType">property return type</param>
         /// <param name="genericType">property generic type parameter, or null if none</param>
         /// <param name="beanEventTypeFactory">for event types</param>
+        /// <param name="publicFields">indicator whether classes are public-field-property-accessible</param>
         /// <returns>fragment type</returns>
         public static FragmentEventType CreateNativeFragmentType(
             Type propertyType,
             Type genericType,
-            BeanEventTypeFactory beanEventTypeFactory)
+            BeanEventTypeFactory beanEventTypeFactory,
+            bool publicFields)
         {
             var isIndexed = false;
 
@@ -660,19 +601,13 @@ namespace com.espertech.esper.common.@internal.@event.core
                 return null;
             }
 
-            EventType type = beanEventTypeFactory.GetCreateBeanType(propertyType);
+            EventType type = beanEventTypeFactory.GetCreateBeanType(propertyType, publicFields);
             return new FragmentEventType(type, isIndexed, true);
         }
 
-        /// <summary>
-        ///     Returns the distinct events by properties.
-        /// </summary>
-        /// <param name="events">to inspect</param>
-        /// <param name="reader">for retrieving properties</param>
-        /// <returns>distinct events</returns>
         public static ICollection<EventBean> GetDistinctByProp(
             ArrayDeque<EventBean> events,
-            EventBeanReader reader)
+            EventPropertyValueGetter getter)
         {
             if (events == null || events.IsEmpty()) {
                 return new EventBean[0];
@@ -682,70 +617,54 @@ namespace com.espertech.esper.common.@internal.@event.core
                 return events;
             }
 
-            ISet<HashableMultiKeyEventPair> set = new LinkedHashSet<HashableMultiKeyEventPair>();
+            var map = new LinkedHashMap<object, EventBean>();
             if (events.First is NaturalEventBean) {
                 foreach (var theEvent in events) {
                     var inner = ((NaturalEventBean) theEvent).OptionalSynthetic;
-                    var keys = reader.Read(inner);
-                    var pair = new HashableMultiKeyEventPair(keys, theEvent);
-                    set.Add(pair);
+                    var key = getter.Get(inner);
+                    map[key] = inner;
                 }
             }
             else {
                 foreach (var theEvent in events) {
-                    var keys = reader.Read(theEvent);
-                    var pair = new HashableMultiKeyEventPair(keys, theEvent);
-                    set.Add(pair);
+                    var key = getter.Get(theEvent);
+                    map[key] = theEvent;
                 }
             }
 
-            var result = new EventBean[set.Count];
-            var count = 0;
-            foreach (var row in set) {
-                result[count++] = row.EventBean;
-            }
-
-            return result;
+            return map.Values.ToArray();
         }
 
         /// <summary>
         ///     Returns the distinct events by properties.
         /// </summary>
         /// <param name="events">to inspect</param>
-        /// <param name="reader">for retrieving properties</param>
+        /// <param name="getter">for retrieving properties</param>
         /// <returns>distinct events</returns>
         public static EventBean[] GetDistinctByProp(
             EventBean[] events,
-            EventBeanReader reader)
+            EventPropertyValueGetter getter)
         {
-            if (events == null || events.Length < 2 || reader == null) {
+            if (events == null || events.Length < 2 || getter == null) {
                 return events;
             }
 
-            ISet<HashableMultiKeyEventPair> set = new LinkedHashSet<HashableMultiKeyEventPair>();
+            var map = new Dictionary<object, EventBean>();
             if (events[0] is NaturalEventBean) {
                 foreach (var theEvent in events) {
                     var inner = ((NaturalEventBean) theEvent).OptionalSynthetic;
-                    var keys = reader.Read(inner);
-                    var pair = new HashableMultiKeyEventPair(keys, theEvent);
-                    set.Add(pair);
+                    var key = getter.Get(inner);
+                    map[key] = theEvent;
                 }
             }
             else {
                 foreach (var theEvent in events) {
-                    var keys = reader.Read(theEvent);
-                    var pair = new HashableMultiKeyEventPair(keys, theEvent);
-                    set.Add(pair);
+                    var key = getter.Get(theEvent);
+                    map[key] = theEvent;
                 }
             }
 
-            var result = new EventBean[set.Count];
-            var count = 0;
-            foreach (var row in set) {
-                result[count++] = row.EventBean;
-            }
-
-            return result;
+            return map.Values.ToArray();
         }
 
         public static EventBean[] Denaturalize(EventBean[] naturals)
@@ -913,8 +832,8 @@ namespace com.espertech.esper.common.@internal.@event.core
         }
 
         public static void AddToCollection(
-            ISet<MultiKey<EventBean>> toAdd,
-            ICollection<MultiKey<EventBean>> events)
+            ISet<MultiKeyArrayOfKeys<EventBean>> toAdd,
+            ICollection<MultiKeyArrayOfKeys<EventBean>> events)
         {
             if (toAdd == null) {
                 return;
@@ -932,16 +851,16 @@ namespace com.espertech.esper.common.@internal.@event.core
             return events.ToArray();
         }
 
-        public static ISet<MultiKey<EventBean>> ToLinkedHashSetNullIfEmpty(ICollection<MultiKey<EventBean>> events)
+        public static ISet<MultiKeyArrayOfKeys<EventBean>> ToLinkedHashSetNullIfEmpty(ICollection<MultiKeyArrayOfKeys<EventBean>> events)
         {
             if (events == null || events.IsEmpty()) {
                 return null;
             }
 
-            return new LinkedHashSet<MultiKey<EventBean>>(events);
+            return new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>(events);
         }
 
-        public static ISet<MultiKey<EventBean>> ToSingletonSetIfNotNull(MultiKey<EventBean> row)
+        public static ISet<MultiKeyArrayOfKeys<EventBean>> ToSingletonSetIfNotNull(MultiKeyArrayOfKeys<EventBean> row)
         {
             if (row == null) {
                 return null;
@@ -950,7 +869,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             return Collections.SingletonSet(row);
         }
 
-        public static MultiKey<EventBean> GetLastInSet(ISet<MultiKey<EventBean>> events)
+        public static MultiKeyArrayOfKeys<EventBean> GetLastInSet(ISet<MultiKeyArrayOfKeys<EventBean>> events)
         {
             if (events.IsEmpty()) {
                 return null;

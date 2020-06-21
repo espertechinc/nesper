@@ -111,9 +111,9 @@ namespace com.espertech.esper.compat.collections
         {
             if (key == null) throw new ArgumentNullException("key");
             // Create the dictionary key
-            Object dictKey = _keyAdapter.ReferenceToDictionary(key);
+            var dictKey = _keyAdapter.ReferenceToDictionary(key);
             // Create the dictionary value
-            Object dictValue = _valueAdapter.ReferenceToDictionary(value);
+            var dictValue = _valueAdapter.ReferenceToDictionary(value);
             // Add them to the dictionary
             _dictionary.Add(dictKey, dictValue);
         }
@@ -179,9 +179,9 @@ namespace com.espertech.esper.compat.collections
         {
             if (key == null) throw new ArgumentNullException("key");
             // Create the dictionary key
-            Object dictKey = _keyAdapter.ReferenceToDictionary(key);
+            var dictKey = _keyAdapter.ReferenceToDictionary(key);
             // Create the dictionary value
-            Object dictValue = _valueAdapter.ReferenceToDictionary(value);
+            var dictValue = _valueAdapter.ReferenceToDictionary(value);
             // Add them to the dictionary
             _dictionary[dictKey] = dictValue;
         }
@@ -203,7 +203,7 @@ namespace com.espertech.esper.compat.collections
         /// </returns>
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            foreach (KeyValuePair<object, object> entry in _dictionary)
+            foreach (var entry in _dictionary)
             {
                 TKey entryKey;
                 TValue entryValue;
@@ -239,7 +239,7 @@ namespace com.espertech.esper.compat.collections
 
         public void Prune()
         {
-            foreach (Object item in _pruneList)
+            foreach (var item in _pruneList)
             {
                 _dictionary.Remove(item);
             }
@@ -255,7 +255,7 @@ namespace com.espertech.esper.compat.collections
         {
             // Iterate over the collection; this will cause entries that are dead to
             // be entered into the purgeList.
-            foreach( KeyValuePair<TKey, TValue> entry in this ) {}
+            foreach( var entry in this ) {}
             // Prune the tree
             Prune();
         }
@@ -269,7 +269,7 @@ namespace com.espertech.esper.compat.collections
         {
         	get 
         	{
-                foreach (KeyValuePair<TKey, TValue> entry in this)
+                foreach (var entry in this)
                 {
                     yield return entry.Key;
                 }
@@ -287,8 +287,8 @@ namespace com.espertech.esper.compat.collections
         {
             get
             {
-        		List<TKey> keyList = new List<TKey>() ;
-                foreach (KeyValuePair<TKey, TValue> entry in this)
+        		var keyList = new List<TKey>() ;
+                foreach (var entry in this)
                 {
                     keyList.Add(entry.Key);
                 }
@@ -306,8 +306,8 @@ namespace com.espertech.esper.compat.collections
         {
             get
             {
-                List<TValue> valueList = new List<TValue>();
-                foreach (KeyValuePair<TKey, TValue> entry in this)
+                var valueList = new List<TValue>();
+                foreach (var entry in this)
                 {
                     valueList.Add(entry.Value);
                 }
@@ -360,7 +360,7 @@ namespace com.espertech.esper.compat.collections
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            TKey key = item.Key ;
+            var key = item.Key ;
         	TValue value ;
         	if ( TryGetValue( key, out value ) )
             {
@@ -436,7 +436,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns></returns>
         public TValue Get(TKey key, TValue defaultValue)
         {
-            TValue returnValue = defaultValue;
+            var returnValue = defaultValue;
             if (key != null)
             {
                 if (!TryGetValue(key, out returnValue))
@@ -490,7 +490,7 @@ namespace com.espertech.esper.compat.collections
         /// <param name="source"></param>
         public void PutAll(IDictionary<TKey, TValue> source)
         {
-            foreach( KeyValuePair<TKey, TValue> entry in source )
+            foreach( var entry in source )
             {
                 this[entry.Key] = entry.Value;
             }
@@ -505,7 +505,7 @@ namespace com.espertech.esper.compat.collections
         {
             get
             {
-                IEnumerator<KeyValuePair<TKey, TValue>> enumObj = GetEnumerator();
+                var enumObj = GetEnumerator();
                 return enumObj.MoveNext()
                            ? enumObj.Current.Value
                            : default(TValue);
@@ -653,7 +653,7 @@ namespace com.espertech.esper.compat.collections
             /// <returns></returns>
             public bool DictionaryToReference(Object item, out T refItem)
             {
-                WeakReference<T> reference = item as WeakReference<T>;
+                var reference = item as WeakReference<T>;
                 if ((reference != null) && (reference.IsAlive))
                 {
                     refItem = reference.Target as T;
@@ -695,8 +695,8 @@ namespace com.espertech.esper.compat.collections
             public new bool Equals(object x, object y)
             {
                 bool xIsDead, yIsDead;
-                T first = GetTarget(x, out xIsDead);
-                T second = GetTarget(y, out yIsDead);
+                var first = GetTarget(x, out xIsDead);
+                var second = GetTarget(y, out yIsDead);
 
                 if (xIsDead)
                     return yIsDead ? x == y : false;
@@ -721,7 +721,7 @@ namespace com.espertech.esper.compat.collections
                 // an object in reference form or dictionary form.  In reference form, it
                 // is just a plain old T; in dictionary form, it would be a WeakReference<T>
 
-                WeakReference<T> refT = obj as WeakReference<T>;
+                var refT = obj as WeakReference<T>;
                 return (refT != null)
                         ? (refT.GetHashCode())
                         : (obj.GetHashCode());
@@ -737,7 +737,7 @@ namespace com.espertech.esper.compat.collections
             /// <returns></returns>
             private static T GetTarget(object obj, out bool isDead)
             {
-                WeakReference<T> wref = obj as WeakReference<T>;
+                var wref = obj as WeakReference<T>;
                 T target;
                 if (wref != null)
                 {

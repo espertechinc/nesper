@@ -6,6 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
+using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage1.specmapper;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -24,5 +27,12 @@ namespace com.espertech.esper.common.@internal.compile.stage1
         ExprNode CompileExpression(
             string expression,
             StatementCompileTimeServices services);
+        
+        Type CompileStandInClass(
+            CodegenClassType classType,
+            string classNameSimple,
+            ModuleCompileTimeServices services);
+
+        CompileResponse Compile(CompileRequest request);
     }
 } // end of namespace

@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -28,7 +30,8 @@ namespace com.espertech.esper.common.@internal.filterspec
             CodegenClassScope classScope,
             CodegenMethodScope parent)
         {
-            var method = parent.MakeChild(typeof(object), GetType(), classScope).AddParam(GET_FILTER_VALUE_FP);
+            var method = parent.MakeChild(typeof(object), GetType(), classScope)
+				.AddParam(GET_FILTER_VALUE_FP);
             method.Block
                 .MethodReturn(
                     ExprDotMethod(
@@ -76,6 +79,12 @@ namespace com.espertech.esper.common.@internal.filterspec
         public override int GetHashCode()
         {
             return _deployTimeConst.GetHashCode();
+        }
+
+        public void ValueToString(StringBuilder @out)
+        {
+            @out.Append("deploy-time constant ");
+            _deployTimeConst.RenderForFilterPlan(@out);
         }
     }
 } // end of namespace

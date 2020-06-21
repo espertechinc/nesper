@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>expression</returns>
         public CoalesceExpression Add(object @object)
         {
-            this.Children.Add(new ConstantExpression(@object));
+            Children.Add(new ConstantExpression(@object));
             return this;
         }
 
@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>expression</returns>
         public CoalesceExpression Add(Expression expression)
         {
-            this.Children.Add(expression);
+            Children.Add(expression);
             return this;
         }
 
@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>expression</returns>
         public CoalesceExpression Add(string propertyName)
         {
-            this.Children.Add(new PropertyValueExpression(propertyName));
+            Children.Add(new PropertyValueExpression(propertyName));
             return this;
         }
 
@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.client.soda
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            ToPrecedenceFreeEPL("coalesce", this.Children, writer);
+            ToPrecedenceFreeEPL("coalesce", Children, writer);
         }
     }
 } // end of namespace

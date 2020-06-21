@@ -15,8 +15,6 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.rettype;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -34,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 classScope.AddOrGetDefaultFieldSharable(new VariableReaderCodegenFieldSharable(forge.Variable));
 
             Type variableType;
-            VariableMetaData metaData = forge.Variable;
+            var metaData = forge.Variable;
             if (metaData.EventType != null) {
                 variableType = typeof(EventBean);
             }
@@ -42,18 +40,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 variableType = metaData.Type;
             }
 
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 forge.EvaluationType,
                 typeof(ExprDotNodeForgeVariableEval),
                 classScope);
 
-            CodegenExpression typeInformation = ConstantNull();
+            var typeInformation = ConstantNull();
             if (classScope.IsInstrumented) {
                 typeInformation = classScope.AddOrGetDefaultFieldSharable(
                     new EPTypeCodegenSharable(new ClassEPType(variableType), classScope));
             }
 
-            CodegenBlock block = methodNode.Block
+            var block = methodNode.Block
                 .DeclareVar(variableType, "result", Cast(variableType, ExprDotName(variableReader, "Value")))
                 .Apply(
                     InstrumentationCode.Instblock(
@@ -62,7 +60,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         typeInformation,
                         Ref("result"),
                         Constant(forge.ChainForge.Length)));
-            CodegenExpression chain = ExprDotNodeUtility.EvaluateChainCodegen(
+            
+            var chain = ExprDotNodeUtility.EvaluateChainCodegen(
                 methodNode,
                 exprSymbol,
                 classScope,
@@ -70,9 +69,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 variableType,
                 forge.ChainForge,
                 forge.ResultWrapLambda);
-            block.DeclareVar(forge.EvaluationType, "returned", chain)
-                .Apply(InstrumentationCode.Instblock(classScope, "aExprDotChain"))
-                .MethodReturn(Ref("returned"));
+
+            if (forge.EvaluationType != typeof(void)) {
+                block.DeclareVar(forge.EvaluationType, "returned", chain)
+                    .Apply(InstrumentationCode.Instblock(classScope, "aExprDotChain"))
+                    .MethodReturn(Ref("returned"));
+            }
+            else {
+                block
+                    .Expression(chain)
+                    .Apply(InstrumentationCode.Instblock(classScope, "aExprDotChain"));
+            }
+
             return LocalMethod(methodNode);
         }
     }

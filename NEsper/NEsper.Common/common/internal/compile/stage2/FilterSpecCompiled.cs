@@ -14,7 +14,6 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
-using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.contained;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.filterspec;
@@ -48,7 +47,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         public FilterSpecCompiled(
             EventType eventType,
             string eventTypeName,
-            IList<FilterSpecParamForge>[] filterParameters,
+            FilterSpecPlanForge filterParameters,
             PropertyEvaluatorForge optionalPropertyEvaluator)
         {
             FilterForEventType = eventType;
@@ -67,7 +66,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         ///     Returns list of filter parameters.
         /// </summary>
         /// <returns>list of filter params</returns>
-        public FilterSpecParamForge[][] Parameters { get; }
+        public FilterSpecPlanForge Parameters { get; }
 
         /// <summary>
         ///     Returns the event type name.
@@ -103,7 +102,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         {
             var buffer = new StringBuilder();
             buffer.Append("FilterSpecCompiled type=" + FilterForEventType);
-            buffer.Append(" parameters=" + CompatExtensions.RenderAny(Parameters));
+            buffer.Append(" parameters=" + Parameters);
             return buffer.ToString();
         }
 
@@ -144,81 +143,49 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         /// <returns>true if same</returns>
         public bool EqualsTypeAndFilter(FilterSpecCompiled other)
         {
-            if (FilterForEventType != other.FilterForEventType) {
-                return false;
-            }
-
-            if (Parameters.Length != other.Parameters.Length) {
-                return false;
-            }
-
-            for (var i = 0; i < Parameters.Length; i++) {
-                var lineThis = Parameters[i];
-                var lineOther = other.Parameters[i];
-                if (lineThis.Length != lineOther.Length) {
-                    return false;
-                }
-
-                for (var j = 0; j < lineThis.Length; j++) {
-                    if (!lineThis[j].Equals(lineOther[j])) {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
+            return Equals(FilterForEventType, other.FilterForEventType) && Parameters.EqualsFilter(other.Parameters);
         }
 
         public override int GetHashCode()
         {
             int hashCode = FilterForEventType.GetHashCode();
-            foreach (var paramLine in Parameters) {
-                foreach (var param in paramLine) {
-                    hashCode ^= 31 * param.GetHashCode();
+            foreach (FilterSpecPlanPathForge path in Parameters.Paths) {
+                foreach (FilterSpecPlanPathTripletForge triplet in path.Triplets) {
+                    hashCode ^= 31 * triplet.GetHashCode();
                 }
             }
 
             return hashCode;
         }
 
-        protected internal static FilterSpecParamForge[][] SortRemoveDups(IList<FilterSpecParamForge>[] parameters)
+        public static FilterSpecPlanForge SortRemoveDups(FilterSpecPlanForge parameters)
         {
-            var processed = new FilterSpecParamForge[parameters.Length][];
-            for (var i = 0; i < parameters.Length; i++) {
-                processed[i] = SortRemoveDups(parameters[i]);
-            }
+            var processed = parameters.Paths
+                .Select(v => SortRemoveDups(v))
+                .ToArray();
 
-            return processed;
+            return new FilterSpecPlanForge(
+                processed,
+                parameters.FilterConfirm,
+                parameters.FilterNegate,
+                parameters.ConvertorForge);
         }
 
-        protected internal static FilterSpecParamForge[] SortRemoveDups(IList<FilterSpecParamForge> parameters)
+        public static FilterSpecPlanPathForge SortRemoveDups(FilterSpecPlanPathForge parameters)
         {
-            if (parameters.IsEmpty()) {
-                return FilterSpecParamForge.EMPTY_PARAM_ARRAY;
+            if (parameters.Triplets.Length <= 1) {
+                return parameters;
             }
 
-            if (parameters.Count == 1) {
-                return new FilterSpecParamForge[] {parameters[0]};
-            }
+            var map = new OrderedListDictionary<FilterOperator, IList<FilterSpecPlanPathTripletForge>>(COMPARATOR_PARAMETERS);
 
-            ArrayDeque<FilterSpecParamForge> result = new ArrayDeque<FilterSpecParamForge>();
-            OrderedDictionary<FilterOperator, IList<FilterSpecParamForge>> map =
-                new OrderedDictionary<FilterOperator, IList<FilterSpecParamForge>>(COMPARATOR_PARAMETERS);
-            foreach (var parameter in parameters) {
-                var list = map.Get(parameter.FilterOperator);
-                if (list == null) {
-                    list = new List<FilterSpecParamForge>();
-                    map.Put(parameter.FilterOperator, list);
+            foreach (FilterSpecPlanPathTripletForge parameter in parameters.Triplets) {
+                if (!map.TryGetValue(parameter.Param.FilterOperator, out var list)) {
+                    list = new List<FilterSpecPlanPathTripletForge>();
+                    map[parameter.Param.FilterOperator] = list;
                 }
 
-                var hasDuplicate = false;
-                foreach (var existing in list) {
-                    if (existing.Lookupable.Equals(parameter.Lookupable)) {
-                        hasDuplicate = true;
-                        break;
-                    }
-                }
-
+                var hasDuplicate = list.Any(existing => Equals(existing.Param.Lookupable, parameter.Param.Lookupable));
                 if (hasDuplicate) {
                     continue;
                 }
@@ -226,18 +193,21 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 list.Add(parameter);
             }
 
-            foreach (KeyValuePair<FilterOperator, IList<FilterSpecParamForge>> entry in map) {
+            var result = new List<FilterSpecPlanPathTripletForge>();
+            foreach (var entry in map) {
                 result.AddAll(entry.Value);
             }
 
-            return result.ToArray();
+            return new FilterSpecPlanPathForge(
+                result.ToArray(),
+                parameters.PathNegate);
         }
 
         public CodegenMethod MakeCodegen(
             CodegenMethodScope parent,
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
-        { 
+        {
             var method = parent.MakeChild(typeof(FilterSpecActivatable), typeof(FilterSpecCompiled), classScope);
 
             if (filterCallbackId == -1) {
@@ -251,10 +221,10 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 .DeclareVar<EventType>(
                     "eventType",
                     EventTypeUtility.ResolveTypeCodegen(FilterForEventType, EPStatementInitServicesConstants.REF))
-                .DeclareVar<FilterSpecParam[][]>(
-                    "parameters",
+                .DeclareVar<FilterSpecPlan>(
+                    "plan",
                     LocalMethod(
-                        FilterSpecParamForge.MakeParamArrayArrayCodegen(Parameters, classScope, method),
+                        Parameters.CodegenWithEventType(method, classScope),
                         Ref("eventType"),
                         symbols.GetAddInitSvc(method)))
                 .DeclareVar<FilterSpecActivatable>(
@@ -262,7 +232,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     NewInstance<FilterSpecActivatable>(
                         SAIFFInitializeSymbolWEventType.REF_EVENTTYPE,
                         Constant(FilterForEventType.Name),
-                        Ref("parameters"),
+                        Ref("plan"),
                         propertyEval,
                         Constant(filterCallbackId)))
                 .Expression(
@@ -278,7 +248,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             IList<FilterSpecCompiled> filterSpecCompileds,
             IList<FilterSpecParamExprNodeForge> additionalBooleanExpressions)
         {
-            ISet<FilterSpecParamExprNodeForge> boolExprs = new LinkedHashSet<FilterSpecParamExprNodeForge>();
+            var boolExprs = new LinkedHashSet<FilterSpecParamExprNodeForge>();
             foreach (var spec in filterSpecCompileds) {
                 spec.TraverseFilterBooleanExpr(v => boolExprs.Add(v));
             }
@@ -289,10 +259,10 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         public void TraverseFilterBooleanExpr(Consumer<FilterSpecParamExprNodeForge> consumer)
         {
-            foreach (var @params in Parameters) {
-                foreach (var param in @params) {
-                    if (param is FilterSpecParamExprNodeForge) {
-                        consumer.Invoke((FilterSpecParamExprNodeForge) param);
+            foreach (var path in Parameters.Paths) {
+                foreach (var triplet in path.Triplets) {
+                    if (triplet.Param is FilterSpecParamExprNodeForge filterSpecParamExprNodeForge) {
+                        consumer.Invoke(filterSpecParamExprNodeForge);
                     }
                 }
             }

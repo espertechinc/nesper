@@ -17,7 +17,7 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.variable.core
 {
-    public class VariableTriggerWriteDescForge
+    public class VariableTriggerWriteDescForge : VariableTriggerWriteForge
     {
         private readonly Type evaluationType;
         private readonly EventPropertyGetterSPI getter;
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 
         public EventPropertyValueGetterForge Getter => getter;
 
-        public CodegenExpression Make(
+        public override CodegenExpression Make(
             CodegenMethodScope parent,
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
@@ -68,8 +68,8 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                     "Writer",
                     EventTypeUtility.CodegenWriter(
                         Type,
-                        getterType,
                         evaluationType,
+                        getterType,
                         Writer,
                         method,
                         GetType(),

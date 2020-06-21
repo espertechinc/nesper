@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Numerics;
 
 using NUnit.Framework;
@@ -16,7 +15,7 @@ namespace com.espertech.esper.common.@internal.util
     [TestFixture]
     public class TestSimpleNumberCoercion : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetCoercer()
         {
             Assert.AreEqual(1d, SimpleNumberCoercerFactory.GetCoercer(null, typeof(double?)).CoerceBoxed(1d));

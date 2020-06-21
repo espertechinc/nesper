@@ -10,7 +10,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
@@ -23,8 +22,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLOtherCreateIndexPathOneModule());
+            WithOneModule(execs);
+            WithThreeModule(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithThreeModule(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLOtherCreateIndexPathThreeModule());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOneModule(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherCreateIndexPathOneModule());
             return execs;
         }
 
@@ -48,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean_S0(1, "a"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "p0","p1" },
+                    new[] {"p0", "p1"},
                     new object[] {"a", 1});
 
                 env.UndeployAll();
@@ -77,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean_S0(1, "a"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "p0","p1" },
+                    new[] {"p0", "p1"},
                     new object[] {"a", 1});
 
                 env.UndeployAll();

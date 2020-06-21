@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.filterspec;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.core
@@ -73,5 +74,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         /// </summary>
         /// <param name="matchEvent">set of events to check for</param>
         public abstract void RemoveMatch(ISet<EventBean> matchEvent);
+
+        public virtual void Transfer(AgentInstanceTransferServices services)
+        {
+            // no action is the default
+        }
     }
 } // end of namespace

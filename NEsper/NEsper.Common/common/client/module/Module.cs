@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.client.module
             Name = name;
             Uri = uri;
             Uses = uses;
-            Imports = imports;
+            Imports = new HashSet<Import>(imports);
             Items = new List<ModuleItem>(items);
             ModuleText = moduleText;
         }

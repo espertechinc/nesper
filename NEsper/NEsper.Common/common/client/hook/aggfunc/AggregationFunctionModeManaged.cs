@@ -23,20 +23,29 @@ namespace com.espertech.esper.common.client.hook.aggfunc
         ///     Returns the injection strategy for the aggregation function factory
         /// </summary>
         /// <returns>strategy</returns>
-        public InjectionStrategy InjectionStrategyAggregationFunctionFactory { get; private set; }
+        public InjectionStrategy InjectionStrategyAggregationFunctionFactory { get; set; }
+
+        public AggregationFunctionModeManaged()
+        {
+        }
+
+        public AggregationFunctionModeManaged(InjectionStrategy injectionStrategyAggregationFunctionFactory)
+        {
+            InjectionStrategyAggregationFunctionFactory = injectionStrategyAggregationFunctionFactory;
+        }
 
         /// <summary>
         ///     Returns indicator whether a serializer-deserialize to provide read and write methods is provided by
         ///     <seealso cref="Serde" />
         /// </summary>
         /// <value>ha-indicator</value>
-        public bool HasHA { get; private set; }
+        public bool HasHA { get; set; }
 
         /// <summary>
         ///     Returns the class providing the serde
         /// </summary>
         /// <returns>serde class</returns>
-        public Type Serde { get; private set; }
+        public Type Serde { get; set; }
 
         /// <summary>
         ///     Sets the injection strategy for the aggregation function factory

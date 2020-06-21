@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 using System.Xml;
 
 using com.espertech.esper.common.client;
@@ -95,7 +96,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
 
         public static object[] GetXMLEvents()
         {
-            return new object[] {MakeXMLEvent(1.1d, 1, "one"), MakeXMLEvent(2.2d, 2, "two")};
+            return new object[] {
+                MakeXMLEvent(1.1d, 1, "one"),
+                MakeXMLEvent(2.2d, 2, "two")
+            };
         }
 
         public static object[] GetOAEvents()
@@ -112,6 +116,11 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         {
             return new object[]
                 {new MyDefaultSupportGraphEvent(1.1d, 1, "one"), new MyDefaultSupportGraphEvent(2.2d, 2, "two")};
+        }
+
+        public static object[] GetJsonEvents()
+        {
+            return new object[] {MakeJsonEvent(1.1, 1, "one"), MakeJsonEvent(2.2d, 2, "two")};
         }
 
         private static ConfigurationCommonEventTypeXMLDOM GetConfig(IResourceManager resourceManager)
@@ -154,11 +163,25 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             int myInt,
             string myString)
         {
-            IDictionary<string, object> map = new Dictionary<string, object>();
+            var map = new Dictionary<string, object>();
             map.Put("MyDouble", myDouble);
             map.Put("MyInt", myInt);
             map.Put("MyString", myString);
             return map;
+        }
+
+        private static string MakeJsonEvent(
+            double myDouble,
+            int myInt,
+            String myString)
+        {
+            return JsonSerializer.Serialize<object>(
+                new {
+                    MyDouble = myDouble,
+                    MyInt = myInt,
+                    MyString = myString
+                },
+                new JsonSerializerOptions());
         }
 
         public class MyDefaultSupportGraphEvent

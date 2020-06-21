@@ -31,9 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public ExprArrayNodeForge(
             ExprArrayNode parent,
             Type arrayReturnType,
-            object[] constantResult)
+            object constantResult)
         {
-            _constantResult = constantResult;
+            _constantResult = (Array) constantResult;
             Parent = parent;
             ArrayReturnType = arrayReturnType;
             IsMustCoerce = false;
@@ -171,7 +171,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 codegenClassScope).Build();
         }
 
-        public Type EvaluationType => Array.CreateInstance(ArrayReturnType, 0).GetType();
+        public Type EvaluationType => ArrayReturnType.MakeArrayType();
 
         public ExprEnumerationEval ExprEvaluatorEnumeration {
             get {

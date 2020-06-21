@@ -29,12 +29,10 @@ namespace com.espertech.esper.common.@internal.context.util
             IDictionary<string, object> properties,
             ISet<string> allTags)
         {
-            if (endpoint is ContextSpecConditionFilter) {
-                var filter = (ContextSpecConditionFilter) endpoint;
-                if (filter.OptionalFilterAsName != null) {
-                    allTags.Add(filter.OptionalFilterAsName);
-                    properties.Put(filter.OptionalFilterAsName, filter.FilterSpecCompiled.FilterForEventType);
-                }
+            var filter = endpoint as ContextSpecConditionFilter;
+            if (filter?.OptionalFilterAsName != null) {
+                allTags.Add(filter.OptionalFilterAsName);
+                properties.Put(filter.OptionalFilterAsName, filter.FilterSpecCompiled.FilterForEventType);
             }
 
             if (endpoint is ContextSpecConditionPattern) {

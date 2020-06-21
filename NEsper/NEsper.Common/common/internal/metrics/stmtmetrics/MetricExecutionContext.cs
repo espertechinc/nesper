@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         {
             FilterService = filterService;
             SchedulingService = schedulingService;
-            EpRuntimeSendEvent = epRuntimeSendEvent;
+            EPRuntimeSendEvent = epRuntimeSendEvent;
             StatementMetricRepository = statementMetricRepository;
         }
 
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
 
         public SchedulingService SchedulingService { get; }
 
-        public EventServiceSendEventCommon EpRuntimeSendEvent { get; }
+        public EventServiceSendEventCommon EPRuntimeSendEvent { get; }
 
         /// <summary>
         ///     Returns statement metric holder

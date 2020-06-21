@@ -11,12 +11,9 @@ using System;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
-using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.common.@internal.epl.table.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.ontrigger
 {
@@ -49,16 +46,22 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             OneEventCollection oldData,
             AgentInstanceContext agentInstanceContext)
         {
-            EventBean theEvent = insertHelper.Process(eventsPerStream, true, true, agentInstanceContext);
+            var theEvent = insertHelper.Process(eventsPerStream, true, true, agentInstanceContext);
 
             if (insertIntoTable != null) {
-                TableInstance tableInstance = insertIntoTable.GetTableInstance(agentInstanceContext.AgentInstanceId);
+                var tableInstance = insertIntoTable.GetTableInstance(agentInstanceContext.AgentInstanceId);
                 tableInstance.AddEventUnadorned(theEvent);
                 return;
             }
 
             if (!route) {
                 newData.Add(theEvent);
+                return;
+            }
+            
+            if (insertIntoTable != null) {
+                var tableInstance = insertIntoTable.GetTableInstance(agentInstanceContext.AgentInstanceId);
+                tableInstance.AddEventUnadorned(theEvent);
                 return;
             }
 
@@ -77,15 +80,19 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             OnExprViewTableChangeHandler changeHandlerRemoved,
             AgentInstanceContext agentInstanceContext)
         {
-            EventBean theEvent = insertHelper.Process(eventsPerStream, true, true, agentInstanceContext);
+            var theEvent = insertHelper.Process(eventsPerStream, true, true, agentInstanceContext);
             if (!route) {
-                AggregationRow aggs = tableStateInstance.Table.AggregationRowFactory.Make();
-                ((object[]) theEvent.Underlying)[0] = aggs;
+                var aggs = tableStateInstance.Table.AggregationRowFactory.Make();
+                ((Array) theEvent.Underlying).SetValue(aggs, 0);
                 tableStateInstance.AddEvent(theEvent);
-                if (changeHandlerAdded != null) {
-                    changeHandlerAdded.Add(theEvent, eventsPerStream, true, agentInstanceContext);
-                }
+                changeHandlerAdded?.Add(theEvent, eventsPerStream, true, agentInstanceContext);
 
+                return;
+            }
+            
+            if (insertIntoTable != null) {
+                var tableInstance = insertIntoTable.GetTableInstance(agentInstanceContext.AgentInstanceId);
+                tableInstance.AddEventUnadorned(theEvent);
                 return;
             }
 

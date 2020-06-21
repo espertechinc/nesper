@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.subquery;
 using com.espertech.esper.common.@internal.epl.expression.table;
@@ -24,13 +25,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> tableAccessForges,
             ResultSetProcessorDesc resultSetProcessorPrototype,
             ExprNode validatedJoin,
-            string zeroStreamAliasName)
+            string zeroStreamAliasName,
+            IList<StmtClassForgeableFactory> additionalForgeables)
         {
             SubselectForges = subselectForges;
             TableAccessForges = tableAccessForges;
             ResultSetProcessorPrototype = resultSetProcessorPrototype;
             ValidatedJoin = validatedJoin;
             ZeroStreamAliasName = zeroStreamAliasName;
+            AdditionalForgeables = additionalForgeables;
         }
 
         public IDictionary<ExprSubselectNode, SubSelectFactoryForge> SubselectForges { get; }
@@ -42,5 +45,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
         public ExprNode ValidatedJoin { get; }
 
         public string ZeroStreamAliasName { get; }
+        
+        public IList<StmtClassForgeableFactory> AdditionalForgeables { get; }
     }
 } // end of namespace

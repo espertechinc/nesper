@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -116,10 +117,11 @@ namespace com.espertech.esper.common.@internal.epl.contained
                     // when the expression returns an array, allow array values to become the column of the single-column event type
                     if (returnType.IsArray &&
                         streamEventType.PropertyNames.Length == 1 &&
+                        !(streamEventType is JsonEventType) && // since json string-array should not become itself the property
                         TypeHelper.IsSubclassOrImplementsInterface(
                             returnType.GetElementType().GetBoxedType(),
                             streamEventType.GetPropertyType(streamEventType.PropertyNames[0]).GetBoxedType())) {
-                        var writables = EventTypeUtility.GetWriteableProperties(streamEventType, false);
+                        var writables = EventTypeUtility.GetWriteableProperties(streamEventType, false, false);
                         if (writables != null && !writables.IsEmpty()) {
                             try {
                                 var manufacturer = EventTypeUtility.GetManufacturer(
@@ -150,19 +152,31 @@ namespace com.espertech.esper.common.@internal.epl.contained
                     else {
                         // check expression result type against eventtype expected underlying type
                         if (returnType.IsArray) {
-                            if (!TypeHelper.IsSubclassOrImplementsInterface(
-                                returnType.GetElementType(),
-                                streamEventType.UnderlyingType)) {
-                                throw new ExprValidationException(
-                                    "Event type '" +
-                                    streamEventType.Name +
-                                    "' underlying type " +
-                                    streamEventType.UnderlyingType.Name +
-                                    " cannot be assigned a value of type " +
-                                    returnType.CleanName());
+                            if (!(streamEventType is JsonEventType)) {
+                                if (!TypeHelper.IsSubclassOrImplementsInterface(
+                                    returnType.GetElementType(),
+                                    streamEventType.UnderlyingType)) {
+                                    throw new ExprValidationException(
+                                        "Event type '" +
+                                        streamEventType.Name +
+                                        "' underlying type " +
+                                        streamEventType.UnderlyingType.CleanName() +
+                                        " cannot be assigned a value of type " +
+                                        returnType.CleanName());
+                                }
+                            }
+                            else {
+                                if (returnType.GetElementType() != typeof(string)) {
+                                    throw new ExprValidationException(
+                                        "Event type '" +
+                                        streamEventType.Name +
+                                        "' requires string-type array and cannot be assigned from value of type " +
+                                        returnType.CleanName());
+                                }
                             }
                         }
-                        else if (returnType.IsGenericEnumerable()) {
+                        else if (GenericExtensions.IsGenericEnumerable(returnType) || 
+                                 TypeHelper.IsImplementsInterface<System.Collections.IEnumerable>(returnType)) {
                             // fine, assumed to return the right type
                         }
                         else {

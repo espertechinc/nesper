@@ -36,8 +36,8 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public void NewResult(UniformPair<EventBean[]> result)
         {
-            if (result != null && Child != null) {
-                Child.Update(result.First, result.Second);
+            if (result != null) {
+                Child?.Update(result.First, result.Second);
             }
         }
 

@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             int underlyingStreamNumber,
             EventPropertyGetterSPI underlyingPropertyEventGetter,
             ExprForge underlyingExprForge,
-            TableMetaData tableMetadata, /* TableMetadata */
+            TableMetaData tableMetadata,
             EventType[] eventTypes)
             : base(selectExprForgeContext, resultEventType, namedStreams, usingWildcard)
         {

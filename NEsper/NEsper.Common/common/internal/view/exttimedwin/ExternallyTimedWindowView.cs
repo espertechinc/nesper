@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -113,9 +112,7 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
                 }
             }
 
-            if (viewUpdatedCollection != null) {
-                viewUpdatedCollection.Update(newData, oldDataUpdate);
-            }
+            viewUpdatedCollection?.Update(newData, oldDataUpdate);
 
             // If there are child views, fireStatementStopped update method
             if (Child != null) {

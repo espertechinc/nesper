@@ -43,8 +43,8 @@ namespace com.espertech.esper.common.@internal.statement.resource
                 var createResult = (StatementAgentInstanceFactoryCreateContextResult) startResult;
                 holder.ContextManagerRealization = createResult.ContextManagerRealization;
             }
-            else if (startResult is StatementAgentInstanceFactoryCreateNWResult) {
-                var createResult = (StatementAgentInstanceFactoryCreateNWResult) startResult;
+            else if (startResult is StatementAgentInstanceFactoryCreateNwResult) {
+                var createResult = (StatementAgentInstanceFactoryCreateNwResult) startResult;
                 holder.TopViewables = new[] {createResult.TopView};
                 holder.NamedWindowInstance = createResult.NamedWindowInstance;
             }

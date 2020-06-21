@@ -142,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             public void Run(RegressionEnvironment env)
             {
                 var startTime =
-                    "2002-05-30T09:01:02.003"; // use 2-digit hour, see https://bugs.openjdk.java.net/browse/JDK-8066806
+                    "2002-05-30T09:01:02.003";
                 env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(startTime));
 
                 var fields = Collections.Array(
@@ -215,26 +215,26 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
                 // test Map inheritance via create-schema
                 var eplMap =
-                    "create schema ParentType as (startTS long, endTS long) starttimestamp startTS endtimestamp endTS;\n" +
+                    "create schema ParentType as (StartTS long, EndTS long) starttimestamp StartTS endtimestamp EndTS;\n" +
                     "create schema ChildType as (foo string) inherits ParentType;\n";
                 env.CompileDeployWBusPublicType(eplMap, path);
 
                 env.CompileDeploy("@Name('s0') select * from ChildType dt where dt.before(current_timestamp())", path);
-                Assert.AreEqual("startTS", env.Statement("s0").EventType.StartTimestampPropertyName);
-                Assert.AreEqual("endTS", env.Statement("s0").EventType.EndTimestampPropertyName);
+                Assert.AreEqual("StartTS", env.Statement("s0").EventType.StartTimestampPropertyName);
+                Assert.AreEqual("EndTS", env.Statement("s0").EventType.EndTimestampPropertyName);
 
                 env.UndeployAll();
 
                 // test Object-array inheritance via create-schema
                 path.Clear();
                 var eplObjectArray =
-                    "create objectarray schema ParentType as (startTS long, endTS long) starttimestamp startTS endtimestamp endTS;\n" +
+                    "create objectarray schema ParentType as (StartTS long, EndTS long) starttimestamp StartTS endtimestamp EndTS;\n" +
                     "create objectarray schema ChildType as (foo string) inherits ParentType;\n";
                 env.CompileDeployWBusPublicType(eplObjectArray, path);
 
                 env.CompileDeploy("@Name('s0') select * from ChildType dt where dt.before(current_timestamp())", path);
-                Assert.AreEqual("startTS", env.Statement("s0").EventType.StartTimestampPropertyName);
-                Assert.AreEqual("endTS", env.Statement("s0").EventType.EndTimestampPropertyName);
+                Assert.AreEqual("StartTS", env.Statement("s0").EventType.StartTimestampPropertyName);
+                Assert.AreEqual("EndTS", env.Statement("s0").EventType.EndTimestampPropertyName);
 
                 env.UndeployAll();
 
@@ -257,23 +257,39 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
                 env.UndeployAll();
 
+                // test PONO inheritance via create-schema
+                path.Clear();
+                String eplXML = "@XMLSchema(RootElementName='root', SchemaText='') " +
+                                "@XMLSchemaField(Name='StartTS', XPath='/abc', Type='string', CastToType='long')" +
+                                "@XMLSchemaField(Name='EndTS', XPath='/def', Type='string', CastToType='long')" +
+                                "create xml schema MyXMLEvent() starttimestamp StartTS endtimestamp EndTS;\n";
+                env.CompileDeployWBusPublicType(eplXML, path);
+
+                compiled = env.Compile("@Name('s2') select * from MyXMLEvent dt where dt.before(current_timestamp())", path);
+
+                env.Deploy(compiled);
+                Assert.AreEqual("StartTS", env.Statement("s2").EventType.StartTimestampPropertyName);
+                Assert.AreEqual("EndTS", env.Statement("s2").EventType.EndTimestampPropertyName);
+
+                env.UndeployAll();
+
                 // test incompatible
                 path.Clear();
                 var eplT1T2 =
-                    "create schema T1 as (startTS long, endTS long) starttimestamp startTS endtimestamp endTS;\n" +
-                    "create schema T2 as (startTSOne long, endTSOne long) starttimestamp startTSOne endtimestamp endTSOne;\n";
+                    "create schema T1 as (StartTS long, EndTS long) starttimestamp StartTS endtimestamp EndTS;\n" +
+                    "create schema T2 as (StartTSOne long, EndTSOne long) starttimestamp StartTSOne endtimestamp EndTSOne;\n";
                 env.CompileDeployWBusPublicType(eplT1T2, path);
 
                 TryInvalidCompile(
                     env,
                     path,
                     "create schema T12 as () inherits T1,T2",
-                    "Event type declares start timestamp as property 'startTS' however inherited event type 'T2' declares start timestamp as property 'startTSOne'");
+                    "Event type declares start timestamp as property 'StartTS' however inherited event type 'T2' declares start timestamp as property 'StartTSOne'");
                 TryInvalidCompile(
                     env,
                     path,
-                    "create schema T12 as (startTSOne long, endTSXXX long) inherits T2 starttimestamp startTSOne endtimestamp endTSXXX",
-                    "Event type declares end timestamp as property 'endTSXXX' however inherited event type 'T2' declares end timestamp as property 'endTSOne'");
+                    "create schema T12 as (StartTSOne long, EndTSXXX long) inherits T2 starttimestamp StartTSOne endtimestamp EndTSXXX",
+                    "Event type declares end timestamp as property 'EndTSXXX' however inherited event type 'T2' declares end timestamp as property 'EndTSOne'");
 
                 env.UndeployAll();
             }

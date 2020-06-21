@@ -341,12 +341,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
             ISet<EventBean> result;
             if (indexMultiKey.HashIndexedProps.Length > 0 && indexMultiKey.RangeIndexedProps.Length == 0) {
                 var table = (PropertyHashedEventTable) eventTable;
-                if (indexMultiKey.HashIndexedProps.Length == 1) {
-                    result = table.Lookup(keyValues[0]);
-                }
-                else {
-                    result = table.Lookup(new HashableMultiKey(keyValues));
-                }
+                var lookupKey = table.MultiKeyTransform.From(keyValues);
+                result = table.Lookup(lookupKey);
             }
             else if (indexMultiKey.HashIndexedProps.Length == 0 && indexMultiKey.RangeIndexedProps.Length == 1) {
                 var table = (PropertySortedEventTable) eventTable;
@@ -355,7 +351,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
             else {
                 var table = (PropertyCompositeEventTable) eventTable;
                 var rangeCoercion = table.OptRangeCoercedTypes;
-                var lookup = CompositeIndexLookupFactory.Make(keyValues, rangeValues, rangeCoercion);
+                var lookup = CompositeIndexLookupFactory.Make(keyValues, table.MultiKeyTransform, rangeValues, rangeCoercion);
                 result = new HashSet<EventBean>();
                 lookup.Lookup(table.Index, result, table.PostProcessor);
             }
@@ -364,7 +360,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
                 return result;
             }
 
-            return new EmptyList<EventBean>();
+            return EmptyList<EventBean>.Instance;
         }
 
         private static NullableObject<ICollection<EventBean>> SnapshotCustomIndex(
@@ -490,15 +486,13 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
                     QUERY_PLAN_LOG.Info(prefix + indexText + eventTableOrNull.ToQueryPlan());
                 }
 
-                if (hook != null) {
-                    hook.FireAndForget(
-                        new QueryPlanIndexDescFAF(
-                            new[] {
-                                new IndexNameAndDescPair(
-                                    indexNameOrNull,
-                                    eventTableOrNull != null ? eventTableOrNull.ProviderClass.Name : null)
-                            }));
-                }
+                hook?.FireAndForget(
+                    new QueryPlanIndexDescFAF(
+                        new[] {
+                            new IndexNameAndDescPair(
+                                indexNameOrNull,
+                                eventTableOrNull != null ? eventTableOrNull.ProviderClass.Name : null)
+                        }));
             }
         }
     }

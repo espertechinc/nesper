@@ -6,13 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.threadlocal;
 
 namespace com.espertech.esper.common.@internal.context.util
@@ -36,5 +31,7 @@ namespace com.espertech.esper.common.@internal.context.util
         bool IsMakeSynthetic { get; }
 
         bool IsMakeNatural { get; }
+        
+        void ClearDeliveriesRemoveStream(EventBean[] removedEvents);
     }
 } // end of namespace

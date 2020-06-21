@@ -50,7 +50,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(Desc.LhsName);
             writer.Write("(");

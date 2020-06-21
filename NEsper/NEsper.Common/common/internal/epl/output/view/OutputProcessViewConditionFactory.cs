@@ -27,6 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             : base(
                 spec.PostProcessFactory,
                 spec.IsDistinct,
+                spec.DistinctKeyGetter,
                 spec.AfterTimePeriod,
                 spec.AfterConditionNumberOfEvents,
                 spec.ResultEventType)
@@ -60,13 +61,13 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             // determine after-stuff
             var isAfterConditionSatisfied = true;
             long? afterConditionTime = null;
-            if (afterConditionNumberOfEvents != null) {
+            if (AfterConditionNumberOfEvents != null) {
                 isAfterConditionSatisfied = false;
             }
-            else if (afterTimePeriod != null) {
+            else if (AfterTimePeriod != null) {
                 isAfterConditionSatisfied = false;
                 var time = agentInstanceContext.TimeProvider.Time;
-                var delta = afterTimePeriod.DeltaAdd(time, null, true, agentInstanceContext);
+                var delta = AfterTimePeriod.DeltaAdd(time, null, true, agentInstanceContext);
                 afterConditionTime = time + delta;
             }
 
@@ -75,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                     return new OutputProcessViewConditionSnapshot(
                         resultSetProcessor,
                         afterConditionTime,
-                        afterConditionNumberOfEvents,
+                        AfterConditionNumberOfEvents,
                         isAfterConditionSatisfied,
                         this,
                         agentInstanceContext);
@@ -85,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 return new OutputProcessViewConditionSnapshotPostProcess(
                     resultSetProcessor,
                     afterConditionTime,
-                    afterConditionNumberOfEvents,
+                    AfterConditionNumberOfEvents,
                     isAfterConditionSatisfied,
                     this,
                     agentInstanceContext,
@@ -97,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                     return new OutputProcessViewConditionFirst(
                         resultSetProcessor,
                         afterConditionTime,
-                        afterConditionNumberOfEvents,
+                        AfterConditionNumberOfEvents,
                         isAfterConditionSatisfied,
                         this,
                         agentInstanceContext);
@@ -107,7 +108,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 return new OutputProcessViewConditionFirstPostProcess(
                     resultSetProcessor,
                     afterConditionTime,
-                    afterConditionNumberOfEvents,
+                    AfterConditionNumberOfEvents,
                     isAfterConditionSatisfied,
                     this,
                     agentInstanceContext,
@@ -119,7 +120,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                     return new OutputProcessViewConditionLastAllUnord(
                         resultSetProcessor,
                         afterConditionTime,
-                        afterConditionNumberOfEvents,
+                        AfterConditionNumberOfEvents,
                         isAfterConditionSatisfied,
                         this,
                         agentInstanceContext);
@@ -129,7 +130,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 return new OutputProcessViewConditionLastAllUnordPostProcessAll(
                     resultSetProcessor,
                     afterConditionTime,
-                    afterConditionNumberOfEvents,
+                    AfterConditionNumberOfEvents,
                     isAfterConditionSatisfied,
                     this,
                     agentInstanceContext,
@@ -140,7 +141,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                     return new OutputProcessViewConditionDefault(
                         resultSetProcessor,
                         afterConditionTime,
-                        afterConditionNumberOfEvents,
+                        AfterConditionNumberOfEvents,
                         isAfterConditionSatisfied,
                         this,
                         agentInstanceContext,
@@ -152,7 +153,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 return new OutputProcessViewConditionDefaultPostProcess(
                     resultSetProcessor,
                     afterConditionTime,
-                    afterConditionNumberOfEvents,
+                    AfterConditionNumberOfEvents,
                     isAfterConditionSatisfied,
                     this,
                     agentInstanceContext,

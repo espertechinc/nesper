@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
                 instance.AgentInstanceContext.TableExprEvaluatorContext);
             var theEvent = insert.InsertHelper.Process(new EventBean[0], true, true, instance.AgentInstanceContext);
             var aggs = instance.Table.AggregationRowFactory.Make();
-            ((object[]) theEvent.Underlying)[0] = aggs;
+            ((Array) theEvent.Underlying).SetValue(aggs, 0);
             instance.AddEvent(theEvent);
             return CollectionUtil.EVENTBEANARRAY_EMPTY;
         }
@@ -161,7 +161,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
             var sourceCollection = instance.EventCollection;
             using (IEnumerator<EventBean> enumerator = sourceCollection.GetEnumerator()) {
                 if (!enumerator.MoveNext()) {
-                    return new EmptyList<EventBean>();
+                    return EmptyList<EventBean>.Instance;
                 }
 
                 var deque = new ArrayDeque<EventBean>(sourceCollection.Count);

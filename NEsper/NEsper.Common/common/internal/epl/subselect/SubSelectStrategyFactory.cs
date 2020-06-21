@@ -20,13 +20,13 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         LookupStrategyDesc LookupStrategyDesc { get; }
 
         void Ready(
-            StatementContext statementContext,
+            SubSelectStrategyFactoryContext subselectFactoryContext,
             EventType eventType);
 
         SubSelectStrategyRealization Instantiate(
             Viewable viewableRoot,
             AgentInstanceContext agentInstanceContext,
-            IList<AgentInstanceStopCallback> stopCallbackList,
+            IList<AgentInstanceMgmtCallback> stopCallbackList,
             int subqueryNumber,
             bool isRecoveringResilient);
     }

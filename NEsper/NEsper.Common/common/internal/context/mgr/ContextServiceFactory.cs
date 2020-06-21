@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.context.controller.category;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.controller.hash;
@@ -13,7 +14,6 @@ using com.espertech.esper.common.@internal.context.controller.initterm;
 using com.espertech.esper.common.@internal.context.controller.keyed;
 using com.espertech.esper.common.@internal.context.cpidsvc;
 using com.espertech.esper.common.@internal.context.util;
-using com.espertech.esper.common.@internal.serde;
 
 namespace com.espertech.esper.common.@internal.context.mgr
 {
@@ -30,9 +30,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
 
         ContextPartitionIdService GetContextPartitionIdService(
             StatementContext statementContextCreateContext,
-            DataInputOutputSerdeWCollation<object>[] bindings);
+            DataInputOutputSerde[] bindings);
 
-        DataInputOutputSerdeWCollation<object>[] GetContextPartitionKeyBindings(
+        DataInputOutputSerde[] GetContextPartitionKeyBindings(
             ContextDefinition contextDefinition);
     }
 } // end of namespace

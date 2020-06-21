@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection;
 
 using XLR8.CGLib;
 
@@ -239,7 +241,7 @@ namespace com.espertech.esper.compat.collections
 
         public static V Delete<K, V>(this IDictionary<K, V> dictionary, K key)
         {
-            return dictionary.TryRemove(key, out V tempItem)
+            return dictionary.TryRemove(key, out var tempItem)
                     ? tempItem
                     : default(V);
         }
@@ -258,7 +260,7 @@ namespace com.espertech.esper.compat.collections
 
         public static V Get<K, V>(this IDictionary<K, V> dictionary, K key, V defaultValue = default(V))
         {
-            if (!dictionary.TryGetValue(key, out V returnValue))
+            if (!dictionary.TryGetValue(key, out var returnValue))
             {
                 returnValue = defaultValue;
             }
@@ -269,8 +271,20 @@ namespace com.espertech.esper.compat.collections
         public static V? GetBoxed<K, V>(this IDictionary<K, V> dictionary, K key)
             where V : struct
         {
-            if (!dictionary.TryGetValue(key, out V returnValue)) {
+            if (!dictionary.TryGetValue(key, out var returnValue)) {
                 return null;
+            }
+
+            return returnValue;
+        }
+        
+        public static V DebugGet<K, V>(this IDictionary<K, V> dictionary, K key, V defaultValue = default(V))
+        {
+            Debug.WriteLine("Dictionary.Get: Key = " + key);
+            
+            if (!dictionary.TryGetValue(key, out var returnValue))
+            {
+                returnValue = defaultValue;
             }
 
             return returnValue;
@@ -305,21 +319,21 @@ namespace com.espertech.esper.compat.collections
 
         public static V Push<K, V>(this IDictionary<K, V> dictionary, K key, V value)
         {
-            dictionary.TryGetValue(key, out V temp);
+            dictionary.TryGetValue(key, out var temp);
             dictionary[key] = value;
             return temp;
         }
 
         public static bool TryPush<K, V>(this IDictionary<K, V> dictionary, K key, V value, out V outPreviousValue)
         {
-            bool rvalue = dictionary.TryGetValue(key, out outPreviousValue);
+            var rvalue = dictionary.TryGetValue(key, out outPreviousValue);
             dictionary[key] = value;
             return rvalue;
         }
 
         public static V PutIfAbsent<K, V>(this IDictionary<K, V> dictionary, K key, V value)
         {
-            if (!dictionary.TryGetValue(key, out V temp)) {
+            if (!dictionary.TryGetValue(key, out var temp)) {
                 dictionary[key] = value;
             }
             return temp;
@@ -347,7 +361,7 @@ namespace com.espertech.esper.compat.collections
 
         public static void PutAll<K, V>(this IDictionary<K, V> dictionary, IEnumerable<KeyValuePair<K, V>> source)
         {
-            foreach (KeyValuePair<K, V> kvPair in source)
+            foreach (var kvPair in source)
             {
                 dictionary[kvPair.Key] = kvPair.Value;
             }
@@ -366,7 +380,7 @@ namespace com.espertech.esper.compat.collections
 
         public static void PutAll<K, V, T>(this IDictionary<K, V> dictionary, IEnumerable<KeyValuePair<K, T>> source, Transformer<T, V> transformer)
         {
-            foreach (KeyValuePair<K, T> kvPair in source)
+            foreach (var kvPair in source)
             {
                 dictionary[kvPair.Key] = transformer(kvPair.Value);
             }
@@ -382,7 +396,7 @@ namespace com.espertech.esper.compat.collections
 
         public static V FirstValue<K, V>(this IDictionary<K, V> dictionary)
         {
-            IEnumerator<KeyValuePair<K, V>> kvPairEnum = dictionary.GetEnumerator();
+            var kvPairEnum = dictionary.GetEnumerator();
             kvPairEnum.MoveNext();
             return kvPairEnum.Current.Value;
         }
@@ -423,6 +437,34 @@ namespace com.espertech.esper.compat.collections
             }
 
             return null;
+        }
+        
+        public static IDictionary<TK, TV> CopyDictionary<TK, TV>(IDictionary<TK, TV> sourceDictionary)
+        {
+            if (sourceDictionary == null) {
+                return null;
+            }
+            
+            // Use HashMap since that supports nullable keys and doesnt apply constraints to the key.
+            var target = new HashMap<TK,TV>();
+            target.PutAll(sourceDictionary);
+            return target;
+        }
+
+        public static object TryCopy(object sourceDictionary)
+        {
+            if (sourceDictionary == null) {
+                return null;
+            }
+            var sourceDictionaryType = sourceDictionary.GetType();
+            if (sourceDictionaryType.IsGenericDictionary()) {
+                var keyType = sourceDictionaryType.GetDictionaryKeyType();
+                var valType = sourceDictionaryType.GetDictionaryValueType();
+                var method = typeof(DictionaryExtensions).GetMethod("CopyDictionary")?.MakeGenericMethod(keyType, valType);
+                return method.Invoke(null, new[] { sourceDictionary });
+            }
+
+            throw new ArgumentException("argument is not a dictionary", nameof(sourceDictionary));
         }
     }
 }

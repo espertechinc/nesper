@@ -32,6 +32,6 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         ///     A static join is for use with iterating over join statements.
         /// </summary>
         /// <returns>set of rows, each row with two or more events, one for each stream</returns>
-        ISet<MultiKey<EventBean>> StaticJoin();
+        ISet<MultiKeyArrayOfKeys<EventBean>> StaticJoin();
     }
 } // end of namespace

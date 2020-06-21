@@ -15,7 +15,6 @@ using com.espertech.esper.common.client.module;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
@@ -28,11 +27,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EPLDataflowCreateStartStop());
-            execs.Add(new EPLDataflowDeploymentAdmin());
+WithCreateStartStop(execs);
+WithDeploymentAdmin(execs);
             return execs;
         }
-
+public static IList<RegressionExecution> WithDeploymentAdmin(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowDeploymentAdmin());
+    return execs;
+}public static IList<RegressionExecution> WithCreateStartStop(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowCreateStartStop());
+    return execs;
+}
         private static void TryInstantiate(
             RegressionEnvironment env,
             string deploymentId,
@@ -126,7 +135,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 Module module = null;
                 try {
-                    module = EPCompilerProvider.Compiler.ParseModule(epl);
+                    module = env.Compiler.ParseModule(epl);
                 }
                 catch (Exception e) {
                     Assert.Fail(e.Message);

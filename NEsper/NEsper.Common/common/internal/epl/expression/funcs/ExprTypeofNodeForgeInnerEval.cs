@@ -85,11 +85,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 ExprEvaluatorContext context)
             {
                 var result = evaluator.Evaluate(eventsPerStream, isNewData, context);
-                if (result == null) {
-                    return null;
-                }
 
-                return result.GetType().GetSimpleName();
+                return result?.GetType().GetSimpleName();
             }
         }
     }

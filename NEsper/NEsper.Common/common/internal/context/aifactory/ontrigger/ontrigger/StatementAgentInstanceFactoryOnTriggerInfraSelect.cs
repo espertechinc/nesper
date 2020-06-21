@@ -7,51 +7,32 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.namedwindow.core;
 using com.espertech.esper.common.@internal.epl.ontrigger;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.table.core;
-using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontrigger
 {
     public class StatementAgentInstanceFactoryOnTriggerInfraSelect : StatementAgentInstanceFactoryOnTriggerInfraBase
     {
-        private bool addToFront;
-        private bool insertInto;
-        private bool isDistinct;
-        private Table optionalInsertIntoTable;
-        private ResultSetProcessorFactoryProvider resultSetProcessorFactoryProvider;
-        private bool selectAndDelete;
+        public ResultSetProcessorFactoryProvider ResultSetProcessorFactoryProvider { get; set; }
 
-        public ResultSetProcessorFactoryProvider ResultSetProcessorFactoryProvider {
-            set => resultSetProcessorFactoryProvider = value;
-        }
+        public bool IsInsertInto { get; set; }
 
-        public bool IsInsertInto {
-            set => insertInto = value;
-        }
+        public Table OptionalInsertIntoTable { get; set; }
 
-        public Table OptionalInsertIntoTable {
-            set => optionalInsertIntoTable = value;
-        }
-
-        public bool IsSelectAndDelete {
-            set => selectAndDelete = value;
-        }
+        public bool IsSelectAndDelete { get; set; }
 
         protected override bool IsSelect => true;
 
-        public bool IsDistinct {
-            set => isDistinct = value;
-        }
+        public bool IsDistinct { get; set; }
 
-        public bool IsAddToFront {
-            set => addToFront = value;
-        }
+        public bool IsAddToFront { get; set; }
+
+        public EventPropertyValueGetter DistinctKeyGetter { get; set; }
 
         protected override InfraOnExprBaseViewFactory SetupFactory(
             EventType infraEventType,
@@ -59,30 +40,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             Table table,
             StatementContext statementContext)
         {
-            EventBeanReader eventBeanReader = null;
-            StreamSelector? optionalStreamSelector = null;
-
-            if (isDistinct) {
-                var outputEventType = resultSetProcessorFactoryProvider.ResultEventType;
-                if (outputEventType is EventTypeSPI) {
-                    eventBeanReader = ((EventTypeSPI) outputEventType).Reader;
-                }
-
-                if (eventBeanReader == null) {
-                    eventBeanReader = new EventBeanReaderDefaultImpl(outputEventType);
-                }
-            }
-
             return new InfraOnSelectViewFactory(
                 infraEventType,
-                addToFront,
-                eventBeanReader,
-                isDistinct,
-                selectAndDelete,
-                optionalStreamSelector,
-                optionalInsertIntoTable,
-                insertInto,
-                resultSetProcessorFactoryProvider);
+                IsAddToFront,
+                IsDistinct,
+                DistinctKeyGetter,
+                IsSelectAndDelete,
+                null,
+                OptionalInsertIntoTable,
+                IsInsertInto,
+                ResultSetProcessorFactoryProvider);
         }
 
         public override IReaderWriterLock ObtainAgentInstanceLock(

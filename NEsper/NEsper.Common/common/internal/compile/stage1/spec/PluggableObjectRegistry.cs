@@ -8,7 +8,6 @@
 
 using System;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
@@ -16,7 +15,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     public interface PluggableObjectRegistry
     {
         Pair<Type, PluggableObjectEntry> Lookup(
-            String nameSpace,
-            String name);
+            string nameSpace,
+            string name);
     }
 }

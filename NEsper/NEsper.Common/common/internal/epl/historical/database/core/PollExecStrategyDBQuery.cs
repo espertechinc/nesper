@@ -11,10 +11,8 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Reflection;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.type;
-using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.db;
 using com.espertech.esper.common.@internal.epl.historical.execstrategy;
@@ -134,7 +132,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                     inputParameterContext = new SQLInputParameterContext();
                 }
 
-                var mk = _factory.InputParameters.Length == 1 ? null : (HashableMultiKey) lookupValuePerStream;
+                var mk = _factory.InputParameters.Length == 1 ? null : (object[]) lookupValuePerStream;
                 for (var i = 0; i < _factory.InputParameters.Length; i++) {
                     try {
                         object parameter;
@@ -142,7 +140,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                             parameter = lookupValuePerStream;
                         }
                         else {
-                            parameter = mk.Keys[i];
+                            parameter = mk[i];
                         }
 
                         if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsInfoEnabled) {

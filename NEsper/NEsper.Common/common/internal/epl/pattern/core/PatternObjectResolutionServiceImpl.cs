@@ -7,10 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.pattern.guard;
 using com.espertech.esper.common.@internal.epl.pattern.observer;
@@ -96,24 +94,22 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             Type forgeClass = null;
 
             var namespaceMap = patternObjects.Pluggables.Get(spec.ObjectNamespace);
-            if (namespaceMap != null) {
-                var pair = namespaceMap.Get(spec.ObjectName);
-                if (pair != null) {
-                    if (pair.Second.PluggableType == type) {
-                        forgeClass = pair.First;
-                    }
-                    else {
-                        // invalid type: expecting observer, got guard
-                        if (type == PluggableObjectType.PATTERN_GUARD) {
-                            throw new PatternObjectException(
-                                "Pattern observer function '" +
-                                spec.ObjectName +
-                                "' cannot be used as a pattern guard");
-                        }
-
+            var pair = namespaceMap?.Get(spec.ObjectName);
+            if (pair != null) {
+                if (pair.Second.PluggableType == type) {
+                    forgeClass = pair.First;
+                }
+                else {
+                    // invalid type: expecting observer, got guard
+                    if (type == PluggableObjectType.PATTERN_GUARD) {
                         throw new PatternObjectException(
-                            "Pattern guard function '" + spec.ObjectName + "' cannot be used as a pattern observer");
+                            "Pattern observer function '" +
+                            spec.ObjectName +
+                            "' cannot be used as a pattern guard");
                     }
+
+                    throw new PatternObjectException(
+                        "Pattern guard function '" + spec.ObjectName + "' cannot be used as a pattern observer");
                 }
             }
 

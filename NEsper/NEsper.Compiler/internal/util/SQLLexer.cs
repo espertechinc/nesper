@@ -85,10 +85,10 @@ namespace com.espertech.esper.compiler.@internal.util
                     var index = unionIndexes[i];
                     string fragmentX;
                     if (i > 0) {
-                        fragmentX = querySQL.Substring(lastIndex + 5, index - 1);
+                        fragmentX = querySQL.Between(lastIndex + 5, index - 1);
                     }
                     else {
-                        fragmentX = querySQL.Substring(lastIndex, index - 1);
+                        fragmentX = querySQL.Between(lastIndex, index - 1);
                     }
 
                     var lexedFragmentX = LexSampleSQL(fragmentX);
@@ -102,7 +102,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 }
 
                 // last part after last union
-                var fragment = querySQL.Substring(lastIndex + 5, querySQL.Length);
+                var fragment = querySQL.Substring(lastIndex + 5);
                 var lexedFragment = LexSampleSQL(fragment);
                 changedSQL.Write("union ");
                 changedSQL.Write(lexedFragment);
@@ -114,7 +114,7 @@ namespace com.espertech.esper.compiler.@internal.util
             if (whereIndex != -1) {
                 var changedSQL = new StringWriter();
                 var prefix = querySQL.Substring(0, whereIndex + 5);
-                var suffix = querySQL.Substring(whereIndex + 5, querySQL.Length);
+                var suffix = querySQL.Substring(whereIndex + 5);
                 changedSQL.Write(prefix);
                 changedSQL.Write("1=0 and ");
                 changedSQL.Write(suffix);
@@ -144,7 +144,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 var prefix = querySQL.Substring(0, insertIndex - 1);
                 changedSQL.Write(prefix);
                 changedSQL.Write("where 1=0 ");
-                var suffix = querySQL.Substring(insertIndex - 1, querySQL.Length);
+                var suffix = querySQL.Substring(insertIndex - 1);
                 changedSQL.Write(suffix);
                 return changedSQL.ToString();
             }

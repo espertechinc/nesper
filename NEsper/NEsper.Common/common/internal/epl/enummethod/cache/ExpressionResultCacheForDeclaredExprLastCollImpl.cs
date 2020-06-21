@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.@event.core;
@@ -27,11 +25,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
             EventBean[] eventsPerStream)
         {
             var cacheRef = exprDeclCacheCollection.Get(node);
-            if (cacheRef == null) {
-                return null;
-            }
 
-            var entry = cacheRef.Get();
+            var entry = cacheRef?.Get();
             if (entry == null) {
                 return null;
             }

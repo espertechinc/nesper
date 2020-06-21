@@ -23,6 +23,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
     [Serializable]
     public sealed class DoubleRangeComparator : IComparer<DoubleRange>
     {
+        public static readonly DoubleRangeComparator INSTANCE = new DoubleRangeComparator();
+        
         /// <summary>
         /// Compares the specified double ranges.
         /// </summary>

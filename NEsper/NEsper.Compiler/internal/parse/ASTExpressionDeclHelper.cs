@@ -87,13 +87,18 @@ namespace com.espertech.esper.compiler.@internal.parse
             var lambdactx = ctxexpr.expressionLambdaDecl();
             if (ctxexpr.expressionLambdaDecl() != null)
             {
-                parametersNames = ASTLibFunctionHelper.GetLambdaGoesParams(lambdactx);
+                parametersNames = ASTLambdaHelper.GetLambdaGoesParams(lambdactx);
             }
 
             var expression = StatementSpecMapper.Unmap(inner);
             var expr = new ExpressionDeclItem(name, parametersNames.ToArray(), false);
             expr.OptionalSoda = expression;
             return new MyPair(expr, null);
+        }
+
+        public static string WalkClassDecl(IList<string> classBodies)
+        {
+            return classBodies.DeleteAt(0);
         }
     }
 } // end of namespace

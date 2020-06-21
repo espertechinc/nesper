@@ -6,6 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
+using com.espertech.esper.compat;
+using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
@@ -13,12 +17,64 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
-    public class EventXMLSchemaWithRestriction : RegressionExecution
+    public class EventXMLSchemaWithRestriction
     {
-        public void Run(RegressionEnvironment env)
+        public static List<RegressionExecution> Executions()
         {
-            var text = "@Name('s0') select order_amount from OrderEvent";
-            env.CompileDeploy(text).AddListener("s0");
+            var execs = new List<RegressionExecution>();
+            WithPreconfig(execs);
+            WithCreateSchema(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLSchemaWithRestrictionCreateSchema());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPreconfig(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLSchemaWithRestrictionPreconfig());
+            return execs;
+        }
+
+        public class EventXMLSchemaWithRestrictionPreconfig : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunAssertion(env, "OrderEvent", new RegressionPath());
+            }
+        }
+
+        public class EventXMLSchemaWithRestrictionCreateSchema : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var resourceManager = env.Container.ResourceManager();
+                var schemaStream = resourceManager.GetResourceAsStream("regression/simpleSchemaWithRestriction.xsd");
+                Assert.IsNotNull(schemaStream);
+                var schemaTextSimpleSchemaWithRestriction = schemaStream.ConsumeStream();
+                var epl = "@public @buseventtype " +
+                          "@XMLSchema(RootElementName='order', SchemaText='" +
+                          schemaTextSimpleSchemaWithRestriction +
+                          "')" +
+                          "create xml schema MyEventCreateSchema()";
+                var path = new RegressionPath();
+                env.CompileDeploy(epl, path);
+                RunAssertion(env, "MyEventCreateSchema", path);
+            }
+        }
+
+        private static void RunAssertion(
+            RegressionEnvironment env,
+            string eventTypeName,
+            RegressionPath path)
+        {
+            var text = "@Name('s0') select order_amount from " + eventTypeName;
+            env.CompileDeploy(text, path).AddListener("s0");
 
             SupportXML.SendXMLEvent(
                 env,

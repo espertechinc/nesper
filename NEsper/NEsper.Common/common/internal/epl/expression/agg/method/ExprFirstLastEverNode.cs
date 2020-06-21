@@ -60,7 +60,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                 resultType = positionalParams[0].Forge.EvaluationType;
             }
 
-            return new AggregationFactoryMethodFirstLastEver(this, resultType);
+            var serde = validationContext.SerdeResolver.SerdeForAggregation(resultType, validationContext.StatementRawInfo);
+            return new AggregationForgeFactoryFirstLastEver(this, resultType, serde);
         }
 
         public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)

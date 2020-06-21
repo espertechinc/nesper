@@ -12,7 +12,6 @@ using System.IO;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
@@ -90,18 +89,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             get => false;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(minMaxTypeEnum.GetExpressionText());
             writer.Write('(');
 
-            this.ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+            this.ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
             writer.Write(',');
-            this.ChildNodes[1].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+            this.ChildNodes[1].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
 
             for (int i = 2; i < this.ChildNodes.Length; i++) {
                 writer.Write(',');
-                this.ChildNodes[i].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+                this.ChildNodes[i].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
             }
 
             writer.Write(')');

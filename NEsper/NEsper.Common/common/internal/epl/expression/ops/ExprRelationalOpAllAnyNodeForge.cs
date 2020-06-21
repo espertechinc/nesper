@@ -14,8 +14,6 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.type;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -23,24 +21,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprRelationalOpAllAnyNodeForge : ExprForgeInstrumentable
     {
-        private readonly ExprRelationalOpAllAnyNode parent;
-        private readonly RelationalOpEnumComputer computer;
-        private readonly bool hasCollectionOrArray;
+        private readonly ExprRelationalOpAllAnyNode _parent;
+        private readonly RelationalOpEnumComputer _computer;
+        private readonly bool _hasCollectionOrArray;
 
         public ExprRelationalOpAllAnyNodeForge(
             ExprRelationalOpAllAnyNode parent,
             RelationalOpEnumComputer computer,
             bool hasCollectionOrArray)
         {
-            this.parent = parent;
-            this.computer = computer;
-            this.hasCollectionOrArray = hasCollectionOrArray;
+            this._parent = parent;
+            this._computer = computer;
+            this._hasCollectionOrArray = hasCollectionOrArray;
         }
 
         public ExprEvaluator ExprEvaluator {
             get => new ExprRelationalOpAllAnyNodeForgeEval(
                 this,
-                ExprNodeUtilityQuery.GetEvaluatorsNoCompile(parent.ChildNodes));
+                ExprNodeUtilityQuery.GetEvaluatorsNoCompile(_parent.ChildNodes));
         }
 
         public ExprForgeConstantType ForgeConstantType {
@@ -61,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     codegenMethodScope,
                     exprSymbol,
                     codegenClassScope)
-                .Qparam(Constant(parent.RelationalOpEnum.GetExpressionText()))
+                .Qparam(Constant(_parent.RelationalOpEnum.GetExpressionText()))
                 .Build();
         }
 
@@ -79,17 +77,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public ExprRelationalOpAllAnyNode ForgeRenderable {
-            get => parent;
+            get => _parent;
         }
 
         ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
         public RelationalOpEnumComputer Computer {
-            get { return computer; }
+            get { return _computer; }
         }
 
         public bool IsCollectionOrArray {
-            get => hasCollectionOrArray;
+            get => _hasCollectionOrArray;
         }
     }
 } // end of namespace

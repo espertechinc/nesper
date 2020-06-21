@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.@internal.context.activator
                 optPropertyEvaluator,
                 agentInstanceContext);
             var consumerView = nw.AddConsumer(consumerDesc, isSubselect);
-            return new ViewableActivationResult(consumerView, consumerView, null, false, false, null, null);
+            return new ViewableActivationResult(consumerView, consumerView, null, false, false, null, null, null);
         }
     }
 } // end of namespace

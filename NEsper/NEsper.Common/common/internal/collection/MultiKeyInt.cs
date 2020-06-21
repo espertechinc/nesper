@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.collection
@@ -25,7 +23,7 @@ namespace com.espertech.esper.common.@internal.collection
             get { return _keys; }
         }
 
-        public override bool Equals(Object o)
+        public override bool Equals(object o)
         {
             if (this == o)
                 return true;

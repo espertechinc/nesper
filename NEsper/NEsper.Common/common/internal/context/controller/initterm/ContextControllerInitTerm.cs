@@ -15,9 +15,8 @@ using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.condition;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.mgr;
+using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.filterspec;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.context.controller.initterm
@@ -50,6 +49,13 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             bool terminateChildContexts);
 
         public abstract void Destroy();
+
+        public virtual void Transfer(
+            IntSeqKey path,
+            bool transferChildContexts,
+            AgentInstanceTransferServices xfer)
+        {
+        }
 
         public ContextControllerInitTermFactory InitTermFactory {
             get => factory;
@@ -134,12 +140,9 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
         {
             // compute correlated termination
             ContextConditionDescriptor start = factory.InitTermSpec.StartCondition;
-            if (!(start is ContextConditionDescriptorFilter)) {
-                return;
-            }
 
-            ContextConditionDescriptorFilter filter = (ContextConditionDescriptorFilter) start;
-            if (filter.OptionalFilterAsName == null) {
+            ContextConditionDescriptorFilter filter = start as ContextConditionDescriptorFilter;
+            if (filter?.OptionalFilterAsName == null) {
                 return;
             }
 
@@ -149,6 +152,30 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             }
 
             map.Add(tag, triggeringEvent);
+        }
+        
+        public void PopulateEndConditionFromTrigger(MatchedEventMap map, IDictionary<String, Object> matchedEventMap) {
+            // compute correlated termination
+            ContextConditionDescriptor start = factory.InitTermSpec.StartCondition;
+            if (!(start is ContextConditionDescriptorPattern)) {
+                return;
+            }
+            ContextConditionDescriptorPattern pattern = (ContextConditionDescriptorPattern) start;
+            foreach (String tagged in pattern.TaggedEvents) {
+                PopulatePattern(tagged, map, matchedEventMap);
+            }
+            foreach (String array in pattern.ArrayEvents) {
+                PopulatePattern(array, map, matchedEventMap);
+            }
+        }
+
+        private void PopulatePattern(String tagged, MatchedEventMap map, IDictionary<String, Object> matchedEventMap) {
+            if (matchedEventMap.TryGetValue(tagged, out var value)) {
+                int tag = map.Meta.GetTagFor(tagged);
+                if (tag != -1) {
+                    map.Add(tag, value);
+                }
+            }
         }
     }
 } // end of namespace

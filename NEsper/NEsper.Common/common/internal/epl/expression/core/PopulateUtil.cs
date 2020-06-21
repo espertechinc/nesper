@@ -24,8 +24,6 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
-using Castle.Core.Internal;
-
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     public class PopulateUtil
@@ -160,7 +158,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 }
 
                 var items = value.UnwrapIntoArray<object>();
-                var coercedArray = Array.CreateInstance(type.GetElementType(), items.Length);
+                var coercedArray = Arrays.CreateInstanceChecked(type.GetElementType(), items.Length);
                 for (var i = 0; i < items.Length; i++) {
                     var coercedValue = CoerceProperty(
                         propertyName + " (array element)",

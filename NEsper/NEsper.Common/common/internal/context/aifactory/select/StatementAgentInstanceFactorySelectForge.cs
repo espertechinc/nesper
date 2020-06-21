@@ -137,9 +137,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             method.Block.DeclareVar(
                     _resultSetProcessorProviderClassName,
                     RSPFACTORYPROVIDER,
-                    NewInstance(_resultSetProcessorProviderClassName, 
+                    NewInstanceInner(_resultSetProcessorProviderClassName, 
                         symbols.GetAddInitSvc(method), 
-                        Ref(StmtClassForgableAIFactoryProviderBase.MEMBERNAME_STATEMENT_FIELDS)))
+                        Ref(StmtClassForgeableAIFactoryProviderBase.MEMBERNAME_STATEMENT_FIELDS)))
                 .SetProperty(Ref("saiff"), "ResultSetProcessorFactoryProvider", Ref(RSPFACTORYPROVIDER));
 
             // where-clause evaluator
@@ -166,7 +166,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             method.Block.DeclareVar(
                     _outputProcessViewProviderClassName,
                     OPVFACTORYPROVIDER,
-                    NewInstance(_outputProcessViewProviderClassName, symbols.GetAddInitSvc(method), Ref("statementFields")))
+                    NewInstanceInner(_outputProcessViewProviderClassName, symbols.GetAddInitSvc(method), Ref("statementFields")))
                 .SetProperty(Ref("saiff"), "OutputProcessViewFactoryProvider", Ref(OPVFACTORYPROVIDER));
 
             // subselects

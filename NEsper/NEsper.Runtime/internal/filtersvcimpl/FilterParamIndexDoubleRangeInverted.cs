@@ -39,9 +39,10 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         public override void MatchEvent(
             EventBean theEvent,
-            ICollection<FilterHandle> matches)
+            ICollection<FilterHandle> matches,
+            ExprEvaluatorContext ctx)
         {
-            var objAttributeValue = Lookupable.Getter.Get(theEvent);
+            var objAttributeValue = Lookupable.Eval.Eval(theEvent, ctx);
             if (InstrumentationHelper.ENABLED) {
                 InstrumentationHelper.Get().QFilterReverseIndex(this, objAttributeValue);
             }
@@ -60,7 +61,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 foreach (var entry in Ranges) {
                     if (attributeValue < entry.Key.Min ||
                         attributeValue > entry.Key.Max) {
-                        entry.Value.MatchEvent(theEvent, matches);
+                        entry.Value.MatchEvent(theEvent, matches, ctx);
                     }
                 }
             }
@@ -68,7 +69,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 foreach (var entry in Ranges) {
                     if (attributeValue <= entry.Key.Min ||
                         attributeValue >= entry.Key.Max) {
-                        entry.Value.MatchEvent(theEvent, matches);
+                        entry.Value.MatchEvent(theEvent, matches, ctx);
                     }
                 }
             }
@@ -76,7 +77,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 foreach (var entry in Ranges) {
                     if (attributeValue <= entry.Key.Min ||
                         attributeValue > entry.Key.Max) {
-                        entry.Value.MatchEvent(theEvent, matches);
+                        entry.Value.MatchEvent(theEvent, matches, ctx);
                     }
                 }
             }
@@ -84,13 +85,15 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 foreach (var entry in Ranges) {
                     if (attributeValue < entry.Key.Min ||
                         attributeValue >= entry.Key.Max) {
-                        entry.Value.MatchEvent(theEvent, matches);
+                        entry.Value.MatchEvent(theEvent, matches, ctx);
                     }
                 }
             }
             else {
                 throw new IllegalStateException("Invalid filter operator " + FilterOperator);
             }
+
+            RangesNullEndpoints?.MatchEvent(theEvent, matches, ctx);
 
             if (InstrumentationHelper.ENABLED) {
                 InstrumentationHelper.Get().AFilterReverseIndex(null);

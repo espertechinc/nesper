@@ -25,19 +25,22 @@ namespace com.espertech.esper.common.@internal.epl.script.compiletime
         private readonly ScriptCompileTimeRegistry _locals;
         private readonly PathRegistry<NameAndParamNum, ExpressionScriptProvided> _path;
         private readonly ModuleDependenciesCompileTime _moduleDependencies;
+        private readonly bool _isFireAndForget;
 
         public ScriptCompileTimeResolverImpl(
             string moduleName,
             ICollection<string> moduleUses,
             ScriptCompileTimeRegistry locals,
             PathRegistry<NameAndParamNum, ExpressionScriptProvided> path,
-            ModuleDependenciesCompileTime moduleDependencies)
+            ModuleDependenciesCompileTime moduleDependencies,
+            bool isFireAndForget)
         {
             this._moduleName = moduleName;
             this._moduleUses = moduleUses;
             this._locals = locals;
             this._path = path;
             this._moduleDependencies = moduleDependencies;
+            _isFireAndForget = isFireAndForget;
         }
 
         public ExpressionScriptProvided Resolve(
@@ -57,7 +60,8 @@ namespace com.espertech.esper.common.@internal.epl.script.compiletime
                     new NameAndParamNum(name, numParameters),
                     _moduleUses);
                 if (expression != null) {
-                    if (!NameAccessModifierExtensions.Visible(
+                    if (!_isFireAndForget &&
+                        !NameAccessModifierExtensions.Visible(
                         expression.First.Visibility,
                         expression.First.ModuleName,
                         _moduleName)) {

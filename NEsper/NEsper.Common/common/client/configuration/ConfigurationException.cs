@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.client.configuration
 {
@@ -39,6 +40,17 @@ namespace com.espertech.esper.common.client.configuration
         /// </param>
         public ConfigurationException(Exception cause)
             : base(cause)
+        {
+        }
+
+        /// <summary>
+        /// Serialization constructor.
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="context"></param>
+        public ConfigurationException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

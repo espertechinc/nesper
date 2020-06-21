@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client.scopetest;
@@ -27,41 +28,220 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
     public class ResultSetQueryTypeLocalGroupBy
     {
         public static readonly string PLAN_CALLBACK_HOOK =
-            "@Hook(HookType=" +
-            typeof(HookType).FullName +
-            ".INTERNAL_AGGLOCALLEVEL,Hook='" +
-            typeof(SupportAggLevelPlanHook).FullName +
-            "')";
+            $"@Hook(HookType={typeof(HookType).FullName}.INTERNAL_AGGLOCALLEVEL,Hook='{typeof(SupportAggLevelPlanHook).FullName}')";
 
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ResultSetLocalUngroupedSumSimple());
-            execs.Add(new ResultSetLocalUngroupedAggSQLStandard());
-            execs.Add(new ResultSetLocalUngroupedAggEvent());
-            execs.Add(new ResultSetLocalUngroupedAggIterator());
+            WithLocalUngroupedSumSimple(execs);
+            WithLocalUngroupedAggSQLStandard(execs);
+            WithLocalUngroupedAggEvent(execs);
+            WithLocalUngroupedAggIterator(execs);
+            WithLocalUngroupedParenSODA(execs);
+            WithLocalUngroupedColNameRendering(execs);
+            WithLocalUngroupedHaving(execs);
+            WithLocalUngroupedUnidirectionalJoin(execs);
+            WithLocalUngroupedThreeLevelWTop(execs);
+            WithLocalGroupedSimple(execs);
+            WithLocalGroupedMultiLevelMethod(execs);
+            WithLocalGroupedSolutionPattern(execs);
+            WithLocalGroupedMultiLevelAccess(execs);
+            WithLocalGroupedMultiLevelNoDefaultLvl(execs);
+            WithLocalPlanning(execs);
+            WithLocalInvalid(execs);
+            WithAggregateFullyVersusNotFullyAgg(execs);
+            WithLocalUngroupedSameKey(execs);
+            WithLocalGroupedSameKey(execs);
+            WithLocalUngroupedRowRemove(execs);
+            WithLocalGroupedRowRemove(execs);
+            WithLocalGroupedOnSelect(execs);
+            WithLocalUngroupedOrderBy(execs);
+            WithLocalEnumMethods(execs);
+            WithLocalUngroupedAggAdditionalAndPlugin(execs);
+            WithLocalMultikeyWArray(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLocalMultikeyWArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLocalMultikeyWArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLocalUngroupedAggAdditionalAndPlugin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLocalUngroupedAggAdditionalAndPlugin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLocalEnumMethods(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLocalEnumMethods(true));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLocalUngroupedOrderBy(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLocalUngroupedOrderBy());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLocalGroupedOnSelect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLocalGroupedOnSelect());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLocalGroupedRowRemove(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLocalGroupedRowRemove());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLocalUngroupedRowRemove(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLocalUngroupedRowRemove());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLocalGroupedSameKey(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLocalGroupedSameKey());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLocalUngroupedSameKey(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLocalUngroupedSameKey());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAggregateFullyVersusNotFullyAgg(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateFullyVersusNotFullyAgg());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLocalInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLocalInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLocalPlanning(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLocalPlanning());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLocalGroupedMultiLevelNoDefaultLvl(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLocalGroupedMultiLevelNoDefaultLvl());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLocalGroupedMultiLevelAccess(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLocalGroupedMultiLevelAccess());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLocalGroupedSolutionPattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLocalGroupedSolutionPattern());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLocalGroupedMultiLevelMethod(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLocalGroupedMultiLevelMethod());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLocalGroupedSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLocalGroupedSimple());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLocalUngroupedThreeLevelWTop(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLocalUngroupedThreeLevelWTop());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLocalUngroupedUnidirectionalJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLocalUngroupedUnidirectionalJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLocalUngroupedHaving(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLocalUngroupedHaving());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLocalUngroupedColNameRendering(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLocalUngroupedColNameRendering());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLocalUngroupedParenSODA(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ResultSetLocalUngroupedParenSODA(false));
             execs.Add(new ResultSetLocalUngroupedParenSODA(true));
-            execs.Add(new ResultSetLocalUngroupedColNameRendering());
-            execs.Add(new ResultSetLocalUngroupedHaving());
-            execs.Add(new ResultSetLocalUngroupedUnidirectionalJoin());
-            execs.Add(new ResultSetLocalUngroupedThreeLevelWTop());
-            execs.Add(new ResultSetLocalGroupedSimple());
-            execs.Add(new ResultSetLocalGroupedMultiLevelMethod());
-            execs.Add(new ResultSetLocalGroupedSolutionPattern());
-            execs.Add(new ResultSetLocalGroupedMultiLevelAccess());
-            execs.Add(new ResultSetLocalGroupedMultiLevelNoDefaultLvl());
-            execs.Add(new ResultSetLocalPlanning());
-            execs.Add(new ResultSetLocalInvalid());
-            execs.Add(new ResultSetAggregateFullyVersusNotFullyAgg());
-            execs.Add(new ResultSetLocalUngroupedSameKey());
-            execs.Add(new ResultSetLocalGroupedSameKey());
-            execs.Add(new ResultSetLocalUngroupedRowRemove());
-            execs.Add(new ResultSetLocalGroupedRowRemove());
-            execs.Add(new ResultSetLocalGroupedOnSelect());
-            execs.Add(new ResultSetLocalUngroupedOrderBy());
-            execs.Add(new ResultSetLocalEnumMethods(true));
-            execs.Add(new ResultSetLocalUngroupedAggAdditionalAndPlugin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLocalUngroupedAggIterator(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLocalUngroupedAggIterator());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLocalUngroupedAggEvent(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLocalUngroupedAggEvent());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLocalUngroupedAggSQLStandard(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLocalUngroupedAggSQLStandard());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLocalUngroupedSumSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLocalUngroupedSumSimple());
             return execs;
         }
 
@@ -170,6 +350,66 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             EPAssertionUtil.AssertEqualsExactOrder(expectedC7, c7.ToArray());
         }
 
+        public class ResultSetLocalMultikeyWArray : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "@Name('s0') select " +
+                             "sum(Value, group_by:(IntArray)) as c0, " +
+                             "sum(Value, group_by:(LongArray)) as c1, " +
+                             "sum(Value, group_by:(DoubleArray)) as c2, " +
+                             "sum(Value, group_by:(IntArray, LongArray, DoubleArray)) as c3, " +
+                             "sum(Value) as c4 " +
+                             "from SupportThreeArrayEvent";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendAssert(env, "E1", 10, new int[] {1}, new long[] {10}, new double[] {100}, 10, 10, 10, 10, 10);
+                SendAssert(env, "E2", 11, new int[] {2}, new long[] {20}, new double[] {200}, 11, 11, 11, 11, 21);
+
+                env.Milestone(0);
+
+                SendAssert(env, "E3", 12, new int[] {3}, new long[] {10}, new double[] {300}, 12, 22, 12, 12, 33);
+                SendAssert(env, "E4", 13, new int[] {1}, new long[] {20}, new double[] {200}, 10 + 13, 11 + 13, 11 + 13, 13, 33 + 13);
+                SendAssert(env, "E5", 14, new int[] {1}, new long[] {10}, new double[] {100}, 10 + 13 + 14, 10 + 12 + 14, 10 + 14, 10 + 14, 33 + 13 + 14);
+
+                env.Milestone(1);
+
+                SendAssert(env, "E6", 15, new int[] {3}, new long[] {20}, new double[] {300}, 12 + 15, 11 + 13 + 15, 12 + 15, 15, 33 + 13 + 14 + 15);
+                SendAssert(
+                    env,
+                    "E7",
+                    16,
+                    new int[] {2},
+                    new long[] {20},
+                    new double[] {200},
+                    11 + 16,
+                    11 + 13 + 15 + 16,
+                    11 + 13 + 16,
+                    11 + 16,
+                    33 + 13 + 14 + 15 + 16);
+
+                env.UndeployAll();
+            }
+
+            private void SendAssert(
+                RegressionEnvironment env,
+                string id,
+                int value,
+                int[] ints,
+                long[] longs,
+                double[] doubles,
+                int c0,
+                int c1,
+                int c2,
+                int c3,
+                int c4)
+            {
+                string[] fields = "c0,c1,c2,c3,c4".SplitCsv();
+                env.SendEventBean(new SupportThreeArrayEvent(id, value, ints, longs, doubles));
+                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {c0, c1, c2, c3, c4});
+            }
+        }
+
         public class ResultSetLocalUngroupedSumSimple : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -262,13 +502,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select coalesce(0, 1, group_by:TheString) from SupportBean",
-                    "Incorrect syntax near ':' at line 1 column 30");
+                    "Failed to validate select-clause expression 'coalesce(0,1,group_by:TheString)': Named parameters are not allowed");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select " +
-                    typeof(SupportStaticMethodLib).Name +
-                    ".staticMethod(group_by:IntPrimitive) from SupportBean",
-                    "Failed to validate select-clause expression 'SupportStaticMethodLib.staticMethod...(58 chars)': Named parameters are not allowed");
+                    typeof(SupportStaticMethodLib).FullName +
+                    ".StaticMethod(group_by:IntPrimitive) from SupportBean",
+                    "Failed to validate select-clause expression 'com.espertech.esper.regressionlib.s...(104 chars)': Named parameters are not allowed");
 
                 // not allowed in combination with roll-up
                 SupportMessageAssertUtil.TryInvalidCompile(

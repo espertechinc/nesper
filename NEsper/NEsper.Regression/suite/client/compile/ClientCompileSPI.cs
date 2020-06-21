@@ -7,9 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client.configuration;
+using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.epl.expression.time.node;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.compiler.@internal.util;
 using com.espertech.esper.regressionlib.framework;
@@ -23,6 +26,13 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithSPIExpression(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSPIExpression(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientCompileSPIExpression());
             return execs;
         }
@@ -32,22 +42,30 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             object expected,
             EPCompilerSPIExpression expressionCompiler)
         {
-            object actual = null;
+            var actual = CompileEvaluate(expression, expressionCompiler);
+            Assert.AreEqual(expected, actual);
+        }
+
+        private static object CompileEvaluate(
+            string expression,
+            EPCompilerSPIExpression expressionCompiler)
+        {
+            object result = null;
             try {
-                actual = expressionCompiler.CompileValidate(expression).Forge.ExprEvaluator.Evaluate(null, true, null);
+                result = expressionCompiler.CompileValidate(expression).Forge.ExprEvaluator.Evaluate(null, true, null);
             }
             catch (EPCompileException e) {
                 Assert.Fail(e.Message);
             }
 
-            Assert.AreEqual(expected, actual);
+            return result;
         }
 
-        internal class ClientCompileSPIExpression : RegressionExecution
+        private class ClientCompileSPIExpression : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var compiler = (EPCompilerSPI) EPCompilerProvider.Compiler;
+                var compiler = (EPCompilerSPI) env.Compiler;
 
                 EPCompilerSPIExpression expressionCompiler = null;
                 try {
@@ -59,6 +77,13 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
                 CompileEvaluate("1*1", 1, expressionCompiler);
                 CompileEvaluate("'a' || 'y'", "ay", expressionCompiler);
+
+                var arrays = typeof(Arrays).FullName;
+
+                var list = (ICollection<object>) CompileEvaluate($"{arrays}.AsList({{\"a\"}})", expressionCompiler);
+                EPAssertionUtil.AssertEqualsExactOrder(list.ToArray(), new object[] {"a"});
+
+                CompileEvaluate($"{arrays}.AsList({{'a', 'b'}}).firstOf()", "a", expressionCompiler);
 
                 try {
                     var timePeriod = (ExprTimePeriod) expressionCompiler.CompileValidate("5 seconds");

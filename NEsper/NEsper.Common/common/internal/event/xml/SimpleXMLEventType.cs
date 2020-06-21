@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
     ///     No namespace support.
     ///     Cannot access to xml attributes, only elements content.
     ///     <para />
-    ///     If an xsd is present, then use {@link com.espertech.esper.common.internal.event.xml.SchemaXMLEventType
+    ///     If an xsd is present, then use {@link com.espertech.esper.common.@internal.@event.xml.SchemaXMLEventType
     ///     SchemaXMLEventType }
     /// </summary>
     /// <author>pablo</author>

@@ -65,7 +65,11 @@ namespace com.espertech.esper.common.@internal.schedule
             }
 
             // Add the minimum resolution to the Start time to ensure we don't get the same exact time
-            if (spec.UnitValues.ContainsKey(ScheduleUnit.SECONDS)) {
+            if (spec.UnitValues.ContainsKey(ScheduleUnit.MICROSECONDS) && timeAbacus.OneSecond == 1000000L) {
+                afterTimeInMillis += 1;
+            } else if (spec.UnitValues.ContainsKey(ScheduleUnit.MILLISECONDS)) {
+                afterTimeInMillis += timeAbacus.OneSecond / 1000;
+            } else if (spec.UnitValues.ContainsKey(ScheduleUnit.SECONDS)) {
                 afterTimeInMillis += timeAbacus.OneSecond;
             }
             else {
@@ -101,7 +105,15 @@ namespace com.espertech.esper.common.@internal.schedule
             TimeZoneInfo timeZone,
             TimeAbacus timeAbacus)
         {
-            long remainderMicros = -1;
+            ICollection<int> minutesSet = spec.UnitValues.Get(ScheduleUnit.MINUTES);
+            ICollection<int> hoursSet = spec.UnitValues.Get(ScheduleUnit.HOURS);
+            ICollection<int> monthsSet = spec.UnitValues.Get(ScheduleUnit.MONTHS);
+            bool isSecondsSpecified = spec.UnitValues.ContainsKey(ScheduleUnit.SECONDS);
+            ICollection<int> secondsSet = isSecondsSpecified ? spec.UnitValues.Get(ScheduleUnit.SECONDS) : null;
+            bool isMillisecondsSpecified = spec.UnitValues.ContainsKey(ScheduleUnit.MILLISECONDS);
+            ICollection<int> millisecondsSet = isMillisecondsSpecified ? spec.UnitValues.Get(ScheduleUnit.MILLISECONDS) : null;
+            bool isMicrosecondsSpecified = spec.UnitValues.ContainsKey(ScheduleUnit.MICROSECONDS);
+            ICollection<int> microsecondsSet = isMillisecondsSpecified ? spec.UnitValues.Get(ScheduleUnit.MICROSECONDS) : null;
 
             while (true) {
                 DateTimeEx after;
@@ -123,22 +135,28 @@ namespace com.espertech.esper.common.@internal.schedule
                 }
 
                 var remainder = timeAbacus.DateTimeSet(afterTimeInMillis, after);
-                if (remainderMicros == -1) {
-                    remainderMicros = remainder;
-                }
-
                 var result = new ScheduleCalendar {Milliseconds = after.Millisecond};
 
-                ICollection<int> minutesSet = spec.UnitValues.Get(ScheduleUnit.MINUTES);
-                ICollection<int> hoursSet = spec.UnitValues.Get(ScheduleUnit.HOURS);
-                ICollection<int> monthsSet = spec.UnitValues.Get(ScheduleUnit.MONTHS);
-                ICollection<int> secondsSet = null;
+                if (isMicrosecondsSpecified) {
+                    long nextValue = NextValue(microsecondsSet, (int) remainder);
+                    remainder = nextValue;
+                    if (nextValue == -1) {
+                        nextValue = NextValue(microsecondsSet, 0);
+                        remainder = nextValue;
+                        after.AddMilliseconds(1);
+                    }
+                } else {
+                    result.Milliseconds = after.Millisecond;
+                }
 
-                bool isSecondsSpecified = false;
-
-                if (spec.UnitValues.ContainsKey(ScheduleUnit.SECONDS)) {
-                    isSecondsSpecified = true;
-                    secondsSet = spec.UnitValues.Get(ScheduleUnit.SECONDS);
+                if (isMillisecondsSpecified) {
+                    result.Milliseconds = NextValue(millisecondsSet, after.Millisecond);
+                    if (result.Milliseconds == -1) {
+                        result.Milliseconds = NextValue(millisecondsSet, 0);
+                        after.AddSeconds(1);
+                    }
+                } else {
+                    result.Milliseconds = after.Millisecond;
                 }
 
                 if (isSecondsSpecified) {

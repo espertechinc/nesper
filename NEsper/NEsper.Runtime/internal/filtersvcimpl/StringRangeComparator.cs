@@ -19,6 +19,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
     /// </summary>
     public sealed class StringRangeComparator : IComparer<StringRange>
     {
+        public static readonly StringRangeComparator INSTANCE = new StringRangeComparator();
+        
         public int Compare(StringRange r1, StringRange r2)
         {
             if (r1.Min == null)

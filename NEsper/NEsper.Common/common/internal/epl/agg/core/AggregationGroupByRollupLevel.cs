@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,33 +8,29 @@
 
 using System;
 
-using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.common.@internal.collection;
+using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat.collections;
-
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.core
 {
-    public class AggregationGroupByRollupLevel
+    public abstract class AggregationGroupByRollupLevel
     {
-        private readonly int levelOffset;
-
         public AggregationGroupByRollupLevel(
             int levelNumber,
             int levelOffset,
-            int[] rollupKeys)
+            int[] rollupKeys,
+            DataInputOutputSerde subkeySerde)
         {
             LevelNumber = levelNumber;
-            this.levelOffset = levelOffset;
+            LevelOffset = levelOffset;
             RollupKeys = rollupKeys;
+            SubkeySerde = subkeySerde;
         }
 
         public int LevelNumber { get; }
 
-        public bool IsAggregationTop => levelOffset == -1;
-
-        public int[] RollupKeys { get; }
+        public bool IsAggregationTop => LevelOffset == -1;
 
         public int AggregationOffset {
             get {
@@ -42,82 +38,74 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     throw new ArgumentException();
                 }
 
-                return levelOffset;
+                return LevelOffset;
             }
         }
 
-        public CodegenExpression ToExpression()
-        {
-            return NewInstance<AggregationGroupByRollupLevel>(
-                Constant(LevelNumber),
-                Constant(levelOffset),
-                Constant(RollupKeys));
-        }
+        public int LevelOffset { get; }
 
-        public object ComputeSubkey(object groupKey)
-        {
-            if (IsAggregationTop) {
-                return null;
-            }
+        public int[] RollupKeys { get; }
 
-            if (groupKey is HashableMultiKey) {
-                var mk = (HashableMultiKey) groupKey;
-                var keys = mk.Keys;
-                if (RollupKeys.Length == keys.Length) {
-                    return mk;
-                }
+        public DataInputOutputSerde SubkeySerde { get; }
 
-                if (RollupKeys.Length == 1) {
-                    return keys[RollupKeys[0]];
-                }
-
-                var subkeys = new object[RollupKeys.Length];
-                var count = 0;
-                foreach (var rollupKey in RollupKeys) {
-                    subkeys[count++] = keys[rollupKey];
-                }
-
-                return new HashableMultiKey(subkeys);
-            }
-
-            return groupKey;
-        }
+        public abstract object ComputeSubkey(object groupKey);
 
         public override string ToString()
         {
             return "GroupByRollupLevel{" +
                    "levelOffset=" +
-                   levelOffset +
+                   LevelOffset +
                    ", rollupKeys=" +
                    RollupKeys.RenderAny() +
                    '}';
         }
 
-        public HashableMultiKey ComputeMultiKey(
+        public object[] ComputeMultiKey(
             object subkey,
             int numExpected)
         {
-            if (subkey is HashableMultiKey) {
-                var mk = (HashableMultiKey) subkey;
-                if (mk.Keys.Length == numExpected) {
-                    return mk;
+            object[] keys;
+            
+            if (subkey is MultiKey mk) {
+                if (mk.NumKeys == numExpected) {
+                    return mk.ToObjectArray();
                 }
 
-                object[] keysInner = {numExpected};
+                keys = new object[] {numExpected};
                 for (var i = 0; i < RollupKeys.Length; i++) {
-                    keysInner[RollupKeys[i]] = mk.Keys[i];
+                    keys[RollupKeys[i]] = mk.GetKey(i);
                 }
 
-                return new HashableMultiKey(keysInner);
+                return keys;
             }
 
-            var keys = new object[numExpected];
+            keys = new object[numExpected];
             if (subkey == null) {
-                return new HashableMultiKey(keys);
+                return keys;
             }
 
             keys[RollupKeys[0]] = subkey;
-            return new HashableMultiKey(keys);
+            return keys;
+        }
+    }
+
+    public class ProxyAggregationGroupByRollupLevel : AggregationGroupByRollupLevel
+    {
+        private Func<object, object> ProcComputeSubkey { get; set; }
+        public ProxyAggregationGroupByRollupLevel(
+            int levelNumber,
+            int levelOffset,
+            int[] rollupKeys,
+            DataInputOutputSerde subkeySerde,
+            Func<object, object> procComputeSubkey)
+            : base(levelNumber, levelOffset, rollupKeys, subkeySerde)
+        {
+            ProcComputeSubkey = procComputeSubkey;
+        }
+
+        public override object ComputeSubkey(object groupKey)
+        {
+            return ProcComputeSubkey?.Invoke(groupKey);
         }
     }
 } // end of namespace

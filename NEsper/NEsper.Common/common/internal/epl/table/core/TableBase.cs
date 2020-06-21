@@ -9,6 +9,8 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.index.hash;
@@ -24,12 +26,15 @@ namespace com.espertech.esper.common.@internal.epl.table.core
     public abstract class TableBase : Table
     {
         internal readonly TableMetaData metaData;
-        internal AggregationRowFactory aggregationRowFactory;
-        internal TableMetadataInternalEventToPublic eventToPublic;
+        private AggregationRowFactory aggregationRowFactory;
+        private TableMetadataInternalEventToPublic eventToPublic;
         internal EventPropertyValueGetter primaryKeyGetter;
-        internal PropertyHashedEventTableFactory primaryKeyIndexFactory;
-        internal StatementContext statementContextCreateTable;
-        internal TableSerdes tableSerdes;
+        private PropertyHashedEventTableFactory primaryKeyIndexFactory;
+        private StatementContext statementContextCreateTable;
+        private TableSerdes tableSerdes;
+        private DataInputOutputSerde primaryKeySerde;
+        private MultiKeyFromObjectArray primaryKeyObjectArrayTransform;
+        private MultiKeyFromMultiKey primaryKeyIntoTableTransform;
 
         protected ISet<TableUpdateStrategyRedoCallback> updateStrategyRedoCallbacks =
             new HashSet<TableUpdateStrategyRedoCallback>();
@@ -60,6 +65,21 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         public TableSerdes TableSerdes {
             get => tableSerdes;
             set => tableSerdes = value;
+        }
+
+        public DataInputOutputSerde PrimaryKeySerde {
+            get => primaryKeySerde;
+            set => primaryKeySerde = value;
+        }
+
+        public MultiKeyFromObjectArray PrimaryKeyObjectArrayTransform {
+            get => primaryKeyObjectArrayTransform;
+            set => primaryKeyObjectArrayTransform = value;
+        }
+
+        public MultiKeyFromMultiKey PrimaryKeyIntoTableTransform {
+            get => primaryKeyIntoTableTransform;
+            set => primaryKeyIntoTableTransform = value;
         }
 
         public AggregationRowFactory AggregationRowFactory {
@@ -115,15 +135,11 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             var statementResourceService = statementContextCreateTable.StatementCPCacheService.StatementResourceService;
             if (metaData.OptionalContextName == null) {
                 var holder = statementResourceService.Unpartitioned;
-                if (holder != null && holder.TableInstance != null) {
-                    holder.TableInstance.IndexRepository.RemoveIndex(index);
-                }
+                holder?.TableInstance?.IndexRepository.RemoveIndex(index);
             }
             else {
                 foreach (var entry in statementResourceService.ResourcesPartitioned) {
-                    if (entry.Value.TableInstance != null) {
-                        entry.Value.TableInstance.IndexRepository.RemoveIndex(index);
-                    }
+                    entry.Value.TableInstance?.IndexRepository.RemoveIndex(index);
                 }
             }
         }

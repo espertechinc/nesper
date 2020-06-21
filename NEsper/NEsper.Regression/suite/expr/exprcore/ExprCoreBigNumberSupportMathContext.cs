@@ -17,55 +17,52 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
-    public class ExprCoreBigNumberSupportMathContext
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            var executions = new List<RegressionExecution>();
-            executions.Add(new ExprCoreMathContextDecimalConvDivide());
-            executions.Add(new ExprCoreMathContextDivide());
-            return executions;
-        }
+	public class ExprCoreBigNumberSupportMathContext
+	{
 
-        internal class ExprCoreMathContextDecimalConvDivide : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select 10/5.0m as c0 from SupportBean";
-                env.CompileDeploy(epl).AddListener("s0");
+		public static ICollection<RegressionExecution> Executions()
+		{
+			var executions = new List<RegressionExecution>();
+			executions.Add(new ExprCoreMathContextBigDecConvDivide());
+			executions.Add(new ExprCoreMathContextDivide());
+			return executions;
+		}
 
-                var fields = new [] { "c0" };
-                Assert.AreEqual(typeof(decimal?), env.Statement("s0").EventType.GetPropertyType("c0"));
+		private class ExprCoreMathContextBigDecConvDivide : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var epl = "@Name('s0') select 10/5.0m as c0 from SupportBean";
+				env.CompileDeploy(epl).AddListener("s0");
 
-                env.SendEventBean(new SupportBean());
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {2m});
+				var fields = "c0".SplitCsv();
+				Assert.AreEqual(typeof(decimal?), env.Statement("s0").EventType.GetPropertyType("c0"));
 
-                env.UndeployAll();
-            }
-        }
+				env.SendEventBean(new SupportBean());
+				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, 2.0m);
 
-        internal class ExprCoreMathContextDivide : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                // cast and divide
-                env.CompileDeploy("@Name('s0') select 1.6m / 9.2m from SupportBean")
-                    .AddListener("s0");
-                env.Statement("s0").SetSubscriber(new MySubscriber());
-                env.SendEventBean(new SupportBean());
-                env.UndeployAll();
-            }
-        }
+				env.UndeployAll();
+			}
+		}
 
-        internal class MySubscriber
-        {
-            public void Update(decimal? value)
-            {
-                Assert.AreEqual(0.1739130m, value);
-            }
-        }
-    }
+		private class ExprCoreMathContextDivide : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				// cast and divide
+				env.CompileDeploy("@Name('s0')  Select 1.6m / 9.2m from SupportBean").AddListener("s0");
+				env.Statement("s0").SetSubscriber(new MySubscriber());
+				env.SendEventBean(new SupportBean());
+				env.UndeployAll();
+			}
+		}
+		
+		internal class MySubscriber
+		{
+			public void Update(decimal? value)
+			{
+				Assert.AreEqual(0.1739130m, value);
+			}
+		}
+	}
 } // end of namespace

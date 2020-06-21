@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
 {
     public class NamedWindowFactoryServiceImpl : NamedWindowFactoryService
     {
-        public readonly static NamedWindowFactoryServiceImpl INSTANCE = new NamedWindowFactoryServiceImpl();
+        public static readonly NamedWindowFactoryServiceImpl INSTANCE = new NamedWindowFactoryServiceImpl();
 
         private NamedWindowFactoryServiceImpl()
         {

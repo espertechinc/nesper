@@ -7,17 +7,18 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.IO;
 
 namespace com.espertech.esper.compat
 {
+    /// <summary>
+    /// ClassLoader provides a limited amount of cross-over functionality
+    /// from the "Java" world.  In short, it exists to load classes.
+    /// </summary>
     public interface ClassLoader
     {
-        Stream GetResourceAsStream(string resourceName);
-
         /// <summary>Gets the class.</summary>
-        /// <param name="className">Name of the class.</param>
+        /// <param name="typeName">Name of the class.</param>
         /// <returns></returns>
-        Type GetClass(string className);
+        Type GetClass(string typeName);
     }
 }

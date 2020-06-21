@@ -11,7 +11,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
-using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -23,17 +22,27 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EPLDataflowDocSamplesRun());
-            execs.Add(new EPLDataflowSODA());
+WithDocSamplesRun(execs);
+WithSODA(execs);
             return execs;
         }
-
+public static IList<RegressionExecution> WithSODA(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowSODA());
+    return execs;
+}public static IList<RegressionExecution> WithDocSamplesRun(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowDocSamplesRun());
+    return execs;
+}
         private static void TryEpl(
             RegressionEnvironment env,
             string epl)
         {
             try {
-                EPCompilerProvider.Compiler.ParseModule(epl);
+                env.Compiler.ParseModule(epl);
             }
             catch (Exception t) {
                 Assert.Fail(t.Message);

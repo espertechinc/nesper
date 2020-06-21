@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.client.annotation
         ///     For use with group-by and std:groupwin, reclaim groups for unbound streams based on time,
         ///     this number is the frequency in seconds at which a sweep occurs for aged groups, if not
         ///     provided then the sweep frequency is the same number as the age.
-        /// </summary>
+        /// </summary>MAX_FILTER_WIDTH
         RECLAIM_GROUP_FREQ,
 
         /// <summary>
@@ -97,6 +97,13 @@ namespace com.espertech.esper.common.client.annotation
         ///     For use when filter expression optimization may widen the filter expression
         /// </summary>
         MAX_FILTER_WIDTH,
+        
+        /// <summary>
+        /// For use when filter expression optimization may filter index composite lookupable expressions (typically LHS, i.e. left hand side).
+        /// Such as "select * from MyEvent(a+b=0)" wherein "a+b" is a composite lookupable expression, i.e. provides lookup values for filter index
+        /// lookup.
+        /// </summary>
+        FILTERINDEX,
 
         /// <summary>
         ///     For use everywhere where unique data window are used
@@ -111,6 +118,11 @@ namespace com.espertech.esper.common.client.annotation
         /// <summary>
         ///     For use with output rate limiting.
         /// </summary>
-        DISABLE_OUTPUTLIMIT_OPT
+        DISABLE_OUTPUTLIMIT_OPT,
+        
+        /// <summary>
+        /// For use with named window to silent-delete.
+        /// </summary>
+        SILENT_DELETE
     }
 }

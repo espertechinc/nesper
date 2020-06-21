@@ -20,5 +20,11 @@ namespace com.espertech.esper.compiler.client
         /// </summary>
         /// <value>compiler</value>
         public static EPCompiler Compiler => new EPCompilerImpl();
+
+        /// <summary>
+        ///     Return a compiler instance.
+        /// </summary>
+        /// <value>compiler</value>
+        public static EPCompiler GetCompiler() => new EPCompilerImpl();
     }
 } // end of namespace

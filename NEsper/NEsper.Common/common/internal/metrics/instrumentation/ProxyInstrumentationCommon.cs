@@ -106,15 +106,15 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         public Action<EventBean[]> ProcAInfraTriggeredLookup { get; set; }
         public Action<ICollection<EventBean>, object> ProcAIndexJoinLookup { get; set; }
         public Action ProcAJoinDispatch { get; set; }
-        public Action<UniformPair<ISet<MultiKey<EventBean>>>> ProcAJoinExecStrategy { get; set; }
-        public Action<ISet<MultiKey<EventBean>>> ProcAJoinCompositionStreamToWin { get; set; }
+        public Action<UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>> ProcAJoinExecStrategy { get; set; }
+        public Action<ISet<MultiKeyArrayOfKeys<EventBean>>> ProcAJoinCompositionStreamToWin { get; set; }
         public Action ProcAJoinCompositionStepUpdIndex { get; set; }
         public Action ProcAIndexAddRemove { get; set; }
         public Action ProcAIndexAdd { get; set; }
         public Action ProcAIndexRemove { get; set; }
         public Action ProcAJoinCompositionQueryStrategy { get; set; }
         public Action ProcAJoinExecProcess { get; set; }
-        public Action<ISet<MultiKey<EventBean>>, ISet<MultiKey<EventBean>>> ProcAJoinCompositionWinToWin { get; set; }
+        public Action<ISet<MultiKeyArrayOfKeys<EventBean>>, ISet<MultiKeyArrayOfKeys<EventBean>>> ProcAJoinCompositionWinToWin { get; set; }
         public Action<bool> ProcAOutputProcessWCondition { get; set; }
         public Action ProcAOutputRateConditionUpdate { get; set; }
         public Action<bool> ProcAOutputRateConditionOutputNow { get; set; }
@@ -138,8 +138,8 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         public Action<object> ProcAUpdateIStreamApplyAssignmentItem { get; set; }
         public Action ProcAOutputRateConditionScheduledEval { get; set; }
         public Action ProcAHistoricalScheduledEval { get; set; }
-        public Action<ISet<MultiKey<EventBean>>, ISet<MultiKey<EventBean>>> ProcAJoinExecFilter { get; set; }
-        public Action<ISet<MultiKey<EventBean>>, ISet<MultiKey<EventBean>>> ProcAJoinCompositionHistorical { get; set; }
+        public Action<ISet<MultiKeyArrayOfKeys<EventBean>>, ISet<MultiKeyArrayOfKeys<EventBean>>> ProcAJoinExecFilter { get; set; }
+        public Action<ISet<MultiKeyArrayOfKeys<EventBean>>, ISet<MultiKeyArrayOfKeys<EventBean>>> ProcAJoinCompositionHistorical { get; set; }
 
         public Action<string> ProcQNamedWindowDispatch { get; set; }
         public Action<string,int,EventBean[],EventBean[],EPStatementAgentInstanceHandle,long> ProcQNamedWindowCPSingle { get; set; }
@@ -223,12 +223,12 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         public Action<EventTable, EventBean[]> ProcQIndexAdd { get; set; }
         public Action<EventTable, EventBean[]> ProcQIndexRemove { get; set; }
         public Action<bool,int,EventBean[]> ProcQJoinCompositionQueryStrategy { get; set; }
-        public Action<UniformPair<ISet<MultiKey<EventBean>>>> ProcQJoinExecProcess { get; set; }
+        public Action<UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>> ProcQJoinExecProcess { get; set; }
         public Action ProcQJoinCompositionWinToWin { get ; set ; }
         public Action<EventBean[], EventBean[]> ProcQOutputProcessWCondition { get; set; }
         public Action<int, int> ProcQOutputRateConditionUpdate { get; set; }
         public Action ProcQOutputRateConditionOutputNow { get ; set ; }
-        public Action<ISet<MultiKey<EventBean>>, ISet<MultiKey<EventBean>>> ProcQOutputProcessWConditionJoin { get; set; }
+        public Action<ISet<MultiKeyArrayOfKeys<EventBean>>, ISet<MultiKeyArrayOfKeys<EventBean>>> ProcQOutputProcessWConditionJoin { get; set; }
         public Action<string,EventBean[],EventBean[]> ProcQWhereClauseFilter { get; set; }
         public Action<int,EventBean,bool> ProcQWhereClauseFilterEval { get; set; }
         public Action<EventBean[], EventBean[]> ProcQWhereClauseIR { get; set; }
@@ -876,7 +876,7 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
                 ProcQJoinExecStrategy ();
         }
 
-        public void AJoinExecStrategy (UniformPair<ISet<MultiKey<EventBean>>> joinSet) {
+        public void AJoinExecStrategy (UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>> joinSet) {
                 ProcAJoinExecStrategy (joinSet);
         }
 
@@ -884,7 +884,7 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
                 ProcQJoinCompositionStreamToWin ();
         }
 
-        public void AJoinCompositionStreamToWin (ISet<MultiKey<EventBean>> newResults) {
+        public void AJoinCompositionStreamToWin (ISet<MultiKeyArrayOfKeys<EventBean>> newResults) {
                 ProcAJoinCompositionStreamToWin (newResults);
         }
 
@@ -928,7 +928,7 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
                 ProcAJoinCompositionQueryStrategy ();
         }
 
-        public void QJoinExecProcess (UniformPair<ISet<MultiKey<EventBean>>> joinSet) {
+        public void QJoinExecProcess (UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>> joinSet) {
                 ProcQJoinExecProcess (joinSet);
         }
 
@@ -940,7 +940,7 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
                 ProcQJoinCompositionWinToWin ();
         }
 
-        public void AJoinCompositionWinToWin (ISet<MultiKey<EventBean>> newResults, ISet<MultiKey<EventBean>> oldResults) {
+        public void AJoinCompositionWinToWin (ISet<MultiKeyArrayOfKeys<EventBean>> newResults, ISet<MultiKeyArrayOfKeys<EventBean>> oldResults) {
                 ProcAJoinCompositionWinToWin (newResults, oldResults);
         }
 
@@ -968,7 +968,7 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
                 ProcAOutputRateConditionOutputNow (generate);
         }
 
-        public void QOutputProcessWConditionJoin (ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents) {
+        public void QOutputProcessWConditionJoin (ISet<MultiKeyArrayOfKeys<EventBean>> newEvents, ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents) {
                 ProcQOutputProcessWConditionJoin (newEvents, oldEvents);
         }
 
@@ -1140,7 +1140,7 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
                 ProcQJoinExecFilter ();
         }
 
-        public void AJoinExecFilter (ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents) {
+        public void AJoinExecFilter (ISet<MultiKeyArrayOfKeys<EventBean>> newEvents, ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents) {
                 ProcAJoinExecFilter (newEvents, oldEvents);
         }
 
@@ -1148,7 +1148,7 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
                 ProcQJoinCompositionHistorical ();
         }
 
-        public void AJoinCompositionHistorical (ISet<MultiKey<EventBean>> newResults, ISet<MultiKey<EventBean>> oldResults) {
+        public void AJoinCompositionHistorical (ISet<MultiKeyArrayOfKeys<EventBean>> newResults, ISet<MultiKeyArrayOfKeys<EventBean>> oldResults) {
                 ProcAJoinCompositionHistorical (newResults, oldResults);
         }
     }

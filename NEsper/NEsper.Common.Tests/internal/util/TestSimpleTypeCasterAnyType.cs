@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.util
 
         private SimpleTypeCasterAnyType caster;
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestCast()
         {
             Assert.IsNull(caster.Cast(new object()));

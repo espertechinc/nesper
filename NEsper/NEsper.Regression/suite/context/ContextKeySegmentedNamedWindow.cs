@@ -26,11 +26,43 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             var execs = new List<RegressionExecution>();
             execs.Add(new ContextKeyedNamedWindowBasic());
+            execs.Add(new ContextKeyedNamedWindowNonPattern());
             execs.Add(new ContextKeyedNamedWindowPattern());
             execs.Add(new ContextKeyedNamedWindowFAF());
             execs.Add(new ContextKeyedSubqueryNamedWindowIndexUnShared());
             execs.Add(new ContextKeyedSubqueryNamedWindowIndexShared());
             return execs;
+        }
+
+        private static void RunAssertionNamedWindow(
+            RegressionEnvironment env,
+            string fromClause)
+        {
+            var path = new RegressionPath();
+            var epl = "create context Ctx partition by TheString from SupportBean;\n" +
+                      "@Name('window') context Ctx create window MyWindow#keepall as SupportBean;" +
+                      "@Name('insert') context Ctx insert into MyWindow select * from SupportBean;" +
+                      "@Name('s0') context Ctx select irstream context.key1 as c0, a.IntPrimitive as c1 from " +
+                      fromClause;
+            env.CompileDeploy(epl, path).AddListener("s0");
+            var fields = "c0,c1".SplitCsv();
+
+            env.SendEventBean(new SupportBean("E1", 1));
+            EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {"E1", 1});
+
+            env.SendEventBean(new SupportBean("E2", 2));
+            EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {"E2", 2});
+
+            env.SendEventBean(new SupportBean("E1", 3));
+            EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {"E1", 3});
+
+            env.SendEventBean(new SupportBean("E2", 4));
+            EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {"E2", 4});
+
+            TryInvalidCreateWindow(env, path);
+            TryInvalidCreateWindow(env, path); // making sure all is cleaned up
+
+            env.UndeployAll();
         }
 
         private static void TryAssertionSubqueryNW(RegressionEnvironment env)
@@ -135,21 +167,19 @@ namespace com.espertech.esper.regressionlib.suite.context
             }
         }
 
+        internal class ContextKeyedNamedWindowNonPattern : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunAssertionNamedWindow(env, "MyWindow as a");
+            }
+        }
+
         internal class ContextKeyedNamedWindowPattern : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                // Esper-695
-                var path = new RegressionPath();
-                var eplTwo =
-                    "create context Ctx partition by TheString from SupportBean;\n" +
-                    "context Ctx create window MyWindow#unique(IntPrimitive) as SupportBean;" +
-                    "context Ctx select irstream * from pattern [MyWindow];";
-                env.CompileDeploy(eplTwo, path);
-                TryInvalidCreateWindow(env, path);
-                TryInvalidCreateWindow(env, path); // making sure all is cleaned up
-
-                env.UndeployAll();
+                RunAssertionNamedWindow(env, "pattern [every a=MyWindow]");
             }
         }
 

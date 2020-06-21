@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -70,13 +71,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
                 false);
 
             // materialize sub-select views
-            var subselectForges = SubSelectHelperForgePlanner.PlanSubSelect(
+            SubSelectHelperForgePlan subselectForgePlan = SubSelectHelperForgePlanner.PlanSubSelect(
                 @base,
-                subselectActivation,
-                new[] {streamSpec.OptionalStreamName},
-                new[] {activatorResult.ActivatorResultEventType},
-                new[] {activatorResult.TriggerEventTypeName},
+                subselectActivation, 
+                new string[]{streamSpec.OptionalStreamName}, 
+                new EventType[]{activatorResult.ActivatorResultEventType},
+                new string[]{activatorResult.TriggerEventTypeName},
                 services);
+            IDictionary<ExprSubselectNode, SubSelectFactoryForge> subselectForges = subselectForgePlan.Subselects;
 
             // compile top-level split
             var items = new OnSplitItemForge[desc.SplitStreams.Count + 1];
@@ -128,13 +130,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
             }
 
             // handle result set processor classes
-            IList<StmtClassForgable> forgables = new List<StmtClassForgable>();
+            IList<StmtClassForgeable> forgeables = new List<StmtClassForgeable>();
             for (var i = 0; i < items.Length; i++) {
                 var classNameRSP = CodeGenerationIDGenerator.GenerateClassNameSimple(
                     typeof(ResultSetProcessorFactoryProvider),
                     classPostfix + "_" + i);
-                forgables.Add(
-                    new StmtClassForgableRSPFactoryProvider(
+                forgeables.Add(
+                    new StmtClassForgeableRSPFactoryProvider(
                         classNameRSP,
                         items[i].ResultSetProcessorDesc,
                         namespaceScope,
@@ -153,12 +155,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
                 tableAccessForges,
                 items,
                 desc.IsFirst);
-            var triggerForge = new StmtClassForgableAIFactoryProviderOnTrigger(
+            var triggerForge = new StmtClassForgeableAIFactoryProviderOnTrigger(
                 aiFactoryProviderClassName,
                 namespaceScope,
                 splitStreamForge);
 
-            return new OnTriggerPlan(triggerForge, forgables, new SelectSubscriberDescriptor());
+            return new OnTriggerPlan(
+                triggerForge,
+                forgeables,
+                new SelectSubscriberDescriptor(),
+                subselectForgePlan.AdditionalForgeables);
         }
 
         private static OnSplitItemForge OnSplitValidate(

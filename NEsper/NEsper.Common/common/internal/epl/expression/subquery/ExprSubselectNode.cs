@@ -116,6 +116,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
         public ExprForge HavingExpr { get; set; }
 
+        public ExprValidationContext FilterStreamExprValidationContext { get; set; }
+
         public abstract bool IsAllowMultiColumnSelect { get; }
 
         public abstract Type ComponentTypeCollection { get; }
@@ -283,6 +285,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             ValidateSubquery(validationContext);
+            if (IsFilterStreamSubselect) {
+                FilterStreamExprValidationContext = validationContext;
+            }
+
             return null;
         }
 
@@ -308,7 +314,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             if (SelectAsNames != null && SelectAsNames[0] != null) {
                 writer.Write(SelectAsNames[0]);

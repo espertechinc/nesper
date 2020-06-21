@@ -16,11 +16,9 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.bean;
-using com.espertech.esper.common.@internal.supportunit.@event;
-using com.espertech.esper.common.@internal.supportunit.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.container;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.common.@internal.@event.map
@@ -84,7 +82,7 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEquals()
         {
             var metadata = new EventTypeMetadata(
@@ -128,7 +126,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                         supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY)));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetFromMap()
         {
             var nestedSupportBean = new SupportBean();
@@ -148,7 +146,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             Assert.AreEqual("NestedValue", eventType.GetValue("MyComplexBean.Nested.NestedValue", valuesMap));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetGetter()
         {
             var nestedSupportBean = new SupportBean();
@@ -188,7 +186,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             Assert.AreEqual("NestedValue", getter.Get(eventBean));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetPropertyNames()
         {
             var properties = eventType.PropertyNames;
@@ -197,7 +195,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                 new[] { "MyInt", "MyString", "MyNullableString", "MySupportBean", "MyComplexBean", "MyNullableSupportBean", "MyNullType" });
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetPropertyType()
         {
             Assert.AreEqual(typeof(int?), eventType.GetPropertyType("MyInt"));
@@ -216,19 +214,19 @@ namespace com.espertech.esper.common.@internal.@event.map
             Assert.IsNull(eventType.GetPropertyType("MyComplexBean.Nested.NestedValueXXX"));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetSuperTypes()
         {
             Assert.IsNull(eventType.SuperTypes);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetUnderlyingType()
         {
             Assert.AreEqual(typeof(IDictionary<string, object>), eventType.UnderlyingType);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestIsValidProperty()
         {
             Assert.IsTrue(eventType.IsProperty("MyInt"));
@@ -245,7 +243,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             Assert.IsFalse(eventType.IsProperty("MyComplexBean.Nested.NestedValueXXX"));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestNestedMap()
         {
             IDictionary<string, object> levelThree = new Dictionary<string, object>();

@@ -74,10 +74,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
             ExprEvaluatorContext context)
         {
             // find the next-nearest reference higher then the current time, compute delta, return reference one lower
-            if (reference > fromTime) {
-                while (reference > fromTime) {
-                    reference = reference - DeltaSubtract(reference, eventsPerStream, isNewData, context);
-                }
+            while (reference > fromTime) {
+                reference = reference - DeltaSubtract(reference, eventsPerStream, isNewData, context);
             }
 
             var next = reference;

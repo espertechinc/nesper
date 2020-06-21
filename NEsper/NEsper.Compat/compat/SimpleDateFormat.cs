@@ -9,8 +9,6 @@
 using System;
 using System.Globalization;
 
-using com.espertech.esper.compat.datetime;
-
 namespace com.espertech.esper.compat
 {
     public class SimpleDateFormat : DateFormat

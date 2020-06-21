@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.index.hash;
 using com.espertech.esper.common.@internal.epl.join.exec.composite;
 using com.espertech.esper.compat.collections;
 
@@ -42,10 +43,12 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             : base(factory)
         {
             if (factory.HashGetter != null) {
-                _index = new Dictionary<object, CompositeIndexEntry>().WithNullKeySupport();
+                var comparer = new AsymmetricEqualityComparer();
+                _index = new Dictionary<object, CompositeIndexEntry>(comparer)
+                    .WithNullKeySupport();
             }
             else {
-                _index = new OrderedDictionary<object, CompositeIndexEntry>();
+                _index = new OrderedListDictionary<object, CompositeIndexEntry>();
             }
         }
 

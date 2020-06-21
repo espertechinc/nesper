@@ -6,9 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
-using com.espertech.esper.common.@internal.serde;
 
 namespace com.espertech.esper.common.@internal.epl.table.core
 {
@@ -25,9 +25,9 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             return new TableImpl(metadata);
         }
 
-        public override TableSerdes GetTableSerdes<T>(
+        public TableSerdes GetTableSerdes<T>(
             Table table,
-            DataInputOutputSerdeWCollation<T> aggregationSerde,
+            DataInputOutputSerde<T> aggregationSerde,
             StatementContext statementContext)
         {
             return null; // this implementation does not require serdes

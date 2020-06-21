@@ -28,7 +28,12 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
     {
         public static AggregationRow GetRow(ObjectArrayBackedEventBean eventBean)
         {
-            return (AggregationRow) eventBean.Properties[0];
+            return GetRow(eventBean.Properties);
+        }
+
+        public static AggregationRow GetRow(object[] underlying)
+        {
+            return (AggregationRow) underlying[0];
         }
 
         public static CodegenExpression CodegenInitMap(
@@ -50,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
                     entry.Value.Make(method, symbols, classScope));
 
                 //method.Block.ExprDotMethod(
-                //    @Ref("ta"),
+                //    Ref("ta"),
                 //    "Put",
                 //    Constant(entry.Key.TableAccessNumber),
                 //    entry.Value.Make(method, symbols, classScope));

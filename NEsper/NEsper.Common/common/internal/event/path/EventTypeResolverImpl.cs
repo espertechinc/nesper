@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
@@ -17,6 +16,7 @@ using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.serde.runtime.@event;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.path
@@ -28,17 +28,20 @@ namespace com.espertech.esper.common.@internal.@event.path
         private readonly IDictionary<string, EventType> locals;
         private readonly PathRegistry<string, EventType> path;
         private readonly EventTypeNameResolver publics;
+        private readonly EventSerdeFactory eventSerdeFactory;
 
         public EventTypeResolverImpl(
             IDictionary<string, EventType> locals,
             PathRegistry<string, EventType> path,
             EventTypeNameResolver publics,
-            BeanEventTypeFactoryPrivate beanEventTypeFactoryPrivate)
+            BeanEventTypeFactoryPrivate beanEventTypeFactoryPrivate,
+            EventSerdeFactory eventSerdeFactory)
         {
             this.locals = locals;
             this.path = path;
             this.publics = publics;
             this.beanEventTypeFactoryPrivate = beanEventTypeFactoryPrivate;
+            this.eventSerdeFactory = eventSerdeFactory;
         }
 
         public EventType GetTypeByName(string typeName)
@@ -55,28 +58,44 @@ namespace com.espertech.esper.common.@internal.@event.path
 
             try {
                 var pair = path.GetAnyModuleExpectSingle(typeName, null);
-                return pair == null ? null : pair.First;
+                return pair?.First;
             }
             catch (PathException e) {
                 throw new EPException("Event type name '" + typeName + "' is ambiguous: " + e.Message, e);
             }
         }
 
-        public BeanEventType ResolvePrivateBean(Type clazz)
+        public BeanEventType ResolvePrivateBean(
+            Type clazz,
+            bool publicFields)
         {
-            return beanEventTypeFactoryPrivate.GetCreateBeanType(clazz);
+            return beanEventTypeFactoryPrivate.GetCreateBeanType(clazz, publicFields);
         }
 
-        public EventType Resolve(EventTypeMetadata metadata)
+        public EventTypeSPI Resolve(EventTypeMetadata metadata)
         {
-            EventType type;
+            return (EventTypeSPI) Resolve(metadata, publics, locals, path);
+        }
+
+        public EventSerdeFactory GetEventSerdeFactory()
+        {
+            return eventSerdeFactory;
+        }
+
+        public static EventType Resolve(
+            EventTypeMetadata metadata,
+            EventTypeNameResolver publics,
+            IDictionary<string, EventType> locals,
+            PathRegistry<string, EventType> path)
+        {
+            EventTypeSPI type;
             // public can only see public
             if (metadata.AccessModifier == NameAccessModifier.PRECONFIGURED) {
-                type = publics.GetTypeByName(metadata.Name);
+                type = (EventTypeSPI) publics.GetTypeByName(metadata.Name);
 
                 // for create-schema the type may be defined by the same module
                 if (type == null) {
-                    type = locals.Get(metadata.Name);
+                    type = (EventTypeSPI) locals.Get(metadata.Name);
                 }
             }
             else if (metadata.AccessModifier == NameAccessModifier.PUBLIC ||
@@ -86,7 +105,7 @@ namespace com.espertech.esper.common.@internal.@event.path
                 if (local != null) {
                     if (local.Metadata.AccessModifier == NameAccessModifier.PUBLIC ||
                         local.Metadata.AccessModifier == NameAccessModifier.INTERNAL) {
-                        return local;
+                        return (EventTypeSPI) local;
                     }
                 }
 
@@ -94,14 +113,14 @@ namespace com.espertech.esper.common.@internal.@event.path
                     var pair = path.GetAnyModuleExpectSingle(
                         metadata.Name,
                         Collections.SingletonSet(metadata.ModuleName));
-                    type = pair?.First;
+                    type = (EventTypeSPI) pair?.First;
                 }
                 catch (PathException e) {
                     throw new EPException(e.Message, e);
                 }
             }
             else {
-                type = locals.Get(metadata.Name);
+                type = (EventTypeSPI) locals.Get(metadata.Name);
             }
 
             if (type == null) {

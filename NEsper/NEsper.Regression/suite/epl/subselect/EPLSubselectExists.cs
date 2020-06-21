@@ -22,15 +22,78 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLSubselectExistsInSelect());
-            execs.Add(new EPLSubselectExistsInSelectOM());
-            execs.Add(new EPLSubselectExistsInSelectCompile());
-            execs.Add(new EPLSubselectExistsSceneOne());
-            execs.Add(new EPLSubselectExistsFiltered());
-            execs.Add(new EPLSubselectTwoExistsFiltered());
-            execs.Add(new EPLSubselectNotExistsOM());
-            execs.Add(new EPLSubselectNotExistsCompile());
+            WithExistsInSelect(execs);
+            WithExistsInSelectOM(execs);
+            WithExistsInSelectCompile(execs);
+            WithExistsSceneOne(execs);
+            WithExistsFiltered(execs);
+            WithTwoExistsFiltered(execs);
+            WithNotExistsOM(execs);
+            WithNotExistsCompile(execs);
+            WithNotExists(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNotExists(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLSubselectNotExists());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNotExistsCompile(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectNotExistsCompile());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNotExistsOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectNotExistsOM());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTwoExistsFiltered(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectTwoExistsFiltered());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithExistsFiltered(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectExistsFiltered());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithExistsSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectExistsSceneOne());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithExistsInSelectCompile(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectExistsInSelectCompile());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithExistsInSelectOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectExistsInSelectOM());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithExistsInSelect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectExistsInSelect());
             return execs;
         }
 

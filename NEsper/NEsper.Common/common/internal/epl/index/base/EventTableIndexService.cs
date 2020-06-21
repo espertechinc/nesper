@@ -9,7 +9,8 @@
 using System;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.service;
 
 namespace com.espertech.esper.common.@internal.epl.index.@base
@@ -23,19 +24,21 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             EventType eventType,
             string[] indexProps,
             Type[] indexTypes,
+            MultiKeyFromObjectArray transformFireAndForget,
+            DataInputOutputSerde keySerde,
             bool unique,
             string optionalIndexName,
             EventPropertyValueGetter getter,
-            object optionalSerde,
+            DataInputOutputSerde optionalValueSerde,
             bool isFireAndForget,
-            StatementContext statementContext);
+            EventTableFactoryFactoryContext eventTableFactoryContext);
 
         EventTableFactory CreateUnindexed(
             int indexedStreamNum,
             EventType eventType,
-            object optionalSerde,
+            DataInputOutputSerde optionalValueSerde,
             bool isFireAndForget,
-            StatementContext statementContext);
+            EventTableFactoryFactoryContext eventTableFactoryContext);
 
         EventTableFactory CreateSorted(
             int indexedStreamNum,
@@ -43,9 +46,10 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             string indexedProp,
             Type indexType,
             EventPropertyValueGetter getter,
-            object optionalSerde,
+            DataInputOutputSerde serde,
+            DataInputOutputSerde optionalValueSerde,
             bool isFireAndForget,
-            StatementContext statementContext);
+            EventTableFactoryFactoryContext eventTableFactoryContext);
 
         EventTableFactory CreateComposite(
             int indexedStreamNum,
@@ -53,10 +57,13 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             string[] indexProps,
             Type[] indexCoercionTypes,
             EventPropertyValueGetter indexGetter,
+            MultiKeyFromObjectArray transformFireAndForget,
+            DataInputOutputSerde keySerde,
             string[] rangeProps,
             Type[] rangeCoercionTypes,
             EventPropertyValueGetter[] rangeGetters,
-            object optionalSerde,
+            DataInputOutputSerde[] rangeSerdes,
+            DataInputOutputSerde optionalValueSerde,
             bool isFireAndForget);
 
         EventTableFactory CreateInArray(
@@ -64,10 +71,11 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             EventType eventType,
             string[] propertyNames,
             Type[] indexTypes,
+            DataInputOutputSerde[] indexSerdes,
             bool unique,
             EventPropertyValueGetter[] getters,
             bool isFireAndForget,
-            StatementContext statementContext);
+            EventTableFactoryFactoryContext eventTableFactoryContext);
 
         EventTableFactory CreateCustom(
             string optionalIndexName,

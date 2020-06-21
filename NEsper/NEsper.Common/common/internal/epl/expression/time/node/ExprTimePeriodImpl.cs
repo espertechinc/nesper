@@ -156,7 +156,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             CodegenClassScope classScope)
         {
             //var timeClass = NewAnonymousClass(method.Block, typeof(TimePeriodEval));
-            //var evalMethod = CodegenMethod.MakeMethod(typeof(TimePeriod), GetType(), classScope).AddParam(PARAMS);
+            //var evalMethod = CodegenMethod.MakeMethod(typeof(TimePeriod), GetType(), classScope)
+			//	.AddParam(PARAMS);
             //timeClass.AddMethod("timePeriodEval", evalMethod);
 
             var evalMethod = new CodegenExpressionLambda(method.Block).WithParams(PARAMS);
@@ -323,68 +324,70 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             return HasMicrosecond == other.HasMicrosecond;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             var exprCtr = 0;
             var delimiter = "";
             if (HasYear) {
-                ChildNodes[exprCtr++].ToEPL(writer, Precedence);
+                ChildNodes[exprCtr++].ToEPL(writer, Precedence, flags);
                 writer.Write(" years");
                 delimiter = " ";
             }
 
             if (HasMonth) {
                 writer.Write(delimiter);
-                ChildNodes[exprCtr++].ToEPL(writer, Precedence);
+                ChildNodes[exprCtr++].ToEPL(writer, Precedence, flags);
                 writer.Write(" months");
                 delimiter = " ";
             }
 
             if (HasWeek) {
                 writer.Write(delimiter);
-                ChildNodes[exprCtr++].ToEPL(writer, Precedence);
+                ChildNodes[exprCtr++].ToEPL(writer, Precedence, flags);
                 writer.Write(" weeks");
                 delimiter = " ";
             }
 
             if (HasDay) {
                 writer.Write(delimiter);
-                ChildNodes[exprCtr++].ToEPL(writer, Precedence);
+                ChildNodes[exprCtr++].ToEPL(writer, Precedence, flags);
                 writer.Write(" days");
                 delimiter = " ";
             }
 
             if (HasHour) {
                 writer.Write(delimiter);
-                ChildNodes[exprCtr++].ToEPL(writer, Precedence);
+                ChildNodes[exprCtr++].ToEPL(writer, Precedence, flags);
                 writer.Write(" hours");
                 delimiter = " ";
             }
 
             if (HasMinute) {
                 writer.Write(delimiter);
-                ChildNodes[exprCtr++].ToEPL(writer, Precedence);
+                ChildNodes[exprCtr++].ToEPL(writer, Precedence, flags);
                 writer.Write(" minutes");
                 delimiter = " ";
             }
 
             if (HasSecond) {
                 writer.Write(delimiter);
-                ChildNodes[exprCtr++].ToEPL(writer, Precedence);
+                ChildNodes[exprCtr++].ToEPL(writer, Precedence, flags);
                 writer.Write(" seconds");
                 delimiter = " ";
             }
 
             if (HasMillisecond) {
                 writer.Write(delimiter);
-                ChildNodes[exprCtr++].ToEPL(writer, Precedence);
+                ChildNodes[exprCtr++].ToEPL(writer, Precedence, flags);
                 writer.Write(" milliseconds");
                 delimiter = " ";
             }
 
             if (HasMicrosecond) {
                 writer.Write(delimiter);
-                ChildNodes[exprCtr].ToEPL(writer, Precedence);
+                ChildNodes[exprCtr].ToEPL(writer, Precedence, flags);
                 writer.Write(" microseconds");
             }
         }

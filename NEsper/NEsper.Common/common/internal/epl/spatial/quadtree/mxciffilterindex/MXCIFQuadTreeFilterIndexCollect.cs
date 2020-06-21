@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif;
 using com.espertech.esper.compat;
@@ -25,9 +26,10 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             double height,
             EventBean eventBean,
             TT target,
-            QuadTreeCollector<TT> collector)
+            QuadTreeCollector<TT> collector, 
+            ExprEvaluatorContext ctx)
         {
-            CollectRange(quadTree.Root, x, y, width, height, eventBean, target, collector);
+            CollectRange(quadTree.Root, x, y, width, height, eventBean, target, collector, ctx);
         }
 
         private static void CollectRange(
@@ -38,20 +40,21 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             double height,
             EventBean eventBean,
             TT target,
-            QuadTreeCollector<TT> collector)
+            QuadTreeCollector<TT> collector,
+            ExprEvaluatorContext ctx)
         {
             if (node is MXCIFQuadTreeNodeLeaf leaf)
             {
-                CollectNode(leaf, x, y, width, height, eventBean, target, collector);
+                CollectNode(leaf, x, y, width, height, eventBean, target, collector, ctx);
                 return;
             }
 
             MXCIFQuadTreeNodeBranch branch = (MXCIFQuadTreeNodeBranch) node;
-            CollectNode(branch, x, y, width, height, eventBean, target, collector);
-            CollectRange(branch.Nw, x, y, width, height, eventBean, target, collector);
-            CollectRange(branch.Ne, x, y, width, height, eventBean, target, collector);
-            CollectRange(branch.Sw, x, y, width, height, eventBean, target, collector);
-            CollectRange(branch.Se, x, y, width, height, eventBean, target, collector);
+            CollectNode(branch, x, y, width, height, eventBean, target, collector, ctx);
+            CollectRange(branch.Nw, x, y, width, height, eventBean, target, collector, ctx);
+            CollectRange(branch.Ne, x, y, width, height, eventBean, target, collector, ctx);
+            CollectRange(branch.Sw, x, y, width, height, eventBean, target, collector, ctx);
+            CollectRange(branch.Se, x, y, width, height, eventBean, target, collector, ctx);
         }
 
         private static void CollectNode(
@@ -62,7 +65,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             double height,
             EventBean eventBean,
             TT target,
-            QuadTreeCollector<TT> collector)
+            QuadTreeCollector<TT> collector,
+            ExprEvaluatorContext ctx)
         {
             object rectangles = node.Data;
             if (rectangles == null) {
@@ -79,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                     rectangleWValue.Y,
                     rectangleWValue.W,
                     rectangleWValue.H)) {
-                    collector.CollectInto(eventBean, rectangleWValue.Value, target);
+                    collector.CollectInto(eventBean, rectangleWValue.Value, target, ctx);
                 }
             }
             else if (rectangles is List<XYWHRectangleWValue> listWithType) {
@@ -100,7 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                         rectangle.Y,
                         rectangle.W,
                         rectangle.H)) {
-                        collector.CollectInto(eventBean, rectangle.Value, target);
+                        collector.CollectInto(eventBean, rectangle.Value, target, ctx);
                     }
                 }
             }
@@ -115,7 +119,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                         rectangle.Y,
                         rectangle.W,
                         rectangle.H)) {
-                        collector.CollectInto(eventBean, rectangle.Value, target);
+                        collector.CollectInto(eventBean, rectangle.Value, target, ctx);
                     }
                 }
             }

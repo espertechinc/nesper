@@ -10,10 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
-using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.bean.introspect;
 using com.espertech.esper.common.@internal.@event.bean.service;
@@ -204,7 +202,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public string[] PropertyNames => Stem.PropertyNames;
 
-        public EventType[] SuperTypes { get; }
+        public IList<EventType> SuperTypes { get; }
 
         public IEnumerable<EventType> DeepSuperTypes => DeepSuperTypesCollection;
 
@@ -220,7 +218,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 return EventBeanUtility.CreateNativeFragmentType(
                     genericPropX.GenericType,
                     genericPropX.Generic,
-                    _beanEventTypeFactory);
+                    _beanEventTypeFactory,
+                    Stem.IsPublicFields);
             }
 
             var prop = PropertyParser.ParseAndWalkLaxToSimple(propertyExpression);
@@ -237,7 +236,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             return EventBeanUtility.CreateNativeFragmentType(
                 genericProp.GenericType,
                 genericProp.Generic,
-                _beanEventTypeFactory);
+                _beanEventTypeFactory,
+                Stem.IsPublicFields);
         }
 
         public EventPropertyDescriptor GetWritableProperty(string propertyName)
@@ -290,8 +290,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         }
 
         public ICollection<EventType> DeepSuperTypesCollection { get; }
-
-        public EventBeanReader Reader => new BeanEventBeanReader(this);
 
         public EventBeanCopyMethodForge GetCopyMethodForge(string[] properties)
         {

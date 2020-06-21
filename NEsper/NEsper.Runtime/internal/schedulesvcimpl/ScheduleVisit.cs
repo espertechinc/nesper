@@ -8,10 +8,12 @@
 
 namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
 {
-    public struct ScheduleVisit
+    public class ScheduleVisit
     {
-        public int AgentInstanceId;
-        public long Timestamp;
-        public int StatementId;
+        public int AgentInstanceId { get; set; }
+        public long Timestamp { get; set; }
+        public int StatementId { get; set; }
+        
+        public object HAPair { get; set; }
     }
 }

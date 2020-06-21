@@ -9,9 +9,6 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.@internal.collection
 {
     /// <summary>
@@ -78,7 +75,7 @@ namespace com.espertech.esper.common.@internal.collection
             */
 
             var result = new int[numElements];
-            var outList = new List<Int32>();
+            var outList = new List<int>();
             for (int i = 0; i < numElements; i++) {
                 outList.Add(i);
             }

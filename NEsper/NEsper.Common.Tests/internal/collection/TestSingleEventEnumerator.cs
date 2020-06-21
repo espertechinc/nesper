@@ -10,7 +10,6 @@ using System;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.@event;
-using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
 
@@ -29,7 +28,7 @@ namespace com.espertech.esper.common.@internal.collection
             enumerator = new SingleEventEnumerator(eventBean);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMoveNext()
         {
             Assert.That(enumerator.MoveNext(), Is.True);
@@ -37,7 +36,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.That(enumerator.MoveNext(), Is.False);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestCurrent()
         {
             Assert.That(enumerator.MoveNext(), Is.True);

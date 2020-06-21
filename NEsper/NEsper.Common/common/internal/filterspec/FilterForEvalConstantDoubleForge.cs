@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -57,6 +59,13 @@ namespace com.espertech.esper.common.@internal.filterspec
         public override int GetHashCode()
         {
             return _doubleValue.GetHashCode();
+        }
+
+
+        public void ValueToString(StringBuilder @out)
+        {
+            @out.Append("double-value ")
+                .Append(_doubleValue);
         }
     }
 } // end of namespace

@@ -11,10 +11,11 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.common.@internal.context.aifactory.core;
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.view.groupwin
 {
@@ -45,6 +46,13 @@ namespace com.espertech.esper.common.@internal.view.groupwin
         {
             throw new UnsupportedOperationException("not supported for merge forge");
         }
+
+        public virtual IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
+        {
+            return EmptyList<StmtClassForgeableFactory>.Instance;
+        }
+
+        public IList<ViewFactoryForge> InnerForges => EmptyList<ViewFactoryForge>.Instance;
 
         public EventType EventType { get; private set; }
 

@@ -6,13 +6,16 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
-using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
 
@@ -20,7 +23,7 @@ using static com.espertech.esper.regressionlib.support.util.SupportXML;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
-    public class EventXMLNoSchemaSimpleXMLXPathProperties : RegressionExecution
+    public class EventXMLNoSchemaSimpleXMLXPathProperties
     {
         protected const string XML_NOSCHEMAEVENT =
             "<myevent>\n" +
@@ -33,12 +36,72 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             "  <element4><element41>VAL4-1</element41></element4>\n" +
             "</myevent>";
 
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public void Run(RegressionEnvironment env)
+        public static IList<RegressionExecution> Executions()
+        {
+            List<RegressionExecution> execs = new List<RegressionExecution>();
+            WithPreconfig(execs);
+            WithCreateSchema(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLNoSchemaSimpleXMLXPathPropertiesCreateSchema());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPreconfig(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLNoSchemaSimpleXMLXPathPropertiesPreconfig());
+            return execs;
+        }
+
+        public class EventXMLNoSchemaSimpleXMLXPathPropertiesPreconfig : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunAssertion(env, "TestXMLNoSchemaTypeWMoreXPath", new RegressionPath());
+            }
+        }
+
+        public class EventXMLNoSchemaSimpleXMLXPathPropertiesCreateSchema : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "@public @buseventtype " +
+                             "@XMLSchema(RootElementName='myevent'," +
+                             "  XPathFunctionResolver='" +
+                             typeof(SupportXPathFunctionResolver).MaskTypeName() +
+                             "'," +
+                             "  XPathVariableResolver='" +
+                             typeof(SupportXPathVariableResolver).MaskTypeName() +
+                             "')" +
+                             "@XMLSchemaField(Name='xpathElement1', XPath='/myevent/element1', Type='STRING')" +
+                             "@XMLSchemaField(Name='xpathCountE21', XPath='count(/myevent/element2/element21)', Type='NUMBER')" +
+                             "@XMLSchemaField(Name='xpathAttrString', XPath='/myevent/element3/@attrString', Type='STRING')" +
+                             "@XMLSchemaField(Name='xpathAttrNum', XPath='/myevent/element3/@attrNum', Type='NUMBER')" +
+                             "@XMLSchemaField(Name='xpathAttrBool', XPath='/myevent/element3/@attrBool', Type='BOOLEAN')" +
+                             "@XMLSchemaField(Name='stringCastLong', XPath='/myevent/element3/@attrNum', Type='STRING', CastToType='long')" +
+                             "@XMLSchemaField(Name='stringCastDouble', XPath='/myevent/element3/@attrNum', Type='STRING', CastToType='double')" +
+                             "@XMLSchemaField(Name='numCastInt', XPath='/myevent/element3/@attrNum', Type='NUMBER', CastToType='int')" +
+                             "create xml schema MyEventCreateSchema()";
+                RegressionPath path = new RegressionPath();
+                env.CompileDeploy(epl, path);
+                RunAssertion(env, "MyEventCreateSchema", path);
+            }
+        }
+
+        private static void RunAssertion(
+            RegressionEnvironment env,
+            String eventTypeName,
+            RegressionPath path)
         {
             // assert type metadata
-            var type = env.Runtime.EventTypeService.GetEventTypePreconfigured("TestXMLNoSchemaTypeWMoreXPath");
+            EventType type = env.Runtime.EventTypeService.GetEventTypePreconfigured(eventTypeName);
             Assert.AreEqual(EventTypeApplicationType.XML, type.Metadata.ApplicationType);
 
             CollectionAssert.AreEquivalent(
@@ -200,14 +263,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 "stringCastLong," +
                 "stringCastDouble," +
                 "numCastInt " +
-                "from TestXMLNoSchemaTypeWMoreXPath#length(100)";
-            env.CompileDeploy(stmt).AddListener("s0");
+                "from " +
+                eventTypeName +
+                "#length(100)";
+            env.CompileDeploy(stmt, path).AddListener("s0");
 
             // Generate document with the specified in element1 to confirm we have independent events
-            SendEvent(env, "EventA", "TestXMLNoSchemaTypeWMoreXPath");
+            SendEvent(env, "EventA", eventTypeName);
             AssertDataSimpleXPath(env, "EventA");
 
-            SendEvent(env, "EventB", "TestXMLNoSchemaTypeWMoreXPath");
+            SendEvent(env, "EventB", eventTypeName);
             AssertDataSimpleXPath(env, "EventB");
 
             env.UndeployAll();
@@ -236,7 +301,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             string typeName)
         {
             var xml = XML_NOSCHEMAEVENT.Replace("VAL1", value);
-            log.Debug(".SendEvent value=" + value);
+            Log.Debug(".SendEvent value=" + value);
             SendXMLEvent(env, xml, typeName);
         }
     }

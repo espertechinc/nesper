@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-using com.espertech.esper.common;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.type;
@@ -29,7 +28,7 @@ namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
         [SetUp]
         public void SetUp()
         {
-            service = new SchedulingServiceImpl(new TimeSourceServiceImpl());
+            service = new SchedulingServiceImpl(-1, new TimeSourceServiceImpl());
 
             // 2-by-2 table of buckets and slots
             var buckets = new ScheduleBucket[3];
@@ -133,7 +132,7 @@ namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
         [Test, RunInApplicationDomain]
         public void TestIncorrectRemove()
         {
-            var evaluator = new SchedulingServiceImpl(new TimeSourceServiceImpl());
+            var evaluator = new SchedulingServiceImpl(-1, new TimeSourceServiceImpl());
             var callback = new SupportScheduleCallback();
             evaluator.Remove(callback, 0);
         }

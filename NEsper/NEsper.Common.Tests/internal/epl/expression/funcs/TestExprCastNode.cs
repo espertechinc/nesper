@@ -11,7 +11,6 @@ using com.espertech.esper.common.@internal.epl.expression.ops;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.util;
 using com.espertech.esper.common.@internal.type;
-using com.espertech.esper.container;
 
 using NUnit.Framework;
 
@@ -34,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         private ExprCastNode[] castNodes;
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEquals()
         {
             Assert.IsFalse(castNodes[0].EqualsNode(new ExprEqualsNodeImpl(true, false), false));
@@ -42,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             Assert.IsFalse(castNodes[0].EqualsNode(new ExprCastNode(new ClassIdentifierWArray(typeof(int).FullName)), false));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEvaluate()
         {
             for (var i = 0; i < castNodes.Length; i++)
@@ -54,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             Assert.AreEqual(16, castNodes[1].Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetType()
         {
             for (var i = 0; i < castNodes.Length; i++)
@@ -66,14 +65,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             Assert.AreEqual(typeof(int?), castNodes[1].TargetType);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestToExpressionString()
         {
             castNodes[0].Validate(SupportExprValidationContextFactory.MakeEmpty(container));
             Assert.AreEqual("cast(10L,long)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(castNodes[0]));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestValidate()
         {
             var castNode = new ExprCastNode(new ClassIdentifierWArray("int"));

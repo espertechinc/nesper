@@ -31,7 +31,6 @@ using com.espertech.esper.common.@internal.epl.expression.subquery;
 using com.espertech.esper.common.@internal.epl.expression.table;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
 using com.espertech.esper.common.@internal.epl.util;
-using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat.collections;
 
@@ -117,7 +116,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             }
 
             // compile offered streams
-            IList<StreamSpecCompiled> streamSpecCompileds = new List<StreamSpecCompiled>();
+            var streamSpecCompileds = new List<StreamSpecCompiled>();
             originatingStreamToViewableStream = new int[select.StreamSpecs.Count];
             for (var streamNum = 0; streamNum < select.StreamSpecs.Count; streamNum++) {
                 var filter = streams.Get(streamNum);
@@ -134,14 +133,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                 var eventType = inputPortValue.Value.TypeDesc.EventType;
                 originatingStreamToViewableStream[inputPortValue.Key] = streamNum;
                 var streamAlias = filter.OptionalStreamName;
-                var filterSpecCompiled = new FilterSpecCompiled(
-                    eventType,
-                    streamAlias,
-                    new IList<FilterSpecParamForge>[] {
-                        new EmptyList<FilterSpecParamForge>()
-                    },
-                    null);
-                ViewSpec[] viewSpecs = select.StreamSpecs[streamNum].ViewSpecs;
+                var filterSpecCompiled = new FilterSpecCompiled(eventType, streamAlias, FilterSpecPlanForge.EMPTY, null);
+                var viewSpecs = select.StreamSpecs[streamNum].ViewSpecs;
                 var filterStreamSpecCompiled = new FilterStreamSpecCompiled(
                     filterSpecCompiled,
                     viewSpecs,
@@ -177,15 +170,15 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                 selectClauseCompiled,
                 mergedAnnotations,
                 groupByExpressions,
-                new EmptyList<ExprSubselectNode>(),
-                new EmptyList<ExprDeclaredNode>(),
-                new EmptyList<ExprTableAccessNode>());
+                EmptyList<ExprSubselectNode>.Instance,
+                EmptyList<ExprDeclaredNode>.Instance,
+                EmptyList<ExprTableAccessNode>.Instance);
             var dataflowClassPostfix = context.CodegenEnv.ClassPostfix + "__dfo" + context.OperatorNumber;
             var containerStatement = context.Base.StatementSpec;
             context.Base.StatementSpec = compiled;
 
-            // make forgable
-            var forablesResult = StmtForgeMethodSelectUtil.Make(
+            // make forgeable
+            var forgeablesResult = StmtForgeMethodSelectUtil.Make(
                 context.Container,
                 true,
                 context.CodegenEnv.Namespace,
@@ -196,16 +189,16 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             // return the statement spec
             context.Base.StatementSpec = containerStatement;
 
-            EventType outputEventType = forablesResult.EventType;
+            EventType outputEventType = forgeablesResult.EventType;
 
             var initializeResult = new DataFlowOpForgeInitializeResult();
             initializeResult.TypeDescriptors = new[] {new GraphTypeDesc(false, true, outputEventType)};
-            initializeResult.AdditionalForgables = forablesResult.ForgeResult;
+            initializeResult.AdditionalForgeables = forgeablesResult.ForgeResult;
 
-            foreach (StmtClassForgable forgable in forablesResult.ForgeResult.Forgables) {
-                if (forgable.ForgableType == StmtClassForgableType.AIFACTORYPROVIDER) {
+            foreach (var forgable in forgeablesResult.ForgeResult.Forgeables) {
+                if (forgable.ForgeableType == StmtClassForgeableType.AIFACTORYPROVIDER) {
                     classNameAIFactoryProvider = forgable.ClassName;
-                } else if (forgable.ForgableType == StmtClassForgableType.FIELDS) {
+                } else if (forgable.ForgeableType == StmtClassForgeableType.FIELDS) {
                     classNameFieldsFactoryProvider = forgable.ClassName;
                 }
             }
@@ -241,10 +234,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                     originatingStreamToViewableStream)
                 .Expression(
                     "FactoryProvider",
-                    NewInstance(
+                    NewInstanceInner(
                         classNameAIFactoryProvider,
                         symbols.GetAddInitSvc(builder.Method()),
-                        NewInstance(classNameFieldsFactoryProvider)
+                        NewInstanceInner(classNameFieldsFactoryProvider)
                         ))
                 .Build();
         }

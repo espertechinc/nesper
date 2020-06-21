@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -49,7 +50,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
         }
 
         public override void ValidateGetContextProps(
-            LinkedHashMap<string, object> props,
+            IDictionary<string, object> props,
             string contextName,
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
@@ -72,6 +73,10 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                 foreach (var filter in detail.OptionalInit) {
                     ContextPropertyEventType.AddEndpointTypes(filter, props, allTags);
                 }
+            }
+
+            if (detail.OptionalTermination != null) {
+                ContextPropertyEventType.AddEndpointTypes(detail.OptionalTermination, props, allTags);
             }
         }
 

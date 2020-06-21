@@ -8,7 +8,6 @@
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -19,7 +18,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
     {
         public void Run(RegressionEnvironment env)
         {
-            var fields = new [] { "c0", "c1" };
+            var fields = new[] {"c0", "c1"};
             var path = new RegressionPath();
 
             var stmtTextOne = "@Name('i0') insert irstream into MyStream " +
@@ -71,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
             // test join
             env.UndeployAll();
-            fields = new [] { "c0", "c1", "c2" };
+            fields = new[] {"c0", "c1", "c2"};
             var stmtTextJoin = "@Name('s0') select irstream TheString as c0, Id as c1, istream() as c2 " +
                                "from SupportBean#lastevent, SupportBean_S0#lastevent";
             env.CompileDeploy(stmtTextJoin).AddListener("s0");

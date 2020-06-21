@@ -46,14 +46,14 @@ namespace com.espertech.esper.common.client.soda
         {
             var selectList = new List<SelectClauseElement>();
             selectList.Add(new SelectClauseWildcard());
-            return new SelectClause(soda.StreamSelector.ISTREAM_ONLY, selectList);
+            return new SelectClause(StreamSelector.ISTREAM_ONLY, selectList);
         }
 
         /// <summary>Creates an empty select-clause to be added to via add methods. </summary>
         /// <returns>select-clause</returns>
         public static SelectClause Create()
         {
-            return new SelectClause(soda.StreamSelector.ISTREAM_ONLY, new List<SelectClauseElement>());
+            return new SelectClause(StreamSelector.ISTREAM_ONLY, new List<SelectClauseElement>());
         }
 
         /// <summary>Creates a select-clause consisting of a list of property names. </summary>
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.client.soda
                 selectList.Add(new SelectClauseExpression(new PropertyValueExpression(name)));
             }
 
-            return new SelectClause(soda.StreamSelector.ISTREAM_ONLY, selectList);
+            return new SelectClause(StreamSelector.ISTREAM_ONLY, selectList);
         }
 
         /// <summary>Creates a select-clause with a single stream wildcard selector (e.g. select streamName.* from MyStream as streamName) </summary>
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.client.soda
         {
             var selectList = new List<SelectClauseElement>();
             selectList.Add(new SelectClauseStreamWildcard(streamName, null));
-            return new SelectClause(soda.StreamSelector.ISTREAM_ONLY, selectList);
+            return new SelectClause(StreamSelector.ISTREAM_ONLY, selectList);
         }
 
         /// <summary>Creates a wildcard select-clause, additional expressions can still be added. </summary>
@@ -255,15 +255,15 @@ namespace com.espertech.esper.common.client.soda
                 writer.Write("distinct ");
             }
 
-            if (_streamSelector == soda.StreamSelector.ISTREAM_ONLY)
+            if (_streamSelector == StreamSelector.ISTREAM_ONLY)
             {
                 // the default, no action
             }
-            else if (_streamSelector == soda.StreamSelector.RSTREAM_ONLY)
+            else if (_streamSelector == StreamSelector.RSTREAM_ONLY)
             {
                 writer.Write("rstream ");
             }
-            else if (_streamSelector == soda.StreamSelector.RSTREAM_ISTREAM_BOTH)
+            else if (_streamSelector == StreamSelector.RSTREAM_ISTREAM_BOTH)
             {
                 writer.Write("irstream ");
             }

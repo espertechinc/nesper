@@ -13,8 +13,10 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.avro;
 using com.espertech.esper.common.@internal.@event.bean.core;
+using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.@event.xml;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.core
 {
@@ -67,7 +69,28 @@ namespace com.espertech.esper.common.@internal.@event.core
             IDictionary<string, object> map,
             EventType wrapperEventType)
         {
-            return new WrapperEventBean(decoratedUnderlying, map, wrapperEventType);
+            if (decoratedUnderlying is DecoratingEventBean) {
+                DecoratingEventBean wrapper = (DecoratingEventBean) decoratedUnderlying;
+                if (!wrapper.DecoratingProperties.IsEmpty()) {
+                    if (map.IsEmpty()) {
+                        map = new Dictionary<string, object>();
+                    }
+
+                    map.PutAll(wrapper.DecoratingProperties);
+                }
+
+                return new WrapperEventBean(wrapper.UnderlyingEvent, map, wrapperEventType);
+            }
+            else {
+                return new WrapperEventBean(decoratedUnderlying, map, wrapperEventType);
+            }
+        }
+
+        public EventBean AdapterForTypedJson(
+            object underlying,
+            EventType eventType)
+        {
+            return new JsonEventBean(underlying, eventType);
         }
     }
 } // end of namespace

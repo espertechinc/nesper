@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 
@@ -15,7 +13,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.adder
 {
     public class TimePeriodAdderHour : TimePeriodAdder
     {
-        public readonly static TimePeriodAdderHour INSTANCE = new TimePeriodAdderHour();
+        public static readonly TimePeriodAdderHour INSTANCE = new TimePeriodAdderHour();
 
         private const double MULTIPLIER = 60 * 60;
 

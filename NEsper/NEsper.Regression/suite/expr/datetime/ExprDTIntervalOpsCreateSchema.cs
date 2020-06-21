@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
     {
         public void Run(RegressionEnvironment env)
         {
-            foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+            foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                 TryAssertionCreateSchema(env, rep);
             }
 
@@ -59,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             var endB = "2002-05-30T09:00:00.700";
 
             // test Map type Long-type timestamps
-            RunAssertionCreateSchemaWTypes(
+            RunAssertionCreateSchemaWTypes<MyLocalJsonProvidedLong>(
                 env,
                 eventRepresentationEnum,
                 "long",
@@ -69,8 +69,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 DateTimeParsingFunctions.ParseDefaultMSec(endB));
 
             // test Map type DateTimeEx-type timestamps
-            if (!eventRepresentationEnum.IsAvroEvent()) {
-                RunAssertionCreateSchemaWTypes(
+            if (!eventRepresentationEnum.IsAvroOrJsonEvent()) {
+                RunAssertionCreateSchemaWTypes<MyLocalJsonProvidedDateTimeEx>(
                     env,
                     eventRepresentationEnum,
                     typeof(DateTimeEx).FullName,
@@ -81,8 +81,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             }
 
             // test Map type DateTimeOffset-type timestamps
-            if (!eventRepresentationEnum.IsAvroEvent()) {
-                RunAssertionCreateSchemaWTypes(
+            if (!eventRepresentationEnum.IsAvroOrJsonEvent()) {
+                RunAssertionCreateSchemaWTypes<MyLocalJsonProvidedDateTimeOffset>(
                     env,
                     eventRepresentationEnum,
                     typeof(DateTimeOffset).FullName,
@@ -93,8 +93,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             }
 
             // test Map type DateTime-type timestamps
-            if (!eventRepresentationEnum.IsAvroEvent()) {
-                RunAssertionCreateSchemaWTypes(
+            if (!eventRepresentationEnum.IsAvroOrJsonEvent()) {
+                RunAssertionCreateSchemaWTypes<MyLocalJsonProvidedDateTime>(
                     env,
                     eventRepresentationEnum,
                     typeof(DateTime).FullName,
@@ -105,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             }
         }
 
-        private void RunAssertionCreateSchemaWTypes(
+        private void RunAssertionCreateSchemaWTypes<T>(
             RegressionEnvironment env,
             EventRepresentationChoice eventRepresentationEnum,
             string typeOfDatetimeProp,
@@ -114,16 +114,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             object startB,
             object endB)
         {
-            var epl = $"{eventRepresentationEnum.GetAnnotationText()} " +
-                      $"create schema TypeA as (startts {typeOfDatetimeProp}, endts {typeOfDatetimeProp}) " +
-                      $"starttimestamp startts endtimestamp endts;\n";
-
-            epl += $"{eventRepresentationEnum.GetAnnotationText()} " +
-                   $"create schema TypeB as (startts {typeOfDatetimeProp}, endts {typeOfDatetimeProp}) " +
-                   $"starttimestamp startts endtimestamp endts;\n";
-
+            var epl = eventRepresentationEnum.GetAnnotationTextWJsonProvided<T>() + " create schema TypeA as (startts " + typeOfDatetimeProp + ", endts " + typeOfDatetimeProp + ") starttimestamp startts endtimestamp endts;\n";
+            epl += eventRepresentationEnum.GetAnnotationTextWJsonProvided<T>() + " create schema TypeB as (startts " + typeOfDatetimeProp + ", endts " + typeOfDatetimeProp + ") starttimestamp startts endtimestamp endts;\n";
             epl += "@Name('s0') select a.includes(b) as val0 from TypeA#lastevent as a, TypeB#lastevent as b;\n";
-
             env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
             MakeSendEvent(env, "TypeA", eventRepresentationEnum, startA, endA);
@@ -158,9 +151,47 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 record.Put("endts", endTs);
                 env.EventService.SendEventAvro(record, typeName);
             }
+            else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
+                var json = "{\"startts\": \"" + startTs + "\", \"endts\": \"" + endTs + "\"}";
+                env.EventService.SendEventJson(json, typeName);
+            }
             else {
                 throw new IllegalStateException("Unrecognized enum " + eventRepresentationEnum);
             }
         }
+
+        [Serializable]
+        public class MyLocalJsonProvided<T>
+        {
+            // ReSharper disable InconsistentNaming
+            // ReSharper disable UnusedMember.Global
+            // ReSharper disable IdentifierTypo
+            public T startts;
+            public T endts;
+            // ReSharper restore IdentifierTypo
+            // ReSharper restore UnusedMember.Global
+            // ReSharper restore InconsistentNaming
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedLong : MyLocalJsonProvided<long>
+        {
+        }
+        
+        [Serializable]
+        public class MyLocalJsonProvidedDateTimeEx : MyLocalJsonProvided<DateTimeEx>
+        {
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedDateTimeOffset : MyLocalJsonProvided<DateTimeOffset>
+        {
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedDateTime : MyLocalJsonProvided<DateTime>
+        {
+        }
+
     }
 } // end of namespace

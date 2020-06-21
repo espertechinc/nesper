@@ -15,18 +15,19 @@ namespace com.espertech.esper.common.@internal.settings
 {
     public class ImportCompileTimeUtil
     {
-        public static object ResolveIdentAsEnumConst(
+        public static ValueAndFieldDesc ResolveIdentAsEnumConst(
             string constant,
             ImportServiceCompileTime importService,
+            ExtensionClass classpathExtension, 
             bool isAnnotation)
         {
-            var enumValue = ResolveIdentAsEnum(constant, importService, isAnnotation);
+            EnumValue enumValue = ResolveIdentAsEnum(constant, importService, classpathExtension, isAnnotation);
             if (enumValue == null) {
                 return null;
             }
 
             try {
-                return enumValue.EnumField.GetValue(null);
+                return new ValueAndFieldDesc(enumValue.EnumField.GetValue(null), enumValue.EnumField);
             }
             catch (MemberAccessException e) {
                 throw new ExprValidationException(
@@ -38,6 +39,7 @@ namespace com.espertech.esper.common.@internal.settings
         public static EnumValue ResolveIdentAsEnum(
             string constant,
             ImportServiceCompileTime importService,
+            ExtensionClass extensionClass,
             bool isAnnotation)
         {
             var lastDotIndex = constant.LastIndexOf('.');
@@ -54,7 +56,7 @@ namespace com.espertech.esper.common.@internal.settings
 
             Type clazz;
             try {
-                clazz = importService.ResolveClass(className, isAnnotation);
+                clazz = importService.ResolveClass(className, isAnnotation, extensionClass);
             }
             catch (ImportException) {
                 return null;

@@ -36,11 +36,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 parts.Add(new AnnotationPart(SUPPRESSOVERLAPPINGMATCHES));
             }
 
-            if (parts == null) {
-                return null;
-            }
-
-            return parts.ToArray();
+            return parts?.ToArray();
         }
 
         public static PatternLevelAnnotationFlags AnnotationsToSpec(AnnotationPart[] parts)

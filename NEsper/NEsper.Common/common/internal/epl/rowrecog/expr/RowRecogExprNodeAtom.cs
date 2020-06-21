@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 
+using com.espertech.esper.common.@internal.compile.stage1.specmapper;
 using com.espertech.esper.common.@internal.epl.rowrecog.core;
 
 namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
@@ -55,9 +56,12 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
         {
             writer.Write(Tag);
             writer.Write(Type.GetOptionalPostfix());
-            if (OptionalRepeat != null) {
-                OptionalRepeat.ToExpressionString(writer);
-            }
+            OptionalRepeat?.ToExpressionString(writer);
+        }
+
+        public override RowRecogExprNode CheckedCopySelf(ExpressionCopier expressionCopier)
+        {
+            return new RowRecogExprNodeAtom(Tag, Type, OptionalRepeat == null ? null : OptionalRepeat.CheckedCopy(expressionCopier));
         }
     }
 } // end of namespace

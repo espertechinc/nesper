@@ -101,9 +101,26 @@ namespace com.espertech.esper.compat.datetime
                 "yyyy-MM-dd HH:mm:ss.ffzzz",
                 "yyyy-MM-dd HH:mm:ss.fzzz",
                 "yyyy-MM-dd HH:mm:sszzz",
+                
+                "yyyy-MM-ddTHH:mm:ss.ffffZ",
+                "yyyy-MM-ddTHH:mm:ss.fffZ",
+                "yyyy-MM-ddTHH:mm:ss.ffZ",
+                "yyyy-MM-ddTHH:mm:ss.fZ",
+                "yyyy-MM-ddTHH:mm:ssZ",
+                "yyyy-MM-ddTHH:mm:ss.ffffzzz",
+                "yyyy-MM-ddTHH:mm:ss.fffzzz",
+                "yyyy-MM-ddTHH:mm:ss.ffzzz",
+                "yyyy-MM-ddTHH:mm:ss.fzzz",
+                "yyyy-MM-ddTHH:mm:sszzz",
             };
 
             string[] nonZoneFormats = {
+                "yyyy-MM-ddTHH:mm:ss.ffff",
+                "yyyy-MM-ddTHH:mm:ss.fff",
+                "yyyy-MM-ddTHH:mm:ss.ff",
+                "yyyy-MM-ddTHH:mm:ss.f",
+                "yyyy-MM-ddTHH:mm:ss",
+
                 "yyyy-MM-dd HH:mm:ss.ffff",
                 "yyyy-MM-dd HH:mm:ss.fff",
                 "yyyy-MM-dd HH:mm:ss.ff",

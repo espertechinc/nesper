@@ -473,7 +473,7 @@ namespace com.espertech.esper.compat
         /// <returns>
         /// 	<c>true</c> if the specified value is long; otherwise, <c>false</c>.
         /// </returns>
-        public static bool IsLong(this object value)
+        public static bool IsInt64(this object value)
         {
             return (value is short) ||
                    (value is int) ||
@@ -488,7 +488,7 @@ namespace com.espertech.esper.compat
         /// <returns>
         ///   <c>true</c> if the specified value is int; otherwise, <c>false</c>.
         /// </returns>
-        public static bool IsInt(this object value, bool withUpcast = true)
+        public static bool IsInt32(this object value, bool withUpcast = true)
         {
             if (withUpcast) {
                 return (value is short) ||
@@ -498,6 +498,18 @@ namespace com.espertech.esper.compat
             return (value is int);
         }
 
+        /// <summary>
+        /// Determines whether the specified value is Int16 (short).
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified value is short; otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsInt16(this object value)
+        {
+            return (value is short);
+        }
+        
         /// <summary>
         /// Determines whether [is date time] [the specified value].
         /// </summary>
@@ -722,6 +734,16 @@ namespace com.espertech.esper.compat
         public static string CleanName<T>(bool useFullName)
         {
             return CleanName(typeof(T), useFullName);
+        }
+        
+        public static object GetDefaultValue(Type t)
+        {
+            if (t.IsValueType && Nullable.GetUnderlyingType(t) == null) {
+                return Activator.CreateInstance(t);
+            }
+            else {
+                return null;
+            }
         }
     }
 }

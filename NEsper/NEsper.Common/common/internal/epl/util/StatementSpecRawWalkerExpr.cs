@@ -110,21 +110,17 @@ namespace com.espertech.esper.common.@internal.epl.util
                     }
                 }
 
-                if (raw.OnTriggerDesc is OnTriggerSetDesc) {
-                    var onSet = (OnTriggerSetDesc) raw.OnTriggerDesc;
-                    if (onSet.Assignments != null) {
-                        foreach (var aitem in onSet.Assignments) {
-                            expressions.Add(aitem.Expression);
-                        }
+                var onSet = raw.OnTriggerDesc as OnTriggerSetDesc;
+                if (onSet?.Assignments != null) {
+                    foreach (var aitem in onSet.Assignments) {
+                        expressions.Add(aitem.Expression);
                     }
                 }
 
-                if (raw.OnTriggerDesc is OnTriggerWindowUpdateDesc) {
-                    var onUpdate = (OnTriggerWindowUpdateDesc) raw.OnTriggerDesc;
-                    if (onUpdate.Assignments != null) {
-                        foreach (var bitem in onUpdate.Assignments) {
-                            expressions.Add(bitem.Expression);
-                        }
+                var onUpdate = raw.OnTriggerDesc as OnTriggerWindowUpdateDesc;
+                if (onUpdate?.Assignments != null) {
+                    foreach (var bitem in onUpdate.Assignments) {
+                        expressions.Add(bitem.Expression);
                     }
                 }
 
@@ -196,11 +192,9 @@ namespace com.espertech.esper.common.@internal.epl.util
                     }
 
                     // method stream
-                    if (stream is MethodStreamSpec) {
-                        var methodStream = (MethodStreamSpec) stream;
-                        if (methodStream.Expressions != null) {
-                            expressions.AddAll(methodStream.Expressions);
-                        }
+                    var methodStream = stream as MethodStreamSpec;
+                    if (methodStream?.Expressions != null) {
+                        expressions.AddAll(methodStream.Expressions);
                     }
 
                     if (stream.ViewSpecs != null) {
@@ -304,10 +298,8 @@ namespace com.espertech.esper.common.@internal.epl.util
                     expressions.Add(define.Expression);
                 }
 
-                if (raw.MatchRecognizeSpec.Interval != null) {
-                    if (raw.MatchRecognizeSpec.Interval.TimePeriodExpr != null) {
-                        expressions.Add(raw.MatchRecognizeSpec.Interval.TimePeriodExpr);
-                    }
+                if (raw.MatchRecognizeSpec.Interval?.TimePeriodExpr != null) {
+                    expressions.Add(raw.MatchRecognizeSpec.Interval.TimePeriodExpr);
                 }
             }
 
@@ -359,11 +351,9 @@ namespace com.espertech.esper.common.@internal.epl.util
             IList<ExprNode> expressions,
             EvalForgeNode patternExpression)
         {
-            if (patternExpression is EvalFilterForgeNode) {
-                var filter = (EvalFilterForgeNode) patternExpression;
-                if (filter.RawFilterSpec.FilterExpressions != null) {
-                    expressions.AddAll(filter.RawFilterSpec.FilterExpressions);
-                }
+            var filter = patternExpression as EvalFilterForgeNode;
+            if (filter?.RawFilterSpec.FilterExpressions != null) {
+                expressions.AddAll(filter.RawFilterSpec.FilterExpressions);
             }
 
             foreach (EvalForgeNode child in patternExpression.ChildNodes) {
@@ -375,9 +365,10 @@ namespace com.espertech.esper.common.@internal.epl.util
             IList<ExprNode> expressions,
             ContextSpecCondition endpoint)
         {
-            if (endpoint is ContextSpecConditionCrontab) {
-                var crontab = (ContextSpecConditionCrontab) endpoint;
-                expressions.AddAll(crontab.Crontab);
+            if (endpoint is ContextSpecConditionCrontab crontab) {
+                foreach (var crontabItem in crontab.Crontabs) {
+                    expressions.AddAll(crontabItem);
+                }
             }
         }
     }

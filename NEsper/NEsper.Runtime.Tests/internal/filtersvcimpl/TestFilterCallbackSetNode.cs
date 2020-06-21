@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filtersvc;
@@ -37,7 +36,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             string fieldName,
             EventType eventType)
         {
-            return new ExprFilterSpecLookupable(fieldName, eventType.GetGetter(fieldName), eventType.GetPropertyType(fieldName), false);
+            SupportExprEventEvaluator eval = new SupportExprEventEvaluator(eventType.GetGetter(fieldName));
+            return new ExprFilterSpecLookupable(fieldName, eval, null, eventType.GetPropertyType(fieldName), false, null);
         }
 
         [Test, RunInApplicationDomain]
@@ -63,12 +63,14 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             EventType eventType = SupportEventTypeFactory
                 .GetInstance(container)
                 .CreateBeanType(typeof(SupportBean));
-
-            var lookupable = new ExprFilterSpecLookupable(
+            SupportExprEventEvaluator eval = new SupportExprEventEvaluator(eventType.GetGetter("IntPrimitive"));
+            ExprFilterSpecLookupable lookupable = new ExprFilterSpecLookupable(
                 "IntPrimitive",
-                eventType.GetGetter("IntPrimitive"),
+                eval,
+                null,
                 eventType.GetPropertyType("IntPrimitive"),
-                false);
+                false,
+                null);
             FilterParamIndexBase indexOne = new SupportFilterParamIndex(lookupable);
             testNode.Add(indexOne);
 
@@ -98,7 +100,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
             // Check matching without an index node
             IList<FilterHandle> matches = new List<FilterHandle>();
-            testNode.MatchEvent(eventBean, matches);
+            testNode.MatchEvent(eventBean, matches, null);
             Assert.AreEqual(1, matches.Count);
             Assert.AreEqual(expr, matches[0]);
             matches.Clear();
@@ -111,7 +113,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             index.Put("DepositEvent_1", testEvaluator);
 
             // Verify matcher instance stored in index is called
-            testNode.MatchEvent(eventBean, matches);
+            testNode.MatchEvent(eventBean, matches, null);
 
             Assert.IsTrue(testEvaluator.GetAndResetCountInvoked() == 1);
             Assert.IsTrue(testEvaluator.LastEvent == eventBean);

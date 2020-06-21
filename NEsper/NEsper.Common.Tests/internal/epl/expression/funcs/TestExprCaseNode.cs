@@ -11,7 +11,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.@event;
 using com.espertech.esper.common.@internal.supportunit.util;
-using com.espertech.esper.container;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             return new[] {SupportEventBeanFactory.CreateObject(supportEventTypeFactory, theEvent) };
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEquals()
         {
             var caseNode = supportExprNodeFactory.MakeCaseSyntax1Node();
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             Assert.IsTrue(caseNodeSyntax2.EqualsNode(otherCaseNodeSyntax2, false));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEvaluate()
         {
             var caseNode = supportExprNodeFactory.MakeCaseSyntax1Node();
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             Assert.AreEqual("c", caseNode.Forge.ExprEvaluator.Evaluate(MakeEvent(3), false, null));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetType()
         {
             // Template expression is:
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             Assert.AreEqual(typeof(string), caseNode.Forge.EvaluationType);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestToExpressionString()
         {
             var _caseNode = supportExprNodeFactory.MakeCaseSyntax1Node();
@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(_caseNode));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestValidate()
         {
             var caseNode = supportExprNodeFactory.MakeCaseSyntax1Node();

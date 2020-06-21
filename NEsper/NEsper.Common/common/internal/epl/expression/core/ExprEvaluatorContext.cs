@@ -8,13 +8,13 @@
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.expr;
-using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.enummethod.cache;
 using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.metrics.audit;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.schedule;
+using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -53,5 +53,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         AuditProvider AuditProvider { get; }
 
         InstrumentationCommon InstrumentationProvider { get; }
+
+        ExceptionHandlingService ExceptionHandlingService { get; }
+        
+        object FilterReboolConstant { get; set; }
     }
 } // end of namespace

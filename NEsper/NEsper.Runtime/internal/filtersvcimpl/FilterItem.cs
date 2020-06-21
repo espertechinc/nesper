@@ -16,17 +16,20 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         public FilterItem(
             string name,
             FilterOperator op,
-            object optionalValue)
+            object optionalValue = null,
+            object index = null)
         {
             Name = name;
             Op = op;
             OptionalValue = optionalValue;
+            Index = index;
         }
 
         public FilterItem(
             string name,
-            FilterOperator op)
-            : this(name, op, null)
+            FilterOperator op,
+            object index)
+            : this(name, op, null, index)
         {
         }
 
@@ -36,13 +39,15 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         public object OptionalValue { get; }
 
+        public object Index { get; set; }
+
         public static FilterItem BoolExprFilterItem => new FilterItem(
-            FilterSpecCompilerPlanner.PROPERTY_NAME_BOOLEAN_EXPRESSION,
+            FilterSpecCompilerIndexPlanner.PROPERTY_NAME_BOOLEAN_EXPRESSION,
             FilterOperator.BOOLEAN_EXPRESSION, null);
 
         public override string ToString()
         {
-            return $"{nameof(Name)}: {Name}, {nameof(Op)}: {Op}";
+            return $"{nameof(Name)}: {Name}, {nameof(Op)}: {Op}, {nameof(OptionalValue)}: {OptionalValue}, {nameof(Index)}: {Index}";
         }
 
         protected bool Equals(FilterItem other)

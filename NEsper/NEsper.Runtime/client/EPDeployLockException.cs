@@ -21,7 +21,7 @@ namespace com.espertech.esper.runtime.client
         /// <param name="message">message</param>
         /// <param name="cause">cause</param>
         public EPDeployLockException(string message, Exception cause)
-            : base(message, cause)
+            : base(message, cause, -1)
         {
         }
     }

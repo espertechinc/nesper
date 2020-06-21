@@ -13,8 +13,6 @@ using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.historical.common;
 using com.espertech.esper.common.@internal.epl.historical.execstrategy;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.historical.method.core
 {
@@ -31,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 ConfigurationCommonMethodRef configCache =
                     agentInstanceContext.ImportServiceRuntime.GetConfigurationMethodRef(factory.ConfigurationName);
                 ConfigurationCommonCache dataCacheDesc = configCache != null ? configCache.DataCacheDesc : null;
-                this.dataCache = agentInstanceContext.HistoricalDataCacheFactory.GetDataCache(
+                this.DataCache = agentInstanceContext.HistoricalDataCacheFactory.GetDataCache(
                     dataCacheDesc,
                     agentInstanceContext,
                     factory.StreamNumber,

@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.lookupplansubord;
@@ -22,12 +23,14 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
     /// </summary>
     public class OnExprViewNamedWindowDelete : OnExprViewNameWindowBase
     {
+        public bool IsSilentDelete { get; }
         public OnExprViewNamedWindowDelete(
             SubordWMatchExprLookupStrategy lookupStrategy,
             NamedWindowRootViewInstance rootView,
             AgentInstanceContext agentInstanceContext)
             : base(lookupStrategy, rootView, agentInstanceContext)
         {
+            IsSilentDelete = HintEnum.SILENT_DELETE.HasHint(agentInstanceContext.Annotations);
         }
 
         public override EventType EventType => rootView.EventType;
@@ -45,6 +48,10 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 // Events to delete are indicated via old data
                 rootView.Update(null, matchingEvents);
 
+                if (IsSilentDelete) {
+                    rootView.ClearDeliveriesRemoveStream(matchingEvents);
+                }
+                
                 var statementResultService = agentInstanceContext.StatementResultService;
                 // The on-delete listeners receive the events deleted, but only if there is interest
                 if (statementResultService.IsMakeNatural || statementResultService.IsMakeSynthetic) {

@@ -73,6 +73,11 @@ namespace com.espertech.esper.compat.io
             return _binaryReader.ReadDecimal();
         }
 
+        public char ReadChar()
+        {
+            return _binaryReader.ReadChar();
+        }
+
         public string ReadUTF()
         {
             return _binaryReader.ReadString();

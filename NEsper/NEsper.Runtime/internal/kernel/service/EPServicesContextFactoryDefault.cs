@@ -6,8 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
+using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.activator;
 using com.espertech.esper.common.@internal.context.mgr;
 using com.espertech.esper.common.@internal.context.module;
@@ -30,11 +34,11 @@ using com.espertech.esper.common.@internal.@event.eventtyperepo;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.metrics.stmtmetrics;
 using com.espertech.esper.common.@internal.schedule;
-using com.espertech.esper.common.@internal.serde;
+using com.espertech.esper.common.@internal.serde.runtime.@event;
+using com.espertech.esper.common.@internal.serde.runtime.eventtype;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.statement.multimatch;
 using com.espertech.esper.common.@internal.statement.resource;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.previous;
 using com.espertech.esper.compat;
@@ -42,6 +46,7 @@ using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.container;
 using com.espertech.esper.runtime.@internal.deploymentlifesvc;
 using com.espertech.esper.runtime.@internal.filtersvcimpl;
+using com.espertech.esper.runtime.@internal.kernel.stage;
 using com.espertech.esper.runtime.@internal.kernel.statement;
 using com.espertech.esper.runtime.@internal.kernel.thread;
 using com.espertech.esper.runtime.@internal.namedwindow;
@@ -52,11 +57,11 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 {
     public class EPServicesContextFactoryDefault : EPServicesContextFactoryBase
     {
-        private IContainer container;
+        private IContainer _container;
 
         public EPServicesContextFactoryDefault(IContainer container)
         {
-            this.container = container;
+            this._container = container;
         }
 
         protected override RuntimeSettingsService MakeRuntimeSettingsService(Configuration configurationSnapshot)
@@ -72,8 +77,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             RuntimeSettingsService runtimeSettingsService)
         {
             return new EPServicesHA(
-                RuntimeExtensionServicesNoHA.INSTANCE, DeploymentRecoveryServiceImpl.INSTANCE, ListenerRecoveryServiceImpl.INSTANCE,
-                new StatementIdRecoveryServiceImpl(), null);
+                RuntimeExtensionServicesNoHA.INSTANCE,
+                DeploymentRecoveryServiceImpl.INSTANCE,
+                ListenerRecoveryServiceImpl.INSTANCE,
+                new StatementIdRecoveryServiceImpl(),
+                null,
+                null);
         }
 
         protected override ViewableActivatorFactory InitViewableActivatorFactory()
@@ -89,9 +98,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             EventTypeIdResolver eventTypeIdResolver,
             FilterSharedLookupableRepository filterSharedLookupableRepository)
         {
-            return new FilterServiceLockCoarse(
-                container.RWLockManager(),
-                false);
+            return new FilterServiceLockCoarse(_container.RWLockManager(), -1);
         }
 
         public override EPEventServiceImpl CreateEPRuntime(
@@ -129,9 +136,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         protected override EventTypeFactory MakeEventTypeFactory(
             RuntimeExtensionServices runtimeExt,
             EventTypeRepositoryImpl eventTypeRepositoryPreconfigured,
-            DeploymentLifecycleServiceImpl deploymentLifecycleService)
+            DeploymentLifecycleServiceImpl deploymentLifecycleService,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            return EventTypeFactoryImpl.GetInstance(container);
+            return EventTypeFactoryImpl.GetInstance(_container);
         }
 
         protected override EventTypeResolvingBeanFactory MakeEventTypeResolvingBeanFactory(
@@ -146,9 +154,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             TimeSourceService timeSourceService,
             RuntimeExtensionServices runtimeExt,
             RuntimeSettingsService runtimeSettingsService,
-            StatementContextResolver statementContextResolver)
+            StatementContextResolver statementContextResolver,
+            string zoneId)
         {
-            return new SchedulingServiceImpl(timeSourceService);
+            return new SchedulingServiceImpl(-1, timeSourceService);
         }
 
         protected override FilterBooleanExpressionFactory MakeFilterBooleanExpressionFactory(StatementLifecycleServiceImpl statementLifecycleService)
@@ -181,14 +190,16 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             return new EventBeanTypedEventFactoryRuntime(eventTypeAvroHandler);
         }
 
+        protected override EventTypeSerdeRepository MakeEventTypeSerdeRepository(
+            EventTypeRepository preconfigureds,
+            PathRegistry<String, EventType> eventTypePathRegistry)
+        {
+            return EventTypeSerdeRepositoryDefault.INSTANCE;
+        }
+
         protected override EventTableIndexService MakeEventTableIndexService(RuntimeExtensionServices runtimeExtensionServices)
         {
             return EventTableIndexServiceImpl.INSTANCE;
-        }
-
-        protected override DataInputOutputSerdeProvider MakeSerdeProvider(RuntimeExtensionServices ext)
-        {
-            return DataInputOutputSerdeProviderDefault.INSTANCE;
         }
 
         protected override ResultSetProcessorHelperFactory MakeResultSetProcessorHelperFactory(RuntimeExtensionServices ext)
@@ -277,6 +288,16 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         protected override ThreadingService MakeThreadingService(Configuration configs)
         {
             return new ThreadingServiceImpl(configs.Runtime.Threading);
+        }
+        
+        protected override EventSerdeFactory MakeEventSerdeFactory(RuntimeExtensionServices ext)
+        {
+            return EventSerdeFactoryDefault.INSTANCE;
+        }
+
+        protected override StageRecoveryService MakeStageRecoveryService(EPServicesHA epServicesHA)
+        {
+            return StageRecoveryServiceImpl.INSTANCE;
         }
     }
 } // end of namespace

@@ -19,16 +19,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
 {
     public class AggregationAccessorForgePlugin : AggregationAccessorForge
     {
-        private readonly AggregationForgeFactoryAccessPlugin parent;
-        private readonly AggregationMultiFunctionAccessorModeManaged mode;
+        private readonly AggregationForgeFactoryAccessPlugin _parent;
+        private readonly AggregationMultiFunctionAccessorModeManaged _mode;
         private CodegenExpressionInstanceField _accessorField;
 
         public AggregationAccessorForgePlugin(
             AggregationForgeFactoryAccessPlugin parent,
             AggregationMultiFunctionAccessorModeManaged mode)
         {
-            this.parent = parent;
-            this.mode = mode;
+            this._parent = parent;
+            this._mode = mode;
         }
 
         public void GetValueCodegen(AggregationAccessorForgeGetCodegenContext context)
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
         {
             if (_accessorField == null) {
                 var injectionStrategy =
-                    (InjectionStrategyClassNewInstance) mode.InjectionStrategyAggregationAccessorFactory;
+                    (InjectionStrategyClassNewInstance) _mode.InjectionStrategyAggregationAccessorFactory;
                 _accessorField = classScope.AddDefaultFieldUnshared(
                     true,
                     typeof(AggregationMultiFunctionAccessor),
@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
                 ExprDotMethod(
                     _accessorField,
                     getterMethod,
-                    RefCol("state", column),
+                    MemberCol("state", column),
                     REF_EPS,
                     REF_ISNEWDATA,
                     REF_EXPREVALCONTEXT));

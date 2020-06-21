@@ -11,6 +11,7 @@ using System;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.@event.core;
 
@@ -23,6 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         private readonly EventType eventType;
         private readonly Type[] optHashCoercedTypes;
         private readonly string[] optHashPropertyNames;
+        private readonly MultiKeyClassRef optHashMultiKeyClasses;
         private readonly string[] rangeProps;
         private readonly Type[] rangeTypes;
         private readonly int streamNum;
@@ -32,6 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             EventType eventType,
             string[] optHashPropertyNames,
             Type[] optHashCoercedTypes,
+            MultiKeyClassRef optHashMultiKeyClasses,
             string[] rangeProps,
             Type[] rangeTypes)
         {
@@ -39,6 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             this.eventType = eventType;
             this.optHashPropertyNames = optHashPropertyNames;
             this.optHashCoercedTypes = optHashCoercedTypes;
+            this.optHashMultiKeyClasses = optHashMultiKeyClasses;
             this.rangeProps = rangeProps;
             this.rangeTypes = rangeTypes;
         }
@@ -59,13 +63,13 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             if (optHashPropertyNames != null) {
                 var propertyGetters = EventTypeUtility.GetGetters(eventType, optHashPropertyNames);
                 var propertyTypes = EventTypeUtility.GetPropertyTypes(eventType, optHashPropertyNames);
-                hashGetter = EventTypeUtility.CodegenGetterMayMultiKeyWCoerce(
+                hashGetter = MultiKeyCodegen.CodegenGetterMayMultiKey(
                     eventType,
                     propertyGetters,
                     propertyTypes,
                     optHashCoercedTypes,
+                    optHashMultiKeyClasses,
                     method,
-                    GetType(),
                     classScope);
             }
 

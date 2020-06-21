@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.view.timewin
     /// </summary>
     public class TimeWindowView : ViewSupport,
         DataWindowView,
-        AgentInstanceStopCallback
+        AgentInstanceMgmtCallback
     {
         private readonly AgentInstanceContext agentInstanceContext;
         private readonly EPStatementHandleCallbackSchedule handle;
@@ -95,6 +95,10 @@ namespace com.espertech.esper.common.@internal.view.timewin
                 agentInstanceContext.StatementContext.SchedulingService.Remove(handle, scheduleSlot);
             }
         }
+        
+        public void Transfer(AgentInstanceTransferServices services)
+        {
+        }
 
         public override EventType EventType => Parent.EventType;
 
@@ -126,9 +130,7 @@ namespace com.espertech.esper.common.@internal.view.timewin
                     timeWindow.Add(timestamp, newData[i]);
                 }
 
-                if (ViewUpdatedCollection != null) {
-                    ViewUpdatedCollection.Update(newData, null);
-                }
+                ViewUpdatedCollection?.Update(newData, null);
             }
 
             // update child views
@@ -167,9 +169,7 @@ namespace com.espertech.esper.common.@internal.view.timewin
             if (Child != null) {
                 if (expired != null && !expired.IsEmpty()) {
                     EventBean[] oldEvents = expired.ToArray();
-                    if (ViewUpdatedCollection != null) {
-                        ViewUpdatedCollection.Update(null, oldEvents);
-                    }
+                    ViewUpdatedCollection?.Update(null, oldEvents);
 
                     agentInstanceContext.InstrumentationProvider.QViewIndicate(timeWindowViewFactory, null, oldEvents);
                     Child.Update(null, oldEvents);
@@ -182,21 +182,23 @@ namespace com.espertech.esper.common.@internal.view.timewin
 
         private void ScheduleExpiryCallback()
         {
-            // If we still have events in the window, schedule new callback
-            if (timeWindow.IsEmpty()) {
+            long scheduleTime = ComputeScheduleTime();
+            if (scheduleTime == -1) {
                 return;
             }
 
-            var oldestTimestamp = timeWindow.OldestTimestamp;
-            var currentTimestamp = agentInstanceContext.StatementContext.SchedulingService.Time;
-            long scheduleTime = timePeriodProvide.DeltaAdd(
-                                    oldestTimestamp.Value,
-                                    null,
-                                    true,
-                                    agentInstanceContext) +
-                                oldestTimestamp.Value -
-                                currentTimestamp;
             ScheduleCallback(scheduleTime);
+        }
+
+        private long ComputeScheduleTime()
+        {
+            if (timeWindow.IsEmpty()) {
+                return -1;
+            }
+
+            var oldestTimestamp = timeWindow.OldestTimestamp.Value; // Null check?
+            var currentTimestamp = agentInstanceContext.StatementContext.SchedulingService.Time;
+            return timePeriodProvide.DeltaAdd(oldestTimestamp, null, true, agentInstanceContext) + oldestTimestamp - currentTimestamp;
         }
 
         private void ScheduleCallback(long timeAfterCurrentTime)

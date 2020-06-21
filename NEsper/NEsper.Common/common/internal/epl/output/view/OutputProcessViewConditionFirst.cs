@@ -39,8 +39,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         private readonly OutputCondition _outputCondition;
         private readonly OutputProcessViewConditionFactory _parent;
 
-        private readonly IList<UniformPair<ISet<MultiKey<EventBean>>>> _joinEventsSet =
-            new List<UniformPair<ISet<MultiKey<EventBean>>>>();
+        private readonly IList<UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>> _joinEventsSet =
+            new List<UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>>();
 
         // Posted events in ordered form (for applying to aggregates) and summarized per type
         // Using ArrayList as random access is a requirement.
@@ -120,10 +120,10 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 if (_parent.IsDistinct) {
                     newOldEvents.First = EventBeanUtility.GetDistinctByProp(
                         newOldEvents.First,
-                        _parent.EventBeanReader);
+                        _parent.DistinctKeyGetter);
                     newOldEvents.Second = EventBeanUtility.GetDistinctByProp(
                         newOldEvents.Second,
-                        _parent.EventBeanReader);
+                        _parent.DistinctKeyGetter);
                 }
 
                 var isGenerateNatural = statementResultService.IsMakeNatural;
@@ -163,8 +163,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         /// <param name="oldEvents">old events</param>
         /// <param name="exprEvaluatorContext">the evaluator context</param>
         public override void Process(
-            ISet<MultiKey<EventBean>> newEvents,
-            ISet<MultiKey<EventBean>> oldEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
@@ -199,10 +199,10 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 if (_parent.IsDistinct) {
                     newOldEvents.First = EventBeanUtility.GetDistinctByProp(
                         newOldEvents.First,
-                        _parent.EventBeanReader);
+                        _parent.DistinctKeyGetter);
                     newOldEvents.Second = EventBeanUtility.GetDistinctByProp(
                         newOldEvents.Second,
-                        _parent.EventBeanReader);
+                        _parent.DistinctKeyGetter);
                 }
 
                 var isGenerateNatural = statementResultService.IsMakeNatural;
@@ -306,7 +306,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 joinExecutionStrategy,
                 _resultSetProcessor,
                 parentView,
-                _parent.IsDistinct);
+                _parent.IsDistinct,
+                _parent.DistinctKeyGetter);
         }
 
         public override void Terminated()
@@ -349,27 +350,27 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         }
 
         private static void AddToChangeSet(
-            IList<UniformPair<ISet<MultiKey<EventBean>>>> joinEventsSet,
-            ISet<MultiKey<EventBean>> newEvents,
-            ISet<MultiKey<EventBean>> oldEvents)
+            IList<UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>> joinEventsSet,
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents)
         {
-            ISet<MultiKey<EventBean>> copyNew;
+            ISet<MultiKeyArrayOfKeys<EventBean>> copyNew;
             if (newEvents != null) {
-                copyNew = new LinkedHashSet<MultiKey<EventBean>>(newEvents);
+                copyNew = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>(newEvents);
             }
             else {
-                copyNew = new LinkedHashSet<MultiKey<EventBean>>();
+                copyNew = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
             }
 
-            ISet<MultiKey<EventBean>> copyOld;
+            ISet<MultiKeyArrayOfKeys<EventBean>> copyOld;
             if (oldEvents != null) {
-                copyOld = new LinkedHashSet<MultiKey<EventBean>>(oldEvents);
+                copyOld = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>(oldEvents);
             }
             else {
-                copyOld = new LinkedHashSet<MultiKey<EventBean>>();
+                copyOld = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
             }
 
-            joinEventsSet.Add(new UniformPair<ISet<MultiKey<EventBean>>>(copyNew, copyOld));
+            joinEventsSet.Add(new UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>(copyNew, copyOld));
         }
     }
 } // end of namespace

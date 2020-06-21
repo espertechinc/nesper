@@ -43,6 +43,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
             this.tableAccesses = tableAccesses;
         }
 
+        public EventType ResultEventType => resultEventType;
+
         public abstract Type TypeOfSubclass();
 
         public abstract void InlineInitializeOnTriggerBase(

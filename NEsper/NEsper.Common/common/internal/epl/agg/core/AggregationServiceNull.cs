@@ -121,5 +121,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         {
             return this;
         }
+
+        public AggregationRow GetAggregationRow(
+            int agentInstanceId,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return null;
+        }
     }
 } // end of namespace

@@ -16,13 +16,13 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
     {
         private decimal _decimalOne;
         private decimal _decimalTwo;
-        private BigInteger bigint;
-        private double doubleOne;
-        private double doubleTwo;
-        private float floatOne;
-        private float floatTwo;
-        private int? intOne;
-        private int? intTwo;
+        private BigInteger _bigint;
+        private double _doubleOne;
+        private double _doubleTwo;
+        private float _floatOne;
+        private float _floatTwo;
+        private int? _intOne;
+        private int? _intTwo;
 
         public SupportBeanNumeric(
             int? intOne,
@@ -32,27 +32,27 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
             double doubleOne,
             double doubleTwo)
         {
-            this.intOne = intOne;
-            this.intTwo = intTwo;
-            this.bigint = bigint;
+            _intOne = intOne;
+            _intTwo = intTwo;
+            _bigint = bigint;
             _decimalOne = decimalOne;
-            this.doubleOne = doubleOne;
-            this.doubleTwo = doubleTwo;
+            _doubleOne = doubleOne;
+            _doubleTwo = doubleTwo;
         }
 
         public SupportBeanNumeric(
             int? intOne,
             int? intTwo)
         {
-            this.intOne = intOne;
-            this.intTwo = intTwo;
+            _intOne = intOne;
+            _intTwo = intTwo;
         }
 
         public SupportBeanNumeric(
             BigInteger bigint,
             decimal decimalOne)
         {
-            this.bigint = bigint;
+            _bigint = bigint;
             _decimalOne = decimalOne;
         }
 
@@ -61,23 +61,23 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
             float floatOne,
             float floatTwo)
         {
-            this.floatOne = floatOne;
-            this.floatTwo = floatTwo;
+            _floatOne = floatOne;
+            _floatTwo = floatTwo;
         }
 
         public int? IntOne {
-            get => intOne;
-            set => intOne = value;
+            get => _intOne;
+            set => _intOne = value;
         }
 
         public int? IntTwo {
-            get => intTwo;
-            set => intTwo = value;
+            get => _intTwo;
+            set => _intTwo = value;
         }
 
         public BigInteger Bigint {
-            get => bigint;
-            set => bigint = value;
+            get => _bigint;
+            set => _bigint = value;
         }
 
         public decimal DecimalOne {
@@ -86,13 +86,13 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
         }
 
         public double DoubleOne {
-            get => doubleOne;
-            set => doubleOne = value;
+            get => _doubleOne;
+            set => _doubleOne = value;
         }
 
         public double DoubleTwo {
-            get => doubleTwo;
-            set => doubleTwo = value;
+            get => _doubleTwo;
+            set => _doubleTwo = value;
         }
 
         public decimal DecimalTwo {
@@ -101,13 +101,13 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
         }
 
         public float FloatOne {
-            get => floatOne;
-            set => floatOne = value;
+            get => _floatOne;
+            set => _floatOne = value;
         }
 
         public float FloatTwo {
-            get => floatTwo;
-            set => floatTwo = value;
+            get => _floatTwo;
+            set => _floatTwo = value;
         }
     }
 } // end of namespace

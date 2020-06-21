@@ -31,15 +31,14 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.eventtyperepo;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.common.@internal.filterspec;
-using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.common.@internal.metrics.stmtmetrics;
-using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.statement.resource;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.previous;
 using com.espertech.esper.compat.directory;
-using com.espertech.esper.container;
+
+using IContainer = com.espertech.esper.container.IContainer;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
@@ -70,13 +69,11 @@ namespace com.espertech.esper.common.@internal.context.util
             EventTypeResolvingBeanFactory eventTypeResolvingBeanFactory,
             ExceptionHandlingService exceptionHandlingService,
             ExpressionResultCacheService expressionResultCacheService,
-            FilterService filterService,
             FilterBooleanExpressionFactory filterBooleanExpressionFactory,
             FilterSharedBoolExprRepository filterSharedBoolExprRepository,
             FilterSharedLookupableRepository filterSharedLookupableRepository,
             HistoricalDataCacheFactory historicalDataCacheFactory,
             InternalEventRouter internalEventRouter,
-            InternalEventRouteDest internalEventRouteDest,
             MetricReportingService metricReportingService,
             NamedWindowConsumerManagementService namedWindowConsumerManagementService,
             NamedWindowManagementService namedWindowManagementService,
@@ -84,7 +81,6 @@ namespace com.espertech.esper.common.@internal.context.util
             PathRegistry<string, NamedWindowMetaData> pathNamedWindowRegistry,
             RowRecogStateRepoFactory rowRecogStateRepoFactory,
             ResultSetProcessorHelperFactory resultSetProcessorHelperFactory,
-            SchedulingService schedulingService,
             StatementAgentInstanceLockFactory statementAgentInstanceLockFactory,
             StatementResourceHolderBuilder statementResourceHolderBuilder,
             TableExprEvaluatorContext tableExprEvaluatorContext,
@@ -93,6 +89,7 @@ namespace com.espertech.esper.common.@internal.context.util
             ViewFactoryService viewFactoryService,
             ViewServicePreviousFactory viewServicePreviousFactory)
         {
+            Container = container;
             ContextManagementService = contextManagementService;
             ContextServiceFactory = contextServiceFactory;
             DatabaseConfigService = databaseConfigService;
@@ -116,13 +113,11 @@ namespace com.espertech.esper.common.@internal.context.util
             EventTypeResolvingBeanFactory = eventTypeResolvingBeanFactory;
             ExceptionHandlingService = exceptionHandlingService;
             ExpressionResultCacheService = expressionResultCacheService;
-            FilterService = filterService;
             FilterBooleanExpressionFactory = filterBooleanExpressionFactory;
             FilterSharedBoolExprRepository = filterSharedBoolExprRepository;
             FilterSharedLookupableRepository = filterSharedLookupableRepository;
             HistoricalDataCacheFactory = historicalDataCacheFactory;
             InternalEventRouter = internalEventRouter;
-            InternalEventRouteDest = internalEventRouteDest;
             MetricReportingService = metricReportingService;
             NamedWindowConsumerManagementService = namedWindowConsumerManagementService;
             NamedWindowManagementService = namedWindowManagementService;
@@ -130,7 +125,6 @@ namespace com.espertech.esper.common.@internal.context.util
             PathNamedWindowRegistry = pathNamedWindowRegistry;
             RowRecogStateRepoFactory = rowRecogStateRepoFactory;
             ResultSetProcessorHelperFactory = resultSetProcessorHelperFactory;
-            SchedulingService = schedulingService;
             StatementAgentInstanceLockFactory = statementAgentInstanceLockFactory;
             StatementResourceHolderBuilder = statementResourceHolderBuilder;
             TableExprEvaluatorContext = tableExprEvaluatorContext;
@@ -139,6 +133,55 @@ namespace com.espertech.esper.common.@internal.context.util
             ViewFactoryService = viewFactoryService;
             ViewServicePreviousFactory = viewServicePreviousFactory;
         }
+
+        public StatementContextRuntimeServices(IContainer container)
+        {
+            Container = container;
+            ContextManagementService = null;
+            ContextServiceFactory = null;
+            DatabaseConfigService = null;
+            DataFlowFilterServiceAdapter = null;
+            DataflowService = null;
+            RuntimeURI = null;
+            RuntimeEnvContext = null;
+            ImportServiceRuntime = null;
+            RuntimeSettingsService = null;
+            RuntimeExtensionServices = null;
+            Runtime = null;
+            EPRuntimeRenderEvent = null;
+            EventServiceSendEventInternal = null;
+            EPRuntimeEventProcessWrapped = null;
+            EventBeanService = null;
+            EventBeanTypedEventFactory = null;
+            EventTableIndexService = null;
+            EventTypeAvroHandler = null;
+            EventTypePathRegistry = null;
+            EventTypeRepositoryPreconfigured = null;
+            EventTypeResolvingBeanFactory = null;
+            ExceptionHandlingService = null;
+            ExpressionResultCacheService = null;
+            FilterBooleanExpressionFactory = null;
+            FilterSharedBoolExprRepository = null;
+            FilterSharedLookupableRepository = null;
+            HistoricalDataCacheFactory = null;
+            InternalEventRouter = null;
+            MetricReportingService = null;
+            NamedWindowConsumerManagementService = null;
+            NamedWindowManagementService = null;
+            PathContextRegistry = null;
+            PathNamedWindowRegistry = null;
+            RowRecogStateRepoFactory = null;
+            ResultSetProcessorHelperFactory = null;
+            StatementAgentInstanceLockFactory = null;
+            StatementResourceHolderBuilder = null;
+            TableExprEvaluatorContext = null;
+            TableManagementService = null;
+            VariableManagementService = null;
+            ViewFactoryService = null;
+            ViewServicePreviousFactory = null;
+        }
+
+        public IContainer Container { get; set; }
 
         public ContextManagementService ContextManagementService { get; }
 
@@ -174,8 +217,6 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public ExpressionResultCacheService ExpressionResultCacheService { get; }
 
-        public FilterService FilterService { get; }
-
         public FilterBooleanExpressionFactory FilterBooleanExpressionFactory { get; }
 
         public FilterSharedBoolExprRepository FilterSharedBoolExprRepository { get; }
@@ -186,8 +227,6 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public InternalEventRouter InternalEventRouter { get; }
 
-        public InternalEventRouteDest InternalEventRouteDest { get; }
-
         public NamedWindowConsumerManagementService NamedWindowConsumerManagementService { get; }
 
         public NamedWindowManagementService NamedWindowManagementService { get; }
@@ -196,13 +235,9 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public ResultSetProcessorHelperFactory ResultSetProcessorHelperFactory { get; }
 
-        public SchedulingService SchedulingService { get; }
-
         public StatementAgentInstanceLockFactory StatementAgentInstanceLockFactory { get; }
 
         public StatementResourceHolderBuilder StatementResourceHolderBuilder { get; }
-
-        public TimeProvider TimeProvider => SchedulingService;
 
         public ViewServicePreviousFactory ViewServicePreviousFactory { get; }
 

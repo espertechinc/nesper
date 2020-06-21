@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using Avro.Generic;
@@ -14,12 +15,13 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NEsper.Avro.Extensions;
 using NEsper.Avro.Util.Support;
+
+using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
 
@@ -33,15 +35,78 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraInsertIntoAndDelete());
-            execs.Add(new InfraInsertIntoSameModuleUnkeyed());
-            execs.Add(new InfraInsertIntoTwoModulesUnkeyed());
-            execs.Add(new InfraInsertIntoSelfAccess());
-            execs.Add(new InfraNamedWindowMergeInsertIntoTable());
-            execs.Add(new InfraInsertIntoWildcard());
-            execs.Add(new InfraInsertIntoFromNamedWindow());
-            execs.Add(new InfraInsertIntoSameModuleKeyed());
+            WithInsertIntoAndDelete(execs);
+            WithInsertIntoSameModuleUnkeyed(execs);
+            WithInsertIntoTwoModulesUnkeyed(execs);
+            WithInsertIntoSelfAccess(execs);
+            WithNamedWindowMergeInsertIntoTable(execs);
+            WithInsertIntoWildcard(execs);
+            WithInsertIntoFromNamedWindow(execs);
+            WithInsertIntoSameModuleKeyed(execs);
+            WithSplitStream(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSplitStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraSplitStream());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInsertIntoSameModuleKeyed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraInsertIntoSameModuleKeyed());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInsertIntoFromNamedWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraInsertIntoFromNamedWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInsertIntoWildcard(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraInsertIntoWildcard());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedWindowMergeInsertIntoTable(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraNamedWindowMergeInsertIntoTable());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInsertIntoSelfAccess(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraInsertIntoSelfAccess());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInsertIntoTwoModulesUnkeyed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraInsertIntoTwoModulesUnkeyed());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInsertIntoSameModuleUnkeyed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraInsertIntoSameModuleUnkeyed());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInsertIntoAndDelete(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraInsertIntoAndDelete());
             return execs;
         }
 
@@ -63,10 +128,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             }
             else {
                 schemaCompiled = env.Compile(
-                    "create " + rep.GetOutputTypeCreateSchemaName() + " schema MySchema (P0 string, P1 string)",
+                    rep.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMySchema>() +
+                    "create schema MySchema (P0 string, P1 string)",
                     options => {
-                        options.BusModifierEventType = ctx => EventTypeBusModifier.BUS;
-                        options.AccessModifierEventType = ctx => NameAccessModifier.PUBLIC;
+                        options.SetBusModifierEventType(ctx => EventTypeBusModifier.BUS);
+                        options.SetAccessModifierEventType(ctx => NameAccessModifier.PUBLIC);
                     });
             }
 
@@ -95,11 +161,19 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 theEvent.Put("P0", "a");
                 theEvent.Put("P1", "b");
                 env.EventService.SendEventAvro(theEvent, "MySchema");
+            } else if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
+                env.EventService.SendEventJson(
+                    new JObject(
+                        new JProperty("P0", "a"),
+                        new JProperty("P1", "b")).ToString(),
+                    "MySchema");
+            } else {
+                Assert.Fail();
             }
 
             EPAssertionUtil.AssertProps(
                 env.GetEnumerator("create").Advance(),
-                new [] { "P0","P1" },
+                new[] {"P0", "P1"},
                 new object[] {"a", "b"});
             env.UndeployAll();
         }
@@ -119,7 +193,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "pKey0","pkey1","c0" };
+                var fields = new[] {"pKey0", "pkey1", "c0"};
                 var path = new RegressionPath();
 
                 var eplCreateTable =
@@ -202,7 +276,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "TheString" };
+                var fields = new[] {"TheString"};
                 var epl = "@Name('create') create table MyTableSM(TheString string);\n" +
                           "@Name('tbl-insert') insert into MyTableSM select TheString from SupportBean;\n";
                 env.CompileDeploy(epl);
@@ -243,7 +317,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean("E1", 0));
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("create"),
-                    new [] { "pkey" },
+                    new[] {"pkey"},
                     new[] {
                         new object[] {"E1"}
                     });
@@ -252,7 +326,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("create"),
-                    new [] { "pkey" },
+                    new[] {"pkey"},
                     new[] {
                         new object[] {"E1"}
                     });
@@ -260,7 +334,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean("E1", 0));
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("create"),
-                    new [] { "pkey" },
+                    new[] {"pkey"},
                     new[] {
                         new object[] {"E1"}
                     });
@@ -268,7 +342,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean("E2", 0));
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("create"),
-                    new [] { "pkey" },
+                    new[] {"pkey"},
                     new[] {
                         new object[] {"E1"},
                         new object[] {"E2"}
@@ -278,7 +352,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("create"),
-                    new [] { "pkey" },
+                    new[] {"pkey"},
                     new[] {
                         new object[] {"E1"},
                         new object[] {"E2"}
@@ -304,7 +378,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean("E1", 0));
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("create"),
-                    new [] { "pkey" },
+                    new[] {"pkey"},
                     new[] {
                         new object[] {"E1"}
                     });
@@ -373,7 +447,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     });
                 EPAssertionUtil.AssertProps(
                     env.Listener("s1").AssertOneGetNewAndReset(),
-                    new [] { "pkey","col" },
+                    new[] {"pkey", "col"},
                     new object[] {"E4", 0});
 
                 env.UndeployAll();
@@ -384,7 +458,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 object[][] tableOneRows,
                 object[][] tableTwoRows)
             {
-                var fields = new [] { "pkey","col" };
+                var fields = new[] {"pkey", "col"};
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("createOne"), fields, tableOneRows);
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("createTwo"), fields, tableTwoRows);
             }
@@ -403,7 +477,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(
                     "on SupportBean_S1 insert into MyTableIIF select TheString as pKey0, IntPrimitive as pkey1 from MyWindow",
                     path);
-                var fields = new [] { "pKey0","pkey1" };
+                var fields = new[] {"pKey0", "pkey1"};
 
                 env.SendEventBean(new SupportBean("E1", 10));
 
@@ -441,7 +515,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "TheString" };
+                var fields = new[] {"TheString"};
                 var path = new RegressionPath();
                 env.CompileDeploy("@Name('create') create table MyTableIIU(TheString string)", path);
                 env.CompileDeploy("@Name('tbl-insert') insert into MyTableIIU select TheString from SupportBean", path);
@@ -483,7 +557,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "pkey","thesum" };
+                var fields = new[] {"pkey", "thesum"};
                 var epl = "@Name('create') create table MyTableIIK(" +
                           "pkey string primary key," +
                           "thesum sum(int));\n";
@@ -560,7 +634,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     TryAssertionWildcard(env, false, rep);
                 }
             }
@@ -579,6 +653,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public string P0 { get; }
 
             public string P1 { get; }
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedMySchema
+        {
+            public String P0;
+            public String P1;
         }
     }
 } // end of namespace

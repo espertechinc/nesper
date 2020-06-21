@@ -9,7 +9,6 @@
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -30,6 +29,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             Assert.AreEqual(
                 StatementType.CREATE_INDEX,
                 env.Statement("idx").GetProperty(StatementProperty.STATEMENTTYPE));
+            Assert.AreEqual(
+                "I1",
+                env.Statement("idx").GetProperty(StatementProperty.CREATEOBJECTNAME));
 
             env.SendEventBean(new SupportBean("E0", 1));
             env.SendEventBean(new SupportBean("E2", 2));

@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="isNot">true for negated regex</param>
         public RegExpExpression(bool isNot)
         {
-            this.not = isNot;
+            not = isNot;
         }
 
         /// <summary>
@@ -55,14 +55,14 @@ namespace com.espertech.esper.common.client.soda
             Expression escape,
             bool isNot)
         {
-            this.Children.Add(left);
-            this.Children.Add(right);
+            Children.Add(left);
+            Children.Add(right);
             if (escape != null)
             {
-                this.Children.Add(escape);
+                Children.Add(escape);
             }
 
-            this.not = isNot;
+            not = isNot;
         }
 
         /// <summary>
@@ -96,11 +96,11 @@ namespace com.espertech.esper.common.client.soda
             Expression right,
             Expression escape)
         {
-            this.Children.Add(left);
-            this.Children.Add(right);
+            Children.Add(left);
+            Children.Add(right);
             if (escape != null)
             {
-                this.Children.Add(escape);
+                Children.Add(escape);
             }
 
             not = false;
@@ -113,19 +113,19 @@ namespace com.espertech.esper.common.client.soda
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            this.Children[0].ToEPL(writer, Precedence);
+            Children[0].ToEPL(writer, Precedence);
             if (not)
             {
                 writer.Write(" not");
             }
 
             writer.Write(" regexp ");
-            this.Children[1].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+            Children[1].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
 
-            if (this.Children.Count > 2)
+            if (Children.Count > 2)
             {
                 writer.Write(" escape ");
-                this.Children[2].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                Children[2].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
         }
 

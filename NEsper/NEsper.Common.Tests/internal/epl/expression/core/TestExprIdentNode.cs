@@ -7,13 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.@event;
 using com.espertech.esper.common.@internal.supportunit.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.container;
 
 using NUnit.Framework;
 
@@ -37,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             streamTypeService = new SupportStreamTypeSvc3Stream(supportEventTypeFactory);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestValidateInvalid()
         {
             Assert.That(() => identNodes[0].StreamId, Throws.InstanceOf<IllegalStateException>());
@@ -46,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             Assert.That(() => identNodes[0].ResolvedPropertyName, Throws.InstanceOf<IllegalStateException>());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestValidate()
         {
             identNodes[0].Validate(SupportExprValidationContextFactory.Make(container, streamTypeService));
@@ -77,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             TryInvalidValidate(new ExprIdentNodeImpl("IntPrimitive", "s3"));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetType()
         {
             // test success
@@ -85,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             Assert.AreEqual(typeof(string), identNodes[0].Forge.EvaluationType);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEvaluate()
         {
             EventBean[] events = new[] { MakeEvent(10) };
@@ -95,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             Assert.IsNull(identNodes[3].Forge.ExprEvaluator.Evaluate(new EventBean[2], false, null));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEvaluatePerformance()
         {
             // test performance of evaluate for indexed events
@@ -115,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             Assert.That(delta, Is.LessThan(500));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestToExpressionString()
         {
             for (int i = 0; i < identNodes.Length; i++)
@@ -128,7 +126,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             Assert.AreEqual("s0.IntPrimitive", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(identNodes[3]));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEqualsNode()
         {
             identNodes[0].Validate(SupportExprValidationContextFactory.Make(container, streamTypeService));

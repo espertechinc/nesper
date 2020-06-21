@@ -9,6 +9,8 @@
 using System;
 using System.IO;
 
+using com.espertech.esper.common.@internal.compile.stage1.specmapper;
+
 namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
 {
     /// <summary>
@@ -30,6 +32,11 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
             }
 
             writer.Write(")");
+        }
+        
+        public override RowRecogExprNode CheckedCopySelf(ExpressionCopier expressionCopier)
+        {
+            return new RowRecogExprNodePermute();
         }
     }
 } // end of namespace

@@ -11,7 +11,7 @@ using System;
 namespace com.espertech.esper.common.client.configuration.runtime
 {
     /// <summary>
-    ///     Holds match-reconize settings.
+    ///     Holds match-recognize settings.
     /// </summary>
     [Serializable]
     public class ConfigurationRuntimeMatchRecognize

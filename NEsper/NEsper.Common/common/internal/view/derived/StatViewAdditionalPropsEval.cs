@@ -9,50 +9,41 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.view.derived
 {
     public class StatViewAdditionalPropsEval
     {
-        private readonly string[] additionalProps;
-        private readonly ExprEvaluator[] additionalEvals;
-        private readonly Type[] additionalTypes;
-
         public StatViewAdditionalPropsEval(
             string[] additionalProps,
             ExprEvaluator[] additionalEvals,
-            Type[] additionalTypes)
+            Type[] additionalTypes,
+            DataInputOutputSerde[] additionalSerdes)
         {
-            this.additionalProps = additionalProps;
-            this.additionalEvals = additionalEvals;
-            this.additionalTypes = additionalTypes;
+            this.AdditionalProps = additionalProps;
+            this.AdditionalEvals = additionalEvals;
+            this.AdditionalTypes = additionalTypes;
+            this.AdditionalSerdes = additionalSerdes;
         }
 
-        public string[] GetAdditionalProps()
-        {
-            return additionalProps;
-        }
+        public string[] AdditionalProps { get; }
 
-        public ExprEvaluator[] GetAdditionalEvals()
-        {
-            return additionalEvals;
-        }
+        public DataInputOutputSerde[] AdditionalSerdes { get; }
 
-        public Type[] GetAdditionalTypes()
-        {
-            return additionalTypes;
-        }
+        public ExprEvaluator[] AdditionalEvals { get; }
+
+        public Type[] AdditionalTypes { get; }
 
         public void AddProperties(
             IDictionary<string, object> newDataMap,
             object[] lastValuesEventNew)
         {
             if (lastValuesEventNew != null) {
-                for (int i = 0; i < additionalProps.Length; i++) {
-                    newDataMap.Put(additionalProps[i], lastValuesEventNew[i]);
+                for (int i = 0; i < AdditionalProps.Length; i++) {
+                    newDataMap.Put(AdditionalProps[i], lastValuesEventNew[i]);
                 }
             }
         }

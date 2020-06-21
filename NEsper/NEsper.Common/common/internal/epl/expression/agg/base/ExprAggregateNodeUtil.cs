@@ -110,12 +110,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
         {
             // Map to hold per level of the node (1 to N depth) of expression node a list of aggregation expr nodes, if any
             // exist at that level
-            var aggregateExprPerLevel = new OrderedDictionary<int, IList<ExprAggregateNode>>();
+            var aggregateExprPerLevel = new OrderedListDictionary<int, IList<ExprAggregateNode>>();
 
-            RecursiveAggregateHandleSpecial(topNode, aggregateExprPerLevel, 1);
-
-            // Recursively enter all aggregate functions and their level into map
-            RecursiveAggregateEnter(topNode, aggregateExprPerLevel, 1);
+            RecursiveAggregate(topNode, aggregateExprPerLevel, 1);
 
             // Done if none found
             if (aggregateExprPerLevel.IsEmpty()) {
@@ -134,6 +131,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             }
         }
 
+        private static void RecursiveAggregate(
+            ExprNode topNode,
+            IDictionary<int, IList<ExprAggregateNode>> aggregateExprPerLevel,
+            int level)
+        {
+            // Special node handling
+            RecursiveAggregateHandleSpecial(topNode, aggregateExprPerLevel, level);
+
+            // Recursively enter all aggregate functions and their level into map
+            RecursiveAggregateEnter(topNode, aggregateExprPerLevel, level);
+        }
+
         private static void RecursiveAggregateHandleSpecial(
             ExprNode topNode,
             IDictionary<int, IList<ExprAggregateNode>> aggregateExprPerLevel,
@@ -143,13 +152,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
                 var parameterized = (ExprNodeInnerNodeProvider) topNode;
                 var additionalNodes = parameterized.AdditionalNodes;
                 foreach (var additionalNode in additionalNodes) {
-                    RecursiveAggregateEnter(additionalNode, aggregateExprPerLevel, level);
+                    RecursiveAggregate(additionalNode, aggregateExprPerLevel, level);
                 }
             }
 
             if (topNode is ExprDeclaredNode) {
                 var declared = (ExprDeclaredNode) topNode;
-                RecursiveAggregateEnter(declared.Body, aggregateExprPerLevel, level);
+                RecursiveAggregate(declared.Body, aggregateExprPerLevel, level);
             }
         }
 
@@ -160,9 +169,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
         {
             // ask all child nodes to enter themselves
             foreach (var node in currentNode.ChildNodes) {
-                RecursiveAggregateHandleSpecial(node, aggregateExprPerLevel, currentLevel + 1);
-
-                RecursiveAggregateEnter(node, aggregateExprPerLevel, currentLevel + 1);
+                RecursiveAggregate(node, aggregateExprPerLevel, currentLevel + 1);
             }
 
             if (!(currentNode is ExprAggregateNode)) {

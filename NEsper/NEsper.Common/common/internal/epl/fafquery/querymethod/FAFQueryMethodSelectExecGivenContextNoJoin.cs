@@ -57,13 +57,12 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             var events = new ArrayDeque<EventBean[]>();
             ResultSetProcessor resultSetProcessor = null;
             foreach (var contextPartitionResult in contextPartitionResults) {
-                if (resultSetProcessor == null) {
-                    resultSetProcessor = ProcessorWithAssign(
-                        select.ResultSetProcessorFactoryProvider,
-                        contextPartitionResult.Context,
-                        assignerSetter,
-                        select.TableAccesses);
-                }
+                resultSetProcessor = ProcessorWithAssign(
+                    select.ResultSetProcessorFactoryProvider,
+                    contextPartitionResult.Context,
+                    assignerSetter,
+                    select.TableAccesses,
+                    select.Subselects);
 
                 var snapshot = contextPartitionResult.Events;
                 if (select.WhereClause != null) {
@@ -83,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 
             var distinct = EventBeanUtility.GetDistinctByProp(
                 EventBeanUtility.Flatten(events),
-                select.EventBeanReaderDistinct);
+                select.DistinctKeyGetter);
             return new EPPreparedQueryResult(select.EventType, distinct);
         }
 

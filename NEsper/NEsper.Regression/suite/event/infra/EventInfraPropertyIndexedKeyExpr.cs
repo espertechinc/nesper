@@ -6,10 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
@@ -21,12 +23,45 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
     {
         public void Run(RegressionEnvironment env)
         {
-            /*
             RunAssertionOA(env);
             RunAssertionMap(env);
             RunAssertionWrapper(env);
-            */
             RunAssertionBean(env);
+            RunAssertionJson(env);
+            RunAssertionJsonClassProvided(env);
+        }
+
+        private void RunAssertionJsonClassProvided(RegressionEnvironment env)
+        {
+            env.CompileDeploy(
+                    "@JsonSchema(ClassName='" +
+                    typeof(MyLocalJsonProvided).MaskTypeName() +
+                    "') @public @buseventtype create json schema JsonSchema();\n" +
+                    "@Name('s0') select * from JsonSchema;\n")
+                .AddListener("s0");
+            env.SendEventJson("{ \"indexed\": [1, 2], \"mapped\" : { \"keyOne\": 20 }}", "JsonSchema");
+            var @event = env.Listener("s0").AssertOneGetNewAndReset();
+
+            Assert.AreEqual(2, @event.EventType.GetGetterIndexed("indexed").Get(@event, 1));
+            Assert.AreEqual(20, @event.EventType.GetGetterMapped("mapped").Get(@event, "keyOne"));
+
+            env.UndeployAll();
+        }
+
+        private void RunAssertionJson(RegressionEnvironment env)
+        {
+            var mapType = typeof(IDictionary<string, object>).CleanName();
+            env.CompileDeploy(
+                    $"@public @buseventtype create json schema JsonSchema(indexed int[], mapped `{mapType}`);\n" +
+                    "@Name('s0') select * from JsonSchema;\n")
+                .AddListener("s0");
+            env.SendEventJson("{ \"indexed\": [1, 2], \"mapped\" : { \"keyOne\": 20 }}", "JsonSchema");
+            var @event = env.Listener("s0").AssertOneGetNewAndReset();
+
+            Assert.AreEqual(2, @event.EventType.GetGetterIndexed("indexed").Get(@event, 1));
+            Assert.AreEqual(20, @event.EventType.GetGetterMapped("mapped").Get(@event, "keyOne"));
+
+            env.UndeployAll();
         }
 
         private void RunAssertionBean(RegressionEnvironment env)
@@ -114,6 +149,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public IList<int> ListOfInt { get; } = Arrays.AsList(1, 2);
 
             public IEnumerable<int> IterableOfInt => ListOfInt;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvided
+        {
+            public int[] indexed;
+            public IDictionary<string, object> mapped;
         }
     }
 } // end of namespace

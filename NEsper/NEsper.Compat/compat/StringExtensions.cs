@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -97,6 +96,11 @@ namespace com.espertech.esper.compat
         public static byte[] GetUnicodeBytes(this string input)
         {
             return Encoding.Unicode.GetBytes(input);
+        }
+
+        public static string RemoveWhitespace(this string input)
+        {
+            return Regex.Replace(input, @"\s", "");
         }
     }
 }

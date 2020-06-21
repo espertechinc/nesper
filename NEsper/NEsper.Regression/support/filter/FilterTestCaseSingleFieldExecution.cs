@@ -41,6 +41,7 @@ namespace com.espertech.esper.regressionlib.support.filter
             var initialListener = env.Listener(stmtName);
 
             for (var i = 0; i < testCase.Values.Length; i++) {
+                // Console.WriteLine($"Run: {i} :> {testCase.FilterExpr} :> field {testCase.FieldName}={testCase.Values[i]}");
                 SendBean(env, testCase.FieldName, testCase.Values[i]);
                 Assert.AreEqual(
                     env.Listener(stmtName).IsInvokedAndReset(),

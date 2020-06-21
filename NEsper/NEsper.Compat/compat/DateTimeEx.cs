@@ -15,9 +15,7 @@ namespace com.espertech.esper.compat
     ///     DateTime with offset and timezone tracking.  When math operations are performed against this
     ///     structure, they can take into account the timezone the date was associated with.
     /// </summary>
-    public class DateTimeEx
-        : IComparable<DateTimeEx>,
-            IComparable
+    public class DateTimeEx : IComparable<DateTimeEx>, IComparable
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="DateTimeEx" /> class.
@@ -80,6 +78,22 @@ namespace com.espertech.esper.compat
 
         public int WeekOfYear => DateTime.GetWeekOfYear();
 
+        public long GetField(ChronoField field)
+        {
+            return field switch {
+                ChronoField.MILLI_OF_SECOND => Millisecond,
+                ChronoField.SECOND_OF_MINUTE => Second,
+                ChronoField.MINUTE_OF_HOUR => Minute,
+                ChronoField.HOUR_OF_DAY => Hour,
+                ChronoField.DAY_OF_MONTH => Day,
+                ChronoField.MONTH_OF_YEAR => Month,
+                ChronoField.ALIGNED_WEEK_OF_YEAR => WeekOfYear,
+                ChronoField.YEAR => Year,
+                ChronoField.DAY_OF_WEEK => (long) DateTime.DayOfWeek,
+                _ => throw new ArgumentOutOfRangeException(nameof(field), field, null)
+            };
+        }
+        
         /// <summary>
         ///     Gets the underlying date time object.
         /// </summary>
@@ -281,7 +295,7 @@ namespace com.espertech.esper.compat
                 TimeZone);
             return this;
         }
-
+        
         protected bool Equals(DateTimeEx other)
         {
             return DateTime.Equals(other.DateTime) && Equals(TimeZone, other.TimeZone);
@@ -324,6 +338,16 @@ namespace com.espertech.esper.compat
         public override string ToString()
         {
             return ToString(TimeZoneInfo.Utc);
+        }
+
+        public bool IsBefore(DateTimeEx that)
+        {
+            return this.DateTime < that.DateTime;
+        }
+
+        public bool IsAfter(DateTimeEx that)
+        {
+            return this.DateTime > that.DateTime;
         }
 
         public static bool operator >(
@@ -411,9 +435,14 @@ namespace com.espertech.esper.compat
             return this;
         }
 
+        public DateTimeEx AddDays(int amount)
+        {
+            return AddDays(amount, DateTimeMathStyle.CLR);
+        }
+
         public DateTimeEx AddDays(
             int amount,
-            DateTimeMathStyle style = DateTimeMathStyle.CLR)
+            DateTimeMathStyle style)
         {
             DateTime = DateTime.AddDays(amount);
             if (style == DateTimeMathStyle.Java) {
@@ -663,16 +692,19 @@ namespace com.espertech.esper.compat
 
         public static DateTimeEx GetInstance(
             TimeZoneInfo timeZoneInfo,
-            DateTimeOffset dtoffset)
+            DateTimeOffset? dtoffset)
         {
-            return new DateTimeEx(dtoffset, timeZoneInfo);
+            return dtoffset != null ? new DateTimeEx(dtoffset.Value, timeZoneInfo) : null;
         }
 
         public static DateTimeEx GetInstance(
             TimeZoneInfo timeZoneInfo,
-            DateTime dateTime)
+            DateTime? dateTime)
         {
-            var baseDt = dateTime.ToDateTimeOffset(timeZoneInfo);
+            if (dateTime == null) {
+                return null;
+            }
+            var baseDt = dateTime.Value.ToDateTimeOffset(timeZoneInfo);
             return new DateTimeEx(baseDt, timeZoneInfo);
         }
 
@@ -691,12 +723,12 @@ namespace com.espertech.esper.compat
             return GetInstance(TimeZoneInfo.Local, dtx);
         }
 
-        public static DateTimeEx LocalInstance(DateTimeOffset dtoffset)
+        public static DateTimeEx LocalInstance(DateTimeOffset? dtoffset)
         {
             return GetInstance(TimeZoneInfo.Local, dtoffset);
         }
 
-        public static DateTimeEx LocalInstance(DateTime dateTime)
+        public static DateTimeEx LocalInstance(DateTime? dateTime)
         {
             return GetInstance(TimeZoneInfo.Local, dateTime);
         }
@@ -712,12 +744,12 @@ namespace com.espertech.esper.compat
             return GetInstance(TimeZoneInfo.Utc, dtx);
         }
 
-        public static DateTimeEx UtcInstance(DateTimeOffset dtoffset)
+        public static DateTimeEx UtcInstance(DateTimeOffset? dtoffset)
         {
             return GetInstance(TimeZoneInfo.Utc, dtoffset);
         }
 
-        public static DateTimeEx UtcInstance(DateTime dateTime)
+        public static DateTimeEx UtcInstance(DateTime? dateTime)
         {
             return GetInstance(TimeZoneInfo.Utc, dateTime);
         }

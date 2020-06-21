@@ -57,8 +57,9 @@ namespace com.espertech.esper.compiler.@internal.util
             ModuleCompileTimeServices services,
             CompilerArguments args)
         {
-            var statementCompileTimeServices = new StatementCompileTimeServices(0, services);
-            var raw = CompilerHelperSingleEPL.ParseWalk(compilable, statementCompileTimeServices);
+            var compileTimeServices = new StatementCompileTimeServices(0, services);
+            var walkResult = CompilerHelperSingleEPL.ParseCompileInlinedClassesWalk(compilable, compileTimeServices);
+            var raw = walkResult.StatementSpecRaw;
 
             var statementType = StatementTypeUtil.GetStatementType(raw);
             if (statementType != StatementType.SELECT) {
@@ -106,7 +107,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 null,
                 compilable,
                 null);
-            var specCompiled = StatementRawCompiler.Compile(
+            StatementSpecCompiledDesc compiledDesc = StatementRawCompiler.Compile(
                 raw,
                 compilable,
                 false,
@@ -115,10 +116,12 @@ namespace com.espertech.esper.compiler.@internal.util
                 visitor.Subselects,
                 new List<ExprTableAccessNode>(raw.TableExpressions),
                 statementRawInfo,
-                statementCompileTimeServices);
+                compileTimeServices);
+            StatementSpecCompiled specCompiled = compiledDesc.Compiled;
+
             var fafSpec = specCompiled.Raw.FireAndForgetSpec;
 
-            var @namespace = "generated";
+            //var @namespace = "generated";
             var classPostfix = IdentifierUtil.GetIdentifierMayStartNumeric(statementName);
 
             EPCompiledManifest manifest;
@@ -130,14 +133,14 @@ namespace com.espertech.esper.compiler.@internal.util
                     specCompiled,
                     compilable,
                     statementRawInfo,
-                    statementCompileTimeServices);
+                    compileTimeServices);
             }
             else if (fafSpec == null) { // null indicates a select-statement, same as continuous query
                 var desc = new FAFQueryMethodSelectDesc(
                     specCompiled,
                     compilable,
                     statementRawInfo,
-                    statementCompileTimeServices);
+                    compileTimeServices);
                 var classNameResultSetProcessor =
                     CodeGenerationIDGenerator.GenerateClassNameSimple(
                         typeof(ResultSetProcessorFactoryProvider),
@@ -149,14 +152,14 @@ namespace com.espertech.esper.compiler.@internal.util
                     specCompiled,
                     compilable,
                     statementRawInfo,
-                    statementCompileTimeServices);
+                    compileTimeServices);
             }
             else if (fafSpec is FireAndForgetSpecUpdate) {
                 query = new FAFQueryMethodIUDUpdateForge(
                     specCompiled,
                     compilable,
                     statementRawInfo,
-                    statementCompileTimeServices);
+                    compileTimeServices);
             }
             else {
                 throw new IllegalStateException("Unrecognized FAF code " + fafSpec);
@@ -166,7 +169,7 @@ namespace com.espertech.esper.compiler.@internal.util
             VerifySubstitutionParams(raw.SubstitutionParameters);
 
             try {
-                manifest = CompileToAssembly(query, classPostfix, @namespace, args.Options, services, out assembly);
+                manifest = CompileToAssembly(query, classPostfix, args.Options, services, out assembly);
             }
             catch (EPCompileException) {
                 throw;
@@ -178,25 +181,19 @@ namespace com.espertech.esper.compiler.@internal.util
                     new EmptyList<EPCompileExceptionItem>());
             }
 
-            return new EPCompiled(assembly, manifest);
+            return new EPCompiled(new [] { assembly }, manifest);
         }
 
         private static EPCompiledManifest CompileToAssembly(
             FAFQueryMethodForge query,
             string classPostfix,
-            string @namespace,
             CompilerOptions compilerOptions,
             ModuleCompileTimeServices compileTimeServices,
             out Assembly assembly)
         {
             string queryMethodProviderClassName;
             try {
-                queryMethodProviderClassName = CompilerHelperFAFQuery.CompileQuery(
-                    query,
-                    classPostfix,
-                    @namespace,
-                    compileTimeServices,
-                    out assembly);
+                queryMethodProviderClassName = CompilerHelperFAFQuery.CompileQuery(query, classPostfix,compileTimeServices, out assembly);
             }
             catch (StatementSpecCompileException ex) {
                 EPCompileExceptionItem first;
@@ -215,28 +212,26 @@ namespace com.espertech.esper.compiler.@internal.util
             var fafProviderClassName = MakeFAFProvider(
                 queryMethodProviderClassName,
                 classPostfix,
-                @namespace,
                 compileTimeServices,
                 out assembly);
 
             // create manifest
-            return new EPCompiledManifest(COMPILER_VERSION, null, fafProviderClassName);
+            return new EPCompiledManifest(COMPILER_VERSION, null, fafProviderClassName, false);
         }
 
         private static string MakeFAFProvider(
             string queryMethodProviderClassName,
             string classPostfix,
-            string @namespace,
             ModuleCompileTimeServices compileTimeServices,
             out Assembly assembly)
         {
             var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementFields), classPostfix);
-            var packageScope = new CodegenNamespaceScope(
-                @namespace, statementFieldsClassName, compileTimeServices.IsInstrumented());
+            var namespaceScope = new CodegenNamespaceScope(
+                compileTimeServices.Namespace, statementFieldsClassName, compileTimeServices.IsInstrumented());
             var fafProviderClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(FAFProvider), classPostfix);
-            var classScope = new CodegenClassScope(true, packageScope, fafProviderClassName);
+            var classScope = new CodegenClassScope(true, namespaceScope, fafProviderClassName);
             var methods = new CodegenClassMethods();
             var properties = new CodegenClassProperties();
 
@@ -249,7 +244,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 classScope,
                 new List<CodegenTypedParam>());
 
-            ctor.Block.AssignRef(Ref("statementFields"), NewInstance(statementFieldsClassName));
+            ctor.Block.AssignRef(Ref("statementFields"), NewInstanceInner(statementFieldsClassName));
 
             // initialize-event-types
             var initializeEventTypesMethod = MakeInitEventTypes(classScope, compileTimeServices);
@@ -264,9 +259,9 @@ namespace com.espertech.esper.compiler.@internal.util
                 .AddParam(
                     typeof(EPStatementInitServices),
                     EPStatementInitServicesConstants.REF.Ref);
-            initializeQueryMethod.Block.AssignRef(
+            initializeQueryMethod.Block.AssignMember(
                 MEMBERNAME_QUERY_METHOD_PROVIDER,
-                NewInstance(queryMethodProviderClassName, EPStatementInitServicesConstants.REF, Ref("statementFields")));
+                NewInstanceInner(queryMethodProviderClassName, EPStatementInitServicesConstants.REF, Ref("statementFields")));
 
             // get-execute
             var queryMethodProviderProperty = CodegenProperty.MakePropertyNode(
@@ -276,7 +271,18 @@ namespace com.espertech.esper.compiler.@internal.util
                 classScope);
             queryMethodProviderProperty.GetterBlock.BlockReturn(Ref(MEMBERNAME_QUERY_METHOD_PROVIDER));
 
+            // provide module dependencies
+            var moduleDependenciesProperty = CodegenProperty.MakePropertyNode(
+                typeof(ModuleDependenciesRuntime),
+                typeof(EPCompilerImpl),
+                CodegenSymbolProviderEmpty.INSTANCE,
+                classScope);
+            moduleDependenciesProperty.GetterBlock
+                .BlockReturn(compileTimeServices.ModuleDependencies.Make(
+                    initializeQueryMethod, classScope));
+
             // build stack
+            CodegenStackGenerator.RecursiveBuildStack(moduleDependenciesProperty, "ModuleDependencies", methods, properties);
             CodegenStackGenerator.RecursiveBuildStack(initializeEventTypesMethod, "InitializeEventTypes", methods, properties);
             CodegenStackGenerator.RecursiveBuildStack(initializeQueryMethod, "InitializeQuery", methods, properties);
             CodegenStackGenerator.RecursiveBuildStack(queryMethodProviderProperty, "QueryMethodProvider", methods, properties);
@@ -288,8 +294,8 @@ namespace com.espertech.esper.compiler.@internal.util
             members.Add(typedParam);
 
             var clazz = new CodegenClass(
+                CodegenClassType.FAFPROVIDER,
                 typeof(FAFProvider),
-                @namespace,
                 fafProviderClassName,
                 classScope,
                 members,
@@ -297,15 +303,16 @@ namespace com.espertech.esper.compiler.@internal.util
                 methods,
                 properties,
                 new EmptyList<CodegenInnerClass>());
+
             var compiler = new RoslynCompiler()
                 .WithCodeLogging(compileTimeServices.Configuration.Compiler.Logging.IsEnableCode)
                 .WithCodeAuditDirectory(compileTimeServices.Configuration.Compiler.Logging.AuditDirectory)
-                .WithCodegenClass(clazz);
+                .WithCodegenClasses(new List<CodegenClass>() { clazz });
 
             assembly = compiler.Compile();
 
             return CodeGenerationIDGenerator.GenerateClassNameWithNamespace(
-                @namespace,
+                compileTimeServices.Namespace,
                 typeof(FAFProvider),
                 classPostfix);
         }

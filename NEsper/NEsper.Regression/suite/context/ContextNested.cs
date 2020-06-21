@@ -65,6 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             execs.Add(new ContextNestedInitTermOverCategoryIterate());
             execs.Add(new ContextNestedInitTermOverInitTermIterate());
             execs.Add(new ContextNestedCategoryOverInitTermDistinct());
+            execs.Add(new ContextNestedKeySegmentedWInitTermEndEvent());
             return execs;
         }
 
@@ -267,7 +268,36 @@ namespace com.espertech.esper.regressionlib.suite.context
             string stmtName)
         {
             var statement = env.Statement(stmtName);
-            Assert.AreEqual(count, SupportFilterHelper.GetFilterCount(statement, "SupportBean"));
+            Assert.AreEqual(count, SupportFilterServiceHelper.GetFilterSvcCount(statement, "SupportBean"));
+        }
+
+        private static SupportBean SendSBEvent(
+            RegressionEnvironment env,
+            string theString,
+            int intPrimitive)
+        {
+            SupportBean sb = new SupportBean(theString, intPrimitive);
+            env.SendEventBean(sb);
+            return sb;
+        }
+
+        internal class ContextNestedKeySegmentedWInitTermEndEvent : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "create context MyContext " +
+                             "context OuterContext partition by TheString from SupportBean,\n" +
+                             "context InnerContext start SupportBean(IntPrimitive = 1) as startevent end SupportBean(IntPrimitive = 0) as endevent;\n" +
+                             "@Name('s0') context MyContext select context.id as id, context.InnerContext.startevent as c0, context.InnerContext.endevent as c1 from SupportBean(IntPrimitive > 0) output all when terminated;\n";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SupportBean sb1 = SendSBEvent(env, "A", 1);
+                SupportBean sb2 = SendSBEvent(env, "A", 0);
+
+                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "c0,c1".SplitCsv(), new object[] {sb1, sb2});
+
+                env.UndeployAll();
+            }
         }
 
         internal class ContextNestedInitWStartNow : RegressionExecution
@@ -454,7 +484,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.UndeployAll();
 
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
             }
         }
 
@@ -711,7 +741,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 AssertFilters(env, "[\"SupportBean(IntPrimitive<0,TheStringisE1)\"]", "s0");
                 env.UndeployAll();
                 path.Clear();
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 // category over partition over category
                 eplContext = "@Name('ctx') create context TheContext " +
@@ -735,7 +765,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 AssertFilters(env, "[\"SupportBean(IntPrimitive<0)\", \"SupportBean(IntPrimitive>0)\"]", "ctx");
                 env.UndeployAll();
                 path.Clear();
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 // partition over partition over partition
                 eplContext = "@Name('ctx') create context TheContext " +
@@ -756,7 +786,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.UndeployAll();
                 path.Clear();
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 // category over hash
                 eplContext = "@Name('ctx') create context TheContext " +
@@ -776,7 +806,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 AssertFilters(env, "[\"SupportBean(IntPrimitive<0)\", \"SupportBean(IntPrimitive>0)\"]", "ctx");
                 env.UndeployAll();
                 path.Clear();
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 eplContext = "@Name('ctx') create context TheContext " +
                              "context CtxOne as partition by TheString from SupportBean, " +
@@ -792,7 +822,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 AssertFilters(env, "[]", "s0");
                 AssertFilters(env, "[\"SupportBean()\", \"SupportBean_S0()\"]", "ctx");
                 env.UndeployAll();
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
             }
 
             private static void AssertFilters(
@@ -800,7 +830,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 string expected,
                 string name)
             {
-                var actual = SupportFilterHelper.GetFilterToString(env, name);
+                var actual = SupportFilterServiceHelper.GetFilterSvcToString(env, name);
                 Assert.AreEqual(expected, actual);
             }
         }
@@ -956,7 +986,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     new[] {new object[] {"g2", "S0_4", "S1_4", 9}});
 
                 env.UndeployAll();
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
             }
         }
 
@@ -1060,7 +1090,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     new[] {new object[] {"S0_1", "E1", 8}, new object[] {"S0_2", "E1", 6}});
 
                 env.UndeployAll();
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
             }
         }
 
@@ -1124,7 +1154,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.UndeployAll();
                 path.Clear();
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 // Test partitioned context
                 //
@@ -1162,7 +1192,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.UndeployModuleContaining("s0");
                 env.UndeployModuleContaining("ctx");
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 path.Clear();
 
                 // Test partitioned context
@@ -1188,7 +1218,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.UndeployModuleContaining("s0");
                 env.UndeployAll();
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
             }
         }
 
@@ -1370,7 +1400,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.SendEventBean(new SupportBean("E16", 16));
                 Assert.IsFalse(listener.IsInvoked);
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env));
 
                 env.UndeployAll();
@@ -1725,21 +1755,21 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.SendEventBean(new SupportBean());
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 Assert.AreEqual(1, SupportScheduleHelper.ScheduleCountOverall(env));
 
                 env.Milestone(0);
 
                 // starts EightToNine context
                 SendTimeEvent(env, "2002-05-1T08:00:00.000");
-                Assert.AreEqual(1, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(1, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.SendEventBean(new SupportBean("E1", 0));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {1L});
-                Assert.AreEqual(2, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(2, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.Milestone(1);
 
@@ -1748,21 +1778,21 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {1L});
-                Assert.AreEqual(3, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(3, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.SendEventBean(new SupportBean("E1", 0));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {2L});
-                Assert.AreEqual(3, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(3, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 Assert.AreEqual(1, SupportScheduleHelper.ScheduleCountOverall(env));
 
                 env.Milestone(2);
 
                 // ends EightToNine context
                 SendTimeEvent(env, "2002-05-1T09:00:00.000");
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.SendEventBean(new SupportBean("E1", 0));
                 env.SendEventBean(new SupportBean("E2", 0));
@@ -1772,7 +1802,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // starts EightToNine context
                 SendTimeEvent(env, "2002-05-2T08:00:00.000");
-                Assert.AreEqual(1, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(1, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.SendEventBean(new SupportBean("E1", 0));
                 EPAssertionUtil.AssertProps(
@@ -1808,7 +1838,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.SendEventBean(new SupportBean("E2", 0));
                 Assert.IsFalse(listener.IsInvoked);
 
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env));
             }
         }
@@ -1833,23 +1863,23 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "context SegmentedByAString partition by TheString from SupportBean, " +
                     "context EightToNine as start (0, 8, *, *, *) end (0, 9, *, *, *)",
                     path);
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env));
 
                 var fields = new [] { "c1" };
                 env.CompileDeploy("@Name('s0') context NestedContext select count(*) as c1 from SupportBean", path);
                 env.AddListener("s0");
-                Assert.AreEqual(1, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(1, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env));
 
                 env.SendEventBean(new SupportBean("E1", 0));
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
-                Assert.AreEqual(1, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(1, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 Assert.AreEqual(1, SupportScheduleHelper.ScheduleCountOverall(env));
 
                 // starts EightToNine context
                 SendTimeEvent(env, "2002-05-1T08:00:00.000");
-                Assert.AreEqual(2, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(2, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.Milestone(0);
 
@@ -1858,7 +1888,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {1L});
-                Assert.AreEqual(2, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(2, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 Assert.AreEqual(1, SupportScheduleHelper.ScheduleCountOverall(env));
 
                 env.SendEventBean(new SupportBean("E2", 0));
@@ -1866,7 +1896,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {1L});
-                Assert.AreEqual(3, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(3, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 Assert.AreEqual(2, SupportScheduleHelper.ScheduleCountOverall(env));
 
                 env.Milestone(1);
@@ -1876,11 +1906,11 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {2L});
-                Assert.AreEqual(3, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(3, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 // ends EightToNine context
                 SendTimeEvent(env, "2002-05-1T09:00:00.000");
-                Assert.AreEqual(1, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(1, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.SendEventBean(new SupportBean("E1", 0));
                 env.SendEventBean(new SupportBean("E2", 0));
@@ -1891,7 +1921,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // starts EightToNine context
                 SendTimeEvent(env, "2002-05-2T08:00:00.000");
-                Assert.AreEqual(3, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(3, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.SendEventBean(new SupportBean("E1", 0));
                 EPAssertionUtil.AssertProps(
@@ -1920,7 +1950,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.SendEventBean(new SupportBean("E1", 0));
                 Assert.IsFalse(listener.IsInvoked);
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env));
             }
         }
@@ -1959,7 +1989,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                           "count(*) as c6 " +
                           "from SupportBean";
                 env.CompileDeploy(epl, path).AddListener("s0");
-                Assert.AreEqual(1, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(1, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.SendEventBean(new SupportBean("E1", 10));
                 EPAssertionUtil.AssertProps(
@@ -1971,7 +2001,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                         "NestedContext",
                         10, 1L
                     });
-                Assert.AreEqual(2, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(2, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.Milestone(0);
 
@@ -1986,14 +2016,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                         20, 1L
                     });
                 Assert.AreEqual(1, SupportScheduleHelper.ScheduleCountOverall(env));
-                Assert.AreEqual(3, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(3, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 2);
 
                 env.Milestone(1);
 
                 env.UndeployModuleContaining("s0");
                 Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env));
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.Milestone(2);
 
@@ -2010,7 +2040,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                         30, 1L
                     });
                 Assert.AreEqual(1, SupportScheduleHelper.ScheduleCountOverall(env));
-                Assert.AreEqual(2, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(2, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 1);
 
                 env.Milestone(3);
@@ -2024,7 +2054,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.SendEventBean(new SupportBean("E2", 30));
                 Assert.IsFalse(listener.IsInvoked);
                 Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env));
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
             }
         }
 

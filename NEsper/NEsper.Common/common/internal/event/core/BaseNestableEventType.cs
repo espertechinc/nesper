@@ -27,6 +27,7 @@ namespace com.espertech.esper.common.@internal.@event.core
     /// </summary>
     public abstract class BaseNestableEventType : EventTypeSPI
     {
+        private readonly bool _publicFields;
         private readonly BeanEventTypeFactory _beanEventTypeFactory;
         private readonly EventTypeNestableGetterFactory _getterFactory;
         private readonly ISet<EventType> _optionalDeepSuperTypes;
@@ -60,6 +61,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <param name="beanEventTypeFactory">bean factory</param>
         /// <param name="endTimestampPropertyName">end timestamp</param>
         /// <param name="startTimestampPropertyName">start timestamp</param>
+        /// <param name="publicFields"></param>
         protected BaseNestableEventType(
             EventTypeMetadata metadata,
             IDictionary<string, object> propertyTypes,
@@ -68,11 +70,15 @@ namespace com.espertech.esper.common.@internal.@event.core
             string startTimestampPropertyName,
             string endTimestampPropertyName,
             EventTypeNestableGetterFactory getterFactory,
-            BeanEventTypeFactory beanEventTypeFactory)
+            BeanEventTypeFactory beanEventTypeFactory,
+            bool publicFields)
         {
             _metadata = metadata;
             _getterFactory = getterFactory;
             _beanEventTypeFactory = beanEventTypeFactory;
+            _publicFields = publicFields;
+            _startTimestampPropertyName = startTimestampPropertyName;
+            _endTimestampPropertyName = endTimestampPropertyName;
 
             _optionalSuperTypes = optionalSuperTypes;
             _optionalDeepSuperTypes = optionalDeepSuperTypes ?? Collections.GetEmptySet<EventType>();
@@ -83,7 +89,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                 beanEventTypeFactory.EventBeanTypedEventFactory,
                 getterFactory,
                 optionalSuperTypes,
-                beanEventTypeFactory);
+                beanEventTypeFactory,
+                publicFields);
 
             _nestableTypes = propertySet.NestableTypes;
             _propertyNames = propertySet.PropertyNameArray;
@@ -128,7 +135,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                 propertyName,
                 _propertyItems,
                 _nestableTypes,
-                _beanEventTypeFactory);
+                _beanEventTypeFactory,
+                _publicFields);
         }
 
         public EventPropertyGetterSPI GetGetterSPI(string propertyName)
@@ -145,7 +153,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                 _beanEventTypeFactory.EventBeanTypedEventFactory,
                 _getterFactory,
                 _metadata.ApplicationType == EventTypeApplicationType.OBJECTARR,
-                _beanEventTypeFactory);
+                _beanEventTypeFactory,
+                _publicFields);
         }
 
         public EventPropertyGetter GetGetter(string propertyName)
@@ -178,7 +187,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             return propertyType != null;
         }
 
-        public EventType[] SuperTypes => _optionalSuperTypes;
+        public IList<EventType> SuperTypes => _optionalSuperTypes;
 
         public ICollection<EventType> DeepSuperTypesCollection => _optionalDeepSuperTypes;
 
@@ -242,7 +251,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                     return EventBeanUtility.CreateNativeFragmentType(
                         ((Type) type).GetElementType(),
                         null,
-                        _beanEventTypeFactory);
+                        _beanEventTypeFactory,
+                        _publicFields);
                 }
 
                 if (property is MappedProperty) {
@@ -305,7 +315,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                     var fragmentParent = EventBeanUtility.CreateNativeFragmentType(
                         (Type) type,
                         null,
-                        _beanEventTypeFactory);
+                        _beanEventTypeFactory,
+                        _publicFields);
 
                     return fragmentParent?.FragmentType.GetFragmentType(propertyNested);
                 }
@@ -332,7 +343,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                     return null;
                 }
 
-                EventType nestedEventType = _beanEventTypeFactory.GetCreateBeanType(simpleClass);
+                EventType nestedEventType = _beanEventTypeFactory.GetCreateBeanType(simpleClass, _publicFields);
                 return nestedEventType.GetFragmentType(propertyNested);
             }
 
@@ -420,13 +431,10 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public abstract Type UnderlyingType { get; }
         public abstract EventPropertyDescriptor[] WriteableProperties { get; }
-        public abstract EventBeanReader Reader { get; }
         public abstract EventPropertyWriterSPI GetWriter(string propertyName);
         public abstract EventPropertyDescriptor GetWritableProperty(string propertyName);
         public abstract EventBeanCopyMethodForge GetCopyMethodForge(string[] properties);
         public abstract EventBeanWriter GetWriter(string[] properties);
-
-        internal abstract void PostUpdateNestableTypes();
 
         /// <summary>
         ///     Compares two sets of properties and determines if they are the same, allowing for

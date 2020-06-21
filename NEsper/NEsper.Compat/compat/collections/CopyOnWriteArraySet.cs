@@ -20,11 +20,11 @@ namespace com.espertech.esper.compat.collections
         /// <param name="source">The source.</param>
         public void AddAll(IEnumerable<T> source)
         {
-            List<T> tempList = new List<T>();
+            var tempList = new List<T>();
 
             using( WriteLock.Acquire() )
             {
-                foreach (T item in source)
+                foreach (var item in source)
                 {
                     if (! Contains(item))
                     {

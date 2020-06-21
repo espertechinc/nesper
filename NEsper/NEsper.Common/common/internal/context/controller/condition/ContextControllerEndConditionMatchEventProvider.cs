@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.filterspec;
@@ -18,17 +19,41 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
         void PopulateEndConditionFromTrigger(
             MatchedEventMap map,
             EventBean triggeringEvent);
+        
+        void PopulateEndConditionFromTrigger(
+            MatchedEventMap map,
+            IDictionary<string, object> triggeringPattern);
     }
 
     public class ProxyContextControllerEndConditionMatchEventProvider : ContextControllerEndConditionMatchEventProvider
     {
-        public Action<MatchedEventMap, EventBean> ProcPopulateEndConditionFromTrigger;
+        public Action<MatchedEventMap, EventBean> ProcPopulateEndConditionFromTriggerWithEventBean;
+        public Action<MatchedEventMap, IDictionary<string, object>> ProcPopulateEndConditionFromTriggerWithPattern;
+
+        public ProxyContextControllerEndConditionMatchEventProvider()
+        {
+        }
+
+        public ProxyContextControllerEndConditionMatchEventProvider(
+            Action<MatchedEventMap, EventBean> procPopulateEndConditionFromTriggerWithEventBean,
+            Action<MatchedEventMap, IDictionary<string, object>> procPopulateEndConditionFromTriggerWithPattern)
+        {
+            ProcPopulateEndConditionFromTriggerWithEventBean = procPopulateEndConditionFromTriggerWithEventBean;
+            ProcPopulateEndConditionFromTriggerWithPattern = procPopulateEndConditionFromTriggerWithPattern;
+        }
 
         public void PopulateEndConditionFromTrigger(
             MatchedEventMap map,
             EventBean triggeringEvent)
         {
-            ProcPopulateEndConditionFromTrigger?.Invoke(map, triggeringEvent);
+            ProcPopulateEndConditionFromTriggerWithEventBean?.Invoke(map, triggeringEvent);
+        }
+
+        public void PopulateEndConditionFromTrigger(
+            MatchedEventMap map,
+            IDictionary<string, object> triggeringPattern)
+        {
+            ProcPopulateEndConditionFromTriggerWithPattern?.Invoke(map, triggeringPattern);
         }
     }
 } // end of namespace

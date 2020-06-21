@@ -114,8 +114,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
 
             // enumerate combinations building an index list
             var combinationEnumeration = new CombinationEnumeration(perNodeCombinations);
-            ISet<int> combination = new SortedSet<int>();
-            ISet<MultiKeyInt> indexList = new LinkedHashSet<MultiKeyInt>();
+            var combination = new SortedSet<int>();
+            var indexList = new LinkedHashSet<MultiKeyArrayInt>();
             while (combinationEnumeration.MoveNext()) {
                 combination.Clear();
                 object[] combinationOA = combinationEnumeration.Current;
@@ -127,7 +127,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
                 }
 
                 var indexArr = CollectionUtil.IntArray(combination);
-                indexList.Add(new MultiKeyInt(indexArr));
+                indexList.Add(new MultiKeyArrayInt(indexArr));
             }
 
             // obtain rollup levels

@@ -9,7 +9,6 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
@@ -24,12 +23,47 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLJoin2Stream());
+            With2Stream(execs);
+            With3StreamAllUnidirectional(execs);
+            With3StreamMixed(execs);
+            With4StreamWhereClause(execs);
+            WithOuterInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOuterInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinOuterInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With4StreamWhereClause(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoin4StreamWhereClause());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With3StreamMixed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoin3StreamMixed());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With3StreamAllUnidirectional(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLJoin3StreamAllUnidirectional(false));
             execs.Add(new EPLJoin3StreamAllUnidirectional(true));
-            execs.Add(new EPLJoin3StreamMixed());
-            execs.Add(new EPLJoin4StreamWhereClause());
-            execs.Add(new EPLJoinOuterInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> With2Stream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoin2Stream());
             return execs;
         }
 
@@ -47,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             string a,
             string b)
         {
-            var fields = new [] { "aId","bId" };
+            var fields = new[] {"aId", "bId"};
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
@@ -60,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             string b,
             string c)
         {
-            var fields = new [] { "a.Id","b.Id","c.Id" };
+            var fields = new[] {"a.Id", "b.Id", "c.Id"};
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
@@ -74,7 +108,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             string c,
             string d)
         {
-            var fields = new [] { "aId","bId","cId","dId" };
+            var fields = new[] {"aId", "bId", "cId", "dId"};
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,

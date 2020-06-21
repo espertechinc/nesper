@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace com.espertech.esper.runtime.@internal.kernel.statement
+﻿namespace com.espertech.esper.runtime.@internal.kernel.statement
 {
     public class EPStatementHandlerBase
     {

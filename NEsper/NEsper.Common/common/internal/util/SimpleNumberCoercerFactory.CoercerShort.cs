@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.util
                 return value.AsInt16();
             }
 
-            public Type ReturnType => typeof(short?);
+            public Type ReturnType => typeof(short);
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,

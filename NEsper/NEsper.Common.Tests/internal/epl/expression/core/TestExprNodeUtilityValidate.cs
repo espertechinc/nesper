@@ -8,7 +8,6 @@
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.util;
-using com.espertech.esper.container;
 
 using NUnit.Framework;
 
@@ -17,7 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     [TestFixture]
     public class TestExprNodeUtilityValidate : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetValidatedSubtree()
         {
             SupportExprNode.ValidateCount = 0;

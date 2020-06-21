@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.context.activator
             bool isRecoveringResilient)
         {
             HistoricalEventViewable viewable = factory.Activate(agentInstanceContext);
-            return new ViewableActivationResult(viewable, viewable, null, false, false, null, null);
+            return new ViewableActivationResult(viewable, viewable, null, false, false, null, null, null);
         }
     }
 } // end of namespace

@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
+
 using com.espertech.esper.common.@internal.supportunit.util;
 
 using NUnit.Framework;
@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.util
     [TestFixture]
     public class TestConstructorHelper : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestValidInvokeConstructor()
         {
             object[] parameters = new object[] { "test", 1 };
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.util
             Assert.AreEqual(parameters, objThree.Arguments);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInvalidInvokeConstructor()
         {
             // No Ctor

@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 namespace com.espertech.esper.common.@internal.collection
 {
     /// <summary> General-purpose pair of values of any type. The pair equals another pair if
@@ -45,7 +43,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// <returns>
         /// true if the specified <see cref="T:System.Object"></see> is equal to the current <see cref="T:System.Object"></see>; otherwise, false.
         /// </returns>
-        public override bool Equals(Object obj)
+        public override bool Equals(object obj)
         {
             if (this == obj) {
                 return true;
@@ -94,7 +92,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// <returns>
         /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
         /// </returns>
-        public override String ToString()
+        public override string ToString()
         {
             return "Pair [" + First + ':' + Second + ']';
         }

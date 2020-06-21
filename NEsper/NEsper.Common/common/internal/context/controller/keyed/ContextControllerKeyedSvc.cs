@@ -55,6 +55,10 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             IntSeqKey controllerPath,
             BiConsumer<object, int> keyAndSubpathOrCPId);
 
+        void KeyVisitEntry(
+            IntSeqKey controllerPath,
+            Consumer<ContextControllerKeyedSvcEntry> consumer);
+
         ICollection<int> Deactivate(IntSeqKey controllerPath);
 
         void Destroy();

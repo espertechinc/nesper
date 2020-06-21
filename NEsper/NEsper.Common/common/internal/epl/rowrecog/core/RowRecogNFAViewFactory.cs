@@ -6,17 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.runtime;
-using com.espertech.esper.common.@internal.collection;
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.rowrecog.nfa;
-using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.view.core;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.rowrecog.core
@@ -26,21 +21,21 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
     /// </summary>
     public class RowRecogNFAViewFactory : ViewFactory
     {
-        private RowRecogDesc desc;
+        private RowRecogDesc _desc;
 
-        private bool trackMaxStates;
-        private RowRecogNFAState[] startStates;
-        private RowRecogNFAState[] allStates;
-        private DataInputOutputSerdeWCollation<object> partitionKeySerde;
-        private int scheduleCallbackId;
+        private bool _trackMaxStates;
+        private RowRecogNFAState[] _startStates;
+        private RowRecogNFAState[] _allStates;
+        private DataInputOutputSerde _partitionKeySerde;
+        private int _scheduleCallbackId;
 
         public RowRecogDesc Desc {
-            get => desc;
-            set => desc = value;
+            get => _desc;
+            set => _desc = value;
         }
 
         public EventType EventType {
-            get => desc.RowEventType;
+            get => _desc.RowEventType;
             set {
                 // ignored
             }
@@ -52,17 +47,17 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         {
             ConfigurationRuntimeMatchRecognize matchRecognize =
                 services.RuntimeSettingsService.ConfigurationRuntime.MatchRecognize;
-            this.trackMaxStates = matchRecognize != null && matchRecognize.MaxStates != null;
+            this._trackMaxStates = matchRecognize != null && matchRecognize.MaxStates != null;
 
             // build start states
-            this.startStates = new RowRecogNFAState[desc.StartStates.Length];
-            for (int i = 0; i < desc.StartStates.Length; i++) {
-                this.startStates[i] = desc.StatesOrdered[desc.StartStates[i]];
+            this._startStates = new RowRecogNFAState[_desc.StartStates.Length];
+            for (int i = 0; i < _desc.StartStates.Length; i++) {
+                this._startStates[i] = _desc.StatesOrdered[_desc.StartStates[i]];
             }
 
             // build all states and state links
-            foreach (Pair<int, int[]> stateLink in desc.NextStatesPerState) {
-                RowRecogNFAStateBase state = desc.StatesOrdered[stateLink.First];
+            foreach (Pair<int, int[]> stateLink in _desc.NextStatesPerState) {
+                RowRecogNFAStateBase state = _desc.StatesOrdered[stateLink.First];
                 RowRecogNFAState[] nextStates = new RowRecogNFAState[stateLink.Second.Length];
                 state.NextStates = nextStates;
                 for (int i = 0; i < stateLink.Second.Length; i++) {
@@ -72,20 +67,20 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                         nextState = new RowRecogNFAStateEndEval();
                     }
                     else {
-                        nextState = desc.StatesOrdered[nextNum];
+                        nextState = _desc.StatesOrdered[nextNum];
                     }
 
                     nextStates[i] = nextState;
                 }
             }
 
-            this.allStates = desc.StatesOrdered;
+            this._allStates = _desc.StatesOrdered;
         }
 
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
             RowRecogNFAViewScheduler scheduler = null;
-            if (desc.HasInterval) {
+            if (_desc.HasInterval) {
                 scheduler = new RowRecogNFAViewSchedulerImpl();
             }
 
@@ -94,32 +89,30 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 agentInstanceViewFactoryContext.AgentInstanceContext,
                 scheduler);
 
-            if (scheduler != null) {
-                scheduler.SetScheduleCallback(agentInstanceViewFactoryContext.AgentInstanceContext, view);
-            }
+            scheduler?.SetScheduleCallback(agentInstanceViewFactoryContext.AgentInstanceContext, view);
 
             return view;
         }
 
         public bool IsTrackMaxStates {
-            get => trackMaxStates;
+            get => _trackMaxStates;
         }
 
         public RowRecogNFAState[] StartStates {
-            get => startStates;
+            get => _startStates;
         }
 
         public RowRecogNFAState[] AllStates {
-            get => allStates;
+            get => _allStates;
         }
 
-        public DataInputOutputSerdeWCollation<object> PartitionKeySerde {
-            get => partitionKeySerde;
+        public DataInputOutputSerde PartitionKeySerde {
+            get => _partitionKeySerde;
         }
 
         public int ScheduleCallbackId {
-            get => scheduleCallbackId;
-            set => scheduleCallbackId = value;
+            get => _scheduleCallbackId;
+            set => _scheduleCallbackId = value;
         }
 
         public string ViewName {

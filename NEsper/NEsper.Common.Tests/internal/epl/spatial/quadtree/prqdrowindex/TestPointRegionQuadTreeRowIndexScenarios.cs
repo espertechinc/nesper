@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
     [TestFixture]
     public class TestPointRegionQuadTreeRowIndexScenarios : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestSubdivideAdd()
         {
             PointRegionQuadTree<object> tree = PointRegionQuadTreeFactory<object>.Make(0, 0, 100, 100, 2, 3);
@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             Assert.AreEqual(3, NavigateLeaf(tree, "nw,nw").Count);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestDimension()
         {
             PointRegionQuadTree<object> tree = PointRegionQuadTreeFactory<object>.Make(1000, 100000, 9000, 900000);
@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             AssertFound(tree, 4000, 790000, 900, 9000, "");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestSuperSlim()
         {
             PointRegionQuadTree<object> tree = PointRegionQuadTreeFactory<object>.Make(0, 0, 100, 100, 1, 100);
@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             Compare(10, 95, "\"P2\"", (XYPointMultiType) se.Points);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestSubdivideMultiChild()
         {
             PointRegionQuadTree<object> tree = PointRegionQuadTreeFactory<object>.Make(0, 0, 100, 100, 4, 3);
@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             Compare(90, 45, "\"P5\"", collection[2]);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestRemoveNonExistent()
         {
             PointRegionQuadTree<object> tree = PointRegionQuadTreeFactory<object>.Make(0, 0, 100, 100, 20, 20);
@@ -135,7 +135,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             AssertFound(tree, 10, 60, 10000, 10000, "");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestSubdivideSingleMerge()
         {
             PointRegionQuadTree<object> tree = PointRegionQuadTreeFactory<object>.Make(0, 0, 100, 100, 3, 2);
@@ -179,7 +179,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             Compare(80, 60, "[\"P4\"]", collection[1]);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestSubdivideMultitypeMerge()
         {
             PointRegionQuadTree<object> tree = PointRegionQuadTreeFactory<object>.Make(0, 0, 100, 100, 6, 2);

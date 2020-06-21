@@ -43,8 +43,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
         }
 
         public void ProcessJoin(
-            ISet<MultiKey<EventBean>> newEvents,
-            ISet<MultiKey<EventBean>> oldEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents,
             bool isGenerateSynthetic)
         {
             if (processor.IsSelectRStream && lastEventRStreamForOutputLast == null) {

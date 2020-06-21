@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     .BlockReturn(ConstantNull());
                 if (subselect.SelectClause == null) {
                     method.Block.MethodReturn(
-                        Cast(
+                        FlexCast(
                             subselect.EvaluationType,
                             StaticMethod(
                                 typeof(EventBeanUtility),
@@ -85,18 +85,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             REF_EVENTS_SHIFTED,
                             symbols.GetAddIsNewData(method),
                             symbols.GetAddExprEvalCtx(method)));
-                    @foreach.IfCondition(NotEqualsNull(Ref("filtered")))
+                    @foreach
+                        .IfCondition(NotEqualsNull(Ref("filtered")))
                         .BlockReturn(ConstantNull())
                         .AssignRef("filtered", Ref("@event"));
                 }
 
                 if (subselect.SelectClause == null) {
-                    method.Block.IfRefNullReturnNull("filtered")
+                    method.Block
+                        .IfRefNullReturnNull("filtered")
                         .MethodReturn(Cast(subselect.EvaluationType, ExprDotUnderlying(Ref("filtered"))));
+
                     return LocalMethod(method);
                 }
 
-                method.Block.IfRefNullReturnNull("filtered")
+                method.Block
+                    .IfRefNullReturnNull("filtered")
                     .AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("filtered"));
             }
 
@@ -283,11 +287,48 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
+            var method = parent.MakeChild(typeof(EventBean), this.GetType(), classScope);
+
             if (subselect.SelectClause == null) {
-                return ConstantNull();
+                if (subselect.FilterExpr == null) {
+                    method
+                        .Block
+                        .IfCondition(
+                            Relational(
+                                ExprDotName(
+                                    symbols.GetAddMatchingEvents(method),
+                                    "Count"),
+                                CodegenExpressionRelational.CodegenRelational.GT,
+                                Constant(1)))
+                        .BlockReturn(ConstantNull())
+                        .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols)
+                        .MethodReturn(StaticMethod(typeof(EventBeanUtility), "GetNonemptyFirstEvent", symbols.GetAddMatchingEvents(method)));
+                    return LocalMethod(method);
+                }
+
+                CodegenExpression filterX = ExprNodeUtilityCodegen.CodegenEvaluator(
+                    subselect.FilterExpr,
+                    method,
+                    GetType(),
+                    classScope);
+                method
+                    .Block
+                    .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols)
+                    .DeclareVar(
+                        typeof(EventBean),
+                        "subSelectResult",
+                        StaticMethod(
+                            typeof(EventBeanUtility),
+                            "EvaluateFilterExpectSingleMatch",
+                            REF_EVENTS_SHIFTED,
+                            symbols.GetAddIsNewData(method),
+                            symbols.GetAddMatchingEvents(method),
+                            symbols.GetAddExprEvalCtx(method),
+                            filterX))
+                    .MethodReturn(Ref("subSelectResult"));
+                return LocalMethod(method);
             }
 
-            var method = parent.MakeChild(typeof(EventBean), this.GetType(), classScope);
             var eventBeanSvc =
                 classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var typeMember = classScope.AddDefaultFieldUnshared(

@@ -17,7 +17,6 @@ using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.previous;
-using com.espertech.esper.common.@internal.view.sort;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -39,7 +38,7 @@ namespace com.espertech.esper.common.@internal.view.timetolive
     /// </summary>
     public class TimeOrderView : ViewSupport,
         DataWindowView,
-        AgentInstanceStopCallback
+        AgentInstanceMgmtCallback
     {
         private readonly AgentInstanceContext agentInstanceContext;
         private readonly TimeOrderViewFactory factory;
@@ -51,7 +50,7 @@ namespace com.espertech.esper.common.@internal.view.timetolive
 
         private readonly EventBean[] eventsPerStream = new EventBean[1];
         private bool isCallbackScheduled;
-        private readonly OrderedDictionary<object, object> sortedEvents;
+        private readonly IOrderedDictionary<object, object> sortedEvents;
 
         public TimeOrderView(
             AgentInstanceViewFactoryChainContext agentInstanceContext,
@@ -65,7 +64,7 @@ namespace com.espertech.esper.common.@internal.view.timetolive
             scheduleSlot = agentInstanceContext.StatementContext.ScheduleBucket.AllocateSlot();
             this.timePeriodProvide = timePeriodProvide;
 
-            sortedEvents = new OrderedDictionary<object, object>();
+            sortedEvents = new OrderedListDictionary<object, object>();
 
             ScheduleHandleCallback callback = new ProxyScheduleHandleCallback {
                 ProcScheduledTrigger = () => {
@@ -216,9 +215,7 @@ namespace com.espertech.esper.common.@internal.view.timetolive
                     postOldEventsArray = postOldEvents.ToArray();
                 }
 
-                if (optionalSortedRandomAccess != null) {
-                    optionalSortedRandomAccess.Refresh(sortedEvents, eventCount, eventCount);
-                }
+                optionalSortedRandomAccess?.Refresh(sortedEvents, eventCount, eventCount);
             }
 
             // update child views
@@ -302,9 +299,7 @@ namespace com.espertech.esper.common.@internal.view.timetolive
                 }
             }
 
-            if (optionalSortedRandomAccess != null) {
-                optionalSortedRandomAccess.Refresh(sortedEvents, eventCount, eventCount);
-            }
+            optionalSortedRandomAccess?.Refresh(sortedEvents, eventCount, eventCount);
 
             // If there are child views, do the update method
             if (Child != null) {
@@ -331,6 +326,10 @@ namespace com.espertech.esper.common.@internal.view.timetolive
                 factory.ViewName);
             agentInstanceContext.StatementContext.SchedulingService.Add(callbackWait, handle, scheduleSlot);
             isCallbackScheduled = true;
+        }
+        
+        public void Transfer(AgentInstanceTransferServices services)
+        {
         }
     }
 } // end of namespace

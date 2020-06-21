@@ -16,7 +16,6 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -38,22 +37,113 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraMapTranspose());
-            execs.Add(new InfraNoWildcardWithAs());
-            execs.Add(new InfraNoWildcardNoAs());
-            execs.Add(new InfraConstantsAs());
-            execs.Add(new InfraCreateTableSyntax());
-            execs.Add(new InfraWildcardNoFieldsNoAs());
-            execs.Add(new InfraModelAfterMap());
-            execs.Add(new InfraWildcardInheritance());
-            execs.Add(new InfraNoSpecificationBean());
-            execs.Add(new InfraWildcardWithFields());
-            execs.Add(new InfraCreateTableArray());
-            foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+            WithMapTranspose(execs);
+            WithNoWildcardWithAs(execs);
+            WithNoWildcardNoAs(execs);
+            WithConstantsAs(execs);
+            WithCreateTableSyntax(execs);
+            WithWildcardNoFieldsNoAs(execs);
+            WithModelAfterMap(execs);
+            WithWildcardInheritance(execs);
+            WithNoSpecificationBean(execs);
+            WithWildcardWithFields(execs);
+            WithCreateTableArray(execs);
+            WithEventTypeColumnDef(execs);
+            WithCreateSchemaModelAfter(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateSchemaModelAfter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraCreateSchemaModelAfter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEventTypeColumnDef(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                 execs.Add(new InfraEventTypeColumnDef(rep));
             }
 
-            execs.Add(new InfraCreateSchemaModelAfter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateTableArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraCreateTableArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWildcardWithFields(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraWildcardWithFields());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNoSpecificationBean(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraNoSpecificationBean());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWildcardInheritance(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraWildcardInheritance());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithModelAfterMap(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraModelAfterMap());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWildcardNoFieldsNoAs(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraWildcardNoFieldsNoAs());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateTableSyntax(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraCreateTableSyntax());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithConstantsAs(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraConstantsAs());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNoWildcardNoAs(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraNoWildcardNoAs());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNoWildcardWithAs(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraNoWildcardWithAs());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMapTranspose(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraMapTranspose());
             return execs;
         }
 
@@ -103,10 +193,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
             public void Run(RegressionEnvironment env)
             {
-                var epl = eventRepresentationEnum.GetAnnotationText() +
-                          " @Name('schema') create schema SchemaOne(col1 int, col2 int);\n";
-                epl += eventRepresentationEnum.GetAnnotationText() +
-                       " @Name('create') create window SchemaWindow#lastevent as (s1 SchemaOne);\n";
+                var epl = eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedSchemaOne>() +
+                          " @name('schema') create schema SchemaOne(col1 int, col2 int);\n";
+                epl += eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedSchemaWindow>() +
+                       " @name('create') create window SchemaWindow#lastevent as (s1 SchemaOne);\n";
                 epl += "insert into SchemaWindow (s1) select sone from SchemaOne as sone;\n";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("create");
 
@@ -131,13 +221,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     theEvent.Put("col2", 11);
                     env.EventService.SendEventAvro(theEvent, "SchemaOne");
                 }
+                else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
+                    env.EventService.SendEventJson("{\"col1\": 10, \"col2\": 11}", "SchemaOne");
+                }
                 else {
                     Assert.Fail();
                 }
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("create").AssertOneGetNewAndReset(),
-                    new [] { "s1.col1","s1.col2" },
+                    new[] {"s1.col1", "s1.col2"},
                     new object[] {10, 11});
 
                 env.UndeployAll();
@@ -148,7 +241,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                TryAssertionMapTranspose(env, EventRepresentationChoice.ARRAY);
+                TryAssertionMapTranspose(env, EventRepresentationChoice.OBJECTARRAY);
                 TryAssertionMapTranspose(env, EventRepresentationChoice.MAP);
                 TryAssertionMapTranspose(env, EventRepresentationChoice.DEFAULT);
             }
@@ -180,7 +273,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.SendEventMap(outerData, "OuterType");
                 EPAssertionUtil.AssertProps(
                     env.Listener("create").AssertOneGetNewAndReset(),
-                    new [] { "one.i1","two.i2" },
+                    new[] {"one.i1", "two.i2"},
                     new object[] {1, 2});
 
                 env.UndeployAll();
@@ -340,7 +433,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     TryAssertionCreateSchemaModelAfter(env, rep);
                 }
 
@@ -364,13 +457,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 RegressionEnvironment env,
                 EventRepresentationChoice eventRepresentationEnum)
             {
-                var epl = eventRepresentationEnum.GetAnnotationText() +
-                          " create schema EventTypeOne (hsi int);\n" +
-                          eventRepresentationEnum.GetAnnotationText() +
-                          " create schema EventTypeTwo (event EventTypeOne);\n" +
-                          eventRepresentationEnum.GetAnnotationText() +
-                          " @Name('create') create window NamedWindow#unique(event.hsi) as EventTypeTwo;\n" +
-                          "on EventTypeOne as ev insert into NamedWindow select ev as event;\n";
+                var epl =
+                    eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedEventTypeOne>() +
+                    " create schema EventTypeOne (hsi int);\n" +
+                    eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedEventTypeTwo>() +
+                    " create schema EventTypeTwo (event EventTypeOne);\n" +
+                    "@Name('create') create window NamedWindow#unique(event.hsi) as EventTypeTwo;\n" +
+                    "on EventTypeOne as ev insert into NamedWindow select ev as event;\n";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath());
 
                 if (eventRepresentationEnum.IsObjectArrayEvent()) {
@@ -386,6 +479,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                             .AsRecordSchema());
                     theEvent.Put("hsi", 10);
                     env.EventService.SendEventAvro(theEvent, "EventTypeOne");
+                }
+                else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
+                    env.EventService.SendEventJson("{\"hsi\": 10}", "EventTypeOne");
                 }
                 else {
                     Assert.Fail();
@@ -428,7 +524,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.CompileDeploy(epl).AddListener("select").AddListener("create");
 
                 SendSupportBean(env, "E1", 1L, 10L);
-                var fields = new [] { "stringValOne","stringValTwo","intVal","longVal" };
+                var fields = new[] {"stringValOne", "stringValTwo", "intVal", "longVal"};
                 EPAssertionUtil.AssertProps(
                     env.Listener("create").AssertOneGetNewAndReset(),
                     fields,
@@ -500,7 +596,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 Assert.IsTrue(theEvent is MappedEventBean);
                 EPAssertionUtil.AssertProps(
                     theEvent,
-                    new [] { "key","primitive" },
+                    new[] {"key", "primitive"},
                     new object[] {"k1", 100L});
 
                 env.UndeployAll();
@@ -597,6 +693,27 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
         public class NWTypesChildClass : NWTypesParentClass
         {
+        }
+
+        public class MyLocalJsonProvidedSchemaOne
+        {
+            public int col1;
+            public int col2;
+        }
+
+        public class MyLocalJsonProvidedSchemaWindow
+        {
+            public MyLocalJsonProvidedSchemaOne s1;
+        }
+
+        public class MyLocalJsonProvidedEventTypeOne
+        {
+            public int hsi;
+        }
+
+        public class MyLocalJsonProvidedEventTypeTwo
+        {
+            public MyLocalJsonProvidedEventTypeOne @event;
         }
     }
 } // end of namespace

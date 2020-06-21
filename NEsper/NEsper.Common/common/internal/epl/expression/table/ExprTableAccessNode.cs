@@ -31,21 +31,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         ExprForgeInstrumentable,
         ExprEvaluator
     {
-        internal readonly string tableName;
-        internal ExprForge[] groupKeyEvaluators;
+        private readonly string _tableName;
+        private ExprForge[] _groupKeyEvaluators;
 #if NOT_USED
-        internal ExprTableEvalStrategyFactoryForge strategy;
+        private ExprTableEvalStrategyFactoryForge strategy;
 #endif
-        internal TableMetaData tableMeta;
+        private TableMetaData _tableMeta;
 
         /// <summary>
         ///     Ctor.
         ///     Getting a table name allows "eplToModel" without knowing tables.
         /// </summary>
         /// <param name="tableName">table name</param>
-        public ExprTableAccessNode(string tableName)
+        protected ExprTableAccessNode(string tableName)
         {
-            this.tableName = tableName;
+            _tableName = tableName;
         }
 
         protected abstract string InstrumentationQName { get; }
@@ -56,7 +56,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
         public abstract Type EvaluationType { get; }
 
-        public string TableName => tableName;
+        public string TableName => _tableName;
+
+        public TableMetaData TableMeta => _tableMeta;
+
+        public ExprForge[] GroupKeyEvaluators => _groupKeyEvaluators;
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
@@ -109,9 +113,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            tableMeta = validationContext.TableCompileTimeResolver.Resolve(tableName);
-            if (tableMeta == null) {
-                throw new ExprValidationException("Failed to resolve table name '" + tableName + "' to a table");
+            _tableMeta = validationContext.TableCompileTimeResolver.Resolve(_tableName);
+            if (_tableMeta == null) {
+                throw new ExprValidationException("Failed to resolve table name '" + _tableName + "' to a table");
             }
 
             if (!validationContext.IsAllowBindingConsumption) {
@@ -119,14 +123,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
                     "Invalid use of table access expression, expression '" + TableName + "' is not allowed here");
             }
 
-            if (tableMeta.OptionalContextName != null &&
+            if (_tableMeta.OptionalContextName != null &&
                 validationContext.ContextDescriptor != null &&
-                !tableMeta.OptionalContextName.Equals(validationContext.ContextDescriptor.ContextName)) {
+                !_tableMeta.OptionalContextName.Equals(validationContext.ContextDescriptor.ContextName)) {
                 throw new ExprValidationException(
                     "Table by name '" +
                     TableName +
                     "' has been declared for context '" +
-                    tableMeta.OptionalContextName +
+                    _tableMeta.OptionalContextName +
                     "' and can only be used within the same context");
             }
 
@@ -140,10 +144,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             ExprValidationContext validationContext)
         {
             if (ChildNodes.Length > 0) {
-                groupKeyEvaluators = ExprNodeUtilityQuery.GetForges(ChildNodes);
+                _groupKeyEvaluators = ExprNodeUtilityQuery.GetForges(ChildNodes);
             }
             else {
-                groupKeyEvaluators = new ExprForge[0];
+                _groupKeyEvaluators = new ExprForge[0];
             }
 
             var typesReturned = ExprNodeUtilityQuery.GetExprResultTypes(ChildNodes);
@@ -189,14 +193,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
         protected void ToPrecedenceFreeEPLInternal(
             TextWriter writer,
-            string subprop)
+            string subprop,
+            ExprNodeRenderableFlags flags)
         {
-            ToPrecedenceFreeEPLInternal(writer);
+            ToPrecedenceFreeEPLInternal(writer, flags);
             writer.Write(".");
             writer.Write(subprop);
         }
 
-        protected void ToPrecedenceFreeEPLInternal(TextWriter writer)
+        protected void ToPrecedenceFreeEPLInternal(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(TableName);
             if (ChildNodes.Length > 0) {
@@ -204,7 +211,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
                 var delimiter = "";
                 foreach (var expr in ChildNodes) {
                     writer.Write(delimiter);
-                    expr.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+                    expr.ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
                     delimiter = ",";
                 }
 
@@ -245,7 +252,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             return EqualsNodeInternal(that);
         }
 
-        protected internal static CodegenExpression MakeEvaluate(
+        internal static CodegenExpression MakeEvaluate(
             AccessEvaluationType evaluationType,
             ExprTableAccessNode accessNode,
             Type resultType,

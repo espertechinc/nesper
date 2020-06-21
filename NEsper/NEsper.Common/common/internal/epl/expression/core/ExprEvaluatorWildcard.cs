@@ -31,11 +31,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprEvaluatorContext context)
         {
             var @event = eventsPerStream[0];
-            if (@event == null) {
-                return null;
-            }
 
-            return @event.Underlying;
+            return @event?.Underlying;
         }
 
         public static CodegenExpression Codegen(

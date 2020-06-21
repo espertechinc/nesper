@@ -11,7 +11,7 @@ using com.espertech.esper.common.@internal.@event.core;
 
 namespace com.espertech.esper.common.@internal.epl.variable.core
 {
-    public class VariableTriggerWriteDesc
+    public class VariableTriggerWriteDesc : VariableTriggerWrite
     {
         public string VariableName { get; set; }
 

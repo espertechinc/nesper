@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.epl.table.strategy;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.agg.table
 {
@@ -206,6 +207,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
         public AggregationService GetContextPartitionAggregationService(int agentInstanceId)
         {
             return this;
+        }
+
+        public AggregationRow GetAggregationRow(
+            int agentInstanceId,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            throw new UnsupportedOperationException();
         }
     }
 } // end of namespace

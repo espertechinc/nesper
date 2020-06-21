@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
                 return null;
             }
 
-            var index = (OrderedDictionary<object, CompositeIndexEntry>) parent;
+            var index = (IOrderedDictionary<object, CompositeIndexEntry>) parent;
             var submapOne = index.Head(comparableStart, !includeStart);
             var submapTwo = index.Tail(comparableEnd, !includeEnd);
             return CompositeIndexQueryRange.Handle(
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
                 return null;
             }
 
-            var index = (OrderedDictionary<object, CompositeIndexEntry>) parent;
+            var index = (IOrderedDictionary<object, CompositeIndexEntry>) parent;
             var submapOne = index.Head(comparableStart, !includeStart);
             var submapTwo = index.Tail(comparableEnd, !includeEnd);
             return CompositeIndexQueryRange.Handle(eventsPerStream, submapOne, submapTwo, result, next, postProcessor);

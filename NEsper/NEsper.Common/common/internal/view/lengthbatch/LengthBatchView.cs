@@ -135,9 +135,7 @@ namespace com.espertech.esper.common.@internal.view.lengthbatch
                 }
 
                 // update view buffer to serve expressions require access to events held
-                if (viewUpdatedCollection != null) {
-                    viewUpdatedCollection.Update(newData, oldData);
-                }
+                viewUpdatedCollection?.Update(newData, oldData);
 
                 // Post new data (current batch) and old data (prior batch)
                 if (newData != null || oldData != null) {

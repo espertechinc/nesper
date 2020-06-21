@@ -8,7 +8,10 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
@@ -23,6 +26,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             IList<RegressionExecution> execs = new List<RegressionExecution>();
             execs.Add(new EPLContainedEventDocSample());
             execs.Add(new EPLContainedEventIntArray());
+            execs.Add(new EPLContainedStringArrayWithWhere());
             return execs;
         }
 
@@ -32,6 +36,47 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             long i)
         {
             Assert.AreEqual(i, env.CompileExecuteFAF("select count(*) as c0 from MyWindow", path).Array[0].Get("c0"));
+        }
+
+        private class EPLContainedStringArrayWithWhere : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "create schema MyRow(id String);\n" +
+                             "@public @buseventtype create schema MyEvent(idsBefore string[], idsAfter string[]);\n" +
+                             "@Name('s0') select id from MyEvent[select idsBefore, * from idsAfter@type(MyRow)] where id not in (idsBefore);\n";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                AssertSend(env, "A,B,C", "D,E", new object[][] {
+                    new object[] {"D"}, 
+                    new object[] {"E"}
+                });
+                AssertSend(env, "A,C", "C,A", null);
+                AssertSend(env, "A", "B", new object[][] {
+                    new object[] {"B"}
+                });
+                AssertSend(env, "A,B", "F,B,A", new object[][] {
+                    new object[] {"F"}
+                });
+
+                env.UndeployAll();
+            }
+
+            private void AssertSend(
+                RegressionEnvironment env,
+                string idsBeforeCSV,
+                string idsAfterCSV,
+                object[][] expected)
+            {
+                var data = CollectionUtil.BuildMap("idsBefore", idsBeforeCSV.SplitCsv(), "idsAfter", idsAfterCSV.SplitCsv());
+                env.SendEventMap(data, "MyEvent");
+                if (expected == null) {
+                    Assert.IsFalse(env.Listener("s0").IsInvokedAndReset());
+                }
+                else {
+                    EPAssertionUtil.AssertPropsPerRow(env.Listener("s0").GetAndResetLastNewData(), "id".SplitCsv(), expected);
+                }
+            }
         }
 
         internal class EPLContainedEventDocSample : RegressionExecution

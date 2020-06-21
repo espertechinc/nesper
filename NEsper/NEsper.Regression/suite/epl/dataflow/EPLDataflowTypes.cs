@@ -9,7 +9,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -18,7 +17,6 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
 using com.espertech.esper.common.@internal.epl.dataflow.util;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;
@@ -33,11 +31,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EPLDataflowBeanType());
-            execs.Add(new EPLDataflowMapType());
+WithBeanType(execs);
+WithMapType(execs);
             return execs;
         }
-
+public static IList<RegressionExecution> WithMapType(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowMapType());
+    return execs;
+}public static IList<RegressionExecution> WithBeanType(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowBeanType());
+    return execs;
+}
         private static IDictionary<string, object> MakeMap(
             string p0,
             int p1)

@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,6 +22,8 @@ using com.espertech.esper.regressionlib.framework;
 using NEsper.Avro.Extensions;
 using NEsper.Avro.Util.Support;
 
+using Newtonsoft.Json.Linq;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.epl.insertinto
@@ -30,24 +33,117 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLInsertIntoNamedWindowInheritsMap());
-            execs.Add(new EPLInsertIntoNamedWindowRep());
-            execs.Add(new EPLInsertIntoStreamInsertWWidenOA());
+            WithNamedWindowInheritsMap(execs);
+            WithNamedWindowRep(execs);
+            WithStreamInsertWWidenOA(execs);
+            WithInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoInvalid());
             return execs;
+        }
+
+        public static IList<RegressionExecution> WithStreamInsertWWidenOA(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoStreamInsertWWidenOA());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedWindowRep(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoNamedWindowRep());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedWindowInheritsMap(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoNamedWindowInheritsMap());
+            return execs;
+        }
+
+        internal class EPLInsertIntoNamedWindowInheritsMap : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "create objectarray schema Event();\n" +
+                             "create objectarray schema ChildEvent(id string, action string) inherits Event;\n" +
+                             "create objectarray schema Incident(name string, event Event);\n" +
+                             "@Name('window') create window IncidentWindow#keepall as Incident;\n" +
+                             "\n" +
+                             "on ChildEvent e\n" +
+                             "    merge IncidentWindow w\n" +
+                             "    where e.id = cast(w.event.id? as string)\n" +
+                             "    when not matched\n" +
+                             "        then insert (name, event) select 'ChildIncident', e \n" +
+                             "            where e.action = 'INSERT'\n" +
+                             "    when matched\n" +
+                             "        then update set w.event = e \n" +
+                             "            where e.action = 'INSERT'\n" +
+                             "        then delete\n" +
+                             "            where e.action = 'CLEAR';";
+                env.CompileDeployWBusPublicType(epl, new RegressionPath());
+
+                env.SendEventObjectArray(new object[] {"ID1", "INSERT"}, "ChildEvent");
+                EventBean @event = env.Statement("window").First();
+                object[] underlying = (object[]) @event.Underlying;
+                Assert.AreEqual("ChildIncident", underlying[0]);
+                object[] underlyingInner = (object[]) ((EventBean) underlying[1]).Underlying;
+                EPAssertionUtil.AssertEqualsExactOrder(new object[] {"ID1", "INSERT"}, underlyingInner);
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class EPLInsertIntoNamedWindowRep : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                foreach (EventRepresentationChoice rep in EventRepresentationChoiceExtensions.Values()) {
+                    if (rep.IsJsonProvidedClassEvent()) { // assertion uses inheritance of types
+                        continue;
+                    }
+
+                    TryAssertionNamedWindow(env, rep);
+                }
+            }
+        }
+
+        internal class EPLInsertIntoStreamInsertWWidenOA : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                foreach (EventRepresentationChoice rep in EventRepresentationChoiceExtensions.Values()) {
+                    TryAssertionStreamInsertWWidenMap(env, rep);
+                }
+            }
+        }
+
+        internal class EPLInsertIntoInvalid : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                foreach (EventRepresentationChoice rep in EventRepresentationChoiceExtensions.Values()) {
+                    TryAssertionInvalid(env, rep);
+                }
+            }
         }
 
         private static void TryAssertionNamedWindow(
             RegressionEnvironment env,
             EventRepresentationChoice rep)
         {
-            var path = new RegressionPath();
-            var schema = "@Name('schema') create " +
-                         rep.GetOutputTypeCreateSchemaName() +
-                         " schema A as (myint int, mystr string);\n" +
-                         "create " +
-                         rep.GetOutputTypeCreateSchemaName() +
-                         " schema C as (addprop int) inherits A;\n";
+            RegressionPath path = new RegressionPath();
+            string schema = rep.GetAnnotationText() +
+                            "@Name('schema') create schema A as (myint int, mystr string);\n" +
+                            rep.GetAnnotationText() +
+                            "create schema C as (addprop int) inherits A;\n";
             env.CompileDeployWBusPublicType(schema, path);
 
             env.CompileDeploy("create window MyWindow#time(5 days) as C", path);
@@ -64,14 +160,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             else if (rep.IsAvroEvent()) {
                 env.SendEventAvro(MakeAvro(env, 123, "abc"), "A");
             }
+            else if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
+                var @object = new JObject();
+                @object.Add("myint", 123);
+                @object.Add("mystr", "abc");
+                env.SendEventJson(@object.ToString(), "A");
+            }
             else {
                 Assert.Fail();
             }
 
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                new [] { "myint","mystr","addprop" },
-                new object[] {123, "abc", null});
+            EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "myint,mystr,addprop".SplitCsv(), new object[] {123, "abc", null});
             env.UndeployModuleContaining("insert");
 
             // select underlying plus property
@@ -85,11 +184,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             else if (rep.IsAvroEvent()) {
                 env.SendEventAvro(MakeAvro(env, 456, "def"), "A");
             }
+            else if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
+                var @object = new JObject();
+                @object.Add("myint", 456);
+                @object.Add("mystr", "def");
+                env.SendEventJson(@object.ToString(), "A");
+            }
+            else {
+                Assert.Fail();
+            }
 
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                new [] { "myint","mystr","addprop" },
-                new object[] {456, "def", 1});
+            EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "myint,mystr,addprop".SplitCsv(), new object[] {456, "def", 1});
 
             env.UndeployAll();
         }
@@ -98,80 +203,35 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             RegressionEnvironment env,
             EventRepresentationChoice rep)
         {
-            var path = new RegressionPath();
-            var schemaSrc = "@Name('schema') create " +
-                            rep.GetOutputTypeCreateSchemaName() +
-                            " schema Src as (myint int, mystr string)";
+            RegressionPath path = new RegressionPath();
+            string schemaSrc = rep.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedSrc>() +
+                               "@Name('schema') create schema Src as (myint int, mystr string)";
             env.CompileDeployWBusPublicType(schemaSrc, path);
 
             env.CompileDeploy(
-                "create " +
-                rep.GetOutputTypeCreateSchemaName() +
-                " schema D1 as (myint int, mystr string, addprop long)",
+                rep.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedD1>() + "create schema D1 as (myint int, mystr string, addprop long)",
                 path);
-            var eplOne = "insert into D1 select 1 as addprop, mysrc.* from Src as mysrc";
-            RunStreamInsertAssertion(
-                env,
-                path,
-                rep,
-                eplOne,
-                "myint,mystr,addprop",
-                new object[] {123, "abc", 1L});
+            string eplOne = "insert into D1 select 1 as addprop, mysrc.* from Src as mysrc";
+            RunStreamInsertAssertion(env, path, rep, eplOne, "myint,mystr,addprop", new object[] {123, "abc", 1L});
 
             env.CompileDeploy(
-                "create " +
-                rep.GetOutputTypeCreateSchemaName() +
-                " schema D2 as (mystr string, myint int, addprop double)",
+                rep.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedD2>() + "create schema D2 as (mystr string, myint int, addprop double)",
                 path);
-            var eplTwo = "insert into D2 select 1 as addprop, mysrc.* from Src as mysrc";
-            RunStreamInsertAssertion(
-                env,
-                path,
-                rep,
-                eplTwo,
-                "myint,mystr,addprop",
-                new object[] {123, "abc", 1d});
+            string eplTwo = "insert into D2 select 1 as addprop, mysrc.* from Src as mysrc";
+            RunStreamInsertAssertion(env, path, rep, eplTwo, "myint,mystr,addprop", new object[] {123, "abc", 1d});
 
-            env.CompileDeploy(
-                "create " + rep.GetOutputTypeCreateSchemaName() + " schema D3 as (mystr string, addprop int)",
-                path);
-            var eplThree = "insert into D3 select 1 as addprop, mysrc.* from Src as mysrc";
-            RunStreamInsertAssertion(
-                env,
-                path,
-                rep,
-                eplThree,
-                "mystr,addprop",
-                new object[] {"abc", 1});
+            env.CompileDeploy(rep.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedD3>() + "create schema D3 as (mystr string, addprop int)", path);
+            string eplThree = "insert into D3 select 1 as addprop, mysrc.* from Src as mysrc";
+            RunStreamInsertAssertion(env, path, rep, eplThree, "mystr,addprop", new object[] {"abc", 1});
 
-            env.CompileDeploy(
-                "create " + rep.GetOutputTypeCreateSchemaName() + " schema D4 as (myint int, mystr string)",
-                path);
-            var eplFour = "insert into D4 select mysrc.* from Src as mysrc";
-            RunStreamInsertAssertion(
-                env,
-                path,
-                rep,
-                eplFour,
-                "myint,mystr",
-                new object[] {123, "abc"});
+            env.CompileDeploy(rep.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedD4>() + "create schema D4 as (myint int, mystr string)", path);
+            string eplFour = "insert into D4 select mysrc.* from Src as mysrc";
+            RunStreamInsertAssertion(env, path, rep, eplFour, "myint,mystr", new object[] {123, "abc"});
 
-            var eplFive = "insert into D4 select mysrc.*, 999 as myint, 'xxx' as mystr from Src as mysrc";
-            RunStreamInsertAssertion(
-                env,
-                path,
-                rep,
-                eplFive,
-                "myint,mystr",
-                new object[] {999, "xxx"});
-            var eplSix = "insert into D4 select 999 as myint, 'xxx' as mystr, mysrc.* from Src as mysrc";
-            RunStreamInsertAssertion(
-                env,
-                path,
-                rep,
-                eplSix,
-                "myint,mystr",
-                new object[] {999, "xxx"});
+            string eplFive = "insert into D4 select mysrc.*, 999 as myint, 'xxx' as mystr from Src as mysrc";
+            RunStreamInsertAssertion(env, path, rep, eplFive, "myint,mystr", new object[] {999, "xxx"});
+            string eplSix = "insert into D4 select 999 as myint, 'xxx' as mystr, mysrc.* from Src as mysrc";
+            RunStreamInsertAssertion(env, path, rep, eplSix, "myint,mystr", new object[] {999, "xxx"});
 
             env.UndeployAll();
         }
@@ -180,24 +240,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             RegressionEnvironment env,
             EventRepresentationChoice rep)
         {
-            var path = new RegressionPath();
-            env.CompileDeploy(
-                "create " + rep.GetOutputTypeCreateSchemaName() + " schema Src as (myint int, mystr string)",
-                path);
+            RegressionPath path = new RegressionPath();
+            env.CompileDeploy(rep.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedSrc>() + "create schema Src as (myint int, mystr string)", path);
 
             // mismatch in type
-            env.CompileDeploy("create " + rep.GetOutputTypeCreateSchemaName() + " schema E1 as (myint long)", path);
-            var message = !rep.IsAvroEvent()
+            env.CompileDeploy(rep.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedE1>() + "create schema E1 as (myint long)", path);
+            string message = !rep.IsAvroEvent()
                 ? "Type by name 'E1' in property 'myint' expected System.Nullable<System.Int32> but receives System.Nullable<System.Int64>"
                 : "Type by name 'E1' in property 'myint' expected schema '{\"type\":\"long\"}' but received schema '{\"type\":\"int\"}'";
-            SupportMessageAssertUtil.TryInvalidCompile(
-                env,
-                path,
-                "insert into E1 select mysrc.* from Src as mysrc",
-                message);
+            SupportMessageAssertUtil.TryInvalidCompile(env, path, "insert into E1 select mysrc.* from Src as mysrc", message);
 
             // mismatch in column name
-            env.CompileDeploy("create " + rep.GetOutputTypeCreateSchemaName() + " schema E2 as (someprop long)", path);
+            env.CompileDeploy(rep.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedE2>() + "create schema E2 as (someprop long)", path);
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 path,
@@ -230,6 +284,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 @event.Put("mystr", "abc");
                 env.SendEventAvro(@event, "Src");
             }
+            else if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
+                JObject @object = new JObject();
+                @object.Add("myint", 123);
+                @object.Add("mystr", "abc");
+                env.SendEventJson(@object.ToString(), "Src");
+            }
+            else {
+                Assert.Fail();
+            }
 
             EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields.SplitCsv(), expected);
             env.UndeployModuleContaining("s0");
@@ -250,74 +313,60 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             int myint,
             string mystr)
         {
-            var eventType = env.Runtime.EventTypeService.GetEventType(env.DeploymentId("schema"), "A");
+            EventType eventType = env.Runtime.EventTypeService.GetEventType(env.DeploymentId("schema"), "A");
             var record = new GenericRecord(SupportAvroUtil.GetAvroSchema(eventType).AsRecordSchema());
             record.Put("myint", myint);
             record.Put("mystr", mystr);
             return record;
         }
 
-        internal class EPLInsertIntoNamedWindowInheritsMap : RegressionExecution
+        [Serializable]
+        public class MyLocalJsonProvidedSrc
         {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "create objectarray schema Event();\n" +
-                          "create objectarray schema ChildEvent(Id string, action string) inherits Event;\n" +
-                          "create objectarray schema Incident(name string, event Event);\n" +
-                          "@Name('window') create window IncidentWindow#keepall as Incident;\n" +
-                          "\n" +
-                          "on ChildEvent e\n" +
-                          "    merge IncidentWindow w\n" +
-                          "    where e.Id = cast(w.event.Id? as string)\n" +
-                          "    when not matched\n" +
-                          "        then insert (name, event) select 'ChildIncident', e \n" +
-                          "            where e.action = 'INSERT'\n" +
-                          "    when matched\n" +
-                          "        then update set w.event = e \n" +
-                          "            where e.action = 'INSERT'\n" +
-                          "        then delete\n" +
-                          "            where e.action = 'CLEAR';";
-                env.CompileDeployWBusPublicType(epl, new RegressionPath());
-
-                env.SendEventObjectArray(new object[] {"ID1", "INSERT"}, "ChildEvent");
-                var @event = env.Statement("window").First();
-                var underlying = (object[]) @event.Underlying;
-                Assert.AreEqual("ChildIncident", underlying[0]);
-                var underlyingInner = (object[]) ((EventBean) underlying[1]).Underlying;
-                EPAssertionUtil.AssertEqualsExactOrder(new object[] {"ID1", "INSERT"}, underlyingInner);
-
-                env.UndeployAll();
-            }
+            public int myint;
+            public string mystr;
         }
 
-        internal class EPLInsertIntoNamedWindowRep : RegressionExecution
+        [Serializable]
+        public class MyLocalJsonProvidedD1
         {
-            public void Run(RegressionEnvironment env)
-            {
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
-                    TryAssertionNamedWindow(env, rep);
-                }
-            }
+            public int myint;
+            public string mystr;
+            public long addprop;
         }
 
-        internal class EPLInsertIntoStreamInsertWWidenOA : RegressionExecution
+        [Serializable]
+        public class MyLocalJsonProvidedD2
         {
-            public void Run(RegressionEnvironment env)
-            {
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
-                    TryAssertionStreamInsertWWidenMap(env, rep);
-                }
-            }
+            public int myint;
+            public string mystr;
+            public double addprop;
         }
 
-        internal class EPLInsertIntoInvalid : RegressionExecution
+        [Serializable]
+        public class MyLocalJsonProvidedD3
         {
-            public void Run(RegressionEnvironment env)
-            {
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
-                    TryAssertionInvalid(env, rep);
-                }
-            }
+            public string mystr;
+            public int addprop;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedD4
+        {
+            public int myint;
+            public string mystr;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedE1
+        {
+            public long myint;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedE2
+        {
+            public long someprop;
         }
     }
 } // end of namespace

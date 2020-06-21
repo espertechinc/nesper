@@ -12,7 +12,6 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.variable;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.context;
@@ -420,7 +419,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env,
                     path,
                     "select * from SupportBean_S0#keepall output every myctxone_int events",
-                    "Error in the output rate limiting clause: Variable 'myctxone_int' defined for use with context 'MyCtxOne' can only be accessed within that context");
+                    "Failed to validate the output rate limiting clause: Variable 'myctxone_int' defined for use with context 'MyCtxOne' can only be accessed within that context");
                 TryInvalidCompile(
                     env,
                     path,

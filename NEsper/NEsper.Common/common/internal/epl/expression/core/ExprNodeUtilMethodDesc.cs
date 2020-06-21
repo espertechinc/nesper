@@ -15,11 +15,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public ExprNodeUtilMethodDesc(
             bool allConstants,
             ExprForge[] childForges,
-            MethodInfo reflectionMethod)
+            MethodInfo reflectionMethod,
+            bool isLocalInlinedClass)
         {
             IsAllConstants = allConstants;
             ChildForges = childForges;
             ReflectionMethod = reflectionMethod;
+            IsLocalInlinedClass = isLocalInlinedClass;
         }
 
         public bool IsAllConstants { get; }
@@ -27,5 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public MethodInfo ReflectionMethod { get; }
 
         public ExprForge[] ChildForges { get; }
+        
+        public bool IsLocalInlinedClass { get; }
     }
 } // end of namespace

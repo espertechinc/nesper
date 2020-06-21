@@ -20,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.epl.subselect;
 using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.common.@internal.view.core;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
@@ -66,7 +67,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
 
         public abstract InfraOnExprBaseViewResult DetermineOnExprView(
             AgentInstanceContext agentInstanceContext,
-            IList<AgentInstanceStopCallback> stopCallbacks,
+            IList<AgentInstanceMgmtCallback> stopCallbacks,
             bool isRecoveringReslient);
 
         public abstract View DetermineFinalOutputView(
@@ -78,7 +79,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
             AgentInstanceContext agentInstanceContext,
             bool isRecoveringResilient)
         {
-            IList<AgentInstanceStopCallback> stopCallbacks = new List<AgentInstanceStopCallback>();
+            IList<AgentInstanceMgmtCallback> stopCallbacks = new List<AgentInstanceMgmtCallback>();
 
             View view;
             IDictionary<int, SubSelectFactoryResult> subselectActivations;
@@ -120,8 +121,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
                 throw new EPException(ex.Message, ex);
             }
 
+            // finally process startup events: handle any pattern-match-event that was produced during startup,
+            // relevant for "timer:interval(0)" in conjunction with contexts
+            Runnable postContextMergeRunnable = () => activationResult.OptPostContextMergeRunnable?.Invoke();
+            
             var stopCallback = AgentInstanceUtil.FinalizeSafeStopCallbacks(stopCallbacks);
-            var onTriggerResult = new StatementAgentInstanceFactoryOnTriggerResult(
+            return new StatementAgentInstanceFactoryOnTriggerResult(
                 view,
                 stopCallback,
                 agentInstanceContext,
@@ -132,9 +137,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
                 null,
                 tableAccessEvals,
                 null,
-                null,
+                postContextMergeRunnable,
+                optPatternRoot,
                 activationResult);
-            return onTriggerResult;
         }
 
         public AIRegistryRequirements RegistryRequirements {

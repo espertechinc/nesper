@@ -36,12 +36,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
         public object GetObjectArray(object[] array)
         {
             var eventBean = array[propertyIndex];
-            if (eventBean == null) {
-                return null;
-            }
 
             var theEvent = (EventBean) eventBean;
-            return theEvent.Underlying;
+            return theEvent?.Underlying;
         }
 
         public bool IsObjectArrayExistsProperty(object[] array)

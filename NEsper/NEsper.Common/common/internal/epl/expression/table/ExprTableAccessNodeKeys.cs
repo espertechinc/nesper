@@ -30,9 +30,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
         protected override CodegenExpression[] InstrumentationQParams => new CodegenExpression[0];
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
-            ToPrecedenceFreeEPLInternal(writer);
+            ToPrecedenceFreeEPLInternal(writer, flags);
             writer.Write(".Keys()");
         }
 
@@ -42,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
         public override ExprTableEvalStrategyFactoryForge TableAccessFactoryForge {
             get {
-                var forge = new ExprTableEvalStrategyFactoryForge(tableMeta, null);
+                var forge = new ExprTableEvalStrategyFactoryForge(TableMeta, null);
                 forge.StrategyEnum = ExprTableEvalStrategyEnum.KEYS;
                 return forge;
             }

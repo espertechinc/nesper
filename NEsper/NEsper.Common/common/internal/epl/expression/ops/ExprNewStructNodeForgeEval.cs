@@ -21,16 +21,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprNewStructNodeForgeEval : ExprTypableReturnEval
     {
-        private readonly ExprEvaluator[] evaluators;
+        private readonly ExprEvaluator[] _evaluators;
 
-        private readonly ExprNewStructNodeForge forge;
+        private readonly ExprNewStructNodeForge _forge;
 
         public ExprNewStructNodeForgeEval(
             ExprNewStructNodeForge forge,
             ExprEvaluator[] evaluators)
         {
-            this.forge = forge;
-            this.evaluators = evaluators;
+            this._forge = forge;
+            this._evaluators = evaluators;
         }
 
         public object Evaluate(
@@ -38,10 +38,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var columnNames = forge.ForgeRenderable.ColumnNames;
+            var columnNames = _forge.ForgeRenderable.ColumnNames;
             IDictionary<string, object> props = new Dictionary<string, object>();
-            for (var i = 0; i < evaluators.Length; i++) {
-                props.Put(columnNames[i], evaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext));
+            for (var i = 0; i < _evaluators.Length; i++) {
+                props.Put(columnNames[i], _evaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext));
             }
 
             return props;
@@ -82,10 +82,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var columnNames = forge.ForgeRenderable.ColumnNames;
+            var columnNames = _forge.ForgeRenderable.ColumnNames;
             var rows = new object[columnNames.Length];
             for (var i = 0; i < columnNames.Length; i++) {
-                rows[i] = evaluators[i].Evaluate(eventsPerStream, isNewData, context);
+                rows[i] = _evaluators[i].Evaluate(eventsPerStream, isNewData, context);
             }
 
             return rows;

@@ -17,7 +17,6 @@ using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.compat.magic;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.runtime.client.scopetest;

@@ -27,6 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
             ExprNodes = new List<ExprNode>();
         }
 
+        public bool IsWalkDeclExprParam => true;
+
         /// <summary>
         ///     Returns the list of expression nodes requiring view resources.
         /// </summary>

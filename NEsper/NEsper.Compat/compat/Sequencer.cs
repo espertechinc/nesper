@@ -102,10 +102,7 @@ namespace com.espertech.esper.compat
             /// Gets the sequence.
             /// </summary>
             /// <value>The sequence.</value>
-            public int Sequence
-            {
-                get { return _sequence; }
-            }
+            public int Sequence => _sequence;
 
             #region IDisposable Members
 

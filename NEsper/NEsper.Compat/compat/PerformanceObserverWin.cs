@@ -59,7 +59,7 @@ namespace com.espertech.esper.compat
             	
             	var measured = timeB - timeA;
             	if (measured >= numCounter) {
-            		// We have achieved at least 1000 microseconds of delay, now computer
+            		// We have achieved at least 1000 microseconds of delay, now compute
             		// the number of iterations per microsecond.
             		var numMicros = measured * MpMicro;
             		SpinIterationsPerMicro = (int) (((double) nn) / numMicros);

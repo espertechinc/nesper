@@ -89,10 +89,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             instance.Methods.AddMethod(
                 typeof(ExprEvaluatorContext),
                 "GetAgentInstanceContext",
-                new EmptyList<CodegenNamedParam>(),
+                EmptyList<CodegenNamedParam>.Instance,
                 GetType(),
                 classScope,
-                node => node.Block.ReturnMethodOrBlock(REF_AGENTINSTANCECONTEXT));
+                node => node.Block.ReturnMethodOrBlock(MEMBER_AGENTINSTANCECONTEXT));
         }
 
         public void ProcessViewResultCodegen(

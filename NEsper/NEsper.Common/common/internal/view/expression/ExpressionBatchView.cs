@@ -68,9 +68,7 @@ namespace com.espertech.esper.common.@internal.view.expression
                     window.Remove(anOldData);
                 }
 
-                if (aggregationService != null) {
-                    aggregationService.ApplyLeave(oldData, null, agentInstanceContext);
-                }
+                aggregationService?.ApplyLeave(oldData, null, agentInstanceContext);
 
                 if (!window.IsEmpty()) {
                     oldestEvent = window.First();
@@ -96,9 +94,7 @@ namespace com.espertech.esper.common.@internal.view.expression
 
                 foreach (var newEvent in newData) {
                     window.Add(newEvent);
-                    if (aggregationService != null) {
-                        aggregationService.ApplyEnter(new[] {newEvent}, null, agentInstanceContext);
-                    }
+                    aggregationService?.ApplyEnter(new[] {newEvent}, null, agentInstanceContext);
 
                     newestEvent = newEvent;
                     if (!fireBatch) {
@@ -124,9 +120,7 @@ namespace com.espertech.esper.common.@internal.view.expression
         {
             if (numEventsInBatch == window.Count || numEventsInBatch == -1) {
                 var batchNewData = window.ToArrayOrNull();
-                if (viewUpdatedCollection != null) {
-                    viewUpdatedCollection.Update(batchNewData, lastBatch);
-                }
+                viewUpdatedCollection?.Update(batchNewData, lastBatch);
 
                 // post
                 if (batchNewData != null || lastBatch != null) {
@@ -138,9 +132,7 @@ namespace com.espertech.esper.common.@internal.view.expression
                 // clear
                 window.Clear();
                 lastBatch = batchNewData;
-                if (aggregationService != null) {
-                    aggregationService.ClearResults(agentInstanceContext);
-                }
+                aggregationService?.ClearResults(agentInstanceContext);
 
                 oldestEvent = null;
                 newestEvent = null;

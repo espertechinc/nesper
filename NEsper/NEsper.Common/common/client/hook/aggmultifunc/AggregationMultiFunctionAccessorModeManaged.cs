@@ -6,11 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client.hook.forgeinject;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.hook.aggmultifunc
 {
@@ -19,14 +15,22 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
     /// </summary>
     public class AggregationMultiFunctionAccessorModeManaged : AggregationMultiFunctionAccessorMode
     {
-        private InjectionStrategy injectionStrategyAggregationAccessorFactory;
+        private InjectionStrategy _injectionStrategyAggregationAccessorFactory;
 
+        public AggregationMultiFunctionAccessorModeManaged() {
+        }
+
+        public AggregationMultiFunctionAccessorModeManaged(InjectionStrategy injectionStrategyAggregationAccessorFactory) {
+            this._injectionStrategyAggregationAccessorFactory = injectionStrategyAggregationAccessorFactory;
+        }
+        
         /// <summary>
         /// Returns the injection strategy for the aggregation accessor factory
         /// </summary>
         /// <returns>strategy</returns>
         public InjectionStrategy InjectionStrategyAggregationAccessorFactory {
-            get => injectionStrategyAggregationAccessorFactory;
+            get => _injectionStrategyAggregationAccessorFactory;
+            set => _injectionStrategyAggregationAccessorFactory = value;
         }
 
         /// <summary>
@@ -37,7 +41,7 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         public AggregationMultiFunctionAccessorModeManaged SetInjectionStrategyAggregationAccessorFactory(
             InjectionStrategy strategy)
         {
-            this.injectionStrategyAggregationAccessorFactory = strategy;
+            this._injectionStrategyAggregationAccessorFactory = strategy;
             return this;
         }
     }

@@ -22,7 +22,8 @@ namespace com.espertech.esper.regressionlib.support.filter
         public static IList<FilterTestMultiStmtExecution> ComputePermutations(
             Type originator,
             PermutationSpec permutationSpec,
-            IList<FilterTestMultiStmtPermutable> cases)
+            IList<FilterTestMultiStmtPermutable> cases,
+            bool withStats)
         {
             // For each permutable test
             IList<FilterTestMultiStmtExecution> executions = new List<FilterTestMultiStmtExecution>();
@@ -31,7 +32,8 @@ namespace com.espertech.esper.regressionlib.support.filter
                     ComputePermutationsCase(
                         originator,
                         permutationSpec,
-                        permutableCase));
+                        permutableCase,
+                        withStats));
             }
 
             return executions;
@@ -40,11 +42,12 @@ namespace com.espertech.esper.regressionlib.support.filter
         private static IList<FilterTestMultiStmtExecution> ComputePermutationsCase(
             Type originator,
             PermutationSpec permutationSpec,
-            FilterTestMultiStmtPermutable permutableCase)
+            FilterTestMultiStmtPermutable permutableCase,
+            bool withStats)
         {
             if (!permutationSpec.IsAll) {
                 return Collections.SingletonList(
-                    CaseOf(originator, permutationSpec.Specific, permutableCase));
+                    CaseOf(originator, permutationSpec.Specific, permutableCase, withStats));
             }
 
             // determine that filters is different
@@ -56,7 +59,7 @@ namespace com.espertech.esper.regressionlib.support.filter
             IList<FilterTestMultiStmtExecution> executions = new List<FilterTestMultiStmtExecution>();
             var permutationEnumerator = PermutationEnumerator.Create(permutableCase.Filters.Length);
             foreach (var permutation in permutationEnumerator) {
-                executions.Add(CaseOf(originator, permutation, permutableCase));
+                executions.Add(CaseOf(originator, permutation, permutableCase, withStats));
             }
 
             return executions;
@@ -65,10 +68,11 @@ namespace com.espertech.esper.regressionlib.support.filter
         private static FilterTestMultiStmtExecution CaseOf(
             Type originator,
             int[] permutation,
-            FilterTestMultiStmtPermutable permutableCase)
+            FilterTestMultiStmtPermutable permutableCase,
+            bool withStats)
         {
             var theCase = ComputePermutation(permutableCase, permutation);
-            return new FilterTestMultiStmtExecution(originator, theCase);
+            return new FilterTestMultiStmtExecution(originator, theCase, withStats);
         }
 
         private static FilterTestMultiStmtCase ComputePermutation(

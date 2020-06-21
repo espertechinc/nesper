@@ -243,7 +243,7 @@ namespace com.espertech.esper.common.@internal.epl.util
             string invocableType,
             bool isFunction)
         {
-            return "Error validating " +
+            return "Failed to validate " +
                    invocableType +
                    " " +
                    (isFunction ? "function '" : "method '") +

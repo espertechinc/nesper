@@ -35,5 +35,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             string moduleName = deployment.ModuleProvider.ModuleName;
             return services.EventTypePathRegistry.GetWithModule(eventTypeName, moduleName);
         }
+        
+        public EventType GetBusEventType(string eventTypeName)
+        {
+            return services.EventTypeRepositoryBus.GetTypeByName(eventTypeName);
+        }
     }
 } // end of namespace

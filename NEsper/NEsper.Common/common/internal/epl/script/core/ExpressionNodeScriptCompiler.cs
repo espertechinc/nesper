@@ -8,12 +8,15 @@
 
 using System;
 
+using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.settings;
 
 namespace com.espertech.esper.common.@internal.epl.script.core
 {
     public class ExpressionNodeScriptCompiler
     {
+        public const string DEFAULT_DIALECT = "js";
+        
         public static ExpressionScriptCompiled CompileScript(
             string dialect,
             string scriptName,
@@ -21,7 +24,8 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             string[] parameterNames,
             Type[] evaluationTypes,
             ExpressionScriptCompiled optionalPrecompiled,
-            ImportService importService)
+            ImportService importService,
+            ScriptCompiler scriptingCompiler)
         {
 #if NOT_USED
             ExpressionScriptCompiled compiled;
@@ -30,8 +34,11 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 return optionalPrecompiled;
             }
 
-            throw new NotImplementedException();
-            //return JSR223Helper.VerifyCompileScript(scriptName, expression, dialect);
+            dialect ??= DEFAULT_DIALECT;
+            return new ExpressionScriptCompiledImpl(
+                scriptingCompiler.Compile(
+                    dialect ?? DEFAULT_DIALECT,
+                    new ExpressionScriptProvided(scriptName, expression, parameterNames, null, false, null, dialect)));
         }
     }
 } // end of namespace

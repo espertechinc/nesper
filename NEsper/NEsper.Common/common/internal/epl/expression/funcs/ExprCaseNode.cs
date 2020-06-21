@@ -232,7 +232,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             return IsCase2 == otherExprCaseNode.IsCase2;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             CaseAnalysis analysis;
             try {
@@ -245,19 +247,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             writer.Write("case");
             if (IsCase2) {
                 writer.Write(' ');
-                analysis.OptionalCompareExprNode.ToEPL(writer, Precedence);
+                analysis.OptionalCompareExprNode.ToEPL(writer, Precedence, flags);
             }
 
             foreach (var p in analysis.WhenThenNodeList) {
                 writer.Write(" when ");
-                p.First.ToEPL(writer, Precedence);
+                p.First.ToEPL(writer, Precedence, flags);
                 writer.Write(" then ");
-                p.Second.ToEPL(writer, Precedence);
+                p.Second.ToEPL(writer, Precedence, flags);
             }
 
             if (analysis.OptionalElseExprNode != null) {
                 writer.Write(" else ");
-                analysis.OptionalElseExprNode.ToEPL(writer, Precedence);
+                analysis.OptionalElseExprNode.ToEPL(writer, Precedence, flags);
             }
 
             writer.Write(" end");

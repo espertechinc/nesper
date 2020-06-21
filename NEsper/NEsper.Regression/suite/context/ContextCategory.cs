@@ -441,7 +441,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                        "select context.name as c0, context.label as c1, sum(IntPrimitive) as c2 from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                Assert.AreEqual(3, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(3, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 3, null, null, null);
 
                 env.MilestoneInc(milestone);
@@ -508,11 +508,11 @@ namespace com.espertech.esper.regressionlib.suite.context
                     });
 
                 Assert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env));
-                Assert.AreEqual(3, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(3, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.UndeployModuleContaining("s0");
 
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 Assert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env));
             }
         }

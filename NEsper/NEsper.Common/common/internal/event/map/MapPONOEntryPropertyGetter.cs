@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.@event.map
         {
             return true; // Property exists as the property is not dynamic (unchecked)
         }
-
+        
         public override object Get(EventBean obj)
         {
             return GetMap(BaseNestableEventUtil.CheckedCastUnderlyingMap(obj));

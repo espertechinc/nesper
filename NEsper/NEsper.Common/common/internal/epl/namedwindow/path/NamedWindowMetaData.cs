@@ -14,13 +14,14 @@ using com.espertech.esper.common.@internal.epl.join.lookup;
 using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.common.@internal.epl.lookupplansubord;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.namedwindow.path
 {
-    public class NamedWindowMetaData
+    public class NamedWindowMetaData : Copyable<NamedWindowMetaData>
     {
         public NamedWindowMetaData(
             EventType eventType,
@@ -63,6 +64,20 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.path
             OptionalEventTypeAs = optionalEventTypeAs;
             IsVirtualDataWindow = virtualDataWindow;
             IndexMetadata = indexMetadata;
+        }
+
+        public NamedWindowMetaData Copy()
+        {
+            return new NamedWindowMetaData(
+                EventType,
+                NamedWindowModuleName,
+                ContextName,
+                Uniqueness,
+                IsChildBatching,
+                IsEnableIndexShare,
+                OptionalEventTypeAs,
+                IsVirtualDataWindow,
+                IndexMetadata.Copy());
         }
 
         public EventType EventType { get; }

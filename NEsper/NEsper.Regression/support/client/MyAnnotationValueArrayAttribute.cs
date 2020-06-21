@@ -9,16 +9,22 @@
 using System;
 using System.ComponentModel;
 
+using com.espertech.esper.compat.attributes;
+
 namespace com.espertech.esper.regressionlib.support.client
 {
     public class MyAnnotationValueArrayAttribute : Attribute
     {
+        [Required]
         public long[] Value { get; set; }
 
+        [Required]
         public int[] IntArray { get; set; }
 
+        [Required]
         public double[] DoubleArray { get; set; }
 
+        [Required]
         public string[] StringArray { get; set; }
 
         [DefaultValue(new string[] { "XYZ" })]

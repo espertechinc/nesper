@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.type
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestAddDouble()
         {
             var computer = MathArithType.GetComputer(
@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.type
             Assert.AreEqual(12.1d, computer.Compute(5.5, 6.6));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestAllComputers()
         {
             Type[] testClasses = {
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.type
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestBigNumberComputers()
         {
             object[][] parameters = {
@@ -154,7 +154,7 @@ namespace com.espertech.esper.common.@internal.type
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInvalidGetComputer()
         {
             // Since we only do Double, Float, Integer and Long as results

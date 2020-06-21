@@ -231,8 +231,12 @@ namespace com.espertech.esper.common.@internal.schedule
             }
 
             foreach (var unit in EnumHelper.GetValues<ScheduleUnit>()) {
-                if (unit == ScheduleUnit.SECONDS && !unitValues.ContainsKey(unit)) // Seconds are optional
+                if ((unit == ScheduleUnit.SECONDS ||
+                     unit == ScheduleUnit.MILLISECONDS || 
+                     unit == ScheduleUnit.MICROSECONDS) && 
+                    (!unitValues.ContainsKey(unit)))
                 {
+                    // Seconds, milliseconds and microseconds are optional
                     continue;
                 }
 

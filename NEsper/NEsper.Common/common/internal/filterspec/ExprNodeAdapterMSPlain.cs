@@ -44,9 +44,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public override bool Evaluate(EventBean theEvent)
         {
-            if (_variableService != null) {
-                _variableService.SetLocalVersion();
-            }
+            _variableService?.SetLocalVersion();
 
             var eventsPerStream = _arrayPerThread.GetOrCreate();
             eventsPerStream[0] = theEvent;

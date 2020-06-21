@@ -12,6 +12,7 @@ using System.Linq;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -26,10 +27,62 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraTableOnMergeSimple());
-            execs.Add(new InfraOnMergePlainPropsAnyKeyed());
-            execs.Add(new InfraMergeWhereWithMethodRead());
+            WithTableOnMergeSimple(execs);
+            WithOnMergePlainPropsAnyKeyed(execs);
+            WithMergeWhereWithMethodRead(execs);
+            WithMergeSelectWithAggReadAndEnum(execs);
+            WithMergeTwoTables(execs);
+            WithTableEMACompute(execs);
+            WithTableArrayAssignmentBoxed(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTableArrayAssignmentBoxed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraTableArrayAssignmentBoxed());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTableEMACompute(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraTableEMACompute());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMergeTwoTables(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraMergeTwoTables());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMergeSelectWithAggReadAndEnum(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraMergeSelectWithAggReadAndEnum());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMergeWhereWithMethodRead(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraMergeWhereWithMethodRead());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOnMergePlainPropsAnyKeyed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraOnMergePlainPropsAnyKeyed());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTableOnMergeSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraTableOnMergeSimple());
             return execs;
         }
 
@@ -41,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var eplDeclare = "create table varaggIUD (p0 string, sumint sum(int))";
             env.CompileDeploy(soda, eplDeclare, path);
 
-            var fields = new [] { "c0", "c1" };
+            var fields = new[] {"c0", "c1"};
             var eplRead =
                 "@Name('s0') select varaggIUD.p0 as c0, varaggIUD.sumint as c1, varaggIUD as c2 from SupportBean_S0";
             env.CompileDeploy(soda, eplRead, path).AddListener("s0");
@@ -106,7 +159,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 new object[] {"updated", 50});
             EPAssertionUtil.AssertPropsMap(
                 (IDictionary<string, object>) received.Get("c2"),
-                new [] { "p0","sumint" },
+                new[] {"p0", "sumint"},
                 "updated",
                 50);
 
@@ -128,13 +181,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             RegressionEnvironment env,
             bool soda)
         {
-            var fieldsTable = new [] { "key","p0","p1","p2","sumint" };
+            var fieldsTable = new[] {"key", "p0", "p1", "p2", "sumint"};
             var path = new RegressionPath();
             var eplDeclare =
                 "create table varaggMIU (key int primary key, p0 string, p1 int, p2 int[], sumint sum(int))";
             env.CompileDeploy(soda, eplDeclare, path);
 
-            var fields = new [] { "c0", "c1", "c2", "c3" };
+            var fields = new[] {"c0", "c1", "c2", "c3"};
             var eplRead =
                 "@Name('s0') select varaggMIU[Id].p0 as c0, varaggMIU[Id].p1 as c1, varaggMIU[Id].p2 as c2, varaggMIU[Id].sumint as c3 from SupportBean_S0";
             env.CompileDeploy(soda, eplRead, path).AddListener("s0");
@@ -242,7 +295,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var eplDeclare = "create table varaggMIUD (keyOne int primary key, keyTwo string primary key, prop string)";
             env.CompileDeploy(soda, eplDeclare, path);
 
-            var fields = new [] { "c0", "c1", "c2" };
+            var fields = new[] {"c0", "c1", "c2"};
             var eplRead =
                 "@Name('s0') select varaggMIUD[Id,P00].keyOne as c0, varaggMIUD[Id,P00].keyTwo as c1, varaggMIUD[Id,P00].prop as c2 from SupportBean_S0";
             env.CompileDeploy(soda, eplRead, path).AddListener("s0");
@@ -316,7 +369,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.SendEventBean(new SupportBean_S1(2));
             EPAssertionUtil.AssertProps(
                 env.Listener("convert").AssertOneGetNewAndReset(),
-                new [] { "val0.keyOne" },
+                new[] {"val0.keyOne"},
                 new object[] {10});
 
             // delete for varagg[10, "A"]
@@ -331,6 +384,27 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 new object[] {null, null, null});
 
             env.UndeployAll();
+        }
+
+
+        private static void SendAssertEMA(
+            RegressionEnvironment env,
+            string id,
+            double x,
+            double? expected)
+        {
+            var @event = new Dictionary<string, object>();
+            @event.Put("id", id);
+            @event.Put("x", x);
+            env.SendEventMap(@event, "MyEvent");
+            var burn = env.Listener("output").AssertOneGetNewAndReset().Get("burn").AsBoxedDouble();
+            if (expected == null) {
+                Assert.IsNull(burn);
+            }
+            else {
+                Assert.NotNull(burn);
+                Assert.AreEqual(expected.Value, burn, 1e-10);
+            }
         }
 
         private static SupportBean MakeSupportBean(
@@ -348,7 +422,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             object[] objects,
             int total)
         {
-            var fields = new [] { "eventset","total" };
+            var fields = new[] {"eventset", "total"};
             env.SendEventBean(new SupportBean_S0(0));
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
             EPAssertionUtil.AssertProps(
@@ -378,12 +452,145 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             }
         }
 
+        internal class InfraTableArrayAssignmentBoxed : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl =
+                    "create table MyTable(dbls double[]);\n" +
+                    "@priority(2) on SupportBean merge MyTable when not matched then insert select new `System.Nullable<System.Double>`[3] as dbls;\n" +
+                    "@priority(1) on SupportBean merge MyTable when matched then update set dbls[IntPrimitive] = 1;\n" +
+                    "@Name('s0') select MyTable.dbls as c0 from SupportBean;\n";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                env.SendEventBean(new SupportBean("E1", 1));
+
+                CollectionAssert.AreEquivalent(
+                    new double?[] {null, 1d, null},
+                    env.Listener("s0").AssertOneGetNewAndReset().Get("c0").UnwrapIntoArray<double?>());
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class InfraTableEMACompute : RegressionExecution
+        {
+            /// <summary>
+            /// let p = 0.1
+            /// a = average(x1, x2, x3, x4, x5)    // Assume 5, in reality use a parameter
+            /// y1 = p * x1 + (p - 1) * a          // Recursive calculation initialized with look-ahead average
+            /// y2 = p * x2 + (p - 1) * y1
+            /// y3 = p * x3 + (p - 1) * y2
+            /// ....
+            /// The final stream should only publish y5, y6, y7, ...
+            /// </summary>
+            public void Run(RegressionEnvironment env)
+            {
+                string epl =
+                    "@public @buseventtype create schema MyEvent(id string, x double);\n" +
+                    "create constant variable int BURN_LENGTH = 5;\n" +
+                    "create constant variable double ALPHA = 0.1;\n" +
+                    "create table EMA(burnValues double[primitive], cnt int, value double);\n" +
+                    "" +
+                    "// Seed the row when the table is empty\n" +
+                    "@priority(2) on MyEvent merge EMA\n" +
+                    "  when not matched then insert select new double[BURN_LENGTH] as burnValues, 0 as cnt, null as value;\n" +
+                    "" +
+                    "inlined_class \"\"\"\n" +
+                    "  public class Helper {\n" +
+                    "    public static double ComputeInitialValue(double alpha, double[] burnValues) {\n" +
+                    "      double total = 0;\n" +
+                    "      foreach (double v in burnValues) {\n" +
+                    "        total = total + v;\n" +
+                    "      }\n" +
+                    "      double value = total / burnValues.Length;\n" +
+                    "      foreach (double v in burnValues) {\n" +
+                    "        value = alpha * v + (1 - alpha) * value;\n" +
+                    "      }\n" +
+                    "      return value;" +
+                    "    }\n" +
+                    "  }\n" +
+                    "\"\"\"\n" +
+                    "// Update the 'value' field with the current value\n" +
+                    "@priority(1) on MyEvent merge EMA as ema\n" +
+                    "  when matched and cnt < BURN_LENGTH - 1 then update set burnValues[cnt] = x, cnt = cnt + 1\n" +
+                    "  when matched and cnt = BURN_LENGTH - 1 then update set burnValues[cnt] = x, cnt = cnt + 1, value = Helper.ComputeInitialValue(ALPHA, burnValues), burnValues = null\n" +
+                    "  when matched then update set value = ALPHA * x + (1 - ALPHA) * value;\n" +
+                    "" +
+                    "// Output value\n" +
+                    "@Name('output') select EMA.value as burn from MyEvent;\n";
+                env.CompileDeploy(epl).AddListener("output");
+
+                SendAssertEMA(env, "E1", 1, null);
+
+                SendAssertEMA(env, "E2", 2, null);
+
+                SendAssertEMA(env, "E3", 3, null);
+
+                SendAssertEMA(env, "E4", 4, null);
+
+                // Last of the burn period
+                // We expect:
+                // a = (1+2+3+4+5) / 5 = 3
+                // y1 = 0.1 * 1 + 0.9 * 3 = 2.8
+                // y2 = 0.1 * 2 + 0.9 * 2.8
+                //    ... leading to
+                // y5 = 3.08588
+                SendAssertEMA(env, "E5", 5, 3.08588);
+
+                // Outside burn period
+                SendAssertEMA(env, "E6", 6, 3.377292);
+
+                env.Milestone(0);
+
+                SendAssertEMA(env, "E7", 7, 3.7395628);
+
+                SendAssertEMA(env, "E8", 8, 4.16560652);
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class InfraMergeTwoTables : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl =
+                    "@Name('T0') create table TableZero(k0 string primary key, v0 int);\n" +
+                    "@Name('T1') create table TableOne(k1 string primary key, v1 int);\n" +
+                    "on SupportBean merge TableZero " +
+                    "  where TheString = k0 when not matched " +
+                    "  then insert select TheString as k0, IntPrimitive as v0" +
+                    "  then insert into TableOne(k1, v1) select TheString, IntPrimitive;\n";
+                env.CompileDeploy(epl);
+
+                env.SendEventBean(new SupportBean("E1", 1));
+                AssertTables(env, new object[][] {new object[] {"E1", 1}});
+
+                env.Milestone(0);
+
+                env.SendEventBean(new SupportBean("E2", 2));
+                env.SendEventBean(new SupportBean("E2", 3));
+                AssertTables(env, new object[][] {new object[] {"E1", 1}, new object[] {"E2", 2}});
+
+                env.UndeployAll();
+            }
+
+            private void AssertTables(
+                RegressionEnvironment env,
+                object[][] expected)
+            {
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("T0"), "k0,v0".SplitCsv(), expected);
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("T1"), "k1,v1".SplitCsv(), expected);
+            }
+        }
+
         internal class InfraTableOnMergeSimple : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var fields = new [] { "k1","v1" };
+                var fields = new[] {"k1", "v1"};
 
                 env.CompileDeploy("@Name('tbl') create table varaggKV (k1 string primary key, v1 int)", path);
                 env.CompileDeploy(

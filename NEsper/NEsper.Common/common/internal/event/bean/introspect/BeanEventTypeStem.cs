@@ -78,5 +78,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
         public IList<EventPropertyDescriptor> PropertyDescriptors { get; }
 
         public IDictionary<string, EventPropertyDescriptor> PropertyDescriptorMap { get; }
+
+        public bool IsPublicFields =>
+            (OptionalLegacyDef != null) &&
+            (OptionalLegacyDef.AccessorStyle == AccessorStyle.PUBLIC);
     }
 } // end of namespace

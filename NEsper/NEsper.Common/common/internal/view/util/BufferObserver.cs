@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.@event.core;
 
 namespace com.espertech.esper.common.@internal.view.util

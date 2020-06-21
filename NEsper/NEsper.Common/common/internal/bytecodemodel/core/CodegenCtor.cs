@@ -23,6 +23,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
     {
         public CodegenCtor(
             Type generator,
+            bool includeDebugSymbols,
+            IList<CodegenTypedParam> @params)
+            : this(generator, null, includeDebugSymbols, @params)
+        {
+        }
+
+        public CodegenCtor(
+            Type generator,
             string className,
             bool includeDebugSymbols,
             IList<CodegenTypedParam> @params)

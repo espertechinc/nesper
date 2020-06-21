@@ -10,7 +10,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -25,9 +24,30 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraRollupOneDim());
-            execs.Add(new InfraRollupTwoDim());
+            WithRollupOneDim(execs);
+            WithRollupTwoDim(execs);
+            WithGroupingSetThreeDim(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupingSetThreeDim(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraGroupingSetThreeDim());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRollupTwoDim(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraRollupTwoDim());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRollupOneDim(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraRollupOneDim());
             return execs;
         }
 
@@ -61,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fieldsOut = new [] { "TheString","total" };
+                var fieldsOut = new[] {"TheString", "total"};
                 var path = new RegressionPath();
 
                 env.CompileDeploy("create table MyTableR1D(pk string primary key, total sum(int))", path);
@@ -133,7 +153,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "k0","k1","total" };
+                var fields = new[] {"k0", "k1", "total"};
 
                 var path = new RegressionPath();
                 env.CompileDeployWBusPublicType("create objectarray schema MyEventTwo(k0 int, k1 int, col int)", path);
@@ -192,7 +212,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "into table MyTableGS3D insert into MyStreamThree select sum(col) as total from MyEventThree#length(3) group by grouping sets(k0,k1,k2)",
                     path);
 
-                var fields = new [] { "k0","k1","k2","total" };
+                var fields = new[] {"k0", "k1", "k2", "total"};
                 env.SendEventObjectArray(new object[] {1, 10, 100, 1000}, "MyEventThree");
                 env.SendEventObjectArray(new object[] {2, 10, 200, 2000}, "MyEventThree");
 

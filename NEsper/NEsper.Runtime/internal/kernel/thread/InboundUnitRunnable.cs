@@ -10,10 +10,10 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.runtime.@internal.kernel.thread
 {
-    /// <summary>
-    /// Interface for inbound runnables.
-    /// </summary>
-    internal interface InboundUnitRunnable : IRunnable
+	/// <summary>
+	///     Interface for inbound runnables.
+	/// </summary>
+	public interface InboundUnitRunnable : IRunnable
     {
     }
 } // end of namespace

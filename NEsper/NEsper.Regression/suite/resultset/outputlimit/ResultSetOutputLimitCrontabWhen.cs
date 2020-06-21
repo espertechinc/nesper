@@ -555,17 +555,17 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportMarketDataBean output when true then set myvardummy = 'b'",
-                    "Error in the output rate limiting clause: Variable 'myvardummy' of declared type System.Nullable<System.Int32> cannot be assigned a value of type System.String [select * from SupportMarketDataBean output when true then set myvardummy = 'b']");
+                    "Failed to validate the output rate limiting clause: Failed to validate assignment expression 'myvardummy=\"b\"': Variable 'myvardummy' of declared type System.Nullable<System.Int32> cannot be assigned a value of type System.String [select * from SupportMarketDataBean output when true then set myvardummy = 'b']");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportMarketDataBean output when true then set myvardummy = sum(myvardummy)",
-                    "An aggregate function may not appear in a OUTPUT LIMIT clause [select * from SupportMarketDataBean output when true then set myvardummy = sum(myvardummy)]");
+                    "Aggregation functions may not be used within update-set [select * from SupportMarketDataBean output when true then set myvardummy = sum(myvardummy)]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportMarketDataBean output when true then set 1",
-                    "Error in the output rate limiting clause: Missing variable assignment expression in assignment number 0 [select * from SupportMarketDataBean output when true then set 1]");
+                    "Failed to validate the output rate limiting clause: Failed to validate assignment expression '1': Assignment expression must receive a single variable value");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,

@@ -6,14 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -35,13 +31,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 context.Method,
                 context.ClassScope,
                 true);
-            context.Method.Block.DeclareVar<EventBean>(
+            context.Method.Block
+                .DeclareVar<EventBean>(
                     "bean",
                     factoryLinear.AggregatorLinear.GetLastValueCodegen(
                         context.ClassScope,
                         context.Method,
                         context.NamedMethods))
-                .DebugStack()
                 .IfRefNullReturnNull("bean")
                 .DeclareVar<EventBean[]>(
                     "eventsPerStreamBuf",

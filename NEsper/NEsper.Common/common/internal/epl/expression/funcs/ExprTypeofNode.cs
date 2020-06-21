@@ -26,6 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         ExprFilterOptimizableNode
     {
         [NonSerialized] private ExprTypeofNodeForge forge;
+        [NonSerialized] private ExprValidationContext exprValidationContext;
 
         public ExprEvaluator ExprEvaluator {
             get {
@@ -57,16 +58,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                         return LocalMethod(method, beanExpression);
                     }
                 };
+                
+                var serde = exprValidationContext.SerdeResolver.SerdeForFilter(typeof(string), exprValidationContext.StatementRawInfo);
+                var eval = new ExprEventEvaluatorForgeFromProp(eventPropertyForge);
                 return new ExprFilterSpecLookupableForge(
                     ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(this),
-                    eventPropertyForge,
+                    eval,
+                    null,
                     typeof(string),
-                    true);
+                    true,
+                    serde);
             }
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
+            this.exprValidationContext = validationContext;
+
             if (ChildNodes.Length != 1) {
                 throw new ExprValidationException(
                     "Typeof node must have 1 child expression node supplying the expression to test");
@@ -103,10 +111,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write("typeof(");
-            ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+            ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
             writer.Write(')');
         }
 

@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.util
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestSortRelevance()
         {
             object[][] uris = {

@@ -10,7 +10,6 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.resultset.grouped;
@@ -67,8 +66,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 .StaticMethod(
                     typeof(ResultSetProcessorGroupedUtil),
                     METHOD_APPLYAGGVIEWRESULTKEYEDVIEW,
-                    REF_AGGREGATIONSVC,
-                    REF_AGENTINSTANCECONTEXT,
+                    MEMBER_AGGREGATIONSVC,
+                    MEMBER_AGENTINSTANCECONTEXT,
                     REF_NEWDATA,
                     Ref("newDataMultiKey"),
                     REF_OLDDATA,
@@ -93,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 ExprDotMethod(
                     factory,
                     "MakeRSRowPerGroupRollupSnapshotUnbound",
-                    REF_AGENTINSTANCECONTEXT,
+                    MEMBER_AGENTINSTANCECONTEXT,
                     Ref("this"),
                     Constant(forge.GroupKeyTypes),
                     Constant(forge.NumStreams),
@@ -130,8 +129,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 .StaticMethod(
                     typeof(ResultSetProcessorGroupedUtil),
                     METHOD_APPLYAGGVIEWRESULTKEYEDVIEW,
-                    REF_AGGREGATIONSVC,
-                    REF_AGENTINSTANCECONTEXT,
+                    MEMBER_AGGREGATIONSVC,
+                    MEMBER_AGENTINSTANCECONTEXT,
                     REF_NEWDATA,
                     Ref("newDataMultiKey"),
                     REF_OLDDATA,

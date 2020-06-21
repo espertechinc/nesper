@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -67,7 +66,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             }
 
             enclosingBlock.DeclareVar<int>("zidx", Op(Ref("index"), "-", Constant(1)));
-            var blocks = enclosingBlock.SwitchBlockOfLength("zidx", fields.Count, false);
+            var blocks = enclosingBlock.SwitchBlockOfLength(Ref("zidx"), fields.Count, false);
             for (var i = 0; i < blocks.Length; i++) {
                 CodegenSubstitutionParamEntry param = fields[i];
                 blocks[i].AssignRef(

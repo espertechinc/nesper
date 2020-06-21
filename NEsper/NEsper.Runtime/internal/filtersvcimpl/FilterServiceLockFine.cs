@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.compat.threading.locks;
@@ -21,8 +22,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         public FilterServiceLockFine(
             IReaderWriterLockManager rwLockManager,
-            bool allowIsolation) :
-            base(new FilterServiceGranularLockFactoryReentrant(rwLockManager), allowIsolation)
+            int stageId) :
+            base(new FilterServiceGranularLockFactoryReentrant(rwLockManager), stageId)
         {
             _lock = rwLockManager.CreateLock(GetType());
         }
@@ -46,20 +47,22 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         public override long Evaluate(
             EventBean theEvent,
-            ICollection<FilterHandle> matches)
+            ICollection<FilterHandle> matches,
+            ExprEvaluatorContext ctx)
         {
             using (_lock.ReadLock.Acquire()) {
-                return EvaluateInternal(theEvent, matches);
+                return EvaluateInternal(theEvent, matches, ctx);
             }
         }
 
         public override long Evaluate(
             EventBean theEvent,
             ICollection<FilterHandle> matches,
-            int statementId)
+            int statementId,
+            ExprEvaluatorContext ctx)
         {
             using (_lock.ReadLock.Acquire()) {
-                return EvaluateInternal(theEvent, matches, statementId);
+                return EvaluateInternal(theEvent, matches, statementId, ctx);
             }
         }
 

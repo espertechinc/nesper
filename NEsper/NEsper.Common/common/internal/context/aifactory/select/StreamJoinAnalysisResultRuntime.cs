@@ -14,13 +14,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 {
     public class StreamJoinAnalysisResultRuntime
     {
-        private bool[] unidirectional;
+        private bool[] _unidirectional;
 
         public bool IsPureSelfJoin { get; set; }
 
         public bool IsUnidirectionalAll {
             get {
-                foreach (var ind in unidirectional) {
+                foreach (var ind in _unidirectional) {
                     if (!ind) {
                         return false;
                     }
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
         public bool IsUnidirectional {
             get {
-                foreach (var ind in unidirectional) {
+                foreach (var ind in _unidirectional) {
                     if (ind) {
                         return true;
                     }
@@ -44,8 +44,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
         public int UnidirectionalStreamNumberFirst {
             get {
-                for (var i = 0; i < unidirectional.Length; i++) {
-                    if (unidirectional[i]) {
+                for (var i = 0; i < _unidirectional.Length; i++) {
+                    if (_unidirectional[i]) {
                         return i;
                     }
                 }
@@ -59,8 +59,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
         public NamedWindow[] NamedWindows { get; set; }
 
         public bool[] Unidirectional {
-            get => unidirectional;
-            set => unidirectional = value;
+            get => _unidirectional;
+            set => _unidirectional = value;
         }
 
         public Table[] Tables { get; set; }

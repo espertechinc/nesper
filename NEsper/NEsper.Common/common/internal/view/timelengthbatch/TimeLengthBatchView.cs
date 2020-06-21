@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
     ///     The view starts the first interval when the view is created.
     /// </summary>
     public class TimeLengthBatchView : ViewSupport,
-        AgentInstanceStopCallback,
+        AgentInstanceMgmtCallback,
         DataWindowView
     {
         private readonly AgentInstanceContext agentInstanceContext;
@@ -186,9 +186,7 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
                 }
 
                 // Post new data (current batch) and old data (prior batch)
-                if (viewUpdatedCollection != null) {
-                    viewUpdatedCollection.Update(newData, oldData);
-                }
+                viewUpdatedCollection?.Update(newData, oldData);
 
                 if (newData != null || oldData != null || factory.IsForceUpdate) {
                     agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, newData, oldData);
@@ -252,6 +250,10 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
             var scheduled = timePeriodProvide.DeltaAdd(currentTime, null, true, agentInstanceContext) - delta;
             agentInstanceContext.StatementContext.SchedulingService.Add(scheduled, handle, scheduleSlot);
             callbackScheduledTime = agentInstanceContext.StatementContext.SchedulingService.Time + scheduled;
+        }
+        
+        public void Transfer(AgentInstanceTransferServices services)
+        {
         }
     }
 } // end of namespace

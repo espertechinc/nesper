@@ -12,6 +12,7 @@ using System.Linq;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.controller.keyed;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.filterspec;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -54,6 +56,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             get => getters;
         }
 
+        public MultiKeyClassRef KeyMultiKey { get; set; }
+        
+        public DataInputOutputSerdeForge[] LookupableSerdes { get; set; }
+
         public string AliasName { get; }
 
         public CodegenExpression MakeCodegen(
@@ -74,18 +80,22 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                     "lookupables",
                     NewArrayByLength(typeof(ExprFilterSpecLookupable), Constant(getters.Length)));
             for (var i = 0; i < getters.Length; i++) {
-                var getter = EventTypeUtility.CodegenGetterWCoerce(
+                CodegenExpression getterX = EventTypeUtility.CodegenGetterWCoerceWArray(
+                    typeof(ExprEventEvaluator), 
                     getters[i],
                     types[i],
                     types[i],
                     method,
                     GetType(),
                     classScope);
-                var lookupable = NewInstance<ExprFilterSpecLookupable>(
+                CodegenExpression lookupable = NewInstance<ExprFilterSpecLookupable>(
                     Constant(PropertyNames[i]),
-                    getter,
+                    getterX,
+                    ConstantNull(),
                     Constant(types[i]),
-                    ConstantFalse());
+                    ConstantFalse(),
+                    LookupableSerdes[i].Codegen(method, classScope, null));
+
                 var eventType = ExprDotName(Ref("activatable"), "FilterForEventType");
                 method.Block
                     .AssignArrayElement(Ref("lookupables"), Constant(i), lookupable)
@@ -98,23 +108,23 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                                 ArrayAtIndex(Ref("lookupables"), Constant(i))));
             }
 
+            CodegenExpression getter = MultiKeyCodegen.CodegenGetterMayMultiKey(
+                filterSpecCompiled.FilterForEventType,
+                getters,
+                types,
+                null,
+                KeyMultiKey,
+                method,
+                classScope);
+
             method.Block
                 .DeclareVar<ContextControllerDetailKeyedItem>(
                     "item",
                     NewInstance(typeof(ContextControllerDetailKeyedItem)))
-                .SetProperty(
-                    Ref("item"),
-                    "Getter",
-                    EventTypeUtility.CodegenGetterMayMultiKeyWCoerce(
-                        filterSpecCompiled.FilterForEventType,
-                        getters,
-                        types,
-                        null,
-                        method,
-                        GetType(),
-                        classScope))
+                .SetProperty(Ref("item"), "Getter", getter)
                 .SetProperty(Ref("item"), "Lookupables", Ref("lookupables"))
                 .SetProperty(Ref("item"), "PropertyTypes", Constant(types))
+                .SetProperty(Ref("item"), "KeySerde", KeyMultiKey.GetExprMKSerde(method, classScope))
                 .SetProperty(Ref("item"), "FilterSpecActivatable", Ref("activatable"))
                 .SetProperty(Ref("item"), "AliasName", Constant(AliasName))
                 .MethodReturn(Ref("item"));

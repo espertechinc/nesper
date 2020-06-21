@@ -35,33 +35,46 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="innerExpression">the expression in parenthesis</param>
         public DotExpression(Expression innerExpression)
         {
-            this.Children.Add(innerExpression);
+            Children.Add(innerExpression);
         }
 
         /// <summary>
         /// Add a method to the chain of methods after the dot.
         /// </summary>
-        /// <param name="methodName">to add</param>
+        /// <param name="item">item to add</param>
+        public void Add(DotExpressionItem item)
+        {
+            chain.Add(item);
+        }
+        
+        /// <summary>
+        /// Add a method to the chain of methods after the dot.
+        /// </summary>
+        /// <param name="name">to add</param>
         /// <param name="parameters">parameters to method</param>
         public void Add(
-            string methodName,
+            string name,
             IList<Expression> parameters)
         {
-            chain.Add(new DotExpressionItem(methodName, parameters, false));
+            chain.Add(new DotExpressionItemCall(name, parameters));
         }
 
         /// <summary>
         /// Add a method to the chain of methods after the dot, indicating the this segment is a property and does not need parenthesis and won't have paramaters.
         /// </summary>
-        /// <param name="methodName">method name</param>
+        /// <param name="name">method name</param>
         /// <param name="parameters">parameter expressions</param>
         /// <param name="isProperty">property flag</param>
         public void Add(
-            string methodName,
+            string name,
             IList<Expression> parameters,
             bool isProperty)
         {
-            chain.Add(new DotExpressionItem(methodName, parameters, isProperty));
+            if (parameters.IsEmpty() && isProperty) {
+                chain.Add(new DotExpressionItemName(name));
+            } else {
+                chain.Add(new DotExpressionItemCall(name, parameters));
+            }
         }
 
         /// <summary>
@@ -80,12 +93,12 @@ namespace com.espertech.esper.common.client.soda
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            if (!this.Children.IsEmpty())
+            if (!Children.IsEmpty())
             {
-                this.Children[0].ToEPL(writer, Precedence);
+                Children[0].ToEPL(writer, Precedence);
             }
 
-            DotExpressionItem.Render(chain, writer, !this.Children.IsEmpty());
+            DotExpressionItem.Render(chain, writer, !Children.IsEmpty());
         }
     }
 } // end of namespace

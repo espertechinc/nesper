@@ -9,14 +9,13 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.configuration.runtime
 {
     /// <summary>
-    ///     Configuratiom for metrics reporting.
+    ///     Configuration for metrics reporting.
     /// </summary>
     [Serializable]
     public class ConfigurationRuntimeMetricsReporting
@@ -51,7 +50,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
         public bool IsThreading { get; set; }
 
         /// <summary>
-        ///     Returns the runtimemetrics production interval in milliseconds.
+        ///     Returns the runtime metrics production interval in milliseconds.
         /// </summary>
         /// <returns>runtime metrics production interval</returns>
         public long RuntimeInterval { get; set; }

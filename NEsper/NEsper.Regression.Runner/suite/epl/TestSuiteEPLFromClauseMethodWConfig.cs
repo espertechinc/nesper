@@ -12,7 +12,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.epl.fromclausemethod;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.epl;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 
 using NUnit.Framework;
 
@@ -94,6 +94,22 @@ namespace com.espertech.esper.regressionrun.suite.epl
             configuration.Common.AddEventType(typeof(SupportBean_S2));
 
             RegressionRunner.Run(session, EPLFromClauseMethodVariable.Executions());
+
+            session.Destroy();
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestEPLFromClauseMethodMultikeyWArray()
+        {
+            RegressionSession session = RegressionRunner.Session();
+
+            ConfigurationCommonMethodRef methodConfig = new ConfigurationCommonMethodRef();
+            methodConfig.SetExpiryTimeCache(1, 10);
+            session.Configuration.Common.AddMethodRef(typeof(EPLFromClauseMethodMultikeyWArray.SupportJoinResultIsArray), methodConfig);
+            session.Configuration.Common.AddEventType<SupportEventWithManyArray>();
+            session.Configuration.Common.Logging.IsEnableQueryPlan = true;
+
+            RegressionRunner.Run(session, EPLFromClauseMethodMultikeyWArray.Executions());
 
             session.Destroy();
         }

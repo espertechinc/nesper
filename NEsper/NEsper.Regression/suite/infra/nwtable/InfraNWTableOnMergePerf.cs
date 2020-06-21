@@ -10,7 +10,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -22,10 +21,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraPerformance(true, EventRepresentationChoice.ARRAY));
+            execs.Add(new InfraPerformance(true, EventRepresentationChoice.OBJECTARRAY));
             execs.Add(new InfraPerformance(true, EventRepresentationChoice.MAP));
             execs.Add(new InfraPerformance(true, EventRepresentationChoice.DEFAULT));
-            execs.Add(new InfraPerformance(false, EventRepresentationChoice.ARRAY));
+            execs.Add(new InfraPerformance(false, EventRepresentationChoice.OBJECTARRAY));
             return execs;
         }
 

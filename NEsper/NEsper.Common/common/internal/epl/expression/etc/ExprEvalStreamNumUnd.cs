@@ -23,15 +23,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         ExprEvaluator,
         ExprNodeRenderable
     {
-        private readonly int streamNum;
-        private readonly Type returnType;
+        private readonly int _streamNum;
+        private readonly Type _returnType;
 
         public ExprEvalStreamNumUnd(
             int streamNum,
             Type returnType)
         {
-            this.streamNum = streamNum;
-            this.returnType = returnType;
+            this._streamNum = streamNum;
+            this._returnType = returnType;
         }
 
         public object Evaluate(
@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return eventsPerStream[streamNum].Underlying;
+            return eventsPerStream[_streamNum].Underlying;
         }
 
         public CodegenExpression EvaluateCodegen(
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             CodegenClassScope codegenClassScope)
         {
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
-            return Cast(returnType, ExprDotUnderlying(ArrayAtIndex(refEPS, Constant(streamNum))));
+            return FlexCast(_returnType, ExprDotUnderlying(ArrayAtIndex(refEPS, Constant(_streamNum))));
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         }
 
         public Type EvaluationType {
-            get => returnType;
+            get => _returnType;
         }
 
         public ExprForgeConstantType ForgeConstantType {
@@ -68,9 +68,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             get => this;
         }
 
-        public void ToEPL(
-            TextWriter writer,
-            ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(this.GetType().Name);
         }

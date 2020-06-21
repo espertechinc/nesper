@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     [Serializable]
     public class ExprEqualsAllAnyNode : ExprNodeBase
     {
-        [NonSerialized] private ExprEqualsAllAnyNodeForge forge;
+        [NonSerialized] private ExprEqualsAllAnyNodeForge _forge;
 
         /// <summary>
         ///     Ctor.
@@ -41,15 +41,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
         public override ExprForge Forge {
             get {
-                CheckValidated(forge);
-                return forge;
+                CheckValidated(_forge);
+                return _forge;
             }
         }
 
@@ -134,13 +134,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
             }
 
-            forge = new ExprEqualsAllAnyNodeForge(this, mustCoerce, coercer, coercionTypeBoxed, hasCollectionOrArray);
+            _forge = new ExprEqualsAllAnyNodeForge(this, mustCoerce, coercer, coercionTypeBoxed, hasCollectionOrArray);
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
-            ChildNodes[0].ToEPL(writer, Precedence);
+            ChildNodes[0].ToEPL(writer, Precedence, flags);
             if (IsAll) {
                 if (IsNot) {
                     writer.Write("!=all");
@@ -163,7 +164,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var delimiter = "";
             for (var i = 0; i < ChildNodes.Length - 1; i++) {
                 writer.Write(delimiter);
-                ChildNodes[i + 1].ToEPL(writer, Precedence);
+                ChildNodes[i + 1].ToEPL(writer, Precedence, flags);
                 delimiter = ",";
             }
 

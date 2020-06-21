@@ -38,6 +38,10 @@ namespace com.espertech.esper.compiler.@internal.util
             string @namespace,
             string typeName)
         {
+            if (@namespace == null) {
+                throw new ArgumentNullException(@namespace);
+            }
+
             Namespace = @namespace
                 .Replace(".internal.", ".@internal.")
                 .Replace(".internal", ".@internal")
@@ -47,6 +51,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 .Replace(".lock", ".@lock")
                 .Replace(".event.", ".@event.")
                 .Replace(".event", ".@event");
+
             TypeName = typeName;
         }
 
@@ -87,7 +92,7 @@ namespace com.espertech.esper.compiler.@internal.util
             // the set.  However, anything beginning with "System" holds a special place
             // at the front of the set.
 
-            var nameComparison = String.Compare(
+            var nameComparison = string.Compare(
                 Namespace, that.Namespace, StringComparison.Ordinal);
 
             if (this.Namespace == "System") {
@@ -120,7 +125,7 @@ namespace com.espertech.esper.compiler.@internal.util
                     return 1;
                 }
                 if (nameComparison == 0) {
-                    nameComparison = String.Compare(
+                    nameComparison = string.Compare(
                         TypeName, that.TypeName, StringComparison.Ordinal);
                 }
             }

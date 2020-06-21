@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.fireandforget;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
@@ -28,10 +27,38 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraFAFInsert());
-            execs.Add(new InfraFAFDelete());
-            execs.Add(new InfraFAFUpdate());
+            WithInsert(execs);
+            WithDelete(execs);
+            WithUpdate(execs);
+            WithSelect(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraFAFSelect());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUpdate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraFAFUpdate());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDelete(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraFAFDelete());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInsert(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraFAFInsert());
             return execs;
         }
 
@@ -54,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var propertyNames = new [] { "p0","p1" };
+                var propertyNames = new[] {"p0", "p1"};
                 env.CompileDeploy("@Name('create') create table MyTableINS as (p0 string, p1 int)", path);
 
                 var eplInsertInto = "insert into MyTableINS (p0, p1) select 'a', 1";
@@ -99,7 +126,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var fields = new [] { "p0","p1" };
+                var fields = new[] {"p0", "p1"};
                 env.CompileDeploy(
                     "@Name('TheTable') create table MyTableUPD as (p0 string primary key, p1 string, thesum sum(int))",
                     path);
@@ -125,7 +152,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var fields = new [] { "P0" };
+                var fields = new[] {"P0"};
                 env.CompileDeploy(
                     "@Name('TheTable') create table MyTableSEL as (P0 string primary key, thesum sum(int))",
                     path);

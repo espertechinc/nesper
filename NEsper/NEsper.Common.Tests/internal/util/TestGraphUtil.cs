@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client.scopetest;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
@@ -67,7 +66,7 @@ namespace com.espertech.esper.common.@internal.util
             return result;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestAcyclicTopDownOrder()
         {
             IDictionary<string, ICollection<string>> graph = new LinkedHashMap<string, ICollection<string>>();
@@ -90,7 +89,7 @@ namespace com.espertech.esper.common.@internal.util
             TryInvalid(graph, "Circular dependency detected between [\"0\", \"R1\", \"A\", \"1_1\"]");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestInvalidTopDownOder()
         {
             IDictionary<string, ICollection<string>> graph = new LinkedHashMap<string, ICollection<string>>();
@@ -105,7 +104,7 @@ namespace com.espertech.esper.common.@internal.util
             TryInvalid(graph, "Circular dependency detected between [\"3\", \"2\", \"1\"]");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestMerge()
         {
             var mapOne = MakeMap(
@@ -146,7 +145,7 @@ namespace com.espertech.esper.common.@internal.util
             Assert.AreEqual(10, nested.Get("n2"));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestSimpleTopDownOrder()
         {
             IDictionary<string, ICollection<string>> graph = new LinkedHashMap<string, ICollection<string>>();

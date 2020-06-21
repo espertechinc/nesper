@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -24,9 +23,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     public class ExprArrayNodeForgeEval : ExprEvaluator,
         ExprEnumerationEval
     {
-        private readonly ExprEvaluator[] _evaluators;
-
+        private const string PRIMITIVE_ARRAY_NULL_MSG = "new-array received a null value as an array element of an array of primitives";
+        
         private readonly ExprArrayNodeForge _forge;
+        private readonly ExprEvaluator[] _evaluators;
 
         public ExprArrayNodeForgeEval(
             ExprArrayNodeForge forge,
@@ -85,8 +85,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var array = Array.CreateInstance(_forge.ArrayReturnType, _evaluators.Length);
+            var array = Arrays.CreateInstanceChecked(_forge.ArrayReturnType, _evaluators.Length);
             var index = 0;
+            var requiresPrimitive =
+                _forge.Parent.OptionalRequiredType != null &&
+                _forge.Parent.OptionalRequiredType.IsPrimitive;
+
             foreach (var child in _evaluators) {
                 var result = child.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                 if (result != null) {
@@ -96,6 +100,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     }
                     else {
                         array.SetValue(result, index);
+                    }
+                }
+                else {
+                    if (requiresPrimitive) {
+                        throw new EPException(PRIMITIVE_ARRAY_NULL_MSG);
                     }
                 }
 
@@ -116,15 +125,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 forge.EvaluationType,
                 typeof(ExprArrayNodeForgeEval),
                 codegenClassScope);
+
+            var arrayType = forge.EvaluationType;
             var block = methodNode.Block
                 .DeclareVar(
-                    forge.EvaluationType,
+                    arrayType,
                     "array",
                     NewArrayByLength(forge.ArrayReturnType, Constant(forgeRenderable.ChildNodes.Length)));
+            var requiresPrimitive =
+                forge.Parent.OptionalRequiredType != null &&
+                forge.Parent.OptionalRequiredType.IsPrimitive;
+
             for (var i = 0; i < forgeRenderable.ChildNodes.Length; i++) {
                 var child = forgeRenderable.ChildNodes[i].Forge;
                 var childType = child.EvaluationType;
                 var refname = "r" + i;
+
                 block.DeclareVar(
                     childType,
                     refname,
@@ -132,25 +148,42 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
                 if (child.EvaluationType.CanNotBeNull()) {
                     if (!forge.IsMustCoerce) {
-                        block.AssignArrayElement("array", Constant(i), Ref(refname));
+                        block
+                            .AssignArrayElement(
+                                "array",
+                                Constant(i),
+                                Unbox(Ref(refname), childType));
                     }
                     else {
-                        block.AssignArrayElement(
-                            "array",
-                            Constant(i),
-                            forge.Coercer.CoerceCodegen(Ref(refname), child.EvaluationType));
+                        block
+                            .AssignArrayElement(
+                                "array",
+                                Constant(i),
+                                forge.Coercer.CoerceCodegen(Ref(refname), childType));
                     }
                 }
                 else {
                     var ifNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
                     if (!forge.IsMustCoerce) {
-                        ifNotNull.AssignArrayElement("array", Constant(i), Ref(refname));
+                        ifNotNull
+                            .AssignArrayElement(
+                                "array",
+                                Constant(i),
+                                Unbox(Ref(refname), childType));
                     }
                     else {
-                        ifNotNull.AssignArrayElement(
-                            "array",
-                            Constant(i),
-                            forge.Coercer.CoerceCodegen(Ref(refname), child.EvaluationType));
+                        ifNotNull
+                            .AssignArrayElement(
+                                "array",
+                                Constant(i),
+                                forge.Coercer.CoerceCodegen(Ref(refname), child.EvaluationType));
+                    }
+
+                    if (requiresPrimitive) {
+                        block.IfCondition(
+                                EqualsNull(Ref(refname)))
+                            .BlockThrow(
+                                NewInstance(typeof(EPException), Constant(PRIMITIVE_ARRAY_NULL_MSG)));
                     }
                 }
             }

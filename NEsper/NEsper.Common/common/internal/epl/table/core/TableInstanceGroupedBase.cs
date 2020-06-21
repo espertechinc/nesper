@@ -6,24 +6,20 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.@event.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.table.core
 {
-    public abstract class TableInstanceGroupedBase
-        : TableInstanceBase,
-            TableInstanceGrouped
+    public abstract class TableInstanceGroupedBase : TableInstanceBase, TableInstanceGrouped
     {
         protected TableInstanceGroupedBase(
             Table table,
@@ -62,12 +58,16 @@ namespace com.espertech.esper.common.@internal.epl.table.core
 
             int[] groupKeyColNums = table.MetaData.KeyColNums;
             if (groupKeyColNums.Length == 1) {
-                data[groupKeyColNums[0]] = groupKeys;
+                if (groupKeys is MultiKeyArrayWrap multiKeyArrayWrap) {
+                    data[groupKeyColNums[0]] = multiKeyArrayWrap.Array;
+                } else {
+                    data[groupKeyColNums[0]] = groupKeys;
+                }
             }
             else {
-                var mk = (HashableMultiKey) groupKeys;
+                var mk = (MultiKey) groupKeys;
                 for (var i = 0; i < groupKeyColNums.Length; i++) {
-                    data[groupKeyColNums[i]] = mk.Keys[i];
+                    data[groupKeyColNums[i]] = mk.GetKey(i);
                 }
             }
 
@@ -83,6 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             object groupByKey,
             ExprEvaluatorContext exprEvaluatorContext);
 
+        public abstract ICollection<object> GroupKeysMayMultiKey { get; }
         public abstract ICollection<object> GroupKeys { get; }
     }
 } // end of namespace

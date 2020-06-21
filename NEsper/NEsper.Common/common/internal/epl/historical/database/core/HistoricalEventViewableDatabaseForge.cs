@@ -12,13 +12,13 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
 using com.espertech.esper.common.@internal.epl.historical.common;
 using com.espertech.esper.common.@internal.epl.streamtype;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             this.outputTypes = outputTypes;
         }
 
-        public override void Validate(
+        public override IList<StmtClassForgeableFactory> Validate(
             StreamTypeService typeService,
             StatementBaseInfo @base,
             StatementCompileTimeServices services)
@@ -59,13 +59,13 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                     .Build();
             ExprNode[] inputParamNodes = new ExprNode[inputParameters.Length];
             foreach (string inputParam in inputParameters) {
-                ExprNode raw = FindSQLExpressionNode(streamNum, count, @base.StatementSpec.Raw.SqlParameters);
+                ExprNode raw = FindSQLExpressionNode(StreamNum, count, @base.StatementSpec.Raw.SqlParameters);
                 if (raw == null) {
                     throw new ExprValidationException(
                         "Internal error find expression for historical stream parameter " +
                         count +
                         " stream " +
-                        streamNum);
+                        StreamNum);
                 }
 
                 ExprNode evaluator = ExprNodeUtilityValidate.GetValidatedSubtree(
@@ -77,16 +77,23 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                 ExprNodeIdentifierCollectVisitor visitor = new ExprNodeIdentifierCollectVisitor();
                 visitor.Visit(evaluator);
                 foreach (ExprIdentNode identNode in visitor.ExprProperties) {
-                    if (identNode.StreamId == streamNum) {
+                    if (identNode.StreamId == StreamNum) {
                         throw new ExprValidationException(
                             "Invalid expression '" + inputParam + "' resolves to the historical data itself");
                     }
 
-                    subordinateStreams.Add(identNode.StreamId);
+                    SubordinateStreams.Add(identNode.StreamId);
                 }
             }
 
-            this.inputParamEvaluators = ExprNodeUtilityQuery.GetForges(inputParamNodes);
+            InputParamEvaluators = ExprNodeUtilityQuery.GetForges(inputParamNodes);
+            
+            
+            // plan multikey
+            MultiKeyPlan multiKeyPlan = MultiKeyPlanner.PlanMultiKey(InputParamEvaluators, false, @base.StatementRawInfo, services.SerdeResolver);
+            MultiKeyClassRef = multiKeyPlan.ClassRef;
+
+            return multiKeyPlan.MultiKeyForgeables;
         }
 
         public override Type TypeOfImplementation()

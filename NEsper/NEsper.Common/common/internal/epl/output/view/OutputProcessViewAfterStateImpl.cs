@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         /// <param name="statementContext">the statement context</param>
         /// <returns>indicator for output condition</returns>
         public bool CheckUpdateAfterCondition(
-            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
             StatementContext statementContext)
         {
             return _isAfterConditionSatisfied ||

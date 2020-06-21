@@ -10,10 +10,14 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.compat.function;
+
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
-    public class CodegenStatementReturnNoValue : CodegenStatementBase,
-        CodegenStatement
+    public class CodegenStatementReturnNoValue 
+        : CodegenStatementBase
+        , CodegenStatement
     {
         public static readonly CodegenStatementReturnNoValue INSTANCE = new CodegenStatementReturnNoValue();
 
@@ -30,6 +34,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             bool isInnerClass)
         {
             builder.Append("return");
+        }
+        
+        public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
         }
     }
 } // end of namespace

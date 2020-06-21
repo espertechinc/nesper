@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
             EventBeanTypedEventFactory = eventBeanTypedEventFactory;
         }
 
-        public BeanEventType GetCreateBeanType(Type clazz)
+        public BeanEventType GetCreateBeanType(Type clazz, bool publicFields)
         {
             throw new EPException("Bean type creation not supported");
         }

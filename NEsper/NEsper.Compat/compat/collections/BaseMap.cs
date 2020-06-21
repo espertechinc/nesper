@@ -69,10 +69,11 @@ namespace com.espertech.esper.compat.collections
 		/// <param name="defaultValue"></param>
 		/// <returns></returns>
 
-		public virtual TV Get(TK key,
+		public virtual TV Get(
+			TK key,
 			TV defaultValue)
 		{
-			TV returnValue = defaultValue;
+			var returnValue = defaultValue;
 			if (key != null) {
 				if (!TryGetValue(key, out returnValue)) {
 					returnValue = defaultValue;
@@ -181,7 +182,7 @@ namespace com.espertech.esper.compat.collections
 
 		public virtual void PutAll(IDictionary<TK, TV> source)
 		{
-			foreach (KeyValuePair<TK, TV> kvPair in source) {
+			foreach (var kvPair in source) {
 				this[kvPair.Key] = kvPair.Value;
 			}
 		}
@@ -193,7 +194,7 @@ namespace com.espertech.esper.compat.collections
 
 		public virtual TV FirstValue {
 			get {
-				IEnumerator<KeyValuePair<TK, TV>> kvPairEnum = GetEnumerator();
+				var kvPairEnum = GetEnumerator();
 				kvPairEnum.MoveNext();
 				return kvPairEnum.Current.Value;
 			}
@@ -315,7 +316,7 @@ namespace com.espertech.esper.compat.collections
 				return _subDictionary.Remove(key);
 			}
 			else {
-				bool wasFound = _nullEntry != null;
+				var wasFound = _nullEntry != null;
 				_nullEntry = null;
 				return wasFound;
 			}
@@ -444,7 +445,7 @@ namespace com.espertech.esper.compat.collections
 				yield return _nullEntry.Value;
 			}
 
-			IEnumerator<KeyValuePair<TK, TV>> temp = _subDictionary.GetEnumerator();
+			var temp = _subDictionary.GetEnumerator();
 			while (temp.MoveNext()) {
 				yield return temp.Current;
 			}
@@ -462,7 +463,7 @@ namespace com.espertech.esper.compat.collections
 				yield return _nullEntry;
 			}
 
-			IEnumerator<KeyValuePair<TK, TV>> temp = _subDictionary.GetEnumerator();
+			var temp = _subDictionary.GetEnumerator();
 			while (temp.MoveNext()) {
 				yield return temp.Current;
 			}
@@ -482,7 +483,7 @@ namespace com.espertech.esper.compat.collections
 				return false;
 			}
 
-			BaseMap<TK, TV> oMap = (BaseMap<TK, TV>) obj;
+			var oMap = (BaseMap<TK, TV>) obj;
 			return
 				Object.Equals(_nullEntry, oMap._nullEntry) &&
 				Collections.AreEqual(_subDictionary, oMap._subDictionary);
@@ -525,7 +526,7 @@ namespace com.espertech.esper.compat.collections
 
 		public static IDictionary<TK, TV> AsEDictionary(IDictionary<TK, TV> sourceDictionary)
 		{
-			IDictionary<TK, TV> result = sourceDictionary as IDictionary<TK, TV>;
+			var result = sourceDictionary as IDictionary<TK, TV>;
 			if (result == null) {
 				if (sourceDictionary != null) {
 					result = new BaseMap<TK, TV>(sourceDictionary);

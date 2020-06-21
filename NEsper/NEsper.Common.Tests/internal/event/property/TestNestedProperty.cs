@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.@event.property
                 supportEventTypeFactory, SupportBeanComplexProps.MakeDefaultBean());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetGetter()
         {
             EventPropertyGetter getter = nested[0].GetGetter((BeanEventType) theEvent.EventType,
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.@event.property
             Assert.AreEqual("NestedNestedValue", getter.Get(theEvent));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetPropertyType()
         {
             Assert.AreEqual(typeof(string), nested[0].GetPropertyType((BeanEventType) theEvent.EventType, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));

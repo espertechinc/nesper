@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -64,7 +65,8 @@ namespace com.espertech.esper.common.@internal.filterspec
             CodegenMethodScope parent)
         {
             var getterSPI = ((EventTypeSPI) _eventType).GetGetterSPI(ResultEventProperty);
-            var method = parent.MakeChild(typeof(object), GetType(), classScope).AddParam(GET_FILTER_VALUE_FP);
+            var method = parent.MakeChild(typeof(object), GetType(), classScope)
+				.AddParam(GET_FILTER_VALUE_FP);
             method.Block
                 .DeclareVar<EventBean[]>(
                     "events",
@@ -135,6 +137,13 @@ namespace com.espertech.esper.common.@internal.filterspec
         public override int GetHashCode()
         {
             return ResultEventProperty.GetHashCode();
+        }
+        
+        public void ValueToString(StringBuilder @out)
+        {
+            @out.Append("indexed eventy property '")
+                .Append(ResultEventProperty)
+                .Append("'");
         }
     }
 } // end of namespace

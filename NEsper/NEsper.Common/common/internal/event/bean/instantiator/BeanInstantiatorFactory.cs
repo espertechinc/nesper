@@ -12,7 +12,6 @@ using System.Reflection;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 
@@ -83,7 +82,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
                     methodName,
                     new Type[0],
                     new bool[0],
-                    new bool[0]);
+                    new bool[0],
+                    ExtensionClassEmpty.INSTANCE);
                 return new BeanInstantiatorForgeByReflection(method);
             }
             catch (ImportException e) {

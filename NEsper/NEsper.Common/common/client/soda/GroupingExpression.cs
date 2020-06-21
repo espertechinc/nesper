@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.client.soda
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            ToPrecedenceFreeEPL("grouping", this.Children, writer);
+            ToPrecedenceFreeEPL("grouping", Children, writer);
         }
     }
 } // end of namespace

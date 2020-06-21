@@ -29,28 +29,28 @@ namespace com.espertech.esper.common.client.configuration
             config.Runtime.Logging.IsEnableExecutionDebug = true;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestString()
         {
             config.Configure(ESPER_TEST_CONFIG);
             TestConfigurationParser.AssertFileConfig(config);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestURL()
         {
             config.Configure(container.ResourceManager().ResolveResourceURL(ESPER_TEST_CONFIG));
             TestConfigurationParser.AssertFileConfig(config);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestFile()
         {
             config.Configure(container.ResourceManager().ResolveResourceFile(ESPER_TEST_CONFIG));
             TestConfigurationParser.AssertFileConfig(config);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestAddEventTypeName()
         {
             ConfigurationCommon common = config.Common;

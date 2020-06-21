@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="crontabExpressions">crontab expressions returning number sets for each crontab position</param>
         /// <param name="now">indicator whethet to include "now"</param>
         public ContextDescriptorConditionCrontab(
-            IList<Expression> crontabExpressions,
+            IList<IList<Expression>> crontabExpressions,
             bool now)
         {
             CrontabExpressions = crontabExpressions;
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.client.soda
 
         /// <summary>Returns the crontab expressions. </summary>
         /// <value>crontab</value>
-        public IList<Expression> CrontabExpressions { get; set; }
+        public IList<IList<Expression>> CrontabExpressions { get; set; }
 
         /// <summary>Returns "now" indicator </summary>
         /// <value>&quot;now&quot; indicator</value>
@@ -51,14 +51,24 @@ namespace com.espertech.esper.common.client.soda
 
         private static void Write(
             TextWriter writer,
-            IList<Expression> expressions,
+            IList<IList<Expression>> crontabs,
             bool now)
         {
-            if (now)
-            {
+            if (now) {
                 writer.Write("@now and ");
             }
-
+            String delimiter = "";
+            foreach (IList<Expression> crontab in crontabs) {
+                writer.Write(delimiter);
+                Write(writer, crontab);
+                delimiter = ", ";
+            }
+        }
+        
+        private static void Write(
+            TextWriter writer,
+            IList<Expression> expressions)
+        {
             writer.Write("(");
             string delimiter = "";
             foreach (Expression e in expressions)

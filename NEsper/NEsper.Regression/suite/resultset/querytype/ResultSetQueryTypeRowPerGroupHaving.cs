@@ -8,7 +8,9 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
@@ -27,6 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             execs.Add(new ResultSetQueryTypeHavingCount());
             execs.Add(new ResultSetQueryTypeSumJoin());
             execs.Add(new ResultSetQueryTypeSumOneView());
+            execs.Add(new ResultSetQueryTypeRowPerGroupBatch());
             return execs;
         }
 
@@ -93,6 +96,26 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             var bean = new SupportMarketDataBean(symbol, price, 0L, null);
             env.SendEventBean(bean);
+        }
+
+        internal class ResultSetQueryTypeRowPerGroupBatch : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.AdvanceTime(0);
+                env.CompileDeploy("@Name('s0') select count(*) as y from SupportBean#time_batch(1 seconds) group by TheString having count(*) > 0");
+                env.AddListener("s0");
+
+                env.SendEventBean(new SupportBean("E1", 0));
+                env.AdvanceTime(1000);
+                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "y".SplitCsv(), new object[] {1L});
+
+                env.SendEventBean(new SupportBean("E2", 0));
+                env.AdvanceTime(2000);
+                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "y".SplitCsv(), new object[] {1L});
+
+                env.UndeployAll();
+            }
         }
 
         internal class ResultSetQueryTypeHavingCount : RegressionExecution

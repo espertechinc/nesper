@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
 
@@ -24,6 +23,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
             GroupingIdNodes = new List<Pair<ExprNode, ExprGroupingIdNode>>(2);
             GroupingNodes = new List<Pair<ExprNode, ExprGroupingNode>>(2);
         }
+        
+        public bool IsWalkDeclExprParam => true;
 
         public IList<Pair<ExprNode, ExprGroupingIdNode>> GroupingIdNodes { get; }
 

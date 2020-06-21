@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         /// <param name="oldDataPerStream">for each stream the event array (can be null).</param>
         /// <param name="exprEvaluatorContext">expression evaluation context</param>
         /// <returns>join tuples</returns>
-        UniformPair<ISet<MultiKey<EventBean>>> Join(
+        UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>> Join(
             EventBean[][] newDataPerStream,
             EventBean[][] oldDataPerStream,
             ExprEvaluatorContext exprEvaluatorContext);
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         ///     all events in indexes, executing query strategies for each.
         /// </summary>
         /// <returns>static join result</returns>
-        ISet<MultiKey<EventBean>> StaticJoin();
+        ISet<MultiKeyArrayOfKeys<EventBean>> StaticJoin();
 
         /// <summary>
         ///     Destroy stateful index tables, if any.

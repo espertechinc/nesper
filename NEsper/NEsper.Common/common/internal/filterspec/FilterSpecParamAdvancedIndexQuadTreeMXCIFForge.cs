@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -48,10 +50,10 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .DeclareVar<ExprFilterSpecLookupable>(
                     "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
-                .DeclareVar<FilterOperator>("op", EnumValue(typeof(FilterOperator), filterOperator.GetName()))
+                .DeclareVar<FilterOperator>("filterOperator", EnumValue(typeof(FilterOperator), filterOperator.GetName()))
                 .DeclareVar<FilterSpecParamAdvancedIndexQuadTreeMXCIF>(
                     "fpai",
-                    NewInstance<FilterSpecParamAdvancedIndexQuadTreeMXCIF>(Ref("lookupable"), Ref("op")))
+                    NewInstance<FilterSpecParamAdvancedIndexQuadTreeMXCIF>(Ref("lookupable"), Ref("filterOperator")))
                 .SetProperty(
                     Ref("fpai"),
                     "XEval",
@@ -117,6 +119,21 @@ namespace com.espertech.esper.common.@internal.filterspec
                 hashCode = (hashCode * 397) ^ (_yEval != null ? _yEval.GetHashCode() : 0);
                 return hashCode;
             }
+        }
+
+        public override void ValueExprToString(
+            StringBuilder @out,
+            int i)
+        {
+            @out.Append("MXCIF ");
+            @out.Append("x ");
+            _xEval.ValueToString(@out);
+            @out.Append("y ");
+            _yEval.ValueToString(@out);
+            @out.Append("w ");
+            _widthEval.ValueToString(@out);
+            @out.Append("h ");
+            _heightEval.ValueToString(@out);
         }
     }
 } // end of namespace

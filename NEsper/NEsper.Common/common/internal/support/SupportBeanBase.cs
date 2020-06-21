@@ -7,8 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
-using System;
-
 namespace com.espertech.esper.common.@internal.support
 {
     public class SupportBeanBase : SupportMarkerInterface

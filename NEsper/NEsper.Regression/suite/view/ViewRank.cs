@@ -22,13 +22,62 @@ namespace com.espertech.esper.regressionlib.suite.view
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ViewRankedPrev());
-            execs.Add(new ViewRankPrevAndGroupWin());
-            execs.Add(new ViewRankMultiexpression());
-            execs.Add(new ViewRankRemoveStream());
-            execs.Add(new ViewRankRanked());
-            execs.Add(new ViewRankedSceneOne());
+            WithedPrev(execs);
+            WithPrevAndGroupWin(execs);
+            WithMultiexpression(execs);
+            WithRemoveStream(execs);
+            WithRanked(execs);
+            WithedSceneOne(execs);
+            WithInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ViewRankInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithedSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewRankedSceneOne());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRanked(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewRankRanked());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRemoveStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewRankRemoveStream());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMultiexpression(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewRankMultiexpression());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPrevAndGroupWin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewRankPrevAndGroupWin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithedPrev(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewRankedPrev());
             return execs;
         }
 
@@ -36,14 +85,12 @@ namespace com.espertech.esper.regressionlib.suite.view
             RegressionEnvironment env,
             object[][] expected)
         {
-            var fields = new[] { "TheString", "IntPrimitive", "LongPrimitive" };
+            var fields = new[] {"TheString", "IntPrimitive", "LongPrimitive"};
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
             SupportBeanAssertionUtil.AssertPropsPerRow((object[]) @event.Get("win"), fields, expected);
-            for (var i = 0; i < 5; i++)
-            {
+            for (var i = 0; i < 5; i++) {
                 var prevValue = @event.Get("prev" + i);
-                if (prevValue == null && expected.Length <= i)
-                {
+                if (prevValue == null && expected.Length <= i) {
                     continue;
                 }
 
@@ -94,33 +141,33 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(MakeEvent("E1", 100, 0L));
                 AssertWindowAggAndPrev(
                     env,
-                    new[] { new object[] { "E1", 100, 0L } });
+                    new[] {new object[] {"E1", 100, 0L}});
 
                 env.Milestone(0);
 
                 env.SendEventBean(MakeEvent("E2", 99, 0L));
                 AssertWindowAggAndPrev(
                     env,
-                    new[] { new object[] { "E2", 99, 0L }, new object[] { "E1", 100, 0L } });
+                    new[] {new object[] {"E2", 99, 0L}, new object[] {"E1", 100, 0L}});
 
                 env.SendEventBean(MakeEvent("E1", 98, 1L));
                 AssertWindowAggAndPrev(
                     env,
-                    new[] { new object[] { "E1", 98, 1L }, new object[] { "E2", 99, 0L } });
+                    new[] {new object[] {"E1", 98, 1L}, new object[] {"E2", 99, 0L}});
 
                 env.Milestone(1);
 
                 env.SendEventBean(MakeEvent("E3", 98, 0L));
                 AssertWindowAggAndPrev(
                     env,
-                    new[] { new object[] { "E1", 98, 1L }, new object[] { "E3", 98, 0L }, new object[] { "E2", 99, 0L } });
+                    new[] {new object[] {"E1", 98, 1L}, new object[] {"E3", 98, 0L}, new object[] {"E2", 99, 0L}});
 
                 env.Milestone(2);
 
                 env.SendEventBean(MakeEvent("E2", 97, 1L));
                 AssertWindowAggAndPrev(
                     env,
-                    new[] { new object[] { "E2", 97, 1L }, new object[] { "E1", 98, 1L }, new object[] { "E3", 98, 0L } });
+                    new[] {new object[] {"E2", 97, 1L}, new object[] {"E1", 98, 1L}, new object[] {"E3", 98, 0L}});
 
                 env.UndeployAll();
             }
@@ -138,59 +185,59 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(MakeEvent("E1", 100, 0L));
                 AssertWindowAggAndPrev(
                     env,
-                    new[] { new object[] { "E1", 100, 0L } });
+                    new[] {new object[] {"E1", 100, 0L}});
 
                 env.SendEventBean(MakeEvent("E2", 99, 0L));
                 AssertWindowAggAndPrev(
                     env,
-                    new[] { new object[] { "E2", 99, 0L }, new object[] { "E1", 100, 0L } });
+                    new[] {new object[] {"E2", 99, 0L}, new object[] {"E1", 100, 0L}});
 
                 env.SendEventBean(MakeEvent("E1", 98, 1L));
                 AssertWindowAggAndPrev(
                     env,
-                    new[] { new object[] { "E1", 98, 1L }, new object[] { "E2", 99, 0L } });
+                    new[] {new object[] {"E1", 98, 1L}, new object[] {"E2", 99, 0L}});
 
                 env.SendEventBean(MakeEvent("E3", 98, 0L));
                 AssertWindowAggAndPrev(
                     env,
-                    new[] { new object[] { "E1", 98, 1L }, new object[] { "E3", 98, 0L }, new object[] { "E2", 99, 0L } });
+                    new[] {new object[] {"E1", 98, 1L}, new object[] {"E3", 98, 0L}, new object[] {"E2", 99, 0L}});
 
                 env.SendEventBean(MakeEvent("E2", 97, 1L));
                 AssertWindowAggAndPrev(
                     env,
-                    new[] { new object[] { "E2", 97, 1L }, new object[] { "E1", 98, 1L }, new object[] { "E3", 98, 0L } });
+                    new[] {new object[] {"E2", 97, 1L}, new object[] {"E1", 98, 1L}, new object[] {"E3", 98, 0L}});
                 env.UndeployAll();
 
                 epl =
                     "@Name('s0') select irstream * from SupportBean#groupwin(TheString)#rank(IntPrimitive, 2, DoublePrimitive) as ev";
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
 
-                var fields = new[] { "TheString", "IntPrimitive", "LongPrimitive", "DoublePrimitive" };
+                var fields = new[] {"TheString", "IntPrimitive", "LongPrimitive", "DoublePrimitive"};
                 env.SendEventBean(MakeEvent("E1", 100, 0L, 1d));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] { "E1", 100, 0L, 1d });
+                    new object[] {"E1", 100, 0L, 1d});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
-                    new[] { new object[] { "E1", 100, 0L, 1d } });
+                    new[] {new object[] {"E1", 100, 0L, 1d}});
 
                 env.SendEventBean(MakeEvent("E2", 100, 0L, 2d));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] { "E2", 100, 0L, 2d });
+                    new object[] {"E2", 100, 0L, 2d});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
-                    new[] { new object[] { "E1", 100, 0L, 1d }, new object[] { "E2", 100, 0L, 2d } });
+                    new[] {new object[] {"E1", 100, 0L, 1d}, new object[] {"E2", 100, 0L, 2d}});
 
                 env.SendEventBean(MakeEvent("E1", 200, 0L, 0.5d));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] { "E1", 200, 0L, 0.5d });
+                    new object[] {"E1", 200, 0L, 0.5d});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
@@ -203,7 +250,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] { "E2", 200, 0L, 2.5d });
+                    new object[] {"E2", 200, 0L, 2.5d});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
@@ -216,8 +263,8 @@ namespace com.espertech.esper.regressionlib.suite.view
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertPairGetIRAndReset(),
                     fields,
-                    new object[] { "E1", 300, 0L, 0.1d },
-                    new object[] { "E1", 100, 0L, 1d });
+                    new object[] {"E1", 300, 0L, 0.1d},
+                    new object[] {"E1", 100, 0L, 1d});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
@@ -234,7 +281,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new[] { "TheString", "IntPrimitive", "LongPrimitive", "DoublePrimitive" };
+                var fields = new[] {"TheString", "IntPrimitive", "LongPrimitive", "DoublePrimitive"};
                 var epl =
                     "@Name('s0') select irstream * from SupportBean#rank(TheString, IntPrimitive, 3, LongPrimitive, DoublePrimitive)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -243,21 +290,21 @@ namespace com.espertech.esper.regressionlib.suite.view
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] { "E1", 100, 1L, 10d });
+                    new object[] {"E1", 100, 1L, 10d});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
-                    new[] { new object[] { "E1", 100, 1L, 10d } });
+                    new[] {new object[] {"E1", 100, 1L, 10d}});
 
                 env.SendEventBean(MakeEvent("E1", 200, 1L, 9d));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] { "E1", 200, 1L, 9d });
+                    new object[] {"E1", 200, 1L, 9d});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
-                    new[] { new object[] { "E1", 200, 1L, 9d }, new object[] { "E1", 100, 1L, 10d } });
+                    new[] {new object[] {"E1", 200, 1L, 9d}, new object[] {"E1", 100, 1L, 10d}});
 
                 env.Milestone(1);
 
@@ -265,7 +312,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] { "E1", 150, 1L, 11d });
+                    new object[] {"E1", 150, 1L, 11d});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
@@ -278,8 +325,8 @@ namespace com.espertech.esper.regressionlib.suite.view
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertPairGetIRAndReset(),
                     fields,
-                    new object[] { "E1", 100, 1L, 8d },
-                    new object[] { "E1", 100, 1L, 10d });
+                    new object[] {"E1", 100, 1L, 8d},
+                    new object[] {"E1", 100, 1L, 10d});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
@@ -294,8 +341,8 @@ namespace com.espertech.esper.regressionlib.suite.view
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertPairGetIRAndReset(),
                     fields,
-                    new object[] { "E2", 300, 2L, 7d },
-                    new object[] { "E2", 300, 2L, 7d });
+                    new object[] {"E2", 300, 2L, 7d},
+                    new object[] {"E2", 300, 2L, 7d});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
@@ -308,8 +355,8 @@ namespace com.espertech.esper.regressionlib.suite.view
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertPairGetIRAndReset(),
                     fields,
-                    new object[] { "E3", 300, 1L, 8.5d },
-                    new object[] { "E1", 150, 1L, 11d });
+                    new object[] {"E3", 300, 1L, 8.5d},
+                    new object[] {"E1", 150, 1L, 11d});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
@@ -324,8 +371,8 @@ namespace com.espertech.esper.regressionlib.suite.view
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertPairGetIRAndReset(),
                     fields,
-                    new object[] { "E4", 400, 1L, 9d },
-                    new object[] { "E1", 200, 1L, 9d });
+                    new object[] {"E4", 400, 1L, 9d},
+                    new object[] {"E1", 200, 1L, 9d});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
@@ -342,7 +389,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new[] { "TheString", "IntPrimitive", "LongPrimitive" };
+                var fields = new[] {"TheString", "IntPrimitive", "LongPrimitive"};
                 var epl =
                     "@Name('create') create window MyWindow#rank(TheString, 3, IntPrimitive asc) as SupportBean;\n" +
                     "insert into MyWindow select * from SupportBean;\n" +
@@ -354,96 +401,96 @@ namespace com.espertech.esper.regressionlib.suite.view
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] { "E1", 10, 0L });
+                    new object[] {"E1", 10, 0L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("create").GetEnumerator(),
                     fields,
-                    new[] { new object[] { "E1", 10, 0L } });
+                    new[] {new object[] {"E1", 10, 0L}});
 
                 env.SendEventBean(MakeEvent("E2", 50, 0L));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] { "E2", 50, 0L });
+                    new object[] {"E2", 50, 0L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("create").GetEnumerator(),
                     fields,
-                    new[] { new object[] { "E1", 10, 0L }, new object[] { "E2", 50, 0L } });
+                    new[] {new object[] {"E1", 10, 0L}, new object[] {"E2", 50, 0L}});
 
                 env.SendEventBean(MakeEvent("E3", 5, 0L));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] { "E3", 5, 0L });
+                    new object[] {"E3", 5, 0L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("create").GetEnumerator(),
                     fields,
-                    new[] { new object[] { "E3", 5, 0L }, new object[] { "E1", 10, 0L }, new object[] { "E2", 50, 0L } });
+                    new[] {new object[] {"E3", 5, 0L}, new object[] {"E1", 10, 0L}, new object[] {"E2", 50, 0L}});
 
                 env.SendEventBean(MakeEvent("E4", 5, 0L));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertPairGetIRAndReset(),
                     fields,
-                    new object[] { "E4", 5, 0L },
-                    new object[] { "E2", 50, 0L });
+                    new object[] {"E4", 5, 0L},
+                    new object[] {"E2", 50, 0L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("create").GetEnumerator(),
                     fields,
-                    new[] { new object[] { "E3", 5, 0L }, new object[] { "E4", 5, 0L }, new object[] { "E1", 10, 0L } });
+                    new[] {new object[] {"E3", 5, 0L}, new object[] {"E4", 5, 0L}, new object[] {"E1", 10, 0L}});
 
                 env.SendEventBean(new SupportBean_A("E3"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetOldAndReset(),
                     fields,
-                    new object[] { "E3", 5, 0L });
+                    new object[] {"E3", 5, 0L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("create").GetEnumerator(),
                     fields,
-                    new[] { new object[] { "E4", 5, 0L }, new object[] { "E1", 10, 0L } });
+                    new[] {new object[] {"E4", 5, 0L}, new object[] {"E1", 10, 0L}});
 
                 env.SendEventBean(new SupportBean_A("E4"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetOldAndReset(),
                     fields,
-                    new object[] { "E4", 5, 0L });
+                    new object[] {"E4", 5, 0L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("create").GetEnumerator(),
                     fields,
-                    new[] { new object[] { "E1", 10, 0L } });
+                    new[] {new object[] {"E1", 10, 0L}});
 
                 env.SendEventBean(new SupportBean_A("E1"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetOldAndReset(),
                     fields,
-                    new object[] { "E1", 10, 0L });
+                    new object[] {"E1", 10, 0L});
                 EPAssertionUtil.AssertPropsPerRow(env.Statement("create").GetEnumerator(), fields, new object[0][]);
 
                 env.SendEventBean(MakeEvent("E3", 100, 0L));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] { "E3", 100, 0L });
+                    new object[] {"E3", 100, 0L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("create").GetEnumerator(),
                     fields,
-                    new[] { new object[] { "E3", 100, 0L } });
+                    new[] {new object[] {"E3", 100, 0L}});
 
                 env.SendEventBean(MakeEvent("E3", 101, 1L));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertPairGetIRAndReset(),
                     fields,
-                    new object[] { "E3", 101, 1L },
-                    new object[] { "E3", 100, 0L });
+                    new object[] {"E3", 101, 1L},
+                    new object[] {"E3", 100, 0L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("create").GetEnumerator(),
                     fields,
-                    new[] { new object[] { "E3", 101, 1L } });
+                    new[] {new object[] {"E3", 101, 1L}});
 
                 env.SendEventBean(new SupportBean_A("E3"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetOldAndReset(),
                     fields,
-                    new object[] { "E3", 101, 1L });
+                    new object[] {"E3", 101, 1L});
                 EPAssertionUtil.AssertPropsPerRow(env.Statement("create").GetEnumerator(), fields, new object[0][]);
 
                 env.UndeployAll();
@@ -454,7 +501,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new[] { "TheString", "IntPrimitive", "LongPrimitive" };
+                var fields = new[] {"TheString", "IntPrimitive", "LongPrimitive"};
                 var epl = "@Name('s0') select irstream * from SupportBean.ext:rank(TheString, 3, IntPrimitive)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -464,110 +511,110 @@ namespace com.espertech.esper.regressionlib.suite.view
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] { "A", 10, 100L });
+                    new object[] {"A", 10, 100L});
 
                 env.Milestone(1);
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s0"),
                     fields,
-                    new[] { new object[] { "A", 10, 100L } });
+                    new[] {new object[] {"A", 10, 100L}});
                 SendSupportBean(env, "B", 20, 101L);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] { "B", 20, 101L });
+                    new object[] {"B", 20, 101L});
 
                 env.Milestone(2);
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s0"),
                     fields,
-                    new[] { new object[] { "A", 10, 100L }, new object[] { "B", 20, 101L } });
+                    new[] {new object[] {"A", 10, 100L}, new object[] {"B", 20, 101L}});
                 SendSupportBean(env, "A", 8, 102L); // replace A
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertGetAndResetIRPair(),
                     fields,
-                    new object[] { "A", 8, 102L },
-                    new object[] { "A", 10, 100L });
+                    new object[] {"A", 8, 102L},
+                    new object[] {"A", 10, 100L});
 
                 env.Milestone(3);
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s0"),
                     fields,
-                    new[] { new object[] { "A", 8, 102L }, new object[] { "B", 20, 101L } });
+                    new[] {new object[] {"A", 8, 102L}, new object[] {"B", 20, 101L}});
                 SendSupportBean(env, "C", 15, 103L);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] { "C", 15, 103L });
+                    new object[] {"C", 15, 103L});
 
                 env.Milestone(4);
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s0"),
                     fields,
-                    new[] { new object[] { "A", 8, 102L }, new object[] { "C", 15, 103L }, new object[] { "B", 20, 101L } });
+                    new[] {new object[] {"A", 8, 102L}, new object[] {"C", 15, 103L}, new object[] {"B", 20, 101L}});
                 SendSupportBean(env, "D", 21, 104L);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertGetAndResetIRPair(),
                     fields,
-                    new object[] { "D", 21, 104L },
-                    new object[] { "D", 21, 104L });
+                    new object[] {"D", 21, 104L},
+                    new object[] {"D", 21, 104L});
 
                 env.Milestone(5);
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s0"),
                     fields,
-                    new[] { new object[] { "A", 8, 102L }, new object[] { "C", 15, 103L }, new object[] { "B", 20, 101L } });
+                    new[] {new object[] {"A", 8, 102L}, new object[] {"C", 15, 103L}, new object[] {"B", 20, 101L}});
                 SendSupportBean(env, "A", 16, 105L);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertGetAndResetIRPair(),
                     fields,
-                    new object[] { "A", 16, 105L },
-                    new object[] { "A", 8, 102L });
+                    new object[] {"A", 16, 105L},
+                    new object[] {"A", 8, 102L});
 
                 env.Milestone(6);
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s0"),
                     fields,
-                    new[] { new object[] { "C", 15, 103L }, new object[] { "A", 16, 105L }, new object[] { "B", 20, 101L } });
+                    new[] {new object[] {"C", 15, 103L}, new object[] {"A", 16, 105L}, new object[] {"B", 20, 101L}});
                 SendSupportBean(env, "C", 16, 106L);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertGetAndResetIRPair(),
                     fields,
-                    new object[] { "C", 16, 106L },
-                    new object[] { "C", 15, 103L });
+                    new object[] {"C", 16, 106L},
+                    new object[] {"C", 15, 103L});
 
                 env.Milestone(7);
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s0"),
                     fields,
-                    new[] { new object[] { "A", 16, 105L }, new object[] { "C", 16, 106L }, new object[] { "B", 20, 101L } });
+                    new[] {new object[] {"A", 16, 105L}, new object[] {"C", 16, 106L}, new object[] {"B", 20, 101L}});
                 SendSupportBean(env, "C", 16, 107L);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertGetAndResetIRPair(),
                     fields,
-                    new object[] { "C", 16, 107L },
-                    new object[] { "C", 16, 106L });
+                    new object[] {"C", 16, 107L},
+                    new object[] {"C", 16, 106L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s0"),
                     fields,
-                    new[] { new object[] { "A", 16, 105L }, new object[] { "C", 16, 107L }, new object[] { "B", 20, 101L } });
+                    new[] {new object[] {"A", 16, 105L}, new object[] {"C", 16, 107L}, new object[] {"B", 20, 101L}});
                 SendSupportBean(env, "E", 1, 108L);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertGetAndResetIRPair(),
                     fields,
-                    new object[] { "E", 1, 108L },
-                    new object[] { "B", 20, 101L });
+                    new object[] {"E", 1, 108L},
+                    new object[] {"B", 20, 101L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s0"),
                     fields,
-                    new[] { new object[] { "E", 1, 108L }, new object[] { "A", 16, 105L }, new object[] { "C", 16, 107L } });
+                    new[] {new object[] {"E", 1, 108L}, new object[] {"A", 16, 105L}, new object[] {"C", 16, 107L}});
 
                 env.UndeployAll();
             }
@@ -577,7 +624,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new[] { "TheString", "IntPrimitive", "LongPrimitive" };
+                var fields = new[] {"TheString", "IntPrimitive", "LongPrimitive"};
                 var epl = "@Name('s0') select irstream * from SupportBean#rank(TheString, 4, IntPrimitive desc)";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -585,11 +632,11 @@ namespace com.espertech.esper.regressionlib.suite.view
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] { "E1", 10, 0L });
+                    new object[] {"E1", 10, 0L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
-                    new[] { new object[] { "E1", 10, 0L } });
+                    new[] {new object[] {"E1", 10, 0L}});
 
                 env.Milestone(0);
 
@@ -597,22 +644,22 @@ namespace com.espertech.esper.regressionlib.suite.view
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] { "E2", 30, 0L });
+                    new object[] {"E2", 30, 0L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
-                    new[] { new object[] { "E2", 30, 0L }, new object[] { "E1", 10, 0L } });
+                    new[] {new object[] {"E2", 30, 0L}, new object[] {"E1", 10, 0L}});
 
                 env.SendEventBean(MakeEvent("E1", 50, 0L));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertPairGetIRAndReset(),
                     fields,
-                    new object[] { "E1", 50, 0L },
-                    new object[] { "E1", 10, 0L });
+                    new object[] {"E1", 50, 0L},
+                    new object[] {"E1", 10, 0L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
-                    new[] { new object[] { "E1", 50, 0L }, new object[] { "E2", 30, 0L } });
+                    new[] {new object[] {"E1", 50, 0L}, new object[] {"E2", 30, 0L}});
 
                 env.Milestone(1);
 
@@ -620,22 +667,22 @@ namespace com.espertech.esper.regressionlib.suite.view
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] { "E3", 40, 0L });
+                    new object[] {"E3", 40, 0L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
-                    new[] { new object[] { "E1", 50, 0L }, new object[] { "E3", 40, 0L }, new object[] { "E2", 30, 0L } });
+                    new[] {new object[] {"E1", 50, 0L}, new object[] {"E3", 40, 0L}, new object[] {"E2", 30, 0L}});
 
                 env.SendEventBean(MakeEvent("E2", 45, 0L));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertPairGetIRAndReset(),
                     fields,
-                    new object[] { "E2", 45, 0L },
-                    new object[] { "E2", 30, 0L });
+                    new object[] {"E2", 45, 0L},
+                    new object[] {"E2", 30, 0L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
-                    new[] { new object[] { "E1", 50, 0L }, new object[] { "E2", 45, 0L }, new object[] { "E3", 40, 0L } });
+                    new[] {new object[] {"E1", 50, 0L}, new object[] {"E2", 45, 0L}, new object[] {"E3", 40, 0L}});
 
                 env.Milestone(2);
 
@@ -643,23 +690,23 @@ namespace com.espertech.esper.regressionlib.suite.view
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertPairGetIRAndReset(),
                     fields,
-                    new object[] { "E1", 43, 0L },
-                    new object[] { "E1", 50, 0L });
+                    new object[] {"E1", 43, 0L},
+                    new object[] {"E1", 50, 0L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
-                    new[] { new object[] { "E2", 45, 0L }, new object[] { "E1", 43, 0L }, new object[] { "E3", 40, 0L } });
+                    new[] {new object[] {"E2", 45, 0L}, new object[] {"E1", 43, 0L}, new object[] {"E3", 40, 0L}});
 
                 env.SendEventBean(MakeEvent("E3", 50, 0L));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertPairGetIRAndReset(),
                     fields,
-                    new object[] { "E3", 50, 0L },
-                    new object[] { "E3", 40, 0L });
+                    new object[] {"E3", 50, 0L},
+                    new object[] {"E3", 40, 0L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
-                    new[] { new object[] { "E3", 50, 0L }, new object[] { "E2", 45, 0L }, new object[] { "E1", 43, 0L } });
+                    new[] {new object[] {"E3", 50, 0L}, new object[] {"E2", 45, 0L}, new object[] {"E1", 43, 0L}});
 
                 env.Milestone(3);
 
@@ -667,18 +714,18 @@ namespace com.espertech.esper.regressionlib.suite.view
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertPairGetIRAndReset(),
                     fields,
-                    new object[] { "E3", 10, 0L },
-                    new object[] { "E3", 50, 0L });
+                    new object[] {"E3", 10, 0L},
+                    new object[] {"E3", 50, 0L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
-                    new[] { new object[] { "E2", 45, 0L }, new object[] { "E1", 43, 0L }, new object[] { "E3", 10, 0L } });
+                    new[] {new object[] {"E2", 45, 0L}, new object[] {"E1", 43, 0L}, new object[] {"E3", 10, 0L}});
 
                 env.SendEventBean(MakeEvent("E4", 43, 0L));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] { "E4", 43, 0L });
+                    new object[] {"E4", 43, 0L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
@@ -694,8 +741,8 @@ namespace com.espertech.esper.regressionlib.suite.view
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertPairGetIRAndReset(),
                     fields,
-                    new object[] { "E4", 43, 1L },
-                    new object[] { "E4", 43, 0L });
+                    new object[] {"E4", 43, 1L},
+                    new object[] {"E4", 43, 0L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
@@ -708,8 +755,8 @@ namespace com.espertech.esper.regressionlib.suite.view
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertPairGetIRAndReset(),
                     fields,
-                    new object[] { "E2", 45, 1L },
-                    new object[] { "E2", 45, 0L });
+                    new object[] {"E2", 45, 1L},
+                    new object[] {"E2", 45, 0L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
@@ -724,8 +771,8 @@ namespace com.espertech.esper.regressionlib.suite.view
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertPairGetIRAndReset(),
                     fields,
-                    new object[] { "E1", 43, 1L },
-                    new object[] { "E1", 43, 0L });
+                    new object[] {"E1", 43, 1L},
+                    new object[] {"E1", 43, 0L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
@@ -739,8 +786,8 @@ namespace com.espertech.esper.regressionlib.suite.view
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertPairGetIRAndReset(),
                     fields,
-                    new object[] { "E5", 10, 2L },
-                    new object[] { "E3", 10, 0L });
+                    new object[] {"E5", 10, 2L},
+                    new object[] {"E3", 10, 0L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
@@ -755,8 +802,8 @@ namespace com.espertech.esper.regressionlib.suite.view
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertPairGetIRAndReset(),
                     fields,
-                    new object[] { "E5", 11, 3L },
-                    new object[] { "E5", 10, 2L });
+                    new object[] {"E5", 11, 3L},
+                    new object[] {"E5", 10, 2L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
@@ -769,8 +816,8 @@ namespace com.espertech.esper.regressionlib.suite.view
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertPairGetIRAndReset(),
                     fields,
-                    new object[] { "E6", 43, 0L },
-                    new object[] { "E5", 11, 3L });
+                    new object[] {"E6", 43, 0L},
+                    new object[] {"E5", 11, 3L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
@@ -785,8 +832,8 @@ namespace com.espertech.esper.regressionlib.suite.view
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertPairGetIRAndReset(),
                     fields,
-                    new object[] { "E7", 50, 0L },
-                    new object[] { "E4", 43, 1L });
+                    new object[] {"E7", 50, 0L},
+                    new object[] {"E4", 43, 1L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
@@ -799,8 +846,8 @@ namespace com.espertech.esper.regressionlib.suite.view
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertPairGetIRAndReset(),
                     fields,
-                    new object[] { "E8", 45, 0L },
-                    new object[] { "E1", 43, 1L });
+                    new object[] {"E8", 45, 0L},
+                    new object[] {"E1", 43, 1L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
@@ -815,8 +862,8 @@ namespace com.espertech.esper.regressionlib.suite.view
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertPairGetIRAndReset(),
                     fields,
-                    new object[] { "E8", 46, 1L },
-                    new object[] { "E8", 45, 0L });
+                    new object[] {"E8", 46, 1L},
+                    new object[] {"E8", 45, 0L});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,

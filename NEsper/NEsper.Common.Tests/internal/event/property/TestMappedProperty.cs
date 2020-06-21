@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.@event.property
             eventType = (BeanEventType) theEvent.EventType;
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetGetter()
         {
             object[] expected = new string[] { "valueOne", "valueTwo" };
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.@event.property
                 supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetPropertyType()
         {
             Type[] expected = new Type[] { typeof(string), typeof(string) };

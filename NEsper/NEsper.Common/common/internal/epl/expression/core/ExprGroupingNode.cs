@@ -13,8 +13,6 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -50,9 +48,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             get => this;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
-            ExprNodeUtilityPrint.ToExpressionStringWFunctionName("grouping", this.ChildNodes, writer);
+            ExprNodeUtilityPrint.ToExpressionStringWFunctionName("grouping", ChildNodes, writer);
         }
 
         public ExprForgeConstantType ForgeConstantType {

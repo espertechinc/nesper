@@ -88,5 +88,10 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
         {
             return (Id != null ? Id.GetHashCode() : 0);
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(Id)}: {Id}, {nameof(P00)}: {P00}";
+        }
     }
 } // end of namespace

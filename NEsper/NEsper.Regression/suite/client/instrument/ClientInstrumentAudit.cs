@@ -64,23 +64,24 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
         {
             public void Run(RegressionEnvironment env)
             {
+                env.AdvanceTime(1);
                 var path = new RegressionPath();
 
                 // stream, and test audit callback
                 var callback = new SupportAuditCallback();
                 AuditPath.AuditCallback = callback.Audit;
 
-#if false
                 AUDITLOG.Info("*** Stream: ");
                 env.CompileDeploy("@Name('ABC') @Audit('stream') select * from SupportBean(TheString = 'E1')");
                 env.SendEventBean(new SupportBean("E1", 1));
                 Assert.AreEqual(1, callback.Audits.Count);
                 var cb = callback.Audits[0];
-                Assert.AreEqual("SupportBean(TheString=...) inserted SupportBean[SupportBean(E1, 1)]", cb.Message);
+                Assert.AreEqual("SupportBean(TheString=...) inserted SupportBean[SupportBean(\"E1\", 1)]", cb.Message);
                 Assert.AreEqual(env.DeploymentId("ABC"), cb.DeploymentId);
                 Assert.AreEqual("ABC", cb.StatementName);
                 Assert.AreEqual(DEFAULT_RUNTIME_URI, cb.RuntimeURI);
                 Assert.AreEqual(AuditEnum.STREAM, cb.Category);
+                Assert.AreEqual(1, cb.RuntimeTime);
                 AuditPath.AuditCallback = null;
                 env.UndeployAll();
 
@@ -189,7 +190,6 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 env.SendEventBean(new SupportBean("E1", 1));
                 Assert.AreEqual(1, env.Listener("ABC").AssertOneGetNewAndReset().Get("DEF()"));
                 env.UndeployAll();
-#endif
 
                 // data flow
                 env.CompileDeploy(

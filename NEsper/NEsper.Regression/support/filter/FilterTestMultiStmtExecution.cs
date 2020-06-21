@@ -24,28 +24,32 @@ namespace com.espertech.esper.regressionlib.support.filter
     public class FilterTestMultiStmtExecution : RegressionExecution
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly string testCaseName;
 
-        private readonly FilterTestMultiStmtCase theCase;
+        private readonly FilterTestMultiStmtCase _theCase;
+        private readonly string _testCaseName;
+        private string[] _stats;
 
         public FilterTestMultiStmtExecution(
             Type originator,
-            FilterTestMultiStmtCase theCase)
+            FilterTestMultiStmtCase theCase,
+            bool withStats)
         {
-            this.theCase = theCase;
-            testCaseName = originator.Name + " permutation " + theCase.Filters.RenderAny();
+            _theCase = theCase;
+            _testCaseName = originator.Name + " permutation " + theCase.Filters.RenderAny();
+            _stats = withStats ? new String[] { theCase.Stats } : null;
+
         }
 
         public void Run(RegressionEnvironment env)
         {
             var milestone = new AtomicLong();
-            var existingStatements = new bool[theCase.Filters.Length];
-            var startedStatements = new bool[theCase.Filters.Length];
-            var initialListeners = new SupportListener[theCase.Filters.Length];
+            var existingStatements = new bool[_theCase.Filters.Length];
+            var startedStatements = new bool[_theCase.Filters.Length];
+            var initialListeners = new SupportListener[_theCase.Filters.Length];
 
             // create statements
-            for (var i = 0; i < theCase.Filters.Length; i++) {
-                var filter = theCase.Filters[i];
+            for (var i = 0; i < _theCase.Filters.Length; i++) {
+                var filter = _theCase.Filters[i];
                 var stmtName = "s" + i;
                 var epl = "@Name('" + stmtName + "') select * from SupportBean(" + filter + ")";
                 env.CompileDeploy(epl).AddListener(stmtName);
@@ -54,34 +58,32 @@ namespace com.espertech.esper.regressionlib.support.filter
                 initialListeners[i] = env.Listener(stmtName);
 
                 try {
-                    AssertSendEvents(existingStatements, startedStatements, initialListeners, env, theCase.Items);
+                    AssertSendEvents(existingStatements, startedStatements, initialListeners, env, _theCase.Items);
                 }
                 catch (AssertionException ex) {
                     var message = "Failed after create stmt " + i + " and before milestone P" + milestone.Get();
                     log.Error(message, ex);
-                    throw new AssertionException(message, ex);
+                    Assert.Fail(message, ex);
                 }
 
                 env.Milestone(milestone.GetAndIncrement());
 
                 try {
-                    AssertSendEvents(existingStatements, startedStatements, initialListeners, env, theCase.Items);
+                    AssertSendEvents(existingStatements, startedStatements, initialListeners, env, _theCase.Items);
                 }
                 catch (AssertionException ex) {
-                    throw new AssertionException(
-                        "Failed after create stmt " + i + " and after milestone P" + milestone.Get(),
-                        ex);
+                    Assert.Fail("Failed after create stmt " + i + " and after milestone P" + milestone.Get(), ex);
                 }
             }
 
             // stop statements
-            for (var i = 0; i < theCase.Filters.Length; i++) {
+            for (var i = 0; i < _theCase.Filters.Length; i++) {
                 var stmtName = "s" + i;
                 env.UndeployModuleContaining(stmtName);
                 startedStatements[i] = false;
 
                 try {
-                    AssertSendEvents(existingStatements, startedStatements, initialListeners, env, theCase.Items);
+                    AssertSendEvents(existingStatements, startedStatements, initialListeners, env, _theCase.Items);
                 }
                 catch (AssertionException ex) {
                     throw new AssertionException(
@@ -92,7 +94,7 @@ namespace com.espertech.esper.regressionlib.support.filter
                 env.Milestone(milestone.Get());
 
                 try {
-                    AssertSendEvents(existingStatements, startedStatements, initialListeners, env, theCase.Items);
+                    AssertSendEvents(existingStatements, startedStatements, initialListeners, env, _theCase.Items);
                 }
                 catch (AssertionException ex) {
                     throw new EPException(
@@ -114,12 +116,12 @@ namespace com.espertech.esper.regressionlib.support.filter
 
         public string Name()
         {
-            return testCaseName;
+            return _testCaseName;
         }
 
         public string[] MilestoneStats()
         {
-            return new[] {theCase.Stats};
+            return _stats;
         }
 
         private static void AssertSendEvents(

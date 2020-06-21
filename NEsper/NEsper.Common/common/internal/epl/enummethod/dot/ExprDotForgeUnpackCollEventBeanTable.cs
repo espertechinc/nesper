@@ -19,7 +19,6 @@ using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.rettype;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -54,15 +53,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         public CodegenExpression Codegen(
             CodegenExpression inner,
             Type innerType,
-            CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol,
-            CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope)
         {
             var eventToPublic =
-                TableDeployTimeResolver.MakeTableEventToPublicField(table, codegenClassScope, this.GetType());
-            var refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
-            var refIsNewData = exprSymbol.GetAddIsNewData(codegenMethodScope);
-            var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
+                TableDeployTimeResolver.MakeTableEventToPublicField(table, classScope, this.GetType());
+            var refEPS = symbols.GetAddEPS(parent);
+            var refIsNewData = symbols.GetAddIsNewData(parent);
+            var refExprEvalCtx = symbols.GetAddExprEvalCtx(parent);
             return StaticMethod(
                 typeof(ExprDotForgeUnpackCollEventBeanTable),
                 "ConvertToTableUnderling",

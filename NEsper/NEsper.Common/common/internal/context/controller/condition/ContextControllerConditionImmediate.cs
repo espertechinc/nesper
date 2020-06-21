@@ -6,7 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.context.util;
 
 namespace com.espertech.esper.common.@internal.context.controller.condition
 {
@@ -22,12 +25,17 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
 
         public bool Activate(
             EventBean optionalTriggeringEvent,
-            ContextControllerEndConditionMatchEventProvider endConditionMatchEventProvider)
+            ContextControllerEndConditionMatchEventProvider endConditionMatchEventProvider,
+            IDictionary<string, object> optionalTriggeringPattern)
         {
             return false;
         }
 
         public void Deactivate()
+        {
+        }
+
+        public void Transfer(AgentInstanceTransferServices xfer)
         {
         }
 

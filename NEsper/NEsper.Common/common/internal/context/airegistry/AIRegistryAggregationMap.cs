@@ -126,6 +126,18 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             return services.Get(context.AgentInstanceId).GetEventBean(column, eventsPerStream, isNewData, context);
         }
 
+
+        public AggregationRow GetAggregationRow(
+            int agentInstanceId,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return services
+                .Get(context.AgentInstanceId)
+                .GetAggregationRow(agentInstanceId, eventsPerStream, isNewData, context);
+        }
+
         public void SetRemovedCallback(AggregationRowRemovedCallback callback)
         {
             // not applicable

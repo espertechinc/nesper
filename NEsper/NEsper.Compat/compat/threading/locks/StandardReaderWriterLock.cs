@@ -16,8 +16,7 @@ namespace com.espertech.esper.compat.threading.locks
         , IReaderWriterLockCommon
     {
 #if DEBUG && DIAGNOSTICS
-        private static readonly AtomicLong _sid = new AtomicLong();
-        private readonly long _id = _sid.GetAndIncrement();
+        private readonly long _id = DebugId<StandardReaderWriterLock>.NewId();
 #endif
         private readonly ReaderWriterLock _rwLock;
 
@@ -81,13 +80,13 @@ namespace com.espertech.esper.compat.threading.locks
         {
             try {
 #if DEBUG && DIAGNOSTICS
-                System.Diagnostics.Debug.WriteLine(
+                Console.WriteLine(
                     "{0}: AcquireReaderLock: {1} - Start",
                     Thread.CurrentThread.ManagedThreadId, _id);
 #endif
                 _rwLock.AcquireReaderLock((int) timeout);
 #if DEBUG && DIAGNOSTICS
-                System.Diagnostics.Debug.WriteLine(
+                Console.WriteLine(
                     "{0}: AcquireReaderLock: {1} - Acquired",
                     Thread.CurrentThread.ManagedThreadId, _id);
 #endif
@@ -107,13 +106,13 @@ namespace com.espertech.esper.compat.threading.locks
             try
             {
 #if DEBUG && DIAGNOSTICS
-                System.Diagnostics.Debug.WriteLine(
+                Console.WriteLine(
                     "{0}: AcquireWriterLock: {1} - Start",
                     Thread.CurrentThread.ManagedThreadId, _id);
 #endif
                 _rwLock.AcquireWriterLock((int) timeout);
 #if DEBUG && DIAGNOSTICS
-                System.Diagnostics.Debug.WriteLine(
+                Console.WriteLine(
                     "{0}: AcquireWriterLock: {1} - Acquired",
                     Thread.CurrentThread.ManagedThreadId, _id);
 #endif
@@ -130,13 +129,13 @@ namespace com.espertech.esper.compat.threading.locks
         public void ReleaseReaderLock()
         {
 #if DEBUG && DIAGNOSTICS
-            System.Diagnostics.Debug.WriteLine(
+            Console.WriteLine(
                 "{0}: ReleaseReaderLock: {1} - Start",
                 Thread.CurrentThread.ManagedThreadId, _id);
 #endif
             _rwLock.ReleaseReaderLock();
 #if DEBUG && DIAGNOSTICS
-            System.Diagnostics.Debug.WriteLine(
+            Console.WriteLine(
                 "{0}: ReleaseReaderLock: {1} - Released",
                 Thread.CurrentThread.ManagedThreadId, _id);
 #endif
@@ -148,13 +147,13 @@ namespace com.espertech.esper.compat.threading.locks
         public void ReleaseWriterLock()
         {
 #if DEBUG && DIAGNOSTICS
-            System.Diagnostics.Debug.WriteLine(
+            Console.WriteLine(
                 "{0}: ReleaseWriterLock: {1} - Start",
                 Thread.CurrentThread.ManagedThreadId, _id);
 #endif
             _rwLock.ReleaseWriterLock();
 #if DEBUG && DIAGNOSTICS
-            System.Diagnostics.Debug.WriteLine(
+            Console.WriteLine(
                 "{0}: ReleaseWriterLock: {1} - Released",
                 Thread.CurrentThread.ManagedThreadId, _id);
 #endif

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
@@ -28,6 +29,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             _method = method;
             _methodTypeParameters = methodTypeParameters;
             _optionalParams = optionalParams;
+            
+            if (optionalParams != null) {
+                for (var ii = 0; ii < optionalParams.Length; ii++) {
+                    if (optionalParams[ii] == null) {
+                        throw new ArgumentException("Invalid null expression parameter at position " + ii);
+                    }
+                }
+            }
         }
 
         public override void Render(
@@ -71,6 +80,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                     param.MergeClasses(classes);
                 }
             }
+        }
+
+        public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            CodegenExpressionBuilder.TraverseMultiple(_optionalParams, consumer);
         }
     }
 }

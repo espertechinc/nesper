@@ -12,11 +12,14 @@ using System.Reflection;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.compat;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.settings
 {
     public interface ImportService
     {
+        IContainer Container { get; }
+        
         TimeAbacus TimeAbacus { get; }
 
         ClassForNameProvider ClassForNameProvider { get; }
@@ -25,7 +28,8 @@ namespace com.espertech.esper.common.@internal.settings
 
         Type ResolveClass(
             string className,
-            bool forAnnotation);
+            bool forAnnotation,
+            ExtensionClass extensionClass);
 
         ConstructorInfo ResolveCtor(
             Type clazz,
@@ -43,7 +47,8 @@ namespace com.espertech.esper.common.@internal.settings
             string methodName,
             Type[] paramTypes,
             bool[] allowEventBeanType,
-            bool[] allowEventBeanCollType);
+            bool[] allowEventBeanCollType,
+            ExtensionClass extensionClass);
 
         Type ResolveClassForBeanEventType(string fullyQualClassName);
     }

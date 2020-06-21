@@ -35,13 +35,33 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EPLDataflowBeaconWithBeans());
-            execs.Add(new EPLDataflowBeaconVariable());
-            execs.Add(new EPLDataflowBeaconFields());
-            execs.Add(new EPLDataflowBeaconNoType());
+WithWithBeans(execs);
+WithVariable(execs);
+WithFields(execs);
+WithNoType(execs);
             return execs;
         }
-
+public static IList<RegressionExecution> WithNoType(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowBeaconNoType());
+    return execs;
+}public static IList<RegressionExecution> WithFields(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowBeaconFields());
+    return execs;
+}public static IList<RegressionExecution> WithVariable(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowBeaconVariable());
+    return execs;
+}public static IList<RegressionExecution> WithWithBeans(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowBeaconWithBeans());
+    return execs;
+}
         private static void RunAssertionFields(
             RegressionEnvironment env,
             EventRepresentationChoice representationEnum,
@@ -53,10 +73,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             var streamType = eventbean ? "EventBean<MyEvent>" : "MyEvent";
             
             env.CompileDeploy(
-                "create " +
-                representationEnum.GetOutputTypeCreateSchemaName() +
-                " schema MyEvent(p0 string, p1 long, p2 double)",
-                path);
+                representationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyEvent>() +
+                "create schema MyEvent(p0 string, p1 long, p2 double)", path);
+            
             env.CompileDeploy(
                 "@Name('flow') create dataflow MyDataFlowOne " +
                 "" +
@@ -400,6 +419,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public class MyLegacyEvent
         {
             public string Myfield { get; set; }
+        }
+        
+        [Serializable]
+        public class MyLocalJsonProvidedMyEvent
+        {
+            public string p0;
+            public long p1;
+            public double p2;
         }
     }
 } // end of namespace

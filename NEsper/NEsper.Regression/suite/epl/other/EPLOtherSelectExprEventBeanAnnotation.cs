@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using Avro.Generic;
@@ -20,6 +21,8 @@ using com.espertech.esper.regressionlib.framework;
 using NEsper.Avro.Extensions;
 using NEsper.Avro.Util.Support;
 
+using Newtonsoft.Json.Linq;
+
 using NUnit.Framework;
 
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
@@ -31,9 +34,76 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLOtherSelectExprEventBeanAnnoSimple());
+            WithSimple(execs);
+            WithWSubquery(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWSubquery(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLOtherSelectExprEventBeanAnnoWSubquery());
             return execs;
+        }
+
+        public static IList<RegressionExecution> WithSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherSelectExprEventBeanAnnoSimple());
+            return execs;
+        }
+
+        internal class EPLOtherSelectExprEventBeanAnnoSimple : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
+                    RunAssertionEventBeanAnnotation(env, rep);
+                }
+            }
+        }
+
+        internal class EPLOtherSelectExprEventBeanAnnoWSubquery : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                // test non-named-window
+                var path = new RegressionPath();
+                env.CompileDeployWBusPublicType("create objectarray schema MyEvent(col1 string, col2 string)", path);
+
+                var eplInsert = "@Name('insert') insert into DStream select " +
+                                "(select * from MyEvent#keepall) @eventbean as c0 " +
+                                "from SupportBean";
+                env.CompileDeploy(eplInsert, path);
+
+                foreach (var prop in "c0".SplitCsv()) {
+                    AssertFragment(prop, env.Statement("insert").EventType, "MyEvent", true);
+                }
+
+                // test consuming statement
+                var fields = "f0,f1".SplitCsv();
+                env.CompileDeploy(
+                        "@Name('s0') select " +
+                        "c0 as f0, " +
+                        "c0.lastOf().col1 as f1 " +
+                        "from DStream",
+                        path)
+                    .AddListener("s0");
+
+                var eventOne = new object[] {"E1", null};
+                env.SendEventObjectArray(eventOne, "MyEvent");
+                env.SendEventBean(new SupportBean());
+                var @out = env.Listener("s0").AssertOneGetNewAndReset();
+                EPAssertionUtil.AssertProps(@out, fields, new object[] {new object[] {eventOne}, "E1"});
+
+                var eventTwo = new object[] {"E2", null};
+                env.SendEventObjectArray(eventTwo, "MyEvent");
+                env.SendEventBean(new SupportBean());
+                @out = env.Listener("s0").AssertOneGetNewAndReset();
+                EPAssertionUtil.AssertProps(@out, fields, new object[] {new object[] {eventOne, eventTwo}, "E2"});
+
+                env.UndeployAll();
+            }
         }
 
         private static void RunAssertionEventBeanAnnotation(
@@ -42,26 +112,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             var path = new RegressionPath();
             env.CompileDeployWBusPublicType(
-                "@Name('schema') create " + rep.GetOutputTypeCreateSchemaName() + " schema MyEvent(col1 string)",
+                rep.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyEvent>() + "@Name('schema') create schema MyEvent(col1 string)",
                 path);
 
             var eplInsert = "@Name('insert') insert into DStream select " +
                             "last(*) @eventbean as c0, " +
                             "window(*) @eventbean as c1, " +
-                            "prevwindow(S0) @eventbean as c2 " +
-                            "from MyEvent#length(2) as S0";
+                            "prevwindow(s0) @eventbean as c2 " +
+                            "from MyEvent#length(2) as s0";
             env.CompileDeploy(eplInsert, path).AddListener("insert");
 
-            foreach (var prop in new [] { "c0", "c1", "c2" }) {
-                AssertFragment(
-                    prop,
-                    env.Statement("insert").EventType,
-                    "MyEvent",
-                    prop.Equals("c1") || prop.Equals("c2"));
+            foreach (var prop in "c0,c1,c2".SplitCsv()) {
+                AssertFragment(prop, env.Statement("insert").EventType, "MyEvent", prop.Equals("c1") || prop.Equals("c2"));
             }
 
             // test consuming statement
-            var fields = new [] { "f0","f1","f2","f3","f4","f5" };
+            var fields = "f0,f1,f2,f3,f4,f5".SplitCsv();
             env.CompileDeploy(
                     "@Name('s0') select " +
                     "c0 as f0, " +
@@ -73,29 +139,29 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "from DStream",
                     path)
                 .AddListener("s0");
+            env.CompileDeploy("@Name('s1') select * from MyEvent", path).AddListener("s1");
 
             var eventOne = SendEvent(env, rep, "E1");
-            Assert.IsTrue(
-                ((IDictionary<string, object>) env.Listener("insert").AssertOneGetNewAndReset().Underlying).Get("c0") is
-                EventBean);
+            if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
+                eventOne = env.Listener("s1").AssertOneGetNewAndReset().Underlying;
+            }
+
+            var underlying = env.Listener("insert").AssertOneGetNewAndReset().Underlying.AsStringDictionary();
+            Assert.IsTrue(underlying.Get("c0") is EventBean);
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
-                new[] {
-                    eventOne, "E1",
-                    new[] {eventOne}, "E1",
-                    new[] {eventOne}, "E1"
-                });
+                new[] {eventOne, "E1", new[] {eventOne}, "E1", new[] {eventOne}, "E1"});
 
             var eventTwo = SendEvent(env, rep, "E2");
+            if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
+                eventTwo = env.Listener("s1").AssertOneGetNewAndReset().Underlying;
+            }
+
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
-                new[] {
-                    eventTwo, "E2",
-                    new[] {eventOne, eventTwo}, "E2",
-                    new[] {eventOne, eventTwo}, "E2"
-                });
+                new[] {eventTwo, "E2", new[] {eventOne, eventTwo}, "E2", new[] {eventOne, eventTwo}, "E2"});
 
             // test SODA
             env.EplToModelCompileDeploy(eplInsert, path);
@@ -136,16 +202,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 eventOne = @event;
             }
             else if (rep.IsObjectArrayEvent()) {
-                object[] @event = {value};
+                var @event = new object[] {value};
                 env.SendEventObjectArray(@event, "MyEvent");
                 eventOne = @event;
             }
             else if (rep.IsAvroEvent()) {
-                var schema = SupportAvroUtil.GetAvroSchema(env.Statement("schema").EventType);
-                var @event = new GenericRecord(schema.AsRecordSchema());
+                var schema = SupportAvroUtil.GetAvroSchema(env.Statement("schema").EventType).AsRecordSchema();
+                var @event = new GenericRecord(schema);
                 @event.Put("col1", value);
                 env.SendEventAvro(@event, "MyEvent");
                 eventOne = @event;
+            }
+            else if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
+                var @object = new JObject(new JProperty("col1", value));
+                env.SendEventJson(@object.ToString(), "MyEvent");
+                eventOne = @object.ToString();
             }
             else {
                 throw new IllegalStateException();
@@ -154,63 +225,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             return eventOne;
         }
 
-        internal class EPLOtherSelectExprEventBeanAnnoSimple : RegressionExecution
+        [Serializable]
+        public class MyLocalJsonProvidedMyEvent
         {
-            public void Run(RegressionEnvironment env)
-            {
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
-                    RunAssertionEventBeanAnnotation(env, rep);
-                }
-            }
-        }
-
-        internal class EPLOtherSelectExprEventBeanAnnoWSubquery : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                // test non-named-window
-                var path = new RegressionPath();
-                env.CompileDeployWBusPublicType("create objectarray schema MyEvent(col1 string, col2 string)", path);
-
-                var eplInsert = "@Name('insert') insert into DStream select " +
-                                "(select * from MyEvent#keepall) @eventbean as c0 " +
-                                "from SupportBean";
-                env.CompileDeploy(eplInsert, path);
-
-                foreach (var prop in new [] { "c0" }) {
-                    AssertFragment(prop, env.Statement("insert").EventType, "MyEvent", true);
-                }
-
-                // test consuming statement
-                var fields = new [] { "f0","f1" };
-                env.CompileDeploy(
-                        "@Name('s0') select " +
-                        "c0 as f0, " +
-                        "c0.lastOf().col1 as f1 " +
-                        "from DStream",
-                        path)
-                    .AddListener("s0");
-
-                object[] eventOne = {"E1", null};
-                env.SendEventObjectArray(eventOne, "MyEvent");
-                env.SendEventBean(new SupportBean());
-                var @out = env.Listener("s0").AssertOneGetNewAndReset();
-                EPAssertionUtil.AssertProps(
-                    @out,
-                    fields,
-                    new object[] {new object[] {eventOne}, "E1"});
-
-                object[] eventTwo = {"E2", null};
-                env.SendEventObjectArray(eventTwo, "MyEvent");
-                env.SendEventBean(new SupportBean());
-                @out = env.Listener("s0").AssertOneGetNewAndReset();
-                EPAssertionUtil.AssertProps(
-                    @out,
-                    fields,
-                    new object[] {new object[] {eventOne, eventTwo}, "E2"});
-
-                env.UndeployAll();
-            }
+            // ReSharper disable once InconsistentNaming
+            // ReSharper disable once UnusedMember.Global
+            public string col1;
         }
     }
 } // end of namespace

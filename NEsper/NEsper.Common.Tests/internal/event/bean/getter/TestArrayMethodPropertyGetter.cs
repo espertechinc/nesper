@@ -7,8 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
-using System.Runtime.Remoting;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.@event;
@@ -34,7 +33,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             getterOutOfBounds = MakeGetter(Int32.MaxValue);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestCtor()
         {
             try
@@ -48,7 +47,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             }
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGet()
         {
             Assert.AreEqual(bean.ArrayProperty[0], getter.Get(theEvent));

@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.subscriber;
 using com.espertech.esper.runtime.client;
 
@@ -30,8 +31,46 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraTableSelectStarPublicTypeVisibility());
+            WithStarPublicTypeVisibility(execs);
+            WithEnum(execs);
+            WithMultikeyWArraySingleArray(execs);
+            WithMultikeyWArrayTwoArray(execs);
+            WithMultikeyWArrayComposite(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMultikeyWArrayComposite(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraTableSelectMultikeyWArrayComposite());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMultikeyWArrayTwoArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraTableSelectMultikeyWArrayTwoArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMultikeyWArraySingleArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraTableSelectMultikeyWArraySingleArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEnum(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraTableSelectEnum());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStarPublicTypeVisibility(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraTableSelectStarPublicTypeVisibility());
             return execs;
         }
 
@@ -77,11 +116,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             env.SendEventBean(new SupportBean_S2(0));
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
-            foreach (var col in new [] { "c1","c2","c6" }) {
+            foreach (var col in new[] {"c1", "c2", "c6"}) {
                 AssertEventUnd(@event.Get(col), rowValues);
             }
 
-            foreach (var col in new [] { "c0","c5" }) {
+            foreach (var col in new[] {"c0", "c5"}) {
                 AssertEventUnd(((object[][]) @event.Get(col))[0], rowValues);
             }
 
@@ -145,8 +184,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             // try join passing of params
             var eplJoin = "@Name('s0') select " +
-                          typeof(InfraTableSelect).FullName + ".MyServiceEventBean(mt) as c0, " +
-                          typeof(InfraTableSelect).FullName + ".MyServiceObjectArray(mt) as c1 " +
+                          typeof(InfraTableSelect).FullName +
+                          ".MyServiceEventBean(mt) as c0, " +
+                          typeof(InfraTableSelect).FullName +
+                          ".MyServiceObjectArray(mt) as c1 " +
                           "from SupportBean_S2, MyTable as mt";
             env.CompileDeploy(eplJoin, path).AddListener("s0");
 
@@ -408,6 +449,146 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             return data;
         }
 
+        internal class InfraTableSelectMultikeyWArrayComposite : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RegressionPath path = new RegressionPath();
+                string epl = "create table MyTable(k0 string primary key, k1 string primary key, k2 string primary key, v string);\n" +
+                             "create index MyIndex on MyTable(k0, k1, v btree);\n" +
+                             "insert into MyTable select P00 as k0, P01 as k1, P02 as k2, P03 as v from SupportBean_S0;\n" +
+                             "@Name('s0') select t.v as v from SupportBean_S1, MyTable as t where k0 = P10 and k1 = P11 and v > P12;\n";
+                env.CompileDeploy(epl, path).AddListener("s0");
+
+                SendS0(env, "A", "BB", "CCC", "X1");
+                SendS0(env, "A", "BB", "DDDD", "X4");
+                SendS0(env, "A", "CC", "CCC", "X3");
+                SendS0(env, "C", "CC", "CCC", "X4");
+
+                env.Milestone(0);
+
+                SendS1Assert(env, "A", "CC", "", "X3");
+                SendS1Assert(env, "C", "CC", "", "X4");
+                SendS1Assert(env, "A", "BB", "X3", "X4");
+                SendS1Assert(env, "A", "BB", "Z", null);
+
+                env.UndeployAll();
+            }
+
+            private void SendS0(
+                RegressionEnvironment env,
+                string p00,
+                string p01,
+                string p02,
+                string p03)
+            {
+                env.SendEventBean(new SupportBean_S0(0, p00, p01, p02, p03));
+            }
+
+            private void SendS1Assert(
+                RegressionEnvironment env,
+                string p10,
+                string p11,
+                string p12,
+                string expected)
+            {
+                env.SendEventBean(new SupportBean_S1(0, p10, p11, p12));
+                if (expected == null) {
+                    Assert.IsFalse(env.Listener("s0").IsInvoked, expected);
+                }
+                else {
+                    Assert.AreEqual(env.Listener("s0").AssertOneGetNewAndReset().Get("v"), expected);
+                }
+            }
+        }
+
+        internal class InfraTableSelectMultikeyWArrayTwoArray : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RegressionPath path = new RegressionPath();
+                string epl = "create table MyTable(k1 int[primitive] primary key, k2 int[primitive] primary key, value int);\n" +
+                             "insert into MyTable select IntOne as k1, IntTwo as k2, Value as value from SupportEventWithManyArray(Id = 'I');\n" +
+                             "@Name('s0') select t.value as c0 from SupportEventWithManyArray(Id='Q'), MyTable as t where k1 = IntOne and k2 = IntTwo;\n";
+                env.CompileDeploy(epl, path).AddListener("s0");
+
+                SendManyArray(env, "I", new int[] {1, 2}, new int[] {3, 4}, 10);
+                SendManyArray(env, "I", new int[] {1, 3}, new int[] {1}, 20);
+                SendManyArray(env, "I", new int[] {2}, new int[] { }, 30);
+
+                env.Milestone(0);
+
+                SendManyArrayAssert(env, "Q", new int[] {2}, new int[0], 30);
+                SendManyArrayAssert(env, "Q", new int[] {1, 2}, new int[] {3, 4}, 10);
+                SendManyArrayAssert(env, "Q", new int[] {1, 3}, new int[] {1}, 20);
+
+                env.UndeployAll();
+            }
+
+            private void SendManyArrayAssert(
+                RegressionEnvironment env,
+                string id,
+                int[] intOne,
+                int[] intTwo,
+                int expected)
+            {
+                SendManyArray(env, id, intOne, intTwo, -1);
+                Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+            }
+
+            private void SendManyArray(
+                RegressionEnvironment env,
+                string id,
+                int[] intOne,
+                int[] intTwo,
+                int value)
+            {
+                env.SendEventBean(new SupportEventWithManyArray(id).WithIntOne(intOne).WithIntTwo(intTwo).WithValue(value));
+            }
+        }
+
+        internal class InfraTableSelectMultikeyWArraySingleArray : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RegressionPath path = new RegressionPath();
+                string epl = "create table MyTable(k int[primitive] primary key, value int);\n" +
+                             "insert into MyTable select Array as k, Value as value from SupportEventWithIntArray;\n" +
+                             "@Name('s0') select t.value as c0 from SupportEventWithManyArray, MyTable as t where k = IntOne;\n";
+                env.CompileDeploy(epl, path).AddListener("s0");
+
+                SendIntArray(env, "E1", new int[] {1, 2}, 10);
+                SendIntArray(env, "E2", new int[] {1, 3}, 20);
+                SendIntArray(env, "E3", new int[] {2}, 30);
+
+                env.Milestone(0);
+
+                SendAssertManyArray(env, new int[] {2}, 30);
+                SendAssertManyArray(env, new int[] {1, 3}, 20);
+                SendAssertManyArray(env, new int[] {1, 2}, 10);
+
+                env.UndeployAll();
+            }
+
+            private void SendAssertManyArray(
+                RegressionEnvironment env,
+                int[] ints,
+                int expected)
+            {
+                env.SendEventBean(new SupportEventWithManyArray().WithIntOne(ints));
+                Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+            }
+
+            private void SendIntArray(
+                RegressionEnvironment env,
+                string id,
+                int[] ints,
+                int value)
+            {
+                env.SendEventBean(new SupportEventWithIntArray(id, ints, value));
+            }
+        }
+
         internal class InfraTableSelectEnum : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -419,7 +600,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileExecuteFAF("insert into MyTable select 'a' as p", path);
 
                 var @event = env.GetEnumerator("s0").Advance();
-                var row = (object[]) @event.Get("c0");
+                var raw = @event.Get("c0");
+                var row = (object[]) raw;
                 Assert.AreEqual("a", row[0]);
 
                 env.UndeployAll();
@@ -479,7 +661,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean_S1(6, "G1", "a", "b")); // merge more values
 
                 object[] rowValues = {"G1", 10, "a", new[] {e1Sb}, 100L, "b", new[] {e2Sb0}};
-                
+
                 RunAssertionSubqueryWindowAgg(env, path, rowValues);
                 RunAssertionOnSelectWindowAgg(env, path, expectedType, rowValues);
                 RunAssertionSubquerySelectStar(env, path, rowValues);

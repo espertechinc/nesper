@@ -42,11 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 ExprEvaluatorContext exprEvaluatorContext)
             {
                 var theEvent = eventsPerStream[streamNumEval];
-                if (theEvent != null) {
-                    return theEvent.Underlying;
-                }
-
-                return null;
+                return theEvent?.Underlying;
             }
 
             public ExprEvaluator ExprEvaluator => this;
@@ -78,9 +74,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
             public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-            public void ToEPL(
-                TextWriter writer,
-                ExprPrecedenceEnum parentPrecedence)
+            public void ToEPL(TextWriter writer,
+                ExprPrecedenceEnum parentPrecedence,
+                ExprNodeRenderableFlags flags)
             {
                 writer.Write(typeof(ExprForgeStreamUnderlying).GetSimpleName());
             }

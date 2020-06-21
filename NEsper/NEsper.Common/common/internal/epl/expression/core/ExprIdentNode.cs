@@ -13,7 +13,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     /// </summary>
     public interface ExprIdentNode : ExprNode,
         ExprFilterOptimizableNode,
-        ExprStreamRefNode
+        ExprStreamRefNode,
+        ExprEnumerationForgeProvider
     {
         string UnresolvedPropertyName { get; }
 

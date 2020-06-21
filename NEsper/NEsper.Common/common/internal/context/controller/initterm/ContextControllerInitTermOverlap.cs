@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -69,7 +68,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                 this,
                 this,
                 true);
-            bool isTriggeringEventMatchesFilter = startCondition.Activate(optionalTriggeringEvent, null);
+            bool isTriggeringEventMatchesFilter = startCondition.Activate(optionalTriggeringEvent, null, optionalTriggeringPattern);
             initTermSvc.MgmtUpdSetStartCondition(path, startCondition);
 
             if (isTriggeringEventMatchesFilter || startCondition.IsImmediate) {
@@ -87,17 +86,13 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             bool terminateChildContexts)
         {
             base.Deactivate(path, terminateChildContexts);
-            if (distinctSvc != null) {
-                distinctSvc.Clear(path);
-            }
+            distinctSvc?.Clear(path);
         }
 
         public override void Destroy()
         {
             base.Destroy();
-            if (distinctSvc != null) {
-                distinctSvc.Destroy();
-            }
+            distinctSvc?.Destroy();
         }
 
         public override void RangeNotification(
@@ -147,7 +142,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 
             // For overlapping mode, make sure we activate again or stay activated
             if (!startCondition.IsRunning) {
-                startCondition.Activate(optionalTriggeringEvent, null);
+                startCondition.Activate(optionalTriggeringEvent, null, optionalTriggeringPattern);
             }
 
             IList<AgentInstance> agentInstances = InstantiateAndActivateEndCondition(

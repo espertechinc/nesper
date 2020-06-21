@@ -9,7 +9,6 @@
 using System.Collections.Generic;
 using System.Xml;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;

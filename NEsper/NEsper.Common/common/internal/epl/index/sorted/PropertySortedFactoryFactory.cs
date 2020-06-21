@@ -9,45 +9,48 @@
 using System;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.epl.index.@base;
 
 namespace com.espertech.esper.common.@internal.epl.index.sorted
 {
     public class PropertySortedFactoryFactory : EventTableFactoryFactoryBase
     {
-        private readonly string indexProp;
-        private readonly Type indexType;
-        private readonly EventPropertyValueGetter valueGetter;
+        private readonly string _indexProp;
+        private readonly Type _indexType;
+        private readonly EventPropertyValueGetter _valueGetter;
+        private readonly DataInputOutputSerde _indexSerde;
 
         public PropertySortedFactoryFactory(
             int indexedStreamNum,
             int? subqueryNum,
-            object optionalSerde,
             bool isFireAndForget,
             string indexProp,
             Type indexType,
-            EventPropertyValueGetter valueGetter)
-            : base(indexedStreamNum, subqueryNum, optionalSerde, isFireAndForget)
+            EventPropertyValueGetter valueGetter,
+            DataInputOutputSerde indexSerde)
+            : base(indexedStreamNum, subqueryNum, isFireAndForget)
         {
-            this.indexProp = indexProp;
-            this.indexType = indexType;
-            this.valueGetter = valueGetter;
+            _indexProp = indexProp;
+            _indexType = indexType;
+            _valueGetter = valueGetter;
+            _indexSerde = indexSerde;
         }
 
         public override EventTableFactory Create(
             EventType eventType,
-            StatementContext statementContext)
+            EventTableFactoryFactoryContext eventTableFactoryContext)
         {
-            return statementContext.EventTableIndexService.CreateSorted(
+            return eventTableFactoryContext.EventTableIndexService.CreateSorted(
                 indexedStreamNum,
                 eventType,
-                indexProp,
-                indexType,
-                valueGetter,
-                optionalSerde,
+                _indexProp,
+                _indexType,
+                _valueGetter,
+                _indexSerde,
+                null,
                 isFireAndForget,
-                statementContext);
+                eventTableFactoryContext);
         }
     }
 } // end of namespace

@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
@@ -19,6 +18,7 @@ using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.context.mgr
 {
@@ -101,13 +101,14 @@ namespace com.espertech.esper.common.@internal.context.mgr
             foreach (var statementEntry in ContextManager.Statements) {
                 var statementDesc = statementEntry.Value;
 
-                Func<AgentInstanceContext, IDictionary<FilterSpecActivatable, FilterValueSetParam[][]>> generator =
-                    agentInstanceContext =>
-                        ContextManagerUtil.ComputeAddendumForStatement(
-                            statementDesc,
-                            ContextManager.ContextDefinition.ControllerFactories,
-                            allPartitionKeys,
-                            agentInstanceContext);
+                Supplier<IDictionary<FilterSpecActivatable, FilterValueSetParam[][]>> generator = () =>
+                    ContextManagerUtil.ComputeAddendumForStatement(
+                        statementDesc,
+                        ContextManager.Statements,
+                        ContextManager.ContextDefinition.ControllerFactories,
+                        allPartitionKeys,
+                        AgentInstanceContextCreate);
+                
                 AgentInstanceFilterProxy proxy = new AgentInstanceFilterProxyImpl(generator);
 
                 var agentInstance = AgentInstanceUtil.StartStatement(
@@ -172,13 +173,15 @@ namespace com.espertech.esper.common.@internal.context.mgr
             var agentInstanceId = subpathIdOrCPId;
 
             // stop - in reverse order of statements, to allow termination to use tables+named-windows
-            List<ContextControllerStatementDesc> contextControllerStatementDescList =
+            var contextControllers = ContextControllers;
+            var contextControllerStatementDescList =
                 new List<ContextControllerStatementDesc>(ContextManager.Statements.Values);
             contextControllerStatementDescList.Reverse();
             foreach (var statementDesc in contextControllerStatementDescList) {
                 AgentInstanceUtil.ContextPartitionTerminate(
                     agentInstanceId,
                     statementDesc,
+                    contextControllers,
                     terminationProperties,
                     leaveLocksAcquired,
                     agentInstancesLocksHeld);
@@ -269,13 +272,13 @@ namespace com.espertech.esper.common.@internal.context.mgr
                     AgentInstanceContextCreate.StatementContext);
 
                 // create filter proxies
-                Func<AgentInstanceContext, IDictionary<FilterSpecActivatable, FilterValueSetParam[][]>> generator =
-                    agentInstanceContext =>
-                        ContextManagerUtil.ComputeAddendumForStatement(
-                            statement,
-                            ContextManager.ContextDefinition.ControllerFactories,
-                            partitionKeys,
-                            agentInstanceContext);
+                Supplier<IDictionary<FilterSpecActivatable, FilterValueSetParam[][]>> generator = () =>
+                    ContextManagerUtil.ComputeAddendumForStatement(
+                        statement,
+                        ContextManager.Statements,
+                        ContextManager.ContextDefinition.ControllerFactories,
+                        partitionKeys,
+                        AgentInstanceContextCreate);
                 AgentInstanceFilterProxy proxy = new AgentInstanceFilterProxyImpl(generator);
 
                 // start
@@ -346,8 +349,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
 
         public void RemoveStatement(ContextControllerStatementDesc statementDesc)
         {
+            var contextControllers = ContextControllers;
             foreach (var id in ContextManager.ContextPartitionIdService.Ids) {
-                AgentInstanceUtil.ContextPartitionTerminate(id, statementDesc, null, false, null);
+                AgentInstanceUtil.ContextPartitionTerminate(id, statementDesc, contextControllers, null, false, null);
             }
         }
 
@@ -396,6 +400,31 @@ namespace com.espertech.esper.common.@internal.context.mgr
 
             keysPerContext[nestingLevel - 1] = partitionKey;
             return keysPerContext;
+        }
+
+        public void Transfer(AgentInstanceTransferServices xfer)
+        {
+            ContextControllers[0].Transfer(IntSeqKeyRoot.INSTANCE, ContextControllers.Length > 1, xfer);
+        }
+
+        public void TransferRecursive(
+            IntSeqKey controllerPath,
+            int subpathOrAgentInstanceId,
+            ContextController originator,
+            AgentInstanceTransferServices xfer)
+        {
+            if (controllerPath.Length != originator.Factory.FactoryEnv.NestingLevel - 1) {
+                throw new IllegalStateException("Unrecognized controller path");
+            }
+
+            var nestingLevel = originator.Factory.FactoryEnv.NestingLevel; // starts at 1 for root
+            if (nestingLevel >= ContextControllers.Length) {
+                return;
+            }
+
+            var childController = ContextControllers[nestingLevel];
+            var subPath = controllerPath.AddToEnd(subpathOrAgentInstanceId);
+            childController.Transfer(subPath, nestingLevel < ContextControllers.Length - 1, xfer);
         }
     }
 } // end of namespace

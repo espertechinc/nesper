@@ -38,17 +38,11 @@ namespace com.espertech.esper.common.@internal.context.airegistry
         public void DeassignService(int agentInstanceId)
         {
             LookupStrategies.DeassignService(agentInstanceId);
-            if (AggregationServices != null) {
-                AggregationServices.DeassignService(agentInstanceId);
-            }
+            AggregationServices?.DeassignService(agentInstanceId);
 
-            if (PriorEvalStrategies != null) {
-                PriorEvalStrategies.DeassignService(agentInstanceId);
-            }
+            PriorEvalStrategies?.DeassignService(agentInstanceId);
 
-            if (PreviousGetterStrategies != null) {
-                PreviousGetterStrategies.DeassignService(agentInstanceId);
-            }
+            PreviousGetterStrategies?.DeassignService(agentInstanceId);
         }
 
         public void Assign(
@@ -59,17 +53,11 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             PreviousGetterStrategy previousGetterStrategy)
         {
             LookupStrategies.AssignService(agentInstanceId, lookupStrategy);
-            if (AggregationServices != null) {
-                AggregationServices.AssignService(agentInstanceId, aggregationService);
-            }
+            AggregationServices?.AssignService(agentInstanceId, aggregationService);
 
-            if (PriorEvalStrategies != null) {
-                PriorEvalStrategies.AssignService(agentInstanceId, priorEvalStrategy);
-            }
+            PriorEvalStrategies?.AssignService(agentInstanceId, priorEvalStrategy);
 
-            if (PreviousGetterStrategies != null) {
-                PreviousGetterStrategies.AssignService(agentInstanceId, previousGetterStrategy);
-            }
+            PreviousGetterStrategies?.AssignService(agentInstanceId, previousGetterStrategy);
         }
     }
 } // end of namespace

@@ -11,7 +11,6 @@ using System.Collections.Generic;
 
 using Avro.Generic;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
@@ -23,11 +22,12 @@ using com.espertech.esper.regressionlib.support.bean;
 
 using NEsper.Avro.Extensions;
 
+using Newtonsoft.Json.Linq;
+
 using NUnit.Framework;
 
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
 
-using static NEsper.Avro.Extensions.SchemaBuilder;
 using static NEsper.Avro.Extensions.TypeBuilder;
 
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
@@ -40,14 +40,78 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLInsertIntoTransposeMapAndObjectArray());
-            execs.Add(new EPLInsertIntoTransposeFunctionToStreamWithProps());
-            execs.Add(new EPLInsertIntoTransposeFunctionToStream());
-            execs.Add(new EPLInsertIntoTransposeSingleColumnInsert());
-            execs.Add(new EPLInsertIntoTransposeEventJoinMap());
-            execs.Add(new EPLInsertIntoTransposeEventJoinPONO());
-            execs.Add(new EPLInsertIntoTransposePONOPropertyStream());
+            WithTransposeCreateSchemaPONO(execs);
+            WithTransposeMapAndObjectArrayAndOthers(execs);
+            WithTransposeFunctionToStreamWithProps(execs);
+            WithTransposeFunctionToStream(execs);
+            WithTransposeSingleColumnInsert(execs);
+            WithTransposeEventJoinMap(execs);
+            WithTransposeEventJoinPONO(execs);
+            WithTransposePONOPropertyStream(execs);
+            WithInvalidTranspose(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalidTranspose(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoInvalidTranspose());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTransposePONOPropertyStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoTransposePONOPropertyStream());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTransposeEventJoinPONO(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoTransposeEventJoinPONO());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTransposeEventJoinMap(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoTransposeEventJoinMap());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTransposeSingleColumnInsert(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoTransposeSingleColumnInsert());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTransposeFunctionToStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoTransposeFunctionToStream());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTransposeFunctionToStreamWithProps(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoTransposeFunctionToStreamWithProps());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTransposeMapAndObjectArrayAndOthers(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoTransposeMapAndObjectArrayAndOthers());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTransposeCreateSchemaPONO(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoTransposeCreateSchemaPONO());
             return execs;
         }
 
@@ -61,20 +125,26 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             return result;
         }
 
-        public static IDictionary<string, object> LocalGenerateMap(string @string, int intPrimitive)
+        public static IDictionary<string, object> LocalGenerateMap(
+            string @string,
+            int intPrimitive)
         {
-            var  @out = new Dictionary<string, object>();
+            var @out = new Dictionary<string, object>();
             @out.Put("p0", @string);
             @out.Put("p1", intPrimitive);
             return @out;
         }
 
-        public static object[] LocalGenerateOA(string @string, int intPrimitive)
+        public static object[] LocalGenerateOA(
+            string @string,
+            int intPrimitive)
         {
-            return new object[] { @string, intPrimitive };
+            return new object[] {@string, intPrimitive};
         }
 
-        public static GenericRecord LocalGenerateAvro(string @string, int intPrimitive)
+        public static GenericRecord LocalGenerateAvro(
+            string @string,
+            int intPrimitive)
         {
             var schema = SchemaBuilder.Record("name", RequiredString("p0"), RequiredInt("p1"));
             var record = new GenericRecord(schema);
@@ -83,11 +153,53 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             return record;
         }
 
-        internal class EPLInsertIntoTransposeMapAndObjectArray : RegressionExecution
+        public static String LocalGenerateJson(
+            string @string,
+            int intPrimitive)
+        {
+            var @object = new JObject();
+            @object.Add("p0", @string);
+            @object.Add("p1", intPrimitive);
+            return @object.ToString();
+        }
+
+        public static SupportBeanTwo MakeSB2Event(SupportBean sb)
+        {
+            return new SupportBeanTwo(sb.TheString, sb.IntPrimitive);
+        }
+
+        internal class EPLInsertIntoTransposeCreateSchemaPONO : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                String epl = "create schema SupportBeanTwo as " +
+                             typeof(SupportBeanTwo).FullName +
+                             ";\n" +
+                             "on SupportBean event insert into astream select transpose(" +
+                             typeof(EPLInsertIntoTransposeStream).FullName +
+                             ".MakeSB2Event(event));\n" +
+                             "on SupportBean event insert into bstream select transpose(" +
+                             typeof(EPLInsertIntoTransposeStream).FullName +
+                             ".MakeSB2Event(event));\n" +
+                             "@Name('a') select * from astream\n;" +
+                             "@Name('b') select * from bstream\n;";
+                env.CompileDeploy(epl).AddListener("a").AddListener("b");
+
+                env.SendEventBean(new SupportBean("E1", 1));
+
+                String[] fields = new String[] {"StringTwo"};
+                EPAssertionUtil.AssertProps(env.Listener("a").AssertOneGetNewAndReset(), fields, new Object[] {"E1"});
+                EPAssertionUtil.AssertProps(env.Listener("b").AssertOneGetNewAndReset(), fields, new Object[] {"E1"});
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class EPLInsertIntoTransposeMapAndObjectArrayAndOthers : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     RunTransposeMapAndObjectArray(env, rep);
                 }
             }
@@ -96,11 +208,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 RegressionEnvironment env,
                 EventRepresentationChoice representation)
             {
-                var fields = new [] { "p0","p1" };
+                var fields = new[] {"p0", "p1"};
                 var path = new RegressionPath();
-                var schema = "create " +
-                             representation.GetOutputTypeCreateSchemaName() +
-                             " schema MySchema(p0 string, p1 int)";
+                var schema = representation.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMySchema>() + "create schema MySchema(p0 string, p1 int)";
                 env.CompileDeployWBusPublicType(schema, path);
 
                 string generateFunction;
@@ -112,6 +222,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 }
                 else if (representation.IsAvroEvent()) {
                     generateFunction = "GenerateAvro";
+                }
+                else if (representation.IsJsonEvent() || representation.IsJsonProvidedClassEvent()) {
+                    generateFunction = "GenerateJson";
                 }
                 else {
                     throw new IllegalStateException("Unrecognized code " + representation);
@@ -168,7 +281,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var underlying = (Pair<object, IDictionary<string, object>>) result.Underlying;
                 EPAssertionUtil.AssertProps(
                     result,
-                    new [] { "dummy","TheString","IntPrimitive" },
+                    new[] {"dummy", "TheString", "IntPrimitive"},
                     new object[] {1, "OI1", 10});
                 Assert.AreEqual("OI1", ((SupportBean) underlying.First).TheString);
 
@@ -195,7 +308,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var result = env.Listener("s0").AssertOneGetNewAndReset();
                 EPAssertionUtil.AssertProps(
                     result,
-                    new [] { "TheString","IntPrimitive" },
+                    new[] {"TheString", "IntPrimitive"},
                     new object[] {"OI1", 10});
                 Assert.AreEqual("OI1", ((SupportBean) result.Underlying).TheString);
 
@@ -205,7 +318,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventBean(new SupportBean("I2", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("second").AssertOneGetNewAndReset(),
-                    new [] { "TheString","IntPrimitive" },
+                    new[] {"TheString", "IntPrimitive"},
                     new object[] {"OI2", 10});
 
                 env.UndeployAll();
@@ -226,7 +339,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var resultOne = env.Listener("s0").AssertOneGetNewAndReset();
                 EPAssertionUtil.AssertProps(
                     resultOne,
-                    new [] { "TheString","IntPrimitive" },
+                    new[] {"TheString", "IntPrimitive"},
                     new object[] {"OI1", 10});
                 Assert.AreEqual("OI1", ((SupportBean) resultOne.Underlying).TheString);
                 env.UndeployModuleContaining("s0");
@@ -241,7 +354,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var resultTwo = env.Listener("s0").AssertOneGetNewAndReset();
                 EPAssertionUtil.AssertProps(
                     resultTwo,
-                    new [] { "IntOne","IntTwo" },
+                    new[] {"IntOne", "IntTwo"},
                     new object[] {10, 11});
                 Assert.AreEqual(11, (int) ((SupportBeanNumeric) resultTwo.Underlying).IntTwo);
                 env.UndeployModuleContaining("s0");
@@ -280,13 +393,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     Assert.Fail();
                 }
                 catch (EPCompileException ex) {
-                    Assert.AreEqual(
-                        "Expression-returned value of type '" +
-                        typeof(SupportBean).CleanName() +
-                        "' cannot be converted to target event type 'SomeOtherStream' with underlying type '" +
-                        typeof(IDictionary<string, object>).CleanName() + 
-                        "' [insert into SomeOtherStream select transpose(customOne('O', 10)) from SupportBean]",
-                        ex.Message);
+                    Assert.That(
+                        ex.Message,
+                        Does.StartWith(
+                            "Error during compilation: " +
+                            "Expression-returned value of type '" +
+                            typeof(SupportBean).CleanName() +
+                            "' cannot be converted to target event type 'SomeOtherStream' with underlying type '" +
+                            typeof(IDictionary<string, object>).CleanName() +
+                            "' [insert into SomeOtherStream select transpose(customOne('O', 10)) from SupportBean]"));
                 }
 
                 env.UndeployAll();
@@ -330,7 +445,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.Id","b.Id" },
+                    new[] {"a.Id", "b.Id"},
                     new object[] {"A1", "B1"});
 
                 env.UndeployAll();
@@ -353,7 +468,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventBean(new SupportBean_B("B1"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.Id","b.Id" },
+                    new[] {"a.Id", "b.Id"},
                     new object[] {"A1", "B1"});
 
                 env.UndeployAll();
@@ -374,7 +489,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventBean(SupportBeanComplexProps.MakeDefaultBean());
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "result" },
+                    new[] {"result"},
                     new object[] {"NestedValue"});
 
                 env.UndeployAll();
@@ -463,6 +578,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public string OtherId { get; }
 
             public E2 Event { get; }
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedMySchema
+        {
+            public string p0;
+            public int p1;
         }
     }
 } // end of namespace

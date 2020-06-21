@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.util
     [TestFixture]
     public class TestSerializableObjectCopier : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestCopyEnum()
         {
             SupportEnum enumOne = SupportEnum.ENUM_VALUE_2;

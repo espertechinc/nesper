@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
-
 using com.espertech.esper.common.client.scopetest;
 
 using NUnit.Framework;
@@ -27,7 +25,7 @@ namespace com.espertech.esper.common.@internal.type
             listParam.Add(new FrequencyParameter(3));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestIsWildcard()
         {
             // Wildcard is expected to make only a best-guess effort, not be perfect
@@ -35,14 +33,14 @@ namespace com.espertech.esper.common.@internal.type
             Assert.IsFalse(listParam.IsWildcard(6, 10));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetValues()
         {
             var result = listParam.GetValuesInRange(1, 8);
             EPAssertionUtil.AssertEqualsAnyOrder(new int[] { 3, 5, 6 }, result);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestContainsPoint()
         {
             Assert.IsTrue(listParam.ContainsPoint(0));
@@ -53,7 +51,7 @@ namespace com.espertech.esper.common.@internal.type
             Assert.IsTrue(listParam.ContainsPoint(5));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestFormat()
         {
             Assert.AreEqual("5, */3", listParam.Formatted());

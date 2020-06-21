@@ -6,27 +6,22 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
-using com.espertech.esper.common.@internal.epl.resultset.codegen;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.context.module.EPStatementInitServices;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 {
     public class BindSelectExprProcessorForge : SelectExprProcessorForge
     {
+        private readonly long _id = DebugId<BindSelectExprProcessorForge>.NewId();
         private readonly SelectExprProcessorForge syntheticProcessorForge;
         private readonly BindProcessorForge bindProcessorForge;
 
@@ -76,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
             processMethod.Block
                 .DeclareVar<bool>("makeNatural", ExprDotName(stmtResultSvc, "IsMakeNatural"))
-                .DeclareVar<bool>("synthesize", Or(ExprDotName(stmtResultSvc, "IsMakeSynthetic"), isSynthesize))
+                .DeclareVar<bool>("synthesize", Or(isSynthesize, ExprDotName(stmtResultSvc, "IsMakeSynthetic")))
                 .IfCondition(Not(Ref("makeNatural")))
                 .IfCondition(Ref("synthesize"))
                 .DeclareVar<EventBean>("synthetic", LocalMethod(syntheticMethod))

@@ -9,7 +9,6 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
@@ -23,8 +22,22 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraIncreasingUseCase());
+            WithIncreasingUseCase(execs);
+            WithDoc(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDoc(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraDoc());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIncreasingUseCase(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraIncreasingUseCase());
             return execs;
         }
 
@@ -50,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventMap(Collections.SingletonDataMap("value", 100L), "ValueEvent");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "value" },
+                    new[] {"value"},
                     new object[] {100L});
 
                 env.SendEventMap(Collections.SingletonDataMap("value", 101L), "ValueEvent");
@@ -63,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventMap(Collections.SingletonDataMap("value", 200L), "ValueEvent");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "value" },
+                    new[] {"value"},
                     new object[] {200L});
 
                 env.SendEventMap(Collections.SingletonDataMap("value", 201L), "ValueEvent");
@@ -71,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventMap(Collections.SingletonDataMap("value", 301L), "ValueEvent");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "value" },
+                    new[] {"value"},
                     new object[] {301L});
 
                 env.UndeployAll();

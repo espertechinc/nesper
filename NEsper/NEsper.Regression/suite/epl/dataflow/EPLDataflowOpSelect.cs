@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.client.dataflow.util;
 using com.espertech.esper.common.client.scopetest;
@@ -31,18 +30,63 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EPLDataflowAllTypes());
-            execs.Add(new EPLDataflowDocSamples());
-            execs.Add(new EPLDataflowInvalid());
-            execs.Add(new EPLDataflowIterateFinalMarker());
-            execs.Add(new EPLDataflowOutputRateLimit());
-            execs.Add(new EPLDataflowTimeWindowTriggered());
-            execs.Add(new EPLDataflowFromClauseJoinOrder());
-            execs.Add(new EPLDataflowSelectPerformance());
-            execs.Add(new EPLDataflowOuterJoinMultirow());
+WithAllTypes(execs);
+WithDocSamples(execs);
+WithInvalid(execs);
+WithIterateFinalMarker(execs);
+WithOutputRateLimit(execs);
+WithTimeWindowTriggered(execs);
+WithFromClauseJoinOrder(execs);
+WithSelectPerformance(execs);
+WithOuterJoinMultirow(execs);
             return execs;
         }
-
+public static IList<RegressionExecution> WithOuterJoinMultirow(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowOuterJoinMultirow());
+    return execs;
+}public static IList<RegressionExecution> WithSelectPerformance(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowSelectPerformance());
+    return execs;
+}public static IList<RegressionExecution> WithFromClauseJoinOrder(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowFromClauseJoinOrder());
+    return execs;
+}public static IList<RegressionExecution> WithTimeWindowTriggered(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowTimeWindowTriggered());
+    return execs;
+}public static IList<RegressionExecution> WithOutputRateLimit(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowOutputRateLimit());
+    return execs;
+}public static IList<RegressionExecution> WithIterateFinalMarker(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowIterateFinalMarker());
+    return execs;
+}public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowInvalid());
+    return execs;
+}public static IList<RegressionExecution> WithDocSamples(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowDocSamples());
+    return execs;
+}public static IList<RegressionExecution> WithAllTypes(IList<RegressionExecution> execs = null)
+{
+    execs = execs ?? new List<RegressionExecution>();
+    execs.Add(new EPLDataflowAllTypes());
+    return execs;
+}
         private static void RunAssertionAllTypes(
             RegressionEnvironment env,
             string typeName,

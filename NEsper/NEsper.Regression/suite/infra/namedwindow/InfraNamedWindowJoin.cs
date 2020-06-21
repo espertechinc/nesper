@@ -15,7 +15,6 @@ using Avro.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compiler.client;
@@ -26,6 +25,8 @@ using com.espertech.esper.runtime.client.scopetest;
 
 using NEsper.Avro.Extensions;
 using NEsper.Avro.Util.Support;
+
+using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
 
@@ -330,34 +331,29 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
-                    tryAssertionInnerJoinLateStart(env, rep);
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
+                    TryAssertionInnerJoinLateStart(env, rep);
                 }
             }
 
-            private static void tryAssertionInnerJoinLateStart(
+            private static void TryAssertionInnerJoinLateStart(
                 RegressionEnvironment env,
                 EventRepresentationChoice eventRepresentationEnum)
             {
-                var schemaEPL = eventRepresentationEnum.GetAnnotationText() +
+                var schemaEPL = eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedProduct>() +
                                 "@Name('schema') create schema Product (product string, size int);\n" +
-                                eventRepresentationEnum.GetAnnotationText() +
+                                eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedPortfolio>() +
                                 " create schema Portfolio (portfolio string, product string);\n";
                 var path = new RegressionPath();
                 env.CompileDeployWBusPublicType(schemaEPL, path);
 
-                env.CompileDeploy(
-                    eventRepresentationEnum.GetAnnotationText() +
-                    "@Name('window') create window ProductWin#keepall as Product",
-                    path);
+                env.CompileDeploy("@Name('window') create window ProductWin#keepall as Product", path);
 
                 Assert.IsTrue(eventRepresentationEnum.MatchesClass(env.Statement("schema").EventType.UnderlyingType));
                 Assert.IsTrue(eventRepresentationEnum.MatchesClass(env.Statement("window").EventType.UnderlyingType));
 
                 env.CompileDeploy("insert into ProductWin select * from Product", path);
-                env.CompileDeploy(
-                    eventRepresentationEnum.GetAnnotationText() + " create window PortfolioWin#keepall as Portfolio",
-                    path);
+                env.CompileDeploy("create window PortfolioWin#keepall as Portfolio", path);
                 env.CompileDeploy("insert into PortfolioWin select * from Portfolio", path);
 
                 SendProduct(env, eventRepresentationEnum, "productA", 1);
@@ -411,6 +407,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     theEvent.Put("size", size);
                     env.EventService.SendEventAvro(theEvent, "Product");
                 }
+                else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
+                    var @object = new JObject();
+                    @object.Add("product", product);
+                    @object.Add("size", size);
+                    env.EventService.SendEventJson(@object.ToString(), "Product");
+                }
                 else {
                     Assert.Fail();
                 }
@@ -439,6 +441,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     theEvent.Put("portfolio", portfolio);
                     theEvent.Put("product", product);
                     env.EventService.SendEventAvro(theEvent, "Portfolio");
+                }
+                else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
+                    var @object = new JObject();
+                    @object.Add("portfolio", portfolio);
+                    @object.Add("product", product);
+                    env.EventService.SendEventJson(@object.ToString(), "Portfolio");
                 }
                 else {
                     Assert.Fail();
@@ -869,6 +877,20 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 env.UndeployAll();
             }
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedProduct
+        {
+            public String product;
+            public int size;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedPortfolio
+        {
+            public String portfolio;
+            public String product;
         }
     }
 } // end of namespace

@@ -210,55 +210,55 @@ namespace com.espertech.esper.common.client.soda
             if (yearsExpr != null)
             {
                 hasYears = true;
-                this.AddChild(yearsExpr);
+                AddChild(yearsExpr);
             }
 
             if (monthExpr != null)
             {
                 hasMonths = true;
-                this.AddChild(monthExpr);
+                AddChild(monthExpr);
             }
 
             if (weeksExpr != null)
             {
                 hasWeeks = true;
-                this.AddChild(weeksExpr);
+                AddChild(weeksExpr);
             }
 
             if (daysExpr != null)
             {
                 hasDays = true;
-                this.AddChild(daysExpr);
+                AddChild(daysExpr);
             }
 
             if (hoursExpr != null)
             {
                 hasHours = true;
-                this.AddChild(hoursExpr);
+                AddChild(hoursExpr);
             }
 
             if (minutesExpr != null)
             {
                 hasMinutes = true;
-                this.AddChild(minutesExpr);
+                AddChild(minutesExpr);
             }
 
             if (secondsExpr != null)
             {
                 hasSeconds = true;
-                this.AddChild(secondsExpr);
+                AddChild(secondsExpr);
             }
 
             if (millisecondsExpr != null)
             {
                 hasMilliseconds = true;
-                this.AddChild(millisecondsExpr);
+                AddChild(millisecondsExpr);
             }
 
             if (microsecondsExpr != null)
             {
                 hasMicroseconds = true;
-                this.AddChild(microsecondsExpr);
+                AddChild(microsecondsExpr);
             }
         }
 
@@ -444,7 +444,7 @@ namespace com.espertech.esper.common.client.soda
             int countExpr = 0;
             if (hasYears)
             {
-                this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" years");
                 delimiter = " ";
                 countExpr++;
@@ -453,7 +453,7 @@ namespace com.espertech.esper.common.client.soda
             if (hasMonths)
             {
                 writer.Write(delimiter);
-                this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" months");
                 delimiter = " ";
                 countExpr++;
@@ -462,7 +462,7 @@ namespace com.espertech.esper.common.client.soda
             if (hasWeeks)
             {
                 writer.Write(delimiter);
-                this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" weeks");
                 delimiter = " ";
                 countExpr++;
@@ -471,7 +471,7 @@ namespace com.espertech.esper.common.client.soda
             if (hasDays)
             {
                 writer.Write(delimiter);
-                this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" days");
                 delimiter = " ";
                 countExpr++;
@@ -480,7 +480,7 @@ namespace com.espertech.esper.common.client.soda
             if (hasHours)
             {
                 writer.Write(delimiter);
-                this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" hours");
                 delimiter = " ";
                 countExpr++;
@@ -489,7 +489,7 @@ namespace com.espertech.esper.common.client.soda
             if (hasMinutes)
             {
                 writer.Write(delimiter);
-                this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" minutes");
                 delimiter = " ";
                 countExpr++;
@@ -498,7 +498,7 @@ namespace com.espertech.esper.common.client.soda
             if (hasSeconds)
             {
                 writer.Write(delimiter);
-                this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" seconds");
                 delimiter = " ";
                 countExpr++;
@@ -507,7 +507,7 @@ namespace com.espertech.esper.common.client.soda
             if (hasMilliseconds)
             {
                 writer.Write(delimiter);
-                this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" milliseconds");
                 delimiter = " ";
                 countExpr++;
@@ -516,7 +516,7 @@ namespace com.espertech.esper.common.client.soda
             if (hasMicroseconds)
             {
                 writer.Write(delimiter);
-                this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" microseconds");
             }
         }

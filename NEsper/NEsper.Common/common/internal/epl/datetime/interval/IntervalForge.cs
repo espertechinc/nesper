@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
 
         FilterExprAnalyzerDTIntervalAffector GetFilterDesc(
             EventType[] typesPerStream,
-            DateTimeMethodEnum currentMethod,
+            DatetimeMethodDesc currentMethod,
             IList<ExprNode> currentParameters,
             ExprDotNodeFilterAnalyzerInput inputDesc);
     }

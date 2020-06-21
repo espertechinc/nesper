@@ -18,14 +18,17 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <param name="propertyName">name of property</param>
         /// <param name="type">type</param>
         /// <param name="writeMember">optional write methods</param>
+        /// <param name="isFragment">indicates whether the property is itself an event or array of events</param>
         public WriteablePropertyDescriptor(
             string propertyName,
             Type type,
-            MemberInfo writeMember)
+            MemberInfo writeMember,
+            bool isFragment)
         {
             PropertyName = propertyName;
             PropertyType = type;
             WriteMember = writeMember;
+            IsFragment = isFragment;
         }
 
         /// <summary>Returns property name. </summary>
@@ -39,6 +42,8 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <summary>Returns write member. </summary>
         /// <value>write member</value>
         public MemberInfo WriteMember { get; }
+        
+        public bool IsFragment { get; }
 
         public bool Equals(WriteablePropertyDescriptor other)
         {

@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.module;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.script.core;
+using com.espertech.esper.compat;
 using com.espertech.esper.runtime.client;
 
 namespace com.espertech.esper.runtime.@internal.kernel.service
@@ -30,6 +32,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             string[] pathExprDecls,
             NameAndParamNum[] pathScripts,
             ModuleIndexMeta[] pathIndexes,
+            string[] pathClassProvideds,
             ModuleProvider moduleProvider,
             IDictionary<ModuleProperty, object> modulePropertiesCached,
             IDictionary<long, EventType> deploymentTypes,
@@ -46,12 +49,42 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             PathExprDecls = pathExprDecls;
             PathScripts = pathScripts;
             PathIndexes = pathIndexes;
+            PathClassProvideds = pathClassProvideds;
+            
             ModuleProvider = moduleProvider;
             ModulePropertiesCached = modulePropertiesCached;
             DeploymentTypes = deploymentTypes;
             LastUpdateDate = lastUpdateDate;
         }
 
+        public static DeploymentInternal From(
+            string deploymentId,
+            EPStatement[] statements,
+            ISet<string> deploymentIdDependencies,
+            DeployerModulePaths modulePaths,
+            DeployerModuleEPLObjects moduleEPLObjects,
+            ModuleProviderCLPair moduleProvider)
+        {
+            var deploymentIdDependenciesArray = deploymentIdDependencies.ToArray();
+            return new DeploymentInternal(
+                deploymentId,
+                statements,
+                deploymentIdDependenciesArray,
+                modulePaths.PathNamedWindows.ToArray(),
+                modulePaths.PathTables.ToArray(),
+                modulePaths.PathVariables.ToArray(),
+                modulePaths.PathContexts.ToArray(),
+                modulePaths.PathEventTypes.ToArray(),
+                modulePaths.PathExprDecl.ToArray(),
+                modulePaths.PathScripts.ToArray(),
+                moduleEPLObjects.ModuleIndexes.ToArray(),
+                modulePaths.PathClassProvideds.ToArray(),
+                moduleProvider.ModuleProvider,
+                moduleProvider.ModuleProvider.ModuleProperties,
+                modulePaths.DeploymentTypes,
+                DateTimeHelper.CurrentTimeMillis);
+        }
+        
         public string DeploymentId { get; }
 
         public EPStatement[] Statements { get; }
@@ -73,7 +106,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         public NameAndParamNum[] PathScripts { get; }
 
         public ModuleIndexMeta[] PathIndexes { get; }
-
+        
+        public string[] PathClassProvideds { get; }
+        
         public ModuleProvider ModuleProvider { get; }
 
         public IDictionary<long, EventType> DeploymentTypes { get; }

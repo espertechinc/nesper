@@ -9,7 +9,6 @@
 using System;
 
 using com.espertech.esper.compat.concurrency;
-using com.espertech.esper.compat.threading;
 
 namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
 {

@@ -13,9 +13,13 @@ using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
+using com.espertech.esper.common.@internal.compile.multikey;
+using com.espertech.esper.common.@internal.compile.stage2;
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.select;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.historical.common;
+using com.espertech.esper.common.@internal.epl.join.@base;
 using com.espertech.esper.common.@internal.epl.join.indexlookupplan;
 using com.espertech.esper.common.@internal.epl.join.lookup;
 using com.espertech.esper.common.@internal.epl.join.querygraph;
@@ -23,6 +27,7 @@ using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.common.@internal.epl.lookupplan;
 using com.espertech.esper.common.@internal.epl.lookupplansubord;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -34,75 +39,100 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
     ///     2 Stream query strategy/execution tree
     ///     (stream 0)         Lookup in stream 1
     ///     (stream 1)         Lookup in stream 0
-    ///     <para />
+    ///     <para>
     ///     ------ Example 1   a 3 table join
-    ///     <para />
-    ///     " where streamA.id = streamB.id " +
-    ///     "   and streamB.id = streamC.id";
-    ///     <para />
-    ///     =&gt; Index propery names for each stream
-    ///     for stream 0 to 4 = "id"
-    ///     <para />
-    ///     =&gt; join order, ie.
-    ///     for stream 0 = {1, 2}
-    ///     for stream 1 = {factor [0,2]}
-    ///     for stream 2 = {1, 0}
-    ///     <para />
-    ///     =&gt; IndexKeyGen optionalIndexKeyGen, created by nested query plan nodes
-    ///     <para />
-    ///     <para />
-    ///     3 Stream query strategy
-    ///     (stream 0)          Nested iteration
-    ///     Lookup in stream 1        Lookup in stream 2
-    ///     <para />
-    ///     (stream 1)         Factor
-    ///     Lookup in stream 0        Lookup in stream 2
-    ///     <para />
-    ///     (stream 2)         Nested iteration
-    ///     Lookup in stream 1        Lookup in stream 0
-    ///     <para />
-    ///     <para />
-    ///     ------ Example 2  a 4 table join
-    ///     <para />
-    ///     " where streamA.id = streamB.id " +
-    ///     "   and streamB.id = streamC.id";
-    ///     "   and streamC.id = streamD.id";
-    ///     <para />
-    ///     =&gt; join order, ie.
-    ///     for stream 0 = {1, 2, 3}
-    ///     for stream 1 = {factor [0,2], use 2 for 3}
-    ///     for stream 2 = {factor [1,3], use 1 for 0}
-    ///     for stream 3 = {2, 1, 0}
-    ///     <para />
-    ///     <para />
-    ///     params concepts[] nested iteration, inner loop
-    ///     <para />
-    ///     select * from s1, s2, s3, s4 where s1.id=s2.id and s2.id=s3.id and s3.id=s4.id
-    ///     <para />
-    ///     <para />
-    ///     (stream 0)              Nested iteration
-    ///     Lookup in stream 1        Lookup in stream 2        Lookup in stream 3
-    ///     <para />
-    ///     (stream 1)              Factor
-    ///     lookup in stream 0                 Nested iteration
-    ///     Lookup in stream 2        Lookup in stream 3
-    ///     <para />
-    ///     (stream 2)              Factor
-    ///     lookup in stream 3                 Nested iteration
-    ///     Lookup in stream 1        Lookup in stream 0
-    ///     <para />
-    ///     (stream 3)              Nested iteration
-    ///     Lookup in stream 2        Lookup in stream 1        Lookup in stream 0
-    ///     <para />
-    ///     ------ Example 4  a 4 table join, orphan table
-    ///     <para />
-    ///     " where streamA.id = streamB.id " +
-    ///     "   and streamB.id = streamC.id"; (no table D join criteria)
-    ///     <para />
-    ///     ------ Example 5  a 3 table join with 2 indexes for stream B
-    ///     <para />
-    ///     " where streamA.A1 = streamB.B1 " +
-    ///     "   and streamB.B2 = streamC.C1"; (no table D join criteria)
+    ///     </para>
+    ///     <para>
+    ///         " where streamA.id = streamB.id " +
+    ///         "   and streamB.id = streamC.id";
+    ///     </para>
+    ///     <para>
+    ///         =&gt; Index propery names for each stream
+    ///         for stream 0 to 4 = "id"
+    ///     </para>
+    ///     <para>
+    ///         =&gt; join order, ie.
+    ///         for stream 0 = {1, 2}
+    ///         for stream 1 = {factor [0,2]}
+    ///         for stream 2 = {1, 0}
+    ///     </para>
+    ///     <para>
+    ///         =&gt; IndexKeyGen optionalIndexKeyGen, created by nested query plan nodes
+    ///     </para>
+    ///     <para>
+    ///     </para>
+    ///     <para>
+    ///         3 Stream query strategy
+    ///         (stream 0)          Nested iteration
+    ///         Lookup in stream 1        Lookup in stream 2
+    ///     </para>
+    ///     <para>
+    ///         (stream 1)         Factor
+    ///         Lookup in stream 0        Lookup in stream 2
+    ///     </para>
+    ///     <para>
+    ///         (stream 2)         Nested iteration
+    ///         Lookup in stream 1        Lookup in stream 0
+    ///     </para>
+    ///     <para>
+    ///     </para>
+    ///     <para>
+    ///         ------ Example 2  a 4 table join
+    ///     </para>
+    ///     <para>
+    ///         " where streamA.id = streamB.id " +
+    ///         "   and streamB.id = streamC.id";
+    ///         "   and streamC.id = streamD.id";
+    ///     </para>
+    ///     <para>
+    ///         =&gt; join order, ie.
+    ///         for stream 0 = {1, 2, 3}
+    ///         for stream 1 = {factor [0,2], use 2 for 3}
+    ///         for stream 2 = {factor [1,3], use 1 for 0}
+    ///         for stream 3 = {2, 1, 0}
+    ///     </para>
+    ///     <para>
+    ///     </para>
+    ///     <para>
+    ///         params concepts[] nested iteration, inner loop
+    ///     </para>
+    ///     <para>
+    ///         select * from s1, s2, s3, s4 where s1.id=s2.id and s2.id=s3.id and s3.id=s4.id
+    ///     </para>
+    ///     <para>
+    ///     </para>
+    ///     <para>
+    ///         (stream 0)              Nested iteration
+    ///         Lookup in stream 1        Lookup in stream 2        Lookup in stream 3
+    ///     </para>
+    ///     <para>
+    ///         (stream 1)              Factor
+    ///         lookup in stream 0                 Nested iteration
+    ///         Lookup in stream 2        Lookup in stream 3
+    ///     </para>
+    ///     <para>
+    ///         (stream 2)              Factor
+    ///         lookup in stream 3                 Nested iteration
+    ///         Lookup in stream 1        Lookup in stream 0
+    ///     </para>
+    ///     <para>
+    ///         (stream 3)              Nested iteration
+    ///         Lookup in stream 2        Lookup in stream 1        Lookup in stream 0
+    ///     </para>
+    ///     <para>
+    ///         ------ Example 4  a 4 table join, orphan table
+    ///     </para>
+    ///     <para>
+    ///         " where streamA.id = streamB.id " +
+    ///         "   and streamB.id = streamC.id"; (no table D join criteria)
+    ///     </para>
+    ///     <para>
+    ///         ------ Example 5  a 3 table join with 2 indexes for stream B
+    ///     </para>
+    ///     <para>
+    ///         " where streamA.A1 = streamB.B1 " +
+    ///         "   and streamB.B2 = streamC.C1"; (no table D join criteria)
+    ///     </para>
     /// </summary>
     /// <summary>
     ///     Builds a query plan for 3 or more streams in a join.
@@ -111,7 +141,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static QueryPlanForge Build(
+        public static QueryPlanForgeDesc Build(
             QueryGraphForge queryGraph,
             EventType[] typesPerStream,
             HistoricalViewableDesc historicalViewableDesc,
@@ -120,13 +150,16 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             bool hasForceNestedIter,
             string[][][] indexedStreamsUniqueProps,
             TableMetaData[] tablesPerStream,
-            StreamJoinAnalysisResultCompileTime streamJoinAnalysisResult)
+            StreamJoinAnalysisResultCompileTime streamJoinAnalysisResult,
+            StatementRawInfo raw,
+            SerdeCompileTimeResolver serdeResolver)
         {
             if (Log.IsDebugEnabled) {
                 Log.Debug(".build filterQueryGraph=" + queryGraph);
             }
 
             var numStreams = queryGraph.NumStreams;
+            var additionalForgeables = new List<StmtClassForgeableFactory>();   
             var indexSpecs = QueryPlanIndexBuilder.BuildIndexSpec(
                 queryGraph,
                 typesPerStream,
@@ -163,7 +196,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     worstDepth = bestChainResult.Depth;
                 }
 
-                planNodeSpecs[streamNo] = CreateStreamPlan(
+                var planDesc = CreateStreamPlan(
                     streamNo,
                     bestChain,
                     queryGraph,
@@ -172,7 +205,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     historicalViewableDesc.Historical,
                     historicalStreamIndexLists,
                     tablesPerStream,
-                    streamJoinAnalysisResult);
+                    streamJoinAnalysisResult,
+                    raw,
+                    serdeResolver);
+
+                planNodeSpecs[streamNo] = planDesc.Forge;
+                additionalForgeables.AddAll(planDesc.AdditionalForgeables);
+                
                 if (Log.IsDebugEnabled) {
                     Log.Debug(".build spec=" + planNodeSpecs[streamNo]);
                 }
@@ -190,18 +229,19 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     ProcVisit = node => {
                         if (node is HistoricalDataPlanNodeForge) {
                             var historical = (HistoricalDataPlanNodeForge) node;
-                            var pair =
-                                historicalStreamIndexLists[historical.StreamNum]
-                                    .GetStrategy(historical.LookupStreamNum);
-                            historical.HistoricalIndexLookupStrategy = pair.First;
-                            historical.PollResultIndexingStrategy = pair.Second;
+                            JoinSetComposerPrototypeHistoricalDesc desc = historicalStreamIndexLists[historical.StreamNum].GetStrategy(
+                                historical.LookupStreamNum, raw, serdeResolver);
+                            historical.PollResultIndexingStrategy = desc.IndexingForge;
+                            historical.HistoricalIndexLookupStrategy = desc.LookupForge;
+                            additionalForgeables.AddAll(desc.AdditionalForgeables);
                         }
                     }
                 };
                 plan.Accept(visitor);
             }
 
-            return new QueryPlanForge(indexSpecs, planNodeSpecs);
+            var forge = new QueryPlanForge(indexSpecs, planNodeSpecs);
+            return new QueryPlanForgeDesc(forge, additionalForgeables);
         }
 
         /// <summary>
@@ -217,8 +257,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         /// <param name="historicalStreamIndexLists">index management, populated for the query plan</param>
         /// <param name="tablesPerStream">tables</param>
         /// <param name="streamJoinAnalysisResult">stream join analysis</param>
+        /// <param name="raw">raw statement information</param>
+        /// <param name="serdeResolver">serde resolver</param>
         /// <returns>NestedIterationNode with lookups attached underneath</returns>
-        public static QueryPlanNodeForge CreateStreamPlan(
+        public static QueryPlanNodeForgeDesc CreateStreamPlan(
             int lookupStream,
             int[] bestChain,
             QueryGraphForge queryGraph,
@@ -227,10 +269,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             bool[] isHistorical,
             HistoricalStreamIndexListForge[] historicalStreamIndexLists,
             TableMetaData[] tablesPerStream,
-            StreamJoinAnalysisResultCompileTime streamJoinAnalysisResult)
+            StreamJoinAnalysisResultCompileTime streamJoinAnalysisResult,
+            StatementRawInfo raw,
+            SerdeCompileTimeResolver serdeResolver)
         {
             var nestedIterNode = new NestedIterationNodeForge(bestChain);
             var currentLookupStream = lookupStream;
+            var additionalForgeables = new List<StmtClassForgeableFactory>();
 
             // Walk through each successive lookup
             for (var i = 0; i < bestChain.Length; i++) {
@@ -261,8 +306,11 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                         streamJoinAnalysisResult.IsVirtualDW(indexedStream),
                         indexSpecsPerStream[indexedStream],
                         typesPerStream,
-                        tablesPerStream[indexedStream]);
-                    node = new TableLookupNodeForge(tableLookupPlan);
+                        tablesPerStream[indexedStream],
+                        raw,
+                        serdeResolver);
+                    node = new TableLookupNodeForge(tableLookupPlan.Forge);
+                    additionalForgeables.AddAll(tableLookupPlan.AdditionalForgeables);
                 }
 
                 nestedIterNode.AddChildNode(node);
@@ -270,7 +318,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 currentLookupStream = bestChain[i];
             }
 
-            return nestedIterNode;
+            return new QueryPlanNodeForgeDesc(nestedIterNode, additionalForgeables);
         }
 
         /// <summary>
@@ -285,15 +333,19 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         /// <param name="typesPerStream">event types for each stream</param>
         /// <param name="indexedStreamTableMeta">table info</param>
         /// <param name="indexedStreamIsVDW">vdw indicators</param>
+        /// <param name="raw">raw statement information</param>
+        /// <param name="serdeResolver">serde resolver</param>
         /// <returns>plan for performing a lookup in a given table using one of the indexes supplied</returns>
-        public static TableLookupPlanForge CreateLookupPlan(
+        public static TableLookupPlanDesc CreateLookupPlan(
             QueryGraphForge queryGraph,
             int currentLookupStream,
             int indexedStream,
             bool indexedStreamIsVDW,
             QueryPlanIndexForge indexSpecs,
             EventType[] typesPerStream,
-            TableMetaData indexedStreamTableMeta)
+            TableMetaData indexedStreamTableMeta,
+            StatementRawInfo raw,
+            SerdeCompileTimeResolver serdeResolver)
         {
             var queryGraphValue = queryGraph.GetGraphValue(currentLookupStream, indexedStream);
             var hashKeyProps = queryGraphValue.HashKeyProps;
@@ -361,13 +413,14 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     }
 
                     if (indexNum != null) {
-                        return new InKeywordTableLookupPlanSingleIdxForge(
+                        var forge = new InKeywordTableLookupPlanSingleIdxForge(
                             currentLookupStream,
                             indexedStream,
                             indexedStreamIsVDW,
                             typesPerStream,
                             indexNum,
                             single.KeyExprs);
+                        return new TableLookupPlanDesc(forge, EmptyList<StmtClassForgeableFactory>.Instance);
                     }
                 }
 
@@ -400,13 +453,14 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     }
 
                     if (foundAll) {
-                        return new InKeywordTableLookupPlanMultiIdxForge(
+                        var forge = new InKeywordTableLookupPlanMultiIdxForge(
                             currentLookupStream,
                             indexedStream,
                             indexedStreamIsVDW,
                             typesPerStream,
                             indexNameArray,
                             multi.Key.KeyExpr);
+                        return new TableLookupPlanDesc(forge, EmptyList<StmtClassForgeableFactory>.Instance);
                     }
                 }
 
@@ -428,12 +482,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                         null);
                 }
 
-                return new FullTableScanLookupPlanForge(
-                    currentLookupStream,
-                    indexedStream,
-                    indexedStreamIsVDW,
-                    typesPerStream,
-                    indexNum);
+                var forgeX = new FullTableScanLookupPlanForge(currentLookupStream, indexedStream, indexedStreamIsVDW, typesPerStream, indexNum);
+                return new TableLookupPlanDesc(forgeX, EmptyList<StmtClassForgeableFactory>.Instance);
             }
 
             if (indexNum == null) {
@@ -522,7 +572,15 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 }
 
                 var coercionTypesArray = coercionTypes.CoercionTypes;
-                return new IndexedTableLookupPlanHashedOnlyForge(
+                MultiKeyClassRef tableLookupMultiKey = null;
+                IList<StmtClassForgeableFactory> additionalForgeables = EmptyList<StmtClassForgeableFactory>.Instance;
+                if (indexNum.TableName != null) {
+                    var tableMultiKeyPlan = MultiKeyPlanner.PlanMultiKey(coercionTypesArray, true, raw, serdeResolver);
+                    tableLookupMultiKey = tableMultiKeyPlan.ClassRef;
+                    additionalForgeables = tableMultiKeyPlan.MultiKeyForgeables;
+                }
+
+                var forge = new IndexedTableLookupPlanHashedOnlyForge(
                     currentLookupStream,
                     indexedStream,
                     indexedStreamIsVDW,
@@ -530,7 +588,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     indexNum,
                     hashPropsKeys.ToArray(),
                     indexSpecs,
-                    coercionTypesArray);
+                    coercionTypesArray,
+                    tableLookupMultiKey);
+                return new TableLookupPlanDesc(forge, additionalForgeables);
             }
 
             // sorted index lookup
@@ -552,7 +612,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     coercionType = coercionTypesRange.CoercionTypes[0];
                 }
 
-                return new SortedTableLookupPlanForge(
+                SortedTableLookupPlanForge forge = new SortedTableLookupPlanForge(
                     currentLookupStream,
                     indexedStream,
                     indexedStreamIsVDW,
@@ -560,19 +620,32 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     indexNum,
                     range,
                     coercionType);
+                return new TableLookupPlanDesc(forge, EmptyList<StmtClassForgeableFactory>.Instance);
             }
+            else {
+                MultiKeyClassRef tableLookupMultiKey = null;
+                IList<StmtClassForgeableFactory> additionalForgeables = EmptyList<StmtClassForgeableFactory>.Instance;
+                if (indexNum.TableName != null) {
+                    MultiKeyPlan tableMultiKeyPlan = MultiKeyPlanner.PlanMultiKey(coercionTypesHash.CoercionTypes, true, raw, serdeResolver);
+                    tableLookupMultiKey = tableMultiKeyPlan.ClassRef;
+                    additionalForgeables = tableMultiKeyPlan.MultiKeyForgeables;
+                }
 
-            // composite range and index lookup
-            return new CompositeTableLookupPlanForge(
-                currentLookupStream,
-                indexedStream,
-                indexedStreamIsVDW,
-                typesPerStream,
-                indexNum,
-                hashPropsKeys,
-                coercionTypesHash.CoercionTypes,
-                rangePropsKeys,
-                coercionTypesRange.CoercionTypes);
+                // composite range and index lookup
+                CompositeTableLookupPlanForge forge = new CompositeTableLookupPlanForge(
+                    currentLookupStream,
+                    indexedStream,
+                    indexedStreamIsVDW,
+                    typesPerStream,
+                    indexNum,
+                    hashPropsKeys,
+                    coercionTypesHash.CoercionTypes,
+                    rangePropsKeys,
+                    coercionTypesRange.CoercionTypes,
+                    indexSpecs,
+                    tableLookupMultiKey);
+                return new TableLookupPlanDesc(forge, additionalForgeables);
+            }
         }
 
         /// <summary>
@@ -775,7 +848,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             return result;
         }
 
-        private static TableLookupPlanForge GetFullTableScanTable(
+        private static TableLookupPlanDesc GetFullTableScanTable(
             int lookupStream,
             int indexedStream,
             bool indexedStreamIsVDW,
@@ -786,12 +859,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 indexedStreamTableMeta.TableName,
                 indexedStreamTableMeta.TableModuleName,
                 indexedStreamTableMeta.TableName);
-            return new FullTableScanUniquePerKeyLookupPlanForge(
+            var forge = new FullTableScanUniquePerKeyLookupPlanForge(
                 lookupStream,
                 indexedStream,
                 indexedStreamIsVDW,
                 typesPerStream,
                 indexName);
+            return new TableLookupPlanDesc(forge, EmptyList<StmtClassForgeableFactory>.Instance);
         }
 
         private static SubordPropRangeKeyForge[] GetRangeFuncsAsSubProp(IList<QueryGraphValueEntryRangeForge> funcs)

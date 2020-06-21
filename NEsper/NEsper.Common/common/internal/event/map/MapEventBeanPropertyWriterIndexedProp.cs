@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.@event.map
         
         public override CodegenExpression WriteCodegen(
             CodegenExpression assigned, 
-            CodegenExpression und,
+            CodegenExpression underlying,
             CodegenExpression target,
             CodegenMethodScope parent,
             CodegenClassScope classScope)
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                 "MapWriteSetArrayProp", 
                 CodegenExpressionBuilder.Constant(propertyName),
                 CodegenExpressionBuilder.Constant(_index),
-                und,
+                underlying,
                 assigned);
         }
         

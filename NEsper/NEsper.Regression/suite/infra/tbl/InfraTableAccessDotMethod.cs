@@ -28,9 +28,30 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraPlainPropDatetimeAndEnumerationAndMethod());
-            execs.Add(new InfraAggDatetimeAndEnumerationAndMethod());
+            WithPlainPropDatetimeAndEnumerationAndMethod(execs);
+            WithAggDatetimeAndEnumerationAndMethod(execs);
+            WithNestedDotMethod(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNestedDotMethod(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraNestedDotMethod());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAggDatetimeAndEnumerationAndMethod(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraAggDatetimeAndEnumerationAndMethod());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPlainPropDatetimeAndEnumerationAndMethod(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraPlainPropDatetimeAndEnumerationAndMethod());
             return execs;
         }
 
@@ -54,9 +75,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var key = grouped ? "[\"E1\"]" : "";
             var eplSelect = string.Format(
                 "@Name('s0') select " +
-                "varaggNDM{0}.windowSupportBean.last(*).IntPrimitive as c0, " + 
-                "varaggNDM{0}.windowSupportBean.window(*).countOf() as c1, " + 
-                "varaggNDM{0}.windowSupportBean.window(IntPrimitive).take(1) as c2" + 
+                "varaggNDM{0}.windowSupportBean.last(*).IntPrimitive as c0, " +
+                "varaggNDM{0}.windowSupportBean.window(*).countOf() as c1, " +
+                "varaggNDM{0}.windowSupportBean.window(IntPrimitive).take(1) as c2" +
                 " from SupportBean_S0",
                 key);
             env.CompileDeploy(soda, eplSelect, path).AddListener("s0");
@@ -71,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 SupportEventTypeAssertionEnum.NAME,
                 SupportEventTypeAssertionEnum.TYPE);
 
-            var fields = new [] { "c0", "c1", "c2" };
+            var fields = new[] {"c0", "c1", "c2"};
             MakeSendBean(env, "E1", 10, 0);
             env.SendEventBean(new SupportBean_S0(0));
             EPAssertionUtil.AssertProps(
@@ -157,7 +178,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 SupportEventTypeAssertionEnum.NAME,
                 SupportEventTypeAssertionEnum.TYPE);
 
-            var fields = new [] { "c0", "c1" };
+            var fields = new[] {"c0", "c1"};
             MakeSendBean(env, "E1", 10, 100);
             env.SendEventBean(new SupportBean_S0(0));
             EPAssertionUtil.AssertProps(
@@ -219,12 +240,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var myBean = TypeHelper.MaskTypeName<MyBean>();
                 var path = new RegressionPath();
-                var eplType = 
+                var eplType =
                     $"create objectarray schema MyEvent as (p0 string);" +
                     $"create objectarray schema PopulateEvent as (" +
                     $" key string," +
                     $" ts long," +
-                    $" mb {myBean}," + 
+                    $" mb {myBean}," +
                     $" mbarr {myBean}[]," +
                     $" me MyEvent," +
                     $" mearr MyEvent[])";
@@ -244,7 +265,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var key = grouped ? "[\"E1\"]" : "";
                 var eplSelect =
                     $"@Name('s0') select " +
-                    $"varaggPWD{key}.ts.getMinuteOfHour() as c0, " + 
+                    $"varaggPWD{key}.ts.getMinuteOfHour() as c0, " +
                     $"varaggPWD{key}.mb.GetMyProperty() as c1, " +
                     $"varaggPWD{key}.mbarr.takeLast(1) as c2, " +
                     $"varaggPWD{key}.me.p0 as c3, " +
@@ -266,8 +287,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var output = env.Listener("s0").AssertOneGetNewAndReset();
                 EPAssertionUtil.AssertProps(
                     output,
-                    new [] {
-                        "c0","c1","c3"
+                    new[] {
+                        "c0", "c1", "c3"
                     },
                     new object[] {
                         55, "x", "p0value"

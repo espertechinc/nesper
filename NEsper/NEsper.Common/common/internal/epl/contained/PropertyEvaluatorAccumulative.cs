@@ -166,14 +166,14 @@ namespace com.espertech.esper.common.@internal.epl.contained
                 throw;
             }
             catch (Exception ex) {
-                Log.Error(
-                    "Unexpected error evaluating property expression for event of type '" +
-                    branch.EventType.Name +
-                    "' and property '" +
-                    propertyNames[level + 1] +
-                    "': " +
-                    ex.Message,
-                    ex);
+                var message = "Unexpected error evaluating property expression for event of type '" +
+                              branch.EventType.Name +
+                              "' and property '" +
+                              propertyNames[level + 1] +
+                              "': " +
+                              ex.Message;
+                Log.Error(message, ex);
+                throw new EPException(message, ex);
             }
         }
     }

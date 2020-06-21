@@ -17,7 +17,6 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 
-using static com.espertech.esper.common.@internal.util.DOMExtensions;
 using static com.espertech.esper.common.@internal.util.DOMUtil;
 
 namespace com.espertech.esper.common.client.configuration.compiler
@@ -68,6 +67,14 @@ namespace com.espertech.esper.common.client.configuration.compiler
                     case "plugin-pattern-observer":
                         HandlePlugInPatternObserver(compiler, element);
                         break;
+                    
+                    case "plugin-method-datetime":
+                        HandlePlugInDateTimeMethod(compiler, element);
+                        break;
+
+                    case "plugin-method-enum":
+                        HandlePlugInEnumMethod(compiler, element);
+                        break;
 
                     case "bytecode":
                         HandleByteCode(compiler, element);
@@ -99,6 +106,10 @@ namespace com.espertech.esper.common.client.configuration.compiler
 
                     case "view-resources":
                         HandleViewResources(compiler, element);
+                        break;
+                    
+                    case "serde-settings":
+                        HandleSerdeSettings(compiler, element);
                         break;
                 }
             }
@@ -137,6 +148,11 @@ namespace com.espertech.esper.common.client.configuration.compiler
                 element,
                 "enable-declared-expr-value-cache",
                 b => compiler.Execution.EnabledDeclaredExprValueCache = b);
+                
+            var filterIndexPlanningStr = DOMExtensions.GetOptionalAttribute(element, "filter-index-planning");
+            if (filterIndexPlanningStr != null) {
+                compiler.Execution.FilterIndexPlanning = EnumHelper.Parse<ConfigurationCompilerExecution.FilterIndexPlanningEnum>(filterIndexPlanningStr);
+            }
         }
 
         private static void HandleExpression(
@@ -191,6 +207,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
             if (defaultDialect != null) {
                 compiler.Scripts.DefaultDialect = defaultDialect;
             }
+
+            ParseOptionalBoolean(element, "enabled", b => compiler.Scripts.IsEnabled = b);
+
         }
 
         private static void HandleLanguage(
@@ -241,10 +260,18 @@ namespace com.espertech.esper.common.client.configuration.compiler
             var nodeEnumerator = DOMElementEnumerator.Create(element.ChildNodes);
             while (nodeEnumerator.MoveNext()) {
                 XmlElement subElement = nodeEnumerator.Current;
-                if (subElement.Name == "code") {
-                    ParseRequiredBoolean(subElement, "enabled", b => compiler.Logging.EnableCode = b);
-                } else if (subElement.Name == "audit-directory") {
-                    compiler.Logging.AuditDirectory = DOMExtensions.GetRequiredAttribute(subElement, "value");
+                switch (subElement.Name) {
+                    case "code":
+                        ParseRequiredBoolean(subElement, "enabled", b => compiler.Logging.EnableCode = b);
+                        break;
+
+                    case "audit-directory":
+                        compiler.Logging.AuditDirectory = DOMExtensions.GetRequiredAttribute(subElement, "value");
+                        break;
+
+                    case "filter-plan":
+                        ParseRequiredBoolean(subElement, "enabled", b => compiler.Logging.IsEnableFilterPlan = b);
+                        break;
                 }
             }
         }
@@ -258,8 +285,13 @@ namespace com.espertech.esper.common.client.configuration.compiler
             ParseOptionalBoolean(element, "include-comments", v => codegen.IncludeComments = v);
             ParseOptionalBoolean(element, "attach-epl", v => codegen.AttachEPL = v);
             ParseOptionalBoolean(element, "attach-module-epl", v => codegen.AttachModuleEPL = v);
+            ParseOptionalBoolean(element, "attach-pattern-epl", v => codegen.AttachPatternEPL = v);
             ParseOptionalBoolean(element, "instrumented", v => codegen.Instrumented = v);
             ParseOptionalBoolean(element, "allow-subscriber", v => codegen.AllowSubscriber = v);
+            ParseOptionalInteger(element, "threadpool-compiler-num-threads", v => codegen.ThreadPoolCompilerNumThreads = v);
+            ParseOptionalInteger(element, "threadpool-compiler-capacity", v => codegen.ThreadPoolCompilerCapacity = v);
+            ParseOptionalInteger(element, "max-methods-per-class", v => codegen.MaxMethodsPerClass = v);
+            ParseOptionalBoolean(element, "allow-inlined-class", v => codegen.IsAllowInlinedClass = v);
 
             ParseOptionalAccessMod(element, "access-modifier-context", v => codegen.AccessModifierContext = v);
             ParseOptionalAccessMod(element, "access-modifier-event-type", v => codegen.AccessModifierEventType = v);
@@ -324,6 +356,25 @@ namespace com.espertech.esper.common.client.configuration.compiler
             var name = DOMExtensions.GetRequiredAttribute(element, "name");
             var forgeClassName = DOMExtensions.GetRequiredAttribute(element, "forge-class");
             configuration.AddPlugInAggregationFunctionForge(name, forgeClassName);
+        }
+        
+        
+        private static void HandlePlugInDateTimeMethod(
+            ConfigurationCompiler configuration,
+            XmlElement element)
+        {
+            String methodName = DOMExtensions.GetRequiredAttribute(element, "method-name");
+            String forgeClassName = DOMExtensions.GetRequiredAttribute(element, "forge-class");
+            configuration.AddPlugInDateTimeMethod(methodName, forgeClassName);
+        }
+
+        private static void HandlePlugInEnumMethod(
+            ConfigurationCompiler configuration,
+            XmlElement element)
+        {
+            String methodName = DOMExtensions.GetRequiredAttribute(element, "method-name");
+            String forgeClassName = DOMExtensions.GetRequiredAttribute(element, "forge-class");
+            configuration.AddPlugInEnumMethod(methodName, forgeClassName);
         }
 
         private static void HandlePlugInMultiFunctionAggregation(
@@ -413,6 +464,40 @@ namespace com.espertech.esper.common.client.configuration.compiler
             var name = DOMExtensions.GetRequiredAttribute(element, "name");
             var forgeClassName = DOMExtensions.GetRequiredAttribute(element, "forge-class");
             configuration.AddPlugInPatternObserver(@namespace, name, forgeClassName);
+        }
+        
+        private static void HandleSerdeSettings(
+            ConfigurationCompiler configuration,
+            XmlElement parentElement)
+        {
+            String text = DOMExtensions.GetOptionalAttribute(parentElement, "enable-serializable");
+            if (text != null) {
+                configuration.Serde.IsEnableSerializable = bool.Parse(text);
+            }
+
+            text = DOMExtensions.GetOptionalAttribute(parentElement, "enable-externalizable");
+            if (text != null) {
+                configuration.Serde.IsEnableExternalizable = bool.Parse(text);
+            }
+
+            text = DOMExtensions.GetOptionalAttribute(parentElement, "enable-extended-builtin");
+            if (text != null) {
+                configuration.Serde.IsEnableExtendedBuiltin = bool.Parse(text);
+            }
+
+            text = DOMExtensions.GetOptionalAttribute(parentElement, "enable-serialization-fallback");
+            if (text != null) {
+                configuration.Serde.IsEnableSerializationFallback = bool.Parse(text);
+            }
+
+            var nodeEnumerator = DOMElementEnumerator.Create(parentElement.ChildNodes);
+            while (nodeEnumerator.MoveNext()) {
+                var subElement = nodeEnumerator.Current;
+                if (subElement.Name == "serde-provider-factory") {
+                    text = DOMExtensions.GetRequiredAttribute(subElement, "class");
+                    configuration.Serde.AddSerdeProviderFactory(text);
+                }
+            }
         }
     }
 } // end of namespace

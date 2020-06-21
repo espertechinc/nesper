@@ -18,10 +18,10 @@ namespace com.espertech.esper.common.@internal.context.controller.category
             : base(realization, factory)
         {
             if (factory.FactoryEnv.IsRoot) {
-                categorySvc = new ContextControllerCategorySvcLevelOne();
+                CategorySvc = new ContextControllerCategorySvcLevelOne();
             }
             else {
-                categorySvc = new ContextControllerCategorySvcLevelAny();
+                CategorySvc = new ContextControllerCategorySvcLevelAny();
             }
         }
     }

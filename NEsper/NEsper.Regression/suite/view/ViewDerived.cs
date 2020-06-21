@@ -30,18 +30,102 @@ namespace com.espertech.esper.regressionlib.suite.view
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ViewSizeSceneOne());
-            execs.Add(new ViewSizeSceneTwo());
-            execs.Add(new ViewSizeAddProps());
-            execs.Add(new ViewDerivedAll());
-            execs.Add(new ViewDerivedLengthWUniSceneOne());
-            execs.Add(new ViewDerivedLengthWUniSceneTwo());
-            execs.Add(new ViewDerivedLengthWUniSceneThree());
-            execs.Add(new ViewDerivedLengthWWeightedAvgSceneOne());
-            execs.Add(new ViewDerivedLengthWWeightedAvgSceneTwo());
-            execs.Add(new ViewDerivedLengthWRegressionLinestSceneOne());
-            execs.Add(new ViewDerivedLengthWRegressionLinestSceneTwo());
+            WithSizeSceneOne(execs);
+            WithSizeSceneTwo(execs);
+            WithSizeAddProps(execs);
+            WithDerivedAll(execs);
+            WithDerivedLengthWUniSceneOne(execs);
+            WithDerivedLengthWUniSceneTwo(execs);
+            WithDerivedLengthWUniSceneThree(execs);
+            WithDerivedLengthWWeightedAvgSceneOne(execs);
+            WithDerivedLengthWWeightedAvgSceneTwo(execs);
+            WithDerivedLengthWRegressionLinestSceneOne(execs);
+            WithDerivedLengthWRegressionLinestSceneTwo(execs);
+            WithDerivedLengthWCorrelation(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDerivedLengthWCorrelation(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ViewDerivedLengthWCorrelation());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDerivedLengthWRegressionLinestSceneTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewDerivedLengthWRegressionLinestSceneTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDerivedLengthWRegressionLinestSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewDerivedLengthWRegressionLinestSceneOne());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDerivedLengthWWeightedAvgSceneTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewDerivedLengthWWeightedAvgSceneTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDerivedLengthWWeightedAvgSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewDerivedLengthWWeightedAvgSceneOne());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDerivedLengthWUniSceneThree(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewDerivedLengthWUniSceneThree());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDerivedLengthWUniSceneTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewDerivedLengthWUniSceneTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDerivedLengthWUniSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewDerivedLengthWUniSceneOne());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDerivedAll(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewDerivedAll());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSizeAddProps(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewSizeAddProps());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSizeSceneTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewSizeSceneTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSizeSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewSizeSceneOne());
             return execs;
         }
 
@@ -193,7 +277,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 epl = "@Name('s0') select size, Symbol, Feed from SupportMarketDataBean#size(Symbol, Feed)";
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
-                var fields = new [] { "size","Symbol","Feed" };
+                var fields = new[] {"size", "Symbol", "Feed"};
 
                 SendEventWithPrice(env, "DELL", price: 1L);
                 EPAssertionUtil.AssertProps(
@@ -652,7 +736,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var events = EPAssertionUtil.EnumeratorToArray(env.GetEnumerator("s0"));
                 EPAssertionUtil.AssertPropsPerRow(
                     events,
-                    new [] { "correlation" },
+                    new[] {"correlation"},
                     new[] {new object[] {0.9762210399358}});
 
                 env.Milestone(3);
@@ -676,27 +760,27 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string epl;
 
                 // correlation
-                var f1 = new [] { "correlation" };
+                var f1 = new[] {"correlation"};
                 epl = "@Name('S1') select irstream * from SupportMarketDataBean#correl(Price, Volume)";
                 env.CompileDeploy(epl).AddListener("S1");
 
                 // size
-                var f2 = new [] { "size" };
+                var f2 = new[] {"size"};
                 epl = "@Name('S2') select irstream * from SupportMarketDataBean#size()";
                 env.CompileDeploy(epl).AddListener("S2");
 
                 // regression
-                var f3 = new [] { "slope","YIntercept" };
+                var f3 = new[] {"slope", "YIntercept"};
                 epl = "@Name('S3') select irstream * from SupportMarketDataBean#linest(Price, Volume)";
                 env.CompileDeploy(epl).AddListener("S3");
 
                 // stat:uni
-                var f4 = new [] { "total","datapoints" };
+                var f4 = new[] {"total", "datapoints"};
                 epl = "@Name('S4') select irstream * from SupportMarketDataBean#uni(Volume)";
                 env.CompileDeploy(epl).AddListener("S4");
 
                 // stat:weighted_avg
-                var f5 = new [] { "average" };
+                var f5 = new[] {"average"};
                 epl = "@Name('S5') select irstream * from SupportMarketDataBean#weighted_avg(Price, Volume)";
                 env.CompileDeploy(epl).AddListener("S5");
 

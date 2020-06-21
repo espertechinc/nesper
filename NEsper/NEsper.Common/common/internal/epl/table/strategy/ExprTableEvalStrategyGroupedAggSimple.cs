@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.@event.core;
 
 namespace com.espertech.esper.common.@internal.epl.table.strategy
 {
@@ -30,14 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            object groupKey = factory.GroupKeyEval.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-            ObjectArrayBackedEventBean row = LockTableReadAndGet(groupKey, exprEvaluatorContext);
-            if (row == null) {
-                return null;
-            }
-
-            AggregationRow aggs = ExprTableEvalStrategyUtil.GetRow(row);
-            return aggs.GetValue(factory.AggColumnNum, eventsPerStream, isNewData, exprEvaluatorContext);
+            AggregationRow aggs = GetAggregationRow(eventsPerStream, isNewData, exprEvaluatorContext);
+            return aggs?.GetValue(Factory.AggColumnNum, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         public override ICollection<EventBean> EvaluateGetROCollectionEvents(
@@ -45,14 +38,8 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            object groupKey = factory.GroupKeyEval.Evaluate(eventsPerStream, isNewData, context);
-            ObjectArrayBackedEventBean row = LockTableReadAndGet(groupKey, context);
-            if (row == null) {
-                return null;
-            }
-
-            AggregationRow aggs = ExprTableEvalStrategyUtil.GetRow(row);
-            return aggs.GetCollectionOfEvents(factory.AggColumnNum, eventsPerStream, isNewData, context);
+            AggregationRow aggs = GetAggregationRow(eventsPerStream, isNewData, context);
+            return aggs?.GetCollectionOfEvents(Factory.AggColumnNum, eventsPerStream, isNewData, context);
         }
 
         public override EventBean EvaluateGetEventBean(

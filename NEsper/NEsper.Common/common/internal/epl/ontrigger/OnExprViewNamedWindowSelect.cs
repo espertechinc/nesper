@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
     {
         private readonly bool audit;
         private readonly bool isDelete;
-        private readonly ISet<MultiKey<EventBean>> oldEvents = new HashSet<MultiKey<EventBean>>();
+        private readonly ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents = new HashSet<MultiKeyArrayOfKeys<EventBean>>();
         private new readonly InfraOnSelectViewFactory parent;
         private readonly ResultSetProcessor resultSetProcessor;
         private readonly TableInstance tableInstanceInsertInto;
@@ -102,11 +102,11 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             agentInstanceContext.InstrumentationProvider.AInfraOnAction();
         }
 
-        public static ISet<MultiKey<EventBean>> BuildJoinResult(
+        public static ISet<MultiKeyArrayOfKeys<EventBean>> BuildJoinResult(
             EventBean[] triggerEvents,
             EventBean[] matchingEvents)
         {
-            var events = new LinkedHashSet<MultiKey<EventBean>>();
+            var events = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
             for (var i = 0; i < triggerEvents.Length; i++) {
                 var triggerEvent = triggerEvents[0];
                 if (matchingEvents != null) {
@@ -114,7 +114,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                         var eventsPerStream = new EventBean[2];
                         eventsPerStream[0] = matchingEvents[j];
                         eventsPerStream[1] = triggerEvent;
-                        events.Add(new MultiKey<EventBean>(eventsPerStream));
+                        events.Add(new MultiKeyArrayOfKeys<EventBean>(eventsPerStream));
                     }
                 }
             }

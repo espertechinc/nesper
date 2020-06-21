@@ -10,8 +10,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.query;
+using com.espertech.esper.common.@internal.epl.classprovided.core;
 using com.espertech.esper.common.@internal.epl.fafquery.querymethod;
 using com.espertech.esper.common.@internal.@event.path;
 using com.espertech.esper.common.@internal.util;
@@ -27,9 +29,21 @@ namespace com.espertech.esper.runtime.@internal.kernel.faf
             EPCompiled compiled,
             EPServicesContext services)
         {
-            var classLoader = services.ImportServiceRuntime.ClassLoader;
-            //var classLoader = new ByteArrayProvidingClassLoader(
-            //    compiled.GetClasses(), services.ImportServiceRuntime.ClassLoader);
+            var classLoader = ClassProvidedImportClassLoaderFactory.GetClassLoader(
+                compiled.Assemblies,
+                services.ClassLoaderParent,
+                services.ClassProvidedPathRegistry);
+
+            if (compiled.Manifest.QueryProviderClassName == null) {
+                if (compiled.Manifest.ModuleProviderClassName != null) {
+                    throw new EPException(
+                        "Cannot execute a fire-and-forget query that was compiled as module EPL, make sure to use the 'compileQuery' method of the compiler");
+                }
+
+                throw new EPException(
+                    "Failed to find query provider class name in manifest (is this a compiled fire-and-forget query?)");
+            }
+
             var className = compiled.Manifest.QueryProviderClassName;
 
             // load module resource class
@@ -53,18 +67,52 @@ namespace com.espertech.esper.runtime.@internal.kernel.faf
                 throw new EPException(e);
             }
 
+            if (classLoader is ClassProvidedImportClassLoader importClassLoader) {
+                importClassLoader.Imported = fafProvider.ModuleDependencies.PathClasses;
+            }
+
             // initialize event types
             IDictionary<string, EventType> moduleTypes = new Dictionary<string, EventType>();
-            var eventTypeResolver = new EventTypeResolverImpl(
-                moduleTypes, services.EventTypePathRegistry, services.EventTypeRepositoryBus, services.BeanEventTypeFactoryPrivate);
-            var eventTypeCollector = new EventTypeCollectorImpl(
-                moduleTypes, services.BeanEventTypeFactoryPrivate, services.EventTypeFactory, services.BeanEventTypeStemService, eventTypeResolver,
-                services.XmlFragmentEventTypeFactory, services.EventTypeAvroHandler, services.EventBeanTypedEventFactory);
+
+            EventTypeResolverImpl eventTypeResolver = new EventTypeResolverImpl(
+                moduleTypes,
+                services.EventTypePathRegistry,
+                services.EventTypeRepositoryBus,
+                services.BeanEventTypeFactoryPrivate,
+                services.EventSerdeFactory);
+
+            EventTypeCollectorImpl eventTypeCollector = new EventTypeCollectorImpl(
+                services.Container,
+                moduleTypes,
+                services.BeanEventTypeFactoryPrivate,
+                classLoader,
+                services.EventTypeFactory,
+                services.BeanEventTypeStemService,
+                eventTypeResolver,
+                services.XmlFragmentEventTypeFactory,
+                services.EventTypeAvroHandler,
+                services.EventBeanTypedEventFactory,
+                services.ImportServiceRuntime);
+
             fafProvider.InitializeEventTypes(new EPModuleEventTypeInitServicesImpl(eventTypeCollector, eventTypeResolver));
 
             // initialize query
             fafProvider.InitializeQuery(
-                new EPStatementInitServicesImpl(null, null, eventTypeResolver, null, null, null, null, false, null, null, services));
+                new EPStatementInitServicesImpl(
+                    "faf-query",
+                    EmptyDictionary<StatementProperty, object>.Instance, 
+                    null,
+                    null,
+                    eventTypeResolver,
+                    null,
+                    null,
+                    null,
+                    null,
+                    false,
+                    null,
+                    null,
+                    services));
+
             return fafProvider;
         }
 

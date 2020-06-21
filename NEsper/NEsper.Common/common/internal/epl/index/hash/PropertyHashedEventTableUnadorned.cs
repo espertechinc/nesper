@@ -17,22 +17,22 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
 {
     public class PropertyHashedEventTableUnadorned : PropertyHashedEventTable
     {
-        internal readonly IDictionary<object, ISet<EventBean>> propertyIndex;
+        private readonly IDictionary<object, ISet<EventBean>> _propertyIndex;
 
         public PropertyHashedEventTableUnadorned(PropertyHashedEventTableFactory factory)
             : base(factory)
         {
-            propertyIndex = new Dictionary<object, ISet<EventBean>>()
+            _propertyIndex = new Dictionary<object, ISet<EventBean>>(AsymmetricEqualityComparer.Instance)
                 .WithNullKeySupport();
         }
 
-        public override bool IsEmpty => propertyIndex.IsEmpty();
+        public override bool IsEmpty => _propertyIndex.IsEmpty();
 
         public override int? NumberOfEvents => null;
 
-        public override int NumKeys => propertyIndex.Count;
+        public override int NumKeys => _propertyIndex.Count;
 
-        public override object Index => propertyIndex;
+        public override object Index => _propertyIndex;
 
         public override Type ProviderClass => typeof(PropertyHashedEventTable);
 
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
         /// <returns>set of events with property value, or null if none found (never returns zero-sized set)</returns>
         public override ISet<EventBean> Lookup(object key)
         {
-            return propertyIndex.Get(key);
+            return _propertyIndex.Get(key);
         }
 
         public override void Add(
@@ -52,10 +52,10 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
         {
             var key = GetKey(theEvent);
 
-            var events = propertyIndex.Get(key);
+            var events = _propertyIndex.Get(key);
             if (events == null) {
                 events = new LinkedHashSet<EventBean>();
-                propertyIndex.Put(key, events);
+                _propertyIndex.Put(key, events);
             }
 
             events.Add(theEvent);
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
         {
             var key = GetKey(theEvent);
 
-            var events = propertyIndex.Get(key);
+            var events = _propertyIndex.Get(key);
             if (events == null) {
                 return;
             }
@@ -79,18 +79,18 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             }
 
             if (events.IsEmpty()) {
-                propertyIndex.Remove(key);
+                _propertyIndex.Remove(key);
             }
         }
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return PropertyHashedEventTableEnumerator.For(propertyIndex);
+            return PropertyHashedEventTableEnumerator.For(_propertyIndex);
         }
 
         public override void Clear()
         {
-            propertyIndex.Clear();
+            _propertyIndex.Clear();
         }
 
         public override void Destroy()

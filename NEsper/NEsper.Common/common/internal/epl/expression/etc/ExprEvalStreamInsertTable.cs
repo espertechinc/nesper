@@ -26,18 +26,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         ExprEvaluator,
         ExprNodeRenderable
     {
-        private readonly int streamNum;
-        private readonly TableMetaData tableMetadata;
-        private readonly Type returnType;
+        private readonly int _streamNum;
+        private readonly TableMetaData _tableMetadata;
+        private readonly Type _returnType;
 
         public ExprEvalStreamInsertTable(
             int streamNum,
             TableMetaData tableMetadata,
             Type returnType)
         {
-            this.streamNum = streamNum;
-            this.tableMetadata = tableMetadata;
-            this.returnType = returnType;
+            this._streamNum = streamNum;
+            this._tableMetadata = tableMetadata;
+            this._returnType = returnType;
         }
 
         public object Evaluate(
@@ -54,17 +54,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
+            CodegenExpressionRef refEps = exprSymbol.GetAddEPS(codegenMethodScope);
             CodegenExpression refIsNewData = exprSymbol.GetAddIsNewData(codegenMethodScope);
             CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
             CodegenExpressionInstanceField eventToPublic =
-                TableDeployTimeResolver.MakeTableEventToPublicField(tableMetadata, codegenClassScope, this.GetType());
+                TableDeployTimeResolver.MakeTableEventToPublicField(_tableMetadata, codegenClassScope, this.GetType());
             return StaticMethod(
                 typeof(ExprEvalStreamInsertTable),
                 "ConvertToTableEvent",
-                Constant(streamNum),
+                Constant(_streamNum),
                 eventToPublic,
-                refEPS,
+                refEps,
                 refIsNewData,
                 refExprEvalCtx);
         }
@@ -118,16 +118,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         }
 
         public Type EvaluationType {
-            get => returnType;
+            get => _returnType;
         }
 
         public ExprNodeRenderable ExprForgeRenderable {
             get => this;
         }
 
-        public void ToEPL(
-            TextWriter writer,
-            ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(this.GetType().Name);
         }

@@ -27,9 +27,6 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprEvaluatorContext context)
         {
             var result = expr.Evaluate(eventsPerStream, isNewData, context);
-            if (result == null) {
-                return null;
-            }
 
             return (int?) result;
         }

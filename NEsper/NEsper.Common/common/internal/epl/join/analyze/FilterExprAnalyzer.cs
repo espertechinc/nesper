@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
                 AnalyzeInNode(inNode, queryGraph);
             }
             else if (topNode is ExprOrNode) {
-                var rewritten = FilterSpecCompilerMakeParamUtil.RewriteOrToInIfApplicable(topNode);
+                var rewritten = FilterSpecCompilerIndexPlannerOrToInRewrite.RewriteOrToInIfApplicable(topNode, true);
                 if (rewritten is ExprInNode) {
                     var inNode = (ExprInNode) rewritten;
                     AnalyzeInNode(inNode, queryGraph);
@@ -239,11 +239,8 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
             bool isOuterJoin)
         {
             var affector = provider.GetAffector(isOuterJoin);
-            if (affector == null) {
-                return;
-            }
 
-            affector.Apply(queryGraph);
+            affector?.Apply(queryGraph);
         }
 
         private static void AnalyzeRelationalOpNode(

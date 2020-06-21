@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 
@@ -18,15 +17,31 @@ namespace com.espertech.esper.common.@internal.collection
 {
     public class PathModuleEntry<TE>
     {
-        private readonly IDictionary<string, PathDeploymentEntry<TE>> modules =
-            new Dictionary<string, PathDeploymentEntry<TE>>().WithNullKeySupport();
+        private readonly IDictionary<string, PathDeploymentEntry<TE>> _modules;
+
+        public PathModuleEntry()
+        {
+            _modules = new Dictionary<string, PathDeploymentEntry<TE>>().WithNullKeySupport();
+        }
+
+        public PathModuleEntry(IDictionary<String, PathDeploymentEntry<TE>> modules)
+        {
+            _modules = modules;
+        }
 
         public void Add(
             string moduleName,
             TE entity,
             string deploymentId)
         {
-            modules.Put(moduleName, new PathDeploymentEntry<TE>(deploymentId, entity));
+            _modules[moduleName] = new PathDeploymentEntry<TE>(deploymentId, entity);
+        }
+
+        public void Add(
+            string moduleName,
+            PathDeploymentEntry<TE> entity)
+        {
+            _modules[moduleName] = entity;
         }
 
         public Pair<TE, string> GetAnyModuleExpectSingle(
@@ -34,17 +49,17 @@ namespace com.espertech.esper.common.@internal.collection
             PathRegistryObjectType objectType,
             ICollection<string> moduleNames)
         {
-            if (modules.IsEmpty()) {
+            if (_modules.IsEmpty()) {
                 return null;
             }
 
             if (moduleNames == null || moduleNames.IsEmpty()) {
-                if (modules.Count > 1) {
+                if (_modules.Count > 1) {
                     throw new PathExceptionAmbiguous(entityName, objectType);
                 }
 
-                var moduleName = modules.Keys.First();
-                var entry = modules.Get(moduleName);
+                var moduleName = _modules.Keys.First();
+                var entry = _modules.Get(moduleName);
                 if (entry == null) {
                     return null;
                 }
@@ -52,45 +67,56 @@ namespace com.espertech.esper.common.@internal.collection
                 return new Pair<TE, string>(entry.Entity, moduleName);
             }
 
-            PathDeploymentEntry<TE> found = null;
-            string moduleNameFound = null;
-            foreach (var moduleName in moduleNames) {
-                var entry = modules.Get(moduleName);
-                if (entry != null) {
-                    if (found != null) {
-                        throw new PathExceptionAmbiguous(entityName, objectType);
-                    }
-
-                    found = entry;
-                    moduleNameFound = moduleName;
-                }
+            if (_modules.Count == 1) {
+                var entry = _modules.First();
+                return new Pair<TE, string>(entry.Value.Entity, entry.Key);
             }
 
-            return found == null ? null : new Pair<TE, string>(found.Entity, moduleNameFound);
+            var found = _modules
+                .Where(e => moduleNames.Contains(e.Key))
+                .Take(3)
+                .ToList();
+
+            switch (found.Count) {
+                case 0:
+                    return null;
+
+                case 1:
+                    var entry = found[0];
+                    return new Pair<TE, string>(entry.Value.Entity, entry.Key);
+
+                default:
+                    throw new PathExceptionAmbiguous(entityName, objectType);
+            }
         }
 
         public string GetDeploymentId(string moduleName)
         {
-            var existing = modules.Get(moduleName);
+            var existing = _modules.Get(moduleName);
             return existing?.DeploymentId;
         }
 
         public TE GetWithModule(string moduleName)
         {
-            var entry = modules.Get(moduleName);
+            var entry = _modules.Get(moduleName);
             return entry == null ? default(TE) : entry.Entity;
+        }
+
+        public PathDeploymentEntry<TE> GetEntryWithModule(string moduleName)
+        {
+            return _modules.Get(moduleName);
         }
 
         public bool DeleteDeployment(string deploymentId)
         {
-            foreach (var entry in modules) {
+            foreach (var entry in _modules) {
                 if (entry.Value.DeploymentId.Equals(deploymentId)) {
-                    modules.Remove(entry.Key);
-                    return modules.IsEmpty();
+                    _modules.Remove(entry.Key);
+                    return _modules.IsEmpty();
                 }
             }
 
-            return modules.IsEmpty();
+            return _modules.IsEmpty();
         }
 
         public void AddDependency(
@@ -99,7 +125,7 @@ namespace com.espertech.esper.common.@internal.collection
             string deploymentIdDep,
             PathRegistryObjectType objectType)
         {
-            var existing = modules.Get(moduleName);
+            var existing = _modules.Get(moduleName);
             if (existing == null) {
                 throw new ArgumentException(
                     "Failed to find " + objectType.Name + " '" + entityName + "' under module '" + moduleName + "'");
@@ -113,7 +139,7 @@ namespace com.espertech.esper.common.@internal.collection
             string moduleName,
             PathRegistryObjectType objectType)
         {
-            var existing = modules.Get(moduleName);
+            var existing = _modules.Get(moduleName);
             if (existing == null) {
                 throw new ArgumentException(
                     "Failed to find " + objectType.Name + " '" + entityName + "' under module '" + moduleName + "'");
@@ -126,15 +152,32 @@ namespace com.espertech.esper.common.@internal.collection
             string moduleName,
             string deploymentId)
         {
-            var existing = modules.Get(moduleName);
+            var existing = _modules.Get(moduleName);
             existing?.RemoveDependency(deploymentId);
         }
 
         public void Traverse(Consumer<TE> consumer)
         {
-            foreach (var entry in modules) {
+            foreach (var entry in _modules) {
                 consumer.Invoke(entry.Value.Entity);
             }
         }
+
+        public void TraverseWithModule(BiConsumer<string, TE> consumer)
+        {
+            foreach (var entry in _modules) {
+                consumer.Invoke(entry.Key, entry.Value.Entity);
+            }
+        }
+        
+        public PathModuleEntry<TE> Copy() {
+            var copy = new HashMap<String, PathDeploymentEntry<TE>>();
+            foreach (var entry in _modules) {
+                PathDeploymentEntry<TE> copyEntry = entry.Value.Copy();
+                copy[entry.Key] = copyEntry;
+            }
+            return new PathModuleEntry<TE>(copy);
+        }
+
     }
 } // end of namespace

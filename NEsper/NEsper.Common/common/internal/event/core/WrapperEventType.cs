@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
@@ -169,7 +168,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
             if (underlyingEventType.IsProperty(property)) {
                 var underlyingGetter = ((EventTypeSPI) underlyingEventType).GetGetterSPI(property);
-                var getter = new WrapperUnderlyingPropertyGetter(underlyingGetter);
+                var getter = new WrapperUnderlyingPropertyGetter(this, underlyingGetter);
                 propertyGetterCache.Put(property, getter);
                 return getter;
             }
@@ -331,9 +330,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             return null;
         }
 
-        public EventBeanReader Reader => null;
-
-        public EventType[] SuperTypes => null;
+        public IList<EventType> SuperTypes => null;
 
         public bool IsProperty(string property)
         {
@@ -395,11 +392,8 @@ namespace com.espertech.esper.common.@internal.@event.core
             }
 
             var pair = writers.Get(propertyName);
-            if (pair == null) {
-                return null;
-            }
 
-            return pair.Second;
+            return pair?.Second;
         }
 
         public EventPropertyDescriptor GetWritableProperty(string propertyName)
@@ -409,11 +403,8 @@ namespace com.espertech.esper.common.@internal.@event.core
             }
 
             var pair = writers.Get(propertyName);
-            if (pair == null) {
-                return null;
-            }
 
-            return pair.First;
+            return pair?.First;
         }
 
         public EventBeanCopyMethodForge GetCopyMethodForge(string[] properties)
@@ -690,9 +681,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             foreach (var property in eventType.PropertyNames) {
                 if (properties.Keys.Contains(property)) {
                     throw new EPException(
-                        "Property " +
-                        property +
-                        " occurs in both the underlying event and in the additional properties");
+                        $"Property '{property}' occurs in both the underlying event and in the additional properties");
                 }
             }
         }

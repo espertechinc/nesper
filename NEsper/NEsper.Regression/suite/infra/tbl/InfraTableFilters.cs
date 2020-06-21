@@ -8,7 +8,6 @@
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -32,7 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean("E" + i, i));
             }
 
-            var fields = new [] { "col0" };
+            var fields = new[] {"col0"};
 
             // test FAF filter
             var events = env.CompileExecuteFAF("select col0 from MyTable(pkey='E1')", path).Array;

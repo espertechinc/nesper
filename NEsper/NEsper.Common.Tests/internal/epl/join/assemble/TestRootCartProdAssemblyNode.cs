@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         private SupportJoinProcNode parentNode;
         private RootCartProdAssemblyNode rootCartNodeOneReq;
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestComputeCombined()
         {
             Assert.IsNull(RootCartProdAssemblyNode.ComputeCombined(new[] { new[] { 2 } }));
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             EPAssertionUtil.AssertEqualsAnyOrder(new[] { 3, 4, 2, 5, 6, 0, 8, 9 }, result[2]);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestFlowOptional()
         {
             var rootCartNodeAllOpt = (RootCartProdAssemblyNode) new RootCartProdAssemblyNodeFactory(1, 5, true).MakeAssemblerUnassociated();
@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
                 rowArr);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestFlowRequired()
         {
             rootCartNodeOneReq.Init(null);

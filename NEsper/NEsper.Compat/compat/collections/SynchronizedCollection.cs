@@ -59,7 +59,7 @@ namespace com.espertech.esper.compat.collections
         public T First
         {
             [MethodImpl(MethodImplOptions.Synchronized)]
-            get { return _facadeCollection.First(); }
+            get => _facadeCollection.First();
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace com.espertech.esper.compat.collections
         public bool IsEmpty
         {
             [MethodImpl(MethodImplOptions.Synchronized)]
-            get { return _facadeCollection.IsEmpty(); }
+            get => _facadeCollection.IsEmpty();
         }
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace com.espertech.esper.compat.collections
         public int Count
         {
             [MethodImpl(MethodImplOptions.Synchronized)]
-            get { return _facadeCollection.Count; }
+            get => _facadeCollection.Count;
         }
 
         ///<summary>
@@ -180,7 +180,7 @@ namespace com.espertech.esper.compat.collections
         public bool IsReadOnly
         {
             [MethodImpl(MethodImplOptions.Synchronized)]
-            get { return _facadeCollection.IsReadOnly; }
+            get => _facadeCollection.IsReadOnly;
         }
 
         #endregion

@@ -8,215 +8,196 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionlib.support.util;
+using com.espertech.esper.regressionlib.support.expreval;
 
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
+using static com.espertech.esper.regressionlib.support.util.LambdaAssertionUtil;
 
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
-    public class ExprEnumMinMax
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            var execs = new List<RegressionExecution>();
-            execs.Add(new ExprEnumMinMaxScalarWithLambda());
-            execs.Add(new ExprEnumMinMaxEvents());
-            execs.Add(new ExprEnumMinMaxScalar());
-            execs.Add(new ExprEnumMinMaxScalarChain());
-            execs.Add(new ExprEnumInvalid());
-            return execs;
-        }
+	public class ExprEnumMinMax
+	{
 
-        internal class ExprEnumMinMaxScalarChain : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                env.CompileDeploy(
-                    "@Name('s0') select Coll.max().minus(1 minute) >= Coll.min() as c0 from SupportEventWithLongArray");
-                env.AddListener("s0");
-                var fields = new [] { "c0" };
+		public static ICollection<RegressionExecution> Executions()
+		{
+			List<RegressionExecution> execs = new List<RegressionExecution>();
+			WithMinMaxEvents(execs);
+			WithMinMaxScalar(execs);
+			WithMinMaxScalarWithPredicate(execs);
+			WithMinMaxScalarChain(execs);
+			WithInvalid(execs);
+			return execs;
+		}
 
-                env.SendEventBean(new SupportEventWithLongArray(new long[] {150000, 140000, 200000, 190000}));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {true});
+		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumInvalid());
+			return execs;
+		}
 
-                env.SendEventBean(new SupportEventWithLongArray(new long[] {150000, 139999, 200000, 190000}));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {true});
+		public static IList<RegressionExecution> WithMinMaxScalarChain(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumMinMaxScalarChain());
+			return execs;
+		}
 
-                env.UndeployAll();
-            }
-        }
+		public static IList<RegressionExecution> WithMinMaxScalarWithPredicate(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumMinMaxScalarWithPredicate());
+			return execs;
+		}
 
-        internal class ExprEnumMinMaxScalarWithLambda : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new [] { "val0","val1","val2","val3" };
-                var eplFragment = "@Name('s0') select " +
-                                  "Strvals.min(v -> extractNum(v)) as val0, " +
-                                  "Strvals.max(v -> extractNum(v)) as val1, " +
-                                  "Strvals.min(v -> v) as val2, " +
-                                  "Strvals.max(v -> v) as val3 " +
-                                  "from SupportCollection";
-                env.CompileDeploy(eplFragment).AddListener("s0");
+		public static IList<RegressionExecution> WithMinMaxScalar(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumMinMaxScalar());
+			return execs;
+		}
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fields,
-                    new[] {typeof(int?), typeof(int?), typeof(string), typeof(string)});
+		public static IList<RegressionExecution> WithMinMaxEvents(IList<RegressionExecution> execs = null)
+		{
+			execs = execs ?? new List<RegressionExecution>();
+			execs.Add(new ExprEnumMinMaxEvents());
+			return execs;
+		}
 
-                env.SendEventBean(SupportCollection.MakeString("E2,E1,E5,E4"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {1, 5, "E1", "E5"});
+		internal class ExprEnumMinMaxScalarChain : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportEventWithLongArray");
+				builder.WithExpression(fields[0], "Coll.max().minus(1 minute) >= Coll.min()");
 
-                env.SendEventBean(SupportCollection.MakeString("E1"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {1, 1, "E1", "E1"});
+				builder.WithAssertion(new SupportEventWithLongArray("E1", new long[] {150000, 140000, 200000, 190000}))
+					.Expect(fields, true);
 
-                env.SendEventBean(SupportCollection.MakeString(null));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {null, null, null, null});
+				builder.WithAssertion(new SupportEventWithLongArray("E2", new long[] {150000, 139999, 200000, 190000}))
+					.Expect(fields, true);
 
-                env.SendEventBean(SupportCollection.MakeString(""));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {null, null, null, null});
+				builder.Run(env);
+			}
+		}
 
-                env.UndeployAll();
-            }
-        }
+		internal class ExprEnumMinMaxScalarWithPredicate : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0,c1,c2,c3,c4,c5,c6,c7".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
+				builder.WithExpression(fields[0], "Strvals.min(v => extractNum(v))");
+				builder.WithExpression(fields[1], "Strvals.max(v => extractNum(v))");
+				builder.WithExpression(fields[2], "Strvals.min(v => v)");
+				builder.WithExpression(fields[3], "Strvals.max(v => v)");
+				builder.WithExpression(fields[4], "Strvals.min( (v, i) => extractNum(v) + i*10)");
+				builder.WithExpression(fields[5], "Strvals.max( (v, i) => extractNum(v) + i*10)");
+				builder.WithExpression(fields[6], "Strvals.min( (v, i, s) => extractNum(v) + i*10 + s*100)");
+				builder.WithExpression(fields[7], "Strvals.max( (v, i, s) => extractNum(v) + i*10 + s*100)");
 
-        internal class ExprEnumMinMaxEvents : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new [] { "val0", "val1" };
-                var eplFragment = "@Name('s0') select " +
-                                  "Contained.min(x -> P00) as val0, " +
-                                  "Contained.max(x -> P00) as val1 " +
-                                  "from SupportBean_ST0_Container";
-                env.CompileDeploy(eplFragment).AddListener("s0");
+				builder.WithStatementConsumer(
+					stmt => AssertTypes(
+						stmt.EventType,
+						fields,
+						new[] {
+							typeof(int?), typeof(int?), typeof(string), typeof(string),
+							typeof(int?), typeof(int?), typeof(int?), typeof(int?)
+						}));
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fields,
-                    new[] {typeof(int?), typeof(int?)});
+				builder.WithAssertion(SupportCollection.MakeString("E2,E1,E5,E4")).Expect(fields, 1, 5, "E1", "E5", 2, 34, 402, 434);
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,12", "E2,11", "E2,2"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {2, 12});
+				builder.WithAssertion(SupportCollection.MakeString("E1")).Expect(fields, 1, 1, "E1", "E1", 1, 1, 101, 101);
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,12", "E2,0", "E2,2"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {0, 12});
+				builder.WithAssertion(SupportCollection.MakeString(null)).Expect(fields, null, null, null, null, null, null, null, null);
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value(null));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {null, null});
+				builder.WithAssertion(SupportCollection.MakeString("")).Expect(fields, null, null, null, null, null, null, null, null);
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value());
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {null, null});
+				builder.Run(env);
+			}
+		}
 
-                env.UndeployAll();
-            }
-        }
+		internal class ExprEnumMinMaxEvents : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
+				builder.WithExpression(fields[0], "Contained.min(x => P00)");
+				builder.WithExpression(fields[1], "Contained.max(x => P00)");
+				builder.WithExpression(fields[2], "Contained.min( (x, i) => P00 + i*10)");
+				builder.WithExpression(fields[3], "Contained.max( (x, i) => P00 + i*10)");
+				builder.WithExpression(fields[4], "Contained.min( (x, i, s) => P00 + i*10 + s*100)");
+				builder.WithExpression(fields[5], "Contained.max( (x, i, s) => P00 + i*10 + s*100)");
 
-        internal class ExprEnumMinMaxScalar : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new [] { "val0", "val1" };
-                var eplFragment = "@Name('s0') select " +
-                                  "Strvals.min() as val0, " +
-                                  "Strvals.max() as val1 " +
-                                  "from SupportCollection";
-                env.CompileDeploy(eplFragment).AddListener("s0");
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fields,
-                    new[] {typeof(string), typeof(string)});
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,12", "E2,11", "E2,2")).Expect(fields, 2, 12, 12, 22, 312, 322);
 
-                env.SendEventBean(SupportCollection.MakeString("E2,E1,E5,E4"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E1", "E5"});
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,12", "E2,0", "E2,2")).Expect(fields, 0, 12, 10, 22, 310, 322);
 
-                env.SendEventBean(SupportCollection.MakeString("E1"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E1", "E1"});
+				builder.WithAssertion(SupportBean_ST0_Container.Make2ValueNull()).Expect(fields, null, null, null, null, null, null);
 
-                env.SendEventBean(SupportCollection.MakeString(null));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {null, null});
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value()).Expect(fields, null, null, null, null, null, null);
 
-                env.SendEventBean(SupportCollection.MakeString(""));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {null, null});
+				builder.Run(env);
+			}
+		}
 
-                env.UndeployAll();
-            }
-        }
+		internal class ExprEnumMinMaxScalar : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0,c1".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
+				builder.WithExpression(fields[0], "Strvals.min()");
+				builder.WithExpression(fields[1], "Strvals.max()");
 
-        internal class ExprEnumInvalid : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                string epl;
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(string)));
 
-                epl = "select Contained.min() from SupportBean_ST0_Container";
-                TryInvalidCompile(
-                    env,
-                    epl,
-                    "Failed to validate select-clause expression 'Contained.min()': Invalid input for built-in enumeration method 'min' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" +
-                    typeof(SupportBean_ST0).Name +
-                    "'");
-            }
-        }
+				builder.WithAssertion(SupportCollection.MakeString("E2,E1,E5,E4")).Expect(fields, "E1", "E5");
 
-        public class MyService
-        {
-            public static int ExtractNum(string arg)
-            {
-                return int.Parse(arg.Substring(1));
-            }
+				builder.WithAssertion(SupportCollection.MakeString("E1")).Expect(fields, "E1", "E1");
 
-            public static decimal ExtractDecimal(string arg)
-            {
-                return decimal.Parse(arg.Substring(1));
-            }
-        }
-    }
+				builder.WithAssertion(SupportCollection.MakeString(null)).Expect(fields, null, null);
+
+				builder.WithAssertion(SupportCollection.MakeString("")).Expect(fields, null, null);
+
+				builder.Run(env);
+			}
+		}
+
+		internal class ExprEnumInvalid : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string epl;
+
+				epl = "select Contained.min() from SupportBean_ST0_Container";
+				TryInvalidCompile(
+					env,
+					epl,
+					"Failed to validate select-clause expression 'Contained.min()': Invalid input for built-in enumeration method 'min' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" +
+					typeof(SupportBean_ST0).FullName +
+					"'");
+			}
+		}
+
+		public static class MyService
+		{
+			public static int ExtractNum(string arg)
+			{
+				return int.Parse(arg.Substring(1));
+			}
+
+			public static decimal ExtractDecimal(string arg)
+			{
+				return decimal.Parse(arg.Substring(1));
+			}
+		}
+	}
 } // end of namespace

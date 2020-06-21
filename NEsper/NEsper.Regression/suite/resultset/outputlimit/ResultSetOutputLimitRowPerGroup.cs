@@ -49,6 +49,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             execs.Add(new ResultSet12AllHavingJoin());
             execs.Add(new ResultSet13LastNoHavingNoJoin());
             execs.Add(new ResultSet14LastNoHavingJoin());
+            execs.Add(new ResultSet13LastNoHavingNoJoinWOrderBy());
+            execs.Add(new ResultSet14LastNoHavingJoinWOrderBy());
             execs.Add(new ResultSet15LastHavingNoJoin());
             execs.Add(new ResultSet16LastHavingJoin());
             execs.Add(new ResultSet17FirstNoHavingNoJoin());
@@ -71,6 +73,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             execs.Add(new ResultSetOutputFirstHavingJoinNoJoin());
             execs.Add(new ResultSetOutputFirstCrontab());
             execs.Add(new ResultSetOutputFirstEveryNEvents());
+            execs.Add(new ResultSetOutputFirstMultikeyWArray());
+            execs.Add(new ResultSetOutputAllMultikeyWArray());
+            execs.Add(new ResultSetOutputLastMultikeyWArray());
+            execs.Add(new ResultSetOutputSnapshotMultikeyWArray());
             return execs;
         }
 
@@ -463,7 +469,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         private static void TryAssertion13_14(
             RegressionEnvironment env,
             string stmtText,
-            string outputLimit)
+            string outputLimit,
+            bool assertAllowAnyOrder)
         {
             SendTimer(env, 0);
             env.CompileDeploy(stmtText).AddListener("s0");
@@ -503,7 +510,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 new[] {new object[] {"IBM", 72d}, new object[] {"MSFT", 9d}, new object[] {"YAH", 7d}});
 
             var execution = new ResultAssertExecution(stmtText, env, expected);
-            execution.Execute(false);
+            execution.Execute(assertAllowAnyOrder);
         }
 
         private static void TryAssertion15_16(
@@ -900,11 +907,163 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.SendEventBean(new SupportBean(theString, intPrimitive));
         }
 
+        private static void SendBeanEvent(
+            RegressionEnvironment env,
+            string theString,
+            long longPrimitive,
+            int intPrimitive)
+        {
+            SupportBean b = new SupportBean();
+            b.TheString = theString;
+            b.LongPrimitive = longPrimitive;
+            b.IntPrimitive = intPrimitive;
+            env.SendEventBean(b);
+        }
+
         private static void SendTimer(
             RegressionEnvironment env,
             long timeInMSec)
         {
             env.AdvanceTime(timeInMSec);
+        }
+
+        internal class ResultSetOutputSnapshotMultikeyWArray : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string[] fields = "c0,c1,c2".SplitCsv();
+                env.AdvanceTime(0);
+
+                string epl =
+                    "@Name('s0') select TheString as c0, LongPrimitive as c1, sum(IntPrimitive) as c2 from SupportBean group by TheString, LongPrimitive " +
+                    "output snapshot every 10 seconds";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendBeanEvent(env, "A", 0, 10);
+                SendBeanEvent(env, "B", 1, 11);
+                SendBeanEvent(env, "A", 0, 12);
+                SendBeanEvent(env, "B", 1, 13);
+
+                env.Milestone(0);
+
+                env.AdvanceTime(10000);
+                EPAssertionUtil.AssertPropsPerRow(
+                    env.Listener("s0").GetAndResetLastNewData(),
+                    fields,
+                    new object[][] {
+                        new object[] {"A", 0L, 22}, 
+                        new object[] {"B", 1L, 24}
+                    });
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class ResultSetOutputLastMultikeyWArray : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.AdvanceTime(0);
+                string[] fields = "TheString,LongPrimitive,thesum".SplitCsv();
+                string epl = "@Name('s0') select TheString, LongPrimitive, sum(IntPrimitive) as thesum from SupportBean#keepall " +
+                             "group by TheString, LongPrimitive output last every 1 seconds";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendBeanEvent(env, "A", 0, 10);
+                SendBeanEvent(env, "B", 1, 11);
+
+                env.Milestone(0);
+
+                SendBeanEvent(env, "A", 0, 12);
+                SendBeanEvent(env, "C", 0, 13);
+
+                env.AdvanceTime(1000);
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                    env.Listener("s0").GetAndResetLastNewData(),
+                    fields,
+                    new object[][] {
+                        new object[] {"A", 0L, 22}, 
+                        new object[] {"B", 1L, 11}, 
+                        new object[] {"C", 0L, 13}
+                    });
+
+                SendBeanEvent(env, "A", 0, 14);
+
+                env.AdvanceTime(2000);
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                    env.Listener("s0").GetAndResetLastNewData(),
+                    fields,
+                    new object[][] {
+                        new object[] {"A", 0L, 36}
+                    });
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class ResultSetOutputAllMultikeyWArray : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.AdvanceTime(0);
+                string[] fields = "TheString,LongPrimitive,thesum".SplitCsv();
+                string epl = "@Name('s0') select TheString, LongPrimitive, sum(IntPrimitive) as thesum from SupportBean#keepall " +
+                             "group by TheString, LongPrimitive output all every 1 seconds";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendBeanEvent(env, "A", 0, 10);
+                SendBeanEvent(env, "B", 1, 11);
+
+                env.Milestone(0);
+
+                SendBeanEvent(env, "A", 0, 12);
+                SendBeanEvent(env, "C", 0, 13);
+
+                env.AdvanceTime(1000);
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                    env.Listener("s0").GetAndResetLastNewData(),
+                    fields,
+                    new object[][] {
+                        new object[] {"A", 0L, 22}, 
+                        new object[] {"B", 1L, 11}, 
+                        new object[] {"C", 0L, 13}
+                    });
+
+                SendBeanEvent(env, "A", 0, 14);
+
+                env.AdvanceTime(2000);
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                    env.Listener("s0").GetAndResetLastNewData(),
+                    fields,
+                    new object[][] {
+                        new object[] {"A", 0L, 36}, 
+                        new object[] {"B", 1L, 11}, 
+                        new object[] {"C", 0L, 13}
+                    });
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class ResultSetOutputFirstMultikeyWArray : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.AdvanceTime(0);
+                string[] fields = new string[] {"thesum"};
+                string epl = "@Name('s0') select sum(Value) as thesum from SupportEventWithIntArray group by Array output first every 10 seconds";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                env.SendEventBean(new SupportEventWithIntArray("E1", new int[] {1, 2}, 10));
+                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {10});
+
+                env.Milestone(0);
+
+                env.SendEventBean(new SupportEventWithIntArray("E1", new int[] {1, 2}, 10));
+                Assert.IsFalse(env.Listener("s0").IsInvoked);
+
+                env.UndeployAll();
+            }
         }
 
         internal class ResultSetCrontabNumberSetVariations : RegressionExecution
@@ -1370,11 +1529,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "@Name('s0') select Symbol, sum(Price) " +
-                               "from SupportMarketDataBean#time(5.5 sec)" +
+                               "from SupportMarketDataBean#time(5.5 sec), " +
+                               "SupportBean#keepall where TheString=Symbol " +
                                "group by Symbol " +
-                               "output last every 1 seconds " +
-                               "order by Symbol";
-                TryAssertion13_14(env, stmtText, "last");
+                               "output last every 1 seconds";
+                TryAssertion13_14(env, stmtText, "last", true);
             }
         }
 
@@ -1386,9 +1545,35 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                                "from SupportMarketDataBean#time(5.5 sec), " +
                                "SupportBean#keepall where TheString=Symbol " +
                                "group by Symbol " +
+                               "output last every 1 seconds";
+                TryAssertion13_14(env, stmtText, "last", true);
+            }
+        }
+
+        internal class ResultSet13LastNoHavingNoJoinWOrderBy : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText = "@Name('s0') select Symbol, sum(Price) " +
+                               "from SupportMarketDataBean#time(5.5 sec)" +
+                               "group by Symbol " +
                                "output last every 1 seconds " +
                                "order by Symbol";
-                TryAssertion13_14(env, stmtText, "last");
+                TryAssertion13_14(env, stmtText, "last", false);
+            }
+        }
+
+        internal class ResultSet14LastNoHavingJoinWOrderBy : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText = "@Name('s0') select Symbol, sum(Price) " +
+                               "from SupportMarketDataBean#time(5.5 sec), " +
+                               "SupportBean#keepall where TheString=Symbol " +
+                               "group by Symbol " +
+                               "output last every 1 seconds " +
+                               "order by Symbol";
+                TryAssertion13_14(env, stmtText, "last", false);
             }
         }
 

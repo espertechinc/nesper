@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -16,8 +15,6 @@ using com.espertech.esper.common.@internal.context.mgr;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.filtersvc;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.controller.hash
 {
@@ -92,6 +89,14 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 
         public EPStatementHandleCallbackFilter FilterHandle {
             get => filterHandle;
+        }
+
+        public void Transfer(
+            FilterSpecActivatable activatable,
+            AgentInstanceTransferServices xfer)
+        {
+            xfer.AgentInstanceContext.FilterService.Remove(filterHandle, activatable.FilterForEventType, filterValueSet);
+            xfer.TargetFilterService.Add(activatable.FilterForEventType, filterValueSet, filterHandle);
         }
     }
 } // end of namespace

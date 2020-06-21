@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.mgr;
+using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.compat.collections;
@@ -50,11 +51,10 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
 
         public bool Activate(
             EventBean optionalTriggeringEvent,
-            ContextControllerEndConditionMatchEventProvider endConditionMatchEventProvider)
+            ContextControllerEndConditionMatchEventProvider endConditionMatchEventProvider,
+            IDictionary<string, object> optionalTriggeringPattern)
         {
-            if (patternStopCallback != null) {
-                patternStopCallback.Stop();
-            }
+            patternStopCallback?.Stop();
 
             var agentInstanceContext = controller.Realization.AgentInstanceContextCreate;
             Func<FilterSpecActivatable, FilterValueSetParam[][]> contextAddendumFunction = filter =>
@@ -67,12 +67,16 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             var rootNode = EvalNodeUtil.MakeRootNodeFromFactory(pattern.Pattern, patternAgentInstanceContext);
 
             var matchedEventMap = new MatchedEventMapImpl(pattern.PatternContext.MatchedEventMapMeta);
-            if (optionalTriggeringEvent != null && endConditionMatchEventProvider != null) {
-                endConditionMatchEventProvider.PopulateEndConditionFromTrigger(
+            if (optionalTriggeringEvent != null) {
+                endConditionMatchEventProvider?.PopulateEndConditionFromTrigger(
                     matchedEventMap,
                     optionalTriggeringEvent);
             }
 
+            if (optionalTriggeringPattern != null) {
+                endConditionMatchEventProvider?.PopulateEndConditionFromTrigger(matchedEventMap, optionalTriggeringPattern);
+            }
+            
             // capture any callbacks that may occur right after start
             var callback = new ConditionPatternMatchCallback(this);
             patternStopCallback = rootNode.Start(callback, pattern.PatternContext, matchedEventMap, false);
@@ -132,6 +136,11 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
                 matchEvent,
                 optionalTriggeringEvent,
                 matchEventInclusive);
+        }
+
+        public void Transfer(AgentInstanceTransferServices xfer)
+        {
+            patternStopCallback.Accept(new EvalStateNodeVisitorStageTransfer(xfer));
         }
 
         public class ConditionPatternMatchCallback : PatternMatchCallback

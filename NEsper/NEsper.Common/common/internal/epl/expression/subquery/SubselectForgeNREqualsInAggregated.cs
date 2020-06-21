@@ -6,15 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -50,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             var evalCtx = symbols.GetAddExprEvalCtx(method);
             var left = symbols.GetAddLeftResult(method);
 
-            method.Block.IfRefNullReturnNull(symbols.GetAddLeftResult(method));
+            method.Block.IfNullReturnNull(symbols.GetAddLeftResult(method));
             if (havingEval != null) {
                 CodegenExpression having = LocalMethod(
                     CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope, true),
@@ -80,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             else {
                 method.Block.DeclareVar<object>("left", coercer.CoerceCodegen(left, symbols.LeftResultType))
                     .DeclareVar<object>("right", coercer.CoerceCodegen(Ref("valueRight"), rightEvalType))
-                    .DeclareVar<bool>("eq", ExprDotMethod(Ref("left"), "Equals", Ref("right")))
+                    .DeclareVar<bool>("eq", StaticMethod<object>("Equals", Ref("left"), Ref("right")))
                     .IfCondition(Ref("eq"))
                     .BlockReturn(Constant(!isNotIn));
             }

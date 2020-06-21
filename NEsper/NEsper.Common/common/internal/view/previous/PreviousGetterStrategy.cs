@@ -6,16 +6,17 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.view.previous
 {
     public interface PreviousGetterStrategy
     {
         PreviousGetterStrategy GetStrategy(ExprEvaluatorContext ctx);
+    }
+
+    public static class PreviousGetterStrategyConstants
+    {
+        public static readonly PreviousGetterStrategy[] EMPTY_ARRAY = new PreviousGetterStrategy[0];
     }
 } // end of namespace

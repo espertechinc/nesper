@@ -12,7 +12,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.datetime;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
@@ -46,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             public override object Parse(string input)
             {
-                return StringToDateTimeWStaticFormatParse(input, DateTimeFormat.For(format));
+                return StringToDateTimeWStaticFormatParse(input, dateFormat);
             }
 
             public override CodegenExpression CodegenPremade(

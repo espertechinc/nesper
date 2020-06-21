@@ -22,18 +22,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprBitWiseNodeForgeEval : ExprEvaluator
     {
-        private readonly ExprBitWiseNodeForge forge;
-        private readonly ExprEvaluator lhs;
-        private readonly ExprEvaluator rhs;
+        private readonly ExprBitWiseNodeForge _forge;
+        private readonly ExprEvaluator _lhs;
+        private readonly ExprEvaluator _rhs;
 
         internal ExprBitWiseNodeForgeEval(
             ExprBitWiseNodeForge forge,
             ExprEvaluator lhs,
             ExprEvaluator rhs)
         {
-            this.forge = forge;
-            this.lhs = lhs;
-            this.rhs = rhs;
+            this._forge = forge;
+            this._lhs = lhs;
+            this._rhs = rhs;
         }
 
         public object Evaluate(
@@ -41,16 +41,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var left = lhs.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-            var right = rhs.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var left = _lhs.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var right = _rhs.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
             if (left == null || right == null) {
                 return null;
             }
 
-            var result = forge.Computer.Compute(left, right);
-
-            return result;
+            return _forge.Computer.Compute(left, right);
         }
 
         public static CodegenExpression Codegen(

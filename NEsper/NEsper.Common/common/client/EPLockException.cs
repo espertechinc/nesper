@@ -1,23 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.client
 {
+    [Serializable]
     public class EPLockException : EPRuntimeException
     {
         public EPLockException(string message) : base(message)
         {
         }
 
-        public EPLockException(string message,
+        public EPLockException(
+            string message,
             Exception cause) : base(message, cause)
         {
         }
 
         public EPLockException(Exception cause) : base(cause)
+        {
+        }
+
+        protected EPLockException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

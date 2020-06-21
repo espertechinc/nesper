@@ -6,7 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 
@@ -20,13 +22,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             ExprForge[][] methodForges,
             AggregationForgeFactory[] methodFactories,
             AggregationStateFactoryForge[] accessStateForges,
-            ExprForge[] partitionForges,
+            ExprNode[] partitionForges,
+            MultiKeyClassRef partitionMkClasses,
             bool defaultLevel)
         {
             MethodForges = methodForges;
             MethodFactories = methodFactories;
             AccessStateForges = accessStateForges;
             PartitionForges = partitionForges;
+            PartitionMKClasses = partitionMkClasses;
             IsDefaultLevel = defaultLevel;
         }
 
@@ -36,21 +40,26 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
 
         public AggregationStateFactoryForge[] AccessStateForges { get; }
 
-        public ExprForge[] PartitionForges { get; }
+        public ExprNode[] PartitionForges { get; }
+        
+        public MultiKeyClassRef PartitionMKClasses { get; }
 
         public bool IsDefaultLevel { get; }
 
         public CodegenExpression ToExpression(
             string rowFactory,
             string rowSerde,
-            CodegenExpression groupKeyEval)
+            CodegenExpression groupKeyEval,
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             return NewInstance<AggregationLocalGroupByLevel>(
-                NewInstance(rowFactory, Ref("this")),
-                NewInstance(rowSerde, Ref("this")),
+                NewInstanceInner(rowFactory, Ref("this")),
+                NewInstanceInner(rowSerde, Ref("this")),
                 Constant(ExprNodeUtilityQuery.GetExprResultTypes(PartitionForges)),
                 groupKeyEval,
-                Constant(IsDefaultLevel));
+                Constant(IsDefaultLevel),
+                PartitionMKClasses.GetExprMKSerde(method, classScope));
         }
     }
 } // end of namespace

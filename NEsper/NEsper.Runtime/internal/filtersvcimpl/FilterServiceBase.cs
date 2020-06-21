@@ -11,6 +11,7 @@ using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.common.@internal.metrics.audit;
@@ -18,7 +19,6 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.runtime.@internal.metrics.instrumentation;
 
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
@@ -31,6 +31,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(FilterServiceBase));
 
+        private readonly int stageId;
         private readonly EventTypeIndex eventTypeIndex;
         private readonly CopyOnWriteArraySet<FilterServiceListener> filterServiceListeners;
         private readonly EventTypeIndexBuilder indexBuilder;
@@ -41,11 +42,12 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         protected FilterServiceBase(
             FilterServiceGranularLockFactory lockFactory,
-            bool allowIsolation)
+            int stageId)
         {
             this.lockFactory = lockFactory;
+            this.stageId = stageId;
             eventTypeIndex = new EventTypeIndex(lockFactory);
-            indexBuilder = new EventTypeIndexBuilder(eventTypeIndex, allowIsolation);
+            indexBuilder = new EventTypeIndexBuilder(eventTypeIndex);
             filterServiceListeners = new CopyOnWriteArraySet<FilterServiceListener>();
         }
 
@@ -119,7 +121,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         protected long EvaluateInternal(
             EventBean theEvent,
-            ICollection<FilterHandle> matches)
+            ICollection<FilterHandle> matches,
+            ExprEvaluatorContext ctx)
         {
             if (InstrumentationHelper.ENABLED) {
                 InstrumentationHelper.Get().QFilter(theEvent);
@@ -129,7 +132,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             numEventsEvaluated.IncrementAndGet();
 
             // Finds all matching filters and return their callbacks.
-            RetryableMatchEvent(theEvent, matches);
+            RetryableMatchEvent(theEvent, matches, ctx);
 
             if (AuditPath.isAuditEnabled && !filterServiceListeners.IsEmpty()) {
                 foreach (var listener in filterServiceListeners) {
@@ -147,7 +150,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         protected long EvaluateInternal(
             EventBean theEvent,
             ICollection<FilterHandle> matches,
-            int statementId)
+            int statementId,
+            ExprEvaluatorContext ctx)
         {
             var version = filtersVersion;
             numEventsEvaluated.IncrementAndGet();
@@ -155,7 +159,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             var allMatches = new ArrayDeque<FilterHandle>();
 
             // Finds all matching filters
-            RetryableMatchEvent(theEvent, allMatches);
+            RetryableMatchEvent(theEvent, allMatches, ctx);
 
             // Add statement matches to collection passed
             foreach (var match in allMatches) {
@@ -190,17 +194,18 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         private void RetryableMatchEvent(
             EventBean theEvent,
-            ICollection<FilterHandle> matches)
+            ICollection<FilterHandle> matches,
+            ExprEvaluatorContext ctx)
         {
             // Install lock backoff exception handler that retries the evaluation.
             try {
-                eventTypeIndex.MatchEvent(theEvent, matches);
+                eventTypeIndex.MatchEvent(theEvent, matches, ctx);
             }
             catch (FilterLockBackoffException) {
                 // retry on lock back-off
                 // lock-backoff may occur when stateful evaluations take place such as boolean expressions that are subqueries
                 // statements that contain subqueries in pattern filter expression can themselves modify filters, leading to a theoretically possible deadlock
-                int delayNs = 10;
+                int delaySpin = 10; // 10 cycles
                 while (true) {
                     try {
                         // yield
@@ -212,14 +217,14 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                         }
 
                         // delay
-                        MicroThread.SleepNano(delayNs);
-                        if (delayNs < 1000000000) {
-                            delayNs = delayNs * 2;
+                        Thread.SpinWait(delaySpin);
+                        if (delaySpin < 10000000) {
+                            delaySpin = delaySpin * 2;
                         }
 
                         // evaluate
                         matches.Clear();
-                        eventTypeIndex.MatchEvent(theEvent, matches);
+                        eventTypeIndex.MatchEvent(theEvent, matches, ctx);
                         break;
                     }
                     catch (FilterLockBackoffException) {
@@ -231,12 +236,14 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         public abstract long Evaluate(
             EventBean theEvent,
-            ICollection<FilterHandle> matches);
+            ICollection<FilterHandle> matches,
+            ExprEvaluatorContext ctx);
 
         public abstract long Evaluate(
             EventBean theEvent,
             ICollection<FilterHandle> matches,
-            int statementId);
+            int statementId,
+            ExprEvaluatorContext ctx);
 
         public abstract void Add(
             EventType eventType,

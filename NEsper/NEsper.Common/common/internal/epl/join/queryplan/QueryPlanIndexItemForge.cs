@@ -13,10 +13,11 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
-using com.espertech.esper.common.@internal.context.aifactory.core;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.service;
 using com.espertech.esper.common.@internal.epl.join.lookup;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
@@ -94,10 +95,14 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         public string[] HashProps { get; }
 
         public Type[] HashTypes { get; set; }
+        
+        public MultiKeyClassRef HashMultiKeyClasses { get; set; }
 
         public string[] RangeProps { get; }
 
         public Type[] RangeTypes { get; }
+        
+        public DataInputOutputSerdeForge[] RangeSerdes { get; set; }
 
         public bool IsUnique { get; }
 
@@ -168,22 +173,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         {
             var method = parent.MakeChild(typeof(QueryPlanIndexItem), GetType(), classScope);
 
-            CodegenExpression valueGetter;
-            if (HashProps.Length == 0) { // full table scan
-                valueGetter = ConstantNull();
-            }
-            else {
-                var propertyGetters = EventTypeUtility.GetGetters(eventType, HashProps);
-                var propertyTypes = EventTypeUtility.GetPropertyTypes(eventType, HashProps);
-                valueGetter = EventTypeUtility.CodegenGetterMayMultiKeyWCoerce(
-                    eventType,
-                    propertyGetters,
-                    propertyTypes,
-                    HashTypes,
-                    method,
-                    GetType(),
-                    classScope);
-            }
+            var propertyGetters = EventTypeUtility.GetGetters(eventType, HashProps);
+            var propertyTypes = EventTypeUtility.GetPropertyTypes(eventType, HashProps);
+            var valueGetter = MultiKeyCodegen.CodegenGetterMayMultiKey(
+                eventType, propertyGetters, propertyTypes, HashTypes, HashMultiKeyClasses, method, classScope);
 
             CodegenExpression rangeGetters;
             if (RangeProps.Length == 0) {
@@ -212,39 +205,25 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                 rangeGetters = LocalMethod(makeMethod);
             }
 
+            CodegenExpression multiKeyTransform = MultiKeyCodegen.CodegenMultiKeyFromArrayTransform(
+                HashMultiKeyClasses, method, classScope);
+
             method.Block.MethodReturn(
                 NewInstance<QueryPlanIndexItem>(
                     Constant(HashProps),
                     Constant(HashTypes),
                     valueGetter,
+                    multiKeyTransform,
+                    HashMultiKeyClasses != null ? HashMultiKeyClasses.GetExprMKSerde(method, classScope) : ConstantNull(),
                     Constant(RangeProps),
                     Constant(RangeTypes),
                     rangeGetters,
+                    DataInputOutputSerdeForgeExtensions.CodegenArray(RangeSerdes, method, classScope, null),
                     Constant(IsUnique),
                     AdvancedIndexProvisionDesc == null
                         ? ConstantNull()
                         : AdvancedIndexProvisionDesc.CodegenMake(method, classScope)));
             return LocalMethod(method);
-        }
-
-        private static string[] GetNames(IndexedPropDesc[] props)
-        {
-            var names = new string[props.Length];
-            for (var i = 0; i < props.Length; i++) {
-                names[i] = props[i].IndexPropName;
-            }
-
-            return names;
-        }
-
-        private static Type[] GetTypes(IndexedPropDesc[] props)
-        {
-            var types = new Type[props.Length];
-            for (var i = 0; i < props.Length; i++) {
-                types[i] = props[i].CoercionType;
-            }
-
-            return types;
         }
 
         private static string[] GetNames(IList<IndexedPropDesc> props)
@@ -277,8 +256,11 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                 HashProps,
                 HashTypes,
                 null,
+                null,
+                null,
                 RangeProps,
                 RangeTypes,
+                null,
                 null,
                 IsUnique,
                 AdvancedIndexProvisionDesc.ToRuntime());

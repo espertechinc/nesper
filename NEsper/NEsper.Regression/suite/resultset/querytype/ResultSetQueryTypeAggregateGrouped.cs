@@ -10,7 +10,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
@@ -34,6 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             execs.Add(new ResultSetQueryTypeSumOneView());
             execs.Add(new ResultSetQueryTypeSumJoin());
             execs.Add(new ResultSetQueryTypeInsertInto());
+            execs.Add(new ResultSetQueryTypeMultikeyWArray());
             return execs;
         }
 
@@ -169,12 +169,49 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             return bean;
         }
 
+        private static void SendAssertIntArray(
+            RegressionEnvironment env,
+            string id,
+            int[] array,
+            int value,
+            int expected)
+        {
+            var fields = new[] {"Id", "thesum"};
+            env.SendEventBean(new SupportEventWithIntArray(id, array, value));
+            EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {id, expected});
+        }
+
+        internal class ResultSetQueryTypeMultikeyWArray : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "@Name('s0') select Id, sum(Value) as thesum from SupportEventWithIntArray group by Array";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendAssertIntArray(env, "E1", new int[] {1, 2}, 5, 5);
+
+                env.Milestone(0);
+
+                SendAssertIntArray(env, "E2", new int[] {1, 2}, 10, 15);
+                SendAssertIntArray(env, "E3", new int[] {1}, 11, 11);
+                SendAssertIntArray(env, "E4", new int[] {1, 3}, 12, 12);
+
+                env.Milestone(1);
+
+                SendAssertIntArray(env, "E5", new int[] {1}, 13, 24);
+                SendAssertIntArray(env, "E6", new int[] {1, 3}, 15, 27);
+                SendAssertIntArray(env, "E7", new int[] {1, 2}, 16, 31);
+
+                env.UndeployAll();
+            }
+        }
+
         internal class ResultSetQueryTypeCriteriaByDotMethod : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl =
-                    "@Name('s0') select sb.GetLongPrimitive() as c0, sum(IntPrimitive) as c1 from SupportBean#length_batch(2) as sb group by sb.GetTheString()";
+                //var epl = "@Name('s0') select sb.GetLongPrimitive() as c0, sum(IntPrimitive) as c1 from SupportBean#length_batch(2) as sb group by sb.GetTheString()";
+                var epl = "@Name('s0') select sb.LongPrimitive as c0, sum(IntPrimitive) as c1 from SupportBean#length_batch(2) as sb group by sb.TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 MakeSendSupportBean(env, "E1", 10, 100L);

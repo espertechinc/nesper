@@ -6,11 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -19,7 +17,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 {
     public class NameParamNumAndModule
     {
-        public readonly static NameParamNumAndModule[] EMPTY_ARRAY = new NameParamNumAndModule[0];
+        public static readonly NameParamNumAndModule[] EMPTY_ARRAY = new NameParamNumAndModule[0];
 
         private readonly string name;
         private readonly int paramNum;

@@ -8,6 +8,9 @@
 
 using System;
 using System.Collections.Generic;
+
+using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.activator;
@@ -24,6 +27,7 @@ using com.espertech.esper.common.@internal.epl.namedwindow.core;
 using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
+using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
@@ -33,7 +37,6 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.path;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.schedule;
-using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.statement.resource;
 using com.espertech.esper.common.@internal.util;
@@ -48,8 +51,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
     public class EPStatementInitServicesImpl : EPStatementInitServices
     {
         public EPStatementInitServicesImpl(
+            String statementName,
+            IDictionary<StatementProperty, Object> statementProperties,
             Attribute[] annotations,
-            string deploymentId,
+            String deploymentId,
             EventTypeResolver eventTypeResolver,
             FilterSpecActivatableRegistry filterSpecActivatableRegistry,
             FilterSharedBoolExprRegistery filterSharedBoolExprRegistery,
@@ -60,7 +65,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
             StatementResultService statementResultService,
             EPServicesContext servicesContext)
         {
-            ServicesContext = servicesContext;
+            StatementName = statementName;
+            StatementProperties = statementProperties;
             Annotations = annotations;
             DeploymentId = deploymentId;
             EventTypeResolver = eventTypeResolver;
@@ -71,6 +77,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
             IsRecovery = recovery;
             StatementResourceService = statementResourceService;
             StatementResultService = statementResultService;
+            ServicesContext = servicesContext;
         }
 
         public IContainer Container => ServicesContext.Container;
@@ -97,6 +104,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
 
         public ImportServiceRuntime ImportServiceRuntime => ServicesContext.ImportServiceRuntime;
 
+        public ScriptCompiler ScriptCompiler => ServicesContext.ScriptCompiler;
+
         public string RuntimeURI => ServicesContext.RuntimeURI;
 
         public RuntimeSettingsService RuntimeSettingsService => ServicesContext.RuntimeSettingsService;
@@ -122,10 +131,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
         public PatternFactoryService PatternFactoryService => ServicesContext.PatternFactoryService;
 
         public StatementResultService StatementResultService { get; }
+        
+        public string StatementName { get; }
+
+        public IDictionary<StatementProperty, object> StatementProperties { get; set; }
 
         public ContextManagementService ContextManagementService => ServicesContext.ContextManagementService;
-
-        public DataInputOutputSerdeProvider DataInputOutputSerdeProvider => ServicesContext.DataInputOutputSerdeProvider;
 
         public EventTypeResolver EventTypeResolver { get; }
 
@@ -193,7 +204,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
             ServicesContext.ContextManagementService.AddContext(definition, this);
         }
 
-        public void ActivateVariable(string name)
+        public void ActivateVariable(
+            string name,
+            DataInputOutputSerde serde)
         {
             var variable = ModuleIncidentals.Variables.Get(name);
             if (variable == null) {
@@ -209,7 +222,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
                     DeploymentId, ServicesContext.ContextPathRegistry);
             }
 
-            ServicesContext.VariableManagementService.AddVariable(DeploymentId, variable, contextDeploymentId);
+            ServicesContext.VariableManagementService.AddVariable(DeploymentId, variable, contextDeploymentId, serde);
 
             // for non-context variables we allocate the state
             if (contextDeploymentId == null) {

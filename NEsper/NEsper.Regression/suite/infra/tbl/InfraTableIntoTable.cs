@@ -30,13 +30,78 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraIntoTableUnkeyedSimpleSameModule());
-            execs.Add(new InfraIntoTableUnkeyedSimpleTwoModule());
-            execs.Add(new InfraBoundUnbound());
-            execs.Add(new InfraIntoTableWindowSortedFromJoin());
-            execs.Add(new InfraTableIntoTableNoKeys());
-            execs.Add(new InfraTableIntoTableWithKeys());
+            WithIntoTableUnkeyedSimpleSameModule(execs);
+            WithIntoTableUnkeyedSimpleTwoModule(execs);
+            WithBoundUnbound(execs);
+            WithIntoTableWindowSortedFromJoin(execs);
+            WithTableIntoTableNoKeys(execs);
+            WithTableIntoTableWithKeys(execs);
+            WithTableBigNumberAggregation(execs);
+            WithIntoTableMultikeyWArraySingleArrayKeyed(execs);
+            WithIntoTableMultikeyWArrayTwoKeyed(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIntoTableMultikeyWArrayTwoKeyed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraIntoTableMultikeyWArrayTwoKeyed());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIntoTableMultikeyWArraySingleArrayKeyed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraIntoTableMultikeyWArraySingleArrayKeyed());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTableBigNumberAggregation(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraTableBigNumberAggregation());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTableIntoTableWithKeys(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraTableIntoTableWithKeys());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTableIntoTableNoKeys(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraTableIntoTableNoKeys());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIntoTableWindowSortedFromJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraIntoTableWindowSortedFromJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBoundUnbound(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraBoundUnbound());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIntoTableUnkeyedSimpleTwoModule(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraIntoTableUnkeyedSimpleTwoModule());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIntoTableUnkeyedSimpleSameModule(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraIntoTableUnkeyedSimpleSameModule());
             return execs;
         }
 
@@ -45,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             bool soda,
             AtomicLong milestone)
         {
-            var fields = new [] { "lasteveru","firsteveru","windowb" };
+            var fields = new[] {"lasteveru", "firsteveru", "windowb"};
             var path = new RegressionPath();
             var eplDeclare = "create table varagg (" +
                              "lasteveru lastever(*) @Type('SupportBean'), " +
@@ -114,7 +179,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             bool soda,
             AtomicLong milestone)
         {
-            var fields = new [] { "maxbyeveru","minbyeveru","sortedb" };
+            var fields = new[] {"maxbyeveru", "minbyeveru", "sortedb"};
             var path = new RegressionPath();
 
             var eplDeclare = "create table varagg (" +
@@ -175,7 +240,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             bool soda,
             AtomicLong milestone)
         {
-            var fields = new [] { "maxb","maxu","minb","minu" };
+            var fields = new[] {"maxb", "maxu", "minb", "minu"};
             var path = new RegressionPath();
             var eplDeclare = "create table varagg (" +
                              "maxb max(int), maxu maxever(int), minb min(int), minu minever(int))";
@@ -278,6 +343,89 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             Assert.AreEqual(expected, env.GetEnumerator("tbl").Advance().Get("mycnt"));
         }
 
+        internal class InfraIntoTableMultikeyWArrayTwoKeyed : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl =
+                    "@Name('tbl') create table MyTable(k1 int[primitive] primary key, k2 int[primitive] primary key, thesum sum(int));\n" +
+                    "into table MyTable select IntOne, IntTwo, sum(Value) as thesum from SupportEventWithManyArray group by IntOne, IntTwo;\n";
+                env.CompileDeploy(epl);
+
+                SendEvent(env, "E1", 100, new int[] {10}, new int[] {1, 2});
+                SendEvent(env, "E2", 101, new int[] {10, 20}, new int[] {1, 2});
+                SendEvent(env, "E3", 102, new int[] {10}, new int[] {1, 1});
+                SendEvent(env, "E4", 103, new int[] {10, 20}, new int[] {1, 2});
+                SendEvent(env, "E5", 104, new int[] {10}, new int[] {1, 1});
+                SendEvent(env, "E6", 105, new int[] {10, 20}, new int[] {1, 1});
+
+                env.Milestone(0);
+
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                    env.GetEnumerator("tbl"),
+                    "k1,k2,thesum".SplitCsv(),
+                    new object[][] {
+                        new object[] {new int[] {10}, new int[] {1, 2}, 100},
+                        new object[] {new int[] {10}, new int[] {1, 1}, 102 + 104},
+                        new object[] {new int[] {10, 20}, new int[] {1, 2}, 101 + 103},
+                        new object[] {new int[] {10, 20}, new int[] {1, 1}, 105},
+                    });
+
+                env.UndeployAll();
+            }
+
+            private void SendEvent(
+                RegressionEnvironment env,
+                string id,
+                int value,
+                int[] intOne,
+                int[] intTwo)
+            {
+                env.SendEventBean(new SupportEventWithManyArray(id).WithIntOne(intOne).WithIntTwo(intTwo).WithValue(value));
+            }
+        }
+
+        internal class InfraIntoTableMultikeyWArraySingleArrayKeyed : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl =
+                    "@Name('tbl') create table MyTable(k int[primitive] primary key, thesum sum(int));\n" +
+                    "into table MyTable select IntOne, sum(Value) as thesum from SupportEventWithManyArray group by IntOne;\n";
+                env.CompileDeploy(epl);
+
+                SendEvent(env, "E1", 10, new int[] {1, 2});
+                SendEvent(env, "E2", 11, new int[] {0, 2});
+                SendEvent(env, "E3", 12, new int[] {1, 1});
+                SendEvent(env, "E4", 13, new int[] {0, 2});
+                SendEvent(env, "E5", 14, new int[] {1});
+                SendEvent(env, "E6", 15, new int[] {1, 1});
+
+                env.Milestone(0);
+
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                    env.GetEnumerator("tbl"),
+                    "k,thesum".SplitCsv(),
+                    new object[][] {
+                        new object[] {new int[] {1, 2}, 10},
+                        new object[] {new int[] {0, 2}, 11 + 13},
+                        new object[] {new int[] {1, 1}, 12 + 15},
+                        new object[] {new int[] {1}, 14},
+                    });
+
+                env.UndeployAll();
+            }
+
+            private void SendEvent(
+                RegressionEnvironment env,
+                string id,
+                int value,
+                int[] array)
+            {
+                env.SendEventBean(new SupportEventWithManyArray(id).WithIntOne(array).WithValue(value));
+            }
+        }
+
         internal class InfraIntoTableUnkeyedSimpleSameModule : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -332,7 +480,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var result = env.CompileExecuteFAF("select * from MyTable", path);
                 EPAssertionUtil.AssertPropsPerRow(
                     result.Array,
-                    new [] { "thewin","thesort" },
+                    new[] {"thewin", "thesort"},
                     new[] {
                         new object[] {new[] {sb1, sb2}, new[] {sb2, sb1}}
                     });
@@ -366,7 +514,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "sumint" };
+                var fields = new[] {"sumint"};
                 var path = new RegressionPath();
 
                 var eplCreateTable = "@Name('Create-Table') create table MyTable(sumint sum(int))";
@@ -468,7 +616,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "pkey","sumint" };
+                var fields = new[] {"pkey", "sumint"};
                 var valueList = "E1,E2,E3";
                 var path = new RegressionPath();
 
@@ -587,7 +735,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2", "c3" };
+                var fields = new[] {"c0", "c1", "c2", "c3"};
                 var epl =
                     "@Name('tbl') create table MyTable as (c0 avg(BigInteger), c1 avg(decimal), c2 sum(BigInteger), c3 sum(decimal));\n" +
                     "into table MyTable select avg(Bigint) as c0, avg(DecimalOne) as c1, sum(Bigint) as c2, sum(DecimalOne) as c3  from SupportBeanNumeric#lastevent;\n";
@@ -600,7 +748,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     fields,
                     new object[] {
                         new BigInteger(5),
-                        100m, 
+                        100m,
                         new BigInteger(5),
                         100m
                     });
@@ -612,7 +760,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     fields,
                     new object[] {
                         new BigInteger(4),
-                        200m, 
+                        200m,
                         new BigInteger(4),
                         200m
                     });

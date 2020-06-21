@@ -17,7 +17,7 @@
     <PackageReference Include="NUnit.ApplicationDomain" Version="11.1.0" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'!='netstandard2.1'">
+  <ItemGroup Condition="'$(TargetFramework)'!='netcoreapp3.1'">
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
   </ItemGroup>
@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj" />
     <ProjectReference Include="..\NEsper.Regression\NEsper.Regression.csproj" />
+    <ProjectReference Include="..\NEsper.Scripting.ClearScript\NEsper.Scripting.ClearScript.csproj" />
   </ItemGroup>
 
 </Project>

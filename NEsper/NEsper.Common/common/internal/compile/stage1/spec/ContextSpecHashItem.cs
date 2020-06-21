@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.controller.hash;
 using com.espertech.esper.common.@internal.context.module;
+using com.espertech.esper.common.@internal.epl.expression.chain;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 
@@ -23,14 +24,14 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     public class ContextSpecHashItem
     {
         public ContextSpecHashItem(
-            ExprChainedSpec function,
+            Chainable function,
             FilterSpecRaw filterSpecRaw)
         {
             Function = function;
             FilterSpecRaw = filterSpecRaw;
         }
 
-        public ExprChainedSpec Function { get; }
+        public Chainable Function { get; }
 
         public FilterSpecRaw FilterSpecRaw { get; }
 

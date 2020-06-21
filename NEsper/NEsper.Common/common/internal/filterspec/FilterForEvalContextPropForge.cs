@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -47,11 +48,12 @@ namespace com.espertech.esper.common.@internal.filterspec
             CodegenClassScope classScope,
             CodegenMethodScope parent)
         {
-            var method = parent.MakeChild(typeof(object), GetType(), classScope).AddParam(GET_FILTER_VALUE_FP);
+            var method = parent.MakeChild(typeof(object), GetType(), classScope)
+				.AddParam(GET_FILTER_VALUE_FP);
 
             method.Block
                 .DeclareVar<EventBean>("props", ExprDotName(REF_EXPREVALCONTEXT, "ContextProperties"))
-                .IfRefNullReturnNull(Ref("props"))
+                .IfNullReturnNull(Ref("props"))
                 .DeclareVar<object>("result", _getter.EventBeanGetCodegen(Ref("props"), method, classScope));
             if (_numberCoercer != null) {
                 method.Block.AssignRef(
@@ -111,6 +113,13 @@ namespace com.espertech.esper.common.@internal.filterspec
         public override int GetHashCode()
         {
             return _propertyName.GetHashCode();
+        }
+        
+        public void ValueToString(StringBuilder @out)
+        {
+            @out.Append("context property '")
+                .Append(_propertyName)
+                .Append("'");
         }
     }
 } // end of namespace

@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Threading;
 
 using com.espertech.esper.common.client;
@@ -51,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
                 var latch = (CountDownLatch) next;
                 latch.Await();
             }
-            else if (next.IsLong() || next.IsInt()) {
+            else if (next.IsInt64() || next.IsInt32()) {
                 Thread.Sleep(next.AsInt32());
             }
             else if (next is EPRuntimeException) {

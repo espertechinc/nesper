@@ -13,6 +13,8 @@ using System.Linq;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
@@ -22,36 +24,42 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     [Serializable]
     public class ExprArrayNode : ExprNodeBase
     {
-        [NonSerialized] private ExprArrayNodeForge forge;
+        [NonSerialized] private ExprArrayNodeForge _forge;
+        private Type _optionalRequiredType;
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
         public bool IsConstantResult {
             get {
-                CheckValidated(forge);
-                return forge.ConstantResult != null;
+                CheckValidated(_forge);
+                return _forge.ConstantResult != null;
             }
         }
 
         public override ExprForge Forge {
             get {
-                CheckValidated(forge);
-                return forge;
+                CheckValidated(_forge);
+                return _forge;
             }
         }
 
         public Type ComponentTypeCollection {
             get {
-                CheckValidated(forge);
-                return forge.ArrayReturnType;
+                CheckValidated(_forge);
+                return _forge.ArrayReturnType;
             }
+        }
+
+        public Type OptionalRequiredType {
+            get => _optionalRequiredType;
+            set => _optionalRequiredType = value;
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)
@@ -60,7 +68,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             // Can be an empty array with no content
             if (ChildNodes.Length == 0) {
-                forge = new ExprArrayNodeForge(this, typeof(object), CollectionUtil.OBJECTARRAY_EMPTY);
+                if (_optionalRequiredType == null) {
+                    _forge = new ExprArrayNodeForge(this, typeof(object), CollectionUtil.OBJECTARRAY_EMPTY);
+                }
+                else {
+                    _forge = new ExprArrayNodeForge(this, _optionalRequiredType, Arrays.CreateInstanceChecked(_optionalRequiredType, 0));
+                }
+
                 return null;
             }
 
@@ -74,19 +88,31 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var mustCoerce = false;
             Coercer coercer = null;
             try {
-                arrayReturnType = TypeHelper.GetCommonCoercionType(comparedTypes.ToArray());
+                if (_optionalRequiredType == null) {
+                    arrayReturnType = TypeHelper.GetCommonCoercionType(comparedTypes.ToArray());
 
-                // Determine if we need to coerce numbers when one type doesn't match any other type
-                if (arrayReturnType.IsNumeric()) {
-                    mustCoerce = false;
-                    foreach (var comparedType in comparedTypes) {
-                        if (comparedType != arrayReturnType) {
-                            mustCoerce = true;
+                    // Determine if we need to coerce numbers when one type doesn't match any other type
+                    if (arrayReturnType.IsNumeric()) {
+                        mustCoerce = false;
+                        foreach (var comparedType in comparedTypes) {
+                            if (comparedType != arrayReturnType) {
+                                mustCoerce = true;
+                            }
+                        }
+
+                        if (mustCoerce) {
+                            coercer = SimpleNumberCoercerFactory.GetCoercer(null, arrayReturnType);
                         }
                     }
-
-                    if (mustCoerce) {
-                        coercer = SimpleNumberCoercerFactory.GetCoercer(null, arrayReturnType);
+                }
+                else {
+                    arrayReturnType = _optionalRequiredType;
+                    var arrayBoxedType = arrayReturnType.GetBoxedType();
+                    foreach (var comparedType in comparedTypes) {
+                        if (!comparedType.GetBoxedType().IsAssignmentCompatible(arrayBoxedType)) {
+                            throw new ExprValidationException(
+                                "Array element type mismatch: Expecting type " + arrayReturnType.CleanName() + " but received type " + comparedType.CleanName());
+                        }
                     }
                 }
             }
@@ -115,7 +141,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             // Copy constants into array and coerce, if required
             Array constantResult = null;
             if (results != null) {
-                constantResult = Array.CreateInstance(arrayReturnType, length);
+                constantResult = Arrays.CreateInstanceChecked(arrayReturnType, length);
                 for (var i = 0; i < length; i++) {
                     if (mustCoerce) {
                         var boxed = results[i];
@@ -125,22 +151,36 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         }
                     }
                     else {
-                        constantResult.SetValue(results[i], i);
+                        if (arrayReturnType.IsPrimitive && results[i] == null) {
+                            throw new ExprValidationException(
+                                "Array element type mismatch: Expecting type " + arrayReturnType.CleanName() + " but received null");
+                        }
+
+                        try {
+                            constantResult.SetValue(results[i], i);
+                        }
+                        catch (ArgumentException) {
+                            throw new ExprValidationException(
+                                "Array element type mismatch: Expecting type " + arrayReturnType.CleanName() +
+                                " but received type " + results[i].GetType().CleanName());
+                        }
                     }
                 }
             }
 
-            forge = new ExprArrayNodeForge(this, arrayReturnType, mustCoerce, coercer, constantResult);
+            _forge = new ExprArrayNodeForge(this, arrayReturnType, mustCoerce, coercer, constantResult);
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             var delimiter = "";
             writer.Write("{");
             foreach (var expr in ChildNodes) {
                 writer.Write(delimiter);
-                expr.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+                expr.ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
                 delimiter = ",";
             }
 

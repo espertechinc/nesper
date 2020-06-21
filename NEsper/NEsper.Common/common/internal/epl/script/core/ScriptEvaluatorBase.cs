@@ -9,7 +9,6 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
@@ -18,11 +17,18 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 {
     public abstract class ScriptEvaluatorBase : ScriptEvaluator
     {
-        internal readonly Coercer coercer;
-        internal readonly string[] parameterNames;
-        internal readonly ExprEvaluator[] parameters;
+        private readonly Coercer coercer;
+        private readonly string[] parameterNames;
+        private readonly ExprEvaluator[] parameters;
+        private readonly string scriptName;
 
-        internal readonly string scriptName;
+        public Coercer Coercer => coercer;
+
+        public string[] ParameterNames => parameterNames;
+
+        public ExprEvaluator[] Parameters => parameters;
+
+        public string ScriptName => scriptName;
 
         public ScriptEvaluatorBase(
             string scriptName,
@@ -60,11 +66,8 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             ExprEvaluatorContext context)
         {
             var result = Evaluate(eventsPerStream, isNewData, context);
-            if (result == null) {
-                return null;
-            }
 
-            return result.Unwrap<object>();
+            return result?.Unwrap<object>();
         }
 
         public EventBean EvaluateGetEventBean(

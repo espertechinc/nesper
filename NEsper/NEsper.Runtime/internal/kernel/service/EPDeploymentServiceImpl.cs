@@ -8,373 +8,511 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
+
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.runtime.client;
+using com.espertech.esper.runtime.client.util;
 using com.espertech.esper.runtime.@internal.kernel.statement;
 
-//using static com.espertech.esper.common.client.util.UndeployRethrowPolicy.RETHROW_FIRST;
+using static com.espertech.esper.common.client.util.UndeployRethrowPolicy; // RETHROW_FIRST
+using static com.espertech.esper.runtime.@internal.kernel.service.DeployerHelperDependencies; // getDependenciesConsumed, getDependenciesProvided
 
 namespace com.espertech.esper.runtime.@internal.kernel.service
 {
-    public class EPDeploymentServiceImpl : EPDeploymentServiceSPI
-    {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+	public class EPDeploymentServiceImpl : EPDeploymentServiceSPI
+	{
+		private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly EPRuntimeSPI runtime;
+		private readonly EPServicesContext _services;
+		private readonly EPRuntimeSPI _runtime;
 
-        private readonly EPServicesContext services;
+		public EPDeploymentServiceImpl(
+			EPServicesContext services,
+			EPRuntimeSPI runtime)
+		{
+			_services = services;
+			_runtime = runtime;
+		}
 
-        public EPDeploymentServiceImpl(
-            EPServicesContext services,
-            EPRuntimeSPI runtime)
-        {
-            this.services = services;
-            this.runtime = runtime;
-        }
+		public EPDeploymentRollout Rollout(ICollection<EPDeploymentRolloutCompiled> items)
+		{
+			return Rollout(items, new RolloutOptions());
+		}
 
-        public EPDeployment Deploy(EPCompiled compiled)
-        {
-            return Deploy(compiled, new DeploymentOptions());
-        }
+		private IDisposable GetRolloutLock(RolloutOptions options)
+		{
+			try {
+				return options.RolloutLockStrategy.Acquire(_services.EventProcessingRWLock);
+			}
+			catch (Exception e) {
+				throw new EPDeployLockException(e.Message, e);
+			}
+		}
 
-        public EPDeployment Deploy(
-            EPCompiled compiled,
-            DeploymentOptions options)
-        {
-            if (runtime.IsDestroyed) {
-                throw new EPRuntimeDestroyedException(runtime.URI);
-            }
+		private IDisposable GetDeploymentLock(DeploymentOptions options)
+		{
+			try {
+				return options.DeploymentLockStrategy.Acquire(_services.EventProcessingRWLock);
+			}
+			catch (Exception e) {
+				throw new EPDeployLockException(e.Message, e);
+			}
+		}
 
-            DeploymentInternal deployerResult;
+		public EPDeploymentRollout Rollout(
+			ICollection<EPDeploymentRolloutCompiled> items,
+			RolloutOptions options)
+		{
+			if (options == null) {
+				options = new RolloutOptions();
+			}
 
-            using (options.DeploymentLockStrategy.Acquire(services.EventProcessingRWLock)) {
-                var statementIdRecovery = services.EpServicesHA.StatementIdRecoveryService;
-                var currentStatementId = statementIdRecovery.CurrentStatementId ?? 1;
+			ValidateRuntimeAlive();
+			var rollItemNum = 0;
+			foreach (var item in items) {
+				CheckManifest(rollItemNum++, item.Compiled.Manifest);
+			}
 
-                string deploymentId;
-                if (options.DeploymentId == null) {
-                    deploymentId = Guid.NewGuid().ToString();
-                }
-                else {
-                    deploymentId = options.DeploymentId;
-                }
+			DeployerRolloutDeploymentResult rolloutResult;
 
-                if (services.DeploymentLifecycleService.GetDeploymentById(deploymentId) != null) {
-                    throw new EPDeployException("Deployment by id '" + deploymentId + "' already exists");
-                }
+			using (GetRolloutLock(options)) {
+				var statementIdRecovery = _services.EpServicesHA.StatementIdRecoveryService;
+				var currentStatementId = statementIdRecovery.CurrentStatementId;
+				if (currentStatementId == null) {
+					currentStatementId = 1;
+				}
 
-                deployerResult = Deployer.DeployFresh(
-                    deploymentId,
-                    currentStatementId,
-                    compiled,
-                    options.StatementNameRuntime,
-                    options.StatementUserObjectRuntime,
-                    options.StatementSubstitutionParameter,
-                    runtime);
-                statementIdRecovery.CurrentStatementId = currentStatementId + deployerResult.Statements.Length;
+				rolloutResult = DeployerRollout.Rollout(currentStatementId.Value, items, _runtime);
+				statementIdRecovery.CurrentStatementId = currentStatementId + rolloutResult.NumStatements;
 
-                // dispatch event
-                DispatchOnDeploymentEvent(deployerResult);
-            }
+				// dispatch event
+				for (var i = 0; i < rolloutResult.Deployments.Length; i++) {
+					DispatchOnDeploymentEvent(rolloutResult.Deployments[i], i);
+				}
+			}
 
-            var copy = new EPStatement[deployerResult.Statements.Length];
-            Array.Copy(deployerResult.Statements, 0, copy, 0, deployerResult.Statements.Length);
-            return new EPDeployment(
-                deployerResult.DeploymentId, deployerResult.ModuleProvider.ModuleName, deployerResult.ModulePropertiesCached, copy,
-                CollectionUtil.CopyArray(deployerResult.DeploymentIdDependencies), DateTimeHelper.GetCurrentTimeUniversal());
-        }
+			var deployments = new EPDeploymentRolloutItem[items.Count];
+			for (var i = 0; i < rolloutResult.Deployments.Length; i++) {
+				var deployment = MakeDeployment(rolloutResult.Deployments[i]);
+				deployments[i] = new EPDeploymentRolloutItem(deployment);
+			}
 
-        public EPStatement GetStatement(
-            string deploymentId,
-            string statementName)
-        {
-            if (deploymentId == null) {
-                throw new ArgumentException("Missing deployment-id parameter");
-            }
+			return new EPDeploymentRollout(deployments);
+		}
 
-            if (statementName == null) {
-                throw new ArgumentException("Missing statement-name parameter");
-            }
+		public EPDeployment Deploy(EPCompiled compiled)
+		{
+			return Deploy(compiled, new DeploymentOptions());
+		}
 
-            return services.DeploymentLifecycleService.GetStatementByName(deploymentId, statementName);
-        }
+		public EPDeployment Deploy(
+			EPCompiled compiled,
+			DeploymentOptions options)
+		{
+			if (options == null) {
+				options = new DeploymentOptions();
+			}
 
-        public string[] Deployments => services.DeploymentLifecycleService.DeploymentIds;
+			ValidateRuntimeAlive();
+			CheckManifest(-1, compiled.Manifest);
 
-        public IDictionary<string, DeploymentInternal> DeploymentMap => services.DeploymentLifecycleService.DeploymentMap;
+			DeploymentInternal deployerResult;
 
-        public EPDeployment GetDeployment(string deploymentId)
-        {
-            var deployed = services.DeploymentLifecycleService.GetDeploymentById(deploymentId);
-            if (deployed == null) {
-                return null;
-            }
+			using (GetDeploymentLock(options))
+			{
+				var statementIdRecovery = _services.EpServicesHA.StatementIdRecoveryService;
+				var currentStatementId = statementIdRecovery.CurrentStatementId;
+				if (currentStatementId == null) {
+					currentStatementId = 1;
+				}
 
-            var stmts = deployed.Statements;
-            var copy = new EPStatement[stmts.Length];
-            Array.Copy(stmts, 0, copy, 0, stmts.Length);
-            return new EPDeployment(
-                deploymentId,
-                deployed.ModuleProvider.ModuleName,
-                deployed.ModulePropertiesCached,
-                copy,
-                CollectionUtil.CopyArray(deployed.DeploymentIdDependencies),
-                new DateTime(deployed.LastUpdateDate));
-        }
+				var deploymentId = DeployerHelperResolver.DetermineDeploymentIdCheckExists(-1, options, _runtime.ServicesContext.DeploymentLifecycleService);
+				deployerResult = Deployer.DeployFresh(
+					deploymentId,
+					currentStatementId.Value,
+					compiled,
+					options.StatementNameRuntime,
+					options.StatementUserObjectRuntime,
+					options.StatementSubstitutionParameter,
+					options.DeploymentClassLoaderOption,
+					_runtime);
+				statementIdRecovery.CurrentStatementId = currentStatementId + deployerResult.Statements.Length;
 
-        public void UndeployAll()
-        {
-            UndeployAllInternal(null);
-        }
+				// dispatch event
+				DispatchOnDeploymentEvent(deployerResult, -1);
+			}
 
-        public void UndeployAll(UndeploymentOptions options)
-        {
-            UndeployAllInternal(options);
-        }
+			return MakeDeployment(deployerResult);
+		}
 
-        public void Undeploy(string deploymentId)
-        {
-            UndeployRemoveInternal(deploymentId, null);
-        }
+		public EPStatement GetStatement(
+			string deploymentId,
+			string statementName)
+		{
+			if (deploymentId == null) {
+				throw new ArgumentException("Missing deployment-id parameter");
+			}
 
-        public void Undeploy(
-            string deploymentId,
-            UndeploymentOptions options)
-        {
-            UndeployRemoveInternal(deploymentId, options);
-        }
+			if (statementName == null) {
+				throw new ArgumentException("Missing statement-name parameter");
+			}
 
-        public void Destroy()
-        {
-        }
+			return _services.DeploymentLifecycleService.GetStatementByName(deploymentId, statementName);
+		}
 
-        public void AddDeploymentStateListener(DeploymentStateListener listener)
-        {
-            services.DeploymentLifecycleService.Listeners.Add(listener);
-        }
+		public string[] Deployments {
+			get { return _services.DeploymentLifecycleService.DeploymentIds; }
+		}
 
-        public void RemoveDeploymentStateListener(DeploymentStateListener listener)
-        {
-            services.DeploymentLifecycleService.Listeners.Remove(listener);
-        }
+		public IDictionary<string, DeploymentInternal> DeploymentMap {
+			get { return _services.DeploymentLifecycleService.DeploymentMap; }
+		}
 
-        public IEnumerator<DeploymentStateListener> DeploymentStateListeners => services.DeploymentLifecycleService.Listeners.GetEnumerator();
+		public EPDeployment GetDeployment(string deploymentId)
+		{
+			return EPDeploymentServiceUtil.ToDeployment(_services.DeploymentLifecycleService, deploymentId);
+		}
 
-        public void RemoveAllDeploymentStateListeners()
-        {
-            services.DeploymentLifecycleService.Listeners.Clear();
-        }
+		public bool IsDeployed(string deploymentId)
+		{
+			return _services.DeploymentLifecycleService.GetDeploymentById(deploymentId) != null;
+		}
 
-        private void UndeployAllInternal(UndeploymentOptions options)
-        {
-            if (options == null) {
-                options = new UndeploymentOptions();
-            }
+		public void UndeployAll()
+		{
+			UndeployAllInternal(null);
+		}
 
-            var deploymentSvc = services.DeploymentLifecycleService;
-            var deployments = services.DeploymentLifecycleService.DeploymentIds;
-            if (deployments.Length == 0) {
-                return;
-            }
+		public void UndeployAll(UndeploymentOptions options)
+		{
+			UndeployAllInternal(options);
+		}
 
-            if (deployments.Length == 1) {
-                Undeploy(deployments[0]);
-                return;
-            }
+		private void UndeployAllInternal(UndeploymentOptions options)
+		{
+			if (options == null) {
+				options = new UndeploymentOptions();
+			}
 
-            if (deployments.Length == 2) {
-                var zero = deploymentSvc.GetDeploymentById(deployments[0]);
-                var zeroDependsOn = zero.DeploymentIdDependencies;
-                if (zeroDependsOn != null && zeroDependsOn.Length > 0) {
-                    Undeploy(deployments[0]);
-                    Undeploy(deployments[1]);
-                }
-                else {
-                    Undeploy(deployments[1]);
-                    Undeploy(deployments[0]);
-                }
+			var deploymentSvc = _services.DeploymentLifecycleService;
+			var deployments = _services.DeploymentLifecycleService.DeploymentIds;
+			if (deployments.Length == 0) {
+				return;
+			}
 
-                return;
-            }
+			if (deployments.Length == 1) {
+				Undeploy(deployments[0]);
+				return;
+			}
 
-            // build map of deployment-to-index
-            IDictionary<string, int> deploymentIndexes = new Dictionary<string, int>();
-            var count = 0;
-            foreach (var deployment in deployments) {
-                deploymentIndexes.Put(deployment, count++);
-            }
+			if (deployments.Length == 2) {
+				var zero = deploymentSvc.GetDeploymentById(deployments[0]);
+				var zeroDependsOn = zero.DeploymentIdDependencies;
+				if (zeroDependsOn != null && zeroDependsOn.Length > 0) {
+					Undeploy(deployments[0]);
+					Undeploy(deployments[1]);
+				}
+				else {
+					Undeploy(deployments[1]);
+					Undeploy(deployments[0]);
+				}
 
-            var graph = new DependencyGraph(deployments.Length, false);
-            foreach (var deploymentId in deployments) {
-                var deployment = deploymentSvc.GetDeploymentById(deploymentId);
-                var dependentOn = deployment.DeploymentIdDependencies;
-                if (dependentOn == null || dependentOn.Length == 0) {
-                    continue;
-                }
+				return;
+			}
 
-                foreach (var target in dependentOn) {
-                    var fromIndex = deploymentIndexes.Get(deploymentId);
-                    var targetIndex = deploymentIndexes.Get(target);
-                    graph.AddDependency(targetIndex, fromIndex);
-                }
-            }
+			// build map of deployment-to-index
+			var deploymentIndexes = new Dictionary<string, int>();
+			var count = 0;
+			foreach (var deployment in deployments) {
+				deploymentIndexes.Put(deployment, count++);
+			}
 
-            ISet<string> undeployed = new HashSet<string>();
-            foreach (var rootIndex in graph.RootNodes) {
-                RecursiveUndeploy(rootIndex, deployments, graph, undeployed, options);
-            }
-        }
+			var graph = new DependencyGraph(deployments.Length, false);
+			foreach (var deploymentId in deployments) {
+				var deployment = deploymentSvc.GetDeploymentById(deploymentId);
+				var dependentOn = deployment.DeploymentIdDependencies;
+				if (dependentOn == null || dependentOn.Length == 0) {
+					continue;
+				}
 
-        private void RecursiveUndeploy(
-            int index,
-            string[] deployments,
-            DependencyGraph graph,
-            ISet<string> undeployed,
-            UndeploymentOptions options)
-        {
-            var dependencies = graph.GetDependenciesForStream(index);
-            foreach (var dependency in dependencies) {
-                RecursiveUndeploy(dependency, deployments, graph, undeployed, options);
-            }
+				foreach (var target in dependentOn) {
+					int fromIndex = deploymentIndexes.Get(deploymentId);
+					int targetIndex = deploymentIndexes.Get(target);
+					graph.AddDependency(targetIndex, fromIndex);
+				}
+			}
 
-            var next = deployments[index];
-            if (!undeployed.Add(next)) {
-                return;
-            }
+			var undeployed = new HashSet<string>();
+			foreach (var rootIndex in graph.RootNodes) {
+				RecursiveUndeploy(rootIndex, deployments, graph, undeployed, options);
+			}
+		}
 
-            Undeploy(next, options);
-        }
+		private void RecursiveUndeploy(
+			int index,
+			string[] deployments,
+			DependencyGraph graph,
+			ISet<string> undeployed,
+			UndeploymentOptions options)
+		{
+			var dependencies = graph.GetDependenciesForStream(index);
+			foreach (int dependency in dependencies) {
+				RecursiveUndeploy(dependency, deployments, graph, undeployed, options);
+			}
 
-        private void UndeployRemoveInternal(
-            string deploymentId,
-            UndeploymentOptions options)
-        {
-            var deployment = services.DeploymentLifecycleService.GetDeploymentById(deploymentId);
-            if (deployment == null) {
-                throw new EPUndeployNotFoundException("Deployment id '" + deploymentId + "' cannot be found");
-            }
+			var next = deployments[index];
+			if (!undeployed.Add(next)) {
+				return;
+			}
 
-            var statements = deployment.Statements;
+			Undeploy(next, options);
+		}
 
-            if (options == null) {
-                options = new UndeploymentOptions();
-            }
+		public void Undeploy(string deploymentId)
+		{
+			UndeployRemoveInternal(deploymentId, null);
+		}
 
-            using (options.UndeploymentLockStrategy.Acquire(services.EventProcessingRWLock)) {
-                // build list of statements in reverse order
-                var reverted = new StatementContext[statements.Length];
-                var count = reverted.Length - 1;
-                foreach (var stmt in statements) {
-                    reverted[count--] = ((EPStatementSPI) stmt).StatementContext;
-                }
+		public void Undeploy(
+			string deploymentId,
+			UndeploymentOptions options)
+		{
+			UndeployRemoveInternal(deploymentId, options);
+		}
 
-                // check module preconditions
-                var moduleName = deployment.ModuleProvider.ModuleName;
-                Undeployer.CheckModulePreconditions(deploymentId, moduleName, deployment, services);
+		private void UndeployRemoveInternal(
+			string deploymentId,
+			UndeploymentOptions options)
+		{
+			var deployment = _services.DeploymentLifecycleService.GetDeploymentById(deploymentId);
+			if (deployment == null) {
+				var stageUri = _services.StageRecoveryService.DeploymentGetStage(deploymentId);
+				if (stageUri != null) {
+					throw new EPUndeployPreconditionException("Deployment id '" + deploymentId + "' is staged and cannot be undeployed");
+				}
 
-                // check preconditions
-                try {
-                    foreach (var statement in reverted) {
-                        statement.StatementAIFactoryProvider.Factory.StatementDestroyPreconditions(statement);
-                    }
-                }
-                catch (UndeployPreconditionException t) {
-                    throw new EPUndeployException("Precondition not satisfied for undeploy: " + t.Message, t);
-                }
+				throw new EPUndeployNotFoundException("Deployment id '" + deploymentId + "' cannot be found");
+			}
 
-                // disassociate statements
-                Undeployer.Disassociate(statements);
+			var statements = deployment.Statements;
 
-                // undeploy statements
-                Exception undeployException = null;
-                try {
-                    Undeployer.Undeploy(
-                        deploymentId,
-                        deployment.DeploymentTypes,
-                        reverted,
-                        deployment.ModuleProvider,
-                        services);
-                }
-                catch (Exception ex) {
-                    Log.Error("Exception encountered during undeploy: " + ex.Message, ex);
-                    undeployException = ex;
-                }
+			if (options == null) {
+				options = new UndeploymentOptions();
+			}
 
-                // remove deployment
-                services.EpServicesHA.DeploymentRecoveryService.Remove(deploymentId);
-                services.DeploymentLifecycleService.Undeploy(deploymentId);
 
-                DispatchOnUndeploymentEvent(deployment);
+			using (options.UndeploymentLockStrategy.Acquire(_services.EventProcessingRWLock)) {
+				// build list of statements in reverse order
+				var reverted = new StatementContext[statements.Length];
+				var count = reverted.Length - 1;
+				foreach (var stmt in statements) {
+					reverted[count--] = ((EPStatementSPI) stmt).StatementContext;
+				}
 
-                // rethrow exception if configured
-                if (undeployException != null &&
-                    services.ConfigSnapshot.Runtime.ExceptionHandling.UndeployRethrowPolicy ==
-                    UndeployRethrowPolicy.RETHROW_FIRST) {
-                    throw new EPUndeployException(
-                        "Undeploy completed with an exception: " + undeployException.Message,
-                        undeployException);
-                }
+				// check module preconditions
+				var moduleName = deployment.ModuleProvider.ModuleName;
+				Undeployer.CheckModulePreconditions(deploymentId, moduleName, deployment, _services);
 
-                ((EPEventServiceSPI) runtime.EventService).ClearCaches();
-            }
-        }
+				// check preconditions
+				try {
+					foreach (var statement in reverted) {
+						statement.StatementAIFactoryProvider.Factory.StatementDestroyPreconditions(statement);
+					}
+				}
+				catch (UndeployPreconditionException t) {
+					throw new EPUndeployException("Precondition not satisfied for undeploy: " + t.Message, t);
+				}
 
-        private void DispatchOnDeploymentEvent(DeploymentInternal deployed)
-        {
-            var listeners = services.DeploymentLifecycleService.Listeners;
-            if (listeners.IsEmpty()) {
-                return;
-            }
+				// disassociate statements
+				Undeployer.Disassociate(statements);
 
-            var stmts = deployed.Statements;
-            var @event = new DeploymentStateEventDeployed(
-                services.RuntimeURI,
-                deployed.DeploymentId, deployed.ModuleProvider.ModuleName, stmts);
-            foreach (var listener in listeners) {
-                try {
-                    listener.OnDeployment(@event);
-                }
-                catch (Exception ex) {
-                    HandleDeploymentEventListenerException("on-deployment", ex);
-                }
-            }
-        }
+				// undeploy statements
+				Exception undeployException = null;
+				try {
+					Undeployer.Undeploy(deploymentId, deployment.DeploymentTypes, reverted, deployment.ModuleProvider, _services);
+				}
+				catch (Exception ex) {
+					log.Error("Exception encountered during undeploy: " + ex.Message, ex);
+					undeployException = ex;
+				}
 
-        private void DispatchOnUndeploymentEvent(DeploymentInternal result)
-        {
-            var listeners = services.DeploymentLifecycleService.Listeners;
-            if (listeners.IsEmpty()) {
-                return;
-            }
+				// remove deployment
+				_services.EpServicesHA.DeploymentRecoveryService.Remove(deploymentId);
+				_services.DeploymentLifecycleService.RemoveDeployment(deploymentId);
 
-            var statements = result.Statements;
-            var @event = new DeploymentStateEventUndeployed(
-                services.RuntimeURI,
-                result.DeploymentId, result.ModuleProvider.ModuleName, statements);
-            foreach (var listener in listeners) {
-                try {
-                    listener.OnUndeployment(@event);
-                }
-                catch (Exception ex) {
-                    HandleDeploymentEventListenerException("on-undeployment", ex);
-                }
-            }
-        }
+				DispatchOnUndeploymentEvent(deployment, -1);
 
-        private void HandleDeploymentEventListenerException(
-            string typeOfOperation,
-            Exception ex)
-        {
-            Log.Error(
-                "Application-provided deployment state listener reported an exception upon receiving the " + typeOfOperation +
-                " event, logging and ignoring the exception, detail: " + ex.Message, ex);
-        }
-    }
+				// rethrow exception if configured
+				if (undeployException != null &&
+				    _services.ConfigSnapshot.Runtime.ExceptionHandling.UndeployRethrowPolicy == RETHROW_FIRST) {
+					throw new EPUndeployException("Undeploy completed with an exception: " + undeployException.Message, undeployException);
+				}
+
+				((EPEventServiceSPI) _runtime.EventService).ClearCaches();
+			}
+		}
+
+		public void Destroy()
+		{
+		}
+
+		public void AddDeploymentStateListener(DeploymentStateListener listener)
+		{
+			_services.DeploymentLifecycleService.Listeners.Add(listener);
+		}
+
+		public void RemoveDeploymentStateListener(DeploymentStateListener listener)
+		{
+			_services.DeploymentLifecycleService.Listeners.Remove(listener);
+		}
+
+		public IEnumerator<DeploymentStateListener> DeploymentStateListeners => 
+			_services.DeploymentLifecycleService.Listeners.GetEnumerator();
+
+		public void RemoveAllDeploymentStateListeners()
+		{
+			_services.DeploymentLifecycleService.Listeners.Clear();
+		}
+
+		public EPDeploymentDependencyProvided GetDeploymentDependenciesProvided(string selfDeploymentId)
+		{
+			if (selfDeploymentId == null) {
+				throw new ArgumentException("deployment-id is null");
+			}
+
+			using (_services.EventProcessingRWLock.AcquireReadLock()) {
+				return GetDependenciesProvided(selfDeploymentId, _services, _services.DeploymentLifecycleService);
+			}
+		}
+
+		public EPDeploymentDependencyConsumed GetDeploymentDependenciesConsumed(string selfDeploymentId)
+		{
+			if (selfDeploymentId == null) {
+				throw new ArgumentException("deployment-id is null");
+			}
+
+			using (_services.EventProcessingRWLock.AcquireReadLock()) {
+				return GetDependenciesConsumed(selfDeploymentId, _services, _services.DeploymentLifecycleService);
+			}
+		}
+
+		private void DispatchOnDeploymentEvent(
+			DeploymentInternal deployed,
+			int rolloutItemNumber)
+		{
+			var listeners = _services.DeploymentLifecycleService.Listeners;
+			if (listeners.IsEmpty()) {
+				return;
+			}
+
+			var stmts = deployed.Statements;
+			var @event = new DeploymentStateEventDeployed(
+				_services.RuntimeURI,
+				deployed.DeploymentId,
+				deployed.ModuleProvider.ModuleName,
+				stmts,
+				rolloutItemNumber);
+			foreach (DeploymentStateListener listener in listeners) {
+				try {
+					listener.OnDeployment(@event);
+				}
+				catch (Exception ex) {
+					HandleDeploymentEventListenerException("on-deployment", ex);
+				}
+			}
+		}
+
+		private void DispatchOnUndeploymentEvent(
+			DeploymentInternal result,
+			int rolloutItemNumber)
+		{
+			var listeners = _services.DeploymentLifecycleService.Listeners;
+			if (listeners.IsEmpty()) {
+				return;
+			}
+
+			var statements = result.Statements;
+			var @event = new DeploymentStateEventUndeployed(
+				_services.RuntimeURI,
+				result.DeploymentId,
+				result.ModuleProvider.ModuleName,
+				statements,
+				rolloutItemNumber);
+			foreach (DeploymentStateListener listener in listeners) {
+				try {
+					listener.OnUndeployment(@event);
+				}
+				catch (Exception ex) {
+					HandleDeploymentEventListenerException("on-undeployment", ex);
+				}
+			}
+		}
+
+		private void HandleDeploymentEventListenerException(
+			string typeOfOperation,
+			Exception ex)
+		{
+			log.Error(
+				"Application-provided deployment state listener reported an exception upon receiving the " +
+				typeOfOperation +
+				" event, logging and ignoring the exception, detail: " +
+				ex.Message,
+				ex);
+		}
+
+		private void ValidateRuntimeAlive()
+		{
+			if (_runtime.IsDestroyed) {
+				throw new EPRuntimeDestroyedException(_runtime.URI);
+			}
+		}
+
+		private void CheckManifest(
+			int rolloutItemNumber,
+			EPCompiledManifest manifest)
+		{
+			try {
+				RuntimeVersion.CheckVersion(manifest.CompilerVersion);
+			}
+			catch (RuntimeVersion.VersionException ex) {
+				throw new EPDeployDeploymentVersionException(ex.Message, ex, rolloutItemNumber);
+			}
+
+			if (manifest.ModuleProviderClassName == null) {
+				if (manifest.QueryProviderClassName != null) {
+					throw new EPDeployException(
+						"Cannot deploy EPL that was compiled as a fire-and-forget query, make sure to use the 'compile' method of the compiler",
+						rolloutItemNumber);
+				}
+
+				throw new EPDeployException("Failed to find module provider class name in manifest (is this a compiled module?)", rolloutItemNumber);
+			}
+
+			try {
+				_services.EventSerdeFactory.VerifyHADeployment(manifest.IsTargetHA);
+			}
+			catch (ExprValidationException ex) {
+				throw new EPDeployException(ex.Message, ex, rolloutItemNumber);
+			}
+		}
+
+		private EPDeployment MakeDeployment(DeploymentInternal deployerResult)
+		{
+			var copy = new EPStatement[deployerResult.Statements.Length];
+			Array.Copy(deployerResult.Statements, 0, copy, 0, deployerResult.Statements.Length);
+			return new EPDeployment(
+				deployerResult.DeploymentId,
+				deployerResult.ModuleProvider.ModuleName,
+				deployerResult.ModulePropertiesCached,
+				copy,
+				CollectionUtil.CopyArray(deployerResult.DeploymentIdDependencies),
+				DateTimeHelper.GetCurrentTime());
+		}
+	}
 } // end of namespace

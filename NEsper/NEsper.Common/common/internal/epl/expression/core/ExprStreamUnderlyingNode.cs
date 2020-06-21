@@ -14,7 +14,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     /// Represents an stream selector that returns the streams underlying event, or null if undefined.
     /// </summary>
     public interface ExprStreamUnderlyingNode : ExprNode,
-        ExprStreamRefNode
+        ExprStreamRefNode,
+        ExprEnumerationForgeProvider
     {
         int StreamId { get; }
 

@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.view.derived
     {
         private readonly int PRECISION_DIGITS = 6;
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestCORREL()
         {
             var stat = new BaseStatisticsBean();

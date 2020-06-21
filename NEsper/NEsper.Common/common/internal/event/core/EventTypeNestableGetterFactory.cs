@@ -19,10 +19,10 @@ namespace com.espertech.esper.common.@internal.@event.core
 {
     public interface EventTypeNestableGetterFactory
     {
-        EventPropertyGetterSPI GetPropertyProvidedGetter(
+        EventPropertyGetterSPI GetPropertyDynamicGetter(
             IDictionary<string, object> nestableTypes,
-            string propertyName,
-            Property prop,
+            string propertyExpression,
+            DynamicProperty prop,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory);
 
@@ -71,9 +71,10 @@ namespace com.espertech.esper.common.@internal.@event.core
             string propertyNameAtomic,
             int index,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            EventType innerType);
+            EventType innerType,
+            BeanEventTypeFactory beanEventTypeFactory);
 
-        EventPropertyGetterSPI GetGetterIndexedPONO(
+        EventPropertyGetterSPI GetGetterIndexedClassArray(
             string propertyNameAtomic,
             int index,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
@@ -131,5 +132,10 @@ namespace com.espertech.esper.common.@internal.@event.core
             EventPropertyGetter innerGetter,
             EventType innerType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory);
+
+        EventPropertyGetterSPI GetGetterRootedDynamicNested(
+            Property prop,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventTypeFactory beanEventTypeFactory);
     }
 } // end of namespace

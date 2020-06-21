@@ -7,16 +7,40 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text;
+
+using com.espertech.esper.common.@internal.util;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.core
 {
     public class CodeGenerationIDGenerator
     {
+        public static String GenerateClassNameUUID() {
+            return UuidGenerator.Generate().Replace("-", "_");
+        }
+
+        public static String GenerateClassNameWithUUID(
+            Type interfaceClass,
+            String postfix,
+            String uuid)
+        {
+            var interfaceName = interfaceClass.Name.Replace('`', '_');
+            var builder = new StringBuilder();
+            builder.Append(interfaceName);
+            builder.Append('_');
+            builder.Append(postfix.Replace("(", "_").Replace(")", "_"));
+            builder.Append('_');
+            builder.Append(uuid);
+            
+            return builder.ToString();
+        }
+
         public static string GenerateClassNameSimple(
             Type interfaceClass,
             string postfix)
         {
-            return interfaceClass.Name + "_" + postfix;
+            var interfaceName = interfaceClass.Name.Replace('`', '_');
+            return interfaceName + "_" + postfix;
         }
 
         public static string GenerateClassNameWithNamespace(

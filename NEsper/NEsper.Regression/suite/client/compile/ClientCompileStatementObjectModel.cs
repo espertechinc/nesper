@@ -6,12 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
@@ -24,18 +25,53 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new ClientCompileSODACreateFromOM());
-            execs.Add(new ClientCompileSODACreateFromOMComplete());
-            execs.Add(new ClientCompileSODAEPLtoOMtoStmt());
-            execs.Add(new ClientCompileSODAPrecedenceExpressions());
+            WithCreateFromOM(execs);
+            WithCreateFromOMComplete(execs);
+            WithEPLtoOMtoStmt(execs);
+            WithPrecedenceExpressions(execs);
+            WithPrecedencePatterns(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPrecedencePatterns(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientCompileSODAPrecedencePatterns());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPrecedenceExpressions(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSODAPrecedenceExpressions());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEPLtoOMtoStmt(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSODAEPLtoOMtoStmt());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateFromOMComplete(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSODACreateFromOMComplete());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateFromOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileSODACreateFromOM());
             return execs;
         }
 
         // This is a simple EPL only.
         // Each OM/SODA Api is tested in it's respective unit test (i.e. TestInsertInto), including toEPL()
         //
-        internal class ClientCompileSODACreateFromOM : RegressionExecution
+        private class ClientCompileSODACreateFromOM : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -43,54 +79,41 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 model.SelectClause = SelectClause.CreateWildcard();
                 model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).Name));
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
-                env.CopyMayFail(model);
-
-                env.CompileDeploy(model).AddListener("s0");
-
-                object theEvent = new SupportBean();
-                env.SendEventBean(theEvent);
-                Assert.AreEqual(theEvent, env.Listener("s0").AssertOneGetNewAndReset().Underlying);
-
-                env.UndeployAll();
+                SerializableObjectCopier.CopyMayFail(env.Container, model);
             }
         }
 
-        internal class ClientCompileSODACreateFromOMComplete : RegressionExecution
+        private class ClientCompileSODACreateFromOMComplete : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var model = new EPStatementObjectModel();
-                model.InsertInto = InsertIntoClause.Create("ReadyStreamAvg", "line", "avgAge");
-                model.SelectClause = SelectClause.Create()
-                    .Add("line")
-                    .Add(Expressions.Avg("age"), "avgAge");
-                var filter = Filter.Create(typeof(SupportBean).Name, Expressions.In("line", 1, 8, 10));
-                model.FromClause = FromClause.Create(
-                    FilterStream.Create(filter, "RS").AddView("time", Expressions.Constant(10)));
-                model.WhereClause = Expressions.IsNotNull("waverId");
-                model.GroupByClause = GroupByClause.Create("line");
-                model.HavingClause = Expressions.Lt(Expressions.Avg("age"), Expressions.Constant(0));
-                model.OutputLimitClause = OutputLimitClause.Create(Expressions.TimePeriod(null, null, null, 10, null));
-                model.OrderByClause = OrderByClause.Create("line");
+                EPStatementObjectModel model = new EPStatementObjectModel();
+                model.SetInsertInto(InsertIntoClause.Create("ReadyStreamAvg", "line", "avgAge"));
+                model.SetSelect(SelectClause.Create().Add("line").Add(Expressions.Avg("age"), "avgAge"));
+                Filter filter = Filter.Create(typeof(SupportBean).FullName, Expressions.In("line", 1, 8, 10));
+                model.SetFrom(FromClause.Create(FilterStream.Create(filter, "RS").AddView("time", Expressions.Constant(10))));
+                model.SetWhere(Expressions.IsNotNull("waverId"));
+                model.SetGroupBy(GroupByClause.Create("line"));
+                model.SetHaving(Expressions.Lt(Expressions.Avg("age"), Expressions.Constant(0)));
+                model.SetOutputLimit(OutputLimitClause.Create(Expressions.TimePeriod(null, null, null, 10, null)));
+                model.SetOrderBy(OrderByClause.Create("line"));
 
                 Assert.AreEqual(
                     "insert into ReadyStreamAvg(line, avgAge) select line, avg(age) as avgAge from " +
-                    typeof(SupportBean).Name +
-                    "(line in (1,8,10))#time(10) as RS where waverId is not null group by line having avg(age)<0 output " +
-                    "every 10.0d seconds " +
-                    "order by line",
+                    typeof(SupportBean).CleanName() +
+                    "(line in (1,8,10))#time(10) as RS where waverId is not null group by line having avg(age)<0 output every 10.0d seconds order by line",
                     model.ToEPL());
-                env.CopyMayFail(model);
+                SerializableObjectCopier.CopyMayFail(env.Container, model);
             }
         }
 
-        internal class ClientCompileSODAEPLtoOMtoStmt : RegressionExecution
+        private class ClientCompileSODAEPLtoOMtoStmt : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "select * from SupportBean";
                 var model = env.EplToModel(stmtText);
-                env.CopyMayFail(model);
+                SerializableObjectCopier.CopyMayFail(env.Container, model);
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
 
                 env.CompileDeploy(model).AddListener("s0");
@@ -104,7 +127,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             }
         }
 
-        internal class ClientCompileSODAPrecedenceExpressions : RegressionExecution
+        private class ClientCompileSODAPrecedenceExpressions : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -123,7 +146,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     new[] {"false or false and true or false", null, "Disjunction"},
                     new[] {"false or (false and true) or false", "false or false and true or false", "Disjunction"},
                     new[] {"\"a\"||\"b\"=\"ab\"", null, "RelationalOpExpression"},
-                    new[] {"(\"a\"||\"b\")=\"ab\"", "\"a\"||\"b\"=\"ab\"", "RelationalOpExpression"}
+                    new[] {"(\"a\"||\"b\")=\"ab\"", "\"a\"||\"b\"=\"ab\"", "RelationalOpExpression"},
                 };
 
                 foreach (var aTestdata in testdata) {
@@ -150,7 +173,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             }
         }
 
-        internal class ClientCompileSODAPrecedencePatterns : RegressionExecution
+        private class ClientCompileSODAPrecedencePatterns : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -169,7 +192,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     new[] {"A or B until C", null, "PatternOrExpr"},
                     new[] {"A or (B until C)", "A or B until C", "PatternOrExpr"},
                     new[] {"every (every A)", null, "PatternEveryExpr"},
-                    new[] {"(A until B) until C", null, "PatternMatchUntilExpr"}
+                    new[] {"(A until B) until C", null, "PatternMatchUntilExpr"},
                 };
 
                 foreach (var aTestdata in testdata) {
@@ -191,14 +214,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
                     // get where clause root expression of both models
                     var modelAfter = env.EplToModel(eplAfter);
-                    Assert.AreEqual(
-                        GetPatternRootExpr(modelAfter).GetType(),
-                        GetPatternRootExpr(modelBefore).GetType(),
-                        failText);
-                    Assert.AreEqual(
-                        expressionLowestPrecedenceClass,
-                        GetPatternRootExpr(modelAfter).GetType().Name,
-                        failText);
+                    Assert.AreEqual(GetPatternRootExpr(modelAfter).GetType(), GetPatternRootExpr(modelBefore).GetType(), failText);
+                    Assert.AreEqual(expressionLowestPrecedenceClass, GetPatternRootExpr(modelAfter).GetType().Name, failText);
                 }
 
                 env.UndeployAll();
@@ -206,8 +223,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
             private PatternExpr GetPatternRootExpr(EPStatementObjectModel model)
             {
-                var patternStrema = (PatternStream) model.FromClause.Streams[0];
-                return patternStrema.Expression;
+                var patternStream = (PatternStream) model.FromClause.Streams[0];
+                return patternStream.Expression;
             }
         }
     }

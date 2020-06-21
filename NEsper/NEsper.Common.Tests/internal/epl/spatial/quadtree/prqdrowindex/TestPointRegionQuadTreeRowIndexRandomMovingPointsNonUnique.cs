@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
     [TestFixture]
     public class TestPointRegionQuadTreeRowIndexRandomMovingPointsNonUnique : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestNonUnique()
         {
             var tools = new SupportQuadTreeToolNonUnique<PointRegionQuadTree<object>>(

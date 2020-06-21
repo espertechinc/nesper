@@ -22,4 +22,23 @@ namespace com.espertech.esper.common.client.context
         /// <returns>true to pass filter, false to reject</returns>
         bool Filter(ContextPartitionIdentifier contextPartitionIdentifier);
     }
+
+    public class ProxyContextPartitionSelectorFiltered : ContextPartitionSelectorFiltered
+    {
+        public Func<ContextPartitionIdentifier, bool> ProcFilter { get; set; }
+
+        public ProxyContextPartitionSelectorFiltered()
+        {
+        }
+
+        public ProxyContextPartitionSelectorFiltered(Func<ContextPartitionIdentifier, bool> procFilter)
+        {
+            ProcFilter = procFilter;
+        }
+
+        public bool Filter(ContextPartitionIdentifier contextPartitionIdentifier)
+        {
+            return ProcFilter.Invoke(contextPartitionIdentifier);
+        }
+    }
 }

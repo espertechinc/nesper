@@ -13,7 +13,7 @@ namespace com.espertech.esper.common.@internal.type
     [TestFixture]
     public class TestCronParameter : AbstractCommonTest
     {
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestFormat()
         {
             CronParameter cronParameter = new CronParameter(CronOperatorEnum.LASTDAY, 1);

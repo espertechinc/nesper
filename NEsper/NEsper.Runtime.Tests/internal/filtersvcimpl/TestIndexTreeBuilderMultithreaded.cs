@@ -10,13 +10,11 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
-using com.espertech.esper.common;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading.locks;
@@ -227,7 +225,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             foreach (var theEvent in unmatchedEvents)
             {
                 IList<FilterHandle> matches = new List<FilterHandle>();
-                topNode.MatchEvent(theEvent, matches);
+                topNode.MatchEvent(theEvent, matches, null);
                 Assert.IsTrue(matches.Count == 0);
             }
 
@@ -235,7 +233,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             foreach (var theEvent in matchedEvents)
             {
                 IList<FilterHandle> matches = new List<FilterHandle>();
-                topNode.MatchEvent(theEvent, matches);
+                topNode.MatchEvent(theEvent, matches, null);
                 Assert.IsTrue(matches.Count == 1);
             }
 
@@ -252,7 +250,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             foreach (var theEvent in matchedEvents)
             {
                 IList<FilterHandle> matches = new List<FilterHandle>();
-                topNode.MatchEvent(theEvent, matches);
+                topNode.MatchEvent(theEvent, matches, null);
                 Assert.IsTrue(matches.Count == 0);
             }
         }

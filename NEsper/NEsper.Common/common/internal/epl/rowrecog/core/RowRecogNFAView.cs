@@ -14,7 +14,6 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
-using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.rowrecog.nfa;
 using com.espertech.esper.common.@internal.epl.rowrecog.state;
 using com.espertech.esper.common.@internal.@event.arr;
@@ -30,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
     /// View for match recognize support.
     /// </summary>
     public class RowRecogNFAView : ViewSupport,
-        AgentInstanceStopCallback,
+        AgentInstanceMgmtCallback,
         RowRecogNFAViewService,
         RowRecogNFAViewScheduleCallback
     {
@@ -125,9 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
         public void Stop(AgentInstanceStopServices services)
         {
-            if (_scheduler != null) {
-                _scheduler.RemoveSchedule();
-            }
+            _scheduler?.RemoveSchedule();
 
             if (_factory.IsTrackMaxStates) {
                 var size = _regexPartitionStateRepo.StateCount;
@@ -153,9 +150,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 if (newData != null) {
                     foreach (var newEvent in newData) {
                         var partitionState = _regexPartitionStateRepo.GetState(newEvent, true);
-                        if (partitionState?.RandomAccess != null) {
-                            partitionState.RandomAccess.NewEventPrepare(newEvent);
-                        }
+                        partitionState?.RandomAccess?.NewEventPrepare(newEvent);
                     }
                 }
 
@@ -1218,6 +1213,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             var result = _factory.Desc.IntervalCompute.DeltaSubtract(currentTime, null, true, null);
             _agentInstanceContext.InstrumentationProvider.ARegIntervalValue(result);
             return result;
+        }
+
+        public void Transfer(AgentInstanceTransferServices services)
+        {
         }
 
         public RowRecogPreviousStrategy PreviousEvaluationStrategy => _rowRecogPreviousStrategy;

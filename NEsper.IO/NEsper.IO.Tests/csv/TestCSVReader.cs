@@ -146,7 +146,7 @@ namespace com.espertech.esperio.csv
 
             // isUsingTitleRow is false by default, so get the title row
             var nextRecord = reader.GetNextRecord();
-            var expected = new[] {"myString", "myInt", "timestamp", "myDouble"};
+            var expected = new[] {"MyString", "MyInt", "timestamp", "MyDouble"};
             Assert.AreEqual(expected, nextRecord);
 
             // Acknowledge the title row and reset the file afterwards
@@ -183,13 +183,13 @@ namespace com.espertech.esperio.csv
             reader.IsUsingTitleRow = false;
 
             nextRecord = reader.GetNextRecord();
-            expected = new[] {"myString", "myInt", "timestamp", "myDouble"};
+            expected = new[] {"MyString", "MyInt", "timestamp", "MyDouble"};
             Assert.AreEqual(expected, nextRecord);
 
             reader.Reset();
 
             nextRecord = reader.GetNextRecord();
-            expected = new[] {"myString", "myInt", "timestamp", "myDouble"};
+            expected = new[] {"MyString", "MyInt", "timestamp", "MyDouble"};
             Assert.AreEqual(expected, nextRecord);
         }
 

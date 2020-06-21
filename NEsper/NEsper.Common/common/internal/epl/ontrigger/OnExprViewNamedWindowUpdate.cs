@@ -75,9 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 // The on-delete listeners receive the events deleted, but only if there is interest
                 var statementResultService = agentInstanceContext.StatementResultService;
                 if (statementResultService.IsMakeNatural || statementResultService.IsMakeSynthetic) {
-                    if (Child != null) {
-                        Child.Update(newData.ToArray(), oldData.ToArray());
-                    }
+                    Child?.Update(newData.ToArray(), oldData.ToArray());
                 }
             }
 

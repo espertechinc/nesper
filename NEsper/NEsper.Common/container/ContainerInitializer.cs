@@ -17,7 +17,6 @@ using com.espertech.esper.common.@internal.db.drivers;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.directory;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.compat.threading.threadlocal;
 
@@ -123,7 +122,7 @@ namespace com.espertech.esper.container
         private static IReaderWriterLockManager DefaultRWLockManager()
         {
             return new DefaultReaderWriterLockManager(
-                lockTimeout => new StandardReaderWriterLock(lockTimeout));
+                lockTimeout => new SlimReaderWriterLock(lockTimeout));
         }
 
         private static IThreadLocalManager DefaultThreadLocalManager()

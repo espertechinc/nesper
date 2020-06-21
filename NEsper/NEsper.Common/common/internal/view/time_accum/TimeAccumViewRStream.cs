@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.view.time_accum
     /// </summary>
     public class TimeAccumViewRStream : ViewSupport,
         DataWindowView,
-        AgentInstanceStopCallback
+        AgentInstanceMgmtCallback
     {
         private readonly TimeAccumViewFactory _factory;
         private readonly AgentInstanceContext _agentInstanceContext;
@@ -39,6 +39,8 @@ namespace com.espertech.esper.common.@internal.view.time_accum
         private EventBean _lastEvent;
         private long _callbackScheduledTime;
         private EPStatementHandleCallbackSchedule _handle;
+
+        public ViewFactory ViewFactory => _factory;
 
         public TimeAccumViewRStream(
             TimeAccumViewFactory timeBatchViewFactory,
@@ -256,6 +258,8 @@ namespace com.espertech.esper.common.@internal.view.time_accum
             }
         }
 
-        public ViewFactory ViewFactory => _factory;
+        public void Transfer(AgentInstanceTransferServices services)
+        {
+        }
     }
 } // end of namespace

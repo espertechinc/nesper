@@ -10,11 +10,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -25,6 +25,7 @@ using com.espertech.esper.common.@internal.epl.expression.prev;
 using com.espertech.esper.common.@internal.epl.expression.time.eval;
 using com.espertech.esper.common.@internal.epl.expression.time.node;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
+using com.espertech.esper.common.@internal.epl.rowrecog.expr;
 using com.espertech.esper.common.@internal.epl.rowrecog.nfa;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.@event.core;
@@ -42,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static RowRecogDescForge ValidateAndPlan(
+        public static RowRecogPlan ValidateAndPlan(
             IContainer container,
             EventType parentEventType,
             bool unbound,
@@ -53,9 +54,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             var matchRecognizeSpec = @base.StatementSpec.Raw.MatchRecognizeSpec;
             var annotations = statementRawInfo.Annotations;
             var iterateOnly = HintEnum.ITERATE_ONLY.GetHint(annotations) != null;
+            var additionalForgeables = new List<StmtClassForgeableFactory>();
 
-            // Expand repeats and permutations
-            var expandedPatternNode = RowRecogPatternExpandUtil.Expand(container, matchRecognizeSpec.Pattern);
+            // Expanded pattern already there
+            RowRecogExprNode expandedPatternNode = matchRecognizeSpec.Pattern;
 
             // Determine single-row and multiple-row variables
             var variablesSingle = new LinkedHashSet<string>();
@@ -76,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             }
 
             // mapping of stream to variable
-            var streamVariables = new OrderedDictionary<int, string>();
+            var streamVariables = new OrderedListDictionary<int, string>();
             foreach (var entry in variableStreams) {
                 streamVariables.Put(entry.Value.First, entry.Key);
             }
@@ -106,7 +108,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             ISet<string> definedVariables = new HashSet<string>();
             IList<ExprAggregateNode> aggregateNodes = new List<ExprAggregateNode>();
             var isExprRequiresMultimatchState = new bool[variableStreams.Count];
-            var previousNodes = new OrderedDictionary<int, IList<ExprPreviousMatchRecognizeNode>>();
+            var previousNodes = new OrderedListDictionary<int, IList<ExprPreviousMatchRecognizeNode>>();
 
             for (var defineIndex = 0; defineIndex < matchRecognizeSpec.Defines.Count; defineIndex++) {
                 MatchRecognizeDefineItem defineItem = matchRecognizeSpec.Defines[defineIndex];
@@ -223,6 +225,11 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     variablesMultiple,
                     @base,
                     services);
+                foreach (AggregationServiceForgeDesc svc in aggregationServices) {
+                    if (svc != null) {
+                        additionalForgeables.AddAll(svc.AdditionalForgeables);
+                    }
+                }
             }
 
             // validate each MEASURE clause expression
@@ -295,6 +302,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
             // validate partition-by expressions, if any
             ExprNode[] partitionBy;
+            MultiKeyClassRef partitionMultiKey;
             if (!matchRecognizeSpec.PartitionByExpressions.IsEmpty()) {
                 StreamTypeService typeServicePartition = new StreamTypeServiceImpl(
                     parentEventType,
@@ -315,9 +323,13 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
                 matchRecognizeSpec.PartitionByExpressions = validated;
                 partitionBy = ExprNodeUtilityQuery.ToArray(validated);
+                MultiKeyPlan multiKeyPlan = MultiKeyPlanner.PlanMultiKey(partitionBy, false, @base.StatementRawInfo, services.SerdeResolver);
+                partitionMultiKey = multiKeyPlan.ClassRef;
+                additionalForgeables.AddAll(multiKeyPlan.MultiKeyForgeables);
             }
             else {
                 partitionBy = null;
+                partitionMultiKey = null;
             }
 
             // validate interval if present
@@ -420,7 +432,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 }
             }
 
-            return new RowRecogDescForge(
+            RowRecogDescForge forge = new RowRecogDescForge(
                 parentEventType,
                 rowEventType,
                 compositeEventType,
@@ -428,6 +440,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 multimatchStreamNumToVariable,
                 multimatchVariableToStreamNum,
                 partitionBy,
+                partitionMultiKey,
                 variableStreams,
                 matchRecognizeSpec.Interval != null,
                 iterateOnly,
@@ -446,6 +459,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 intervalCompute,
                 previousRandomAccessIndexes,
                 aggregationServices);
+            
+            return new RowRecogPlan(forge, additionalForgeables);
         }
 
         private static AggregationServiceForgeDesc[] PlanAggregations(
@@ -453,7 +468,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             StreamTypeService compositeTypeServiceMeasure,
             string[] allStreamNames,
             EventType[] allTypes,
-            OrderedDictionary<int, string> streamVariables,
+            IOrderedDictionary<int, string> streamVariables,
             ISet<string> variablesMultiple,
             StatementBaseInfo @base,
             StatementCompileTimeServices services)
@@ -546,14 +561,15 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             var declareds = Arrays.AsList(@base.StatementSpec.DeclaredExpressions);
             foreach (var entry in measureExprAggNodesPerStream) {
                 EventType[] typesPerStream = {allTypes[entry.Key]};
-                var desc = AggregationServiceFactoryFactory.GetService(
+                AggregationServiceForgeDesc desc = AggregationServiceFactoryFactory.GetService(
                     entry.Value,
-                    new EmptyDictionary<ExprNode, string>(),
+                    EmptyDictionary<ExprNode, string>.Instance, 
                     declareds,
                     new ExprNode[0],
-                    new EmptyList<ExprAggregateNode>(),
-                    new EmptyList<ExprAggregateNode>(),
-                    new EmptyList<ExprAggregateNodeGroupKey>(),
+                    null,
+                    EmptyList<ExprAggregateNode>.Instance,
+                    EmptyList<ExprAggregateNode>.Instance,
+                    EmptyList<ExprAggregateNodeGroupKey>.Instance,
                     false,
                     @base.StatementRawInfo.Annotations,
                     services.VariableCompileTimeResolver,
@@ -569,7 +585,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     true,
                     false,
                     services.ImportServiceCompileTime,
-                    @base.StatementName);
+                    @base.StatementRawInfo,
+                    services.SerdeResolver);
+
                 aggServices[entry.Key] = desc;
             }
 
@@ -653,7 +671,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
         private static ExprNode HandlePreviousFunctions(
             ExprNode defineItemExpression,
-            OrderedDictionary<int, IList<ExprPreviousMatchRecognizeNode>> previousNodes)
+            IOrderedDictionary<int, IList<ExprPreviousMatchRecognizeNode>> previousNodes)
         {
             var previousVisitor = new ExprNodePreviousVisitorWParent();
             defineItemExpression.Accept(previousVisitor);

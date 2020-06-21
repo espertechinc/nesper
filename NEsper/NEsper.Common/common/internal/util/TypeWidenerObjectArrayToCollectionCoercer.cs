@@ -6,6 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat.collections;
@@ -17,6 +20,10 @@ namespace com.espertech.esper.common.@internal.util
     /// </summary>
     public class TypeWidenerObjectArrayToCollectionCoercer : TypeWidenerSPI
     {
+        public Type WidenResultType {
+            get => typeof(ICollection<object>);
+        }
+        
         /// <summary>
         /// Widen input value.
         /// </summary>
@@ -26,7 +33,7 @@ namespace com.espertech.esper.common.@internal.util
         /// </returns>
         public object Widen(object input)
         {
-            return WidenInput(input);
+            return input?.Unwrap<object>();
         }
 
         /// <summary>
@@ -41,22 +48,12 @@ namespace com.espertech.esper.common.@internal.util
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return CodegenExpressionBuilder.StaticMethod(
+            return TypeWidenerFactory.CodegenWidenArrayAsListMayNull(
+                expression,
+                typeof(object[]),
+                codegenMethodScope,
                 typeof(TypeWidenerObjectArrayToCollectionCoercer),
-                "WidenInput",
-                expression);
-        }
-
-        /// <summary>
-        /// Widens the input value.
-        /// </summary>
-        /// <param name="input">the object to widen.</param>
-        /// <returns>
-        /// widened object.
-        /// </returns>
-        public static object WidenInput(object input)
-        {
-            return input.Unwrap<object>(true);
+                codegenClassScope);
         }
     }
 } // end of namespace

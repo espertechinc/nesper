@@ -15,7 +15,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
@@ -24,22 +23,47 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     public abstract class ExprPlugInSingleRowNodeForge : ExprForgeInstrumentable,
-        EventPropertyValueGetterForge
+        ExprEventEvaluatorForge
     {
-        private readonly ExprPlugInSingleRowNode parent;
+        private readonly ExprPlugInSingleRowNode _parent;
 
         protected ExprPlugInSingleRowNodeForge(
             ExprPlugInSingleRowNode parent,
             bool isReturnsConstantResult)
         {
-            this.parent = parent;
+            this._parent = parent;
             IsReturnsConstantResult = isReturnsConstantResult;
         }
 
-        public abstract MethodInfo Method { get; }
-
         public bool IsReturnsConstantResult { get; }
 
+        protected CodegenExpression[] MethodAsParams {
+            get {
+                var method = Method;
+                var parameterTypes = method.GetParameterTypes().Select(type => type.FullName).ToArray();
+                return new[] {
+                    Constant(method.DeclaringType.FullName),
+                    Constant(method.Name), Constant(method.ReturnType.GetSimpleName()), Constant(parameterTypes)
+                };
+            }
+        }
+
+        public ExprNodeRenderable ExprForgeRenderable => _parent;
+
+        public bool HasMethodInvocationContextParam()
+        {
+            foreach (var param in Method.GetParameterTypes()) {
+                if (param == typeof(EPLMethodInvocationContext)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        
+        public abstract MethodInfo Method { get;  }
+        public abstract bool IsLocalInlinedClass { get; }
+        
         public abstract ExprEvaluator ExprEvaluator { get; }
 
         public abstract CodegenExpression EvaluateCodegen(
@@ -57,33 +81,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
 
-        public abstract CodegenExpression EventBeanGetCodegen(
+        public abstract CodegenExpression EventBeanWithCtxGet(
             CodegenExpression beanExpression,
-            CodegenMethodScope codegenMethodScope,
-            CodegenClassScope codegenClassScope);
-
-        protected CodegenExpression[] MethodAsParams {
-            get {
-                var method = Method;
-                var parameterTypes = method.GetParameterTypes().Select(type => type.FullName).ToArray();
-                return new[] {
-                    Constant(method.DeclaringType.FullName),
-                    Constant(method.Name), Constant(method.ReturnType.GetSimpleName()), Constant(parameterTypes)
-                };
-            }
-        }
-
-        public ExprNodeRenderable ExprForgeRenderable => parent;
-
-        public bool HasMethodInvocationContextParam()
-        {
-            foreach (var param in Method.GetParameterTypes()) {
-                if (param == typeof(EPLMethodInvocationContext)) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
+            CodegenExpression ctxExpression,
+            CodegenMethodScope parent,
+            CodegenClassScope classScope);
     }
 } // end of namespace

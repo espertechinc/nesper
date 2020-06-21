@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -15,8 +13,6 @@ using com.espertech.esper.common.@internal.epl.index.hash;
 using com.espertech.esper.common.@internal.epl.join.exec.@base;
 using com.espertech.esper.common.@internal.epl.join.exec.inkeyword;
 using com.espertech.esper.common.@internal.epl.join.queryplan;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
 {

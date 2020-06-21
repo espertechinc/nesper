@@ -60,9 +60,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             }
 
             // If the map does not contain the key, this is allowed and represented as null
-            EventBean eventBean = eventBeanTypedEventFactory.AdapterForTypedMap(
+            EventBean eventBean = EventBeanTypedEventFactory.AdapterForTypedMap(
                 (IDictionary<string, object>) value,
-                fragmentType);
+                FragmentType);
             return mapGetter.GetFragment(eventBean);
         }
 

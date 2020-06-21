@@ -62,7 +62,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             ArrayDeque<FilterItem> evaluatorStack)
         {
             foreach (var entry in ConstantsMap) {
-                evaluatorStack.Add(new FilterItem(Lookupable.Expression, FilterOperator, entry.Value));
+                evaluatorStack.Add(new FilterItem(Lookupable.Expression, FilterOperator, entry.Value, this));
                 entry.Value.GetTraverseStatement(traverse, statementIds, evaluatorStack);
                 evaluatorStack.RemoveLast();
             }

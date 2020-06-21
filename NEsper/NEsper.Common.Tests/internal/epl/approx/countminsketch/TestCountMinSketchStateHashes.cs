@@ -9,7 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using com.espertech.esper.common.client;
+
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             return Encoding.UTF8.GetBytes(item);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestPerformanceMurmurHash()
         {
             var warmupLoopCount = 1; // 1000000;
@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             // Comment me in - System.out.println("Delta " + (delta / 1000000000.0));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestSimpleFlow()
         {
             var state = CountMinSketchStateHashes.MakeState(DefaultSpec);
@@ -116,7 +116,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             Assert.AreEqual(1, EstimateCount(state, "text"));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestSpace()
         {
             var eps = 0.001;

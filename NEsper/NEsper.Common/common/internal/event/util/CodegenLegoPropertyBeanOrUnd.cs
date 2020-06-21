@@ -16,8 +16,6 @@ using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-using Constant = System.Reflection.Metadata.Constant;
-
 namespace com.espertech.esper.common.@internal.@event.util
 {
     // if (!(valueMap instanceof TYPE)) {

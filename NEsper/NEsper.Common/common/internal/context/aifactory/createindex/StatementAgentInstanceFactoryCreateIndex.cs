@@ -126,7 +126,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
             AgentInstanceContext agentInstanceContext,
             bool isRecoveringResilient)
         {
-            AgentInstanceStopCallback stopCallback;
+            AgentInstanceMgmtCallback stopCallback;
 
             if (namedWindow != null) {
                 // handle named window index
@@ -135,7 +135,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
                 if (processorInstance.RootViewInstance.IsVirtualDataWindow) {
                     var virtualDWView = processorInstance.RootViewInstance.VirtualDataWindow;
                     virtualDWView.HandleStartIndex(indexName, explicitIndexDesc);
-                    stopCallback = new ProxyAgentInstanceStopCallback {
+                    stopCallback = new ProxyAgentInstanceMgmtCallback {
                         ProcStop = services => { virtualDWView.HandleStopIndex(indexName, explicitIndexDesc); }
                     };
                 }
@@ -151,12 +151,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
                         throw new EPException("Failed to create index: " + e.Message, e);
                     }
 
-                    stopCallback = new ProxyAgentInstanceStopCallback {
+                    stopCallback = new ProxyAgentInstanceMgmtCallback {
                         ProcStop = services => {
                             var instance = namedWindow.GetNamedWindowInstance(services.AgentInstanceContext);
-                            if (instance != null) {
-                                instance.RemoveExplicitIndex(indexName);
-                            }
+                            instance?.RemoveExplicitIndex(indexName);
                         }
                     };
                 }
@@ -171,12 +169,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
                     throw new EPException("Failed to create index: " + ex.Message, ex);
                 }
 
-                stopCallback = new ProxyAgentInstanceStopCallback {
+                stopCallback = new ProxyAgentInstanceMgmtCallback {
                     ProcStop = services => {
                         var instance = table.GetTableInstance(services.AgentInstanceContext.AgentInstanceId);
-                        if (instance != null) {
-                            instance.RemoveExplicitIndex(indexName);
-                        }
+                        instance?.RemoveExplicitIndex(indexName);
                     }
                 };
             }

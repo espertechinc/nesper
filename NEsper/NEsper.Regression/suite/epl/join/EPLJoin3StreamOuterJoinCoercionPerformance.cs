@@ -26,10 +26,38 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLJoinPerfCoercion3waySceneOne());
-            execs.Add(new EPLJoinPerfCoercion3waySceneTwo());
-            execs.Add(new EPLJoinPerfCoercion3waySceneThree());
+            WithSceneOne(execs);
+            WithSceneTwo(execs);
+            WithSceneThree(execs);
+            WithRange(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRange(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLJoinPerfCoercion3wayRange());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSceneThree(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinPerfCoercion3waySceneThree());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSceneTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinPerfCoercion3waySceneTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinPerfCoercion3waySceneOne());
             return execs;
         }
 

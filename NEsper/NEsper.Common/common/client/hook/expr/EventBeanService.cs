@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.client.hook.expr
             EventType eventType);
 
         /// <summary>
-        ///     Construct an event bean for a given Avro GenericData.Record using the event type name to look up the Avro event
+        ///     Construct an event bean for a given Avro GenericRecord using the event type name to look up the Avro event
         ///     type
         /// </summary>
         /// <param name="avroGenericDataDotRecord">event underlying</param>
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.client.hook.expr
             string eventTypeName);
 
         /// <summary>
-        ///     Construct an event bean for a given Avro GenericData.Record and given the Avro-event-type
+        ///     Construct an event bean for a given Avro GenericRecord and given the Avro-event-type
         /// </summary>
         /// <param name="avroGenericDataDotRecord">event underlying</param>
         /// <param name="eventType">event type (Avro only)</param>

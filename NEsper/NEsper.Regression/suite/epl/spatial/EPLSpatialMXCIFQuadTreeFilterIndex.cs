@@ -31,10 +31,38 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLSpatialMXCIFFilterIndexPatternSimple());
-            execs.Add(new EPLSpatialMXCIFFilterIndexPerfPattern());
-            execs.Add(new EPLSpatialMXCIFFilterIndexTypeAssertion());
+            WithPatternSimple(execs);
+            WithPerfPattern(execs);
+            WithTypeAssertion(execs);
+            WithWContext(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWContext(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLSpatialMXCIFFilterIndexWContext());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTypeAssertion(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialMXCIFFilterIndexTypeAssertion());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPerfPattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialMXCIFFilterIndexPerfPattern());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPatternSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialMXCIFFilterIndexPatternSimple());
             return execs;
         }
 
@@ -76,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 var eplNoIndex =
                     "@Name('s0') select * from SupportSpatialEventRectangle(rectangle(0, 0, 1, 1).intersects(rectangle(X, Y, Width, Height)))";
                 env.CompileDeploy(eplNoIndex);
-                SupportFilterHelper.AssertFilterMulti(
+                SupportFilterServiceHelper.AssertFilterSvcByTypeMulti(
                     env.Statement("s0"),
                     "SupportSpatialEventRectangle",
                     new[] {new[] {FilterItem.BoolExprFilterItem}});
@@ -85,7 +113,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 var eplIndexed = "@Name('s0') expression myindex {mxcifquadtree(0, 0, 100, 100)}" +
                                  "select * from SupportSpatialEventRectangle(rectangle(10, 20, 5, 6, filterindex:myindex).intersects(rectangle(X, Y, Width, Height)))";
                 env.CompileDeploy(eplIndexed).AddListener("s0");
-                SupportFilterHelper.AssertFilterMulti(
+                SupportFilterServiceHelper.AssertFilterSvcByTypeMulti(
                     env.Statement("s0"),
                     "SupportSpatialEventRectangle",
                     new[] {
@@ -131,12 +159,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 SendEventRectangle(env, "R2", 60, 10, 1, 1);
                 SendEventRectangle(env, "R3", 10, 60, 1, 1);
                 SendEventRectangle(env, "R4", 10, 10, 1, 1);
-                Assert.AreEqual(6, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(6, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 AssertRectanglesManyRow(env, env.Listener("out"), BOXES, "R0,R4", "R2", "R3", "R1", "R1");
 
                 env.Milestone(1);
 
-                Assert.AreEqual(6, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(6, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 AssertRectanglesManyRow(env, env.Listener("out"), BOXES, "R0,R4", "R2", "R3", "R1", "R1");
 
                 env.UndeployAll();

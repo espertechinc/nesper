@@ -17,7 +17,6 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -113,7 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     else {
                         ifRightNotNull.DeclareVar<object>("left", coercer.CoerceCodegen(left, symbols.LeftResultType))
                             .DeclareVar<object>("right", coercer.CoerceCodegen(Ref("valueRight"), valueRightType))
-                            .DeclareVar<bool>("eq", ExprDotMethod(Ref("left"), "Equals", Ref("right")));
+                            .DeclareVar<bool>("eq", StaticMethod<object>("Equals", Ref("left"), Ref("right")));
                     }
 
                     if (isNot) {

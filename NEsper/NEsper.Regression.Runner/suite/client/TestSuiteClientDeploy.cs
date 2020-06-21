@@ -11,7 +11,7 @@ using System;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.client.deploy;
-using com.espertech.esper.regressionrun.Runner;
+using com.espertech.esper.regressionrun.runner;
 
 using NUnit.Framework;
 
@@ -77,6 +77,26 @@ namespace com.espertech.esper.regressionrun.suite.client
         public void TestClientDeployRedefinition()
         {
             RegressionRunner.Run(_session, ClientDeployRedefinition.Executions());
+        }
+        
+        [Test, RunInApplicationDomain]
+        public void TestClientDeployVersion() {
+            RegressionRunner.Run(_session, ClientDeployVersion.Executions());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestClientDeployClassLoaderOption() {
+            RegressionRunner.Run(_session, ClientDeployClassLoaderOption.Executions());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestClientDeployRollout() {
+            RegressionRunner.Run(_session, ClientDeployRollout.Executions());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestClientDeployListDependencies() {
+            RegressionRunner.Run(_session, ClientDeployListDependencies.Executions());
         }
 
         private void Configure(Configuration configuration)

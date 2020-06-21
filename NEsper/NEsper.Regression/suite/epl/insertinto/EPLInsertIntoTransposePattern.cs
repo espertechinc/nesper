@@ -10,7 +10,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -26,9 +25,30 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLInsertIntoThisAsColumn());
-            execs.Add(new EPLInsertIntoTransposePONOEventPattern());
+            WithhisAsColumn(execs);
+            WithransposePONOEventPattern(execs);
+            WithransposeMapEventPattern(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithransposeMapEventPattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoTransposeMapEventPattern());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithransposePONOEventPattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoTransposePONOEventPattern());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithhisAsColumn(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLInsertIntoThisAsColumn());
             return execs;
         }
 
@@ -105,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventBean(new SupportBean_B("B1"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a.Id","b.Id" },
+                    new[] {"a.Id", "b.Id"},
                     new object[] {"A1", "B1"});
 
                 env.UndeployAll();
@@ -141,13 +161,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
                 EPAssertionUtil.AssertProps(
                     theEvent,
-                    new [] { "a.Id","b.Id" },
+                    new[] {"a.Id", "b.Id"},
                     new object[] {"A1", "B1"});
 
                 theEvent = env.Listener("i1").AssertOneGetNewAndReset();
                 EPAssertionUtil.AssertProps(
                     theEvent,
-                    new [] { "a","b" },
+                    new[] {"a", "b"},
                     new object[] {eventOne, eventTwo});
 
                 env.UndeployAll();

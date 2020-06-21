@@ -6,20 +6,29 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
+using com.espertech.esper.common.@internal.compile.stage3;
+
 namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 {
     public class SelectExprProcessorDescriptor
     {
         public SelectExprProcessorDescriptor(
             SelectSubscriberDescriptor subscriberDescriptor,
-            SelectExprProcessorForge forge)
+            SelectExprProcessorForge forge,
+            IList<StmtClassForgeableFactory> additionalForgeables)
         {
             SubscriberDescriptor = subscriberDescriptor;
             Forge = forge;
+            AdditionalForgeables = additionalForgeables;
         }
 
         public SelectSubscriberDescriptor SubscriberDescriptor { get; }
 
         public SelectExprProcessorForge Forge { get; }
+        
+        public IList<StmtClassForgeableFactory> AdditionalForgeables { get; }
+
     }
 } // end of namespace

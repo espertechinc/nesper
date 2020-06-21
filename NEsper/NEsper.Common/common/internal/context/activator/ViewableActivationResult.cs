@@ -9,6 +9,7 @@
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.view.core;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.context.activator
 {
@@ -16,12 +17,13 @@ namespace com.espertech.esper.common.@internal.context.activator
     {
         public ViewableActivationResult(
             Viewable viewable,
-            AgentInstanceStopCallback stopCallback,
+            AgentInstanceMgmtCallback stopCallback,
             EvalRootMatchRemover optEvalRootMatchRemover,
             bool suppressSameEventMatches,
             bool discardPartialsOnMatch,
             EvalRootState optionalPatternRoot,
-            ViewableActivationResultExtension viewableActivationResultExtension)
+            ViewableActivationResultExtension viewableActivationResultExtension,
+            Runnable optPostContextMergeRunnable)
         {
             Viewable = viewable;
             StopCallback = stopCallback;
@@ -30,11 +32,13 @@ namespace com.espertech.esper.common.@internal.context.activator
             IsDiscardPartialsOnMatch = discardPartialsOnMatch;
             OptionalPatternRoot = optionalPatternRoot;
             ViewableActivationResultExtension = viewableActivationResultExtension;
+            OptPostContextMergeRunnable = optPostContextMergeRunnable;
+
         }
 
         public Viewable Viewable { get; }
 
-        public AgentInstanceStopCallback StopCallback { get; }
+        public AgentInstanceMgmtCallback StopCallback { get; }
 
         public ViewableActivationResultExtension ViewableActivationResultExtension { get; }
 
@@ -45,5 +49,7 @@ namespace com.espertech.esper.common.@internal.context.activator
         public bool IsDiscardPartialsOnMatch { get; }
 
         public EvalRootState OptionalPatternRoot { get; }
+        
+        public Runnable OptPostContextMergeRunnable { get; }
     }
 } // end of namespace

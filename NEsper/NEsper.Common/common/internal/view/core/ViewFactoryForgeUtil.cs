@@ -13,9 +13,11 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.schedule;
+using com.espertech.esper.common.@internal.serde.compiletime.eventtype;
 using com.espertech.esper.common.@internal.view.groupwin;
 using com.espertech.esper.common.@internal.view.intersect;
 using com.espertech.esper.common.@internal.view.union;
@@ -49,15 +51,16 @@ namespace com.espertech.esper.common.@internal.view.core
             }
         }
 
-        public static IList<ViewFactoryForge> CreateForges(
+        public static ViewFactoryForgeDesc CreateForges(
             ViewSpec[] viewSpecDefinitions,
             ViewFactoryForgeArgs args,
             EventType parentEventType)
         {
             try {
                 // Clone the view spec list to prevent parameter modification
-                IList<ViewSpec> viewSpecList = new List<ViewSpec>(viewSpecDefinitions);
+                var viewSpecList = new List<ViewSpec>(viewSpecDefinitions);
                 var viewForgeEnv = new ViewForgeEnv(args);
+                var additionalForgeables = new List<StmtClassForgeableFactory>();
 
                 // Inspect views and add merge views if required
                 // As users can specify merge views, if they are not provided they get added
@@ -66,6 +69,19 @@ namespace com.espertech.esper.common.@internal.view.core
                 // Instantiate factories, not making them aware of each other yet, we now have a chain
                 var forgesChain = InstantiateFactories(viewSpecList, args, viewForgeEnv);
 
+                
+                // Determine event type serdes that may be required
+                foreach (ViewFactoryForge forge in forgesChain) {
+                    if (forge is DataWindowViewForge) {
+                        IList<StmtClassForgeableFactory> serdeForgeables = SerdeEventTypeUtility.Plan(
+                            parentEventType,
+                            viewForgeEnv.StatementRawInfo,
+                            viewForgeEnv.SerdeEventTypeRegistry,
+                            viewForgeEnv.SerdeResolver);
+                        additionalForgeables.AddAll(serdeForgeables);
+                    }
+                }
+                
                 // Build data window views that occur next to each other ("d d", "d d d") into a single intersection or union
                 // Calls attach on the contained-views.
                 var forgesChainWIntersections = BuildIntersectionsUnions(
@@ -94,10 +110,34 @@ namespace com.espertech.esper.common.@internal.view.core
                     }
                 }
 
-                return forgesGrouped;
+                // get multikey forges
+                var multikeyForges = GetMultikeyForges(forgesGrouped, viewForgeEnv);
+                additionalForgeables.AddAll(multikeyForges);
+
+                return new ViewFactoryForgeDesc(forgesGrouped, additionalForgeables);
             }
             catch (ViewProcessingException ex) {
                 throw new ExprValidationException("Failed to validate data window declaration: " + ex.Message, ex);
+            }
+        }
+
+        private static IList<StmtClassForgeableFactory> GetMultikeyForges(
+            IList<ViewFactoryForge> forges,
+            ViewForgeEnv viewForgeEnv)
+        {
+            var factories = new List<StmtClassForgeableFactory>();
+            GetMultikeyForgesRecursive(forges, factories, viewForgeEnv);
+            return factories;
+        }
+
+        private static void GetMultikeyForgesRecursive(
+            IList<ViewFactoryForge> forges,
+            IList<StmtClassForgeableFactory> multikeyForges,
+            ViewForgeEnv viewForgeEnv)
+        {
+            foreach (ViewFactoryForge forge in forges) {
+                multikeyForges.AddAll(forge.InitAdditionalForgeables(viewForgeEnv));
+                GetMultikeyForgesRecursive(forge.InnerForges, multikeyForges, viewForgeEnv);
             }
         }
 
@@ -338,11 +378,8 @@ namespace com.espertech.esper.common.@internal.view.core
 
             foreach (var spec in specifications) {
                 var viewEnum = ViewEnumExtensions.ForName(spec.ObjectNamespace, spec.ObjectName);
-                if (viewEnum == null) {
-                    continue;
-                }
 
-                if (viewEnum.Value.GetMergeView() == null) {
+                if (viewEnum?.GetMergeView() == null) {
                     continue;
                 }
 

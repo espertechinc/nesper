@@ -11,13 +11,14 @@ using System.Collections.Generic;
 using Avro.Generic;
 
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
+
+using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
 
@@ -34,6 +35,13 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+            Withe(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> Withe(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientRuntimeListenerRoute());
             return execs;
         }
@@ -58,13 +66,16 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     "@Name('avro') select * from " +
                     AVRO_TYPENAME +
                     ";\n" +
+                    "@public @buseventtype create json schema JsonEvent(Ident string);\n" +
+                    "@Name('json') select * from JsonEvent;\n" +
                     "@Name('trigger') select * from SupportBean;";
                 env.CompileDeploy(epl)
                     .AddListener("map")
                     .AddListener("oa")
                     .AddListener("xml")
                     .AddListener("avro")
-                    .AddListener("bean");
+                    .AddListener("bean")
+                    .AddListener("json");
 
                 env.Statement("trigger").Events += (
                     sender,
@@ -80,16 +91,18 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     var xml = "<Myevent Ident=\"XXXXXX\"></Myevent>\n".Replace("XXXXXX", ident);
                     processEvent.RouteEventXMLDOM(SupportXML.GetDocument(xml).DocumentElement, XML_TYPENAME);
 
-                    var avroSchema = AvroSchemaUtil
-                        .ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME));
+                    var avroSchema = AvroSchemaUtil.ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME));
                     var datum = new GenericRecord(avroSchema.AsRecordSchema());
                     datum.Put("Ident", ident);
                     processEvent.RouteEventAvro(datum, AVRO_TYPENAME);
+
+                    var jsonObject = new JObject(new JProperty("Ident", ident));
+                    processEvent.RouteEventJson(jsonObject.ToString(), "JsonEvent");
                 };
 
                 env.SendEventBean(new SupportBean("xy", -1));
 
-                foreach (var name in new[] { "map", "bean", "oa", "xml", "avro" }) {
+                foreach (var name in new[] {"map", "bean", "oa", "xml", "avro", "json"}) {
                     var listener = env.Listener(name);
                     Assert.IsTrue(listener.IsInvoked, "failed for " + name);
                     Assert.AreEqual("xy", env.Listener(name).AssertOneGetNewAndReset().Get("Ident"));

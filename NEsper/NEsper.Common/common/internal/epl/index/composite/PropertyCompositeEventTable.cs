@@ -11,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.join.exec.composite;
@@ -97,21 +98,15 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             return this.GetType().Name;
         }
 
-        public int? NumberOfEvents {
-            get => null;
-        }
+        public int? NumberOfEvents => null;
 
-        public EventTableOrganization Organization {
-            get => factory.Organization;
-        }
+        public EventTableOrganization Organization => factory.Organization;
 
-        public Type[] OptKeyCoercedTypes {
-            get => factory.OptKeyCoercedTypes;
-        }
+        public Type[] OptKeyCoercedTypes => factory.OptKeyCoercedTypes;
 
-        public Type[] OptRangeCoercedTypes {
-            get => factory.OptRangeCoercedTypes;
-        }
+        public Type[] OptRangeCoercedTypes => factory.OptRangeCoercedTypes;
+
+        public MultiKeyFromObjectArray MultiKeyTransform => factory.TransformFireAndForget;
 
         IEnumerator IEnumerable.GetEnumerator()
         {

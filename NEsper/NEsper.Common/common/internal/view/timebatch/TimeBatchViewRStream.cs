@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.view.timebatch
     ///     events.
     /// </summary>
     public class TimeBatchViewRStream : ViewSupport,
-        AgentInstanceStopCallback,
+        AgentInstanceMgmtCallback,
         DataWindowView
     {
         private readonly AgentInstanceContext agentInstanceContext;
@@ -224,5 +224,10 @@ namespace com.espertech.esper.common.@internal.view.timebatch
                 factory.ViewName);
             agentInstanceContext.StatementContext.SchedulingService.Add(afterTime, handle, scheduleSlot);
         }
+        
+        public void Transfer(AgentInstanceTransferServices services)
+        {
+        }
+
     }
 } // end of namespace

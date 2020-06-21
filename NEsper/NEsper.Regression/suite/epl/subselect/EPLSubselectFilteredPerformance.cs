@@ -23,10 +23,38 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLSubselectPerformanceOneCriteria());
-            execs.Add(new EPLSubselectPerformanceTwoCriteria());
-            execs.Add(new EPLSubselectPerformanceJoin3CriteriaSceneOne());
+            WithOneCriteria(execs);
+            WithTwoCriteria(execs);
+            WithJoin3CriteriaSceneOne(execs);
+            WithJoin3CriteriaSceneTwo(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithJoin3CriteriaSceneTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLSubselectPerformanceJoin3CriteriaSceneTwo());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithJoin3CriteriaSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectPerformanceJoin3CriteriaSceneOne());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTwoCriteria(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectPerformanceTwoCriteria());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOneCriteria(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectPerformanceOneCriteria());
             return execs;
         }
 

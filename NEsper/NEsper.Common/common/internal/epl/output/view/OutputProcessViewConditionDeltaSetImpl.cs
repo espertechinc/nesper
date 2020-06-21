@@ -20,12 +20,12 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         public OutputProcessViewConditionDeltaSetImpl(bool isJoin)
         {
             if (isJoin) {
-                JoinEventsSet = new List<UniformPair<ISet<MultiKey<EventBean>>>>();
+                JoinEventsSet = new List<UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>>();
                 ViewEventsSet = new EmptyList<UniformPair<EventBean[]>>();
             }
             else {
                 ViewEventsSet = new List<UniformPair<EventBean[]>>();
-                JoinEventsSet = new EmptyList<UniformPair<ISet<MultiKey<EventBean>>>>();
+                JoinEventsSet = new EmptyList<UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>>();
             }
         }
 
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             ViewEventsSet.Add(uniformPair);
         }
 
-        public void AddJoin(UniformPair<ISet<MultiKey<EventBean>>> setUniformPair)
+        public void AddJoin(UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>> setUniformPair)
         {
             JoinEventsSet.Add(setUniformPair);
         }
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             Clear();
         }
 
-        public IList<UniformPair<ISet<MultiKey<EventBean>>>> JoinEventsSet { get; }
+        public IList<UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>> JoinEventsSet { get; }
 
         public IList<UniformPair<EventBean[]>> ViewEventsSet { get; }
     }

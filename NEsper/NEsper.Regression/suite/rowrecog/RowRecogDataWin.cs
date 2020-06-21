@@ -10,7 +10,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.rowrecog;
@@ -235,11 +234,15 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.SendEventBean(new SupportRecogBean("B4", "003", 10));
                 env.SendEventBean(new SupportRecogBean("C5", "002", 0));
                 env.SendEventBean(new SupportRecogBean("C6", "003", 10));
+                var after4 = EPAssertionUtil.EnumeratorToArray(env.Statement("s0").GetEnumerator());
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
                     fields,
-                    new[] {new object[] {null, "B4", "C6"}, new object[] {"A2", null, "C5"}});
+                    new[] {
+                        new object[] {null, "B4", "C6"},
+                        new object[] {"A2", null, "C5"}
+                    });
 
                 env.Milestone(6);
 
@@ -247,7 +250,10 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
                     fields,
-                    new[] {new object[] {null, "B4", "C6"}, new object[] {"A2", null, "C5"}});
+                    new[] {
+                        new object[] {null, "B4", "C6"},
+                        new object[] {"A2", null, "C5"}
+                    });
                 Assert.IsFalse(env.Statement("s0").GetEnumerator().MoveNext());
 
                 env.UndeployAll();

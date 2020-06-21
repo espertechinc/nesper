@@ -21,21 +21,28 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+            Withe(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> Withe(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientCompileStatementNameResolve());
             return execs;
         }
 
-        internal class ClientCompileStatementNameResolve : RegressionExecution
+        private class ClientCompileStatementNameResolve : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 MyStatementNameResolver.Contexts.Clear();
                 var args = new CompilerArguments(env.Configuration);
-                args.Options.StatementName = new MyStatementNameResolver().GetValue;
+                args.Options.StatementName = (new MyStatementNameResolver()).GetValue;
                 var epl = "select * from SupportBean";
                 var compiled = env.Compile(epl, args);
 
-                var ctx = MyStatementNameResolver.Contexts[0];
+                StatementNameContext ctx = MyStatementNameResolver.Contexts[0];
                 Assert.AreEqual(epl, ctx.EplSupplier.Invoke());
                 Assert.AreEqual(null, ctx.StatementName);
                 Assert.AreEqual(null, ctx.ModuleName);
@@ -48,13 +55,15 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             }
         }
 
-        internal class MyStatementNameResolver
+        private class MyStatementNameResolver
         {
-            public static IList<StatementNameContext> Contexts { get; } = new List<StatementNameContext>();
+            private static readonly IList<StatementNameContext> contexts = new List<StatementNameContext>();
+
+            public static IList<StatementNameContext> Contexts => contexts;
 
             public string GetValue(StatementNameContext env)
             {
-                Contexts.Add(env);
+                contexts.Add(env);
                 return "hello";
             }
         }

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.bean.core;
@@ -38,7 +39,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
 
         public NameAccessModifier Visibility => NameAccessModifier.TRANSIENT;
 
-        public BeanEventType GetCreateBeanType(Type clazz)
+        public BeanEventType GetCreateBeanType(Type clazz, bool publicFields)
         {
             var existing = types.Get(clazz);
             if (existing != null) {
@@ -46,11 +47,16 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
             }
 
             // check-allocate bean-stem
-            var stem = stemFactory.GetCreateStem(clazz, null);
+            ConfigurationCommonEventTypeBean config = null;
+            if (publicFields) {
+                config = new ConfigurationCommonEventTypeBean();
+                config.AccessorStyle = AccessorStyle.PUBLIC;
+            }
 
+            var stem = stemFactory.GetCreateStem(clazz, config);
             // metadata
             var metadata = new EventTypeMetadata(
-                clazz.Name,
+                clazz.FullName,
                 null,
                 EventTypeTypeClass.BEAN_INCIDENTAL,
                 EventTypeApplicationType.CLASS,
@@ -95,7 +101,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
 
             var types = new EventType[superTypes.Length];
             for (var i = 0; i < types.Length; i++) {
-                types[i] = GetCreateBeanType(superTypes[i]);
+                types[i] = GetCreateBeanType(superTypes[i], false);
             }
 
             return types;
@@ -109,7 +115,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
 
             var supers = new LinkedHashSet<EventType>();
             foreach (var clazz in superTypes) {
-                supers.Add(GetCreateBeanType(clazz));
+                supers.Add(GetCreateBeanType(clazz, false));
             }
 
             return supers;

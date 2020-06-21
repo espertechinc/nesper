@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
 {
     public class OutputConditionNullFactoryForge : OutputConditionFactoryForge
     {
-        public readonly static OutputConditionNullFactoryForge INSTANCE = new OutputConditionNullFactoryForge();
+        public static readonly OutputConditionNullFactoryForge INSTANCE = new OutputConditionNullFactoryForge();
 
         private OutputConditionNullFactoryForge()
         {

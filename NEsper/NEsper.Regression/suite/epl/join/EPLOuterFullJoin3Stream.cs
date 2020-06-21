@@ -10,7 +10,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
@@ -23,8 +22,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLJoinFullJoin2SidesMulticolumn());
+            WithsMulticolumn(execs);
+            Withs(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> Withs(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLJoinFullJoin2Sides());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithsMulticolumn(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinFullJoin2SidesMulticolumn());
             return execs;
         }
 
@@ -467,7 +480,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                TryAssertionFullJoin_2sides_multicolumn(env, EventRepresentationChoice.ARRAY);
+                TryAssertionFullJoin_2sides_multicolumn(env, EventRepresentationChoice.OBJECTARRAY);
                 TryAssertionFullJoin_2sides_multicolumn(env, EventRepresentationChoice.MAP);
                 TryAssertionFullJoin_2sides_multicolumn(env, EventRepresentationChoice.DEFAULT);
             }
@@ -476,9 +489,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 RegressionEnvironment env,
                 EventRepresentationChoice eventRepresentationEnum)
             {
-                var fields = new [] { "S0.Id"," S0.P00"," S0.P01"," S1.Id"," S1.P10"," S1.P11"," S2.Id"," S2.P20"," S2.P21" };
+                var fields = new[] {"S0.Id", " S0.P00", " S0.P01", " S1.Id", " S1.P10", " S1.P11", " S2.Id", " S2.P20", " S2.P21"};
 
-                var epl = eventRepresentationEnum.GetAnnotationText() +
+                var epl = eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvided>() +
                           " @Name('s0') select * from " +
                           "SupportBean_S0#length(1000) as S0 " +
                           " full outer join SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10 and S0.P01 = S1.P11" +
@@ -609,6 +622,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 env.UndeployAll();
             }
+        }
+
+        internal class MyLocalJsonProvided
+        {
+            public SupportBean_S0 s0;
+            public SupportBean_S1 s1;
+            public SupportBean_S2 s2;
         }
     }
 } // end of namespace

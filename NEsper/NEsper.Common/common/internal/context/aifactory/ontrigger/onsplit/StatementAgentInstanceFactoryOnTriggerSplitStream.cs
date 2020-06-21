@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
 
         public override InfraOnExprBaseViewResult DetermineOnExprView(
             AgentInstanceContext agentInstanceContext,
-            IList<AgentInstanceStopCallback> stopCallbacks,
+            IList<AgentInstanceMgmtCallback> stopCallbacks,
             bool isRecoveringReslient)
         {
             var processors = new ResultSetProcessor[items.Length];

@@ -26,7 +26,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                            "from SupportBean_S0 as S0";
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            var fields = new [] { "P00","sumP00" };
+            var fields = new[] {"P00", "sumP00"};
 
             // preload
             var max = 50000;

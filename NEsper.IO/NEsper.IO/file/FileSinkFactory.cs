@@ -17,8 +17,6 @@ namespace com.espertech.esperio.file
     {
         public ExprEvaluator File { get; set; }
 
-        public ExprEvaluator ClasspathFile { get; set; }
-
         public ExprEvaluator Append { get; set; }
 
         public EventType EventType { get; set; }

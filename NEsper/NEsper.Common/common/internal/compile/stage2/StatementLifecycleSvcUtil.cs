@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return tableCompileTimeResolver.Resolve(statementSpecRaw.InsertIntoDesc.EventTypeName) != null;
         }
 
-        private static bool IsSubqueryWithTable(
+        public static bool IsSubqueryWithTable(
             IList<ExprSubselectNode> subselectNodes,
             TableCompileTimeResolver tableCompileTimeResolver)
         {
@@ -190,11 +190,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             OnTriggerMergeAction action,
             TableCompileTimeResolver tableCompileTimeResolver)
         {
-            if (action is OnTriggerMergeActionInsert) {
-                var insert = (OnTriggerMergeActionInsert) action;
-                if (insert.OptionalStreamName != null && IsTable(insert.OptionalStreamName, tableCompileTimeResolver)) {
-                    return true;
-                }
+            var insert = action as OnTriggerMergeActionInsert;
+            if (insert?.OptionalStreamName != null && IsTable(insert.OptionalStreamName, tableCompileTimeResolver)) {
+                return true;
             }
 
             return false;

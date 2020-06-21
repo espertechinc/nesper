@@ -17,8 +17,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -141,9 +139,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
 
         public void ToEPL(
             TextWriter writer,
-            ExprPrecedenceEnum parentPrecedence)
+            ExprPrecedenceEnum parentPrecedence,
+            ExprNodeRenderableFlags flags)
         {
-            typable.ExprForgeRenderable.ToEPL(writer, parentPrecedence);
+            typable.ExprForgeRenderable.ToEPL(writer, parentPrecedence, flags);
         }
 
         public ExprNodeRenderable ExprForgeRenderable {

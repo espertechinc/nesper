@@ -27,6 +27,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.not
     {
         public override PatternExpressionPrecedenceEnum Precedence => PatternExpressionPrecedenceEnum.UNARY;
 
+        public EvalNotForgeNode(bool attachPatternText) : base(attachPatternText)
+        {
+        }
+
         public override string ToString()
         {
             return "EvalNotNode children=" + ChildNodes.Count;

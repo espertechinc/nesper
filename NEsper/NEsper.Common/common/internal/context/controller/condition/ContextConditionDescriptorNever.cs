@@ -6,18 +6,15 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.filterspec;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.controller.condition
 {
     public class ContextConditionDescriptorNever : ContextConditionDescriptor
     {
-        public readonly static ContextConditionDescriptorNever INSTANCE = new ContextConditionDescriptorNever();
+        public static readonly ContextConditionDescriptorNever INSTANCE = new ContextConditionDescriptorNever();
 
         private ContextConditionDescriptorNever()
         {

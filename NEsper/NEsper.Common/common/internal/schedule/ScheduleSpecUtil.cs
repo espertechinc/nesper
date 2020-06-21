@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -30,7 +29,7 @@ namespace com.espertech.esper.common.@internal.schedule
         /// <returns>crontab schedule</returns>
         public static ScheduleSpec ComputeValues(object[] args)
         {
-            if (args.Length <= 4 || args.Length >= 8) {
+            if (args.Length <= 4 || args.Length >= 10) {
                 throw new ScheduleParameterException(GetExpressionCountException(args.Length));
             }
 
@@ -48,7 +47,7 @@ namespace com.espertech.esper.common.@internal.schedule
                     "Invalid combination between days of week and days of month fields for timer:at");
             }
 
-            if (resultMonths != null && resultMonths.Count == 1 && (resultMonths.First().IsInt())) {
+            if (resultMonths != null && resultMonths.Count == 1 && (resultMonths.First().IsInt32())) {
                 // If other arguments are cronParameters, use it for later computations
                 CronParameter parameter = null;
                 if (daysOfMonth is CronParameter) {
@@ -65,7 +64,7 @@ namespace com.espertech.esper.common.@internal.schedule
 
             var resultDaysOfWeek = ComputeValues(daysOfWeek, ScheduleUnit.DAYS_OF_WEEK);
             var resultDaysOfMonth = ComputeValues(daysOfMonth, ScheduleUnit.DAYS_OF_MONTH);
-            if (resultDaysOfWeek != null && resultDaysOfWeek.Count == 1 && (resultDaysOfWeek.First().IsInt())) {
+            if (resultDaysOfWeek != null && resultDaysOfWeek.Count == 1 && (resultDaysOfWeek.First().IsInt32())) {
                 // The result is in the form "last xx of the month
                 // Days of week is replaced by a wildcard and days of month is updated with
                 // the computation of "last xx day of month".
@@ -81,7 +80,7 @@ namespace com.espertech.esper.common.@internal.schedule
                 }
             }
 
-            if (resultDaysOfMonth != null && resultDaysOfMonth.Count == 1 && (resultDaysOfMonth.First().IsInt())) {
+            if (resultDaysOfMonth != null && resultDaysOfMonth.Count == 1 && (resultDaysOfMonth.First().IsInt32())) {
                 if (resultDaysOfWeek != null) {
                     throw new ScheduleParameterException(
                         "Invalid combination between days of week and days of month fields for timer:at");
@@ -106,6 +105,12 @@ namespace com.espertech.esper.common.@internal.schedule
                     timezone = (string) args[6];
                 }
             }
+            if (args.Length > 7) {
+                unitMap.Put(ScheduleUnit.MILLISECONDS, ComputeValues(args[7], ScheduleUnit.MILLISECONDS));
+            }
+            if (args.Length > 8) {
+                unitMap.Put(ScheduleUnit.MICROSECONDS, ComputeValues(args[8], ScheduleUnit.MICROSECONDS));
+            }
 
             var optionalDayOfMonthOp = GetOptionalSpecialOp(daysOfMonth);
             var optionalDayOfWeekOp = GetOptionalSpecialOp(daysOfWeek);
@@ -119,11 +124,7 @@ namespace com.espertech.esper.common.@internal.schedule
 
         private static CronParameter GetOptionalSpecialOp(object unitParameter)
         {
-            if (!(unitParameter is CronParameter)) {
-                return null;
-            }
-
-            return (CronParameter) unitParameter;
+            return unitParameter as CronParameter;
         }
 
         private static ICollection<int> ComputeValues(

@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
@@ -54,26 +53,22 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
             RowRecogExprNode optionalParent,
             int level)
         {
-            if (node is RowRecogExprNodeAtom) {
-                var atom = (RowRecogExprNodeAtom) node;
-                if (atom.OptionalRepeat != null) {
-                    if (_atoms == null) {
-                        _atoms = new List<Pair<RowRecogExprNodeAtom, RowRecogExprNode>>();
-                    }
-
-                    _atoms.Add(new Pair<RowRecogExprNodeAtom, RowRecogExprNode>(atom, optionalParent));
+            var atom = node as RowRecogExprNodeAtom;
+            if (atom?.OptionalRepeat != null) {
+                if (_atoms == null) {
+                    _atoms = new List<Pair<RowRecogExprNodeAtom, RowRecogExprNode>>();
                 }
+
+                _atoms.Add(new Pair<RowRecogExprNodeAtom, RowRecogExprNode>(atom, optionalParent));
             }
 
-            if (node is RowRecogExprNodeNested) {
-                var nested = (RowRecogExprNodeNested) node;
-                if (nested.OptionalRepeat != null) {
-                    if (_nesteds == null) {
-                        _nesteds = new List<RowRegexNestedDesc>();
-                    }
-
-                    _nesteds.Add(new RowRegexNestedDesc(nested, optionalParent, level));
+            var nested = node as RowRecogExprNodeNested;
+            if (nested?.OptionalRepeat != null) {
+                if (_nesteds == null) {
+                    _nesteds = new List<RowRegexNestedDesc>();
                 }
+
+                _nesteds.Add(new RowRegexNestedDesc(nested, optionalParent, level));
             }
 
             if (node is RowRecogExprNodePermute) {

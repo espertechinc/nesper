@@ -13,7 +13,6 @@ using System.Reflection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.fireandforget;
 using com.espertech.esper.common.client.scopetest;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
@@ -35,6 +34,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             execs.Add(new InfraSelectIndexChoiceJoin(false));
             execs.Add(new InfraSelectIndexChoice(true));
             execs.Add(new InfraSelectIndexChoice(false));
+            execs.Add(new InfraSelectIndexMultikeyWArray(true));
+            execs.Add(new InfraSelectIndexMultikeyWArray(false));
+            execs.Add(new InfraSelectIndexMultikeyWArrayTwoField(true));
+            execs.Add(new InfraSelectIndexMultikeyWArrayTwoField(false));
+            execs.Add(new InfraSelectIndexMultikeyWArrayCompositeArray(true));
+            execs.Add(new InfraSelectIndexMultikeyWArrayCompositeArray(false));
+            execs.Add(new InfraSelectIndexMultikeyWArrayCompositeTwoArray(true));
+            execs.Add(new InfraSelectIndexMultikeyWArrayCompositeTwoArray(false));
             return execs;
         }
 
@@ -90,6 +97,202 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             env.UndeployAll();
         }
 
+        private static void AssertFAF(
+            RegressionEnvironment env,
+            RegressionPath path,
+            String epl,
+            String expectedId)
+        {
+            String faf = "@Hint('index(MyInfraIndex, bust)') select * from MyInfra where " + epl;
+            EPFireAndForgetQueryResult result = env.CompileExecuteFAF(faf, path);
+            Assert.AreEqual(1, result.Array.Length);
+            Assert.AreEqual(expectedId, result.Array[0].Get("Id"));
+        }
+
+        private static void AssertFAFNot(
+            RegressionEnvironment env,
+            RegressionPath path,
+            String epl)
+        {
+            String faf = "@Hint('index(MyInfraIndex, bust)') select * from MyInfra where " + epl;
+            EPFireAndForgetQueryResult result = env.CompileExecuteFAF(faf, path);
+            Assert.AreEqual(0, result.Array.Length);
+        }
+
+        internal class InfraSelectIndexMultikeyWArrayCompositeTwoArray : RegressionExecution
+        {
+            private readonly bool namedWindow;
+
+            public InfraSelectIndexMultikeyWArrayCompositeTwoArray(bool namedWindow)
+            {
+                this.namedWindow = namedWindow;
+            }
+
+            public void Run(RegressionEnvironment env)
+            {
+                RegressionPath path = new RegressionPath();
+                string epl = namedWindow
+                    ? "@public create window MyInfra#keepall as (Id string, ArrayOne string[], ArrayTwo string[], Value int);\n"
+                    : "@public create table MyInfra(Id string primary key, ArrayOne string[], ArrayTwo string[], Value int);\n";
+                epl += "insert into MyInfra select Id, StringOne as ArrayOne, StringTwo as ArrayTwo, Value from SupportEventWithManyArray;\n" +
+                       "create index MyInfraIndex on MyInfra(ArrayOne, ArrayTwo, Value btree);\n";
+                env.CompileDeploy(epl, path);
+
+                SendManyArray(env, "E1", new string[] {"a", "b"}, new string[] {"c", "d"}, 100);
+                SendManyArray(env, "E2", new string[] {"a", "b"}, new string[] {"e", "f"}, 200);
+                SendManyArray(env, "E3", new string[] {"a"}, new string[] {"b"}, 300);
+
+                env.Milestone(0);
+
+                AssertFAF(env, path, "ArrayOne = {'a', 'b'} and ArrayTwo = {'e', 'f'} and Value > 150", "E2");
+                AssertFAF(env, path, "ArrayOne = {'a'} and ArrayTwo = {'b'} and Value > 150", "E3");
+                AssertFAF(env, path, "ArrayOne = {'a', 'b'} and ArrayTwo = {'c', 'd'} and Value > 90", "E1");
+                AssertFAFNot(env, path, "ArrayOne = {'a', 'b'} and ArrayTwo = {'c', 'd'} and Value > 200");
+                AssertFAFNot(env, path, "ArrayOne = {'a', 'b'} and ArrayTwo = {'c', 'e'} and Value > 90");
+                AssertFAFNot(env, path, "ArrayOne = {'ax', 'b'} and ArrayTwo = {'c', 'd'} and Value > 90");
+
+                env.UndeployAll();
+            }
+
+            private void SendManyArray(
+                RegressionEnvironment env,
+                string id,
+                string[] arrayOne,
+                string[] arrayTwo,
+                int value)
+            {
+                env.SendEventBean(new SupportEventWithManyArray(id).WithStringOne(arrayOne).WithStringTwo(arrayTwo).WithValue(value));
+            }
+        }
+
+        internal class InfraSelectIndexMultikeyWArrayCompositeArray : RegressionExecution
+        {
+            private readonly bool namedWindow;
+
+            public InfraSelectIndexMultikeyWArrayCompositeArray(bool namedWindow)
+            {
+                this.namedWindow = namedWindow;
+            }
+
+            public void Run(RegressionEnvironment env)
+            {
+                RegressionPath path = new RegressionPath();
+                string epl = namedWindow
+                    ? "@public create window MyInfra#keepall as (Id string, ArrayOne string[], Value int);\n"
+                    : "@public create table MyInfra(Id string primary key, ArrayOne string[], Value int);\n";
+                epl += "insert into MyInfra select Id, StringOne as ArrayOne, Value from SupportEventWithManyArray;\n" +
+                       "create index MyInfraIndex on MyInfra(ArrayOne, Value btree);\n";
+                env.CompileDeploy(epl, path);
+
+                SendManyArray(env, "E1", new string[] {"a", "b"}, 100);
+                SendManyArray(env, "E2", new string[] {"a", "b"}, 200);
+                SendManyArray(env, "E3", new string[] {"a"}, 300);
+
+                env.Milestone(0);
+
+                AssertFAF(env, path, "ArrayOne = {'a', 'b'} and Value < 150", "E1");
+                AssertFAF(env, path, "ArrayOne = {'a', 'b'} and Value > 150", "E2");
+                AssertFAF(env, path, "ArrayOne = {'a'} and Value > 200", "E3");
+                AssertFAFNot(env, path, "ArrayOne = {'a'} and Value > 400");
+                AssertFAFNot(env, path, "ArrayOne = {'a', 'c'} and Value < 150");
+
+                env.UndeployAll();
+            }
+
+            private void SendManyArray(
+                RegressionEnvironment env,
+                string id,
+                string[] arrayOne,
+                int value)
+            {
+                env.SendEventBean(new SupportEventWithManyArray(id).WithStringOne(arrayOne).WithValue(value));
+            }
+        }
+
+        internal class InfraSelectIndexMultikeyWArrayTwoField : RegressionExecution
+        {
+            private readonly bool namedWindow;
+
+            public InfraSelectIndexMultikeyWArrayTwoField(bool namedWindow)
+            {
+                this.namedWindow = namedWindow;
+            }
+
+            public void Run(RegressionEnvironment env)
+            {
+                RegressionPath path = new RegressionPath();
+                string epl = namedWindow
+                    ? "@public create window MyInfra#keepall as (Id string, ArrayOne string[], ArrayTwo string[]);\n"
+                    : "@public create table MyInfra(Id string primary key, ArrayOne string[], ArrayTwo string[]);\n";
+                epl += "insert into MyInfra select Id, StringOne as ArrayOne, StringTwo as ArrayTwo from SupportEventWithManyArray;\n" +
+                       "create index MyInfraIndex on MyInfra(ArrayOne, ArrayTwo);\n";
+                env.CompileDeploy(epl, path);
+
+                SendManyArray(env, "E1", new string[] {"a", "b"}, new string[] {"c", "d"});
+                SendManyArray(env, "E2", new string[] {"a"}, new string[] {"b"});
+
+                env.Milestone(0);
+
+                AssertFAF(env, path, "ArrayOne = {'a', 'b'} and ArrayTwo = {'c', 'd'}", "E1");
+                AssertFAF(env, path, "ArrayOne = {'a'} and ArrayTwo = {'b'}", "E2");
+                AssertFAFNot(env, path, "ArrayOne = {'a', 'b', 'c'} and ArrayTwo = {'c', 'd'}");
+                AssertFAFNot(env, path, "ArrayOne = {'a', 'b'} and ArrayTwo = {'c', 'c'}");
+
+                env.UndeployAll();
+            }
+
+            private void SendManyArray(
+                RegressionEnvironment env,
+                string id,
+                string[] arrayOne,
+                string[] arrayTwo)
+            {
+                env.SendEventBean(new SupportEventWithManyArray(id).WithStringOne(arrayOne).WithStringTwo(arrayTwo));
+            }
+        }
+
+        internal class InfraSelectIndexMultikeyWArray : RegressionExecution
+        {
+            private readonly bool namedWindow;
+
+            public InfraSelectIndexMultikeyWArray(bool namedWindow)
+            {
+                this.namedWindow = namedWindow;
+            }
+
+            public void Run(RegressionEnvironment env)
+            {
+                RegressionPath path = new RegressionPath();
+                string epl = namedWindow
+                    ? "@public create window MyInfra#keepall as (Id string, Array string[]);\n"
+                    : "@public create table MyInfra(Id string primary key, Array string[]);\n";
+                epl += "insert into MyInfra select Id, StringOne as Array from SupportEventWithManyArray;\n" +
+                       "create index MyInfraIndex on MyInfra(Array);\n";
+                env.CompileDeploy(epl, path);
+
+                SendManyArray(env, "E1", new string[] {"a", "b"});
+                SendManyArray(env, "E2", new string[] {"a"});
+                SendManyArray(env, "E3", null);
+
+                env.Milestone(0);
+
+                AssertFAF(env, path, "Array = {'a', 'b'}", "E1");
+                AssertFAF(env, path, "Array = {'a'}", "E2");
+                AssertFAF(env, path, "Array is null", "E3");
+                AssertFAFNot(env, path, "Array = {'b'}");
+
+                env.UndeployAll();
+            }
+
+            private void SendManyArray(
+                RegressionEnvironment env,
+                string id,
+                string[] strings)
+            {
+                env.SendEventBean(new SupportEventWithManyArray(id).WithStringOne(strings));
+            }
+        }
+
         internal class InfraSelectIndexChoiceJoin : RegressionExecution
         {
             private readonly bool namedWindow;
@@ -108,7 +311,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     new SupportSimpleBeanTwo("E2", 21, 3, 4)
                 };
                 IndexAssertionFAF fafAssertion = result => {
-                    var fields = new [] { "w1.S1","w2.S2","w1.I1","w2.I2" };
+                    var fields = new[] {"w1.S1", "w2.S2", "w1.I1", "w2.I2"};
                     EPAssertionUtil.AssertPropsPerRowAnyOrder(
                         result.Array,
                         fields,
@@ -283,7 +486,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 object[] preloadedEventsOne =
                     {new SupportSimpleBeanOne("E1", 10, 11, 12), new SupportSimpleBeanOne("E2", 20, 21, 22)};
                 IndexAssertionFAF fafAssertion = result => {
-                    var fields = new [] { "S1","I1" };
+                    var fields = new[] {"S1", "I1"};
                     EPAssertionUtil.AssertPropsPerRow(
                         result.Array,
                         fields,

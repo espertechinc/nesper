@@ -18,6 +18,7 @@ using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.eventtyperepo;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.bean.service
@@ -38,13 +39,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
             AddPredefinedBeanEventTypes(beanTypes);
 
             foreach (var beanType in beanTypes) {
-                BuildPublicBeanType(
-                    beanEventTypeStemService,
-                    repo,
-                    beanType.Key,
-                    beanType.Value,
-                    privateFactory,
-                    configs);
+                if (repo.GetTypeByName(beanType.Key) == null) {
+                    BuildPublicBeanType(
+                        beanEventTypeStemService,
+                        repo,
+                        beanType.Key,
+                        beanType.Value,
+                        privateFactory,
+                        configs);
+                }
             }
         }
 
@@ -199,9 +202,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
                     "Predefined event type " +
                     clazzFullName +
                     " expected class " +
-                    clazzFullName +
+                    clazz.CleanName() +
                     " but is already defined to another class " +
-                    existing.Name);
+                    existing.CleanName());
             }
 
             resolvedBeanEventTypes.Put(clazzFullName, clazz);

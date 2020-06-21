@@ -14,9 +14,8 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.@event;
-using com.espertech.esper.common.@internal.supportunit.util;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.container;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.common.@internal.@event.arr
@@ -43,14 +42,14 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 SupportEventTypeFactory.GetInstance(container).BEAN_EVENT_TYPE_FACTORY);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetPropertyNames()
         {
             var properties = eventType.PropertyNames;
             EPAssertionUtil.AssertEqualsAnyOrder(properties, new string[] { "MyInt", "MyIntBoxed", "MyString", "MySupportBean", "MyComplexBean", "MyNullType" });
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetPropertyType()
         {
             Assert.AreEqual(typeof(int?), eventType.GetPropertyType("MyInt"));
@@ -70,13 +69,13 @@ namespace com.espertech.esper.common.@internal.@event.arr
             Assert.IsNull(eventType.GetPropertyType("MyComplexBean.Nested.NestedValueXXX"));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetUnderlyingType()
         {
             Assert.AreEqual(typeof(object[]), eventType.UnderlyingType);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestIsValidProperty()
         {
             Assert.IsTrue(eventType.IsProperty("MyInt"));
@@ -94,7 +93,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             Assert.IsFalse(eventType.IsProperty("MyComplexBean.Nested.NestedValueXXX"));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetGetter()
         {
             var nestedSupportBean = new SupportBean();
@@ -114,7 +113,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             Assert.AreEqual("NestedValue", eventType.GetGetter("MyComplexBean.Nested.NestedValue").Get(eventBean));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetSuperTypes()
         {
             Assert.IsNull(eventType.SuperTypes);

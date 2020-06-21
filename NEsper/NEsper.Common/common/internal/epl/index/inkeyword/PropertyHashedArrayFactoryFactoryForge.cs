@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -16,7 +15,7 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.index.hash;
 using com.espertech.esper.common.@internal.@event.core;
-using com.espertech.esper.compat;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -25,16 +24,20 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
 {
     public class PropertyHashedArrayFactoryFactoryForge : EventTableFactoryFactoryForge
     {
-        internal readonly int streamNum;
-        internal readonly EventType eventType;
-        internal readonly string[] propertyNames;
-        internal readonly bool unique;
-        internal readonly bool isFireAndForget;
+        private readonly int streamNum;
+        private readonly EventType eventType;
+        private readonly string[] propertyNames;
+        private readonly Type[] propertyTypes;
+        private readonly DataInputOutputSerdeForge[] serdes;
+        private readonly bool unique;
+        private readonly bool isFireAndForget;
 
         public PropertyHashedArrayFactoryFactoryForge(
             int streamNum,
             EventType eventType,
             string[] propertyNames,
+            Type[] propertyTypes,
+            DataInputOutputSerdeForge[] serdes,
             bool unique,
             bool isFireAndForget)
         {
@@ -43,6 +46,8 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
             this.propertyNames = propertyNames;
             this.unique = unique;
             this.isFireAndForget = isFireAndForget;
+            this.propertyTypes = propertyTypes;
+            this.serdes = serdes;
         }
 
         public Type EventTableClass {
@@ -59,18 +64,15 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
                 this.GetType(),
                 classScope);
 
-            Type[] propertyTypes = new Type[propertyNames.Length];
             method.Block.DeclareVar<EventPropertyValueGetter[]>(
                 "getters",
                 NewArrayByLength(typeof(EventPropertyValueGetter), Constant(propertyNames.Length)));
             for (int i = 0; i < propertyNames.Length; i++) {
-                Type propertyType = eventType.GetPropertyType(propertyNames[i]);
-                propertyTypes[i] = propertyType;
                 EventPropertyGetterSPI getterSPI = ((EventTypeSPI) eventType).GetGetterSPI(propertyNames[i]);
                 CodegenExpression getter = EventTypeUtility.CodegenGetterWCoerce(
                     getterSPI,
-                    propertyType,
-                    propertyType,
+                    propertyTypes[i],
+                    propertyTypes[i],
                     method,
                     this.GetType(),
                     classScope);
@@ -82,6 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
                     Constant(streamNum),
                     Constant(propertyNames),
                     Constant(propertyTypes),
+                    DataInputOutputSerdeForgeExtensions.CodegenArray(serdes, method, classScope, null),
                     Constant(unique),
                     Ref("getters"),
                     Constant(isFireAndForget)));

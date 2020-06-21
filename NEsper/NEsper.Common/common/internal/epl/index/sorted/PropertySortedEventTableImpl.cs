@@ -32,12 +32,12 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
         /// <summary>
         ///     Index table.
         /// </summary>
-        internal readonly OrderedDictionary<object, ISet<EventBean>> propertyIndex;
+        internal readonly IOrderedDictionary<object, ISet<EventBean>> propertyIndex;
 
         public PropertySortedEventTableImpl(PropertySortedEventTableFactory factory)
             : base(factory)
         {
-            propertyIndex = new OrderedDictionary<object, ISet<EventBean>>();
+            propertyIndex = new OrderedListDictionary<object, ISet<EventBean>>();
             nullKeyedValues = new LinkedHashSet<EventBean>();
         }
 
@@ -88,16 +88,14 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             keyStart = Coerce(keyStart);
             keyEnd = Coerce(keyEnd);
             IDictionary<object, ISet<EventBean>> submap;
-            try {
+
+            if (propertyIndex.KeyComparer.Compare(keyStart, keyEnd) <= 0) {
                 submap = propertyIndex.Between(keyStart, includeStart, keyEnd, includeEnd);
+            } else if (allowRangeReversal) {
+                submap = propertyIndex.Between(keyEnd, includeStart, keyStart, includeEnd);
             }
-            catch (ArgumentException) {
-                if (allowRangeReversal) {
-                    submap = propertyIndex.Between(keyEnd, includeStart, keyStart, includeEnd);
-                }
-                else {
-                    return Collections.GetEmptySet<EventBean>();
-                }
+            else {
+                return Collections.GetEmptySet<EventBean>();
             }
 
             return Normalize(submap);
@@ -116,17 +114,16 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
 
             keyStart = Coerce(keyStart);
             keyEnd = Coerce(keyEnd);
+
             IDictionary<object, ISet<EventBean>> submap;
-            try {
+            if (propertyIndex.KeyComparer.Compare(keyStart, keyEnd) <= 0) {
                 submap = propertyIndex.Between(keyStart, includeStart, keyEnd, includeEnd);
             }
-            catch (ArgumentException) {
-                if (allowRangeReversal) {
-                    submap = propertyIndex.Between(keyEnd, includeStart, keyStart, includeEnd);
-                }
-                else {
-                    return Collections.GetEmptyList<EventBean>();
-                }
+            else if (allowRangeReversal) {
+                submap = propertyIndex.Between(keyEnd, includeStart, keyStart, includeEnd);
+            }
+            else {
+                return Collections.GetEmptyList<EventBean>();
             }
 
             return NormalizeCollection(submap);

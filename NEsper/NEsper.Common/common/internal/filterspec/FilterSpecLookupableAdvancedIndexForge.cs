@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             EventPropertyGetterSPI width,
             EventPropertyGetterSPI height,
             string indexType)
-            : base(expression, getter, returnType, true)
+            : base(expression, new ExprEventEvaluatorForgeFromProp(getter), null, returnType, true, null)
         {
             QuadTreeConfig = quadTreeConfig;
             _x = x;
@@ -75,9 +75,9 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .DeclareVar<FilterSpecLookupableAdvancedIndex>(
                     "lookupable",
                     NewInstance<FilterSpecLookupableAdvancedIndex>(
-                        Constant(expression),
+                        Constant(Expression),
                         ConstantNull(),
-                        Typeof(returnType)))
+                        Typeof(ReturnType)))
                 .SetProperty(Ref("lookupable"), "QuadTreeConfig", QuadTreeConfig.Make())
                 .SetProperty(Ref("lookupable"), "X", toEval.Invoke(_x))
                 .SetProperty(Ref("lookupable"), "Y", toEval.Invoke(_y))

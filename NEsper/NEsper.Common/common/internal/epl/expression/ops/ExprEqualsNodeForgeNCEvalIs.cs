@@ -17,18 +17,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprEqualsNodeForgeNCEvalIs : ExprEvaluator
     {
-        private readonly ExprEvaluator lhs;
-        private readonly ExprEqualsNodeImpl parent;
-        private readonly ExprEvaluator rhs;
+        private readonly ExprEvaluator _lhs;
+        private readonly ExprEqualsNodeImpl _parent;
+        private readonly ExprEvaluator _rhs;
 
         public ExprEqualsNodeForgeNCEvalIs(
             ExprEqualsNodeImpl parent,
             ExprEvaluator lhs,
             ExprEvaluator rhs)
         {
-            this.parent = parent;
-            this.lhs = lhs;
-            this.rhs = rhs;
+            this._parent = parent;
+            this._lhs = lhs;
+            this._rhs = rhs;
         }
 
         public object Evaluate(
@@ -36,8 +36,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var left = lhs.Evaluate(eventsPerStream, isNewData, context);
-            var right = rhs.Evaluate(eventsPerStream, isNewData, context);
+            var left = _lhs.Evaluate(eventsPerStream, isNewData, context);
+            var right = _rhs.Evaluate(eventsPerStream, isNewData, context);
 
             bool result;
             if (left == null) {
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 result = right != null && left.Equals(right);
             }
 
-            result = result ^ parent.IsNotEquals;
+            result = result ^ _parent.IsNotEquals;
 
             return result;
         }
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 .IfElse()
                 .AssignRef(
                     "result",
-                    And(NotEqualsNull(Ref("right")), ExprDotMethod(Ref("left"), "Equals", Ref("right"))))
+                    And(NotEqualsNull(Ref("right")), StaticMethod<object>("Equals", Ref("left"), Ref("right"))))
                 .BlockEnd();
             if (!forge.ForgeRenderable.IsNotEquals) {
                 block.MethodReturn(Ref("result"));

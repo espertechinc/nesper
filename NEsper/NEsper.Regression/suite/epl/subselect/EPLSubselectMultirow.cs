@@ -10,7 +10,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -22,8 +21,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLSubselectMultirowSingleColumn());
+            WithSingleColumn(execs);
+            WithUnderlyingCorrelated(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUnderlyingCorrelated(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLSubselectMultirowUnderlyingCorrelated());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSingleColumn(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectMultirowSingleColumn());
             return execs;
         }
 
@@ -41,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     "@Name('s0') select P00, (select window(IntPrimitive) from SupportBean#keepall sb) as val from SupportBean_S0 as S0;\n";
                 env.CompileDeploy(epl, path).AddListener("s0").Milestone(0);
 
-                var fields = new [] { "P00","val" };
+                var fields = new[] {"P00", "val"};
 
                 object[][] rows = {
                     new object[] {"P00", typeof(string)},

@@ -8,7 +8,6 @@
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.concurrency;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics.stats;
 
 namespace com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics.core

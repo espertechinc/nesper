@@ -7,13 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Diagnostics;
-using System.Numerics;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.common.@internal.@event.propertyparser;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -63,7 +60,7 @@ namespace com.espertech.esper.common.@internal.util
                 var sourceArrayLength = sourceArray.Length;
                 var sourceArrayType = sourceArray.GetType().GetElementType();
                 var targetArrayType = sourceArrayType.GetBoxedType().MakeArrayType();
-                var targetArray = Array.CreateInstance(targetArrayType, sourceArrayLength);
+                var targetArray = Arrays.CreateInstanceChecked(targetArrayType, sourceArrayLength);
                 for (int ii = 0; ii < sourceArrayLength; ii++) {
                     targetArray.SetValue(sourceArray.GetValue(ii), ii);
                 }
@@ -84,7 +81,7 @@ namespace com.espertech.esper.common.@internal.util
                 var sourceArrayLength = sourceArray.Length;
                 var sourceArrayType = sourceArray.GetType().GetElementType();
                 var targetArrayType = sourceArrayType.GetUnboxedType().MakeArrayType();
-                var targetArray = Array.CreateInstance(targetArrayType, sourceArrayLength);
+                var targetArray = Arrays.CreateInstanceChecked(targetArrayType, sourceArrayLength);
                 for (int ii = 0; ii < sourceArrayLength; ii++) {
                     var sourceValue = sourceArray.GetValue(ii);
                     if (sourceValue != null) {

@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public override CodegenExpression WriteCodegen(
             CodegenExpression assigned,
-            CodegenExpression und,
+            CodegenExpression underlying,
             CodegenExpression target,
             CodegenMethodScope parent,
             CodegenClassScope classScope)
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 typeof(ObjectArrayEventBeanPropertyWriterMapProp),
                 "ObjectArrayWriteMapProp",
                 assigned,
-                und,
+                underlying,
                 Constant(index),
                 Constant(key));
         }
@@ -65,9 +65,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             string key)
         {
             var mapEntry = (IDictionary<string, object>) array[index];
-            if (mapEntry != null) {
-                mapEntry.Put(key, value);
-            }
+            mapEntry?.Put(key, value);
         }
     }
 } // end of namespace

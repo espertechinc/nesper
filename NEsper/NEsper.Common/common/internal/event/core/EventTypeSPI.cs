@@ -23,13 +23,6 @@ namespace com.espertech.esper.common.@internal.@event.core
         EventPropertyDescriptor[] WriteableProperties { get; }
 
         /// <summary>
-        ///     Returns a reader for reading all properties of an event. This is completely optional
-        ///     and need only be implemented for performance.
-        /// </summary>
-        /// <returns>reader</returns>
-        EventBeanReader Reader { get; }
-
-        /// <summary>
         ///     Return a writer for writing a single property value.
         /// </summary>
         /// <param name="propertyName">to write to</param>

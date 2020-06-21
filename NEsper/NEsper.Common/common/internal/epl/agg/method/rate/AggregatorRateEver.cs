@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.schedule;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.io;
 
@@ -28,33 +29,26 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
     /// </summary>
     public class AggregatorRateEver : AggregatorMethodWDistinctWFilterBase
     {
-        internal readonly AggregationFactoryMethodRate factory;
-        internal readonly CodegenExpressionRef hasLeave;
-        internal readonly CodegenExpressionRef points;
+        private readonly AggregationForgeFactoryRate _factory;
+        private readonly CodegenExpressionMember _hasLeave;
+        private readonly CodegenExpressionMember _points;
 
         public AggregatorRateEver(
-            AggregationFactoryMethodRate factory,
+            AggregationForgeFactoryRate factory,
             int col,
             CodegenCtor rowCtor,
             CodegenMemberCol membersColumnized,
             CodegenClassScope classScope,
             Type optionalDistinctValueType,
+            DataInputOutputSerdeForge optionalDistinctSerde,
             bool hasFilter,
             ExprNode optionalFilter)
-            : base(
-                factory,
-                col,
-                rowCtor,
-                membersColumnized,
-                classScope,
-                optionalDistinctValueType,
-                hasFilter,
-                optionalFilter)
+            : base(factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter)
         {
-            this.factory = factory;
-            points = membersColumnized.AddMember(col, typeof(Deque<long>), "points");
-            hasLeave = membersColumnized.AddMember(col, typeof(bool), "hasLeave");
-            rowCtor.Block.AssignRef(points, NewInstance(typeof(ArrayDeque<long>)));
+            _factory = factory;
+            _points = membersColumnized.AddMember(col, typeof(Deque<long>), "points");
+            _hasLeave = membersColumnized.AddMember(col, typeof(bool), "hasLeave");
+            rowCtor.Block.AssignRef(_points, NewInstance(typeof(ArrayDeque<long>)));
         }
 
         protected override void ApplyEvalEnterFiltered(
@@ -105,37 +99,37 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(points, "Clear");
+            method.Block.ExprDotMethod(_points, "Clear");
         }
 
         public override void GetValueCodegen(
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.IfCondition(Not(ExprDotMethod(points, "IsEmpty")))
-                .DeclareVar<long>("newest", Cast(typeof(long), ExprDotName(points, "Last")))
+            method.Block.IfCondition(Not(ExprDotMethod(_points, "IsEmpty")))
+                .DeclareVar<long>("newest", ExprDotMethod(ExprDotName(_points, "Last"), "AsInt64"))
                 .DeclareVar<bool>(
                     "leave",
                     StaticMethod(
                         typeof(AggregatorRateEver),
                         "RemoveFromHead",
-                        points,
+                        _points,
                         Ref("newest"),
-                        Constant(factory.IntervalTime)))
-                .AssignCompound(hasLeave, "|", Ref("leave"))
+                        Constant(_factory.IntervalTime)))
+                .AssignCompound(_hasLeave, "|", Ref("leave"))
                 .BlockEnd()
-                .IfCondition(Not(hasLeave))
+                .IfCondition(Not(_hasLeave))
                 .BlockReturn(ConstantNull())
-                .IfCondition(ExprDotMethod(points, "IsEmpty"))
+                .IfCondition(ExprDotMethod(_points, "IsEmpty"))
                 .BlockReturn(Constant(0d))
                 .MethodReturn(
                     Op(
                         Op(
-                            Op(ExprDotName(points, "Count"), "*", Constant(factory.TimeAbacus.OneSecond)),
+                            Op(ExprDotName(_points, "Count"), "*", Constant(_factory.TimeAbacus.OneSecond)),
                             "*",
                             Constant(1d)),
                         "/",
-                        Constant(factory.IntervalTime)));
+                        Constant(_factory.IntervalTime)));
         }
 
         protected override void WriteWODistinct(
@@ -148,8 +142,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             CodegenClassScope classScope)
         {
             method.Block
-                .Apply(WriteBoolean(output, row, hasLeave))
-                .StaticMethod(GetType(), "WritePoints", output, RowDotRef(row, points));
+                .Apply(WriteBoolean(output, row, _hasLeave))
+                .StaticMethod(GetType(), "WritePoints", output, RowDotMember(row, _points));
         }
 
         protected override void ReadWODistinct(
@@ -161,8 +155,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             CodegenClassScope classScope)
         {
             method.Block
-                .Apply(ReadBoolean(row, hasLeave, input))
-                .AssignRef(RowDotRef(row, points), StaticMethod(GetType(), "ReadPoints", input));
+                .Apply(ReadBoolean(row, _hasLeave, input))
+                .AssignRef(RowDotMember(row, _points), StaticMethod(GetType(), "ReadPoints", input));
         }
 
         /// <summary>
@@ -187,16 +181,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
         {
             CodegenExpression timeProvider = classScope.AddOrGetDefaultFieldSharable(TimeProviderField.INSTANCE);
             method.Block.DeclareVar<long>("timestamp", ExprDotName(timeProvider, "Time"))
-                .ExprDotMethod(points, "Add", Ref("timestamp"))
+                .ExprDotMethod(_points, "Add", Ref("timestamp"))
                 .DeclareVar<bool>(
                     "leave",
                     StaticMethod(
                         typeof(AggregatorRateEver),
                         "RemoveFromHead",
-                        points,
+                        _points,
                         Ref("timestamp"),
-                        Constant(factory.IntervalTime)))
-                .AssignCompound(hasLeave, "|", Ref("leave"));
+                        Constant(_factory.IntervalTime)))
+                .AssignCompound(_hasLeave, "|", Ref("leave"));
         }
 
         /// <summary>

@@ -16,9 +16,10 @@ namespace com.espertech.esper.regressionlib.framework
     {
         public IList<EPCompiled> Compileds { get; } = new List<EPCompiled>();
 
-        public void Add(EPCompiled compiled)
+        public RegressionPath Add(EPCompiled compiled)
         {
             Compileds.Add(compiled);
+            return this;
         }
 
         public void Clear()

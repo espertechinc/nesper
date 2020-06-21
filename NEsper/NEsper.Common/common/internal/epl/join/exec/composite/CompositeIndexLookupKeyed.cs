@@ -18,24 +18,18 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
     {
         private readonly object[] _keys;
         private CompositeIndexLookup _next;
+        private readonly MultiKeyFromObjectArray _multiKeyTransform;
 
-        public CompositeIndexLookupKeyed(object[] keys)
+        public CompositeIndexLookupKeyed(object[] keys, MultiKeyFromObjectArray multiKeyTransform)
         {
             this._keys = keys;
+            this._multiKeyTransform = multiKeyTransform;
         }
+
+        public MultiKeyFromObjectArray MultiKeyTransform => _multiKeyTransform;
 
         public CompositeIndexLookup Next {
             set { this._next = value; }
-        }
-
-        private object GetKey()
-        {
-            if (_keys.Length == 1) {
-                return _keys[0];
-            }
-            else {
-                return new HashableMultiKey(_keys);
-            }
         }
 
         public void Lookup(
@@ -43,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             ISet<EventBean> result,
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
-            var key = GetKey();
+            var key = _multiKeyTransform.From(_keys);
             var innerEntry = parent.Get(key);
             if (innerEntry == null) {
                 return;

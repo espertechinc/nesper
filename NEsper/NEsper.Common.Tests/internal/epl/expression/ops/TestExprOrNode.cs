@@ -10,7 +10,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.funcs;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.util;
-using com.espertech.esper.container;
 
 using NUnit.Framework;
 
@@ -27,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         private ExprOrNode orNode;
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEqualsNode()
         {
             Assert.IsTrue(orNode.EqualsNode(orNode, false));
@@ -35,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.IsTrue(orNode.EqualsNode(new ExprOrNode(), false));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestEvaluate()
         {
             orNode.AddChildNode(new SupportBoolExprNode(true));
@@ -56,13 +55,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.IsNull(orNode.Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestGetType()
         {
             Assert.AreEqual(typeof(bool?), orNode.Forge.EvaluationType);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestToExpressionString()
         {
             orNode.AddChildNode(new SupportExprNode(true));
@@ -70,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.AreEqual("true or false", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(orNode));
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestValidate()
         {
             // test success

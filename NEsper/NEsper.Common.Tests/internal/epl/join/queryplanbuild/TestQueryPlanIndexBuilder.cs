@@ -12,7 +12,6 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.@join.querygraph;
-using com.espertech.esper.common.@internal.supportunit.@event;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -64,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             return new ExprIdentNodeImpl(types[stream], p, stream);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestBuildIndexSpec()
         {
             var indexes = QueryPlanIndexBuilder.BuildIndexSpec(queryGraph, types, new string[queryGraph.NumStreams][][]);
@@ -90,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             Assert.AreEqual(1, indexes[1].IndexProps.Length);
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestIndexAlreadyExists()
         {
             queryGraph = new QueryGraphForge(5, null, false);

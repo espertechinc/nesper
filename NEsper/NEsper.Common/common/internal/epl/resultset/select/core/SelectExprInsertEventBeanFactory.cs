@@ -19,6 +19,7 @@ using com.espertech.esper.common.@internal.@event.avro;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.manufacturer;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
@@ -48,23 +49,33 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             // handle single-column coercion to underlying, i.e. "insert into MapDefinedEvent select doSomethingReturnMap() from MyEvent"
             if (expressionReturnTypes.Length == 1 &&
                 expressionReturnTypes[0] is Type &&
-                (eventType is BaseNestableEventType || eventType is AvroSchemaEventType) &&
-                TypeHelper.IsSubclassOrImplementsInterface((Type) expressionReturnTypes[0], eventType.UnderlyingType) &&
                 insertIntoDesc.ColumnNames.IsEmpty() &&
                 columnNamesAsProvided[0] == null) {
-                if (eventType is MapEventType) {
-                    return new SelectExprInsertNativeExpressionCoerceMap(eventType, forges[0]);
-                }
 
-                if (eventType is ObjectArrayEventType) {
-                    return new SelectExprInsertNativeExpressionCoerceObjectArray(eventType, forges[0]);
-                }
+                var resultType = (Type) expressionReturnTypes[0];
+                var compatible = (eventType is BaseNestableEventType || eventType is AvroSchemaEventType) &&
+                                 TypeHelper.IsSubclassOrImplementsInterface(resultType, eventType.UnderlyingType);
+                compatible = compatible | (eventType is JsonEventType && resultType == typeof(string));
 
-                if (eventType is AvroSchemaEventType) {
-                    return new SelectExprInsertNativeExpressionCoerceAvro(eventType, forges[0]);
-                }
+                if (compatible) {
+                    if (eventType is MapEventType) {
+                        return new SelectExprInsertNativeExpressionCoerceMap(eventType, forges[0]);
+                    }
 
-                throw new IllegalStateException("Unrecognized event type " + eventType);
+                    if (eventType is ObjectArrayEventType) {
+                        return new SelectExprInsertNativeExpressionCoerceObjectArray(eventType, forges[0]);
+                    }
+
+                    if (eventType is AvroSchemaEventType) {
+                        return new SelectExprInsertNativeExpressionCoerceAvro(eventType, forges[0]);
+                    }
+
+                    if (eventType is JsonEventType) {
+                        return new SelectExprInsertNativeExpressionCoerceJson(eventType, forges[0]);
+                    }
+
+                    throw new IllegalStateException("Unrecognized event type " + eventType);
+                }
             }
 
             // handle special case where the target type has no properties and there is a single "null" value selected
@@ -90,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             }
 
             // handle writing to defined columns
-            var writableProps = EventTypeUtility.GetWriteableProperties(eventType, false);
+            var writableProps = EventTypeUtility.GetWriteableProperties(eventType, false, false);
             var isEligible = CheckEligible(eventType, writableProps, allowNestableTargetFragmentTypes);
             if (!isEligible) {
                 return null;
@@ -140,7 +151,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             string statementName,
             EventTypeAvroHandler eventTypeAvroHandler)
         {
-            var writableProps = EventTypeUtility.GetWriteableProperties(eventType, false);
+            var writableProps = EventTypeUtility.GetWriteableProperties(eventType, false, false);
             var isEligible = CheckEligible(eventType, writableProps, false);
             if (!isEligible) {
                 return null;
@@ -273,9 +284,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         if (TypeHelper.IsSubclassOrImplementsInterface(returnType, desc.PropertyType)) {
                             selectedWritable = desc;
                             widener = new ProxyTypeWidenerSPI {
+                                ProcWidenResultType = () => desc.PropertyType,
                                 ProcWiden = input => {
-                                    if (input is EventBean) {
-                                        return ((EventBean) input).Underlying;
+                                    if (input is EventBean eventBean) {
+                                        return eventBean.Underlying;
                                     }
 
                                     return input;
@@ -316,7 +328,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         // handle case where the select-clause contains an fragment array
                         var columnEventType = ((EventType[]) columnType)[0];
                         var componentReturnType = columnEventType.UnderlyingType;
-                        var arrayReturnType = Array.CreateInstance(componentReturnType, 0).GetType();
+                        var arrayReturnType = componentReturnType.MakeArrayType();
 
                         var allowObjectArrayToCollectionConversion = eventType is AvroSchemaEventType;
                         try {
@@ -449,6 +461,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             }
             catch (EventBeanManufactureException e) {
                 throw new ExprValidationException(e.Message, e);
+            }
+            
+            if (eventManufacturer == null) {
+                return null;
             }
 
             return new SelectExprInsertNativeWidening(eventType, eventManufacturer, exprForges, wideners);

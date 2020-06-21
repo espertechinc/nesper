@@ -43,7 +43,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
         public void Run()
         {
             try {
-                EPEventServiceImpl.ProcessStatementScheduleSingle(handleCallback, services);
+                EPEventServiceHelper.ProcessStatementScheduleSingle(handleCallback, services);
 
                 runtime.Dispatch();
 

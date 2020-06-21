@@ -62,6 +62,9 @@ namespace com.espertech.esper.common.client.annotation
                 case HintEnum.MAX_FILTER_WIDTH:
                     return "MAX_FILTER_WIDTH";
 
+                case HintEnum.FILTERINDEX:
+                    return "FILTERINDEX";
+                
                 case HintEnum.DISABLE_WHEREEXPR_MOVETO_FILTER:
                     return "DISABLE_WHEREEXPR_MOVETO_FILTER";
 
@@ -70,6 +73,9 @@ namespace com.espertech.esper.common.client.annotation
 
                 case HintEnum.DISABLE_OUTPUTLIMIT_OPT:
                     return "DISABLE_OUTPUTLIMIT_OPT";
+                
+                case HintEnum.SILENT_DELETE:
+                    return "SILENT_DELETE";
             }
 
             throw new ArgumentException();
@@ -118,6 +124,9 @@ namespace com.espertech.esper.common.client.annotation
 
                 case HintEnum.MAX_FILTER_WIDTH:
                     return true;
+                
+                case HintEnum.FILTERINDEX:
+                    return false;
 
                 case HintEnum.DISABLE_WHEREEXPR_MOVETO_FILTER:
                     return false;
@@ -126,6 +135,9 @@ namespace com.espertech.esper.common.client.annotation
                     return false;
 
                 case HintEnum.DISABLE_OUTPUTLIMIT_OPT:
+                    return false;
+                
+                case HintEnum.SILENT_DELETE:
                     return false;
             }
 
@@ -179,6 +191,9 @@ namespace com.espertech.esper.common.client.annotation
 
                 case HintEnum.MAX_FILTER_WIDTH:
                     return true;
+                
+                case HintEnum.FILTERINDEX:
+                    return false;
 
                 case HintEnum.DISABLE_WHEREEXPR_MOVETO_FILTER:
                     return false;
@@ -187,6 +202,9 @@ namespace com.espertech.esper.common.client.annotation
                     return false;
 
                 case HintEnum.DISABLE_OUTPUTLIMIT_OPT:
+                    return false;
+                
+                case HintEnum.SILENT_DELETE:
                     return false;
             }
 
@@ -234,7 +252,10 @@ namespace com.espertech.esper.common.client.annotation
 
                 case HintEnum.MAX_FILTER_WIDTH:
                     return false;
-
+                
+                case HintEnum.FILTERINDEX:
+                    return true;
+                
                 case HintEnum.DISABLE_WHEREEXPR_MOVETO_FILTER:
                     return false;
 
@@ -243,9 +264,19 @@ namespace com.espertech.esper.common.client.annotation
 
                 case HintEnum.DISABLE_OUTPUTLIMIT_OPT:
                     return false;
+                
+                case HintEnum.SILENT_DELETE:
+                    return false;
             }
 
             throw new ArgumentException();
+        }
+
+        public static bool HasHint(
+            this HintEnum @enum,
+            IEnumerable<Attribute> attributes)
+        {
+            return GetHint(@enum, attributes) != null;
         }
 
         /// <summary>

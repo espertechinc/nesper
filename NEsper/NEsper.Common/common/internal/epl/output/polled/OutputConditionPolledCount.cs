@@ -41,11 +41,9 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             int newDataCount,
             int oldDataCount)
         {
-            if (optionalVariableReader != null) {
-                object value = optionalVariableReader.Value;
-                if (value != null) {
-                    state.EventRate = value.AsInt64();
-                }
+            object value = optionalVariableReader?.Value;
+            if (value != null) {
+                state.EventRate = value.AsInt64();
             }
 
             state.NewEventsCount = state.NewEventsCount + newDataCount;

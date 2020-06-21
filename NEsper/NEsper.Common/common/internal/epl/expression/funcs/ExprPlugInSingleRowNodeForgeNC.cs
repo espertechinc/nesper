@@ -20,23 +20,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     public class ExprPlugInSingleRowNodeForgeNC : ExprPlugInSingleRowNodeForge
     {
-        private readonly ExprDotNodeForgeStaticMethod inner;
+        private readonly ExprDotNodeForgeStaticMethod _inner;
 
         public ExprPlugInSingleRowNodeForgeNC(
             ExprPlugInSingleRowNode parent,
             ExprDotNodeForgeStaticMethod inner)
             : base(parent, false)
         {
-            this.inner = inner;
+            this._inner = inner;
         }
 
-        public override MethodInfo Method => inner.StaticMethod;
+        public override MethodInfo Method => _inner.StaticMethod;
 
-        public override ExprEvaluator ExprEvaluator => inner.ExprEvaluator;
+        public override ExprEvaluator ExprEvaluator => _inner.ExprEvaluator;
 
         public override ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public override Type EvaluationType => inner.EvaluationType;
+        public override Type EvaluationType => _inner.EvaluationType;
 
         public override CodegenExpression EvaluateCodegen(
             Type requiredType,
@@ -62,15 +62,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return inner.EvaluateCodegen(requiredType, codegenMethodScope, exprSymbol, codegenClassScope);
+            return _inner.EvaluateCodegen(requiredType, codegenMethodScope, exprSymbol, codegenClassScope);
         }
-
-        public override CodegenExpression EventBeanGetCodegen(
+        
+        public override CodegenExpression EventBeanWithCtxGet(
             CodegenExpression beanExpression,
+            CodegenExpression ctxExpression,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return inner.EventBeanGetCodegen(beanExpression, codegenMethodScope, codegenClassScope);
+            return _inner.EventBeanGetCodegen(beanExpression, codegenMethodScope, codegenClassScope);
         }
+
+        public override bool IsLocalInlinedClass => _inner.IsLocalInlinedClass;
     }
 } // end of namespace

@@ -113,7 +113,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.stmtmetrics
 
         public void Route(MetricEvent metricEvent)
         {
-            executionContext.EpRuntimeSendEvent.SendEventBean(metricEvent, metricEvent.GetType().FullName);
+            executionContext.EPRuntimeSendEvent.SendEventBean(metricEvent, metricEvent.GetType().FullName);
         }
 
         public bool IsMetricsReportingEnabled => specification.IsEnableMetricsReporting;
@@ -290,8 +290,8 @@ namespace com.espertech.esper.runtime.@internal.metrics.stmtmetrics
 
         public void Dispose()
         {
-            schedule.Clear();
-            metricsExecutor.Dispose();
+            schedule?.Clear();
+            metricsExecutor?.Dispose();
         }
 
         private bool IsConsiderSchedule(long value)

@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
 
@@ -26,6 +25,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
         {
             ExprProperties = new List<Pair<ExprNode, ExprIdentNode>>(2);
         }
+        
+        public bool IsWalkDeclExprParam => true;
 
         /// <summary>
         ///     Returns list of event property stream numbers and names that uniquely identify which property is from whcih stream,

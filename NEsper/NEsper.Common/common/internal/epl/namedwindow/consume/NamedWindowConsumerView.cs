@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
     ///     The view simply dispatches directly to child views, and keeps the last new event for iteration.
     /// </summary>
     public class NamedWindowConsumerView : ViewSupport,
-        AgentInstanceStopCallback
+        AgentInstanceMgmtCallback
     {
         private readonly bool audit;
         private readonly EventType eventType;
@@ -67,6 +67,11 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
         public void Stop(AgentInstanceStopServices services)
         {
             ConsumerCallback.Stopped(this);
+        }
+        
+        public void Transfer(AgentInstanceTransferServices services)
+        {
+            // no action required
         }
 
         public override void Update(

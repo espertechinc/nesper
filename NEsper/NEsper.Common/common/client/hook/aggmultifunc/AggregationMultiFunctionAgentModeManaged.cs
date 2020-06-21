@@ -6,11 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client.hook.forgeinject;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.hook.aggmultifunc
 {
@@ -19,14 +15,24 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
     /// </summary>
     public class AggregationMultiFunctionAgentModeManaged : AggregationMultiFunctionAgentMode
     {
-        private InjectionStrategy injectionStrategyAggregationAgentFactory;
+        private InjectionStrategy _injectionStrategyAggregationAgentFactory;
+
+        public AggregationMultiFunctionAgentModeManaged()
+        {
+        }
+
+        public AggregationMultiFunctionAgentModeManaged(InjectionStrategy injectionStrategyAggregationAgentFactory)
+        {
+            _injectionStrategyAggregationAgentFactory = injectionStrategyAggregationAgentFactory;
+        }
 
         /// <summary>
         /// Returns the injection strategy for the aggregation agent factory
         /// </summary>
         /// <returns>strategy</returns>
         public InjectionStrategy InjectionStrategyAggregationAgentFactory {
-            get => injectionStrategyAggregationAgentFactory;
+            get => _injectionStrategyAggregationAgentFactory;
+            set => _injectionStrategyAggregationAgentFactory = value;
         }
 
         /// <summary>
@@ -37,7 +43,7 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         public AggregationMultiFunctionAgentModeManaged SetInjectionStrategyAggregationAgentFactory(
             InjectionStrategy strategy)
         {
-            this.injectionStrategyAggregationAgentFactory = strategy;
+            this._injectionStrategyAggregationAgentFactory = strategy;
             return this;
         }
     }

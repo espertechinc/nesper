@@ -85,8 +85,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
         }
 
         public void ProcessJoin(
-            ISet<MultiKey<EventBean>> newData,
-            ISet<MultiKey<EventBean>> oldData,
+            ISet<MultiKeyArrayOfKeys<EventBean>> newData,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldData,
             bool isGenerateSynthetic)
         {
             if (newData != null) {
@@ -171,6 +171,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             if (!groupRepsOutputLastUnordRStream.IsEmpty()) {
                 var oldEvents = groupRepsOutputLastUnordRStream.Values;
                 oldEventsArr = oldEvents.ToArray();
+                groupRepsOutputLastUnordRStream.Clear();
             }
 
             if (newEventsArr == null && oldEventsArr == null) {

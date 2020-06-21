@@ -22,13 +22,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
 {
     public class InternalEventRouterDescForge
     {
-        private readonly Attribute[] annotations;
-        private readonly ExprNode[] assignments;
         private readonly EventBeanCopyMethodForge copyMethod;
+        private readonly TypeWidenerSPI[] wideners;
         private readonly EventType eventType;
+        private readonly Attribute[] annotations;
         private readonly ExprNode optionalWhereClause;
         private readonly string[] properties;
-        private readonly TypeWidenerSPI[] wideners;
+        private readonly ExprNode[] assignments;
+        private readonly InternalEventRouterWriterForge[] writers;
 
         public InternalEventRouterDescForge(
             EventBeanCopyMethodForge copyMethod,
@@ -37,7 +38,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
             Attribute[] annotations,
             ExprNode optionalWhereClause,
             string[] properties,
-            ExprNode[] assignments)
+            ExprNode[] assignments,
+            InternalEventRouterWriterForge[] writers)
         {
             this.copyMethod = copyMethod;
             this.wideners = wideners;
@@ -46,6 +48,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
             this.optionalWhereClause = optionalWhereClause;
             this.properties = properties;
             this.assignments = assignments;
+            this.writers = writers;
         }
 
         public CodegenExpression Make(
@@ -54,28 +57,25 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(InternalEventRouterDesc), GetType(), classScope);
+            var eventTypeExpr = EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method));
+            var optionalWhereClauseExpr = optionalWhereClause == null
+                ? ConstantNull()
+                : ExprNodeUtilityCodegen.CodegenEvaluator(
+                    optionalWhereClause.Forge,
+                    method,
+                    GetType(),
+                    classScope);
+            var assignmentsExpr = ExprNodeUtilityCodegen.CodegenEvaluators(assignments, method, GetType(), classScope);
+            var writersExpr = MakeWriters(writers, method, symbols, classScope);
+            
             method.Block
                 .DeclareVar<InternalEventRouterDesc>("ire", NewInstance(typeof(InternalEventRouterDesc)))
                 .SetProperty(Ref("ire"), "Wideners", MakeWideners(wideners, method, classScope))
-                .SetProperty(
-                    Ref("ire"),
-                    "EventType",
-                    EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
-                .SetProperty(
-                    Ref("ire"),
-                    "OptionalWhereClauseEval",
-                    optionalWhereClause == null
-                        ? ConstantNull()
-                        : ExprNodeUtilityCodegen.CodegenEvaluator(
-                            optionalWhereClause.Forge,
-                            method,
-                            GetType(),
-                            classScope))
+                .SetProperty(Ref("ire"), "EventType", eventTypeExpr)
+                .SetProperty(Ref("ire"), "OptionalWhereClauseEval", optionalWhereClauseExpr)
                 .SetProperty(Ref("ire"), "Properties", Constant(properties))
-                .SetProperty(
-                    Ref("ire"),
-                    "Assignments",
-                    ExprNodeUtilityCodegen.CodegenEvaluators(assignments, method, GetType(), classScope))
+                .SetProperty(Ref("ire"), "Assignments", assignmentsExpr)
+                .SetProperty(Ref("ire"), "Writers", writersExpr)
                 .MethodReturn(Ref("ire"));
             return LocalMethod(method);
         }
@@ -96,6 +96,25 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
             }
 
             return NewArrayWithInit(typeof(TypeWidener), init);
+        }
+
+        private CodegenExpression MakeWriters(
+            InternalEventRouterWriterForge[] writers,
+            CodegenMethod method,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
+        {
+            var init = new CodegenExpression[writers.Length];
+            for (int i = 0; i < init.Length; i++) {
+                if (writers[i] != null) {
+                    init[i] = writers[i].Codegen(writers[i], method, symbols, classScope);
+                }
+                else {
+                    init[i] = ConstantNull();
+                }
+            }
+
+            return NewArrayWithInit(typeof(InternalEventRouterWriter), init);
         }
     }
 } // end of namespace

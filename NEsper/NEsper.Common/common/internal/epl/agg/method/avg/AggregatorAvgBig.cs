@@ -16,16 +16,15 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.serde;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
+using com.espertech.esper.common.@internal.serde.serdeset.builtin;
 using com.espertech.esper.common.@internal.type;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compat.logging;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
-    CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
 
 namespace com.espertech.esper.common.@internal.epl.agg.method.avg
@@ -37,28 +36,21 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly CodegenExpressionRef _cnt;
-        private readonly AggregationFactoryMethodAvg _factory;
-        private readonly CodegenExpressionRef _sum;
+        private readonly AggregationForgeFactoryAvg _factory;
+        private readonly CodegenExpressionMember _sum;
+        private readonly CodegenExpressionMember _cnt;
 
         public AggregatorAvgBig(
-            AggregationFactoryMethodAvg factory,
+            AggregationForgeFactoryAvg factory,
             int col,
             CodegenCtor rowCtor,
             CodegenMemberCol membersColumnized,
             CodegenClassScope classScope,
             Type optionalDistinctValueType,
+            DataInputOutputSerdeForge optionalDistinctSerde,
             bool hasFilter,
             ExprNode optionalFilter)
-            : base(
-                factory,
-                col,
-                rowCtor,
-                membersColumnized,
-                classScope,
-                optionalDistinctValueType,
-                hasFilter,
-                optionalFilter)
+            : base(factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter)
         {
             _factory = factory;
             _sum = membersColumnized.AddMember(col, typeof(BigInteger), "sum");
@@ -138,9 +130,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            var math = _factory.optionalMathContext == null
+            var math = _factory.OptionalMathContext == null
                 ? ConstantNull()
-                : classScope.AddOrGetDefaultFieldSharable(new MathContextCodegenField(_factory.optionalMathContext));
+                : classScope.AddOrGetDefaultFieldSharable(new MathContextCodegenField(_factory.OptionalMathContext));
             method.Block.MethodReturn(Op(_sum, "/", _cnt));
             //StaticMethod(GetType(), "GetValueDivide", cnt, math, sum));
         }
@@ -156,7 +148,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
         {
             method.Block
                 .Apply(WriteLong(output, row, _cnt))
-                .StaticMethod(typeof(DIOSerdeBigInteger), "WriteBigInt", RowDotRef(row, _sum), output);
+                .StaticMethod(typeof(DIOBigIntegerUtil), "WriteBigInt", RowDotMember(row, _sum), output);
         }
 
         protected override void ReadWODistinct(
@@ -170,8 +162,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
             method.Block
                 .Apply(ReadLong(row, _cnt, input))
                 .AssignRef(
-                    RowDotRef(row, _sum),
-                    StaticMethod(typeof(DIOSerdeBigInteger), "ReadBigInt", input));
+                    RowDotMember(row, _sum),
+                    StaticMethod(typeof(DIOBigIntegerUtil), "ReadBigInt", input));
         }
 
         /// <summary>

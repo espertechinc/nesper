@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
@@ -27,106 +28,88 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 {
     public class SubSelectStrategyFactoryLocalViewPreloaded : SubSelectStrategyFactory
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(SubSelectStrategyFactoryLocalViewPreloaded));
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        
+        private AggregationServiceFactory _aggregationServiceFactory;
+        private bool _correlatedSubquery;
+        private EventTableFactory _eventTableFactory;
+        private EventTableFactoryFactory _eventTableFactoryFactory;
+        private EventTableIndexService _eventTableIndexService;
+        private ExprEvaluator _filterExprEval;
+        private ExprEvaluator _groupKeyEval;
+        private SubordTableLookupStrategyFactory _lookupStrategyFactory;
+        private NamedWindow _namedWindow;
+        private ExprEvaluator _namedWindowFilterExpr;
+        private QueryGraph _namedWindowFilterQueryGraph;
 
-        private AggregationServiceFactory aggregationServiceFactory;
-        private bool correlatedSubquery;
-        private EventTableFactory eventTableFactory;
-        private EventTableFactoryFactory eventTableFactoryFactory;
-        private EventTableIndexService eventTableIndexService;
-        private ExprEvaluator filterExprEval;
-        private ExprEvaluator groupKeyEval;
-        private SubordTableLookupStrategyFactory lookupStrategyFactory;
-        private NamedWindow namedWindow;
-        private ExprEvaluator namedWindowFilterExpr;
-
-        private QueryGraph namedWindowFilterQueryGraph;
-        // private final static SubordTableLookupStrategyNullRow NULL_ROW_STRATEGY = new SubordTableLookupStrategyNullRow();
-
-        private int subqueryNumber;
-        private ViewFactory[] viewFactories;
-        private ViewResourceDelegateDesc viewResourceDelegate;
+        private int _subqueryNumber;
+        private ViewFactory[] _viewFactories;
+        private ViewResourceDelegateDesc _viewResourceDelegate;
 
         public int SubqueryNumber {
-            set => subqueryNumber = value;
+            set => _subqueryNumber = value;
         }
 
         public ViewFactory[] ViewFactories {
-            set => viewFactories = value;
+            set => _viewFactories = value;
         }
 
         public ViewResourceDelegateDesc ViewResourceDelegate {
-            set => viewResourceDelegate = value;
+            set => _viewResourceDelegate = value;
         }
 
         public EventTableFactoryFactory EventTableFactoryFactory {
-            set => eventTableFactoryFactory = value;
+            set => _eventTableFactoryFactory = value;
         }
 
         public NamedWindow NamedWindow {
-            set => namedWindow = value;
+            set => _namedWindow = value;
         }
 
         public SubordTableLookupStrategyFactory LookupStrategyFactory {
-            set => lookupStrategyFactory = value;
+            set => _lookupStrategyFactory = value;
         }
 
         public AggregationServiceFactory AggregationServiceFactory {
-            set => aggregationServiceFactory = value;
+            set => _aggregationServiceFactory = value;
         }
 
         public bool CorrelatedSubquery {
-            set => correlatedSubquery = value;
+            set => _correlatedSubquery = value;
         }
 
         public ExprEvaluator GroupKeyEval {
-            set => groupKeyEval = value;
+            set => _groupKeyEval = value;
         }
 
         public ExprEvaluator FilterExprEval {
-            set => filterExprEval = value;
+            set => _filterExprEval = value;
         }
 
         public ExprEvaluator NamedWindowFilterExpr {
-            set => namedWindowFilterExpr = value;
+            set => _namedWindowFilterExpr = value;
         }
 
         public QueryGraph NamedWindowFilterQueryGraph {
-            set => namedWindowFilterQueryGraph = value;
-        }
-
-        public void Ready(
-            StatementContext statementContext,
-            EventType eventType)
-        {
-            var type = viewFactories.Length == 0 ? eventType : viewFactories[viewFactories.Length - 1].EventType;
-            eventTableFactory = eventTableFactoryFactory.Create(type, statementContext);
-            eventTableIndexService = statementContext.EventTableIndexService;
+            set => _namedWindowFilterQueryGraph = value;
         }
 
         public SubSelectStrategyRealization Instantiate(
             Viewable viewableRoot,
             AgentInstanceContext agentInstanceContext,
-            IList<AgentInstanceStopCallback> stopCallbackList,
+            IList<AgentInstanceMgmtCallback> stopCallbackList,
             int subqueryNumber,
             bool isRecoveringResilient)
         {
             // create factory chain context to hold callbacks specific to "prior" and "prev"
-            var viewFactoryChainContext = AgentInstanceViewFactoryChainContext.Create(
-                viewFactories,
-                agentInstanceContext,
-                viewResourceDelegate);
-            var viewables = ViewFactoryUtil.Materialize(
-                viewFactories,
-                viewableRoot,
-                viewFactoryChainContext,
-                stopCallbackList);
+            var viewFactoryChainContext = AgentInstanceViewFactoryChainContext.Create(_viewFactories, agentInstanceContext, _viewResourceDelegate);
+            var viewables = ViewFactoryUtil.Materialize(_viewFactories, viewableRoot, viewFactoryChainContext, stopCallbackList);
             var subselectView = viewables.Last;
 
             // make aggregation service
             AggregationService aggregationService = null;
-            if (aggregationServiceFactory != null) {
-                aggregationService = aggregationServiceFactory.MakeService(
+            if (_aggregationServiceFactory != null) {
+                aggregationService = _aggregationServiceFactory.MakeService(
                     agentInstanceContext,
                     agentInstanceContext.ImportServiceRuntime,
                     true,
@@ -135,8 +118,11 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 
                 var aggregationServiceStoppable = aggregationService;
                 stopCallbackList.Add(
-                    new ProxyAgentInstanceStopCallback {
-                        ProcStop = services => { aggregationServiceStoppable.Stop(); }
+                    new ProxyAgentInstanceMgmtCallback {
+                        ProcStop = services => { aggregationServiceStoppable.Stop(); },
+                        ProcTransfer = services => {
+                            // no action
+                        },
                     });
             }
 
@@ -147,44 +133,32 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             var previousGetter = viewFactoryChainContext.PreviousNodeGetter;
 
             // handle aggregated and non-correlated queries: there is no strategy or index
-            if (aggregationServiceFactory != null && !correlatedSubquery) {
+            if (_aggregationServiceFactory != null && !_correlatedSubquery) {
                 View aggregatorView;
-                if (groupKeyEval == null) {
-                    if (filterExprEval == null) {
+                if (_groupKeyEval == null) {
+                    if (_filterExprEval == null) {
                         aggregatorView = new SubselectAggregatorViewUnfilteredUngrouped(
-                            aggregationService,
-                            filterExprEval,
-                            agentInstanceContext,
-                            null);
+                            aggregationService, _filterExprEval, agentInstanceContext, null);
                     }
                     else {
                         aggregatorView = new SubselectAggregatorViewFilteredUngrouped(
-                            aggregationService,
-                            filterExprEval,
-                            agentInstanceContext,
-                            null);
+                            aggregationService, _filterExprEval, agentInstanceContext, null);
                     }
                 }
                 else {
-                    if (filterExprEval == null) {
+                    if (_filterExprEval == null) {
                         aggregatorView = new SubselectAggregatorViewUnfilteredGrouped(
-                            aggregationService,
-                            filterExprEval,
-                            agentInstanceContext,
-                            groupKeyEval);
+                            aggregationService, _filterExprEval, agentInstanceContext, _groupKeyEval);
                     }
                     else {
                         aggregatorView = new SubselectAggregatorViewFilteredGrouped(
-                            aggregationService,
-                            filterExprEval,
-                            agentInstanceContext,
-                            groupKeyEval);
+                            aggregationService, _filterExprEval, agentInstanceContext, _groupKeyEval);
                     }
                 }
 
                 subselectView.Child = aggregatorView;
 
-                if (namedWindow != null && eventTableIndexService.AllowInitIndex(isRecoveringResilient)) {
+                if (_namedWindow != null && _eventTableIndexService.AllowInitIndex(isRecoveringResilient)) {
                     PreloadFromNamedWindow(null, aggregatorView, agentInstanceContext);
                 }
 
@@ -199,47 +173,39 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             }
 
             // create index/holder table
-            var index = eventTableFactory.MakeEventTables(agentInstanceContext, subqueryNumber);
-            stopCallbackList.Add(new SubqueryIndexStopCallback(index));
+            var index = _eventTableFactory.MakeEventTables(agentInstanceContext, subqueryNumber);
+            stopCallbackList.Add(new SubqueryIndexMgmtCallback(index));
 
             // create strategy
-            var strategy = lookupStrategyFactory.MakeStrategy(index, agentInstanceContext, null);
+            var strategy = _lookupStrategyFactory.MakeStrategy(index, agentInstanceContext, null);
 
             // handle unaggregated or correlated queries or
             SubselectAggregationPreprocessorBase subselectAggregationPreprocessor = null;
-            if (aggregationServiceFactory != null) {
-                if (groupKeyEval == null) {
-                    if (filterExprEval == null) {
+            if (_aggregationServiceFactory != null) {
+                if (_groupKeyEval == null) {
+                    if (_filterExprEval == null) {
                         subselectAggregationPreprocessor = new SubselectAggregationPreprocessorUnfilteredUngrouped(
-                            aggregationService,
-                            filterExprEval,
-                            null);
+                            aggregationService, _filterExprEval, null);
                     }
                     else {
                         subselectAggregationPreprocessor = new SubselectAggregationPreprocessorFilteredUngrouped(
-                            aggregationService,
-                            filterExprEval,
-                            null);
+                            aggregationService, _filterExprEval, null);
                     }
                 }
                 else {
-                    if (filterExprEval == null) {
+                    if (_filterExprEval == null) {
                         subselectAggregationPreprocessor = new SubselectAggregationPreprocessorUnfilteredGrouped(
-                            aggregationService,
-                            filterExprEval,
-                            groupKeyEval);
+                            aggregationService, _filterExprEval, _groupKeyEval);
                     }
                     else {
                         subselectAggregationPreprocessor = new SubselectAggregationPreprocessorFilteredGrouped(
-                            aggregationService,
-                            filterExprEval,
-                            groupKeyEval);
+                            aggregationService, _filterExprEval, _groupKeyEval);
                     }
                 }
             }
 
             // preload when allowed
-            if (namedWindow != null && eventTableIndexService.AllowInitIndex(isRecoveringResilient)) {
+            if (_namedWindow != null && _eventTableIndexService.AllowInitIndex(isRecoveringResilient)) {
                 PreloadFromNamedWindow(index, subselectView, agentInstanceContext);
             }
 
@@ -257,20 +223,27 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                 index);
         }
 
-        public LookupStrategyDesc LookupStrategyDesc => lookupStrategyFactory.LookupStrategyDesc;
+        public void Ready(
+            SubSelectStrategyFactoryContext subselectFactoryContext,
+            EventType eventType)
+        {
+            var type = _viewFactories.Length == 0 ? eventType : _viewFactories[_viewFactories.Length - 1].EventType;
+            _eventTableFactory = _eventTableFactoryFactory.Create(type, subselectFactoryContext.EventTableFactoryContext);
+            _eventTableIndexService = subselectFactoryContext.EventTableIndexService;
+        }
 
         private void PreloadFromNamedWindow(
             EventTable[] eventIndex,
             Viewable subselectView,
             AgentInstanceContext agentInstanceContext)
         {
-            var instance = namedWindow.GetNamedWindowInstance(agentInstanceContext);
+            var instance = _namedWindow.GetNamedWindowInstance(agentInstanceContext);
             if (instance == null) {
                 throw new EPException(
                     "Named window '" +
-                    namedWindow.Name +
+                    _namedWindow.Name +
                     "' is associated to context '" +
-                    namedWindow.StatementContext.ContextName +
+                    _namedWindow.StatementContext.ContextName +
                     "' that is not available for querying");
             }
 
@@ -278,36 +251,31 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 
             // preload view for stream
             ICollection<EventBean> eventsInWindow;
-            if (namedWindowFilterExpr != null) {
-                ICollection<EventBean> snapshot = consumerView.SnapshotNoLock(
-                    namedWindowFilterQueryGraph,
-                    agentInstanceContext.Annotations);
+            if (_namedWindowFilterExpr != null) {
+                var snapshot = consumerView.SnapshotNoLock(_namedWindowFilterQueryGraph, agentInstanceContext.Annotations);
                 eventsInWindow = new List<EventBean>(snapshot.Count);
                 ExprNodeUtilityEvaluate.ApplyFilterExpressionIterable(
                     snapshot.GetEnumerator(),
-                    namedWindowFilterExpr,
+                    _namedWindowFilterExpr,
                     agentInstanceContext,
                     eventsInWindow);
             }
             else {
-                eventsInWindow = new List<EventBean>();
-                using (var enumerator = consumerView.GetEnumerator()) {
-                    while (enumerator.MoveNext()) {
-                        eventsInWindow.Add(enumerator.Current);
-                    }
-                }
+                eventsInWindow = consumerView.ToList();
             }
 
             var newEvents = eventsInWindow.ToArray();
-            if (subselectView != null) {
-                ((View) subselectView).Update(newEvents, null);
-            }
+            ((View) subselectView)?.Update(newEvents, null);
 
             if (eventIndex != null) {
                 foreach (var table in eventIndex) {
                     table.Add(newEvents, agentInstanceContext); // fill index
                 }
             }
+        }
+
+        public LookupStrategyDesc LookupStrategyDesc {
+            get { return _lookupStrategyFactory.LookupStrategyDesc; }
         }
     }
 } // end of namespace

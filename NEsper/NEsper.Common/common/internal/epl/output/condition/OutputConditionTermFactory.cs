@@ -12,7 +12,7 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
 {
     public class OutputConditionTermFactory : OutputConditionFactory
     {
-        public readonly static OutputConditionTermFactory INSTANCE = new OutputConditionTermFactory();
+        public static readonly OutputConditionTermFactory INSTANCE = new OutputConditionTermFactory();
 
         private OutputConditionTermFactory()
         {

@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                             "GetSortKey",
                             Ref("eventsPerStream"),
                             ConstantTrue(),
-                            REF_AGENTINSTANCECONTEXT));
+                            MEMBER_AGENTINSTANCECONTEXT));
 
                 if (forge.OptionalHavingNode == null) {
                     loop.DeclareVar<EventBean[]>(
@@ -115,11 +115,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                         StaticMethod(
                             typeof(ResultSetProcessorUtil),
                             ResultSetProcessorUtil.METHOD_GETSELECTEVENTSNOHAVING,
-                            REF_SELECTEXPRPROCESSOR,
+                            MEMBER_SELECTEXPRPROCESSOR,
                             Ref("eventsPerStream"),
                             ConstantTrue(),
                             ConstantTrue(),
-                            REF_AGENTINSTANCECONTEXT));
+                            MEMBER_AGENTINSTANCECONTEXT));
                 }
                 else {
                     var select = ResultSetProcessorUtil.GetSelectEventsHavingCodegen(classScope, instance);
@@ -127,11 +127,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                         "result",
                         LocalMethod(
                             select,
-                            REF_SELECTEXPRNONMEMBER,
+                            MEMBER_SELECTEXPRNONMEMBER,
                             Ref("eventsPerStream"),
                             ConstantTrue(),
                             ConstantTrue(),
-                            REF_AGENTINSTANCECONTEXT));
+                            MEMBER_AGENTINSTANCECONTEXT));
                 }
 
                 loop.IfCondition(
@@ -153,7 +153,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                         "SortWOrderKeys",
                         Ref("outgoingEvents"),
                         Ref("orderKeysArr"),
-                        REF_AGENTINSTANCECONTEXT))
+                        MEMBER_AGENTINSTANCECONTEXT))
                 .MethodReturn(
                     ExprDotMethod(
                         StaticMethod(typeof(Arrays), "Enumerate", Ref("orderedEvents")),
@@ -172,7 +172,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                         Ref("this"),
                         "ProcessJoinResult",
                         REF_JOINSET,
-                        StaticMethod(typeof(Collections), "GetEmptySet", new[] {typeof(MultiKey<EventBean>)}),
+                        StaticMethod(typeof(Collections), "GetEmptySet", new[] {typeof(MultiKeyArrayOfKeys<EventBean>)}),
                         ConstantTrue()))
                 .IfRefNull("result")
                 .BlockReturn(
@@ -208,8 +208,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                 instance.AddMember(NAME_OUTPUTALLHELPER, typeof(ResultSetProcessorSimpleOutputAllHelper));
                 instance.ServiceCtor.Block.AssignRef(
                     NAME_OUTPUTALLHELPER,
-                    ExprDotMethod(factory, "MakeRSSimpleOutputAll", Ref("this"), REF_AGENTINSTANCECONTEXT, eventTypes));
-                method.Block.ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), methodName, REF_NEWDATA, REF_OLDDATA);
+                    ExprDotMethod(factory, "MakeRSSimpleOutputAll", Ref("this"), MEMBER_AGENTINSTANCECONTEXT, eventTypes));
+                method.Block.ExprDotMethod(Member(NAME_OUTPUTALLHELPER), methodName, REF_NEWDATA, REF_OLDDATA);
             }
             else if (forge.IsOutputLast) {
                 instance.AddMember(NAME_OUTPUTLASTHELPER, typeof(ResultSetProcessorSimpleOutputLastHelper));
@@ -219,9 +219,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                         factory,
                         "MakeRSSimpleOutputLast",
                         Ref("this"),
-                        REF_AGENTINSTANCECONTEXT,
+                        MEMBER_AGENTINSTANCECONTEXT,
                         eventTypes));
-                method.Block.ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), methodName, REF_NEWDATA, REF_OLDDATA);
+                method.Block.ExprDotMethod(Member(NAME_OUTPUTLASTHELPER), methodName, REF_NEWDATA, REF_OLDDATA);
             }
         }
 
@@ -241,10 +241,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             CodegenInstanceAux instance)
         {
             if (forge.IsOutputAll) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "OutputView", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Member(NAME_OUTPUTALLHELPER), "OutputView", REF_ISSYNTHESIZE));
             }
             else if (forge.IsOutputLast) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "OutputView", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Member(NAME_OUTPUTLASTHELPER), "OutputView", REF_ISSYNTHESIZE));
             }
             else {
                 method.Block.MethodReturn(ConstantNull());
@@ -258,10 +258,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             CodegenInstanceAux instance)
         {
             if (forge.IsOutputAll) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "OutputJoin", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Member(NAME_OUTPUTALLHELPER), "OutputJoin", REF_ISSYNTHESIZE));
             }
             else if (forge.IsOutputLast) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "OutputJoin", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Member(NAME_OUTPUTLASTHELPER), "OutputJoin", REF_ISSYNTHESIZE));
             }
             else {
                 method.Block.MethodReturn(ConstantNull());
@@ -273,11 +273,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             CodegenInstanceAux instance)
         {
             if (instance.HasMember(NAME_OUTPUTLASTHELPER)) {
-                method.Block.ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "Destroy");
+                method.Block.ExprDotMethod(Member(NAME_OUTPUTLASTHELPER), "Destroy");
             }
 
             if (instance.HasMember(NAME_OUTPUTALLHELPER)) {
-                method.Block.ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "Destroy");
+                method.Block.ExprDotMethod(Member(NAME_OUTPUTALLHELPER), "Destroy");
             }
         }
 
@@ -286,11 +286,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             CodegenInstanceAux instance)
         {
             if (instance.HasMember(NAME_OUTPUTLASTHELPER)) {
-                method.Block.ExprDotMethod(REF_RESULTSETVISITOR, "Visit", Ref(NAME_OUTPUTLASTHELPER));
+                method.Block.ExprDotMethod(REF_RESULTSETVISITOR, "Visit", Member(NAME_OUTPUTLASTHELPER));
             }
 
             if (instance.HasMember(NAME_OUTPUTALLHELPER)) {
-                method.Block.ExprDotMethod(REF_RESULTSETVISITOR, "Visit", Ref(NAME_OUTPUTALLHELPER));
+                method.Block.ExprDotMethod(REF_RESULTSETVISITOR, "Visit", Member(NAME_OUTPUTALLHELPER));
             }
         }
 
@@ -299,7 +299,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             CodegenMethod method)
         {
             if (!forge.IsOutputLast) {
-                method.Block.DeclareVar<UniformPair<ISet<MultiKey<EventBean>>>>(
+                method.Block.DeclareVar<UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>>(
                         "pair",
                         StaticMethod(
                             typeof(EventBeanUtility),

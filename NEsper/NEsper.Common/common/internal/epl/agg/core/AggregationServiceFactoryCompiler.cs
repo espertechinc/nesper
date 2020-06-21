@@ -12,6 +12,7 @@ using System.IO;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -21,10 +22,7 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.settings;
-using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compat.io;
@@ -257,7 +255,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 makeMethod.Block.MethodReturn(ConstantNull());
             }
             else {
-                makeMethod.Block.MethodReturn(NewInstance(classNameRow, CTX_REF));
+                makeMethod.Block.MethodReturn(NewInstanceInner(classNameRow, CTX_REF));
             }
 
             var methods = new CodegenClassMethods();
@@ -355,11 +353,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             var output = Ref("output");
             var unitKey = Ref("unitKey");
             var writer = Ref("writer");
+
             var writeMethod = CodegenMethod.MakeMethod(
                     typeof(void),
                     typeof(AggregationServiceFactoryCompiler),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
+                .WithOverride()
                 .AddParam(
                     CodegenNamedParam.From(
                         typeof(AggregationRow), "@object",
@@ -373,6 +373,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     typeof(AggregationServiceFactoryCompiler),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
+                .WithOverride()
                 .AddParam(CodegenNamedParam.From(typeof(DataInput), input.Ref, typeof(byte[]), unitKey.Ref))
                 .AddThrown(typeof(IOException));
 
@@ -380,7 +381,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 readMethod.Block.MethodReturn(ConstantNull());
             }
             else {
-                readMethod.Block.DeclareVar(classNameRow, "row", NewInstance(classNameRow, CTX_REF));
+                readMethod.Block.DeclareVar(classNameRow, "row", NewInstanceInner(classNameRow, CTX_REF));
                 readConsumer.Invoke(readMethod, level);
 
                 var methodFactories = levelDesc.StateDesc.MethodFactories;
@@ -449,9 +450,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             var properties = new CodegenClassProperties();
 
             CodegenStackGenerator.RecursiveBuildStack(writeMethod, "Write", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(readMethod, "Read", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(readMethod, "ReadValue", methods, properties);
 
-            var innerClassInterface = typeof(DataInputOutputSerdeWCollation<AggregationRow>);
+            var innerClassInterface = typeof(DataInputOutputSerdeBase<AggregationRow>);
             var innerClass = new CodegenInnerClass(
                 classNameSerde,
                 innerClassInterface,
@@ -459,7 +460,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 members,
                 methods,
                 properties);
-            innerClass.InterfaceGenericClass = classNameRow;
             innerClasses.Add(innerClass);
         }
 
@@ -576,13 +576,19 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 classScope,
                 namedMethods);
             var clearMethod = MakeStateUpdate(
-                !isGenerateTableEnter,
+                true,
                 AggregationCodegenUpdateType.CLEAR,
                 methodForges,
                 methodFactories,
                 accessFactories,
                 classScope,
                 namedMethods);
+            
+            // get-access-state
+            var getAccessStateMethod = MakeGetAccessState(
+                numMethodFactories,
+                accessFactories,
+                classScope);
 
             // make state-update for tables
             var enterAggMethod = MakeTableMethod(
@@ -594,6 +600,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 isGenerateTableEnter,
                 AggregationCodegenTableUpdateType.LEAVE,
                 methodFactories,
+                classScope);
+            var resetAggMethod = MakeTableResetMethod(
+                isGenerateTableEnter,
+                methodFactories,
+                accessFactories,
                 classScope);
             var enterAccessMethod = MakeTableAccess(
                 isGenerateTableEnter,
@@ -609,11 +620,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 accessFactories,
                 classScope,
                 namedMethods);
-            var getAccessStateMethod = MakeTableGetAccessState(
-                isGenerateTableEnter,
-                numMethodFactories,
-                accessFactories,
-                classScope);
 
             // make getters
             var getValueMethod = MakeGet(
@@ -652,6 +658,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             CodegenStackGenerator.RecursiveBuildStack(clearMethod, "Clear", innerMethods, innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(enterAggMethod, "EnterAgg", innerMethods, innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(leaveAggMethod, "LeaveAgg", innerMethods, innerProperties);
+            CodegenStackGenerator.RecursiveBuildStack(resetAggMethod, "Reset", innerMethods, innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(enterAccessMethod, "EnterAccess", innerMethods, innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(leaveAccessMethod, "LeaveAccess", innerMethods, innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(getAccessStateMethod, "GetAccessState", innerMethods, innerProperties);
@@ -697,7 +704,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             }
 
             var value = Ref("value");
-            var blocks = method.Block.SwitchBlockOfLength("column", methodFactories.Length, true);
+            var blocks = method.Block.SwitchBlockOfLength(Ref("column"), methodFactories.Length, true);
             for (var i = 0; i < methodFactories.Length; i++) {
                 var factory = methodFactories[i];
                 var evaluationTypes =
@@ -712,7 +719,48 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     factory.Aggregator.ApplyTableLeaveCodegen(value, evaluationTypes, updateMethod, classScope);
                 }
 
-                blocks[i].InstanceMethod(updateMethod, value).BlockReturnNoValue();
+                blocks[i].LocalMethod(updateMethod, value).BlockReturnNoValue();
+            }
+
+            return method;
+        }
+
+        private static CodegenMethod MakeTableResetMethod(
+            bool isGenerateTableEnter,
+            AggregationForgeFactory[] methodFactories,
+            AggregationStateFactoryForge[] accessFactories,
+            CodegenClassScope classScope)
+        {
+            CodegenMethod method = CodegenMethod
+                .MakeParentNode(typeof(void), typeof(AggregationServiceFactoryCompiler), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .AddParam(typeof(int), "column");
+            if (!isGenerateTableEnter) {
+                method.Block.MethodThrowUnsupported();
+                return method;
+            }
+
+            List<CodegenMethod> methods = new List<CodegenMethod>();
+
+            if (methodFactories != null) {
+                foreach (AggregationForgeFactory factory in methodFactories) {
+                    CodegenMethod resetMethod = method.MakeChild(typeof(void), factory.Aggregator.GetType(), classScope);
+                    factory.Aggregator.ClearCodegen(resetMethod, classScope);
+                    methods.Add(resetMethod);
+                }
+            }
+
+            if (accessFactories != null) {
+                foreach (AggregationStateFactoryForge accessFactory in accessFactories) {
+                    CodegenMethod resetMethod = method.MakeChild(typeof(void), accessFactory.Aggregator.GetType(), classScope);
+                    accessFactory.Aggregator.ClearCodegen(resetMethod, classScope);
+                    methods.Add(resetMethod);
+                }
+            }
+
+            CodegenBlock[] blocks = method.Block.SwitchBlockOfLength(Ref("column"), methods.Count, false);
+            int count = 0;
+            foreach (CodegenMethod getValue in methods) {
+                blocks[count++].Expression(LocalMethod(getValue));
             }
 
             return method;
@@ -747,7 +795,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 colums[i] = offset + i;
             }
 
-            var blocks = method.Block.SwitchBlockOptions("column", colums, true);
+            var blocks = method.Block.SwitchBlockOptions(Ref("column"), colums, true);
             for (var i = 0; i < accessStateFactories.Length; i++) {
                 var stateFactoryForge = accessStateFactories[i];
                 var aggregator = stateFactoryForge.Aggregator;
@@ -758,11 +806,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     .AddParam(PARAMS);
                 if (type == AggregationCodegenTableUpdateType.ENTER) {
                     aggregator.ApplyEnterCodegen(updateMethod, symbols, classScope, namedMethods);
-                    blocks[i].InstanceMethod(updateMethod, REF_EPS, ConstantTrue(), REF_EXPREVALCONTEXT);
+                    blocks[i].LocalMethod(updateMethod, REF_EPS, ConstantTrue(), REF_EXPREVALCONTEXT);
                 }
                 else {
                     aggregator.ApplyLeaveCodegen(updateMethod, symbols, classScope, namedMethods);
-                    blocks[i].InstanceMethod(updateMethod, REF_EPS, ConstantFalse(), REF_EXPREVALCONTEXT);
+                    blocks[i].LocalMethod(updateMethod, REF_EPS, ConstantFalse(), REF_EXPREVALCONTEXT);
                 }
 
                 blocks[i].BlockReturnNoValue();
@@ -771,8 +819,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             return method;
         }
 
-        private static CodegenMethod MakeTableGetAccessState(
-            bool isGenerateTableEnter,
+        private static CodegenMethod MakeGetAccessState(
             int offset,
             AggregationStateFactoryForge[] accessStateFactories,
             CodegenClassScope classScope)
@@ -783,18 +830,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
                 .AddParam(typeof(int), "column");
-            if (!isGenerateTableEnter) {
-                method.Block.MethodThrowUnsupported();
-                return method;
+
+            int[] columns = new int[accessStateFactories?.Length ?? 0];
+            for (int i = 0; i < columns.Length; i++) {
+                columns[i] = offset + i;
             }
 
-            var colums = new int[accessStateFactories.Length];
-            for (var i = 0; i < accessStateFactories.Length; i++) {
-                colums[i] = offset + i;
-            }
-
-            var blocks = method.Block.SwitchBlockOptions("column", colums, true);
-            for (var i = 0; i < accessStateFactories.Length; i++) {
+            CodegenBlock[] blocks = method.Block.SwitchBlockOptions(Ref("column"), columns, true);
+            for (int i = 0; i < columns.Length; i++) {
                 var stateFactoryForge = accessStateFactories[i];
                 var expr = stateFactoryForge.CodegenGetAccessTableState(i + offset, method, classScope);
                 blocks[i].BlockReturn(expr);
@@ -890,7 +933,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 }
             }
 
-            var blocks = parent.Block.SwitchBlockOfLength("column", count, true);
+            var blocks = parent.Block.SwitchBlockOfLength(Ref("column"), count, true);
             count = 0;
             foreach (var getValue in methods) {
                 blocks[count++]
@@ -1029,7 +1072,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             // code for enter
             symbols.DerivedSymbolsCodegen(parent, parent.Block, classScope);
             foreach (var method in methods) {
-                parent.Block.InstanceMethod(method);
+                parent.Block.LocalMethod(method);
             }
 
             return parent;
@@ -1170,6 +1213,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     typeof(ExprEvaluatorContext),
                     NAME_EXPREVALCONTEXT);
             forge.GetEventBeanCodegen(getEventBeanMethod, classScope, namedMethods);
+            
+            var getRowMethod = CodegenMethod
+                .MakeParentNode(typeof(AggregationRow), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .AddParam(typeof(int), AggregationServiceCodegenNames.NAME_AGENTINSTANCEID)
+                .AddParam(typeof(EventBean[]), NAME_EPS)
+                .AddParam(typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA)
+                .AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
+            forge.GetRowCodegen(getRowMethod, classScope, namedMethods);
 
             var getGroupKeyMethod = CodegenMethod
                 .MakeMethod(typeof(object), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
@@ -1291,6 +1342,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             CodegenStackGenerator.RecursiveBuildStack(
                 getEventBeanMethod,
                 "GetEventBean",
+                innerMethods,
+                innerProperties);
+            CodegenStackGenerator.RecursiveBuildStack(
+                getRowMethod,
+                "GetAggregationRow",
                 innerMethods,
                 innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(

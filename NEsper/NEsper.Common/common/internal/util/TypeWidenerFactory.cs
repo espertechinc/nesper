@@ -24,6 +24,7 @@ namespace com.espertech.esper.common.@internal.util
     public class TypeWidenerFactory
     {
         private static readonly TypeWidenerSPI STRING_TO_CHAR_COERCER = new ProxyTypeWidenerSPI {
+            ProcWidenResultType = () => typeof(char),
             ProcWiden = input => SimpleTypeCasterFactory.CharTypeCaster.Cast(input),
             ProcWidenCodegen = (
                     expression,
@@ -73,7 +74,7 @@ namespace com.espertech.esper.common.@internal.util
         /// <param name="allowObjectArrayToCollectionConversion">whether we widen object-array to collection</param>
         /// <param name="customizer">customization if any</param>
         /// <param name="statementName">statement name</param>
-        /// <returns>type widender</returns>
+        /// <returns>type widener</returns>
         /// <throws>TypeWidenerException if type validation fails</throws>
         public static TypeWidenerSPI GetCheckPropertyAssignType(
             string columnName,
@@ -87,16 +88,14 @@ namespace com.espertech.esper.common.@internal.util
             var columnTypeBoxed = columnType.GetBoxedType();
             var targetTypeBoxed = writeablePropertyType.GetBoxedType();
 
-            if (customizer != null) {
-                var custom = customizer.WidenerFor(
-                    columnName,
-                    columnType,
-                    writeablePropertyType,
-                    writeablePropertyName,
-                    statementName);
-                if (custom != null) {
-                    return custom;
-                }
+            var custom = customizer?.WidenerFor(
+                columnName,
+                columnType,
+                writeablePropertyType,
+                writeablePropertyName,
+                statementName);
+            if (custom != null) {
+                return custom;
             }
 
             if (columnType == null) {
@@ -133,6 +132,21 @@ namespace com.espertech.esper.common.@internal.util
 
                 if (!columnType.IsAssignmentCompatible(writeablePropertyType) && 
                     !columnTypeUnboxed.IsAssignmentCompatible(targetTypeUnboxed)) {
+                    
+                    // Arrays can be assigned to each other if the underlying target types
+                    // can be assigned from one another.
+                    if (columnType.IsArray && 
+                        targetTypeBoxed.IsArray &&
+                        columnType.GetArrayRank() == targetTypeBoxed.GetArrayRank()) {
+                        var columnElementType = columnType.GetElementType();
+                        var targetElementType = targetTypeBoxed.GetElementType();
+                        if (columnElementType.IsAssignmentCompatible(targetElementType)) {
+                            return new TypeWidenerCompatibleArrayCoercer(
+                                columnElementType,
+                                targetElementType);
+                        }
+                    }
+
                     var writablePropName = writeablePropertyType.CleanName();
                     if (writeablePropertyType.IsArray) {
                         writablePropName = writeablePropertyType.GetElementType().CleanName() + "[]";
@@ -231,17 +245,24 @@ namespace com.espertech.esper.common.@internal.util
             Type generator,
             CodegenClassScope codegenClassScope)
         {
-            var collectionType = typeof(ICollection<>).MakeGenericType(arrayType.GetElementType());
-            var method = codegenMethodScope.MakeChild(collectionType, generator, codegenClassScope)
+            var elementType = arrayType.GetElementType();
+            var collectionType = typeof(ICollection<>).MakeGenericType(elementType);
+            var method = codegenMethodScope
+                .MakeChild(collectionType, generator, codegenClassScope)
                 .AddParam(typeof(object), "input")
                 .Block
                 .IfRefNullReturnNull("input")
-                .MethodReturn(StaticMethod(typeof(Arrays), "AsList", new Type[0], Cast(arrayType, Ref("input"))));
+                .MethodReturn(Unwrap(elementType, Ref("input")));
+            
             return LocalMethodBuild(method).Pass(expression).Call();
         }
 
         internal class TypeWidenerByteArrayToCollectionCoercer : TypeWidenerSPI
         {
+            public Type WidenResultType {
+                get => typeof(IList<byte>);
+            }
+
             public object Widen(object input)
             {
                 return input == null ? null : Arrays.AsList((byte[]) input);
@@ -263,6 +284,10 @@ namespace com.espertech.esper.common.@internal.util
 
         internal class TypeWidenerShortArrayToCollectionCoercer : TypeWidenerSPI
         {
+            public Type WidenResultType {
+                get => typeof(IList<short>);
+            }
+            
             public object Widen(object input)
             {
                 return input == null ? null : Arrays.AsList((short[]) input);
@@ -284,6 +309,10 @@ namespace com.espertech.esper.common.@internal.util
 
         internal class TypeWidenerIntArrayToCollectionCoercer : TypeWidenerSPI
         {
+            public Type WidenResultType {
+                get => typeof(IList<int>);
+            }
+            
             public object Widen(object input)
             {
                 return input == null ? null : Arrays.AsList((int[]) input);
@@ -305,6 +334,10 @@ namespace com.espertech.esper.common.@internal.util
 
         internal class TypeWidenerLongArrayToCollectionCoercer : TypeWidenerSPI
         {
+            public Type WidenResultType {
+                get => typeof(IList<long>);
+            }
+            
             public object Widen(object input)
             {
                 return input == null ? null : Arrays.AsList((long[]) input);
@@ -326,6 +359,10 @@ namespace com.espertech.esper.common.@internal.util
 
         internal class TypeWidenerFloatArrayToCollectionCoercer : TypeWidenerSPI
         {
+            public Type WidenResultType {
+                get => typeof(IList<float>);
+            }
+            
             public object Widen(object input)
             {
                 return input == null ? null : Arrays.AsList((float[]) input);
@@ -347,6 +384,10 @@ namespace com.espertech.esper.common.@internal.util
 
         internal class TypeWidenerDoubleArrayToCollectionCoercer : TypeWidenerSPI
         {
+            public Type WidenResultType {
+                get => typeof(IList<double>);
+            }
+            
             public object Widen(object input)
             {
                 return input == null ? null : Arrays.AsList((double[]) input);
@@ -368,6 +409,10 @@ namespace com.espertech.esper.common.@internal.util
 
         internal class TypeWidenerBooleanArrayToCollectionCoercer : TypeWidenerSPI
         {
+            public Type WidenResultType {
+                get => typeof(IList<bool>);
+            }
+            
             public object Widen(object input)
             {
                 return input == null ? null : Arrays.AsList((bool[]) input);
@@ -389,6 +434,10 @@ namespace com.espertech.esper.common.@internal.util
 
         internal class TypeWidenerCharArrayToCollectionCoercer : TypeWidenerSPI
         {
+            public Type WidenResultType {
+                get => typeof(IList<char>);
+            }
+            
             public object Widen(object input)
             {
                 return input == null ? null : Arrays.AsList((char[]) input);
@@ -405,6 +454,47 @@ namespace com.espertech.esper.common.@internal.util
                     codegenMethodScope,
                     typeof(TypeWidenerCharArrayToCollectionCoercer),
                     codegenClassScope);
+            }
+        }
+
+        internal class TypeWidenerCompatibleArrayCoercer : TypeWidenerSPI
+        {
+            private Type inputElementType;
+            private Type targetElementType;
+
+            public TypeWidenerCompatibleArrayCoercer(
+                Type inputElementType,
+                Type targetElementType)
+            {
+                this.inputElementType = inputElementType;
+                this.targetElementType = targetElementType;
+                this.WidenResultType = targetElementType.MakeArrayType();
+            }
+
+            public Type WidenResultType { get; }
+
+            public object Widen(object input)
+            {
+                var inputArray = (Array) input;
+                var targetArray = Array.CreateInstance(targetElementType, inputArray.Length);
+                for (int ii = 0; ii < inputArray.Length; ii++) {
+                    targetArray.SetValue(inputArray.GetValue(ii), ii);
+                }
+
+                return targetArray;
+            }
+
+            public CodegenExpression WidenCodegen(
+                CodegenExpression expression,
+                CodegenMethodScope codegenMethodScope,
+                CodegenClassScope codegenClassScope)
+            {
+                return StaticMethod(
+                    typeof(CompatExtensions),
+                    "UnwrapIntoArray",
+                    new[] {targetElementType},
+                    expression,
+                    ConstantTrue());
             }
         }
     }

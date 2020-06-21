@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="inner">is the pattern expression to negate</param>
         public PatternNotExpr(PatternExpr inner)
         {
-            this.Children.Add(inner);
+            Children.Add(inner);
         }
 
         public override PatternExprPrecedenceEnum Precedence
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.client.soda
             EPStatementFormatter formatter)
         {
             writer.Write("not ");
-            this.Children[0].ToEPL(writer, Precedence, formatter);
+            Children[0].ToEPL(writer, Precedence, formatter);
         }
     }
 }

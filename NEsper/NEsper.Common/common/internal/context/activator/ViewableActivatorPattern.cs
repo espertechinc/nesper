@@ -6,12 +6,15 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.view.core;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.context.activator
 {
@@ -99,17 +102,46 @@ namespace com.espertech.esper.common.@internal.context.activator
                 }
             };
 
-            EvalRootState rootState = rootNode.Start(callback, patternContext, isRecoveringResilient);
+            var hasContext = agentInstanceContext.StatementContext.ContextRuntimeDescriptor != null;
+            EvalRootState rootState;
+            Runnable optPostContextMergeRunnable = null;
+            if (!hasContext) {
+                rootState = rootNode.Start(callback, patternContext, isRecoveringResilient);
+            } else {
+                // handle any pattern-match-event that was produced during startup, relevant for "timer:interval(0)" and only in conjunction with contexts
+                var startMatchEvent = new Atomic<IList<IDictionary<string, object>>>();
+                var callbackStartup = new ProxyPatternMatchCallback((matchEvent, optionalTriggeringEvent) => {
+                    var received = startMatchEvent.Get();
+                    if (received != null) {
+                        received.Add(matchEvent);
+                    } else {
+                        received = new List<IDictionary<string, object>>();
+                        received.Add(matchEvent);
+                        startMatchEvent.Set(received);
+                    }
+                });
 
+                rootState = rootNode.Start(callbackStartup, patternContext, isRecoveringResilient);
+                rootState.Callback = callback;
+                if (startMatchEvent.Get() != null) {
+                    optPostContextMergeRunnable = () => {
+                        foreach (var matchEvent in startMatchEvent.Get()) {
+                            callback.MatchFound(matchEvent, null);
+                        }
+                    };
+                }
+            }
 
+            ViewableActivatorPatternMgmt mgmt = new ViewableActivatorPatternMgmt(rootState);
             return new ViewableActivationResult(
                 sourceEventStream,
-                new ProxyAgentInstanceStopCallback(services => rootState.Stop()),
+                mgmt,
                 rootState,
                 suppressSameEventMatches,
                 discardPartialsOnMatch,
                 rootState,
-                null);
+                null,
+                optPostContextMergeRunnable);
         }
     }
 } // end of namespace

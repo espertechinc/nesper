@@ -58,13 +58,13 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             testCase.Add("e12", "a", events.GetEvent("e12"));
 
             (new PatternTestHarness(events, testCase, GetType())).RunTest(env);
-            
+
             testCase = new EventExpressionCase("every a=" + INTERFACE_B + "(B='B1')");
             testCase.Add("e2", "a", events.GetEvent("e2"));
             testCase.Add("e4", "a", events.GetEvent("e4"));
 
             (new PatternTestHarness(events, testCase, GetType())).RunTest(env);
-            
+
             testCase = new EventExpressionCase("every a=" + INTERFACE_A + "(A='A3')");
             testCase.Add("e12", "a", events.GetEvent("e12"));
 

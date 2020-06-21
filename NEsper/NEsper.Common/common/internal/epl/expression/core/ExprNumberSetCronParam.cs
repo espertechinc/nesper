@@ -33,8 +33,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         ExprForge,
         ExprEvaluator
     {
-        public const string METHOD_HANDLENUMBERSETCRONPARAMNULLVALUE = "handleNumberSetCronParamNullValue";
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public const string METHOD_HANDLENUMBERSETCRONPARAMNULLVALUE = "HandleNumberSetCronParamNullValue";
 
         [NonSerialized] private ExprEvaluator evaluator;
 
@@ -119,10 +120,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return LocalMethod(methodNode);
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             if (ChildNodes.Length != 0) {
-                ChildNodes[0].ToEPL(writer, Precedence);
+                ChildNodes[0].ToEPL(writer, Precedence, flags);
                 writer.Write(" ");
             }
 

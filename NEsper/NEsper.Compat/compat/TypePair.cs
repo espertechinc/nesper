@@ -19,19 +19,13 @@ namespace com.espertech.esper.compat
         /// Gets the type A.
         /// </summary>
         /// <value>The type A.</value>
-        public Type TypeA
-        {
-            get { return typeA; }
-        }
+        public Type TypeA => typeA;
 
         /// <summary>
         /// Gets the type B.
         /// </summary>
         /// <value>The type B.</value>
-        public Type TypeB
-        {
-            get { return typeB; }
-        }
+        public Type TypeB => typeB;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TypePair"/> class.

@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
 
         public override InfraOnExprBaseViewResult DetermineOnExprView(
             AgentInstanceContext agentInstanceContext,
-            IList<AgentInstanceStopCallback> stopCallbacks,
+            IList<AgentInstanceMgmtCallback> stopCallbacks,
             bool isRecoveringResilient)
         {
             // get instance
@@ -135,7 +135,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                         isRecoveringResilient);
 
                     stopCallbacks.Add(
-                        new ProxyAgentInstanceStopCallback {
+                        new ProxyAgentInstanceMgmtCallback {
                             ProcStop = services => {
                                 for (var i = 0; i < queryPlan.IndexDescs.Length; i++) {
                                     var last = NamedWindow.EventTableIndexMetadata.RemoveIndexReference(

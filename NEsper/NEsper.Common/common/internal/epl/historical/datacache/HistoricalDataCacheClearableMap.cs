@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.datacache
         /// </summary>
         public HistoricalDataCacheClearableMap()
         {
-            cache = new Dictionary<object, EventTable[]>();
+            cache = new Dictionary<object, EventTable[]>().WithNullKeySupport();
         }
 
         public EventTable[] GetCached(object methodParams)

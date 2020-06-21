@@ -42,11 +42,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
             if (index[0] is PropertyHashedEventTable) {
                 eventsPerStream[lookupStream] = lookupEvent;
                 var result = InKeywordTableLookupUtil.MultiIndexLookup(evaluator, eventsPerStream, context, index);
-                if (result == null) {
-                    return null;
-                }
 
-                return result.GetEnumerator();
+                return result?.GetEnumerator();
             }
 
             return index[0].GetEnumerator();

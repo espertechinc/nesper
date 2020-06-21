@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                 Log.Debug(".setObserverParameters " + parameters);
             }
 
-            if (parameters.Count < 5 || parameters.Count > 7) {
+            if (parameters.Count < 5 || parameters.Count > 9) {
                 throw new ObserverParameterException("Invalid number of parameters for timer:at");
             }
 

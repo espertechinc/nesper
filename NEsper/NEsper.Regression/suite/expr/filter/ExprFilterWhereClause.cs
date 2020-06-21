@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "Select TheString From SupportBean#time(30 seconds) where IntPrimitive group by TheString",
-                    "Error validating expression: The where-clause filter expression must return a boolean value");
+                    "Failed to validate expression: The where-clause filter expression must return a boolean value");
 
                 // invalid return type for filter at eventService
                 epl = "select * From MapEventWithCriteriaBool#time(30 seconds) where criteria";

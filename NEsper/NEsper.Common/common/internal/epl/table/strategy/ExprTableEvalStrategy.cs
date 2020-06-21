@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.epl.table.strategy
@@ -36,6 +37,11 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             ExprEvaluatorContext context);
 
         object[] EvaluateTypableSingle(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context);
+
+        AggregationRow GetAggregationRow(
             EventBean[] eventsPerStream,
             bool isNewData,
             ExprEvaluatorContext context);

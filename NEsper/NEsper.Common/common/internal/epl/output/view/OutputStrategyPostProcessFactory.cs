@@ -21,8 +21,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
         public OutputStrategyPostProcessFactory(
             bool isRoute,
-            SelectClauseStreamSelectorEnum insertIntoStreamSelector,
-            SelectClauseStreamSelectorEnum selectStreamDirEnum,
+            SelectClauseStreamSelectorEnum? insertIntoStreamSelector,
+            SelectClauseStreamSelectorEnum? selectStreamDirEnum,
             bool addToFront,
             Table optionalTable)
         {
@@ -35,9 +35,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
         public bool IsRoute { get; }
 
-        public SelectClauseStreamSelectorEnum InsertIntoStreamSelector { get; }
+        public SelectClauseStreamSelectorEnum? InsertIntoStreamSelector { get; }
 
-        public SelectClauseStreamSelectorEnum SelectStreamDirEnum { get; }
+        public SelectClauseStreamSelectorEnum? SelectStreamDirEnum { get; }
 
         public bool IsAddToFront { get; }
 

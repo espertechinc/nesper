@@ -32,6 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
     public class ExprDotDTForge : ExprDotForge
     {
         private readonly DTLocalForge forge;
+        private readonly EPType _returnType;
 
         public ExprDotDTForge(
             IList<CalendarForge> calendarForges,
@@ -42,18 +43,18 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             EventType inputEventType)
         {
             if (intervalForge != null) {
-                TypeInfo = EPTypeHelper.SingleValue(typeof(bool?));
+                _returnType = EPTypeHelper.SingleValue(typeof(bool?));
             }
             else if (reformatForge != null) {
-                TypeInfo = EPTypeHelper.SingleValue(reformatForge.ReturnType);
+                _returnType = EPTypeHelper.SingleValue(reformatForge.ReturnType);
             }
             else { // only calendar op
                 if (inputEventType != null) {
-                    TypeInfo = EPTypeHelper.SingleValue(
+                    _returnType = EPTypeHelper.SingleValue(
                         inputEventType.GetPropertyType(inputEventType.StartTimestampPropertyName));
                 }
                 else {
-                    TypeInfo = EPTypeHelper.SingleValue(inputType);
+                    _returnType = EPTypeHelper.SingleValue(inputType);
                 }
             }
 
@@ -85,21 +86,26 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
         public CodegenExpression Codegen(
             CodegenExpression inner,
             Type innerType,
-            CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol,
-            CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope)
         {
-            var returnType = ((ClassEPType) TypeInfo).Clazz.GetBoxedType();
-            var methodNode = codegenMethodScope
-                .MakeChild(returnType, typeof(ExprDotDTForge), codegenClassScope)
-                .AddParam(innerType, "target");
+            Type methodReturnType;
+            if (_returnType is ClassEPType classEPType) {
+                methodReturnType = classEPType.Clazz.GetBoxedType();
+            }
+            else {
+                methodReturnType = ((ClassMultiValuedEPType) _returnType).Container;
+            }
 
-            CodegenExpression targetValue = Unbox(Ref("target"), innerType);
+            var methodNode = parent
+                .MakeChild(methodReturnType, typeof(ExprDotDTForge), classScope)
+                .AddParam(innerType, "target");
+            
+            var targetValue = Unbox(Ref("target"), innerType);
 
             var block = methodNode.Block;
 
-            block.Debug("Codegen: target = {0}", Ref("target"));
-            
             if (innerType.CanBeNull()) {
                 block.IfRefNullReturnNull("target");
             }
@@ -109,13 +115,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                     targetValue,
                     innerType,
                     methodNode,
-                    exprSymbol,
-                    codegenClassScope));
+                    symbols,
+                    classScope));
 
             return LocalMethod(methodNode, inner);
         }
 
-        public EPType TypeInfo { get; }
+        public EPType TypeInfo => _returnType;
 
         public void Visit(ExprDotEvalVisitor visitor)
         {

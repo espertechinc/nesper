@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.@internal.@event.bean.service;
@@ -46,13 +45,12 @@ namespace com.espertech.esper.common.@internal.@event.map
                 startTimestampPropertyName,
                 endTimestampPropertyName,
                 GETTER_FACTORY,
-                beanEventTypeFactory)
+                beanEventTypeFactory,
+                false)
         {
         }
 
         public override Type UnderlyingType => typeof(IDictionary<string, object>);
-
-        public override EventBeanReader Reader => new MapEventBeanReader(this);
 
         public override EventPropertyDescriptor[] WriteableProperties {
             get {
@@ -64,7 +62,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             }
         }
 
-        internal override void PostUpdateNestableTypes()
+        internal void PostUpdateNestableTypes()
         {
         }
 
@@ -104,10 +102,16 @@ namespace com.espertech.esper.common.@internal.@event.map
 
             var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
             if (property is MappedProperty mapProp) {
+                if (!PropertyItems.ContainsKey(mapProp.PropertyNameAtomic)) {
+                    return null;
+                }
                 return new MapEventBeanPropertyWriterMapProp(mapProp.PropertyNameAtomic, mapProp.Key);
             }
 
             if (property is IndexedProperty indexedProp) {
+                if (!PropertyItems.ContainsKey(indexedProp.PropertyNameAtomic)) {
+                    return null;
+                }
                 return new MapEventBeanPropertyWriterIndexedProp(indexedProp.PropertyNameAtomic, indexedProp.Index);
             }
 

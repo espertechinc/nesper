@@ -60,6 +60,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
 
         public static IDictionary<FilterSpecActivatable, FilterValueSetParam[][]> ComputeAddendumForStatement(
             ContextControllerStatementDesc statementDesc,
+            IDictionary<int, ContextControllerStatementDesc> statements,
             ContextControllerFactory[] controllerFactories,
             object[] allPartitionKeys,
             AgentInstanceContext agentInstanceContextCreate)
@@ -75,6 +76,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
                     true,
                     statementDesc,
                     controllerFactories,
+                    statements,
                     agentInstanceContextCreate);
                 if (addendum != null && addendum.Length > 0) {
                     map.Put(filter.Value, addendum);
@@ -95,6 +97,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
                 false,
                 null,
                 realization.ContextManager.ContextDefinition.ControllerFactories,
+                realization.ContextManager.Statements,
                 realization.AgentInstanceContextCreate);
         }
 
@@ -104,6 +107,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
             bool forStatement,
             ContextControllerStatementDesc optionalStatementDesc,
             ContextControllerFactory[] controllerFactories,
+            IDictionary<int, ContextControllerStatementDesc> statements,
             AgentInstanceContext agentInstanceContextCreate)
         {
             var result = new FilterValueSetParam[0][];
@@ -115,6 +119,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
                         i + 1,
                         parentPartitionKeys[i],
                         optionalStatementDesc,
+                        statements,
                         agentInstanceContextCreate);
                 result = FilterAddendumUtil.MultiplyAddendum(result, addendumForController);
             }

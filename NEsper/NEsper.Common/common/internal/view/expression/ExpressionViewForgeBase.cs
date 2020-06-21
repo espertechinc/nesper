@@ -49,15 +49,20 @@ namespace com.espertech.esper.common.@internal.view.expression
         DataWindowViewForgeWithPrevious,
         ScheduleHandleCallbackProvider
     {
-        internal AggregationServiceForgeDesc aggregationServiceForgeDesc;
-        internal EventType builtinType;
-        internal ExprNode expiryExpression;
-        internal int scheduleCallbackId = -1;
-        internal int streamNumber;
-        internal IDictionary<string, VariableMetaData> variableNames;
+        private AggregationServiceForgeDesc aggregationServiceForgeDesc;
+        private EventType builtinType;
+        private ExprNode expiryExpression;
+        private int scheduleCallbackId = -1;
+        private int streamNumber;
+        private IDictionary<string, VariableMetaData> variableNames;
 
         public int ScheduleCallbackId {
             set => scheduleCallbackId = value;
+        }
+
+        public ExprNode ExpiryExpression {
+            get => expiryExpression;
+            set => expiryExpression = value;
         }
 
         internal abstract void MakeSetters(
@@ -145,6 +150,7 @@ namespace com.espertech.esper.common.@internal.view.expression
                         Collections.GetEmptyMap<ExprNode, string>(),
                         Collections.GetEmptyList<ExprDeclaredNode>(),
                         null,
+                        null,
                         aggregateNodes,
                         Collections.GetEmptyList<ExprAggregateNode>(),
                         Collections.GetEmptyList<ExprAggregateNodeGroupKey>(),
@@ -163,7 +169,8 @@ namespace com.espertech.esper.common.@internal.view.expression
                         false,
                         false,
                         viewForgeEnv.ImportServiceCompileTime,
-                        viewForgeEnv.OptionalStatementName);
+                        viewForgeEnv.StatementRawInfo,
+                        viewForgeEnv.SerdeResolver);
                 }
                 catch (ExprValidationException ex) {
                     throw new ViewParameterException(ex.Message, ex);
@@ -188,7 +195,7 @@ namespace com.espertech.esper.common.@internal.view.expression
                 .DeclareVar(
                     evalClass.ClassName,
                     "eval",
-                    NewInstance(evalClass.ClassName, Ref("statementFields")))
+                    NewInstanceInner(evalClass.ClassName, Ref("statementFields")))
                 .SetProperty(
                     factory,
                     "BuiltinMapType",
@@ -253,7 +260,7 @@ namespace com.espertech.esper.common.@internal.view.expression
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
                 .AddParam(PARAMS);
-            var evalMethodCall = CodegenLegoMethodExpression.CodegenExpression(expiryExpression.Forge, evalMethod, classScope, true);
+            var evalMethodCall = CodegenLegoMethodExpression.CodegenExpression(ExpiryExpression.Forge, evalMethod, classScope, true);
             evalMethod.Block.MethodReturn(LocalMethod(evalMethodCall, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
 
             var assignMethod = CodegenMethod
@@ -271,7 +278,7 @@ namespace com.espertech.esper.common.@internal.view.expression
 
             var statementFieldsClassName = classScope.NamespaceScope.FieldsClassName;
             var ctor = new CodegenCtor(
-                typeof(StmtClassForgableRSPFactoryProvider),
+                typeof(StmtClassForgeableRSPFactoryProvider),
                 classScope,
                 new List<CodegenTypedParam>() {
                     new CodegenTypedParam(statementFieldsClassName, null, "statementFields")

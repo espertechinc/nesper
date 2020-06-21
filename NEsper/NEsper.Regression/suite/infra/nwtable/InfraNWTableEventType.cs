@@ -6,34 +6,82 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+using System.Collections.Generic;
+
+using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
-    public class InfraNWTableEventType : RegressionExecution
+    public class InfraNWTableEventType
     {
-        public void Run(RegressionEnvironment env)
+        public static IList<RegressionExecution> Executions() {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            execs.Add(new InfraNWTableEventTypeInvalid());
+            execs.Add(new InfraNWTableEventTypeDefineFields());
+            execs.Add(new InfraNWTableEventTypeInsertIntoProtected());
+            return execs;
+        }
+
+        private class InfraNWTableEventTypeInsertIntoProtected : RegressionExecution
         {
-            RunAssertionType(env, true);
-            RunAssertionType(env, false);
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "module test;\n" +
+                             "@Name('event') @buseventtype @public create map schema Fubar as (foo string, bar double);\n" +
+                             "@Name('window') @protected create window Snafu#keepall as Fubar;\n" +
+                             "@Name('insert') @private insert into Snafu select * from Fubar;\n";
+                env.CompileDeploy(epl);
 
-            string epl;
+                env.SendEventMap(CollectionUtil.BuildMap("foo", "a", "bar", 1d), "Fubar");
+                env.SendEventMap(CollectionUtil.BuildMap("foo", "b", "bar", 2d), "Fubar");
 
-            // name cannot be the same as an existing event type
-            epl = "create schema SchemaOne as (p0 string);\n" +
-                  "create window SchemaOne#keepall as SchemaOne;\n";
-            SupportMessageAssertUtil.TryInvalidCompile(
-                env,
-                epl,
-                "Error starting statement: An event type or schema by name 'SchemaOne' already exists");
+                EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("window"), "foo,bar".SplitCsv(), new Object[][] {
+                    new object[] {"a", 1d}, 
+                    new object[] {"b", 2d}
+                });
 
-            epl = "create schema SchemaTwo as (p0 string);\n" +
-                  "create table SchemaTwo(c0 int);\n";
-            SupportMessageAssertUtil.TryInvalidCompile(
-                env,
-                epl,
-                "An event type by name 'SchemaTwo' has already been declared");
+                env.UndeployAll();
+            }
+        }
+
+        private class InfraNWTableEventTypeDefineFields : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunAssertionType(env, true);
+                RunAssertionType(env, false);
+            }
+        }
+
+        private class InfraNWTableEventTypeInvalid : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunAssertionType(env, true);
+                RunAssertionType(env, false);
+
+                string epl;
+
+                // name cannot be the same as an existing event type
+                epl = "create schema SchemaOne as (p0 string);\n" +
+                      "create window SchemaOne#keepall as SchemaOne;\n";
+                SupportMessageAssertUtil.TryInvalidCompile(
+                    env,
+                    epl,
+                    "Error starting statement: An event type or schema by name 'SchemaOne' already exists");
+
+                epl = "create schema SchemaTwo as (p0 string);\n" +
+                      "create table SchemaTwo(c0 int);\n";
+                SupportMessageAssertUtil.TryInvalidCompile(
+                    env,
+                    epl,
+                    "An event type by name 'SchemaTwo' has already been declared");
+            }
         }
 
         private static void RunAssertionType(

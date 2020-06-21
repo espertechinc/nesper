@@ -10,7 +10,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
@@ -23,24 +22,150 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLSubselectInSimple());
-            execs.Add(new EPLSubselectExistsSimple());
-            execs.Add(new EPLSubselectUngroupedWOHavingWRelOpAllAnySome());
-            execs.Add(new EPLSubselectUngroupedWOHavingWEqualsAllAnySome());
-            execs.Add(new EPLSubselectUngroupedWOHavingWIn());
-            execs.Add(new EPLSubselectUngroupedWOHavingWExists());
-            execs.Add(new EPLSubselectUngroupedWHavingWExists());
-            execs.Add(new EPLSubselectGroupedWOHavingWRelOpAllAnySome());
-            execs.Add(new EPLSubselectGroupedWOHavingWEqualsAllAnySome());
-            execs.Add(new EPLSubselectGroupedWOHavingWIn());
-            execs.Add(new EPLSubselectGroupedWHavingWIn());
-            execs.Add(new EPLSubselectGroupedWHavingWEqualsAllAnySome());
-            execs.Add(new EPLSubselectGroupedWHavingWRelOpAllAnySome());
-            execs.Add(new EPLSubselectUngroupedWHavingWIn());
-            execs.Add(new EPLSubselectUngroupedWHavingWRelOpAllAnySome());
-            execs.Add(new EPLSubselectUngroupedWHavingWEqualsAllAnySome());
-            execs.Add(new EPLSubselectGroupedWOHavingWExists());
+            WithInSimple(execs);
+            WithExistsSimple(execs);
+            WithUngroupedWOHavingWRelOpAllAnySome(execs);
+            WithUngroupedWOHavingWEqualsAllAnySome(execs);
+            WithUngroupedWOHavingWIn(execs);
+            WithUngroupedWOHavingWExists(execs);
+            WithUngroupedWHavingWExists(execs);
+            WithGroupedWOHavingWRelOpAllAnySome(execs);
+            WithGroupedWOHavingWEqualsAllAnySome(execs);
+            WithGroupedWOHavingWIn(execs);
+            WithGroupedWHavingWIn(execs);
+            WithGroupedWHavingWEqualsAllAnySome(execs);
+            WithGroupedWHavingWRelOpAllAnySome(execs);
+            WithUngroupedWHavingWIn(execs);
+            WithUngroupedWHavingWRelOpAllAnySome(execs);
+            WithUngroupedWHavingWEqualsAllAnySome(execs);
+            WithGroupedWOHavingWExists(execs);
+            WithGroupedWHavingWExists(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupedWHavingWExists(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLSubselectGroupedWHavingWExists());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupedWOHavingWExists(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectGroupedWOHavingWExists());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUngroupedWHavingWEqualsAllAnySome(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectUngroupedWHavingWEqualsAllAnySome());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUngroupedWHavingWRelOpAllAnySome(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectUngroupedWHavingWRelOpAllAnySome());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUngroupedWHavingWIn(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectUngroupedWHavingWIn());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupedWHavingWRelOpAllAnySome(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectGroupedWHavingWRelOpAllAnySome());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupedWHavingWEqualsAllAnySome(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectGroupedWHavingWEqualsAllAnySome());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupedWHavingWIn(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectGroupedWHavingWIn());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupedWOHavingWIn(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectGroupedWOHavingWIn());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupedWOHavingWEqualsAllAnySome(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectGroupedWOHavingWEqualsAllAnySome());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupedWOHavingWRelOpAllAnySome(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectGroupedWOHavingWRelOpAllAnySome());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUngroupedWHavingWExists(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectUngroupedWHavingWExists());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUngroupedWOHavingWExists(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectUngroupedWOHavingWExists());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUngroupedWOHavingWIn(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectUngroupedWOHavingWIn());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUngroupedWOHavingWEqualsAllAnySome(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectUngroupedWOHavingWEqualsAllAnySome());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUngroupedWOHavingWRelOpAllAnySome(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectUngroupedWOHavingWRelOpAllAnySome());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithExistsSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectExistsSimple());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectInSimple());
             return execs;
         }
 
@@ -81,7 +206,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
                 var epl =
                     "@Name('s0') select Value in (select sum(IntPrimitive) from SupportBean#keepall having last(TheString) != 'E1') as c0," +
                     "Value not in (select sum(IntPrimitive) from SupportBean#keepall having last(TheString) != 'E1') as c1 " +
@@ -130,7 +255,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
                 var epl =
                     "@Name('s0') select Value in (select sum(IntPrimitive) from SupportBean#keepall group by TheString having last(TheString) != 'E1') as c0," +
                     "Value not in (select sum(IntPrimitive) from SupportBean#keepall group by TheString having last(TheString) != 'E1') as c1 " +
@@ -167,7 +292,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
                 var epl =
                     "@Name('s0') select Value in (select sum(IntPrimitive) from SupportBean#keepall group by TheString) as c0," +
                     "Value not in (select sum(IntPrimitive) from SupportBean#keepall group by TheString) as c1 " +
@@ -201,7 +326,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
                 var epl = "@Name('s0') select Value in (select sum(IntPrimitive) from SupportBean#keepall) as c0," +
                           "Value not in (select sum(IntPrimitive) from SupportBean#keepall) as c1 " +
                           "from SupportValueEvent";
@@ -242,7 +367,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
                 var epl = "@Name('s0') select " +
                           "Value < all (select sum(IntPrimitive) from SupportBean#keepall group by TheString) as c0, " +
                           "Value < any (select sum(IntPrimitive) from SupportBean#keepall group by TheString) as c1, " +
@@ -279,7 +404,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
                 var epl = "@Name('s0') select " +
                           "Value < all (select sum(IntPrimitive) from SupportBean#keepall group by TheString having last(TheString) not in ('E1', 'E3')) as c0, " +
                           "Value < any (select sum(IntPrimitive) from SupportBean#keepall group by TheString having last(TheString) not in ('E1', 'E3')) as c1, " +
@@ -329,7 +454,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
                 var epl = "@Name('s0') select " +
                           "Value = all (select sum(IntPrimitive) from SupportBean#keepall group by TheString) as c0, " +
                           "Value = any (select sum(IntPrimitive) from SupportBean#keepall group by TheString) as c1, " +
@@ -365,7 +490,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
                 var epl = "@Name('s0') select " +
                           "Value = all (select sum(IntPrimitive) from SupportBean#keepall) as c0, " +
                           "Value = any (select sum(IntPrimitive) from SupportBean#keepall) as c1, " +
@@ -401,7 +526,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
                 var epl = "@Name('s0') select " +
                           "Value = all (select sum(IntPrimitive) from SupportBean#keepall having last(TheString) != 'E1') as c0, " +
                           "Value = any (select sum(IntPrimitive) from SupportBean#keepall having last(TheString) != 'E1') as c1, " +
@@ -451,7 +576,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
                 var epl = "@Name('s0') select " +
                           "Value = all (select sum(IntPrimitive) from SupportBean#keepall group by TheString having first(TheString) != 'E1') as c0, " +
                           "Value = any (select sum(IntPrimitive) from SupportBean#keepall group by TheString having first(TheString) != 'E1') as c1, " +
@@ -494,7 +619,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
                 var epl =
                     "@Name('s0') select exists (select sum(IntPrimitive) from SupportBean having sum(IntPrimitive) < 15) as c0," +
                     "not exists (select sum(IntPrimitive) from SupportBean  having sum(IntPrimitive) < 15) as c1 from SupportValueEvent";
@@ -525,7 +650,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
                 var epl = "@Name('s0') select exists (select sum(IntPrimitive) from SupportBean) as c0," +
                           "not exists (select sum(IntPrimitive) from SupportBean) as c1 from SupportValueEvent";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -555,7 +680,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                           "@Name('s0') select exists (select sum(anint) from MyWindow group by key) as c0," +
                           "not exists (select sum(anint) from MyWindow group by key) as c1 from SupportValueEvent;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
 
                 SendVEAndAssert(
                     env,
@@ -588,7 +713,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                           "insert into MyWindow(key, anint) select Id, Value from SupportIdAndValueEvent;\n" +
                           "@Name('s0') select exists (select sum(anint) from MyWindow group by key having sum(anint) < 15) as c0," +
                           "not exists (select sum(anint) from MyWindow group by key having sum(anint) < 15) as c1 from SupportValueEvent";
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 SendVEAndAssert(
@@ -623,7 +748,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
                 var epl = "@Name('s0') select " +
                           "Value < all (select sum(IntPrimitive) from SupportBean#keepall having last(TheString) not in ('E1', 'E3')) as c0, " +
                           "Value < any (select sum(IntPrimitive) from SupportBean#keepall having last(TheString) not in ('E1', 'E3')) as c1, " +
@@ -673,7 +798,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1", "c2" };
+                var fields = new[] {"c0", "c1", "c2"};
                 var epl = "@Name('s0') select " +
                           "Value < all (select sum(IntPrimitive) from SupportBean#keepall) as c0, " +
                           "Value < any (select sum(IntPrimitive) from SupportBean#keepall) as c1, " +

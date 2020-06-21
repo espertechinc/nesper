@@ -10,7 +10,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
@@ -23,8 +22,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLJoinJoinWInnerKeywordWOOnClause());
+            WithWInnerKeywordWOOnClause(execs);
+            WithNoWhereClause(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNoWhereClause(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLJoinJoinNoWhereClause());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWInnerKeywordWOOnClause(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinJoinWInnerKeywordWOOnClause());
             return execs;
         }
 
@@ -47,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "a.TheString","b.TheString" };
+                var fields = new[] {"a.TheString", "b.TheString"};
                 var epl =
                     "@Name('s0') select * from SupportBean(TheString like 'A%')#length(3) as a inner join SupportBean(TheString like 'B%')#length(3) as b " +
                     "where a.IntPrimitive = b.IntPrimitive";

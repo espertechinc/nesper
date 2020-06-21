@@ -12,8 +12,6 @@ using System.IO;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -25,9 +23,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     [Serializable]
     public class ExprLikeNode : ExprNodeBase
     {
-        private readonly bool isNot;
+        private readonly bool _isNot;
 
-        [NonSerialized] private ExprLikeNodeForge forge;
+        [NonSerialized] private ExprLikeNodeForge _forge;
 
         /// <summary>
         /// Ctor.
@@ -35,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         /// <param name="not">is true if this is a "not like", or false if just a like</param>
         public ExprLikeNode(bool not)
         {
-            isNot = not;
+            _isNot = not;
         }
 
         public Type EvaluationType {
@@ -44,15 +42,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
         public override ExprForge Forge {
             get {
-                CheckValidated(forge);
-                return forge;
+                CheckValidated(_forge);
+                return _forge;
             }
         }
 
@@ -111,10 +109,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     Constant(patternVal),
                     Constant(escapeCharacter),
                     ConstantFalse());
-                forge = new ExprLikeNodeForgeConst(this, isNumericValue, likeUtil, likeUtilInit);
+                _forge = new ExprLikeNodeForgeConst(this, isNumericValue, likeUtil, likeUtilInit);
             }
             else {
-                forge = new ExprLikeNodeForgeNonconst(this, isNumericValue);
+                _forge = new ExprLikeNodeForgeNonconst(this, isNumericValue);
             }
 
             return null;
@@ -137,27 +135,28 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             ExprLikeNode other = (ExprLikeNode) node;
-            if (isNot != other.isNot) {
+            if (_isNot != other._isNot) {
                 return false;
             }
 
             return true;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
-            ChildNodes[0].ToEPL(writer, Precedence);
+            ChildNodes[0].ToEPL(writer, Precedence, flags);
 
-            if (isNot) {
+            if (_isNot) {
                 writer.Write(" not");
             }
 
             writer.Write(" like ");
-            ChildNodes[1].ToEPL(writer, Precedence);
+            ChildNodes[1].ToEPL(writer, Precedence, flags);
 
             if (ChildNodes.Length == 3) {
                 writer.Write(" escape ");
-                ChildNodes[2].ToEPL(writer, Precedence);
+                ChildNodes[2].ToEPL(writer, Precedence, flags);
             }
         }
 
@@ -170,7 +169,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         /// </summary>
         /// <returns>indicator whether negated or not</returns>
         public bool IsNot {
-            get => isNot;
+            get => _isNot;
         }
     }
 } // end of namespace

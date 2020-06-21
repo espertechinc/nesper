@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.view.union
     /// </summary>
     public class UnionView : ViewSupport,
         LastPostObserver,
-        AgentInstanceStopCallback,
+        AgentInstanceMgmtCallback,
         DataWindowView,
         ViewDataVisitableContainer
     {
@@ -74,9 +74,7 @@ namespace com.espertech.esper.common.@internal.view.union
         public void Stop(AgentInstanceStopServices services)
         {
             foreach (var view in views) {
-                if (view is AgentInstanceStopCallback) {
-                    ((AgentInstanceStopCallback) view).Stop(services);
-                }
+                (view as AgentInstanceMgmtCallback)?.Stop(services);
             }
         }
 
@@ -237,6 +235,10 @@ namespace com.espertech.esper.common.@internal.view.union
         public void VisitViewContainer(ViewDataVisitorContained viewDataVisitor)
         {
             IntersectDefaultView.VisitViewContained(viewDataVisitor, ViewFactory, views);
+        }
+        
+        public void Transfer(AgentInstanceTransferServices services)
+        {
         }
     }
 } // end of namespace

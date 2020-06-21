@@ -191,6 +191,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
             {
             }
 
+            public Type WidenResultType {
+                get => typeof(string);
+            }
+
             public object Widen(object input)
             {
                 var dateTimeOffset = (DateTimeOffset) input;
@@ -212,6 +216,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
         public class MySupportBeanWidener : TypeWidenerSPI
         {
             public static RecordSchema supportBeanSchema;
+
+            public Type WidenResultType {
+                get => typeof(GenericRecord);
+            }
 
             public object Widen(object input)
             {

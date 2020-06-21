@@ -9,6 +9,8 @@
 using System;
 using System.IO;
 
+using com.espertech.esper.common.@internal.compile.stage1.specmapper;
+
 namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
 {
     /// <summary>
@@ -27,6 +29,11 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
                 node.ToEPL(writer, Precedence);
                 delimiter = "|";
             }
+        }
+
+        public override RowRecogExprNode CheckedCopySelf(ExpressionCopier expressionCopier)
+        {
+            return new RowRecogExprNodeAlteration();
         }
     }
 } // end of namespace

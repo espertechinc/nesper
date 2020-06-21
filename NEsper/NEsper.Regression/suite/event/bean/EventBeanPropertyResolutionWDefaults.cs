@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -57,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 Assert.Fail();
             }
             catch (PropertyAccessException ex) {
-                AssertMessage(ex, "Failed to parse property 'a\u008F': Unexpected token '\u008F'");
+                AssertMessage(ex, "Property named 'a\u008F' is not a valid property name for this type");
             }
         }
 

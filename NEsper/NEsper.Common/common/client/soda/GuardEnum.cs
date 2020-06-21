@@ -31,19 +31,12 @@ namespace com.espertech.esper.common.client.soda
         /// <value>The namespace.</value>
         public static string GetNamespace(this GuardEnum value)
         {
-            switch (value)
-            {
-                case GuardEnum.TIMER_WITHIN:
-                    return "timer";
-
-                case GuardEnum.TIMER_WITHINMAX:
-                    return "timer";
-
-                case GuardEnum.WHILE_GUARD:
-                    return "internal";
-            }
-
-            throw new ArgumentException();
+            return value switch {
+                GuardEnum.TIMER_WITHIN => "timer",
+                GuardEnum.TIMER_WITHINMAX => "timer",
+                GuardEnum.WHILE_GUARD => "internal",
+                _ => throw new ArgumentException()
+            };
         }
 
         /// <summary>
@@ -52,19 +45,12 @@ namespace com.espertech.esper.common.client.soda
         /// <value>The name.</value>
         public static string GetName(this GuardEnum value)
         {
-            switch (value)
-            {
-                case GuardEnum.TIMER_WITHIN:
-                    return "within";
-
-                case GuardEnum.TIMER_WITHINMAX:
-                    return "withinmax";
-
-                case GuardEnum.WHILE_GUARD:
-                    return "while";
-            }
-
-            throw new ArgumentException();
+            return value switch {
+                GuardEnum.TIMER_WITHIN => "within",
+                GuardEnum.TIMER_WITHINMAX => "withinmax",
+                GuardEnum.WHILE_GUARD => "while",
+                _ => throw new ArgumentException()
+            };
         }
 
         /// <summary>Returns the enum for the given namespace and name.</summary>
@@ -103,19 +89,12 @@ namespace com.espertech.esper.common.client.soda
         /// <returns></returns>
         public static Type GetClazz(this GuardEnum guardEnum)
         {
-            switch (guardEnum)
-            {
-                case GuardEnum.TIMER_WITHIN:
-                    return typeof(TimerWithinGuardForge);
-
-                case GuardEnum.TIMER_WITHINMAX:
-                    return typeof(TimerWithinOrMaxCountGuardForge);
-
-                case GuardEnum.WHILE_GUARD:
-                    return typeof(ExpressionGuardForge);
-            }
-
-            throw new ArgumentException("invalid value", nameof(guardEnum));
+            return guardEnum switch {
+                GuardEnum.TIMER_WITHIN => typeof(TimerWithinGuardForge),
+                GuardEnum.TIMER_WITHINMAX => typeof(TimerWithinOrMaxCountGuardForge),
+                GuardEnum.WHILE_GUARD => typeof(ExpressionGuardForge),
+                _ => throw new ArgumentException("invalid value", nameof(guardEnum))
+            };
         }
     }
 }

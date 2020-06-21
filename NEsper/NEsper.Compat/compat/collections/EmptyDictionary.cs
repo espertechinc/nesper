@@ -93,7 +93,7 @@ namespace com.espertech.esper.compat.collections
         public V this[K key]
         {
             get => throw new KeyNotFoundException();
-            set { throw new NotSupportedException(); }
+            set => throw new NotSupportedException();
         }
 
         /// <summary>

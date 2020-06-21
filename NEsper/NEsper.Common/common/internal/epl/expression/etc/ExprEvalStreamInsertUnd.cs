@@ -22,18 +22,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 {
     public class ExprEvalStreamInsertUnd : ExprForgeInstrumentable
     {
-        private readonly ExprStreamUnderlyingNode undNode;
-        private readonly int streamNum;
-        private readonly Type returnType;
+        private readonly ExprStreamUnderlyingNode _undNode;
+        private readonly int _streamNum;
+        private readonly Type _returnType;
 
         public ExprEvalStreamInsertUnd(
             ExprStreamUnderlyingNode undNode,
             int streamNum,
             Type returnType)
         {
-            this.undNode = undNode;
-            this.streamNum = streamNum;
-            this.returnType = returnType;
+            _undNode = undNode;
+            _streamNum = streamNum;
+            _returnType = returnType;
         }
 
         public CodegenExpression EvaluateCodegen(
@@ -58,41 +58,32 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
-                typeof(EventBean),
+            var methodNode = codegenMethodScope.MakeChild(
+                _returnType,
                 typeof(ExprEvalStreamInsertUnd),
                 codegenClassScope);
 
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
                 .IfCondition(EqualsNull(refEPS))
                 .BlockReturn(ConstantNull())
-                .MethodReturn(ArrayAtIndex(refEPS, Constant(streamNum)));
+                .DeclareVar<EventBean>("bean", ArrayAtIndex(refEPS, Constant(_streamNum)))
+                .IfRefNullReturnNull("bean")
+                .MethodReturn(FlexCast(_returnType, ExprDotUnderlying(Ref("bean"))));
+            
             return LocalMethod(methodNode);
         }
 
-        public int StreamNum {
-            get => streamNum;
-        }
+        public int StreamNum => _streamNum;
 
-        public ExprEvaluator ExprEvaluator {
-            get { throw new IllegalStateException("Evaluator not available"); }
-        }
+        public ExprEvaluator ExprEvaluator => throw new IllegalStateException("Evaluator not available");
 
-        public Type EvaluationType {
-            get => typeof(EventBean);
-        }
+        public Type EvaluationType => _returnType;
 
-        public Type UnderlyingReturnType {
-            get => returnType;
-        }
+        public Type UnderlyingReturnType => _returnType;
 
-        public ExprNodeRenderable ExprForgeRenderable {
-            get => undNode;
-        }
+        public ExprNodeRenderable ExprForgeRenderable => _undNode;
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
     }
 } // end of namespace

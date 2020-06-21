@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         ExprEvaluator,
         ExprForgeInstrumentable
     {
-        [NonSerialized] private ExprEvaluator evaluator;
+        [NonSerialized] private ExprEvaluator _evaluator;
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
@@ -44,12 +44,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 throw new ExprValidationException("Incorrect use of NOT clause, sub-expressions do not return boolean");
             }
 
-            evaluator = forge.ExprEvaluator;
+            _evaluator = forge.ExprEvaluator;
             return null;
         }
 
         public ExprEvaluator ExprEvaluator {
-            get => this;
+            get {
+                InitEvaluator();
+                return this;
+            }
         }
 
         public override ExprForge Forge {
@@ -114,7 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var evaluated = evaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var evaluated = _evaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (evaluated == null) {
                 return null;
             }
@@ -122,10 +125,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return false.Equals(evaluated);
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write("not ");
-            ChildNodes[0].ToEPL(writer, Precedence);
+            ChildNodes[0].ToEPL(writer, Precedence, flags);
         }
 
         public override ExprPrecedenceEnum Precedence {
@@ -145,6 +150,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public ExprForgeConstantType ForgeConstantType {
             get => ExprForgeConstantType.NONCONST;
+        }
+        
+        private void InitEvaluator() {
+            if (_evaluator == null) {
+                _evaluator = ChildNodes[0].Forge.ExprEvaluator;
+            }
         }
     }
 } // end of namespace

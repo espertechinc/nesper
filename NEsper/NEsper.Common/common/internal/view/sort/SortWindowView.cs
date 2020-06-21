@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.util;
@@ -26,7 +27,7 @@ namespace com.espertech.esper.common.@internal.view.sort
     ///     the second parameter defines whether to sort ascending or descending, the third parameter
     ///     is the number of elements to keep in the sorted list.
     ///     <para />
-    ///     The type of the field to be sorted in the event must implement the Comparable interface.
+    ///     The type of the field to be sorted in the event must implement the IComparable interface.
     ///     <para />
     ///     The natural order in which events arrived is used as the second sorting criteria. Thus should events arrive
     ///     with equal sort values the oldest event leaves the sort window first.
@@ -42,7 +43,7 @@ namespace com.espertech.esper.common.@internal.view.sort
         private readonly IStreamSortRankRandomAccess optionalSortedRandomAccess;
         private readonly int sortWindowSize;
         protected internal int eventCount;
-        protected internal OrderedDictionary<object, object> sortedEvents;
+        protected internal IOrderedDictionary<object, object> sortedEvents;
 
         public SortWindowView(
             SortWindowViewFactory factory,
@@ -55,13 +56,13 @@ namespace com.espertech.esper.common.@internal.view.sort
             this.optionalSortedRandomAccess = optionalSortedRandomAccess;
             agentInstanceContext = agentInstanceViewFactoryContext.AgentInstanceContext;
 
-            sortedEvents = new OrderedDictionary<object, object>(factory.comparator);
+            sortedEvents = new OrderedListDictionary<object, object>(factory.IComparer);
         }
 
         public ViewFactory ViewFactory => factory;
 
         public override EventType EventType => parent.EventType;
-
+        
         public override void Update(
             EventBean[] newData,
             EventBean[] oldData)
@@ -138,9 +139,7 @@ namespace com.espertech.esper.common.@internal.view.sort
             }
 
             // If there are child views, fireStatementStopped update method
-            if (optionalSortedRandomAccess != null) {
-                optionalSortedRandomAccess.Refresh(sortedEvents, eventCount, sortWindowSize);
-            }
+            optionalSortedRandomAccess?.Refresh(sortedEvents, eventCount, sortWindowSize);
 
             if (child != null) {
                 EventBean[] expiredArr = null;
@@ -184,7 +183,7 @@ namespace com.espertech.esper.common.@internal.view.sort
         {
             return GetType().Name +
                    " isDescending=" +
-                   factory.isDescendingValues.RenderAny() +
+                   factory.IsDescendingValues.RenderAny() +
                    " sortWindowSize=" +
                    sortWindowSize;
         }
@@ -192,13 +191,13 @@ namespace com.espertech.esper.common.@internal.view.sort
         protected object GetSortValues(EventBean theEvent)
         {
             eventsPerStream[0] = theEvent;
-            if (factory.sortCriteriaEvaluators.Length == 1) {
-                return factory.sortCriteriaEvaluators[0].Evaluate(eventsPerStream, true, agentInstanceContext);
+            if (factory.SortCriteriaEvaluators.Length == 1) {
+                return factory.SortCriteriaEvaluators[0].Evaluate(eventsPerStream, true, agentInstanceContext);
             }
 
-            var result = new object[factory.sortCriteriaEvaluators.Length];
+            var result = new object[factory.SortCriteriaEvaluators.Length];
             var count = 0;
-            foreach (var expr in factory.sortCriteriaEvaluators) {
+            foreach (var expr in factory.SortCriteriaEvaluators) {
                 result[count++] = expr.Evaluate(eventsPerStream, true, agentInstanceContext);
             }
 

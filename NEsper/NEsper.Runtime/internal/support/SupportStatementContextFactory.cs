@@ -22,11 +22,27 @@ namespace com.espertech.esper.runtime.@internal.support
             StatementInformationalsRuntime informationals = new StatementInformationalsRuntime();
             return new StatementContext(
                 container,
-                null, "deployment1", statementId, "s0",
-                null, informationals,
-                null, null, null, null, null, null,
+                null,
+                "deployment1",
+                statementId,
+                "s0",
+                null,
+                informationals,
+                null,
+                new StatementContextRuntimeServices(container),
+                null,
+                null,
+                null,
+                null,
                 new ScheduleBucket(statementId),
-                null, null, null, null, null);
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
         }
     }
 } // end of namespace

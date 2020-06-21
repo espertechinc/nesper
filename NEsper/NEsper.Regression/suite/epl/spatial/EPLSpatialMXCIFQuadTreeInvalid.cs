@@ -19,12 +19,47 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithInvalidEventIndexCreate(execs);
+            WithInvalidEventIndexRuntime(execs);
+            WithInvalidMethod(execs);
+            WithInvalidFilterIndex(execs);
+            WithDocSample(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDocSample(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialDocSample());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalidFilterIndex(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialInvalidFilterIndex());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalidMethod(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialInvalidMethod());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalidEventIndexRuntime(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialInvalidEventIndexRuntime());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalidEventIndexCreate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             // invalid-testing overlaps with pointregion-quadtree
             execs.Add(new EPLSpatialInvalidEventIndexCreate());
-            execs.Add(new EPLSpatialInvalidEventIndexRuntime());
-            execs.Add(new EPLSpatialInvalidMethod());
-            execs.Add(new EPLSpatialInvalidFilterIndex());
-            execs.Add(new EPLSpatialDocSample());
             return execs;
         }
 
@@ -53,7 +88,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportSpatialEventRectangle(rectangle(0).intersects(rectangle(0, 0, 0, 0)))",
-                    "Failed to validate filter expression 'rectangle(0).intersects(rectangle(0...(43 chars)': Error validating left-hand-side method 'rectangle', expected 4 parameters but received 1 parameters");
+                    "Failed to validate filter expression 'rectangle(0).intersects(rectangle(0...(43 chars)': Failed to validate left-hand-side method 'rectangle', expected 4 parameters but received 1 parameters");
             }
         }
 

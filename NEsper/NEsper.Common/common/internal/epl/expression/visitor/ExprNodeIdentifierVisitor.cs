@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -36,6 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
             isVisitAggregateNodes = visitAggregateNodes;
             ExprProperties = new List<Pair<int, string>>();
         }
+        
+        public bool IsWalkDeclExprParam => true;
 
         /// <summary>
         ///     Returns list of event property stream numbers and names that uniquely identify which

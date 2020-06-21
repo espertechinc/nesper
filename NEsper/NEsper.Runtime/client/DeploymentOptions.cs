@@ -51,6 +51,11 @@ namespace com.espertech.esper.runtime.client
         /// </summary>
         /// <returns>callback</returns>
         public StatementSubstitutionParameterOption StatementSubstitutionParameter { get; set; }
+        
+        /// <summary>
+        ///    Returns the class loader option
+        /// </summary>
+        public DeploymentClassLoaderOption DeploymentClassLoaderOption { get; set; }
 
         /// <summary>
         ///     Sets the deployment id if one should be assigned; A null value causes the runtime to generate
@@ -110,6 +115,18 @@ namespace com.espertech.esper.runtime.client
             StatementSubstitutionParameterOption statementSubstitutionParameter)
         {
             StatementSubstitutionParameter = statementSubstitutionParameter;
+            return this;
+        }
+        
+        /// <summary>
+        ///     Sets the deployment class loader options.
+        /// </summary>
+        /// <param name="deploymentClassLoaderOption">deployment options</param>
+        /// <returns>itself</returns>
+        public DeploymentOptions WithDeploymentClassLoaderOption(
+            DeploymentClassLoaderOption deploymentClassLoaderOption)
+        {
+            DeploymentClassLoaderOption = deploymentClassLoaderOption;
             return this;
         }
     }

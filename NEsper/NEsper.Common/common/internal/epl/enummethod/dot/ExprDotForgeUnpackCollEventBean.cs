@@ -18,7 +18,6 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.rettype;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -43,21 +42,23 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         {
             if (target == null) {
                 return null;
+            } else if (target is FlexCollection flexCollection) {
+                return new EventUnderlyingCollection(flexCollection);
             }
 
-            return new EventUnderlyingCollection((ICollection<EventBean>) target);
+            return new EventUnderlyingCollection(target.Unwrap<EventBean>());
         }
 
         public CodegenExpression Codegen(
             CodegenExpression inner,
             Type innerType,
-            CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol,
-            CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope) 
         {
             var returnType = typeof(ICollection<EventBean>);
-            CodegenMethod methodNode = codegenMethodScope
-                .MakeChild(returnType, typeof(ExprDotForgeUnpackCollEventBean), codegenClassScope)
+            CodegenMethod methodNode = parent
+                .MakeChild(returnType, typeof(ExprDotForgeUnpackCollEventBean), classScope)
                 .AddParam(typeof(FlexCollection), "target");
 
             methodNode.Block

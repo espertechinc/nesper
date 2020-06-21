@@ -15,7 +15,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.schedule;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -28,8 +27,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
     public class EvalRootForgeNode : EvalForgeNodeBase
     {
         public EvalRootForgeNode(
+            bool attachPatternText,
             EvalForgeNode childNode,
             Attribute[] annotations)
+            : base(attachPatternText)
         {
             AddChildNode(childNode);
             bool audit = AuditEnum.PATTERN.GetAudit(annotations) != null ||

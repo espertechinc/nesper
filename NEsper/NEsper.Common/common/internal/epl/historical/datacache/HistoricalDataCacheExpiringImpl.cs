@@ -29,12 +29,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.datacache
         ScheduleHandleCallback
     {
         private const string NAME_AUDITPROVIDER_SCHEDULE = "historical data-cache";
-        private readonly AgentInstanceContext agentInstanceContext;
-        private readonly IDictionary<object, Item> cache;
-
-        private readonly long scheduleSlot;
-
-        private bool isScheduled;
+        
+        private readonly AgentInstanceContext _agentInstanceContext;
+        private readonly IDictionary<object, Item> _cache;
+        private readonly long _scheduleSlot;
+        private bool _isScheduled;
 
         /// <summary>
         ///     Ctor.
@@ -53,19 +52,22 @@ namespace com.espertech.esper.common.@internal.epl.historical.datacache
         {
             MaxAgeSec = maxAgeSec;
             PurgeIntervalSec = purgeIntervalSec;
-            this.agentInstanceContext = agentInstanceContext;
-            this.scheduleSlot = scheduleSlot;
+            this._agentInstanceContext = agentInstanceContext;
+            this._scheduleSlot = scheduleSlot;
 
             if (cacheReferenceType == CacheReferenceType.HARD) {
-                cache = new Dictionary<object, Item>();
+                _cache = new Dictionary<object, Item>()
+                    .WithNullKeySupport();
             }
             else if (cacheReferenceType == CacheReferenceType.SOFT) {
-                cache = new ReferenceMap<object, Item>(
-                    ReferenceType.SOFT,
-                    ReferenceType.SOFT);
+                _cache = new ReferenceMap<object, Item>(
+                        ReferenceType.SOFT,
+                        ReferenceType.SOFT)
+                    .WithNullKeySupport();
             }
             else {
-                cache = new WeakDictionary<object, Item>();
+                _cache = new WeakDictionary<object, Item>()
+                    .WithNullKeySupport();
             }
         }
 
@@ -81,21 +83,20 @@ namespace com.espertech.esper.common.@internal.epl.historical.datacache
         ///     Returns the current cache size.
         /// </summary>
         /// <value>cache size</value>
-        protected long Size => cache.Count;
+        protected long Size => _cache.Count;
 
         public EventTable[] GetCached(object methodParams)
         {
             var key = methodParams;
-            var item = cache.Get(key);
-            if (item == null) {
+            if (!_cache.TryGetValue(key, out var item)) {
                 return null;
             }
 
-            var now = agentInstanceContext.SchedulingService.Time;
+            var now = _agentInstanceContext.SchedulingService.Time;
             var maxAgeMSec =
-                agentInstanceContext.ImportServiceRuntime.TimeAbacus.DeltaForSecondsDouble(MaxAgeSec);
+                _agentInstanceContext.ImportServiceRuntime.TimeAbacus.DeltaForSecondsDouble(MaxAgeSec);
             if (now - item.Time > maxAgeMSec) {
-                cache.Remove(key);
+                _cache.Remove(key);
                 return null;
             }
 
@@ -106,27 +107,27 @@ namespace com.espertech.esper.common.@internal.epl.historical.datacache
             object methodParams,
             EventTable[] rows)
         {
-            var schedulingService = agentInstanceContext.SchedulingService;
-            var timeAbacus = agentInstanceContext.ImportServiceRuntime.TimeAbacus;
+            var schedulingService = _agentInstanceContext.SchedulingService;
+            var timeAbacus = _agentInstanceContext.ImportServiceRuntime.TimeAbacus;
 
             var key = methodParams;
             var now = schedulingService.Time;
             var item = new Item(rows, now);
-            cache.Put(key, item);
+            _cache.Put(key, item);
 
-            if (!isScheduled) {
+            if (!_isScheduled) {
                 var callback = new EPStatementHandleCallbackSchedule(
-                    agentInstanceContext.EpStatementAgentInstanceHandle,
+                    _agentInstanceContext.EpStatementAgentInstanceHandle,
                     this);
                 var timeDelta = timeAbacus.DeltaForSecondsDouble(PurgeIntervalSec);
-                agentInstanceContext.AuditProvider.ScheduleAdd(
+                _agentInstanceContext.AuditProvider.ScheduleAdd(
                     timeDelta,
-                    agentInstanceContext,
+                    _agentInstanceContext,
                     callback,
                     ScheduleObjectType.historicaldatacache,
                     NAME_AUDITPROVIDER_SCHEDULE);
-                schedulingService.Add(timeDelta, callback, scheduleSlot);
-                isScheduled = true;
+                schedulingService.Add(timeDelta, callback, _scheduleSlot);
+                _isScheduled = true;
             }
         }
 
@@ -138,24 +139,24 @@ namespace com.espertech.esper.common.@internal.epl.historical.datacache
 
         public void ScheduledTrigger()
         {
-            agentInstanceContext.InstrumentationProvider.QHistoricalScheduledEval();
+            _agentInstanceContext.InstrumentationProvider.QHistoricalScheduledEval();
 
             // purge expired
-            agentInstanceContext.AuditProvider.ScheduleFire(
-                agentInstanceContext,
+            _agentInstanceContext.AuditProvider.ScheduleFire(
+                _agentInstanceContext,
                 ScheduleObjectType.historicaldatacache,
                 NAME_AUDITPROVIDER_SCHEDULE);
-            var now = agentInstanceContext.SchedulingService.Time;
-            var maxAgeMSec = agentInstanceContext.ImportServiceRuntime.TimeAbacus.DeltaForSecondsDouble(MaxAgeSec);
+            var now = _agentInstanceContext.SchedulingService.Time;
+            var maxAgeMSec = _agentInstanceContext.ImportServiceRuntime.TimeAbacus.DeltaForSecondsDouble(MaxAgeSec);
 
-            cache
+            _cache
                 .Where(entry => now - entry.Value.Time > maxAgeMSec)
                 .ToList()
-                .ForEach(entry => cache.Remove(entry.Key));
+                .ForEach(entry => _cache.Remove(entry.Key));
 
-            isScheduled = false;
+            _isScheduled = false;
 
-            agentInstanceContext.InstrumentationProvider.AHistoricalScheduledEval();
+            _agentInstanceContext.InstrumentationProvider.AHistoricalScheduledEval();
         }
 
         private class Item

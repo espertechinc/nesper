@@ -17,7 +17,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.rowrecog.core;
 using com.espertech.esper.common.@internal.epl.rowrecog.expr;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
@@ -787,8 +786,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             RowRecogExprNode expanded = null;
             try {
                 expanded = RowRecogPatternExpandUtil.Expand(
-                    env.Container,
-                    spec.Raw.MatchRecognizeSpec.Pattern);
+                    spec.Raw.MatchRecognizeSpec.Pattern,
+                    null);
             }
             catch (ExprValidationException e) {
                 Assert.Fail(e.Message);

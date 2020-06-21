@@ -115,9 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.or
         public override void RemoveMatch(ISet<EventBean> matchEvent)
         {
             foreach (var node in childNodes) {
-                if (node != null) {
-                    node.RemoveMatch(matchEvent);
-                }
+                node?.RemoveMatch(matchEvent);
             }
         }
 

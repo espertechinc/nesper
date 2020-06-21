@@ -172,9 +172,9 @@ namespace com.espertech.esper.compiler.@internal.parse
             foreach (EsperEPL2GrammarParser.OnSetAssignmentContext assign in ctxs)
             {
                 ExprNode childEvalNode;
-                if (assign.eventProperty() != null)
+                if (assign.chainable() != null)
                 {
-                    ExprNode prop = ASTExprHelper.ExprCollectSubNodes(assign.eventProperty(), 0, astExprNodeMap)[0];
+                    ExprNode prop = ASTExprHelper.ExprCollectSubNodes(assign.chainable(), 0, astExprNodeMap)[0];
                     ExprNode value = ASTExprHelper.ExprCollectSubNodes(assign.expression(), 0, astExprNodeMap)[0];
                     ExprEqualsNode equals = new ExprEqualsNodeImpl(false, false);
                     equals.AddChildNode(prop);

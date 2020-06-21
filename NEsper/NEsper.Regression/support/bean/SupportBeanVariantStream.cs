@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.support.bean
         public SupportBeanVariantStream(
             string theString,
             bool boolBoxed,
-            int? intPrimitive,
+            int intPrimitive,
             int longPrimitive,
             float doublePrimitive,
             SupportEnum enumValue)

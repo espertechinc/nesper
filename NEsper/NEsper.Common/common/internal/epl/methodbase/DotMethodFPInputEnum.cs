@@ -10,9 +10,21 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
 {
     public enum DotMethodFPInputEnum
     {
+        /// <summary>
+        /// Numeric scalar values.
+        /// </summary>
         SCALAR_NUMERIC,
+        /// <summary>
+        /// Any values.
+        /// </summary>
         SCALAR_ANY,
+        /// <summary>
+        /// Collection of events.
+        /// </summary>
         EVENTCOLL,
+        /// <summary>
+        /// Any input.
+        /// </summary>
         ANY
     };
 

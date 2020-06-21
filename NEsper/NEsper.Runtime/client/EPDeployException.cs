@@ -7,6 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
+
 using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.runtime.client
@@ -14,35 +16,56 @@ namespace com.espertech.esper.runtime.client
     /// <summary>
     ///     Exception during a deploy operation by <seealso cref="EPDeploymentService.Deploy(EPCompiled)" />
     /// </summary>
+    [Serializable]
     public class EPDeployException : Exception
     {
+        private readonly int _rolloutItemNumber;
+
+        public int RolloutItemNumber => _rolloutItemNumber;
+
         /// <summary>
-        ///     Ctor.
+        /// Constructor.
         /// </summary>
-        /// <param name="message">message</param>
-        public EPDeployException(string message)
-            : base(message)
+        /// <param name="rolloutItemNumber">rollout item number when using rollout</param>
+        public EPDeployException(int rolloutItemNumber)
         {
+            _rolloutItemNumber = rolloutItemNumber;
         }
 
         /// <summary>
-        ///     Ctor.
+        /// Constructor.
         /// </summary>
-        /// <param name="cause">cause</param>
-        public EPDeployException(Exception cause)
-            : base("Deployment Exception", cause)
-        {
-        }
-
-        /// <summary>
-        ///     Ctor.
-        /// </summary>
-        /// <param name="message">message</param>
-        /// <param name="cause">cause</param>
+        /// <param name="message">exception message</param>
+        /// <param name="rolloutItemNumber">rollout item number when using rollout</param>
         public EPDeployException(
             string message,
-            Exception cause)
-            : base(message, cause)
+            int rolloutItemNumber) : base(message)
+        {
+            _rolloutItemNumber = rolloutItemNumber;
+        }
+        
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="message">exception message</param>
+        /// <param name="innerException">inner / cause exception</param>
+        /// <param name="rolloutItemNumber">rollout item number when using rollout</param>
+        public EPDeployException(
+            string message,
+            Exception innerException,
+            int rolloutItemNumber) : base(message, innerException)
+        {
+            _rolloutItemNumber = rolloutItemNumber;
+        }
+        
+        /// <summary>
+        /// Deserialization constructor.
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="context"></param>
+        protected EPDeployException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

@@ -181,7 +181,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             var joinProps = new LinkedHashMap<string, SubordPropHashKeyForge>();
             var rangeProps = new LinkedHashMap<string, SubordPropRangeKeyForge>();
             IDictionary<QueryGraphValueEntryCustomKeyForge, QueryGraphValueEntryCustomOperationForge> customIndexOps =
-                new EmptyDictionary<QueryGraphValueEntryCustomKeyForge, QueryGraphValueEntryCustomOperationForge>();
+                EmptyDictionary<QueryGraphValueEntryCustomKeyForge, QueryGraphValueEntryCustomOperationForge>.Instance;
 
             for (var stream = 0; stream < outsideStreamCount; stream++) {
                 var lookupStream = stream + 1;

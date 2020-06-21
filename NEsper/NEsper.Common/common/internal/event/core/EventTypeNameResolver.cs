@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.@event.core
@@ -13,5 +15,24 @@ namespace com.espertech.esper.common.@internal.@event.core
     public interface EventTypeNameResolver
     {
         EventType GetTypeByName(string typeName);
+    }
+
+    public class ProxyEventTypeNameResolver : EventTypeNameResolver
+    {
+        public Func<string, EventType> ProcGetTypeByName { get; set; }
+
+        public ProxyEventTypeNameResolver()
+        {
+        }
+
+        public ProxyEventTypeNameResolver(Func<string, EventType> procGetTypeByName)
+        {
+            ProcGetTypeByName = procGetTypeByName;
+        }
+
+        public EventType GetTypeByName(string typeName)
+        {
+            return ProcGetTypeByName(typeName);
+        }
     }
 } // end of namespace

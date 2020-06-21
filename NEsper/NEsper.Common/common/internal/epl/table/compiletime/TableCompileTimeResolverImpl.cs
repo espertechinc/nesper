@@ -25,19 +25,22 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         private readonly TableCompileTimeRegistry compileTimeRegistry;
         private readonly PathRegistry<string, TableMetaData> pathTables;
         private readonly ModuleDependenciesCompileTime moduleDependencies;
+        private readonly bool isFireAndForget;
 
         public TableCompileTimeResolverImpl(
             string moduleName,
             ICollection<string> moduleUses,
             TableCompileTimeRegistry compileTimeRegistry,
             PathRegistry<string, TableMetaData> pathTables,
-            ModuleDependenciesCompileTime moduleDependencies)
+            ModuleDependenciesCompileTime moduleDependencies,
+            bool isFireAndForget)
         {
             this.moduleName = moduleName;
             this.moduleUses = moduleUses;
             this.compileTimeRegistry = compileTimeRegistry;
             this.pathTables = pathTables;
             this.moduleDependencies = moduleDependencies;
+            this.isFireAndForget = isFireAndForget;
         }
 
         public TableMetaData ResolveTableFromEventType(EventType containedType)
@@ -60,7 +63,8 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             try {
                 var data = pathTables.GetAnyModuleExpectSingle(tableName, moduleUses);
                 if (data != null) {
-                    if (!NameAccessModifierExtensions.Visible(
+                    if (!isFireAndForget && 
+                        !NameAccessModifierExtensions.Visible(
                         data.First.TableVisibility,
                         data.First.TableModuleName,
                         moduleName)) {

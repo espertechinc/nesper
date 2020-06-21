@@ -19,7 +19,6 @@ using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.@event.xml;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -71,6 +70,7 @@ namespace com.espertech.esper.common.@internal.@event.property
             IList<EventPropertyGetter> getters = new List<EventPropertyGetter>();
 
             Property lastProperty = null;
+            bool publicFields = eventType.Stem.IsPublicFields;
 
             var properties = Properties;
             var propertiesCount = properties.Count;
@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.@event.property
                         return null;
                     }
 
-                    eventType = beanEventTypeFactory.GetCreateBeanType(clazz);
+                    eventType = beanEventTypeFactory.GetCreateBeanType(clazz, publicFields);
                 }
 
                 getters.Add(getter);
@@ -142,11 +142,14 @@ namespace com.espertech.esper.common.@internal.@event.property
                         return null;
                     }
 
+#if IRRELEVANT
                     if (result.IsArray || result.IsValueType || result.IsBuiltinDataType()) {
                         return null;
                     }
+#endif
 
-                    eventType = beanEventTypeFactory.GetCreateBeanType(result);
+                    var publicFields = eventType.Stem.IsPublicFields;
+                    eventType = beanEventTypeFactory.GetCreateBeanType(result, publicFields);
                 }
             }
 
@@ -158,6 +161,8 @@ namespace com.espertech.esper.common.@internal.@event.property
             BeanEventTypeFactory beanEventTypeFactory)
         {
             GenericPropertyDesc result = null;
+
+            bool publicFields = eventType.Stem.IsPublicFields;
 
             var properties = Properties;
             var propertiesCount = properties.Count;
@@ -180,7 +185,7 @@ namespace com.espertech.esper.common.@internal.@event.property
                         return null;
                     }
 
-                    eventType = beanEventTypeFactory.GetCreateBeanType(result.GenericType);
+                    eventType = beanEventTypeFactory.GetCreateBeanType(result.GenericType, publicFields);
                 }
             }
 
@@ -344,17 +349,16 @@ namespace com.espertech.esper.common.@internal.@event.property
                     return typeof(object);
                 }
 
-                if (nestedType is Type) {
-                    var pojoClass = (Type) nestedType;
-                    if (!pojoClass.IsArray) {
-                        var beanType = beanEventTypeFactory.GetCreateBeanType(pojoClass);
+                if (nestedType is Type ponoType) {
+                    if (!ponoType.IsArray) {
+                        var beanType = beanEventTypeFactory.GetCreateBeanType(ponoType, false);
                         var remainingProps = ToPropertyEPL(Properties, count);
                         return beanType.GetPropertyType(remainingProps);
                     }
 
                     if (property is IndexedProperty) {
-                        var componentType = pojoClass.GetElementType();
-                        var beanType = beanEventTypeFactory.GetCreateBeanType(componentType);
+                        var componentType = ponoType.GetElementType();
+                        var beanType = beanEventTypeFactory.GetCreateBeanType(componentType, false);
                         var remainingProps = ToPropertyEPL(Properties, count);
                         return beanType.GetPropertyType(remainingProps);
                     }
@@ -446,8 +450,8 @@ namespace com.espertech.esper.common.@internal.@event.property
                     }
 
                     if (propertyReturnType != null) {
-                        if (propertyReturnType is IDictionary<string, object>) {
-                            currentDictionary = (IDictionary<string, object>) propertyReturnType;
+                        if (propertyReturnType is IDictionary<string, object> mapReturnType) {
+                            currentDictionary = mapReturnType;
                         }
                         else if (propertyReturnType.Equals(typeof(IDictionary<string, object>))) {
                             currentDictionary = null;
@@ -495,9 +499,9 @@ namespace com.espertech.esper.common.@internal.@event.property
                         }
                         else {
                             // treat the return type of the map property as an object
-                            var pojoClass = (Type) propertyReturnType;
-                            if (!pojoClass.IsArray) {
-                                var beanType = beanEventTypeFactory.GetCreateBeanType(pojoClass);
+                            var ponoType = (Type) propertyReturnType;
+                            if (!ponoType.IsArray) {
+                                var beanType = beanEventTypeFactory.GetCreateBeanType(ponoType, false);
                                 var remainingProps = ToPropertyEPL(Properties, count);
                                 var getterInner = beanType.GetGetterSPI(remainingProps);
                                 if (getterInner == null) {
@@ -508,8 +512,8 @@ namespace com.espertech.esper.common.@internal.@event.property
                                 break; // the single getter handles the rest
                             }
                             else {
-                                var componentType = pojoClass.GetElementType();
-                                var beanType = beanEventTypeFactory.GetCreateBeanType(componentType);
+                                var componentType = ponoType.GetElementType();
+                                var beanType = beanEventTypeFactory.GetCreateBeanType(componentType, false);
                                 var remainingProps = ToPropertyEPL(Properties, count);
                                 var getterInner = beanType.GetGetterSPI(remainingProps);
                                 if (getterInner == null) {

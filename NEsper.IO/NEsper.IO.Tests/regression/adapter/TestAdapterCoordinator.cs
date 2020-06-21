@@ -44,9 +44,9 @@ namespace com.espertech.esperio.regression.adapter
             _container = SupportContainer.Reset();
 
     		IDictionary<String, Object> propertyTypes = new LinkedHashMap<String, Object>();
-    		propertyTypes.Put("myInt", typeof(int));
-    		propertyTypes.Put("myDouble", typeof(double?));
-    		propertyTypes.Put("myString", typeof(String));
+    		propertyTypes.Put("MyInt", typeof(int));
+    		propertyTypes.Put("MyDouble", typeof(double?));
+    		propertyTypes.Put("MyString", typeof(String));
     
     		_eventTypeName = "mapEvent";
     		var configuration = new Configuration(_container);
@@ -67,8 +67,8 @@ namespace com.espertech.esperio.regression.adapter
     
     		_coordinator = new AdapterCoordinatorImpl(_runtime, true);
     
-        	_propertyOrderNoTimestamp = new[] { "myInt", "myDouble", "myString" };
-        	var propertyOrderTimestamp = new[] { "timestamp", "myInt", "myDouble", "myString" };
+        	_propertyOrderNoTimestamp = new[] { "MyInt", "MyDouble", "MyString" };
+        	var propertyOrderTimestamp = new[] { "timestamp", "MyInt", "MyDouble", "MyString" };
     
     		// A CSVPlayer for a file with timestamps, not looping
     		_timestampsNotLooping = new CSVInputAdapterSpec(new AdapterInputSource(_container, "regression/timestampOne.csv"), _eventTypeName);
@@ -272,9 +272,9 @@ namespace com.espertech.esperio.regression.adapter
     		var data = _listener.GetNewDataList()[howManyBack];
     		Assert.AreEqual(1, data.Length);
     		var theEvent = data[0];
-    		Assert.AreEqual(myInt, theEvent.Get("myInt"));
-    		Assert.AreEqual(myDouble, theEvent.Get("myDouble"));
-    		Assert.AreEqual(myString, theEvent.Get("myString"));
+    		Assert.AreEqual(myInt, theEvent.Get("MyInt"));
+    		Assert.AreEqual(myDouble, theEvent.Get("MyDouble"));
+    		Assert.AreEqual(myString, theEvent.Get("MyString"));
     	}
     
     

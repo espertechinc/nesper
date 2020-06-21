@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                         codegenClassScope))
                 .MethodReturn(
                     entryGetter.UnderlyingGetCodegen(
-                        Cast(entryGetter.TargetType, Ref("value")),
+                        FlexCast(entryGetter.TargetType, Ref("value")),
                         codegenMethodScope,
                         codegenClassScope));
         }
@@ -177,7 +177,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                         codegenClassScope))
                 .MethodReturn(
                     entryGetter.UnderlyingExistsCodegen(
-                        Cast(entryGetter.TargetType, Ref("value")),
+                        FlexCast(entryGetter.TargetType, Ref("value")),
                         codegenMethodScope,
                         codegenClassScope));
         }

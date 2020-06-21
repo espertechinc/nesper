@@ -6,15 +6,62 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
+using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
-    public class EventXMLSchemaDOMGetterBacked : RegressionExecution
+    public class EventXMLSchemaDOMGetterBacked
     {
-        public void Run(RegressionEnvironment env)
+        public static IList<RegressionExecution> Executions()
         {
-            EventXMLSchemaXPathBacked.RunAssertion(env, false, "XMLSchemaConfigTwo");
+            var execs = new List<RegressionExecution>();
+            WithPreconfig(execs);
+            WithCreateSchema(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLSchemaDOMGetterBackedCreateSchema());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPreconfig(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLSchemaDOMGetterBackedPreconfig());
+            return execs;
+        }
+
+        public class EventXMLSchemaDOMGetterBackedPreconfig : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                EventXMLSchemaXPathBacked.RunAssertion(env, false, "XMLSchemaConfigTwo", new RegressionPath());
+            }
+        }
+
+        public class EventXMLSchemaDOMGetterBackedCreateSchema : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var resourceManager = env.Container.ResourceManager();
+                var schemaUriSimpleSchema = resourceManager.ResolveResourceURL("regression/simpleSchema.xsd");
+                var epl = "@public @buseventtype " +
+                          "@XMLSchema(RootElementName='simpleEvent', SchemaResource='" +
+                          schemaUriSimpleSchema +
+                          "', XPathPropertyExpr=false)" +
+                          "@XMLSchemaNamespacePrefix(Prefix='ss', Namespace='samples:schemas:simpleSchema')" +
+                          "@XMLSchemaField(Name='customProp', XPath='count(/ss:simpleEvent/ss:nested3/ss:nested4)', Type='number')" +
+                          "create xml schema MyEventCreateSchema()";
+                var path = new RegressionPath();
+                env.CompileDeploy(epl, path);
+                EventXMLSchemaXPathBacked.RunAssertion(env, false, "MyEventCreateSchema", path);
+            }
         }
     }
 } // end of namespace

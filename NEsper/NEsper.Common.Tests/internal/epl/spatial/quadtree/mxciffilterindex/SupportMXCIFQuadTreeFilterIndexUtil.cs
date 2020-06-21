@@ -25,14 +25,16 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 (
                     @event,
                     s,
-                    target) => target.Add(s));
+                    target,
+                    ctx) => target.Add(s));
 
         private static readonly QuadTreeCollector<IDictionary<int, string>> MAP_COLLECTOR =
             new ProxyQuadTreeCollector<IDictionary<int, string>>(
                 (
                     @event,
                     s,
-                    target) => {
+                    target,
+                    ctx) => {
                         var asString = (string) s;
                         var num = int.Parse(asString.Substring(1));
                         if (target.ContainsKey(num))
@@ -51,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             height) => {
                 IList<object> received = new List<object>();
                 MXCIFQuadTreeFilterIndexCollect<ICollection<object>>
-                    .CollectRange(tree, x, y, width, height, null, received, COLLECTION_COLLECTOR);
+                    .CollectRange(tree, x, y, width, height, null, received, COLLECTION_COLLECTOR, null);
                 // Comment-me-in: System.out.println("// query(tree, " + x + ", " + y + ", " + width + ", " + height + "); -=> " + received);
                 return received.IsEmpty() ? null : received;
             };
@@ -96,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
         {
             IDictionary<int, string> received = new SortedDictionary<int, string>();
             MXCIFQuadTreeFilterIndexCollect<IDictionary<int, string>>
-                .CollectRange(tree, x, y, width, height, null, received, MAP_COLLECTOR);
+                .CollectRange(tree, x, y, width, height, null, received, MAP_COLLECTOR, null);
             AssertCompare(tree, expected, received);
         }
 

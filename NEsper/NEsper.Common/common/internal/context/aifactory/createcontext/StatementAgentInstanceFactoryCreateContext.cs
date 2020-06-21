@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             var realization = manager.AllocateNewRealization(agentInstanceContext);
             return new StatementAgentInstanceFactoryCreateContextResult(
                 new ZeroDepthStreamNoIterate(StatementEventType),
-                AgentInstanceStopCallbackConstants.INSTANCE_NO_ACTION,
+                AgentInstanceMgmtCallbackConstants.INSTANCE_NO_ACTION,
                 agentInstanceContext,
                 null,
                 null,
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                 null,
                 null,
                 null,
-                new EmptyList<StatementAgentInstancePreload>(),
+                EmptyList<StatementAgentInstancePreload>.Instance,
                 realization);
         }
 

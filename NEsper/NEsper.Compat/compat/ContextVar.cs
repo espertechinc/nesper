@@ -26,10 +26,7 @@ namespace com.espertech.esper.compat
         /// Gets the current value associated with the context.
         /// </summary>
         /// <value>The current.</value>
-        public static T Current
-        {
-            get { return current; }
-        }
+        public static T Current => current;
 
         private readonly T previous;
 

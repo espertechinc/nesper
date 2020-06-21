@@ -31,9 +31,9 @@ namespace com.espertech.esper.common.@internal.view.intersect
         DataWindowViewForge,
         DataWindowViewForgeUniqueCandidate
     {
-        internal readonly IList<ViewFactoryForge> intersected;
-        internal int batchViewIndex = -1;
-        internal bool hasAsymetric;
+        private readonly IList<ViewFactoryForge> intersected;
+        private int batchViewIndex = -1;
+        private bool hasAsymetric;
 
         public IntersectViewFactoryForge(IList<ViewFactoryForge> intersected)
         {
@@ -147,5 +147,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
                 return null;
             }
         }
+
+        public override IList<ViewFactoryForge> InnerForges => intersected;
     }
 } // end of namespace

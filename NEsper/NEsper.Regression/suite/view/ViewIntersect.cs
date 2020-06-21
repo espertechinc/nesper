@@ -26,25 +26,158 @@ namespace com.espertech.esper.regressionlib.suite.view
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ViewIntersectUniqueAndFirstLength());
-            execs.Add(new ViewIntersectFirstUniqueAndFirstLength());
-            execs.Add(new ViewIntersectBatchWindow());
-            execs.Add(new ViewIntersectAndDerivedValue());
-            execs.Add(new ViewIntersectGroupBy());
-            execs.Add(new ViewIntersectThreeUnique());
-            execs.Add(new ViewIntersectPattern());
-            execs.Add(new ViewIntersectTwoUnique());
-            execs.Add(new ViewIntersectSorted());
-            execs.Add(new ViewIntersectTimeWin());
-            execs.Add(new ViewIntersectTimeWinReversed());
-            execs.Add(new ViewIntersectTimeWinSODA());
-            execs.Add(new ViewIntersectLengthOneUnique());
-            execs.Add(new ViewIntersectTimeUniqueMultikey());
-            execs.Add(new ViewIntersectGroupTimeUnique());
-            execs.Add(new ViewIntersectSubselect());
-            execs.Add(new ViewIntersectFirstUniqueAndLengthOnDelete());
-            execs.Add(new ViewIntersectTimeWinNamedWindow());
+            WithUniqueAndFirstLength(execs);
+            WithFirstUniqueAndFirstLength(execs);
+            WithBatchWindow(execs);
+            WithAndDerivedValue(execs);
+            WithGroupBy(execs);
+            WithThreeUnique(execs);
+            WithPattern(execs);
+            WithTwoUnique(execs);
+            WithSorted(execs);
+            WithTimeWin(execs);
+            WithTimeWinReversed(execs);
+            WithTimeWinSODA(execs);
+            WithLengthOneUnique(execs);
+            WithTimeUniqueMultikey(execs);
+            WithGroupTimeUnique(execs);
+            WithSubselect(execs);
+            WithFirstUniqueAndLengthOnDelete(execs);
+            WithTimeWinNamedWindow(execs);
+            WithTimeWinNamedWindowDelete(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimeWinNamedWindowDelete(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ViewIntersectTimeWinNamedWindowDelete());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimeWinNamedWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewIntersectTimeWinNamedWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFirstUniqueAndLengthOnDelete(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewIntersectFirstUniqueAndLengthOnDelete());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubselect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewIntersectSubselect());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupTimeUnique(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewIntersectGroupTimeUnique());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimeUniqueMultikey(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewIntersectTimeUniqueMultikey());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLengthOneUnique(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewIntersectLengthOneUnique());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimeWinSODA(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewIntersectTimeWinSODA());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimeWinReversed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewIntersectTimeWinReversed());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimeWin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewIntersectTimeWin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSorted(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewIntersectSorted());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTwoUnique(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewIntersectTwoUnique());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewIntersectPattern());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithThreeUnique(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewIntersectThreeUnique());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupBy(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewIntersectGroupBy());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAndDerivedValue(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewIntersectAndDerivedValue());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBatchWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewIntersectBatchWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFirstUniqueAndFirstLength(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewIntersectFirstUniqueAndFirstLength());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUniqueAndFirstLength(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewIntersectUniqueAndFirstLength());
             return execs;
         }
 
@@ -150,7 +283,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var fields = new [] { "c0", "c1" };
+            var fields = new[] {"c0", "c1"};
 
             env.SendEventBean(new SupportBean("A1", 10));
             env.SendEventBean(new SupportBean("A2", 11));
@@ -391,7 +524,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             long startTime,
             AtomicLong milestone)
         {
-            var fields = new [] { "TheString","IntPrimitive" };
+            var fields = new[] {"TheString", "IntPrimitive"};
             env.Listener("s0").Reset();
 
             SendEvent(env, "E1", 1);
@@ -425,7 +558,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var fields = new [] { "TheString","IntPrimitive" };
+            var fields = new[] {"TheString", "IntPrimitive"};
 
             SendEvent(env, "E1", 1);
             SendEvent(env, "E2", 2);

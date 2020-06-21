@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="isNotIn">true for the not-in expression, false for the in-expression</param>
         public InExpression(bool isNotIn)
         {
-            this.notIn = isNotIn;
+            notIn = isNotIn;
         }
 
         /// <summary>
@@ -48,17 +48,17 @@ namespace com.espertech.esper.common.client.soda
             bool isNotIn,
             params object[] parameters)
         {
-            this.notIn = isNotIn;
-            this.Children.Add(value);
+            notIn = isNotIn;
+            Children.Add(value);
             for (int i = 0; i < parameters.Length; i++)
             {
                 if (parameters[i] is Expression)
                 {
-                    this.Children.Add((Expression) parameters[i]);
+                    Children.Add((Expression) parameters[i]);
                 }
                 else
                 {
-                    this.Children.Add(new ConstantExpression(parameters[i]));
+                    Children.Add(new ConstantExpression(parameters[i]));
                 }
             }
         }
@@ -74,11 +74,11 @@ namespace com.espertech.esper.common.client.soda
             bool isNotIn,
             Expression[] parameters)
         {
-            this.notIn = isNotIn;
-            this.Children.Add(value);
+            notIn = isNotIn;
+            Children.Add(value);
             foreach (Expression parameter in parameters)
             {
-                this.Children.Add(parameter);
+                Children.Add(parameter);
             }
         }
 
@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>expression</returns>
         public InExpression Add(object @object)
         {
-            this.Children.Add(new ConstantExpression(@object));
+            Children.Add(new ConstantExpression(@object));
             return this;
         }
 
@@ -128,7 +128,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>expression</returns>
         public InExpression Add(Expression expression)
         {
-            this.Children.Add(expression);
+            Children.Add(expression);
             return this;
         }
 
@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>expression</returns>
         public InExpression Add(string propertyName)
         {
-            this.Children.Add(new PropertyValueExpression(propertyName));
+            Children.Add(new PropertyValueExpression(propertyName));
             return this;
         }
 
@@ -150,7 +150,7 @@ namespace com.espertech.esper.common.client.soda
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            this.Children[0].ToEPL(writer, Precedence);
+            Children[0].ToEPL(writer, Precedence);
             if (notIn)
             {
                 writer.Write(" not in (");
@@ -161,10 +161,10 @@ namespace com.espertech.esper.common.client.soda
             }
 
             string delimiter = "";
-            for (int i = 1; i < this.Children.Count; i++)
+            for (int i = 1; i < Children.Count; i++)
             {
                 writer.Write(delimiter);
-                this.Children[i].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                Children[i].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ",";
             }
 

@@ -11,7 +11,6 @@ using System.Linq;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.supportunit.@event;
-using com.espertech.esper.compat;
 
 using NUnit.Framework;
 
@@ -38,7 +37,7 @@ namespace com.espertech.esper.common.@internal.collection
             EPAssertionUtil.AssertEqualsExactOrder(expectedValues, iterator.GetEnumerator());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestIterator()
         {
             ICollection<IEnumerable<EventBean>> iterables = new LinkedList<IEnumerable<EventBean>>();

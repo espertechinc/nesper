@@ -28,10 +28,7 @@ namespace com.espertech.esper.compat
         /// Gets a value indicating whether this instance is dead.
         /// </summary>
         /// <value><c>true</c> if this instance is dead; otherwise, <c>false</c>.</value>
-	    public bool IsDead
-	    {
-            get { return !IsAlive; }
-	    }
+	    public bool IsDead => !IsAlive;
 
         /// <summary>
         /// Gets the object (the target) referenced by the current <see cref="T:System.WeakReference"></see> object.
@@ -39,10 +36,7 @@ namespace com.espertech.esper.compat
         /// <value></value>
         /// <returns>null if the object referenced by the current <see cref="T:System.WeakReference"></see> object has been garbage collected; otherwise, a reference to the object referenced by the current <see cref="T:System.WeakReference"></see> object.</returns>
         /// <exception cref="T:System.InvalidOperationException">The reference to the target object is invalid. This can occur if the current <see cref="T:System.WeakReference"></see> object has been finalized.</exception>
-		public new T Target
-		{
-			get { return (T) base.Target; }
-		}
+		public new T Target => (T) base.Target;
 
         /// <summary>
         /// Gets the object (the target) referenced by the current <see cref="T:System.WeakReference"></see> object.

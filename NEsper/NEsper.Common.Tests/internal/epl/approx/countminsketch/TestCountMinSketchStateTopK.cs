@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -73,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             return new ByteBuffer(value.GetUTF8Bytes());
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestFlow()
         {
             // top-k for 3
@@ -99,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             UpdateAssert(state, "c", "a=3,e=3,c=4");
         }
 
-        [Test]
+        [Test, RunInApplicationDomain]
         public void TestTopK()
         {
             var space = 10000;

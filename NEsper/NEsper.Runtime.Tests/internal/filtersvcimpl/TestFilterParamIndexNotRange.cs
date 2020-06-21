@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
@@ -133,7 +132,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         private void Verify(FilterParamIndexBase index, long? testValue, bool[] expected)
         {
             testBean.LongBoxed = testValue;
-            index.MatchEvent(testEventBean, matchesList);
+            index.MatchEvent(testEventBean, matchesList, null);
             for (int i = 0; i < expected.Length; i++)
             {
                 Assert.AreEqual(expected[i], testEvaluators[i].GetAndResetCountInvoked() == 1, "Unexpected result for eval " + i);
@@ -142,7 +141,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         private ExprFilterSpecLookupable MakeLookupable(string fieldName)
         {
-            return new ExprFilterSpecLookupable(fieldName, testEventType.GetGetter(fieldName), testEventType.GetPropertyType(fieldName), false);
+            SupportExprEventEvaluator eval = new SupportExprEventEvaluator(testEventType.GetGetter(fieldName));
+            return new ExprFilterSpecLookupable(fieldName, eval, null, testEventType.GetPropertyType(fieldName), false, null);
         }
     }
 } // end of namespace
