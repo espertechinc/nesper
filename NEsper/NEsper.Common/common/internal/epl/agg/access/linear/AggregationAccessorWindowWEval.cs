@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .DeclareVar<EventBean>("bean", Cast(typeof(EventBean), ExprDotName(Ref("it"), "Current")))
                 .AssignArrayElement("eventsPerStreamBuf", Constant(forge.StreamNum), Ref("bean"))
                 .AssignArrayElement(Ref("array"), Ref("count"), invokeChild)
-                .Increment("count")
+                .IncrementRef("count")
                 .BlockEnd()
                 .MethodReturn(Ref("array"));
         }

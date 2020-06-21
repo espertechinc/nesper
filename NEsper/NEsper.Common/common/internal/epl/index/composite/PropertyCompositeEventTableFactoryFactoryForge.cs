@@ -13,9 +13,11 @@ using System.Linq;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -29,8 +31,11 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
         private readonly bool _isFireAndForget;
         private readonly string[] _optKeyProps;
         private readonly Type[] _optKeyTypes;
+        private readonly MultiKeyClassRef _hashMultikeyClasses;
         private readonly string[] _rangeProps;
         private readonly Type[] _rangeTypes;
+        private readonly DataInputOutputSerdeForge[] _rangeSerdes;
+
         private readonly int? _subqueryNum;
 
         public PropertyCompositeEventTableFactoryFactoryForge(
@@ -39,8 +44,10 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             bool isFireAndForget,
             string[] optKeyProps,
             Type[] optKeyTypes,
+            MultiKeyClassRef hashMultikeyClasses,
             string[] rangeProps,
             Type[] rangeTypes,
+            DataInputOutputSerdeForge[] rangeSerdes,
             EventType eventType)
         {
             _indexedStreamNum = indexedStreamNum;
@@ -48,8 +55,10 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             _isFireAndForget = isFireAndForget;
             _optKeyProps = optKeyProps;
             _optKeyTypes = optKeyTypes;
+            _hashMultikeyClasses = hashMultikeyClasses;
             _rangeProps = rangeProps;
             _rangeTypes = rangeTypes;
+            _rangeSerdes = rangeSerdes;
             _eventType = eventType;
         }
 
@@ -78,14 +87,8 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             if (_optKeyProps != null && _optKeyProps.Length > 0) {
                 var propertyTypes = EventTypeUtility.GetPropertyTypes(_eventType, _optKeyProps);
                 var getters = EventTypeUtility.GetGetters(_eventType, _optKeyProps);
-                hashGetter = EventTypeUtility.CodegenGetterMayMultiKeyWCoerce(
-                    _eventType,
-                    getters,
-                    propertyTypes,
-                    _optKeyTypes,
-                    method,
-                    GetType(),
-                    classScope);
+                hashGetter = MultiKeyCodegen.CodegenGetterMayMultiKey(
+                    _eventType, getters, propertyTypes, _optKeyTypes, _hashMultikeyClasses, method, classScope);
             }
 
             method.Block.DeclareVar<EventPropertyValueGetter[]>(
@@ -111,9 +114,11 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             @params.Add(Constant(_optKeyProps));
             @params.Add(Constant(_optKeyTypes));
             @params.Add(hashGetter);
+            @params.Add(_hashMultikeyClasses.GetExprMKSerde(method, classScope));
             @params.Add(Constant(_rangeProps));
             @params.Add(Constant(_rangeTypes));
             @params.Add(Ref("rangeGetters"));
+            @params.Add(DataInputOutputSerdeForge.CodegenArray(_rangeSerdes, method, classScope, null));
 
             method.Block.MethodReturn(
                 NewInstance<PropertyCompositeEventTableFactoryFactory>(@params.ToArray()));

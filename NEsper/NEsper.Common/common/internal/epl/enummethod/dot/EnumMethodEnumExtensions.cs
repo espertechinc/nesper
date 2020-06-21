@@ -14,6 +14,7 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 {
+    [Obsolete]
     public static class EnumMethodEnumExtensions
     {
         public static string GetNameCamel(this EnumMethodEnum value)

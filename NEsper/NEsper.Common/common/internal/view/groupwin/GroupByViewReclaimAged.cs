@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 {
     public class GroupByViewReclaimAged : ViewSupport,
         GroupByView,
-        AgentInstanceStopCallback
+        AgentInstanceMgmtCallback
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly EventBean[] eventsPerStream = new EventBean[1];

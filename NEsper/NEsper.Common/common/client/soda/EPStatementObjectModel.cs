@@ -23,9 +23,8 @@ namespace com.espertech.esper.common.client.soda
     ///     </para>
     ///     Use the toEPL method to generate a textual EPL from an object model.
     ///     <para>
-    ///         Minimally, and EPL statement consists of the select-clause and the where-clause.These are represented by {
-    ///         @link SelectClause }
-    ///         and <seealso cref="FromClause" /> respectively.
+    ///         Minimally, and EPL statement consists of the select-clause and the where-clause.These are represented by
+    ///         <<seealso cref="SelectClause" /> and <seealso cref="FromClause" /> respectively.
     ///     </para>
     ///     <para>
     ///         Here is a short example that create a simple EPL statement such as "select page, responseTime from PageLoad" :
@@ -36,7 +35,7 @@ namespace com.espertech.esper.common.client.soda
     ///         </pre>
     ///     </para>
     ///     <para>
-    ///         The select-clause and from-clause must be set for the statement object model to be useable by the
+    ///         The select-clause and from-clause must be set for the statement object model to be usable by the
     ///         administrative API.All other clauses a optional.
     ///     </para>
     ///     <para>
@@ -179,6 +178,8 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <value>scripts</value>
         public IList<ScriptExpression> ScriptExpressions { get; set; }
+        
+        public IList<ClassProvidedExpression> ClassProvidedExpressions { get; set; }
 
         /// <summary>
         ///     Returns the "create dataflow" part, if present.
@@ -197,6 +198,8 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <value>clause</value>
         public CreateExpressionClause CreateExpression { get; set; }
+        
+        public CreateClassClause CreateClass { get; set; }
 
         /// <summary>
         ///     Returns fire-and-forget (on-demand) query information for FAF select, insert, update and delete.
@@ -350,6 +353,7 @@ namespace com.espertech.esper.common.client.soda
             AnnotationPart.ToEPL(writer, Annotations, formatter);
             ExpressionDeclaration.ToEPL(writer, ExpressionDeclarations, formatter);
             ScriptExpression.ToEPL(writer, ScriptExpressions, formatter);
+            ClassProvidedExpression.ToEPL(writer, ClassProvidedExpressions, formatter);
 
             if (ContextName != null) {
                 formatter.BeginContext(writer);
@@ -372,6 +376,12 @@ namespace com.espertech.esper.common.client.soda
             if (CreateExpression != null) {
                 formatter.BeginCreateExpression(writer);
                 CreateExpression.ToEPL(writer);
+                return;
+            }
+                
+            if (CreateClass != null) {
+                formatter.BeginCreateExpression(writer);
+                CreateClass.ToEPL(writer);
                 return;
             }
 

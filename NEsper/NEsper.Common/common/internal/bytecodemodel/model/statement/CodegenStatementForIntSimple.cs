@@ -13,13 +13,14 @@ using System.Text;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
     public class CodegenStatementForIntSimple : CodegenStatementWBlockBase
     {
-        private readonly string @ref;
-        private readonly CodegenExpression upperLimit;
+        private readonly string _ref;
+        private readonly CodegenExpression _upperLimit;
 
         public CodegenStatementForIntSimple(
             CodegenBlock parent,
@@ -28,8 +29,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             : base(
                 parent)
         {
-            this.@ref = @ref;
-            this.upperLimit = upperLimit;
+            _ref = @ref;
+            _upperLimit = upperLimit;
         }
 
         public CodegenBlock Block { get; set; }
@@ -42,16 +43,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         {
             builder
                 .Append("for (int ")
-                .Append(@ref)
+                .Append(_ref)
                 .Append("=0; ")
-                .Append(@ref)
+                .Append(_ref)
                 .Append("<");
 
-            upperLimit.Render(builder, isInnerClass, level, indent);
+            _upperLimit.Render(builder, isInnerClass, level, indent);
 
             builder
                 .Append("; ")
-                .Append(@ref)
+                .Append(_ref)
                 .Append("++) {\n");
 
             Block.Render(builder, isInnerClass, level + 1, indent);
@@ -62,7 +63,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         public override void MergeClasses(ISet<Type> classes)
         {
             Block.MergeClasses(classes);
-            upperLimit.MergeClasses(classes);
+            _upperLimit.MergeClasses(classes);
+        }
+        
+        public void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            consumer.Invoke(_upperLimit);
+            Block.TraverseExpressions(consumer);
         }
     }
 } // end of namespace

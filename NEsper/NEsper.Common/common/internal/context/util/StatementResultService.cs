@@ -36,5 +36,7 @@ namespace com.espertech.esper.common.@internal.context.util
         bool IsMakeSynthetic { get; }
 
         bool IsMakeNatural { get; }
+        
+        void ClearDeliveriesRemoveStream(EventBean[] removedEvents);
     }
 } // end of namespace

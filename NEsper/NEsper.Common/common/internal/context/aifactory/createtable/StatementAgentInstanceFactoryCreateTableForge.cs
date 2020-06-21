@@ -10,12 +10,14 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
@@ -24,18 +26,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
 {
     public class StatementAgentInstanceFactoryCreateTableForge
     {
-        private readonly string className;
-        private readonly TableAccessAnalysisResult plan;
-        private readonly string tableName;
+        private readonly string _className;
+        private readonly TableAccessAnalysisResult _plan;
+        private readonly string _tableName;
 
         public StatementAgentInstanceFactoryCreateTableForge(
             string className,
             string tableName,
             TableAccessAnalysisResult plan)
         {
-            this.className = className;
-            this.tableName = tableName;
-            this.plan = plan;
+            this._className = className;
+            this._tableName = tableName;
+            this._plan = plan;
         }
 
         public CodegenMethod InitializeCodegen(
@@ -46,46 +48,51 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             // add aggregation row+factory+serde as inner classes
             var aggregationClassNames = new AggregationClassNames();
             var inners = AggregationServiceFactoryCompiler.MakeTable(
-                AggregationCodegenRowLevelDesc.FromTopOnly(plan.AggDesc),
+                AggregationCodegenRowLevelDesc.FromTopOnly(_plan.AggDesc),
                 GetType(),
                 classScope,
                 aggregationClassNames,
-                className);
+                _className);
             classScope.AddInnerClasses(inners);
 
             var method = parent.MakeChild(typeof(StatementAgentInstanceFactoryCreateTable), GetType(), classScope);
 
-            var primaryKeyGetter = ConstantNull();
-            if (plan.PrimaryKeyGetters != null) {
-                primaryKeyGetter = EventTypeUtility.CodegenGetterMayMultiKeyWCoerce(
-                    plan.InternalEventType,
-                    plan.PrimaryKeyGetters,
-                    plan.PrimaryKeyTypes,
-                    null,
-                    method,
-                    GetType(),
-                    classScope);
-            }
+            CodegenExpression primaryKeyGetter = MultiKeyCodegen.CodegenGetterMayMultiKey(
+                _plan.InternalEventType, 
+                _plan.PrimaryKeyGetters,
+                _plan.PrimaryKeyTypes,
+                null,
+                _plan.PrimaryKeyMultikeyClasses,
+                method,
+                classScope);
+            CodegenExpression fafTransform = MultiKeyCodegen.CodegenMultiKeyFromArrayTransform(
+                _plan.PrimaryKeyMultikeyClasses,
+                method,
+                classScope);
+            CodegenExpression intoTableTransform = MultiKeyCodegen.CodegenMultiKeyFromMultiKeyTransform(
+                _plan.PrimaryKeyMultikeyClasses,
+                method,
+                classScope);
 
+            var propertyForgeEval = DataInputOutputSerdeForge.CodegenArray(
+                _plan.InternalEventTypePropertySerdes,
+                method,
+                classScope,
+                ExprDotMethod(symbols.GetAddInitSvc(method), EPStatementInitServicesConstants.GETEVENTTYPERESOLVER));
+            
             method.Block
-                .DeclareVar<StatementAgentInstanceFactoryCreateTable>(
-                    "saiff",
-                    NewInstance(typeof(StatementAgentInstanceFactoryCreateTable)))
-                .SetProperty(Ref("saiff"), "TableName", Constant(tableName))
-                .SetProperty(
-                    Ref("saiff"),
-                    "PublicEventType",
-                    EventTypeUtility.ResolveTypeCodegen(plan.PublicEventType, symbols.GetAddInitSvc(method)))
+                .DeclareVar<StatementAgentInstanceFactoryCreateTable>("saiff", NewInstance(typeof(StatementAgentInstanceFactoryCreateTable)))
+                .SetProperty(Ref("saiff"), "TableName", Constant(_tableName))
+                .SetProperty(Ref("saiff"), "PublicEventType", EventTypeUtility.ResolveTypeCodegen(_plan.PublicEventType, symbols.GetAddInitSvc(method)))
                 .SetProperty(Ref("saiff"), "EventToPublic", MakeEventToPublic(method, symbols, classScope))
-                .SetProperty(
-                    Ref("saiff"),
-                    "AggregationRowFactory",
-                    NewInstance(aggregationClassNames.RowFactoryTop, Ref("this")))
-                .SetProperty(
-                    Ref("saiff"),
-                    "AggregationSerde",
-                    NewInstance(aggregationClassNames.RowSerdeTop, Ref("this")))
+                .SetProperty(Ref("saiff"), "AggregationRowFactory", NewInstance(aggregationClassNames.RowFactoryTop, Ref("this")))
+                .SetProperty(Ref("saiff"), "AggregationSerde", NewInstance(aggregationClassNames.RowSerdeTop, Ref("this")))
                 .SetProperty(Ref("saiff"), "PrimaryKeyGetter", primaryKeyGetter)
+                .SetProperty(Ref("saiff"), "PrimaryKeySerde", _plan.PrimaryKeyMultikeyClasses.GetExprMKSerde(method, classScope))
+                .SetProperty(Ref("saiff"), "PropertyForges", propertyForgeEval)
+                .SetProperty(Ref("saiff"), "PrimaryKeyObjectArrayTransform", fafTransform)
+                .SetProperty(Ref("saiff"), "PrimaryKeyIntoTableTransform", intoTableTransform)
+
                 .ExprDotMethod(symbols.GetAddInitSvc(method), "AddReadyCallback", Ref("saiff"))
                 .MethodReturn(Ref("saiff"));
             return method;
@@ -101,7 +108,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             var eventType = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
-                EventTypeUtility.ResolveTypeCodegen(plan.PublicEventType, EPStatementInitServicesConstants.REF));
+                EventTypeUtility.ResolveTypeCodegen(_plan.PublicEventType, EPStatementInitServicesConstants.REF));
 
             CodegenExpressionLambda convertToUnd = new CodegenExpressionLambda(method.Block)
                 .WithParams(new CodegenNamedParam(typeof(EventBean), "@event"))
@@ -113,21 +120,21 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                     ExprDotName(Cast(typeof(ObjectArrayBackedEventBean), Ref("@event")), "Properties"))
                 .DeclareVar<object[]>(
                     "data",
-                    NewArrayByLength(typeof(object), Constant(plan.PublicEventType.PropertyNames.Length)));
-            foreach (TableMetadataColumnPairPlainCol plain in plan.ColsPlain) {
+                    NewArrayByLength(typeof(object), Constant(_plan.PublicEventType.PropertyNames.Length)));
+            foreach (TableMetadataColumnPairPlainCol plain in _plan.ColsPlain) {
                 convertToUnd.Block.AssignArrayElement(
                     Ref("data"),
                     Constant(plain.Dest),
                     ArrayAtIndex(Ref("props"), Constant(plain.Source)));
             }
 
-            if (plan.ColsAggMethod.Length > 0 || plan.ColsAccess.Length > 0) {
+            if (_plan.ColsAggMethod.Length > 0 || _plan.ColsAccess.Length > 0) {
                 convertToUnd.Block.DeclareVar<AggregationRow>(
                     "row",
                     Cast(typeof(AggregationRow), ArrayAtIndex(Ref("props"), Constant(0))));
                 var count = 0;
 
-                foreach (TableMetadataColumnPairAggMethod aggMethod in plan.ColsAggMethod) {
+                foreach (TableMetadataColumnPairAggMethod aggMethod in _plan.ColsAggMethod) {
                     // Code: data[method.getDest()] = row.getMethods()[count++].getValue();
                     convertToUnd.Block.DebugStack();
                     convertToUnd.Block.AssignArrayElement(
@@ -143,7 +150,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                     count++;
                 }
 
-                foreach (TableMetadataColumnPairAggAccess aggAccess in plan.ColsAccess) {
+                foreach (TableMetadataColumnPairAggAccess aggAccess in _plan.ColsAccess) {
                     // Code: data[method.getDest()] = row.getMethods()[count++].getValue();
                     convertToUnd.Block.DebugStack();
                     convertToUnd.Block.AssignArrayElement(

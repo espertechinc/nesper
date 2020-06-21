@@ -774,7 +774,7 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void AJoinExecStrategy(UniformPair<ISet<MultiKey<EventBean>>> joinSet)
+        public void AJoinExecStrategy(UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>> joinSet)
         {
         }
 
@@ -782,7 +782,7 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void AJoinCompositionStreamToWin(ISet<MultiKey<EventBean>> newResults)
+        public void AJoinCompositionStreamToWin(ISet<MultiKeyArrayOfKeys<EventBean>> newResults)
         {
         }
 
@@ -839,7 +839,7 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
-        public void QJoinExecProcess(UniformPair<ISet<MultiKey<EventBean>>> joinSet)
+        public void QJoinExecProcess(UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>> joinSet)
         {
         }
 
@@ -852,8 +852,8 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         }
 
         public void AJoinCompositionWinToWin(
-            ISet<MultiKey<EventBean>> newResults,
-            ISet<MultiKey<EventBean>> oldResults)
+            ISet<MultiKeyArrayOfKeys<EventBean>> newResults,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldResults)
         {
         }
 
@@ -886,8 +886,8 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         }
 
         public void QOutputProcessWConditionJoin(
-            ISet<MultiKey<EventBean>> newEvents,
-            ISet<MultiKey<EventBean>> oldEvents)
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents)
         {
         }
 
@@ -1089,8 +1089,8 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         }
 
         public void AJoinExecFilter(
-            ISet<MultiKey<EventBean>> newEvents,
-            ISet<MultiKey<EventBean>> oldEvents)
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents)
         {
         }
 
@@ -1099,8 +1099,8 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         }
 
         public void AJoinCompositionHistorical(
-            ISet<MultiKey<EventBean>> newResults,
-            ISet<MultiKey<EventBean>> oldResults)
+            ISet<MultiKeyArrayOfKeys<EventBean>> newResults,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldResults)
         {
         }
 

@@ -11,6 +11,7 @@ using System;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.context.mgr;
+using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -21,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
     /// </summary>
     public interface FAFQueryMethod
     {
-        void Ready();
+        void Ready(StatementContextRuntimeServices services);
 
         EPPreparedQueryResult Execute(
             AtomicBoolean serviceStatusProvider,

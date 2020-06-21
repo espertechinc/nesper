@@ -24,9 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     [Serializable]
     public class ExprRegexpNode : ExprNodeBase
     {
-        private readonly bool isNot;
+        private readonly bool _isNot;
 
-        [NonSerialized] private ExprRegexpNodeForge forge;
+        [NonSerialized] private ExprRegexpNodeForge _forge;
 
         /// <summary>
         /// Ctor.
@@ -34,20 +34,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         /// <param name="not">is true if the it's a "not regexp" expression, of false for regular regexp</param>
         public ExprRegexpNode(bool not)
         {
-            isNot = not;
+            _isNot = not;
         }
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
         public override ExprForge Forge {
             get {
-                CheckValidated(forge);
-                return forge;
+                CheckValidated(_forge);
+                return _forge;
             }
         }
 
@@ -81,15 +81,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
                 catch (ArgumentException ex) {
                     throw new ExprValidationException(
-                        "Error compiling regex pattern '" + patternText + "': " + ex.Message,
+                        "Failed to compile regex pattern '" + patternText + "': " + ex.Message,
                         ex);
                 }
 
                 var patternInit = NewInstance<Regex>(Constant(patternText));
-                forge = new ExprRegexpNodeForgeConst(this, isNumericValue, pattern, patternInit);
+                _forge = new ExprRegexpNodeForgeConst(this, isNumericValue, pattern, patternInit);
             }
             else {
-                forge = new ExprRegexpNodeForgeNonconst(this, isNumericValue);
+                _forge = new ExprRegexpNodeForgeNonconst(this, isNumericValue);
             }
 
             return null;
@@ -112,22 +112,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             var other = (ExprRegexpNode) node;
-            if (isNot != other.isNot) {
+            if (_isNot != other._isNot) {
                 return false;
             }
 
             return true;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
-            ChildNodes[0].ToEPL(writer, Precedence);
-            if (isNot) {
+            ChildNodes[0].ToEPL(writer, Precedence, flags);
+            if (_isNot) {
                 writer.Write(" not");
             }
 
             writer.Write(" regexp ");
-            ChildNodes[1].ToEPL(writer, Precedence);
+            ChildNodes[1].ToEPL(writer, Precedence, flags);
         }
 
         public override ExprPrecedenceEnum Precedence {
@@ -139,7 +140,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         /// </summary>
         /// <returns>indicator whether negated or not</returns>
         public bool IsNot {
-            get => isNot;
+            get => _isNot;
         }
     }
 } // end of namespace

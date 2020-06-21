@@ -233,7 +233,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(
                 eventTypes,
                 streamNames,
-                new bool[1],
+                new bool[eventTypes.Length],
                 false,
                 false);
 

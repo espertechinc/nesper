@@ -265,7 +265,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 }
 
                 forEach.Apply(Instblock(classScope, "aOrderBy", Ref("sortProperties")))
-                    .Increment("count");
+                    .IncrementRef("count");
                 method.Block.MethodReturn(StaticMethod(typeof(CompatExtensions), "AsList", Ref("sortProperties")));
             };
             return namedMethods.AddMethod(
@@ -353,7 +353,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                                 REF_EXPREVALCONTEXT));
                 }
 
-                forEach.Increment("count");
+                forEach.IncrementRef("count");
                 method.Block.MethodReturn(StaticMethod(typeof(CompatExtensions), "AsList", Ref("sortProperties")));
             };
             return namedMethods.AddMethod(
@@ -406,7 +406,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                         .AssignRef("localMinMax", Ref("sortKey"))
                         .AssignRef("outgoingMinMaxBean", ArrayAtIndex(REF_OUTGOINGEVENTS, Ref("count")))
                         .BlockEnd()
-                        .Increment("count");
+                        .IncrementRef("count");
                 }
                 else {
                     method.Block.DeclareVar<object[]>(
@@ -453,7 +453,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                         .AssignRef("valuesMk", NewInstance<HashableMultiKey>(Ref("values")))
                         .AssignRef("outgoingMinMaxBean", ArrayAtIndex(REF_OUTGOINGEVENTS, Ref("count")))
                         .BlockEnd()
-                        .Increment("count");
+                        .IncrementRef("count");
                 }
 
                 method.Block.MethodReturn(Ref("outgoingMinMaxBean"));

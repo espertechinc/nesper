@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -21,194 +22,164 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.epl.table.compiletime;
-using com.espertech.esper.common.@internal.rettype;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 {
-    /// <summary>
-    ///     Represents a custom aggregation function in an expresson tree.
-    /// </summary>
-    public class ExprPlugInMultiFunctionAggNode : ExprAggregateNodeBase,
-        ExprEnumerationEval,
-        ExprAggMultiFunctionNode,
-        ExprPlugInAggNodeMarker
-    {
-        private readonly AggregationMultiFunctionForge aggregationMultiFunctionForge;
-        private readonly ConfigurationCompilerPlugInAggregationMultiFunction config;
-        private readonly string functionName;
-        private AggregationForgeFactoryAccessPlugin factory;
+	/// <summary>
+	/// Represents a custom aggregation function in an expresson tree.
+	/// </summary>
+	public class ExprPlugInMultiFunctionAggNode : ExprAggregateNodeBase,
+		ExprEnumerationEval,
+		ExprAggMultiFunctionNode,
+		ExprPlugInAggNodeMarker
+	{
+		private readonly AggregationMultiFunctionForge _aggregationMultiFunctionForge;
+		private readonly string _functionName;
+		private readonly ConfigurationCompilerPlugInAggregationMultiFunction _config;
+		private AggregationForgeFactoryAccessPlugin _factory;
 
-        public ExprPlugInMultiFunctionAggNode(
-            bool distinct,
-            ConfigurationCompilerPlugInAggregationMultiFunction config,
-            AggregationMultiFunctionForge aggregationMultiFunctionForge,
-            string functionName)
-            : base(distinct)
-        {
-            this.aggregationMultiFunctionForge = aggregationMultiFunctionForge;
-            this.functionName = functionName;
-            this.config = config;
-        }
+		public ExprPlugInMultiFunctionAggNode(
+			bool distinct,
+			ConfigurationCompilerPlugInAggregationMultiFunction config,
+			AggregationMultiFunctionForge aggregationMultiFunctionForge,
+			string functionName)
+			: base(distinct)
+		{
+			this._aggregationMultiFunctionForge = aggregationMultiFunctionForge;
+			this._functionName = functionName;
+			this._config = config;
+		}
 
-        public override string AggregationFunctionName => functionName;
+		public override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
+		{
+			ValidatePositionals(validationContext);
+			// validate using the context provided by the 'outside' streams to determine parameters
+			// at this time 'inside' expressions like 'window(intPrimitive)' are not handled
+			ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.AGGPARAM, this.ChildNodes, validationContext);
+			AggregationMultiFunctionValidationContext ctx = new AggregationMultiFunctionValidationContext(
+				_functionName,
+				validationContext.StreamTypeService.EventTypes,
+				positionalParams,
+				validationContext.StatementName,
+				validationContext,
+				_config,
+				ChildNodes,
+				optionalFilter);
+			AggregationMultiFunctionHandler handlerPlugin = _aggregationMultiFunctionForge.ValidateGetHandler(ctx);
+			_factory = new AggregationForgeFactoryAccessPlugin(this, handlerPlugin);
+			return _factory;
+		}
 
-        public override bool IsFilterExpressionAsLastParameter => false;
+		public override string AggregationFunctionName {
+			get { return _functionName; }
+		}
 
-        public AggregationTableReadDesc ValidateAggregationTableRead(
-            ExprValidationContext validationContext,
-            TableMetadataColumnAggregation tableAccessColumn,
-            TableMetaData table)
-        {
-            // child node validation
-            ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.AGGPARAM, ChildNodes, validationContext);
+		public override bool IsFilterExpressionAsLastParameter {
+			get { return false; }
+		}
 
-            // portable validation
-            var validation = tableAccessColumn.AggregationPortableValidation;
-            if (!(validation is AggregationPortableValidationPluginMultiFunc)) {
-                throw new ExprValidationException("Invalid aggregation column type");
-            }
+		public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
+		{
+			return false;
+		}
 
-            // obtain handler
-            var ctx = new AggregationMultiFunctionValidationContext(
-                functionName,
-                validationContext.StreamTypeService.EventTypes,
-                positionalParams,
-                validationContext.StatementName,
-                validationContext,
-                config,
-                null,
-                ChildNodes,
-                optionalFilter);
-            var handler = aggregationMultiFunctionForge.ValidateGetHandler(ctx);
+		public Type ComponentTypeCollection {
+			get { return _factory.ComponentTypeCollection; }
+		}
 
-            // set of reader
-            var epType = handler.ReturnType;
-            Type returnType = EPTypeHelper.GetNormalizedClass(epType);
-            var forge = new AggregationTableAccessAggReaderForgePlugIn(
-                returnType,
-                (AggregationMultiFunctionTableReaderModeManaged) handler.TableReaderMode);
-            EventType eventTypeCollection = EPTypeHelper.OptionalIsEventTypeColl(epType);
-            EventType eventTypeSingle = EPTypeHelper.OptionalIsEventTypeSingle(epType);
-            Type componentTypeCollection = EPTypeHelper.OptionalIsComponentTypeColl(epType);
-            return new AggregationTableReadDesc(forge, eventTypeCollection, componentTypeCollection, eventTypeSingle);
-        }
+		public EventType GetEventTypeCollection(
+			StatementRawInfo statementRawInfo,
+			StatementCompileTimeServices compileTimeServices)
+		{
+			return _factory.EventTypeCollection;
+		}
 
-        public Type ComponentTypeCollection => factory.ComponentTypeCollection;
+		public EventType GetEventTypeSingle(
+			StatementRawInfo statementRawInfo,
+			StatementCompileTimeServices compileTimeServices)
+		{
+			return _factory.EventTypeSingle;
+		}
 
-        public EventType GetEventTypeCollection(
-            StatementRawInfo statementRawInfo,
-            StatementCompileTimeServices compileTimeServices)
-        {
-            return factory.EventTypeCollection;
-        }
+		public ICollection<EventBean> EvaluateGetROCollectionEvents(
+			EventBean[] eventsPerStream,
+			bool isNewData,
+			ExprEvaluatorContext context)
+		{
+			throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
+		}
 
-        public EventType GetEventTypeSingle(
-            StatementRawInfo statementRawInfo,
-            StatementCompileTimeServices compileTimeServices)
-        {
-            return factory.EventTypeSingle;
-        }
+		public ICollection<object> EvaluateGetROCollectionScalar(
+			EventBean[] eventsPerStream,
+			bool isNewData,
+			ExprEvaluatorContext context)
+		{
+			throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
+		}
 
-        public CodegenExpression EvaluateGetROCollectionEventsCodegen(
-            CodegenMethodScope parent,
-            ExprForgeCodegenSymbol exprSymbol,
-            CodegenClassScope codegenClassScope)
-        {
-            var future = GetAggFuture(codegenClassScope);
-            return FlexWrap(
-                ExprDotMethod(
-                    future,
-                    "GetCollectionOfEvents",
-                    Constant(column),
-                    exprSymbol.GetAddEPS(parent),
-                    exprSymbol.GetAddIsNewData(parent),
-                    exprSymbol.GetAddExprEvalCtx(parent)));
-        }
+		public EventBean EvaluateGetEventBean(
+			EventBean[] eventsPerStream,
+			bool isNewData,
+			ExprEvaluatorContext context)
+		{
+			throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
+		}
 
-        public CodegenExpression EvaluateGetROCollectionScalarCodegen(
-            CodegenMethodScope parent,
-            ExprForgeCodegenSymbol exprSymbol,
-            CodegenClassScope codegenClassScope)
-        {
-            var future = GetAggFuture(codegenClassScope);
-            return ExprDotMethod(
-                future,
-                "GetCollectionScalar",
-                Constant(column),
-                exprSymbol.GetAddEPS(parent),
-                exprSymbol.GetAddIsNewData(parent),
-                exprSymbol.GetAddExprEvalCtx(parent));
-        }
+		public CodegenExpression EvaluateGetROCollectionEventsCodegen(
+			CodegenMethodScope parent,
+			ExprForgeCodegenSymbol exprSymbol,
+			CodegenClassScope codegenClassScope)
+		{
+			CodegenExpression future = GetAggFuture(codegenClassScope);
+			return ExprDotMethod(
+				future,
+				"GetCollectionOfEvents",
+				Constant(column),
+				exprSymbol.GetAddEPS(parent),
+				exprSymbol.GetAddIsNewData(parent),
+				exprSymbol.GetAddExprEvalCtx(parent));
+		}
 
-        public CodegenExpression EvaluateGetEventBeanCodegen(
-            CodegenMethodScope parent,
-            ExprForgeCodegenSymbol exprSymbol,
-            CodegenClassScope codegenClassScope)
-        {
-            var future = GetAggFuture(codegenClassScope);
-            return ExprDotMethod(
-                future,
-                "GetEventBean",
-                Constant(column),
-                exprSymbol.GetAddEPS(parent),
-                exprSymbol.GetAddIsNewData(parent),
-                exprSymbol.GetAddExprEvalCtx(parent));
-        }
+		public CodegenExpression EvaluateGetROCollectionScalarCodegen(
+			CodegenMethodScope parent,
+			ExprForgeCodegenSymbol exprSymbol,
+			CodegenClassScope codegenClassScope)
+		{
+			CodegenExpression future = GetAggFuture(codegenClassScope);
+			return ExprDotMethod(
+				future,
+				"GetCollectionScalar",
+				Constant(column),
+				exprSymbol.GetAddEPS(parent),
+				exprSymbol.GetAddIsNewData(parent),
+				exprSymbol.GetAddExprEvalCtx(parent));
+		}
 
-        public ExprNodeRenderable EnumForgeRenderable => this;
-        public ExprEnumerationEval ExprEvaluatorEnumeration => this;
+		public CodegenExpression EvaluateGetEventBeanCodegen(
+			CodegenMethodScope parent,
+			ExprForgeCodegenSymbol exprSymbol,
+			CodegenClassScope codegenClassScope)
+		{
+			CodegenExpression future = GetAggFuture(codegenClassScope);
+			return ExprDotMethod(
+				future,
+				"GetEventBean",
+				Constant(column),
+				exprSymbol.GetAddEPS(parent),
+				exprSymbol.GetAddIsNewData(parent),
+				exprSymbol.GetAddExprEvalCtx(parent));
+		}
 
-        public ICollection<EventBean> EvaluateGetROCollectionEvents(
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
-        {
-            throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
-        }
+		public ExprEnumerationEval ExprEvaluatorEnumeration {
+			get { return this; }
+		}
 
-        public ICollection<object> EvaluateGetROCollectionScalar(
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
-        {
-            throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
-        }
-
-        public EventBean EvaluateGetEventBean(
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
-        {
-            throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
-        }
-
-        public override AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext)
-        {
-            ValidatePositionals(validationContext);
-            // validate using the context provided by the 'outside' streams to determine parameters
-            // at this time 'inside' expressions like 'window(IntPrimitive)' are not handled
-            ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.AGGPARAM, ChildNodes, validationContext);
-            var ctx = new AggregationMultiFunctionValidationContext(
-                functionName,
-                validationContext.StreamTypeService.EventTypes,
-                positionalParams,
-                validationContext.StatementName,
-                validationContext,
-                config,
-                null,
-                ChildNodes,
-                optionalFilter);
-            var handlerPlugin = aggregationMultiFunctionForge.ValidateGetHandler(ctx);
-            factory = new AggregationForgeFactoryAccessPlugin(this, handlerPlugin);
-            return factory;
-        }
-
-        public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
-        {
-            return false;
-        }
-    }
+		public AggregationForgeFactory AggregationForgeFactory {
+			get { return _factory; }
+		}
+	}
 } // end of namespace

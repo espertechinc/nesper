@@ -19,19 +19,20 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
     {
         public StatementAgentInstanceFactoryCreateExpressionResult(
             Viewable finalView,
-            AgentInstanceStopCallback stopCallback,
+            AgentInstanceMgmtCallback stopCallback,
             AgentInstanceContext agentInstanceContext)
             : base(
                 finalView,
                 stopCallback,
                 agentInstanceContext,
                 null,
-                new EmptyDictionary<int, SubSelectFactoryResult>(),
+                EmptyDictionary<int, SubSelectFactoryResult>.Instance,
                 null,
                 null,
                 null,
-                new EmptyDictionary<int, ExprTableEvalStrategy>(),
-                new EmptyList<StatementAgentInstancePreload>())
+                EmptyDictionary<int, ExprTableEvalStrategy>.Instance,
+                EmptyList<StatementAgentInstancePreload>.Instance,
+                null)
         {
         }
     }

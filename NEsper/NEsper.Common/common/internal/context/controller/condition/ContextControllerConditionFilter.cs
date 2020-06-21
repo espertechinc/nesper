@@ -48,9 +48,10 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
 
         public bool Activate(
             EventBean optionalTriggeringEvent,
-            ContextControllerEndConditionMatchEventProvider endConditionMatchEventProvider)
+            ContextControllerEndConditionMatchEventProvider endConditionMatchEventProvider,
+            IDictionary<string, object> optionalTriggeringPattern)
         {
-            AgentInstanceContext agentInstanceContext = controller.Realization.AgentInstanceContextCreate;
+            var agentInstanceContext = controller.Realization.AgentInstanceContextCreate;
 
             FilterHandleCallback filterCallback = new ProxyFilterHandleCallback() {
                 ProcMatchFound = (
@@ -59,27 +60,20 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
                 ProcIsSubselect = () => false,
             };
 
-            FilterValueSetParam[][] addendum = ContextManagerUtil.ComputeAddendumNonStmt(
-                partitionKeys,
-                filter.FilterSpecActivatable,
-                controller.Realization);
             filterHandle = new EPStatementHandleCallbackFilter(
                 agentInstanceContext.EpStatementAgentInstanceHandle,
                 filterCallback);
-            FilterValueSetParam[][] filterValueSet = filter.FilterSpecActivatable.GetValueSet(
-                null,
-                addendum,
-                agentInstanceContext,
-                agentInstanceContext.StatementContextFilterEvalEnv);
-            agentInstanceContext.FilterService.Add(
-                filter.FilterSpecActivatable.FilterForEventType,
-                filterValueSet,
-                filterHandle);
-            long filtersVersion = agentInstanceContext.FilterService.FiltersVersion;
-            agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion =
-                filtersVersion;
+            var filterValueSet = ComputeFilterValues(agentInstanceContext);
+            if (filterValueSet != null) {
+                agentInstanceContext.FilterService.Add(
+                    filter.FilterSpecActivatable.FilterForEventType,
+                    filterValueSet,
+                    filterHandle);
+                var filtersVersion = agentInstanceContext.FilterService.FiltersVersion;
+                agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;
+            }
 
-            bool match = false;
+            var match = false;
             if (optionalTriggeringEvent != null) {
                 match = AgentInstanceUtil.EvaluateFilterForStatement(
                     optionalTriggeringEvent,
@@ -96,24 +90,33 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
                 return;
             }
 
-            AgentInstanceContext agentInstanceContext = controller.Realization.AgentInstanceContextCreate;
-            FilterValueSetParam[][] addendum = ContextManagerUtil.ComputeAddendumNonStmt(
+            var agentInstanceContext = controller.Realization.AgentInstanceContextCreate;
+            var filterValueSet = ComputeFilterValues(agentInstanceContext);
+            if (filterValueSet != null) {
+
+                agentInstanceContext.FilterService.Remove(
+                    filterHandle,
+                    filter.FilterSpecActivatable.FilterForEventType,
+                    filterValueSet);
+                var filtersVersion = agentInstanceContext.StatementContext.FilterService.FiltersVersion;
+                agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion =
+                    filtersVersion;
+            }
+
+            filterHandle = null;
+        }
+
+        private FilterValueSetParam[][] ComputeFilterValues(AgentInstanceContext agentInstanceContext)
+        {
+            var addendum = ContextManagerUtil.ComputeAddendumNonStmt(
                 partitionKeys,
                 filter.FilterSpecActivatable,
                 controller.Realization);
-            FilterValueSetParam[][] filterValueSet = filter.FilterSpecActivatable.GetValueSet(
+            return filter.FilterSpecActivatable.GetValueSet(
                 null,
                 addendum,
                 agentInstanceContext,
                 agentInstanceContext.StatementContextFilterEvalEnv);
-            agentInstanceContext.FilterService.Remove(
-                filterHandle,
-                filter.FilterSpecActivatable.FilterForEventType,
-                filterValueSet);
-            filterHandle = null;
-            long filtersVersion = agentInstanceContext.StatementContext.FilterService.FiltersVersion;
-            agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion =
-                filtersVersion;
         }
 
         public bool IsImmediate {
@@ -132,10 +135,24 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             get => null;
         }
 
+
+        public void Transfer(AgentInstanceTransferServices xfer)
+        {
+            if (filterHandle == null) {
+                return;
+            }
+
+            var filterValueSet = ComputeFilterValues(xfer.AgentInstanceContext);
+            if (filterValueSet != null) {
+                xfer.AgentInstanceContext.FilterService.Remove(filterHandle, filter.FilterSpecActivatable.FilterForEventType, filterValueSet);
+                xfer.TargetFilterService.Add(filter.FilterSpecActivatable.FilterForEventType, filterValueSet, filterHandle);
+            }
+        }
+
         private void FilterMatchFound(EventBean theEvent)
         {
             // For OR-type filters we de-duplicate here by keeping the last event instance
-            if (filter.FilterSpecActivatable.Parameters.Length > 1) {
+            if (filter.FilterSpecActivatable.Plan.Paths.Length > 1) {
                 if (theEvent == lastEvent) {
                     return;
                 }

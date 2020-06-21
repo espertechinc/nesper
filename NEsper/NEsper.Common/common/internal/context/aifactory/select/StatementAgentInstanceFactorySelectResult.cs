@@ -20,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.subselect;
 using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.previous;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.select
 {
@@ -27,7 +28,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
     {
         public StatementAgentInstanceFactorySelectResult(
             Viewable finalView,
-            AgentInstanceStopCallback stopCallback,
+            AgentInstanceMgmtCallback stopCallback,
             AgentInstanceContext agentInstanceContext,
             AggregationService optionalAggegationService,
             IDictionary<int, SubSelectFactoryResult> subselectStrategies,
@@ -36,6 +37,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             RowRecogPreviousStrategy regexExprPreviousEvalStrategy,
             IDictionary<int, ExprTableEvalStrategy> tableAccessStrategies,
             IList<StatementAgentInstancePreload> preloadList,
+            Runnable postContextMergeRunnable,
             EvalRootState[] patternRoots,
             JoinSetComposer joinSetComposer,
             Viewable[] topViews,
@@ -51,7 +53,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 previousGetterStrategies,
                 regexExprPreviousEvalStrategy,
                 tableAccessStrategies,
-                preloadList)
+                preloadList,
+                postContextMergeRunnable)
         {
             TopViews = topViews;
             PatternRoots = patternRoots;

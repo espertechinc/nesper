@@ -114,8 +114,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
         }
 
         public void ProcessJoin(
-            ISet<MultiKey<EventBean>> newEvents,
-            ISet<MultiKey<EventBean>> oldEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents,
             bool isGenerateSynthetic)
         {
             GenerateRemoveStreamJustOnce(isGenerateSynthetic, true);

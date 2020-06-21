@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.statement.insertintolatch
         ///     Ctor.
         /// </summary>
         /// <param name="name">the factory name</param>
-        /// <param name="msecWait">the number of milliseconds latches will await maximually</param>
+        /// <param name="msecWait">the number of milliseconds latches will await maximally</param>
         /// <param name="locking">the blocking strategy to employ</param>
         /// <param name="timeSourceService">time source provider</param>
         /// <param name="stateless">indicator whether stateless</param>

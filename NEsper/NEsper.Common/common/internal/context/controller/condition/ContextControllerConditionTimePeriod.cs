@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
@@ -46,7 +47,8 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
 
         public bool Activate(
             EventBean optionalTriggeringEvent,
-            ContextControllerEndConditionMatchEventProvider endConditionMatchEventProvider)
+            ContextControllerEndConditionMatchEventProvider endConditionMatchEventProvider,
+            IDictionary<string, object> optionalTriggeringPattern)
         {
             ScheduleHandleCallback scheduleCallback = new ProxyScheduleHandleCallback() {
                 ProcScheduledTrigger = () => {
@@ -95,6 +97,10 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             }
 
             scheduleHandle = null;
+        }
+
+        public void Transfer(AgentInstanceTransferServices xfer)
+        {
         }
 
         public bool IsImmediate {

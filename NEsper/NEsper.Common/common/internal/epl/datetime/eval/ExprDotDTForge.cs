@@ -85,13 +85,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
         public CodegenExpression Codegen(
             CodegenExpression inner,
             Type innerType,
-            CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol,
-            CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope)
         {
             var returnType = ((ClassEPType) TypeInfo).Clazz.GetBoxedType();
-            var methodNode = codegenMethodScope
-                .MakeChild(returnType, typeof(ExprDotDTForge), codegenClassScope)
+            var methodNode = parent
+                .MakeChild(returnType, typeof(ExprDotDTForge), classScope)
                 .AddParam(innerType, "target");
 
             CodegenExpression targetValue = Unbox(Ref("target"), innerType);
@@ -109,8 +109,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                     targetValue,
                     innerType,
                     methodNode,
-                    exprSymbol,
-                    codegenClassScope));
+                    symbols,
+                    classScope));
 
             return LocalMethod(methodNode, inner);
         }

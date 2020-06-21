@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            CodegenExpressionRef state = RefCol("state", col);
+            CodegenExpressionRef state = MemberCol("state", col);
             method.Block
                 .DeclareVar<AggregationNthState>(
                     state.Ref,
@@ -156,7 +156,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
             CodegenClassScope classScope)
         {
             var sizeBuf = Constant(factory.SizeOfBuf);
-            method.Block.IfRefNullReturnNull(circularBuffer)
+            method.Block.IfNullReturnNull(circularBuffer)
                 .DeclareVar<int>("index", Op(Op(currentBufferElementPointer, "+", sizeBuf), "%", sizeBuf))
                 .MethodReturn(ArrayAtIndex(circularBuffer, Ref("index")));
         }

@@ -11,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 
@@ -96,6 +97,8 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
         {
             return Factory.ToQueryPlan();
         }
+
+        public MultiKeyFromObjectArray MultiKeyTransform => Factory.MultiKeyTransform;
 
         public abstract ISet<EventBean> Lookup(object key);
 

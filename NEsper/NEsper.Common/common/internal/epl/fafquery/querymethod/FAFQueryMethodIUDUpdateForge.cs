@@ -74,14 +74,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             FireAndForgetSpecUpdate updateSpec = (FireAndForgetSpecUpdate) spec.Raw.FireAndForgetSpec;
             try {
                 foreach (OnTriggerSetAssignment assignment in updateSpec.Assignments) {
-                    ExprNode validated = ExprNodeUtilityValidate.GetValidatedSubtree(
-                        ExprNodeOrigin.UPDATEASSIGN,
-                        assignment.Expression,
-                        validationContext);
-                    assignment.Expression = validated;
-                    EPStatementStartMethodHelperValidate.ValidateNoAggregations(
-                        validated,
-                        "Aggregation functions may not be used within an update-clause");
+                    ExprNodeUtilityValidate.ValidateAssignment(
+                        false, ExprNodeOrigin.UPDATEASSIGN, assignment, validationContext);
                 }
             }
             catch (ExprValidationException e) {
@@ -89,7 +83,6 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             }
 
             // make updater
-            //TableUpdateStrategy tableUpdateStrategy = null;
             try {
                 bool copyOnWrite = processor is FireAndForgetProcessorNamedWindowForge;
                 updateHelper = EventBeanUpdateHelperForgeFactory.Make(

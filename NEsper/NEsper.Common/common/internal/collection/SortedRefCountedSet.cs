@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.collection
     ///     key is added, the reference counter increases. Each time a key is removed, the
     ///     reference counter decreases.
     /// </summary>
-    public class SortedRefCountedSet<K>
+    public class SortedRefCountedSet<TK>
     {
         /// <summary>
         ///     Constructor.
@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.collection
         public SortedRefCountedSet()
         {
             CountPoints = 0;
-            RefSet = new SortedList<K, MutableInt>();
+            RefSet = new SortedList<TK, MutableInt>();
         }
 
         /// <summary>
@@ -37,21 +37,21 @@ namespace com.espertech.esper.common.@internal.collection
         ///     Gets the ref set.
         /// </summary>
         /// <value>The ref set.</value>
-        public SortedList<K, MutableInt> RefSet { get; }
+        public SortedList<TK, MutableInt> RefSet { get; }
 
         /// <summary> Returns the largest key value, or null if the collection is empty.</summary>
         /// <returns>
         ///     largest key value, null if none
         /// </returns>
 
-        public virtual K MaxValue => RefSet.Count != 0 ? RefSet.Keys[RefSet.Count - 1] : default(K);
+        public virtual TK MaxValue => RefSet.Count != 0 ? RefSet.Keys[RefSet.Count - 1] : default(TK);
 
         /// <summary> Returns the smallest key value, or null if the collection is empty.</summary>
         /// <returns>
         ///     smallest key value, default(K) if none
         /// </returns>
 
-        public virtual K MinValue => RefSet.Count != 0 ? RefSet.Keys[0] : default(K);
+        public virtual TK MinValue => RefSet.Count != 0 ? RefSet.Keys[0] : default(TK);
 
         /// <summary>
         ///     Add a key to the set. Add with a reference count of one if the key didn't exist in the set.
@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// <param name="key">
         ///     to add
         /// </param>
-        public virtual void Add(K key)
+        public virtual void Add(TK key)
         {
             MutableInt value;
             if (!RefSet.TryGetValue(key, out value)) {
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// <param name="key">The key.</param>
         /// <param name="numReferences">The num references.</param>
         public void Add(
-            K key,
+            TK key,
             int numReferences)
         {
             MutableInt value;
@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.collection
         ///     to add
         /// </param>
         /// <throws>  IllegalStateException is a key is removed that wasn't added to the map </throws>
-        public virtual void Remove(K key)
+        public virtual void Remove(TK key)
         {
             MutableInt value;
 

@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             ExprEvaluatorContext context)
         {
             InitInnerEvaluatorLambda();
-            eventsPerStream = GetEventsPerStreamRewritten(eventsPerStream);
+            eventsPerStream = GetEventsPerStreamRewritten(eventsPerStream, isNewData, context);
             var result =
                 innerEvaluatorLambdaLazy.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context);
             return result;
@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             ExprEvaluatorContext context)
         {
             InitInnerEvaluatorLambda();
-            eventsPerStream = GetEventsPerStreamRewritten(eventsPerStream);
+            eventsPerStream = GetEventsPerStreamRewritten(eventsPerStream, isNewData, context);
             return innerEvaluatorLambdaLazy.EvaluateGetROCollectionScalar(eventsPerStream, isNewData, context);
         }
 
@@ -115,13 +115,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                 typeof(FlexCollection),
                 typeof(ExprDeclaredForgeBase),
                 codegenClassScope);
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
             var refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
             methodNode.Block
                 .DeclareVar<EventBean[]>(
                     "rewritten",
-                    CodegenEventsPerStreamRewritten(refEPS, methodNode, codegenClassScope))
+                    CodegenEventsPerStreamRewritten(methodNode, exprSymbol, codegenClassScope))
                 .MethodReturn(
                     LocalMethod(
                         EvaluateGetROCollectionEventsCodegenRewritten(methodNode, codegenClassScope),
@@ -140,13 +139,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                 typeof(ICollection<object>),
                 typeof(ExprDeclaredForgeBase),
                 codegenClassScope);
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
             var refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
             methodNode.Block
                 .DeclareVar<EventBean[]>(
                     "rewritten",
-                    CodegenEventsPerStreamRewritten(refEPS, methodNode, codegenClassScope))
+                    CodegenEventsPerStreamRewritten(methodNode, exprSymbol, codegenClassScope))
                 .MethodReturn(
                     LocalMethod(
                         EvaluateGetROCollectionScalarCodegenRewritten(methodNode, codegenClassScope),
@@ -257,11 +255,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                 .Build();
         }
 
-        public abstract EventBean[] GetEventsPerStreamRewritten(EventBean[] eventsPerStream);
+        public abstract EventBean[] GetEventsPerStreamRewritten(
+            EventBean[] eventsPerStream, bool isNewData, ExprEvaluatorContext context);
 
         protected abstract CodegenExpression CodegenEventsPerStreamRewritten(
-            CodegenExpression eventsPerStream,
             CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
 
         public bool? IsMultirow {
@@ -320,7 +319,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             ExprEvaluatorContext context)
         {
             InitInnerEvaluator();
-            eventsPerStream = GetEventsPerStreamRewritten(eventsPerStream);
+            eventsPerStream = GetEventsPerStreamRewritten(eventsPerStream, isNewData, context);
             return innerEvaluatorLazy.Evaluate(eventsPerStream, isNewData, context);
         }
 
@@ -351,13 +350,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                 evaluationType,
                 typeof(ExprDeclaredForgeBase),
                 codegenClassScope);
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
             var refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
             methodNode.Block
                 .DeclareVar<EventBean[]>(
                     "rewritten",
-                    CodegenEventsPerStreamRewritten(refEPS, methodNode, codegenClassScope))
+                    CodegenEventsPerStreamRewritten(methodNode, exprSymbol, codegenClassScope))
                 .MethodReturn(
                     LocalMethod(
                         EvaluateCodegenRewritten(requiredType, methodNode, codegenClassScope),

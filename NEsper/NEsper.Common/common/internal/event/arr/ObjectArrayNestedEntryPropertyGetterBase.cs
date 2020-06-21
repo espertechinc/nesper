@@ -17,10 +17,15 @@ namespace com.espertech.esper.common.@internal.@event.arr
 {
     public abstract class ObjectArrayNestedEntryPropertyGetterBase : ObjectArrayEventPropertyGetter
     {
-        internal readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
-        internal readonly EventType fragmentType;
+        private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
+        private readonly EventType _fragmentType;
+        private readonly int _propertyIndex;
 
-        internal readonly int propertyIndex;
+        public EventBeanTypedEventFactory EventBeanTypedEventFactory => _eventBeanTypedEventFactory;
+
+        public EventType FragmentType => _fragmentType;
+
+        public int PropertyIndex => _propertyIndex;
 
         /// <summary>
         ///     Ctor.
@@ -33,14 +38,14 @@ namespace com.espertech.esper.common.@internal.@event.arr
             EventType fragmentType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            this.propertyIndex = propertyIndex;
-            this.fragmentType = fragmentType;
-            this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            _propertyIndex = propertyIndex;
+            _fragmentType = fragmentType;
+            _eventBeanTypedEventFactory = eventBeanTypedEventFactory;
         }
 
         public object GetObjectArray(object[] array)
         {
-            var value = array[propertyIndex];
+            var value = array[_propertyIndex];
             if (value == null) {
                 return null;
             }
@@ -50,7 +55,12 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public bool IsObjectArrayExistsProperty(object[] array)
         {
-            return true; // Property exists as the property is not dynamic (unchecked)
+            var value = array[_propertyIndex];
+            if (value == null) {
+                return false;
+            }
+
+            return HandleNestedValueExists(value);
         }
 
         public object Get(EventBean obj)
@@ -61,7 +71,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         public bool IsExistsProperty(EventBean eventBean)
         {
             var array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
-            var value = array[propertyIndex];
+            var value = array[_propertyIndex];
             if (value == null) {
                 return false;
             }
@@ -72,7 +82,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         public object GetFragment(EventBean obj)
         {
             var array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(obj);
-            var value = array[propertyIndex];
+            var value = array[_propertyIndex];
             if (value == null) {
                 return null;
             }
@@ -165,7 +175,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(object[]), "array")
                 .Block
-                .DeclareVar<object>("value", ArrayAtIndex(Ref("array"), Constant(propertyIndex)))
+                .DeclareVar<object>("value", ArrayAtIndex(Ref("array"), Constant(_propertyIndex)))
                 .IfRefNullReturnNull("value")
                 .MethodReturn(HandleNestedValueCodegen(Ref("value"), codegenMethodScope, codegenClassScope));
         }
@@ -177,7 +187,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
                 .AddParam(typeof(object[]), "array")
                 .Block
-                .DeclareVar<object>("value", ArrayAtIndex(Ref("array"), Constant(propertyIndex)))
+                .DeclareVar<object>("value", ArrayAtIndex(Ref("array"), Constant(_propertyIndex)))
                 .IfRefNullReturnFalse("value")
                 .MethodReturn(HandleNestedValueExistsCodegen(Ref("value"), codegenMethodScope, codegenClassScope));
         }
@@ -189,7 +199,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(object[]), "array")
                 .Block
-                .DeclareVar<object>("value", ArrayAtIndex(Ref("array"), Constant(propertyIndex)))
+                .DeclareVar<object>("value", ArrayAtIndex(Ref("array"), Constant(_propertyIndex)))
                 .IfRefNullReturnFalse("value")
                 .MethodReturn(HandleNestedValueFragmentCodegen(Ref("value"), codegenMethodScope, codegenClassScope));
         }

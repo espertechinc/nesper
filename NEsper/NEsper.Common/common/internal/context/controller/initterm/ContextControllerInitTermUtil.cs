@@ -6,12 +6,14 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.context.controller.condition;
 using com.espertech.esper.common.@internal.schedule;
+using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.controller.initterm
@@ -44,25 +46,21 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             // we are not currently running if either of the endpoints is not crontab-triggered
             if (spec.StartCondition is ContextConditionDescriptorCrontab &&
                 spec.EndCondition is ContextConditionDescriptorCrontab) {
-                var scheduleStart = ((ContextControllerConditionCrontab) startCondition).Schedule;
+                ScheduleSpec[] schedulesStart = ((ContextControllerConditionCrontab) startCondition).Schedules;
 
                 var endCron = (ContextConditionDescriptorCrontab) spec.EndCondition;
-                var scheduleEnd = ScheduleExpressionUtil.CrontabScheduleBuild(
-                    endCron.Evaluators,
-                    controller.Realization.AgentInstanceContextCreate);
+                var schedulesEnd = new ScheduleSpec[endCron.EvaluatorsPerCrontab.Length];
+                for (var i = 0; i < schedulesEnd.Length; i++) {
+                    schedulesEnd[i] = ScheduleExpressionUtil.CrontabScheduleBuild(
+                        endCron.EvaluatorsPerCrontab[i],
+                        controller.Realization.AgentInstanceContextCreate);
+                }
 
-                var importService = controller.Realization.AgentInstanceContextCreate.ImportServiceRuntime;
+                var classpathImportService = controller.Realization.AgentInstanceContextCreate.ImportServiceRuntime;
                 var time = controller.Realization.AgentInstanceContextCreate.SchedulingService.Time;
-                var nextScheduledStartTime = ScheduleComputeHelper.ComputeNextOccurance(
-                    scheduleStart,
-                    time,
-                    importService.TimeZone,
-                    importService.TimeAbacus);
-                var nextScheduledEndTime = ScheduleComputeHelper.ComputeNextOccurance(
-                    scheduleEnd,
-                    time,
-                    importService.TimeZone,
-                    importService.TimeAbacus);
+                var nextScheduledStartTime = ComputeScheduleMinimumNextOccurance(schedulesStart, time, classpathImportService);
+                var nextScheduledEndTime = ComputeScheduleMinimumNextOccurance(schedulesEnd, time, classpathImportService);
+                
                 return nextScheduledStartTime >= nextScheduledEndTime;
             }
 
@@ -116,6 +114,36 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             }
 
             return identifier;
+        }
+        
+        public static long ComputeScheduleMinimumNextOccurance(ScheduleSpec[] schedules, long time, ImportServiceRuntime classpathImportService) {
+            var value = Int64.MaxValue;
+            foreach (var spec in schedules) {
+                var computed = ScheduleComputeHelper.ComputeNextOccurance(
+                    spec,
+                    time,
+                    classpathImportService.TimeZone,
+                    classpathImportService.TimeAbacus);
+                if (computed < value) {
+                    value = computed;
+                }
+            }
+            return value;
+        }
+
+        public static long ComputeScheduleMinimumDelta(ScheduleSpec[] schedules, long time, ImportServiceRuntime classpathImportService) {
+            var value = Int64.MaxValue;
+            foreach (ScheduleSpec spec in schedules) {
+                long computed = ScheduleComputeHelper.ComputeDeltaNextOccurance(
+                    spec,
+                    time,
+                    classpathImportService.TimeZone,
+                    classpathImportService.TimeAbacus);
+                if (computed < value) {
+                    value = computed;
+                }
+            }
+            return value;
         }
     }
 } // end of namespace

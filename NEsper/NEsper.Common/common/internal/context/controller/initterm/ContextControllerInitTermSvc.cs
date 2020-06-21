@@ -49,6 +49,12 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             IntSeqKey controllerPath,
             BiConsumer<ContextControllerInitTermPartitionKey, int> partKeyAndCPId);
 
+        void EndVisitConditions(
+            IntSeqKey controllerPath,
+            BiConsumer<ContextControllerConditionNonHA, int> partKeyAndCPId);
+
         void Destroy();
+        
+        ContextControllerCondition MgmtGetStartCondition(IntSeqKey conditionPath);
     }
 } // end of namespace

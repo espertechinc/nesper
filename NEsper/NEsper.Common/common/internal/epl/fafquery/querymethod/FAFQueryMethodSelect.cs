@@ -12,14 +12,17 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.context.mgr;
+using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.fafquery.processor;
 using com.espertech.esper.common.@internal.epl.join.@base;
 using com.espertech.esper.common.@internal.epl.join.querygraph;
 using com.espertech.esper.common.@internal.epl.resultset.core;
+using com.espertech.esper.common.@internal.epl.subselect;
 using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 {
@@ -28,8 +31,6 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
     /// </summary>
     public class FAFQueryMethodSelect : FAFQueryMethod
     {
-        private bool _isDistinct;
-
         public Attribute[] Annotations { get; set; }
 
         public string ContextName { get; set; }
@@ -42,8 +43,6 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 
         public FireAndForgetProcessor[] Processors { get; set; }
 
-        public EventBeanReader EventBeanReaderDistinct { get; private set; }
-
         public JoinSetComposerPrototype JoinSetComposerPrototype { get; set; }
 
         public QueryGraph QueryGraph { get; set; }
@@ -53,6 +52,12 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
         public FAFQueryMethodSelectExec SelectExec { get; private set; }
 
         public IDictionary<int, ExprTableEvalStrategyFactory> TableAccesses { get; set; }
+        
+        public bool IsDistinct { get; set; }
+
+        public EventPropertyValueGetter DistinctKeyGetter { get; set; }
+        
+        public IDictionary<int, SubSelectFactory> Subselects { get; set; }
 
         /// <summary>
         ///     Returns the event type of the prepared statement.
@@ -60,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
         /// <returns>event type</returns>
         public EventType EventType => ResultSetProcessorFactoryProvider.ResultEventType;
 
-        public void Ready()
+        public void Ready(StatementContextRuntimeServices services)
         {
             var hasContext = false;
             for (var i = 0; i < Processors.Length; i++) {
@@ -96,6 +101,10 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 
                 SelectExec = FAFQueryMethodSelectExecGivenContextNoJoin.INSTANCE;
             }
+            
+            if (!Subselects.IsEmpty()) {
+                FAFQueryMethodUtil.InitializeSubselects(services, Annotations, Subselects);
+            }
         }
 
         public EPPreparedQueryResult Execute(
@@ -119,23 +128,6 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             finally {
                 if (HasTableAccess) {
                     Processors[0].StatementContext.TableExprEvaluatorContext.ReleaseAcquiredLocks();
-                }
-            }
-        }
-
-        public bool IsDistinct {
-            get => _isDistinct;
-            set {
-                _isDistinct = value;
-                if (_isDistinct) {
-                    var resultEventType = ResultSetProcessorFactoryProvider.ResultEventType;
-                    if (resultEventType is EventTypeSPI) {
-                        EventBeanReaderDistinct = ((EventTypeSPI) resultEventType).Reader;
-                    }
-
-                    if (EventBeanReaderDistinct == null) {
-                        EventBeanReaderDistinct = new EventBeanReaderDefaultImpl(resultEventType);
-                    }
                 }
             }
         }

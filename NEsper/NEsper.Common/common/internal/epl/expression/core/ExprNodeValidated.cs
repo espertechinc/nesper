@@ -66,22 +66,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public override void ToEPL(
             TextWriter writer,
-            ExprPrecedenceEnum parentPrecedence)
+            ExprPrecedenceEnum parentPrecedence,
+            ExprNodeRenderableFlags flags)
         {
-            inner.ToEPL(writer, parentPrecedence);
+            inner.ToEPL(writer, parentPrecedence, flags);
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
-            inner.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+            inner.ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
         }
 
         public override bool EqualsNode(
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (node is ExprNodeValidated) {
-                return inner.EqualsNode(((ExprNodeValidated) node).inner, false);
+            if (node is ExprNodeValidated nodeValidated) {
+                return inner.EqualsNode(nodeValidated.inner, false);
             }
 
             return inner.EqualsNode(node, false);

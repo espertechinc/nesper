@@ -128,7 +128,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
             CodeGenerationUtil.Importsdecl(builder, imports);
             CodeGenerationUtil.NamespaceDecl(builder, clazz.Namespace);
-            CodeGenerationUtil.Classimplements(builder, clazz.ClassName, clazz.InterfaceImplemented, null, true, false);
+            CodeGenerationUtil.Classimplements(builder, clazz.ClassName, clazz.OptionalInterfaceImplemented, null, true, false);
 
             // members
             GenerateCodeMembers(builder, clazz.ExplicitMembers, clazz.OptionalCtor, 2);

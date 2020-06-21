@@ -10,6 +10,7 @@ using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.compile.stage1;
 using com.espertech.esper.common.@internal.context.compile;
 using com.espertech.esper.common.@internal.context.module;
+using com.espertech.esper.common.@internal.epl.classprovided.compiletime;
 using com.espertech.esper.common.@internal.epl.dataflow.core;
 using com.espertech.esper.common.@internal.epl.expression.declared.compiletime;
 using com.espertech.esper.common.@internal.epl.historical.database.connection;
@@ -27,6 +28,8 @@ using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.eventtyperepo;
 using com.espertech.esper.common.@internal.@event.xml;
+using com.espertech.esper.common.@internal.serde.compiletime.eventtype;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.container;
@@ -43,6 +46,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             ContextCompileTimeResolver contextCompileTimeResolver,
             BeanEventTypeStemService beanEventTypeStemService,
             BeanEventTypeFactoryPrivate beanEventTypeFactoryPrivate,
+            ClassProvidedCompileTimeRegistry classProvidedCompileTimeRegistry,
+            ClassProvidedCompileTimeResolver classProvidedCompileTimeResolver,
             DatabaseConfigServiceCompileTime databaseConfigServiceCompileTime,
             ImportServiceCompileTime importService,
             ExprDeclaredCompileTimeRegistry exprDeclaredCompileTimeRegistry,
@@ -51,6 +56,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             EventTypeCompileTimeRegistry eventTypeCompileTimeRegistry,
             EventTypeCompileTimeResolver eventTypeCompileTimeResolver,
             EventTypeRepositoryImpl eventTypeRepositoryPreconfigured,
+            bool fireAndForget,
             IndexCompileTimeRegistry indexCompileTimeRegistry,
             ModuleDependenciesCompileTime moduleDependencies,
             ModuleAccessModifierService moduleVisibilityRules,
@@ -60,6 +66,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             ScriptCompileTimeRegistry scriptCompileTimeRegistry,
             ScriptCompileTimeResolver scriptCompileTimeResolver,
             ScriptServiceCompileTime scriptServiceCompileTime,
+            SerdeEventTypeCompileTimeRegistry serdeEventTypeRegistry,
+            SerdeCompileTimeResolver serdeResolver, 
             TableCompileTimeRegistry tableCompileTimeRegistry,
             TableCompileTimeResolver tableCompileTimeResolver,
             VariableCompileTimeRegistry variableCompileTimeRegistry,
@@ -97,6 +105,14 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             VariableCompileTimeResolver = variableCompileTimeResolver;
             ViewResolutionService = viewResolutionService;
             XmlFragmentEventTypeFactory = xmlFragmentEventTypeFactory;
+
+            #region ESPER_8.5.0
+            ClassProvidedCompileTimeRegistry = classProvidedCompileTimeRegistry;
+            ClassProvidedCompileTimeResolver = classProvidedCompileTimeResolver;
+            SerdeEventTypeRegistry = serdeEventTypeRegistry;
+            SerdeResolver = serdeResolver;
+            IsFireAndForget = fireAndForget;
+            #endregion
         }
 
         public ModuleCompileTimeServices(IContainer container)
@@ -131,8 +147,17 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             VariableCompileTimeResolver = null;
             ViewResolutionService = null;
             XmlFragmentEventTypeFactory = null;
+            
+            #region ESPER_8.5.0
+            ClassProvidedCompileTimeRegistry = null;
+            ClassProvidedCompileTimeResolver = null;
+            SerdeEventTypeRegistry = null;
+            SerdeResolver = null;
+            IsFireAndForget = false;
+            #endregion
         }
 
+        public string Namespace { get; } = "generated";
         public IContainer Container { get; }
 
         public BeanEventTypeStemService BeanEventTypeStemService { get; }
@@ -142,7 +167,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         public CompilerServices CompilerServices { get; }
 
         public Configuration Configuration { get; set; }
-
+        
         public ContextCompileTimeRegistry ContextCompileTimeRegistry { get; }
 
         public ContextCompileTimeResolver ContextCompileTimeResolver { get; }
@@ -195,6 +220,18 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
         public DataFlowCompileTimeRegistry DataFlowCompileTimeRegistry { get; } = new DataFlowCompileTimeRegistry();
 
+#region ESPER_8.5.0
+        public ClassProvidedCompileTimeRegistry ClassProvidedCompileTimeRegistry { get; }
+        
+        public ClassProvidedCompileTimeResolver ClassProvidedCompileTimeResolver { get; }
+        
+        public bool IsFireAndForget { get; }
+        
+        public SerdeEventTypeCompileTimeRegistry SerdeEventTypeRegistry { get; }
+        
+        public SerdeCompileTimeResolver SerdeResolver { get; }
+#endregion
+        
         public bool IsInstrumented()
         {
             return Configuration.Compiler.ByteCode.IsInstrumented;

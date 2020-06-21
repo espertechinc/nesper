@@ -121,7 +121,7 @@ namespace com.espertech.esper.compiler.@internal.util
             var @namespace = "generated";
             var classPostfix = IdentifierUtil.GetIdentifierMayStartNumeric(statementName);
 
-            EPCompiledManifest manifest;
+            EpCompiledManifest manifest;
             Assembly assembly;
 
             FAFQueryMethodForge query;
@@ -181,7 +181,7 @@ namespace com.espertech.esper.compiler.@internal.util
             return new EPCompiled(assembly, manifest);
         }
 
-        private static EPCompiledManifest CompileToAssembly(
+        private static EpCompiledManifest CompileToAssembly(
             FAFQueryMethodForge query,
             string classPostfix,
             string @namespace,
@@ -220,7 +220,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 out assembly);
 
             // create manifest
-            return new EPCompiledManifest(COMPILER_VERSION, null, fafProviderClassName);
+            return new EpCompiledManifest(COMPILER_VERSION, null, fafProviderClassName);
         }
 
         private static string MakeFAFProvider(

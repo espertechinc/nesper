@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.epl.expression.core;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -18,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
     public class ScriptCodegenFieldSharable : CodegenFieldSharable
     {
         private readonly string _scriptName;
-        private readonly int _parameterNumber;
+        private readonly ExprNode[] _parameters;
         private readonly ScriptDescriptorCompileTime _scriptDescriptor;
         private readonly CodegenClassScope _classScope;
 
@@ -27,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             CodegenClassScope classScope)
         {
             _scriptName = scriptDescriptor.ScriptName;
-            _parameterNumber = scriptDescriptor.ParameterNames.Length;
+            _parameters = scriptDescriptor.Parameters;
             _scriptDescriptor = scriptDescriptor;
             _classScope = classScope;
         }
@@ -55,19 +56,18 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 return false;
             }
 
-            ScriptCodegenFieldSharable that = (ScriptCodegenFieldSharable) o;
-
-            if (_parameterNumber != that._parameterNumber) {
+            var that = (ScriptCodegenFieldSharable) o;
+            if (!(ExprNodeUtilityCompare.DeepEquals(_parameters, that._parameters, false))) {
                 return false;
             }
-
+            
             return _scriptName.Equals(that._scriptName);
         }
 
         public override int GetHashCode()
         {
             int result = _scriptName.GetHashCode();
-            result = 31 * result + _parameterNumber;
+            result = 31 * result + _parameters.Length;
             return result;
         }
     }

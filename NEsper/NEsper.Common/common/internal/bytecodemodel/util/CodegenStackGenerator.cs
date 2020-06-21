@@ -81,7 +81,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
                     methodNode.Block,
                     true,
                     methodNode.IsOverride,
-                    methodNode.IsStatic);
+                    methodNode.IsStatic,
+                    methodNode);
 
                 methodNode.AssignedMethod = method;
                 methods.PublicMethods.Add(method);
@@ -147,7 +148,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
                 methodNode.Block,
                 false,
                 methodNode.IsOverride,
-                isStatic);
+                isStatic,
+                methodNode);
 
             methodNode.AssignedMethod = method;
             classMethods.PrivateMethods.Add(method);
@@ -221,27 +223,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
             foreach (var child in node.Children) {
                 RecursiveGetNamesPassed(child, names);
             }
-        }
-
-        public static void MakeSetter(
-            string className,
-            string memberName,
-            IList<CodegenTypedParam> members,
-            CodegenClassMethods methods,
-            CodegenClassScope classScope,
-            CodegenClassProperties properties)
-        {
-            members.Add(new CodegenTypedParam(className, memberName));
-
-            var method = CodegenMethod.MakeMethod(
-                    typeof(void),
-                    typeof(CodegenStackGenerator),
-                    CodegenSymbolProviderEmpty.INSTANCE,
-                    classScope)
-                .AddParam(className, "p");
-            method.Block.AssignRef(memberName, Ref("p"));
-            var setterMethodName = "Set" + memberName.Substring(0, 1).ToUpperInvariant() + memberName.Substring(1);
-            RecursiveBuildStack(method, setterMethodName, methods, properties);
         }
     }
 } // end of namespace

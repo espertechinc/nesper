@@ -66,6 +66,22 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// <value>plug-in pattern objects</value>
         public IList<ConfigurationCompilerPlugInPatternObject> PlugInPatternObjects { get; private set; }
 
+
+        /// <summary>
+        /// Returns the list of configured plug-in date-time-methods.
+        /// </summary>
+        public IList<ConfigurationCompilerPlugInDateTimeMethod> PlugInDateTimeMethods { get; private set; }
+
+        /// <summary>
+        /// Returns the list of configured plug-in enum-methods.
+        /// </summary>
+        public IList<ConfigurationCompilerPlugInEnumMethod> PlugInEnumMethods { get; private set; }
+        
+        /// <summary>
+        /// Returns the compiler serializer-deserializer configuration.
+        /// </summary>
+        public ConfigurationCompilerSerde Serde { get; private set; }
+
         /// <summary>
         ///     Returns code generation settings
         /// </summary>
@@ -477,6 +493,24 @@ namespace com.espertech.esper.common.client.configuration.compiler
         {
             AddPlugInPatternGuard(@namespace, name, guardForgeClass.FullName);
         }
+        
+        /// <summary>
+        /// Add a plug-in date-time method
+        /// </summary>
+        /// <param name="dateTimeMethodName">method name</param>
+        /// <param name="dateTimeMethodForgeFactoryClassName">fully-qualified forge class name</param>
+        public void AddPlugInDateTimeMethod(String dateTimeMethodName, String dateTimeMethodForgeFactoryClassName) {
+            PlugInDateTimeMethods.Add(new ConfigurationCompilerPlugInDateTimeMethod(dateTimeMethodName, dateTimeMethodForgeFactoryClassName));
+        }
+
+        /// <summary>
+        /// Add a plug-in enum method
+        /// </summary>
+        /// <param name="enumMethodName">method name</param>
+        /// <param name=enumMethodForgeFactoryClassName">fully-qualified forge class name</param>
+        public void AddPlugInEnumMethod(String enumMethodName, String enumMethodForgeFactoryClassName) {
+            PlugInEnumMethods.Add(new ConfigurationCompilerPlugInEnumMethod(enumMethodName, enumMethodForgeFactoryClassName));
+        }
 
         /// <summary>
         ///     Reset to an empty configuration.
@@ -488,6 +522,8 @@ namespace com.espertech.esper.common.client.configuration.compiler
             PlugInAggregationFunctions = new List<ConfigurationCompilerPlugInAggregationFunction>();
             PlugInAggregationMultiFunctions = new List<ConfigurationCompilerPlugInAggregationMultiFunction>();
             PlugInSingleRowFunctions = new List<ConfigurationCompilerPlugInSingleRowFunction>();
+            PlugInDateTimeMethods = new List<ConfigurationCompilerPlugInDateTimeMethod>();
+            PlugInEnumMethods = new List<ConfigurationCompilerPlugInEnumMethod>();
             PlugInPatternObjects = new List<ConfigurationCompilerPlugInPatternObject>();
             ByteCode = new ConfigurationCompilerByteCode();
             StreamSelection = new ConfigurationCompilerStreamSelection();
@@ -497,6 +533,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
             Execution = new ConfigurationCompilerExecution();
             Scripts = new ConfigurationCompilerScripts();
             Language = new ConfigurationCompilerLanguage();
+            Serde = new ConfigurationCompilerSerde();
         }
     }
 } // end of namespace

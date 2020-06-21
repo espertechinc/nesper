@@ -25,9 +25,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     public class ExprRelationalOpNodeImpl : ExprNodeBase,
         ExprRelationalOpNode
     {
-        private readonly RelationalOpEnum relationalOpEnum;
+        private readonly RelationalOpEnum _relationalOpEnum;
 
-        [NonSerialized] private ExprRelationalOpNodeForge forge;
+        [NonSerialized] private ExprRelationalOpNodeForge _forge;
 
         /// <summary>
         /// Ctor.
@@ -35,20 +35,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         /// <param name="relationalOpEnum">type of compare, ie. lt, gt, le, ge</param>
         public ExprRelationalOpNodeImpl(RelationalOpEnum relationalOpEnum)
         {
-            this.relationalOpEnum = relationalOpEnum;
+            this._relationalOpEnum = relationalOpEnum;
         }
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
         public override ExprForge Forge {
             get {
-                CheckValidated(forge);
-                return forge;
+                CheckValidated(_forge);
+                return _forge;
             }
         }
 
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         /// </summary>
         /// <returns>enum with relational op type</returns>
         public RelationalOpEnum RelationalOpEnum {
-            get => relationalOpEnum;
+            get => _relationalOpEnum;
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)
@@ -92,16 +92,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             var coercionType = typeOne.GetCompareToCoercionType(typeTwo);
-            var computer = relationalOpEnum.GetComputer(coercionType, typeOne, typeTwo);
-            forge = new ExprRelationalOpNodeForge(this, computer, coercionType);
+            var computer = _relationalOpEnum.GetComputer(coercionType, typeOne, typeTwo);
+            _forge = new ExprRelationalOpNodeForge(this, computer, coercionType);
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
-            ChildNodes[0].ToEPL(writer, Precedence);
-            writer.Write(relationalOpEnum.GetExpressionText());
-            ChildNodes[1].ToEPL(writer, Precedence);
+            ChildNodes[0].ToEPL(writer, Precedence, flags);
+            writer.Write(_relationalOpEnum.GetExpressionText());
+            ChildNodes[1].ToEPL(writer, Precedence, flags);
         }
 
         public override ExprPrecedenceEnum Precedence {
@@ -118,7 +119,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             ExprRelationalOpNodeImpl other = (ExprRelationalOpNodeImpl) node;
 
-            if (other.relationalOpEnum != relationalOpEnum) {
+            if (other._relationalOpEnum != _relationalOpEnum) {
                 return false;
             }
 

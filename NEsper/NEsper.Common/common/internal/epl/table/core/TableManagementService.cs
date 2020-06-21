@@ -37,11 +37,6 @@ namespace com.espertech.esper.common.@internal.epl.table.core
 
         Table AllocateTable(TableMetaData metadata);
 
-        TableSerdes GetTableSerdes<T>(
-            Table table,
-            DataInputOutputSerdeWCollation<T> aggregationSerde,
-            StatementContext statementContext);
-
         TableInstance AllocateTableInstance(
             Table table,
             AgentInstanceContext agentInstanceContext);

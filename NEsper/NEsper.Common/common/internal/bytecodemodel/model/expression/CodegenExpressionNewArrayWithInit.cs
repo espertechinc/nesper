@@ -12,6 +12,7 @@ using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
+using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.util.CodegenClassUtil;
 
@@ -56,6 +57,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             foreach (CodegenExpression expression in expressions) {
                 expression.MergeClasses(classes);
             }
+        }
+
+        public void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            CodegenExpressionBuilder.TraverseMultiple(expressions, consumer);
         }
     }
 } // end of namespace

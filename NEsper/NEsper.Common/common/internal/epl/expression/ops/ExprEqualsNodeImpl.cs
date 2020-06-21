@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     public class ExprEqualsNodeImpl : ExprNodeBase,
         ExprEqualsNode
     {
-        [NonSerialized] private ExprEqualsNodeForge forge;
+        [NonSerialized] private ExprEqualsNodeForge _forge;
 
         /// <summary>
         ///     Ctor.
@@ -40,8 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
@@ -51,8 +51,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public override ExprForge Forge {
             get {
-                CheckValidated(forge);
-                return forge;
+                CheckValidated(_forge);
+                return _forge;
             }
         }
 
@@ -74,12 +74,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             // Null constants can be compared for any type
             if (typeOne == null || typeTwo == null) {
-                forge = new ExprEqualsNodeForgeNC(this);
+                _forge = new ExprEqualsNodeForgeNC(this);
                 return null;
             }
 
             if (typeOne.Equals(typeTwo) || typeOne.IsAssignableFrom(typeTwo)) {
-                forge = new ExprEqualsNodeForgeNC(this);
+                _forge = new ExprEqualsNodeForgeNC(this);
                 return null;
             }
 
@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             // Check if we need to coerce
             if (coercionType == typeOne.GetBoxedType() &&
                 coercionType == typeTwo.GetBoxedType()) {
-                forge = new ExprEqualsNodeForgeNC(this);
+                _forge = new ExprEqualsNodeForgeNC(this);
             }
             else {
                 if (typeOne.IsArray && typeTwo.IsArray) {
@@ -112,7 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         coercionType = typeOneElement.GetBoxedType().MakeArrayType();
                         var coercerLhs = ArrayCoercerFactory.GetCoercer(typeOne, coercionType);
                         var coercerRhs = ArrayCoercerFactory.GetCoercer(typeTwo, coercionType);
-                        forge = new ExprEqualsNodeForgeCoercion(this, coercerLhs, coercerRhs);
+                        _forge = new ExprEqualsNodeForgeCoercion(this, coercerLhs, coercerRhs);
                         return null;
                     }
                 }
@@ -130,7 +130,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
                 var numberCoercerLHS = SimpleNumberCoercerFactory.GetCoercer(typeOne, coercionType);
                 var numberCoercerRHS = SimpleNumberCoercerFactory.GetCoercer(typeTwo, coercionType);
-                forge = new ExprEqualsNodeForgeCoercion(this, numberCoercerLHS, numberCoercerRHS);
+                _forge = new ExprEqualsNodeForgeCoercion(this, numberCoercerLHS, numberCoercerRHS);
             }
 
             return null;
@@ -154,9 +154,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public bool IsIs { get; }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
-            ChildNodes[0].ToEPL(writer, Precedence);
+            ChildNodes[0].ToEPL(writer, Precedence, flags);
             if (IsIs) {
                 writer.Write(" is ");
                 if (IsNotEquals) {
@@ -172,7 +173,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
             }
 
-            ChildNodes[1].ToEPL(writer, Precedence);
+            ChildNodes[1].ToEPL(writer, Precedence, flags);
         }
     }
 } // end of namespace

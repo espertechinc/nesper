@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.client.collection
         private readonly ICollection<EventBean> _eventBeanCollection;
         private readonly ICollection<object> _objectCollection;
 
-        public static readonly FlexCollection Empty = new FlexCollection(new EmptyList<EventBean>()); 
+        public static readonly FlexCollection Empty = new FlexCollection(EmptyList<EventBean>.Instance); 
 
         public FlexCollection(ICollection<EventBean> eventBeanCollection)
         {

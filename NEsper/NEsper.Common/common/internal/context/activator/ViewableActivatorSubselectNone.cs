@@ -22,10 +22,11 @@ namespace com.espertech.esper.common.@internal.context.activator
         {
             return new ViewableActivationResult(
                 null,
-                AgentInstanceStopCallbackNoAction.INSTANCE,
+                AgentInstanceMgmtCallbackNoAction.INSTANCE,
                 null,
                 false,
                 false,
+                null,
                 null,
                 null);
         }

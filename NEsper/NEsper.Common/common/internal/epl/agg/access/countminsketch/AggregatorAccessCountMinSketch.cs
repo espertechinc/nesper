@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            return RefCol("state", column);
+            return MemberCol("state", column);
         }
     }
 } // end of namespace

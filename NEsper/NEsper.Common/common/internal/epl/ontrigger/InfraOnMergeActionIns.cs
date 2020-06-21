@@ -61,6 +61,12 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 newData.Add(theEvent);
                 return;
             }
+            
+            if (insertIntoTable != null) {
+                TableInstance tableInstance = insertIntoTable.GetTableInstance(agentInstanceContext.AgentInstanceId);
+                tableInstance.AddEventUnadorned(theEvent);
+                return;
+            }
 
             if (audit) {
                 agentInstanceContext.AuditProvider.Insert(theEvent, agentInstanceContext);

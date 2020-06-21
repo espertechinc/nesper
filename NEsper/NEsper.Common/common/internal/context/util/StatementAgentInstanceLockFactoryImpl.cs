@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.context.util
                 throw new UnsupportedOperationException("Operation not available for statement type " + statementType);
             }
 
-            bool foundNoLock = AnnotationUtil.FindAnnotation(annotations, typeof(NoLockAttribute)) != null;
+            bool foundNoLock = AnnotationUtil.HasAnnotation(annotations, typeof(NoLockAttribute));
             if (disableLocking || foundNoLock || stateless) {
                 return new VoidReaderWriterLock();
                 //return new StatementAgentInstanceLockNoLockImpl(statementName);

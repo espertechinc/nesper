@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
 
         public ExprEnumerationGivenEvent OptionalEnumEval { get; set; }
 
-        public AggregationMultiFunctionTableReader AccessAggReader { get; set; }
+        public AggregationMultiFunctionAggregationMethod AggregationMethod { get; set; }
 
         public ExprTableEvalStrategy MakeStrategy(TableAndLockProvider provider)
         {

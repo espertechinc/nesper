@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             var evalCtx = symbols.GetAddExprEvalCtx(method);
             var left = symbols.GetAddLeftResult(method);
 
-            method.Block.IfRefNullReturnNull(symbols.GetAddLeftResult(method));
+            method.Block.IfNullReturnNull(symbols.GetAddLeftResult(method));
             if (havingEval != null) {
                 CodegenExpression having = LocalMethod(
                     CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope, true),

@@ -737,22 +737,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 TryAssertionWildcardRecast(
                     env,
                     false,
-                    EventRepresentationChoice.ARRAY,
+                    EventRepresentationChoice.OBJECTARRAY,
                     false,
-                    EventRepresentationChoice.ARRAY);
+                    EventRepresentationChoice.OBJECTARRAY);
                 TryAssertionWildcardRecast(
                     env,
                     false,
-                    EventRepresentationChoice.ARRAY,
+                    EventRepresentationChoice.OBJECTARRAY,
                     false,
                     EventRepresentationChoice.MAP);
                 TryAssertionWildcardRecast(
                     env,
                     false,
-                    EventRepresentationChoice.ARRAY,
+                    EventRepresentationChoice.OBJECTARRAY,
                     false,
                     EventRepresentationChoice.AVRO);
-                TryAssertionWildcardRecast(env, false, EventRepresentationChoice.ARRAY, true, null);
+                TryAssertionWildcardRecast(env, false, EventRepresentationChoice.OBJECTARRAY, true, null);
 
                 // Map
                 TryAssertionWildcardRecast(
@@ -760,7 +760,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     false,
                     EventRepresentationChoice.MAP,
                     false,
-                    EventRepresentationChoice.ARRAY);
+                    EventRepresentationChoice.OBJECTARRAY);
                 TryAssertionWildcardRecast(
                     env,
                     false,
@@ -781,7 +781,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     false,
                     EventRepresentationChoice.AVRO,
                     false,
-                    EventRepresentationChoice.ARRAY);
+                    EventRepresentationChoice.OBJECTARRAY);
                 TryAssertionWildcardRecast(
                     env,
                     false,

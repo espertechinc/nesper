@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
     ///     The view starts the first interval when the view is created.
     /// </summary>
     public class TimeLengthBatchView : ViewSupport,
-        AgentInstanceStopCallback,
+        AgentInstanceMgmtCallback,
         DataWindowView
     {
         private readonly AgentInstanceContext agentInstanceContext;

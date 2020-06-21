@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         ///     Returns false (default) when division by zero returns Double.Infinity.
         ///     Returns true when division by zero return null.
         ///     <para />
-        ///     If integer devision is set, then division by zero for non-FP operands also returns null.
+        ///     If integer division is set, then division by zero for non-FP operands also returns null.
         /// </summary>
         /// <value>indicator for division-by-zero results</value>
         public bool IsDivisionByZeroReturnsNull { get; set; }
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         ///     Set to false (default) to have division by zero return Double.Infinity.
         ///     Set to true to have division by zero return null.
         ///     <para />
-        ///     If integer devision is set, then division by zero for non-FP operands also returns null.
+        ///     If integer division is set, then division by zero for non-FP operands also returns null.
         /// </summary>
         /// <value>indicator for division-by-zero results</value>
         public bool DivisionByZeroReturnsNull {

@@ -25,15 +25,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         ExprEvaluator,
         ExprNodeRenderable
     {
-        private readonly int streamNum;
-        private readonly TableMetaData tableMetadata;
+        private readonly int _streamNum;
+        private readonly TableMetaData _tableMetadata;
 
         public ExprEvalStreamNumEventTable(
             int streamNum,
             TableMetaData table)
         {
-            this.streamNum = streamNum;
-            this.tableMetadata = table;
+            this._streamNum = streamNum;
+            this._tableMetadata = table;
         }
 
         public object Evaluate(
@@ -51,14 +51,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             CodegenClassScope codegenClassScope)
         {
             CodegenExpressionInstanceField eventToPublic =
-                TableDeployTimeResolver.MakeTableEventToPublicField(tableMetadata, codegenClassScope, this.GetType());
+                TableDeployTimeResolver.MakeTableEventToPublicField(_tableMetadata, codegenClassScope, this.GetType());
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
             CodegenExpression refIsNewData = exprSymbol.GetAddIsNewData(codegenMethodScope);
             CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
             return StaticMethod(
                 typeof(ExprEvalStreamNumEventTable),
                 "EvaluateConvertTableEvent",
-                Constant(streamNum),
+                Constant(_streamNum),
                 eventToPublic,
                 refEPS,
                 refIsNewData,
@@ -101,9 +101,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             get => this;
         }
 
-        public void ToEPL(
-            TextWriter writer,
-            ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(this.GetType().Name);
         }

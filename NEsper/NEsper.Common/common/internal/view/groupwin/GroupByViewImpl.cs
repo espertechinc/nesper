@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
     /// </summary>
     public class GroupByViewImpl : ViewSupport,
         GroupByView,
-        AgentInstanceStopCallback
+        AgentInstanceMgmtCallback
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 

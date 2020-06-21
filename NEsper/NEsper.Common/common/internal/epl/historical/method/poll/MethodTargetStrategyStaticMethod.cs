@@ -23,26 +23,26 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
         MethodTargetStrategyFactory,
         StatementReadyCallback
     {
-        private Type clazz;
-        private MethodTargetStrategyStaticMethodInvokeType invokeType;
-        private MethodInfo method;
-        private string methodName;
-        private Type[] methodParameters;
+        private Type _clazz;
+        private MethodTargetStrategyStaticMethodInvokeType _invokeType;
+        private MethodInfo _method;
+        private string _methodName;
+        private Type[] _methodParameters;
 
         public MethodTargetStrategyStaticMethodInvokeType InvokeType {
-            set => invokeType = value;
+            set => _invokeType = value;
         }
 
         public Type Clazz {
-            set => clazz = value;
+            set => _clazz = value;
         }
 
         public string MethodName {
-            set => methodName = value;
+            set => _methodName = value;
         }
 
         public Type[] MethodParameters {
-            set => methodParameters = value;
+            set => _methodParameters = value;
         }
 
         public object Invoke(
@@ -50,33 +50,33 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             AgentInstanceContext agentInstanceContext)
         {
             try {
-                switch (invokeType) {
+                switch (_invokeType) {
                     case MethodTargetStrategyStaticMethodInvokeType.NOPARAM:
-                        return method.Invoke(null, null);
+                        return _method.Invoke(null, null);
 
                     case MethodTargetStrategyStaticMethodInvokeType.SINGLE:
-                        return method.Invoke(null, new[] {lookupValues});
+                        return _method.Invoke(null, new[] {lookupValues});
 
                     case MethodTargetStrategyStaticMethodInvokeType.MULTIKEY:
-                        return method.Invoke(null, ((HashableMultiKey) lookupValues).Keys);
+                        return _method.Invoke(null, (object[]) lookupValues);
 
                     default:
-                        throw new IllegalStateException("Unrecognized value for " + invokeType);
+                        throw new IllegalStateException("Unrecognized value for " + _invokeType);
                 }
             }
             catch (TargetException ex) {
                 throw new EPException(
                     "Method '" +
-                    method.Name +
+                    _method.Name +
                     "' of class '" +
-                    method.DeclaringType.Name +
+                    _method.DeclaringType.Name +
                     "' reported an exception: " +
                     ex.InnerException,
                     ex.InnerException);
             }
         }
 
-        public string Plan => "method '" + methodName + "' of class '" + clazz.Name + "'";
+        public string Plan => "method '" + _methodName + "' of class '" + _clazz.Name + "'";
 
         public MethodTargetStrategy Make(AgentInstanceContext agentInstanceContext)
         {
@@ -88,8 +88,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             ModuleIncidentals moduleIncidentals,
             bool recovery)
         {
-            method = ResolveMethod(clazz, methodName, methodParameters);
-            invokeType = MethodTargetStrategyStaticMethodInvokeTypeExtensions.GetInvokeType(method);
+            _method = ResolveMethod(_clazz, _methodName, _methodParameters);
+            _invokeType = MethodTargetStrategyStaticMethodInvokeTypeExtensions.GetInvokeType(_method);
         }
 
         protected internal static MethodInfo ResolveMethod(

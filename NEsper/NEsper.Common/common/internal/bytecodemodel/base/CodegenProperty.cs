@@ -18,6 +18,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 {
@@ -78,6 +79,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public bool IsStatic { get; set; }
 
         public CodegenPropertyWGraph AssignedProperty { get; set; }
+        
+        public String AssignedProviderClassName { get; set;  }
 
         public CodegenProperty WithStatic(bool value = true)
         {
@@ -280,6 +283,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         {
             throw new NotImplementedException();
         }
+
+        public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class Setter : CodegenStatementWBlockBase
@@ -298,6 +306,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         }
 
         public override void MergeClasses(ISet<Type> classes)
+        {
+            throw new NotImplementedException();
+        }
+        
+        public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
             throw new NotImplementedException();
         }

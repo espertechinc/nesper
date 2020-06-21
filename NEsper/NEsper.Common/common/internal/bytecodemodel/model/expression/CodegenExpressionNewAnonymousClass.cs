@@ -11,18 +11,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.statement;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
+    [Obsolete]
     public class CodegenExpressionNewAnonymousClass : CodegenStatementWBlockBase,
         CodegenExpression
     {
@@ -129,6 +130,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             CodegenMethod methodNode)
         {
             methods.Add(new Pair<string, CodegenMethod>(name, methodNode));
+        }
+
+        public void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
         }
     }
 } // end of namespace

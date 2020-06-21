@@ -71,9 +71,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return ChildNodes[0].Forge.EvaluateCodegen(requiredType, codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
-            ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+            ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
             if (IsDescending) {
                 writer.Write(" desc");
             }

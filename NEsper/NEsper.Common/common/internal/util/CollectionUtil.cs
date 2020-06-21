@@ -55,8 +55,10 @@ namespace com.espertech.esper.common.@internal.util
 
         public static readonly object[] OBJECTARRAY_EMPTY = new object[0];
         public static readonly object[][] OBJECTARRAYARRAY_EMPTY = new object[0][];
+
         public static readonly CodegenExpression EMPTY_LIST_EXPRESSION = EnumValue(
-            typeof(FlexCollection), "Empty");
+            typeof(FlexCollection),
+            "Empty");
 
         public static readonly StopCallback STOP_CALLBACK_NONE;
 
@@ -617,6 +619,78 @@ namespace com.espertech.esper.common.@internal.util
             return map;
         }
 
+        /// <summary>
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="array">the array to be checked</param>
+        /// <param name="index">the index</param>
+        /// <returns>null or array value</returns>
+        public static object ArrayValueAtIndex(
+            Array array,
+            int index)
+        {
+            if (array == null) {
+                return null;
+            }
+
+            if (array.Length <= index) {
+                return null;
+            }
+
+            return array.GetValue(index);
+        }
+
+        /// <summary>
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="array">the array to be checked</param>
+        /// <param name="index">the index</param>
+        /// <returns>true if the index is a valid index in the array</returns>
+        public static bool ArrayExistsAtIndex(
+            Array array,
+            int index)
+        {
+            if (array == null) {
+                return false;
+            }
+
+            return array.Length > index;
+        }
+
+        /// <summary>
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="map">the map / dictionary to be checked</param>
+        /// <param name="key">the key to be tested</param>
+        /// <returns>the value associated with the key or null</returns>
+        public static object MapValueForKey(
+            IDictionary<string, object> map,
+            string key)
+        {
+            if ((map != null) && map.TryGetValue(key, out var value)) {
+                return value;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="map">the map / dictionary to be checked</param>
+        /// <param name="key">the key to be tested</param>
+        /// <returns>true if the key s contained in the map.</returns>
+        public static bool MapExistsForKey(
+            IDictionary<string, object> map,
+            string key)
+        {
+            if (map == null) {
+                return false;
+            }
+
+            return map.ContainsKey(key);
+        }
+
         public static ICollection<T> ArrayToCollectionAllowNull<T>(object array)
         {
             if (array == null) {
@@ -813,6 +887,10 @@ namespace com.espertech.esper.common.@internal.util
             return events.ToArray();
         }
 
+        /// <summary>
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <returns>a dictionary build from the pairs</returns>
         public static IDictionary<string, object> BuildMap(params object[] pairs)
         {
             if (pairs.Length % 2 != 0) {
@@ -989,6 +1067,90 @@ namespace com.espertech.esper.common.@internal.util
             Array.Copy(appendedTo, 0, result, 0, appendedTo.Length);
             result[appendedTo.Length] = appended;
             return result;
+        }
+
+
+        public static IList<IList<T>> Subdivide<T>(
+            IList<T> items,
+            int size)
+        {
+            if (size < 1) {
+                throw new ArgumentException("Invalid size " + size);
+            }
+
+            if (items.Count <= size) {
+                return Collections.SingletonList(items);
+            }
+
+            IList<IList<T>> lists = new List<IList<T>>();
+            int start = 0;
+            int remainder = items.Count;
+            while (remainder > size) {
+                lists.Add(items.SubList(start, start + size));
+                start += size;
+                remainder -= size;
+            }
+
+            lists.Add(items.SubList(start, start + remainder));
+            return lists;
+        }
+
+        public static bool IsArrayAllNull(Array array)
+        {
+            if (array == null || array.Length == 0) {
+                return true;
+            }
+
+            for (int i = 0; i < array.Length; i++) {
+                if (array.GetValue(i) != null) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public static bool IsArraySameReferences(
+            Array arrayOne,
+            Array arrayTwo)
+        {
+            if (arrayOne == null || arrayTwo == null) {
+                throw new ArgumentException("Null arrays");
+            }
+
+            if (arrayOne.Length != arrayTwo.Length) {
+                return false;
+            }
+
+            for (int i = 0; i < arrayOne.Length; i++) {
+                if (arrayOne.GetValue(i) != arrayTwo.GetValue(i)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public static Object GetMapValueChecked(
+            Object candidate,
+            Object key)
+        {
+            if (candidate is IDictionary<object, object> map) {
+                return map.Get(key);
+            }
+
+            return null;
+        }
+
+        public static bool GetMapKeyExistsChecked(
+            Object candidate,
+            Object key)
+        {
+            if (candidate is IDictionary<object, object> map) {
+                return map.ContainsKey(key);
+            }
+
+            return false;
         }
     }
 } // end of namespace

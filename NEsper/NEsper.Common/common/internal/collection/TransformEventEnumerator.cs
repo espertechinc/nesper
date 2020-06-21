@@ -15,8 +15,8 @@ namespace com.espertech.esper.common.@internal.collection
 {
     public class TransformEventEnumerator : IEnumerator<EventBean>
     {
-        private readonly IEnumerator<EventBean> sourceEnumerator;
-        private readonly TransformEventMethod transformEventMethod;
+        private readonly IEnumerator<EventBean> _sourceEnumerator;
+        private readonly TransformEventMethod _transformEventMethod;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TransformEventEnumerator"/> class.
@@ -27,8 +27,8 @@ namespace com.espertech.esper.common.@internal.collection
             IEnumerator<EventBean> sourceEnumerator,
             TransformEventMethod transformEventMethod)
         {
-            this.sourceEnumerator = sourceEnumerator;
-            this.transformEventMethod = transformEventMethod;
+            this._sourceEnumerator = sourceEnumerator;
+            this._transformEventMethod = transformEventMethod;
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// </summary>
         public void Reset()
         {
-            sourceEnumerator.Reset();
+            _sourceEnumerator.Reset();
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// </summary>
         public bool MoveNext()
         {
-            return sourceEnumerator.MoveNext();
+            return _sourceEnumerator.MoveNext();
         }
 
         /// <summary>
@@ -63,6 +63,6 @@ namespace com.espertech.esper.common.@internal.collection
         /// <summary>
         /// Gets the element in the collection at the current position of the enumerator.
         /// </summary>
-        public EventBean Current => transformEventMethod.Transform(sourceEnumerator.Current);
+        public EventBean Current => _transformEventMethod.Transform(_sourceEnumerator.Current);
     }
 }

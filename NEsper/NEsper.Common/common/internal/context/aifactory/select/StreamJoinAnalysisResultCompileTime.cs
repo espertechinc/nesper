@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
     /// </summary>
     public class StreamJoinAnalysisResultCompileTime
     {
-        private readonly bool[] unidirectionalNonDriving;
+        private readonly bool[] _unidirectionalNonDriving;
 
         /// <summary>
         ///     Ctor.
@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             NumStreams = numStreams;
             IsPureSelfJoin = false;
             UnidirectionalInd = new bool[numStreams];
-            unidirectionalNonDriving = new bool[numStreams];
+            _unidirectionalNonDriving = new bool[numStreams];
             HasChildViews = new bool[numStreams];
             NamedWindowsPerStream = new NamedWindowMetaData[numStreams];
             UniqueKeys = new string[numStreams][][];
@@ -123,7 +123,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
         /// <param name="index">index</param>
         public void SetUnidirectionalNonDriving(int index)
         {
-            unidirectionalNonDriving[index] = true;
+            _unidirectionalNonDriving[index] = true;
         }
 
         /// <summary>
@@ -174,7 +174,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     NewInstance(typeof(StreamJoinAnalysisResultRuntime)))
                 .SetProperty(Ref("ar"), "IsPureSelfJoin", Constant(IsPureSelfJoin))
                 .SetProperty(Ref("ar"), "Unidirectional", Constant(UnidirectionalInd))
-                .SetProperty(Ref("ar"), "UnidirectionalNonDriving", Constant(unidirectionalNonDriving))
+                .SetProperty(Ref("ar"), "UnidirectionalNonDriving", Constant(_unidirectionalNonDriving))
                 .SetProperty(Ref("ar"), "NamedWindows", MakeNamedWindows(method, symbols))
                 .SetProperty(Ref("ar"), "Tables", MakeTables(method, symbols))
                 .MethodReturn(Ref("ar"));

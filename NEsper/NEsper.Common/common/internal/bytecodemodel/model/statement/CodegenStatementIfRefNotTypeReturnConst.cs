@@ -10,7 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
+using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionUtil;
@@ -19,34 +21,38 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
     public class CodegenStatementIfRefNotTypeReturnConst : CodegenStatementBase
     {
-        private readonly object constant;
-        private readonly Type type;
+        private readonly object _constant;
+        private readonly Type _type;
 
-        private readonly string var;
+        private readonly string _var;
 
         public CodegenStatementIfRefNotTypeReturnConst(
             string var,
             Type type,
             object constant)
         {
-            this.var = var;
-            this.type = type;
-            this.constant = constant;
+            _var = var;
+            _type = type;
+            _constant = constant;
         }
 
         public override void RenderStatement(
             StringBuilder builder,
             bool isInnerClass)
         {
-            builder.Append("if (!(").Append(var).Append(" is ");
-            AppendClassName(builder, type);
+            builder.Append("if (!(").Append(_var).Append(" is ");
+            AppendClassName(builder, _type);
             builder.Append(")) return ");
-            RenderConstant(builder, constant);
+            RenderConstant(builder, _constant);
         }
 
         public override void MergeClasses(ISet<Type> classes)
         {
-            classes.AddToSet(type);
+            classes.AddToSet(_type);
+        }
+
+        public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
         }
     }
 } // end of namespace

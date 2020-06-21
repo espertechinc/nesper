@@ -20,11 +20,12 @@ namespace com.espertech.esper.common.client
     /// allows it to use the byte code.
     /// </summary>
     [Serializable]
-    public class EPCompiledManifest
+    public class EpCompiledManifest
     {
-        private readonly string compilerVersion;
-        private readonly string moduleProviderClassName;
-        private readonly string queryProviderClassName;
+        private readonly string _compilerVersion;
+        private readonly string _moduleProviderClassName;
+        private readonly string _queryProviderClassName;
+        private readonly bool _targetHA;
 
         /// <summary>
         /// Ctor.
@@ -32,14 +33,17 @@ namespace com.espertech.esper.common.client
         /// <param name="compilerVersion">compiler version</param>
         /// <param name="moduleProviderClassName">class name of the class providing the module, or null for fire-and-forget query</param>
         /// <param name="queryProviderClassName">class name of the class providing the fire-and-forget query, or null when this is a module</param>
-        public EPCompiledManifest(
+        /// <param name="targetHa">indicates whether the compiler targets high-availability</param>
+        public EpCompiledManifest(
             string compilerVersion,
             string moduleProviderClassName,
-            string queryProviderClassName)
+            string queryProviderClassName,
+            bool targetHa)
         {
-            this.compilerVersion = compilerVersion;
-            this.moduleProviderClassName = moduleProviderClassName;
-            this.queryProviderClassName = queryProviderClassName;
+            this._compilerVersion = compilerVersion;
+            this._moduleProviderClassName = moduleProviderClassName;
+            this._queryProviderClassName = queryProviderClassName;
+            this._targetHA = targetHa;
         }
 
         /// <summary>
@@ -47,7 +51,7 @@ namespace com.espertech.esper.common.client
         /// </summary>
         /// <returns>compiler version</returns>
         public string CompilerVersion {
-            get => compilerVersion;
+            get => _compilerVersion;
         }
 
         /// <summary>
@@ -55,7 +59,7 @@ namespace com.espertech.esper.common.client
         /// </summary>
         /// <returns>class name</returns>
         public string ModuleProviderClassName {
-            get => moduleProviderClassName;
+            get => _moduleProviderClassName;
         }
 
         /// <summary>
@@ -63,8 +67,13 @@ namespace com.espertech.esper.common.client
         /// </summary>
         /// <returns>class name</returns>
         public string QueryProviderClassName {
-            get => queryProviderClassName;
+            get => _queryProviderClassName;
         }
+
+        /// <summary>
+        /// Returns true if the compiler targets high-availability.
+        /// </summary>
+        public bool IsTargetHA => _targetHA;
 
         /// <summary>
         /// Write the manifest to output.
@@ -73,9 +82,10 @@ namespace com.espertech.esper.common.client
         /// <throws>IOException when an IO exception occurs</throws>
         public void Write(DataOutput output)
         {
-            output.WriteUTF(compilerVersion);
-            WriteNullableString(moduleProviderClassName, output);
-            WriteNullableString(queryProviderClassName, output);
+            output.WriteUTF(_compilerVersion);
+            WriteNullableString(_moduleProviderClassName, output);
+            WriteNullableString(_queryProviderClassName, output);
+            output.WriteBoolean(_targetHA);
         }
 
         /// <summary>
@@ -84,12 +94,13 @@ namespace com.espertech.esper.common.client
         /// <param name="input">input</param>
         /// <returns>manifest</returns>
         /// <throws>IOException when an IO exception occurs</throws>
-        public static EPCompiledManifest Read(DataInput input)
+        public static EpCompiledManifest Read(DataInput input)
         {
             string compilerVersion = input.ReadUTF();
             string moduleClassName = ReadNullableString(input);
             string queryClassName = ReadNullableString(input);
-            return new EPCompiledManifest(compilerVersion, moduleClassName, queryClassName);
+            bool targetHa = input.ReadBoolean();
+            return new EpCompiledManifest(compilerVersion, moduleClassName, queryClassName, targetHa);
         }
 
         private void WriteNullableString(

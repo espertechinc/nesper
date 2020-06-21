@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             execs.Add(new EPLInsertIntoTypableSubquery());
             execs.Add(new EPLInsertIntoTypableNewOperatorDocSample());
             execs.Add(new EPLInsertIntoTypableAndCaseNew(EventRepresentationChoice.MAP));
-            execs.Add(new EPLInsertIntoTypableAndCaseNew(EventRepresentationChoice.ARRAY));
+            execs.Add(new EPLInsertIntoTypableAndCaseNew(EventRepresentationChoice.OBJECTARRAY));
             execs.Add(new EPLInsertIntoInvalid());
             execs.Add(new EPLInsertIntoEnumerationSubquery());
             return execs;

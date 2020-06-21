@@ -116,7 +116,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public ExprNodeRenderable ExprForgeRenderable => this;
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             var delimiter = "";
 
@@ -124,7 +126,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             foreach (var expr in ChildNodes) {
                 writer.Write(delimiter);
-                expr.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+                expr.ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
                 delimiter = ",";
             }
 

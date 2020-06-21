@@ -16,15 +16,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     /// </summary>
     public class ExprInNodeForgeEvalNoColl : ExprEvaluator
     {
-        private readonly ExprEvaluator[] evaluators;
-        private readonly ExprInNodeForge forge;
+        private readonly ExprEvaluator[] _evaluators;
+        private readonly ExprInNodeForge _forge;
 
         public ExprInNodeForgeEvalNoColl(
             ExprInNodeForge forge,
             ExprEvaluator[] evaluators)
         {
-            this.forge = forge;
-            this.evaluators = evaluators;
+            this._forge = forge;
+            this._evaluators = evaluators;
         }
 
         public object Evaluate(
@@ -41,34 +41,34 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var inPropResult = evaluators[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var inPropResult = _evaluators[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
-            var isNotIn = forge.ForgeRenderable.IsNotIn;
-            if (forge.IsMustCoerce && inPropResult != null) {
-                inPropResult = forge.Coercer.CoerceBoxed(inPropResult);
+            var isNotIn = _forge.ForgeRenderable.IsNotIn;
+            if (_forge.IsMustCoerce && inPropResult != null) {
+                inPropResult = _forge.Coercer.CoerceBoxed(inPropResult);
             }
 
-            var len = evaluators.Length - 1;
+            var len = _evaluators.Length - 1;
             if (len > 0 && inPropResult == null) {
                 return null;
             }
 
             var hasNullRow = false;
             for (var i = 1; i <= len; i++) {
-                var rightResult = evaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                var rightResult = _evaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (rightResult == null) {
                     hasNullRow = true;
                     continue;
                 }
 
-                if (!forge.IsMustCoerce) {
+                if (!_forge.IsMustCoerce) {
                     if (rightResult.Equals(inPropResult)) {
                         return !isNotIn;
                     }
                 }
                 else {
-                    var right = forge.Coercer.CoerceBoxed(rightResult);
+                    var right = _forge.Coercer.CoerceBoxed(rightResult);
                     if (right.Equals(inPropResult)) {
                         return !isNotIn;
                     }

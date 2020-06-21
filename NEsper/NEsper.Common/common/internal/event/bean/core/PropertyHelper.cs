@@ -283,7 +283,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                     new WriteablePropertyDescriptor(
                         magicProperty.Name,
                         magicProperty.PropertyType,
-                        magicProperty.Member));
+                        magicProperty.Member,
+                        false));
             }
         }
 

@@ -20,94 +20,94 @@ namespace com.espertech.esper.common.@internal.type
 {
     public static class RelationalOpEnumExtensions
     {
-        private static readonly IDictionary<HashableMultiKey, RelationalOpEnumComputer> computers;
+        private static readonly IDictionary<RelationalOpDesc, RelationalOpEnumComputer> computers;
 
         static RelationalOpEnumExtensions()
         {
-            computers = new Dictionary<HashableMultiKey, RelationalOpEnumComputer>();
+            computers = new Dictionary<RelationalOpDesc, RelationalOpEnumComputer>();
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(string), RelationalOpEnum.GT}),
+                new RelationalOpDesc(typeof(string), RelationalOpEnum.GT),
                 new RelationalOpEnumGT.StringComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(string), RelationalOpEnum.GE}),
+                new RelationalOpDesc(typeof(string), RelationalOpEnum.GE),
                 new RelationalOpEnumGE.StringComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(string), RelationalOpEnum.LT}),
+                new RelationalOpDesc(typeof(string), RelationalOpEnum.LT),
                 new RelationalOpEnumLT.StringComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(string), RelationalOpEnum.LE}),
+                new RelationalOpDesc(typeof(string), RelationalOpEnum.LE),
                 new RelationalOpEnumLE.StringComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(int?), RelationalOpEnum.GT}),
+                new RelationalOpDesc(typeof(int?), RelationalOpEnum.GT),
                 new RelationalOpEnumGT.IntegerComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(int?), RelationalOpEnum.GE}),
+                new RelationalOpDesc(typeof(int?), RelationalOpEnum.GE),
                 new RelationalOpEnumGE.IntegerComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(int?), RelationalOpEnum.LT}),
+                new RelationalOpDesc(typeof(int?), RelationalOpEnum.LT),
                 new RelationalOpEnumLT.IntegerComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(int?), RelationalOpEnum.LE}),
+                new RelationalOpDesc(typeof(int?), RelationalOpEnum.LE),
                 new RelationalOpEnumLE.IntegerComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(long?), RelationalOpEnum.GT}),
+                new RelationalOpDesc(typeof(long?), RelationalOpEnum.GT),
                 new RelationalOpEnumGT.LongComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(long?), RelationalOpEnum.GE}),
+                new RelationalOpDesc(typeof(long?), RelationalOpEnum.GE),
                 new RelationalOpEnumGE.LongComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(long?), RelationalOpEnum.LT}),
+                new RelationalOpDesc(typeof(long?), RelationalOpEnum.LT),
                 new RelationalOpEnumLT.LongComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(long?), RelationalOpEnum.LE}),
+                new RelationalOpDesc(typeof(long?), RelationalOpEnum.LE),
                 new RelationalOpEnumLE.LongComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(double?), RelationalOpEnum.GT}),
+                new RelationalOpDesc(typeof(double?), RelationalOpEnum.GT),
                 new RelationalOpEnumGT.DoubleComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(double?), RelationalOpEnum.GE}),
+                new RelationalOpDesc(typeof(double?), RelationalOpEnum.GE),
                 new RelationalOpEnumGE.DoubleComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(double?), RelationalOpEnum.LT}),
+                new RelationalOpDesc(typeof(double?), RelationalOpEnum.LT),
                 new RelationalOpEnumLT.DoubleComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(double?), RelationalOpEnum.LE}),
+                new RelationalOpDesc(typeof(double?), RelationalOpEnum.LE),
                 new RelationalOpEnumLE.DoubleComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(float?), RelationalOpEnum.GT}),
+                new RelationalOpDesc(typeof(float?), RelationalOpEnum.GT),
                 new RelationalOpEnumGT.FloatComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(float?), RelationalOpEnum.GE}),
+                new RelationalOpDesc(typeof(float?), RelationalOpEnum.GE),
                 new RelationalOpEnumGE.FloatComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(float?), RelationalOpEnum.LT}),
+                new RelationalOpDesc(typeof(float?), RelationalOpEnum.LT),
                 new RelationalOpEnumLT.FloatComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(float?), RelationalOpEnum.LE}),
+                new RelationalOpDesc(typeof(float?), RelationalOpEnum.LE),
                 new RelationalOpEnumLE.FloatComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(decimal?), RelationalOpEnum.GT}),
+                new RelationalOpDesc(typeof(decimal?), RelationalOpEnum.GT),
                 new RelationalOpEnumGT.DecimalComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(decimal?), RelationalOpEnum.GE}),
+                new RelationalOpDesc(typeof(decimal?), RelationalOpEnum.GE),
                 new RelationalOpEnumGE.DecimalComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(decimal?), RelationalOpEnum.LT}),
+                new RelationalOpDesc(typeof(decimal?), RelationalOpEnum.LT),
                 new RelationalOpEnumLT.DecimalComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(decimal?), RelationalOpEnum.LE}),
+                new RelationalOpDesc(typeof(decimal?), RelationalOpEnum.LE),
                 new RelationalOpEnumLE.DecimalComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(BigInteger), RelationalOpEnum.GT}),
+                new RelationalOpDesc(typeof(BigInteger), RelationalOpEnum.GT),
                 new RelationalOpEnumGT.BigIntComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(BigInteger), RelationalOpEnum.GE}),
+                new RelationalOpDesc(typeof(BigInteger), RelationalOpEnum.GE),
                 new RelationalOpEnumGE.BigIntComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(BigInteger), RelationalOpEnum.LT}),
+                new RelationalOpDesc(typeof(BigInteger), RelationalOpEnum.LT),
                 new RelationalOpEnumLT.BigIntComputer());
             computers.Put(
-                new HashableMultiKey(new object[] {typeof(BigInteger), RelationalOpEnum.LE}),
+                new RelationalOpDesc(typeof(BigInteger), RelationalOpEnum.LE),
                 new RelationalOpEnumLE.BigIntComputer());
         }
 
@@ -206,7 +206,7 @@ namespace com.espertech.esper.common.@internal.type
                 return MakeBigIntegerComputer(value, typeOne, typeTwo);
             }
 
-            var key = new HashableMultiKey(new object[] {coercedType, value});
+            var key = new RelationalOpDesc(coercedType, value);
             return computers.Get(key);
         }
 
@@ -216,7 +216,7 @@ namespace com.espertech.esper.common.@internal.type
             Type typeTwo)
         {
             if (typeOne.IsBigInteger() && typeTwo.IsBigInteger()) {
-                return computers.Get(new HashableMultiKey(new object[] {typeof(BigInteger), value}));
+                return computers.Get(new RelationalOpDesc(typeof(BigInteger), value));
             }
 
             var convertorOne = SimpleNumberCoercerFactory.GetCoercerBigInteger(typeOne);

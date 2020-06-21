@@ -22,6 +22,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         internal ConfigurationCompilerLogging()
         {
             IsEnableCode = false;
+            IsEnableFilterPlan = false;
         }
 
         /// <summary>
@@ -29,6 +30,11 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// </summary>
         /// <value>indicator</value>
         public bool IsEnableCode { get; private set; }
+        
+        /// <summary>
+        /// Returns indicator whether filter plan logging is enabled or not.
+        /// </summary>
+        public bool IsEnableFilterPlan { get; set; }
         
         /// <summary>
         /// Gets or sets the location for audit code to be written.

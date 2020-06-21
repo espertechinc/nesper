@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
     /// View for match recognize support.
     /// </summary>
     public class RowRecogNFAView : ViewSupport,
-        AgentInstanceStopCallback,
+        AgentInstanceMgmtCallback,
         RowRecogNFAViewService,
         RowRecogNFAViewScheduleCallback
     {

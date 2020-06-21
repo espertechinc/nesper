@@ -194,8 +194,6 @@ namespace com.espertech.esper.common.@internal.@event.variant
             return null;
         }
 
-        public EventBeanReader Reader => null;
-
         public EventPropertyGetterMapped GetGetterMapped(string mappedProperty)
         {
             return null;

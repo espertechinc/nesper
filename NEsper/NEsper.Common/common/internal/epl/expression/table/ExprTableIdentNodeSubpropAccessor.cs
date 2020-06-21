@@ -209,7 +209,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             if (_optionalStreamName != null) {
                 writer.Write(_optionalStreamName);
@@ -218,7 +219,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
             writer.Write(_tableAccessColumn.ColumnName);
             writer.Write(".");
-            _aggregateAccessMultiValueNode.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+            _aggregateAccessMultiValueNode.ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
         }
 
         public override bool EqualsNode(

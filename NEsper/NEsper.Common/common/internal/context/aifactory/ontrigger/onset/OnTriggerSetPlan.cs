@@ -16,19 +16,23 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
     public class OnTriggerSetPlan
     {
         public OnTriggerSetPlan(
-            StmtClassForgableAIFactoryProviderBase forgable,
-            IList<StmtClassForgable> forgables,
-            SelectSubscriberDescriptor selectSubscriberDescriptor)
+            StmtClassForgeableAIFactoryProviderBase forgeable,
+            IList<StmtClassForgeable> forgeables,
+            SelectSubscriberDescriptor selectSubscriberDescriptor,
+            IList<StmtClassForgeableFactory> additionalForgeables)
         {
-            Forgable = forgable;
-            Forgables = forgables;
+            Forgeable = forgeable;
+            Forgeables = forgeables;
             SelectSubscriberDescriptor = selectSubscriberDescriptor;
+            AdditionalForgeables = additionalForgeables;
         }
 
-        public StmtClassForgableAIFactoryProviderBase Forgable { get; }
+        public StmtClassForgeableAIFactoryProviderBase Forgeable { get; }
 
-        public IList<StmtClassForgable> Forgables { get; }
+        public IList<StmtClassForgeable> Forgeables { get; }
 
         public SelectSubscriberDescriptor SelectSubscriberDescriptor { get; }
+
+        public IList<StmtClassForgeableFactory> AdditionalForgeables { get; }
     }
 } // end of namespace

@@ -29,10 +29,11 @@ namespace com.espertech.esper.common.@internal.context.activator
             var state = Table.GetTableInstance(agentInstanceContext.AgentInstanceId);
             return new ViewableActivationResult(
                 new TableStateViewableInternal(state, FilterEval),
-                AgentInstanceStopCallbackNoAction.INSTANCE,
+                AgentInstanceMgmtCallbackNoAction.INSTANCE,
                 null,
                 false,
                 false,
+                null,
                 null,
                 null);
         }

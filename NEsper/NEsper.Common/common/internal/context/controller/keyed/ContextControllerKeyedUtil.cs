@@ -7,10 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.aifactory.createwindow;
 using com.espertech.esper.common.@internal.context.controller.condition;
@@ -27,7 +30,19 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 {
     public class ContextControllerKeyedUtil
     {
-        protected internal static ContextControllerKeyedSvc GetService(
+        public static Object[] UnpackKey(Object key)
+        {
+            if (key is MultiKey multiKey) {
+                return multiKey.ToObjectArray();
+            }
+            else if (key is MultiKeyArrayWrap multiKeyArrayWrap) {
+                return new object[] {multiKeyArrayWrap.Array};
+            }
+
+            return new object[] {key};
+        }
+
+        public static ContextControllerKeyedSvc GetService(
             ContextControllerKeyedFactory factory,
             ContextManagerRealization realization)
         {
@@ -38,7 +53,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             return new ContextControllerKeyedSvcLevelAny();
         }
 
-        protected internal static Type[] ValidateContextDesc(
+        public static Type[] ValidateContextDesc(
             string contextName,
             ContextSpecKeyed partitionSpec)
         {
@@ -172,10 +187,11 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 
         public static FilterValueSetParam[][] GetAddendumFilters(
             object getterKey,
-            FilterSpecActivatable filtersSpec,
+            FilterSpecActivatable filtersSpec, 
             ContextControllerDetailKeyed keyedSpec,
             bool includePartition,
             ContextControllerStatementDesc optionalStatementDesc,
+            IDictionary<int, ContextControllerStatementDesc> statements,
             AgentInstanceContext agentInstanceContext)
         {
             // determine whether create-named-window
@@ -186,13 +202,25 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             ContextControllerDetailKeyedItem foundPartition = null;
 
             if (!isCreateWindow) {
-                foreach (var partitionItem in keyedSpec.Items) {
-                    var typeOrSubtype = EventTypeUtility.IsTypeOrSubTypeOf(
-                        filtersSpec.FilterForEventType,
-                        partitionItem.FilterSpecActivatable.FilterForEventType);
-                    if (typeOrSubtype) {
-                        foundPartition = partitionItem;
-                        break;
+                if (filtersSpec.FilterForEventType.Metadata.TypeClass == EventTypeTypeClass.NAMED_WINDOW) {
+                    String declaredAsName = FindNamedWindowDeclaredAsName(statements, filtersSpec.FilterForEventType.Metadata.Name);
+                    foreach (ContextControllerDetailKeyedItem partitionItem in keyedSpec.Items) {
+                        if (partitionItem.FilterSpecActivatable.FilterForEventType.Name.Equals(declaredAsName)) {
+                            foundPartition = partitionItem;
+                            break;
+                        }
+                    }
+                }
+
+                if (foundPartition == null) {
+                    foreach (var partitionItem in keyedSpec.Items) {
+                        var typeOrSubtype = EventTypeUtility.IsTypeOrSubTypeOf(
+                            filtersSpec.FilterForEventType,
+                            partitionItem.FilterSpecActivatable.FilterForEventType);
+                        if (typeOrSubtype) {
+                            foundPartition = partitionItem;
+                            break;
+                        }
                     }
                 }
             }
@@ -219,9 +247,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                 addendumFilters[0] = GetFilterMayEqualOrNull(lookupables[0], getterKey);
             }
             else {
-                var keys = getterKey is HashableMultiKey ? ((HashableMultiKey) getterKey).Keys : (object[]) getterKey;
+                var keyProvisioning = (MultiKey) getterKey;
                 for (var i = 0; i < lookupables.Length; i++) {
-                    addendumFilters[i] = GetFilterMayEqualOrNull(lookupables[i], keys[i]);
+                    addendumFilters[i] = GetFilterMayEqualOrNull(lookupables[i], keyProvisioning.GetKey(i));
                 }
             }
 
@@ -238,6 +266,23 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             }
 
             return addendum;
+        }
+
+        private static String FindNamedWindowDeclaredAsName(
+            IDictionary<int, ContextControllerStatementDesc> statements,
+            String name)
+        {
+            foreach (var stmtEntry in statements) {
+                StatementContext ctx = stmtEntry.Value.Lightweight.StatementContext;
+                if (ctx.StatementType == StatementType.CREATE_WINDOW) {
+                    StatementAgentInstanceFactoryCreateNW factory = (StatementAgentInstanceFactoryCreateNW) ctx.StatementAIFactoryProvider.Factory;
+                    if (factory.StatementEventType.Name == name) {
+                        return factory.AsEventTypeName;
+                    }
+                }
+            }
+
+            return null;
         }
 
         public static ContextControllerDetailKeyedItem FindInitMatchingKey(
@@ -264,6 +309,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             ExprFilterSpecLookupable lookupable,
             object keyValue)
         {
+            if (keyValue != null && keyValue.GetType().IsArray) {
+                keyValue = MultiKeyPlanner.ToMultiKey(keyValue);
+            }
             return new FilterValueSetParamImpl(lookupable, FilterOperator.IS, keyValue);
         }
 

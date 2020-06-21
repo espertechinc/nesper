@@ -13,7 +13,17 @@ namespace com.espertech.esper.common.client.hook.exception
     /// </summary>
     public enum ExceptionHandlerExceptionType
     {
+        /// <summary>
+        /// Exception occurred during event processing.
+        /// </summary>
         PROCESS,
-        UNDEPLOY
+        /// <summary>
+        /// Exception occurred upon undeploy.
+        /// </summary>
+        UNDEPLOY,
+        /// <summary>
+        /// Stage-related exception.
+        /// </summary>
+        STAGE
     }
 } // end of namespace

@@ -118,7 +118,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
         /// </summary>
         /// <param name="loaderName">is the name of the loader</param>
         /// <param name="className">is the fully-qualified classname of the loader class</param>
-        /// <param name="configuration">is loader cofiguration entries</param>
+        /// <param name="configuration">is loader configuration entries</param>
         public void AddPluginLoader(
             string loaderName,
             string className,
@@ -154,7 +154,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
         /// </summary>
         /// <param name="loaderName">is the name of the loader</param>
         /// <param name="className">is the fully-qualified classname of the loader class</param>
-        /// <param name="configuration">is loader cofiguration entries</param>
+        /// <param name="configuration">is loader configuration entries</param>
         /// <param name="configurationXML">config xml if any</param>
         public void AddPluginLoader(
             string loaderName,

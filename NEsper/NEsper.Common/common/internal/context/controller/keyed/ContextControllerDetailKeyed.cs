@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.controller.condition;
 using com.espertech.esper.common.@internal.context.controller.core;
@@ -29,6 +30,8 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
         public IList<FilterSpecActivatable> FilterSpecActivatables { get; private set; }
 
         public bool HasAsName { get; private set; }
+        
+        public MultiKeyFromObjectArray MultiKeyFromObjectArray { get; set; }
 
         public void Ready(
             StatementContext statementContext,

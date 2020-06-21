@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
@@ -47,7 +48,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             bool isHistoricalOnly,
             ResultSetProcessorOutputConditionType? outputConditionType,
             OutputConditionPolledFactoryForge optionalOutputFirstConditionFactory,
-            EventType[] eventTypes)
+            EventType[] eventTypes,
+            MultiKeyClassRef multiKeyClassRef)
         {
             ResultEventType = resultEventType;
             GroupKeyNodeExpressions = groupKeyNodeExpressions;
@@ -61,6 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             OptionalOutputFirstConditionFactory = optionalOutputFirstConditionFactory;
             EventTypes = eventTypes;
             GroupKeyTypes = ExprNodeUtilityQuery.GetExprResultTypes(groupKeyNodeExpressions);
+            MultiKeyClassRef = multiKeyClassRef;
         }
 
         public EventType ResultEventType { get; }
@@ -97,6 +100,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
         public Type InterfaceClass => typeof(ResultSetProcessorAggregateGrouped);
 
         public string InstrumentedQName => "ResultSetProcessGroupedRowPerEvent";
+        
+        public MultiKeyClassRef MultiKeyClassRef { get; }
+
+        public CodegenMethod GenerateGroupKeySingle { get; private set; }
+        public CodegenMethod GenerateGroupKeyArrayView { get; private set; }
+        public CodegenMethod GenerateGroupKeyArrayJoin { get; private set; }
 
         public void InstanceCodegen(
             CodegenInstanceAux instance,
@@ -109,20 +118,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 "SelectExprProcessor",
                 GetType(),
                 classScope,
-                propertyNode => propertyNode.GetterBlock.BlockReturn(REF_SELECTEXPRPROCESSOR));
+                propertyNode => propertyNode.GetterBlock.BlockReturn(MEMBER_SELECTEXPRPROCESSOR));
             instance.Properties.AddProperty(
                 typeof(AggregationService),
                 "AggregationService",
                 GetType(),
                 classScope,
-                propertyNode => propertyNode.GetterBlock.BlockReturn(REF_AGGREGATIONSVC));
+                propertyNode => propertyNode.GetterBlock.BlockReturn(MEMBER_AGGREGATIONSVC));
             instance.Methods.AddMethod(
                 typeof(ExprEvaluatorContext),
                 "GetAgentInstanceContext",
-                new EmptyList<CodegenNamedParam>(),
+                EmptyList<CodegenNamedParam>.Instance,
                 GetType(),
                 classScope,
-                node => node.Block.ReturnMethodOrBlock(REF_AGENTINSTANCECONTEXT));
+                node => node.Block.ReturnMethodOrBlock(MEMBER_AGENTINSTANCECONTEXT));
             instance.Properties.AddProperty(
                 typeof(bool),
                 "HasHavingClause",
@@ -138,15 +147,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             ResultSetProcessorUtil.EvaluateHavingClauseCodegen(OptionalHavingNode, classScope, instance);
             ResultSetProcessorAggregateGroupedImpl.RemovedAggregationGroupKeyCodegen(classScope, instance);
 
-            ResultSetProcessorGroupedUtil.GenerateGroupKeySingleCodegen(GroupKeyNodeExpressions, classScope, instance);
-            ResultSetProcessorGroupedUtil.GenerateGroupKeyArrayViewCodegen(
-                GroupKeyNodeExpressions,
-                classScope,
-                instance);
-            ResultSetProcessorGroupedUtil.GenerateGroupKeyArrayJoinCodegen(
-                GroupKeyNodeExpressions,
-                classScope,
-                instance);
+            GenerateGroupKeySingle = ResultSetProcessorGroupedUtil.GenerateGroupKeySingleCodegen(
+                GroupKeyNodeExpressions, MultiKeyClassRef, classScope, instance);
+            GenerateGroupKeyArrayView = ResultSetProcessorGroupedUtil.GenerateGroupKeyArrayViewCodegen(
+                GenerateGroupKeySingle, classScope, instance);
+            GenerateGroupKeyArrayJoin = ResultSetProcessorGroupedUtil.GenerateGroupKeyArrayJoinCodegen(
+                GenerateGroupKeySingle, classScope, instance);
 
             ResultSetProcessorAggregateGroupedImpl.GenerateOutputBatchedSingleCodegen(this, classScope, instance);
             ResultSetProcessorAggregateGroupedImpl.GenerateOutputBatchedViewUnkeyedCodegen(this, classScope, instance);

@@ -15,9 +15,9 @@ namespace com.espertech.esper.common.@internal.filterspec
     public sealed class FilterSpecParamAdvancedIndexQuadTreePointRegion : FilterSpecParam
     {
         public FilterSpecParamAdvancedIndexQuadTreePointRegion(
-            ExprFilterSpecLookupable lookupable,
+            ExprFilterSpecLookupable lkupable,
             FilterOperator filterOperator)
-            : base(lookupable, filterOperator)
+            : base(lkupable, filterOperator)
         {
         }
 
@@ -25,14 +25,16 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public FilterSpecParamFilterForEvalDouble YEval { get; set; }
 
-        public override object GetFilterValue(
+        public override FilterValueSetParam GetFilterValue(
             MatchedEventMap matchedEvents,
             ExprEvaluatorContext exprEvaluatorContext,
             StatementContextFilterEvalEnv filterEvalEnv)
         {
             var x = XEval.GetFilterValueDouble(matchedEvents, exprEvaluatorContext, filterEvalEnv);
             var y = YEval.GetFilterValueDouble(matchedEvents, exprEvaluatorContext, filterEvalEnv);
-            return new XYPoint(x, y);
+            var point = new XYPoint(x, y);
+            var lookupable = this.lkupable.Make(matchedEvents, exprEvaluatorContext);
+            return new FilterValueSetParamImpl(lookupable, FilterOperator, point);
         }
 
         private bool Equals(FilterSpecParamAdvancedIndexQuadTreePointRegion other)

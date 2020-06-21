@@ -87,6 +87,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         {
             var array = Array.CreateInstance(_forge.ArrayReturnType, _evaluators.Length);
             var index = 0;
+            var requiresPrimitive =
+                _forge.Parent.OptionalRequiredType != null &&
+                _forge.Parent.OptionalRequiredType.IsPrimitive;
+
             foreach (var child in _evaluators) {
                 var result = child.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                 if (result != null) {
@@ -96,6 +100,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     }
                     else {
                         array.SetValue(result, index);
+                    }
+                }
+                else {
+                    if (requiresPrimitive) {
+                        throw new EPException(PRIMITIVE_ARRAY_NULL_MSG);
                     }
                 }
 
@@ -121,6 +130,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     forge.EvaluationType,
                     "array",
                     NewArrayByLength(forge.ArrayReturnType, Constant(forgeRenderable.ChildNodes.Length)));
+            var requiresPrimitive =
+                forge.Parent.OptionalRequiredType != null &&
+                forge.Parent.OptionalRequiredType.IsPrimitive;
+
             for (var i = 0; i < forgeRenderable.ChildNodes.Length; i++) {
                 var child = forgeRenderable.ChildNodes[i].Forge;
                 var childType = child.EvaluationType;
@@ -151,6 +164,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                             "array",
                             Constant(i),
                             forge.Coercer.CoerceCodegen(Ref(refname), child.EvaluationType));
+                    }
+                    if (requiresPrimitive) {
+                        block.IfCondition(
+                                EqualsNull(Ref(refname)))
+                            .BlockThrow(
+                                NewInstance(typeof(EPException), Constant(PRIMITIVE_ARRAY_NULL_MSG)));
                     }
                 }
             }

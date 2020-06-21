@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
 namespace com.espertech.esper.common.@internal.epl.agg.core
@@ -26,39 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         public int NumLevelsAggregation { get; }
 
         public int NumLevels => Levels.Length;
-
-        public static AggregationGroupByRollupDesc Make(int[][] indexes)
-        {
-            var levels = new List<AggregationGroupByRollupLevel>();
-            var countOffset = 0;
-            var countNumber = -1;
-            foreach (var mki in indexes) {
-                countNumber++;
-                if (mki.Length == 0) {
-                    levels.Add(new AggregationGroupByRollupLevel(countNumber, -1, null));
-                }
-                else {
-                    levels.Add(new AggregationGroupByRollupLevel(countNumber, countOffset, mki));
-                    countOffset++;
-                }
-            }
-
-            var levelsarr = levels.ToArray();
-            return new AggregationGroupByRollupDesc(levelsarr);
-        }
-
-        public CodegenExpression Codegen()
-        {
-            var levels = Levels;
-            var level = new CodegenExpression[levels.Length];
-            for (var i = 0; i < levels.Length; i++) {
-                level[i] = levels[i].ToExpression();
-            }
-
-            return CodegenExpressionBuilder.NewInstance<AggregationGroupByRollupDesc>(
-                CodegenExpressionBuilder.NewArrayWithInit(
-                    typeof(AggregationGroupByRollupLevel),
-                    level));
-        }
+        
+        public DataInputOutputSerde<object>[] KeySerdes => Levels.Select(v => v.SubkeySerde).ToArray();
     }
 }

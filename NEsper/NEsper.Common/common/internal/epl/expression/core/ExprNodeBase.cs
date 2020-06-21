@@ -99,15 +99,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public virtual void ToEPL(
             TextWriter writer,
-            ExprPrecedenceEnum parentPrecedence)
+            ExprPrecedenceEnum parentPrecedence,
+            ExprNodeRenderableFlags flags)
         {
-            if (this.Precedence.GetLevel() < parentPrecedence.GetLevel()) {
+            if (Precedence.GetLevel() < parentPrecedence.GetLevel()) {
                 writer.Write("(");
-                ToPrecedenceFreeEPL(writer);
+                ToPrecedenceFreeEPL(writer, flags);
                 writer.Write(")");
             }
             else {
-                ToPrecedenceFreeEPL(writer);
+                ToPrecedenceFreeEPL(writer, flags);
             }
         }
 
@@ -115,7 +116,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprNode node,
             bool ignoreStreamPrefix);
 
-        public abstract void ToPrecedenceFreeEPL(TextWriter writer);
+        public abstract void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags);
+        
         public abstract ExprNode Validate(ExprValidationContext validationContext);
 
         public void AddChildNodeToFront(ExprNode childNode)

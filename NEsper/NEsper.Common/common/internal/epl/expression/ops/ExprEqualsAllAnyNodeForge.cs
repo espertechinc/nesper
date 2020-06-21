@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprEqualsAllAnyNodeForge : ExprForgeInstrumentable
     {
-        private readonly bool hasCollectionOrArray;
+        private readonly bool _hasCollectionOrArray;
 
         public ExprEqualsAllAnyNodeForge(
             ExprEqualsAllAnyNode parent,
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             IsMustCoerce = mustCoerce;
             Coercer = coercer;
             CoercionTypeBoxed = coercionTypeBoxed;
-            this.hasCollectionOrArray = hasCollectionOrArray;
+            this._hasCollectionOrArray = hasCollectionOrArray;
         }
 
         public ExprEqualsAllAnyNode ForgeRenderable { get; }
@@ -49,14 +49,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             get {
                 var evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(ForgeRenderable.ChildNodes);
                 if (ForgeRenderable.IsAll) {
-                    if (!hasCollectionOrArray) {
+                    if (!_hasCollectionOrArray) {
                         return new ExprEqualsAllAnyNodeForgeEvalAllNoColl(this, evaluators);
                     }
 
                     return new ExprEqualsAllAnyNodeForgeEvalAllWColl(this, evaluators);
                 }
 
-                if (!hasCollectionOrArray) {
+                if (!_hasCollectionOrArray) {
                     return new ExprEqualsAllAnyNodeForgeEvalAnyNoColl(this, evaluators);
                 }
 

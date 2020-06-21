@@ -316,11 +316,14 @@ namespace com.espertech.esper.common.@internal.support
                     continue;
                 }
 
-                var fragment = eventBean.GetFragment(propertyName);
-                ScopeTestHelper.AssertNotNull(failedMessage, fragment);
-
                 var fragmentType = eventBean.EventType.GetFragmentType(propertyName);
                 ScopeTestHelper.AssertNotNull(failedMessage, fragmentType);
+
+                // fragment can be null
+                var fragment = eventBean.GetFragment(propertyName);
+                if (fragment == null) {
+                    return;
+                }
 
                 if (!fragmentType.IsIndexed) {
                     ScopeTestHelper.AssertTrue(failedMessage, fragment is EventBean);
@@ -484,6 +487,14 @@ namespace com.espertech.esper.common.@internal.support
                     var assertion = assertions[i];
                     var expected = expectedArr[i];
                     var value = assertion.GetExtractor().Invoke(prop, eventType);
+                    if (expected == typeof(object[])) {
+                        var valueAsType = (Type) value;
+                        if ((valueAsType != null) && 
+                            (valueAsType.IsArray) &&
+                            !valueAsType.GetElementType().IsPrimitive) {
+                            continue;
+                        }
+                    }
                     ScopeTestHelper.AssertEquals(
                         message + " at assertion " + assertion, expected, value);
                 }

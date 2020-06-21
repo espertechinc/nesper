@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
     public class StmtForgeMethodResult
     {
         public StmtForgeMethodResult(
-            IList<StmtClassForgable> forgables,
+            IList<StmtClassForgeable> forgables,
             IList<FilterSpecCompiled> filtereds,
             IList<ScheduleHandleCallbackProvider> scheduleds,
             IList<NamedWindowConsumerStreamSpec> namedWindowConsumers,
@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             FilterBooleanExpressions = filterBooleanExpressions;
         }
 
-        public IList<StmtClassForgable> Forgables { get; }
+        public IList<StmtClassForgeable> Forgables { get; }
 
         public IList<ScheduleHandleCallbackProvider> Scheduleds { get; }
 

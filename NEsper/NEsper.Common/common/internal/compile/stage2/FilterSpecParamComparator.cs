@@ -38,6 +38,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             FilterOperator.LESS_OR_EQUAL,
             FilterOperator.GREATER_OR_EQUAL,
             FilterOperator.GREATER,
+            FilterOperator.REBOOL,
             FilterOperator.NOT_RANGE_CLOSED,
             FilterOperator.NOT_RANGE_HALF_CLOSED,
             FilterOperator.NOT_RANGE_HALF_OPEN,

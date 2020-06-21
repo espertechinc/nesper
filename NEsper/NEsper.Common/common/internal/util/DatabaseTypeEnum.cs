@@ -194,7 +194,7 @@ namespace com.espertech.esper.common.@internal.util
         /// <returns>type enumeration value for type</returns>
         public static DatabaseTypeEnum GetEnum(string type)
         {
-            var boxedType = TypeHelper.GetBoxedTypeName(type).ToLower();
+            var boxedType = Boxing.GetBoxedTypeName(type).ToLower();
             var sourceName1 = boxedType.ToLower();
 
             foreach (var val in VALUES)

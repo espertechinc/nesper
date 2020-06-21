@@ -13,7 +13,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
     /// <summary>
     ///     Service interface for match recognize.
     /// </summary>
-    public interface RowRecogNFAViewService : AgentInstanceStopCallback
+    public interface RowRecogNFAViewService : AgentInstanceMgmtCallback
     {
         RowRecogPreviousStrategy PreviousEvaluationStrategy { get; }
 

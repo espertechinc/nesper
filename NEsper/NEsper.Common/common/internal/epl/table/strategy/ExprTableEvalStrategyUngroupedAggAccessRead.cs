@@ -33,8 +33,8 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             }
 
             var aggs = ExprTableEvalStrategyUtil.GetRow(row);
-            return factory.AccessAggReader.GetValue(
-                factory.AggColumnNum,
+            return Factory.AggregationMethod.GetValue(
+                Factory.AggColumnNum,
                 aggs,
                 eventsPerStream,
                 isNewData,
@@ -52,8 +52,8 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             }
 
             var aggs = ExprTableEvalStrategyUtil.GetRow(row);
-            return factory.AccessAggReader.GetValueCollectionEvents(
-                factory.AggColumnNum,
+            return Factory.AggregationMethod.GetValueCollectionEvents(
+                Factory.AggColumnNum,
                 aggs,
                 eventsPerStream,
                 isNewData,
@@ -71,8 +71,8 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             }
 
             var aggs = ExprTableEvalStrategyUtil.GetRow(row);
-            return factory.AccessAggReader.GetValueEventBean(
-                factory.AggColumnNum,
+            return Factory.AggregationMethod.GetValueEventBean(
+                Factory.AggColumnNum,
                 aggs,
                 eventsPerStream,
                 isNewData,
@@ -90,8 +90,8 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             }
 
             var aggs = ExprTableEvalStrategyUtil.GetRow(row);
-            return factory.AccessAggReader.GetValueCollectionScalar(
-                factory.AggColumnNum,
+            return Factory.AggregationMethod.GetValueCollectionScalar(
+                Factory.AggColumnNum,
                 aggs,
                 eventsPerStream,
                 isNewData,

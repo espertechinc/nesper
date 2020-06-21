@@ -12,7 +12,9 @@ using System.IO;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.context.compile;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
+using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.type;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -28,26 +30,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         ExprEvaluator,
         ExprWildcard
     {
+        private EventType _eventType;
+
         public ExprWildcardImpl()
         {
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write("*");
         }
 
-        public override ExprPrecedenceEnum Precedence {
-            get => ExprPrecedenceEnum.UNARY;
-        }
+        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
-        public ExprEvaluator ExprEvaluator {
-            get => this;
-        }
+        public ExprEvaluator ExprEvaluator => this;
 
-        public bool IsConstantResult {
-            get => true;
-        }
+        public bool IsConstantResult => true;
 
         public override bool EqualsNode(
             ExprNode node,
@@ -58,20 +58,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
+            if (validationContext.StreamTypeService.EventTypes.Length > 0) {
+                _eventType = validationContext.StreamTypeService.EventTypes[0];
+            }
+
             return null;
         }
 
-        public override ExprForge Forge {
-            get => this;
-        }
+        public override ExprForge Forge => this;
 
-        public ExprNodeRenderable ExprForgeRenderable {
-            get => this;
-        }
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
         public object Evaluate(
             EventBean[] eventsPerStream,
@@ -90,8 +88,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return EnumValue(typeof(WildcardParameter), "Instance");
         }
 
-        public Type EvaluationType {
-            get => typeof(WildcardParameter);
+        public Type EvaluationType => typeof(WildcardParameter);
+
+
+        public ExprEnumerationForgeDesc GetEnumerationForge(
+            StreamTypeService streamTypeService,
+            ContextCompileTimeDescriptor contextDescriptor)
+        {
+            if (_eventType == null) {
+                return null;
+            }
+
+            if (streamTypeService.EventTypes.Length > 1) {
+                return null;
+            }
+
+            return new ExprEnumerationForgeDesc(
+                new ExprStreamUnderlyingNodeEnumerationForge("*", 0, _eventType),
+                streamTypeService.IStreamOnly[0],
+                0);
         }
     }
 } // end of namespace

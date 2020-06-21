@@ -20,19 +20,19 @@ namespace com.espertech.esper.common.@internal.collection
     [TestFixture]
     public class TestMultiKey : AbstractCommonTest
     {
-        private MultiKey<string> keys1 = new MultiKey<string>(new string[] { "a", "b" });
-        private MultiKey<string> keys2 = new MultiKey<string>(new string[] { "a", "b" });
-        private MultiKey<string> keys3 = new MultiKey<string>(new string[] { "a", null });
-        private MultiKey<string> keys4 = new MultiKey<string>(new string[] { null, "b" });
-        private MultiKey<string> keys5 = new MultiKey<string>(new string[] { null, null });
-        private MultiKey<string> keys6 = new MultiKey<string>(new string[] { "a" });
-        private MultiKey<string> keys7 = new MultiKey<string>(new string[] { "a", "b", "c" });
-        private MultiKey<string> keys8 = new MultiKey<string>(new string[] { "a", "b", null });
-        private MultiKey<string> keys9 = new MultiKey<string>(new string[] { "a", "b", "c", "d" });
-        private MultiKey<string> keys10 = new MultiKey<string>(new string[] { "a", "b", "c", "d" });
-        private MultiKey<string> keys11 = new MultiKey<string>(new string[] { "espera", "esperb" });
-        private MultiKey<string> keys12 = new MultiKey<string>(new string[] { "esperc", "esperd" });
-        private MultiKey<string> keys13 = new MultiKey<string>(new string[] { "espere", "esperf" });
+        private MultiKeyArrayOfKeys<string> keys1 = new MultiKeyArrayOfKeys<string>(new string[] { "a", "b" });
+        private MultiKeyArrayOfKeys<string> keys2 = new MultiKeyArrayOfKeys<string>(new string[] { "a", "b" });
+        private MultiKeyArrayOfKeys<string> keys3 = new MultiKeyArrayOfKeys<string>(new string[] { "a", null });
+        private MultiKeyArrayOfKeys<string> keys4 = new MultiKeyArrayOfKeys<string>(new string[] { null, "b" });
+        private MultiKeyArrayOfKeys<string> keys5 = new MultiKeyArrayOfKeys<string>(new string[] { null, null });
+        private MultiKeyArrayOfKeys<string> keys6 = new MultiKeyArrayOfKeys<string>(new string[] { "a" });
+        private MultiKeyArrayOfKeys<string> keys7 = new MultiKeyArrayOfKeys<string>(new string[] { "a", "b", "c" });
+        private MultiKeyArrayOfKeys<string> keys8 = new MultiKeyArrayOfKeys<string>(new string[] { "a", "b", null });
+        private MultiKeyArrayOfKeys<string> keys9 = new MultiKeyArrayOfKeys<string>(new string[] { "a", "b", "c", "d" });
+        private MultiKeyArrayOfKeys<string> keys10 = new MultiKeyArrayOfKeys<string>(new string[] { "a", "b", "c", "d" });
+        private MultiKeyArrayOfKeys<string> keys11 = new MultiKeyArrayOfKeys<string>(new string[] { "espera", "esperb" });
+        private MultiKeyArrayOfKeys<string> keys12 = new MultiKeyArrayOfKeys<string>(new string[] { "esperc", "esperd" });
+        private MultiKeyArrayOfKeys<string> keys13 = new MultiKeyArrayOfKeys<string>(new string[] { "espere", "esperf" });
 
         [Test]
         public void TestHashCode()
@@ -105,31 +105,31 @@ namespace com.espertech.esper.common.@internal.collection
                     SupportEventBeanFactory.MakeEvents(supportEventTypeFactory, new string[]{"a", "b"}),
             };
 
-            ISet<MultiKey<EventBean>> mapSet = new HashSet<MultiKey<EventBean>>();
+            ISet<MultiKeyArrayOfKeys<EventBean>> mapSet = new HashSet<MultiKeyArrayOfKeys<EventBean>>();
 
             // Test contains
-            mapSet.Add(new MultiKey<EventBean>(testEvents[0]));
-            Assert.IsTrue(mapSet.Contains(new MultiKey<EventBean>(testEvents[0])));
-            Assert.IsFalse(mapSet.Contains(new MultiKey<EventBean>(testEvents[1])));
-            Assert.IsFalse(mapSet.Contains(new MultiKey<EventBean>(testEvents[2])));
-            Assert.IsFalse(mapSet.Contains(new MultiKey<EventBean>(testEvents[3])));
+            mapSet.Add(new MultiKeyArrayOfKeys<EventBean>(testEvents[0]));
+            Assert.IsTrue(mapSet.Contains(new MultiKeyArrayOfKeys<EventBean>(testEvents[0])));
+            Assert.IsFalse(mapSet.Contains(new MultiKeyArrayOfKeys<EventBean>(testEvents[1])));
+            Assert.IsFalse(mapSet.Contains(new MultiKeyArrayOfKeys<EventBean>(testEvents[2])));
+            Assert.IsFalse(mapSet.Contains(new MultiKeyArrayOfKeys<EventBean>(testEvents[3])));
 
             // Test unique
-            mapSet.Add(new MultiKey<EventBean>(testEvents[0]));
+            mapSet.Add(new MultiKeyArrayOfKeys<EventBean>(testEvents[0]));
             Assert.AreEqual(1, mapSet.Count);
 
-            mapSet.Add(new MultiKey<EventBean>(testEvents[1]));
-            mapSet.Add(new MultiKey<EventBean>(testEvents[2]));
-            mapSet.Add(new MultiKey<EventBean>(testEvents[3]));
+            mapSet.Add(new MultiKeyArrayOfKeys<EventBean>(testEvents[1]));
+            mapSet.Add(new MultiKeyArrayOfKeys<EventBean>(testEvents[2]));
+            mapSet.Add(new MultiKeyArrayOfKeys<EventBean>(testEvents[3]));
             Assert.AreEqual(4, mapSet.Count);
 
-            mapSet.Remove(new MultiKey<EventBean>(testEvents[0]));
+            mapSet.Remove(new MultiKeyArrayOfKeys<EventBean>(testEvents[0]));
             Assert.AreEqual(3, mapSet.Count);
-            Assert.IsFalse(mapSet.Contains(new MultiKey<EventBean>(testEvents[0])));
+            Assert.IsFalse(mapSet.Contains(new MultiKeyArrayOfKeys<EventBean>(testEvents[0])));
 
-            mapSet.Remove(new MultiKey<EventBean>(testEvents[1]));
-            mapSet.Remove(new MultiKey<EventBean>(testEvents[2]));
-            mapSet.Remove(new MultiKey<EventBean>(testEvents[3]));
+            mapSet.Remove(new MultiKeyArrayOfKeys<EventBean>(testEvents[1]));
+            mapSet.Remove(new MultiKeyArrayOfKeys<EventBean>(testEvents[2]));
+            mapSet.Remove(new MultiKeyArrayOfKeys<EventBean>(testEvents[3]));
             Assert.AreEqual(0, mapSet.Count);
         }
     }

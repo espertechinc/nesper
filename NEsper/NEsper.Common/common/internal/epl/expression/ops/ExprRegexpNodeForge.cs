@@ -19,8 +19,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public abstract class ExprRegexpNodeForge : ExprForgeInstrumentable
     {
-        private readonly ExprRegexpNode parent;
-        private readonly bool isNumericValue;
+        private readonly ExprRegexpNode _parent;
+        private readonly bool _isNumericValue;
 
         public abstract ExprEvaluator ExprEvaluator { get; }
 
@@ -42,18 +42,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprRegexpNode parent,
             bool isNumericValue)
         {
-            this.parent = parent;
-            this.isNumericValue = isNumericValue;
+            this._parent = parent;
+            this._isNumericValue = isNumericValue;
         }
 
         public ExprRegexpNode ForgeRenderable {
-            get => parent;
+            get => _parent;
         }
 
         ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
         public bool IsNumericValue {
-            get => isNumericValue;
+            get => _isNumericValue;
         }
 
         public Type EvaluationType {

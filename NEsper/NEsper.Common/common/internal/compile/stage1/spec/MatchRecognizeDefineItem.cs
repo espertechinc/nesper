@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="identifier">variable name</param>
         /// <param name="expression">expression</param>
         public MatchRecognizeDefineItem(
-            String identifier,
+            string identifier,
             ExprNode expression)
         {
             Identifier = identifier;

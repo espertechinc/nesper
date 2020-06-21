@@ -16,7 +16,7 @@ using com.espertech.esper.common.@internal.view.core;
 namespace com.espertech.esper.regressionlib.support.extend.view
 {
     public class MyFlushedSimpleView : ViewSupport,
-        AgentInstanceStopCallback
+        AgentInstanceMgmtCallback
     {
         private IList<EventBean> events;
         private EventType eventType;

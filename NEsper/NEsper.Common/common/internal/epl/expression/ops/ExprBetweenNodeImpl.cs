@@ -150,12 +150,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             IList<ExprNode> children = ChildNodes;
             using (IEnumerator<ExprNode> enumerator = children.GetEnumerator()) {
                 if (IsLowEndpointIncluded && IsHighEndpointIncluded) {
-                    enumerator.Advance().ToEPL(writer, Precedence);
+                    enumerator.Advance().ToEPL(writer, Precedence, flags);
                     if (IsNotBetween) {
                         writer.Write(" not between ");
                     }
@@ -163,12 +165,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         writer.Write(" between ");
                     }
 
-                    enumerator.Advance().ToEPL(writer, Precedence);
+                    enumerator.Advance().ToEPL(writer, Precedence, flags);
                     writer.Write(" and ");
-                    enumerator.Advance().ToEPL(writer, Precedence);
+                    enumerator.Advance().ToEPL(writer, Precedence, flags);
                 }
                 else {
-                    enumerator.Advance().ToEPL(writer, Precedence);
+                    enumerator.Advance().ToEPL(writer, Precedence, flags);
                     writer.Write(" in ");
                     if (IsLowEndpointIncluded) {
                         writer.Write('[');
@@ -177,9 +179,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         writer.Write('(');
                     }
 
-                    enumerator.Advance().ToEPL(writer, Precedence);
+                    enumerator.Advance().ToEPL(writer, Precedence, flags);
                     writer.Write(':');
-                    enumerator.Advance().ToEPL(writer, Precedence);
+                    enumerator.Advance().ToEPL(writer, Precedence, flags);
                     if (IsHighEndpointIncluded) {
                         writer.Write(']');
                     }

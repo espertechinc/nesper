@@ -45,7 +45,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             ResultSetProcessorFactoryProvider processorProvider,
             AgentInstanceContext agentInstanceContext,
             FAFQueryMethodAssignerSetter assignerSetter,
-            IDictionary<int, ExprTableEvalStrategyFactory> tableAccesses)
+            IDictionary<int, ExprTableEvalStrategyFactory> tableAccesses,
+            IDictionary<int, SubSelectFactory> subselects)
         {
             // start table-access
             var tableAccessEvals = ExprTableEvalHelperStart.StartTableAccess(tableAccesses, agentInstanceContext);
@@ -56,6 +57,11 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 agentInstanceContext,
                 false,
                 null);
+            
+            // start subselects
+            var subselectStopCallbacks = new List<AgentInstanceMgmtCallback>(2);
+            IDictionary<int, SubSelectFactoryResult> subselectActivations = SubSelectHelperStart.StartSubselects(
+                subselects, agentInstanceContext, subselectStopCallbacks, false);
 
             // assign
             assignerSetter.Assign(
@@ -63,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                     pair.Second,
                     null,
                     null,
-                    Collections.GetEmptyMap<int, SubSelectFactoryResult>(),
+                    subselectActivations,
                     tableAccessEvals,
                     null));
 
@@ -87,17 +93,17 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
         protected internal static EPPreparedQueryResult ProcessedNonJoin(
             ResultSetProcessor resultSetProcessor,
             ICollection<EventBean> events,
-            EventBeanReader distinctHandler)
+            EventPropertyValueGetter distinctKeyGetter)
         {
             var rows = events.ToArray();
             var results = resultSetProcessor.ProcessViewResult(rows, null, true);
 
             EventBean[] distinct;
-            if (distinctHandler == null) {
+            if (distinctKeyGetter == null) {
                 distinct = results.First;
             }
             else {
-                distinct = EventBeanUtility.GetDistinctByProp(results.First, distinctHandler);
+                distinct = EventBeanUtility.GetDistinctByProp(results.First, distinctKeyGetter);
             }
 
             return new EPPreparedQueryResult(resultSetProcessor.ResultEventType, distinct);

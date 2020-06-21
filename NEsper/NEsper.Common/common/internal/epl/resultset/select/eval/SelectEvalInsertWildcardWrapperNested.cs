@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         {
             EventBean inner = factory.AdapterForTypedWrapper(
                 @event,
-                new EmptyDictionary<string, object>(),
+                EmptyDictionary<string, object>.Instance,
                 innerWrapperType);
             return factory.AdapterForTypedWrapper(inner, props, outerWrapperType);
         }

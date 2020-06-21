@@ -140,33 +140,31 @@ namespace com.espertech.esper.common.@internal.view.rank
             }
 
             // Remove data that sorts to the bottom of the window
-            if (_numberOfEvents > _sortWindowSize) {
-                while (_numberOfEvents > _sortWindowSize) {
-                    var lastKey = _sortedEvents.Keys.Last();
-                    var existing = _sortedEvents.Get(lastKey);
-                    if (existing is IList<EventBean> existingList) {
-                        while (_numberOfEvents > _sortWindowSize && !existingList.IsEmpty()) {
-                            var newestEvent = existingList.DeleteAt(0);
-                            var uniqueKey = GetUniqueKey(newestEvent);
-                            _uniqueKeySortKeys.Remove(uniqueKey);
-                            _numberOfEvents--;
-                            removedEvents.Add(newestEvent);
-                            InternalHandleRemovedKey(existing, newestEvent);
-                        }
-
-                        if (existingList.IsEmpty()) {
-                            _sortedEvents.Remove(lastKey);
-                        }
-                    }
-                    else {
-                        var lastSortedEvent = (EventBean) existing;
-                        var uniqueKey = GetUniqueKey(lastSortedEvent);
+            while (_numberOfEvents > _sortWindowSize) {
+                var lastKey = _sortedEvents.Keys.Last();
+                var existing = _sortedEvents.Get(lastKey);
+                if (existing is IList<EventBean> existingList) {
+                    while (_numberOfEvents > _sortWindowSize && !existingList.IsEmpty()) {
+                        var newestEvent = existingList.DeleteAt(0);
+                        var uniqueKey = GetUniqueKey(newestEvent);
                         _uniqueKeySortKeys.Remove(uniqueKey);
                         _numberOfEvents--;
-                        removedEvents.Add(lastSortedEvent);
-                        _sortedEvents.Remove(lastKey);
-                        InternalHandleRemovedKey(lastKey, lastSortedEvent);
+                        removedEvents.Add(newestEvent);
+                        InternalHandleRemovedKey(existing, newestEvent);
                     }
+
+                    if (existingList.IsEmpty()) {
+                        _sortedEvents.Remove(lastKey);
+                    }
+                }
+                else {
+                    var lastSortedEvent = (EventBean) existing;
+                    var uniqueKey = GetUniqueKey(lastSortedEvent);
+                    _uniqueKeySortKeys.Remove(uniqueKey);
+                    _numberOfEvents--;
+                    removedEvents.Add(lastSortedEvent);
+                    _sortedEvents.Remove(lastKey);
+                    InternalHandleRemovedKey(lastKey, lastSortedEvent);
                 }
             }
 
@@ -334,7 +332,7 @@ namespace com.espertech.esper.common.@internal.view.rank
         {
             return GetUniqueKey(
                 _eventsPerStream,
-                _rankWindowViewFactory.UniqueEvaluators,
+                _rankWindowViewFactory.CriteriaEval,
                 theEvent,
                 _agentInstanceContext);
         }
@@ -350,16 +348,12 @@ namespace com.espertech.esper.common.@internal.view.rank
 
         public static object GetUniqueKey(
             EventBean[] eventsPerStream,
-            ExprEvaluator[] evaluators,
+            ExprEvaluator evaluator,
             EventBean theEvent,
             ExprEvaluatorContext evalContext)
         {
             eventsPerStream[0] = theEvent;
-            if (evaluators.Length > 1) {
-                return GetCriteriaMultiKey(eventsPerStream, evaluators, evalContext);
-            }
-
-            return evaluators[0].Evaluate(eventsPerStream, true, evalContext);
+            return evaluator.Evaluate(eventsPerStream, true, evalContext);
         }
 
         public static object GetSortKey(
@@ -374,20 +368,6 @@ namespace com.espertech.esper.common.@internal.view.rank
             }
 
             return evaluators[0].Evaluate(eventsPerStream, true, evalContext);
-        }
-
-        public static HashableMultiKey GetCriteriaMultiKey(
-            EventBean[] eventsPerStream,
-            ExprEvaluator[] evaluators,
-            ExprEvaluatorContext evalContext)
-        {
-            var result = new object[evaluators.Length];
-            var count = 0;
-            foreach (var expr in evaluators) {
-                result[count++] = expr.Evaluate(eventsPerStream, true, evalContext);
-            }
-
-            return new HashableMultiKey(result);
         }
 
         public static HashableMultiKey GetSortMultiKey(

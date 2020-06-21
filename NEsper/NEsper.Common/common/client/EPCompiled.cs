@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.client
         /// <param name="manifest">the manifest</param>
         public EPCompiled(
             Assembly assembly,
-            EPCompiledManifest manifest)
+            EpCompiledManifest manifest)
         {
             Assembly = assembly;
             Manifest = manifest;
@@ -40,6 +40,6 @@ namespace com.espertech.esper.common.client
         ///     Returns a manifest object
         /// </summary>
         /// <returns>manifest</returns>
-        public EPCompiledManifest Manifest { get; }
+        public EpCompiledManifest Manifest { get; }
     }
 } // end of namespace

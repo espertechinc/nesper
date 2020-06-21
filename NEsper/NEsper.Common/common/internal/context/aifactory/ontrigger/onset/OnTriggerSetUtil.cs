@@ -52,22 +52,23 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
                 .Build();
 
             // handle subselects
-            var subselectForges = SubSelectHelperForgePlanner.PlanSubSelect(
+            SubSelectHelperForgePlan subSelectForgePlan = SubSelectHelperForgePlanner.PlanSubSelect(
                 @base,
                 subselectActivation,
-                new[] {optionalStreamName},
-                new[] {activatorResult.ActivatorResultEventType},
-                new[] {activatorResult.TriggerEventTypeName},
+                new string[] {optionalStreamName},
+                new EventType[] {activatorResult.ActivatorResultEventType},
+                new string[] {activatorResult.TriggerEventTypeName},
                 services);
+            IDictionary<ExprSubselectNode, SubSelectFactoryForge> subselectForges = subSelectForgePlan.Subselects;
 
             // validate assignments
             foreach (var assignment in desc.Assignments) {
-                var validated = ExprNodeUtilityValidate.GetValidatedAssignment(assignment, validationContext);
-                assignment.Expression = validated;
+                ExprNodeUtilityValidate.ValidateAssignment(true, ExprNodeOrigin.UPDATEASSIGN, assignment, validationContext);
             }
 
             // create read-write logic
-            var variableReadWritePackageForge = new VariableReadWritePackageForge(desc.Assignments, services);
+            VariableReadWritePackageForge variableReadWritePackageForge = new VariableReadWritePackageForge(
+                desc.Assignments, @base.StatementName, services);
 
             // plan table access
             var tableAccessForges = ExprTableEvalHelperPlan.PlanTableAccess(@base.StatementSpec.TableAccessNodes);
@@ -126,16 +127,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
                 tableAccessForges,
                 variableReadWritePackageForge,
                 classNameRSP);
-            IList<StmtClassForgable> forgables = new List<StmtClassForgable>();
-            forgables.Add(
-                new StmtClassForgableRSPFactoryProvider(
-                    classNameRSP,
-                    resultSetProcessor,
-                    namespaceScope,
-                    @base.StatementRawInfo));
+            var forgeables = new List<StmtClassForgeable>();
+            forgeables.Add(new StmtClassForgeableRSPFactoryProvider(classNameRSP, resultSetProcessor, namespaceScope, @base.StatementRawInfo));
 
-            var onTrigger = new StmtClassForgableAIFactoryProviderOnTrigger(className, namespaceScope, forge);
-            return new OnTriggerSetPlan(onTrigger, forgables, resultSetProcessor.SelectSubscriberDescriptor);
+            var onTrigger = new StmtClassForgeableAIFactoryProviderOnTrigger(className, namespaceScope, forge);
+            return new OnTriggerSetPlan(
+                onTrigger,
+                forgeables,
+                resultSetProcessor.SelectSubscriberDescriptor,
+                subSelectForgePlan.AdditionalForgeables);
         }
     }
 } // end of namespace

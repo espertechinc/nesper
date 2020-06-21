@@ -10,6 +10,7 @@ using System;
 using System.IO;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.name;
@@ -61,22 +62,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
                 aggregationResultFutureMemberName,
                 typeof(AggregationResultFuture));
             CodegenMethod method = parent.MakeChild(returnType, this.GetType(), classScope);
-            CodegenExpression getGroupKey = ExprDotMethod(
-                future,
-                "GetGroupKey",
-                ExprDotName(symbol.GetAddExprEvalCtx(method), "AgentInstanceId"));
-            if (numGroupKeys == 1) {
-                method.Block.MethodReturn(CodegenLegoCast.CastSafeFromObjectType(returnType, getGroupKey));
-            }
-            else {
-                method.Block
-                    .DeclareVar<HashableMultiKey>("mk", Cast(typeof(HashableMultiKey), getGroupKey))
-                    .MethodReturn(
-                        CodegenLegoCast.CastSafeFromObjectType(
-                            returnType,
-                            ArrayAtIndex(ExprDotName(Ref("mk"), "Keys"), Constant(groupKeyIndex))));
-            }
+            
+            method.Block.DeclareVar<object>("key", ExprDotMethod(future, "GetGroupKey", ExprDotName(symbol.GetAddExprEvalCtx(method), "AgentInstanceId")));
+            method.Block
+                .IfCondition(InstanceOf(Ref("key"), typeof(MultiKey)))
+                .DeclareVar<MultiKey>("mk", Cast(typeof(MultiKey), Ref("key")))
+                .BlockReturn(CodegenLegoCast.CastSafeFromObjectType(returnType, ExprDotMethod(Ref("mk"), "GetKey", Constant(groupKeyIndex))));
 
+            method.Block.IfCondition(InstanceOf(Ref("key"), typeof(MultiKeyArrayWrap)))
+                .DeclareVar<MultiKeyArrayWrap>("mk", Cast(typeof(MultiKeyArrayWrap), Ref("key")))
+                .BlockReturn(CodegenLegoCast.CastSafeFromObjectType(returnType, ExprDotName(Ref("mk"), "Array")));
+
+            method.Block.MethodReturn(CodegenLegoCast.CastSafeFromObjectType(returnType, Ref("key")));
+            
             return LocalMethod(method);
         }
 
@@ -102,7 +100,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             get => this;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
         }
 

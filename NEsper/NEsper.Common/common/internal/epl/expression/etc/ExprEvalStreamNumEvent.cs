@@ -23,11 +23,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         ExprEvaluator,
         ExprNodeRenderable
     {
-        private readonly int streamNum;
+        private readonly int _streamNum;
 
         public ExprEvalStreamNumEvent(int streamNum)
         {
-            this.streamNum = streamNum;
+            this._streamNum = streamNum;
         }
 
         public object Evaluate(
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return eventsPerStream[streamNum];
+            return eventsPerStream[_streamNum];
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             CodegenClassScope codegenClassScope)
         {
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
-            return ArrayAtIndex(refEPS, Constant(streamNum));
+            return ArrayAtIndex(refEPS, Constant(_streamNum));
         }
 
         public Type EvaluationType {
@@ -64,9 +64,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             get => this;
         }
 
-        public void ToEPL(
-            TextWriter writer,
-            ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(typeof(ExprEvalStreamNumEvent).Name);
         }

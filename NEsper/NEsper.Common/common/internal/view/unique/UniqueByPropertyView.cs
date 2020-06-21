@@ -172,17 +172,7 @@ namespace com.espertech.esper.common.@internal.view.unique
         internal object GetUniqueKey(EventBean theEvent)
         {
             _eventsPerStream[0] = theEvent;
-            var criteriaExpressionsEvals = _viewFactory.CriteriaEvals;
-            if (criteriaExpressionsEvals.Length == 1) {
-                return criteriaExpressionsEvals[0].Evaluate(_eventsPerStream, true, _agentInstanceContext);
-            }
-
-            var values = new object[criteriaExpressionsEvals.Length];
-            for (var i = 0; i < criteriaExpressionsEvals.Length; i++) {
-                values[i] = criteriaExpressionsEvals[i].Evaluate(_eventsPerStream, true, _agentInstanceContext);
-            }
-
-            return new HashableMultiKey(values);
+            return _viewFactory.CriteriaEval.Evaluate(_eventsPerStream, true, _agentInstanceContext);
         }
     }
 } // end of namespace

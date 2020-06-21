@@ -96,6 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
         public override AggregationPortableValidation AggregationPortableValidation {
             get {
                 var portable = new AggregationPortableValidationPluginMultiFunc();
+                portable.Handler = handler;
                 portable.AggregationFunctionName = parent.AggregationFunctionName;
                 return portable;
             }

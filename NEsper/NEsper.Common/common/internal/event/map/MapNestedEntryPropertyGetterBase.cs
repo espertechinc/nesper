@@ -22,7 +22,6 @@ namespace com.espertech.esper.common.@internal.@event.map
     {
         internal readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
         internal readonly EventType fragmentType;
-
         internal readonly string propertyMap;
 
         /// <summary>
@@ -53,7 +52,12 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public bool IsMapExistsProperty(IDictionary<string, object> map)
         {
-            return true; // Property exists as the property is not dynamic (unchecked)
+            var value = map.Get(propertyMap);
+            if (value == null) {
+                return false;
+            }
+            
+            return HandleNestedValueExists(value);
         }
 
         public object Get(EventBean obj)
@@ -63,7 +67,7 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public virtual bool IsExistsProperty(EventBean eventBean)
         {
-            return true; // Property exists as the property is not dynamic (unchecked)
+            return IsMapExistsProperty((IDictionary<string, object>) eventBean.Underlying);
         }
 
         public object GetFragment(EventBean obj)
@@ -93,7 +97,10 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ConstantTrue();
+            return UnderlyingExistsCodegen(
+                CastUnderlying<IDictionary<string, object>>(beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
@@ -120,7 +127,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ConstantTrue();
+            return LocalMethod(GetMapExistsCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
@@ -132,10 +139,17 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public abstract object HandleNestedValue(object value);
+        
+        public abstract bool HandleNestedValueExists(object value);
 
         public abstract object HandleNestedValueFragment(object value);
 
         public abstract CodegenExpression HandleNestedValueCodegen(
+            CodegenExpression name,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope);
+
+        public abstract CodegenExpression HandleNestedValueExistsCodegen(
             CodegenExpression name,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope);
@@ -155,6 +169,19 @@ namespace com.espertech.esper.common.@internal.@event.map
                 .DeclareVar<object>("value", ExprDotMethod(Ref("map"), "Get", Constant(propertyMap)))
                 .IfRefNullReturnNull("value")
                 .MethodReturn(HandleNestedValueCodegen(Ref("value"), codegenMethodScope, codegenClassScope));
+        }
+
+        private CodegenMethod GetMapExistsCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return codegenMethodScope
+                .MakeChild(typeof(bool), GetType(), codegenClassScope)
+                .AddParam(typeof(IDictionary<string, object>), "map")
+                .Block
+                .DeclareVar<object>("value", ExprDotMethod(Ref("map"), "Get", Constant(propertyMap)))
+                .IfRefNullReturnFalse("value")
+                .MethodReturn(HandleNestedValueExistsCodegen(Ref("value"), codegenMethodScope, codegenClassScope));
         }
 
         private CodegenMethod GetFragmentCodegen(

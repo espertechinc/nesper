@@ -283,11 +283,48 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
+            var method = parent.MakeChild(typeof(EventBean), this.GetType(), classScope);
+
             if (subselect.SelectClause == null) {
-                return ConstantNull();
+                if (subselect.FilterExpr == null) {
+                    method
+                        .Block
+                        .IfCondition(
+                            Relational(
+                                ExprDotMethod(
+                                    symbols.GetAddMatchingEvents(method),
+                                    "size"),
+                                CodegenExpressionRelational.CodegenRelational.GT,
+                                Constant(1)))
+                        .BlockReturn(ConstantNull())
+                        .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols)
+                        .MethodReturn(StaticMethod(typeof(EventBeanUtility), "GetNonemptyFirstEvent", symbols.GetAddMatchingEvents(method)));
+                    return LocalMethod(method);
+                }
+
+                CodegenExpression filterX = ExprNodeUtilityCodegen.CodegenEvaluator(
+                    subselect.FilterExpr,
+                    method,
+                    GetType(),
+                    classScope);
+                method
+                    .Block
+                    .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols)
+                    .DeclareVar(
+                        typeof(EventBean),
+                        "SubSelectResult",
+                        StaticMethod(
+                            typeof(EventBeanUtility),
+                            "EvaluateFilterExpectSingleMatch",
+                            REF_EVENTS_SHIFTED,
+                            symbols.GetAddIsNewData(method),
+                            symbols.GetAddMatchingEvents(method),
+                            symbols.GetAddExprEvalCtx(method),
+                            filterX))
+                    .MethodReturn(Ref("subSelectResult"));
+                return LocalMethod(method);
             }
 
-            var method = parent.MakeChild(typeof(EventBean), this.GetType(), classScope);
             var eventBeanSvc =
                 classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var typeMember = classScope.AddDefaultFieldUnshared(

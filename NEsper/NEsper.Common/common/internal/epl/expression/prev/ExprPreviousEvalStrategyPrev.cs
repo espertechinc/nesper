@@ -19,14 +19,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
 {
     public class ExprPreviousEvalStrategyPrev : ExprPreviousEvalStrategy
     {
-        private readonly int streamNumber;
-        private readonly ExprEvaluator indexNode;
-        private readonly ExprEvaluator evalNode;
-        private readonly RandomAccessByIndexGetter randomAccessGetter;
-        private readonly RelativeAccessByEventNIndexGetter relativeAccessGetter;
-        private readonly bool isConstantIndex;
-        private readonly int? constantIndexNumber;
-        private readonly bool isTail;
+        private readonly int _streamNumber;
+        private readonly ExprEvaluator _indexNode;
+        private readonly ExprEvaluator _evalNode;
+        private readonly RandomAccessByIndexGetter _randomAccessGetter;
+        private readonly RelativeAccessByEventNIndexGetter _relativeAccessGetter;
+        private readonly bool _isConstantIndex;
+        private readonly int? _constantIndexNumber;
+        private readonly bool _isTail;
 
         public ExprPreviousEvalStrategyPrev(
             int streamNumber,
@@ -38,14 +38,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             int? constantIndexNumber,
             bool tail)
         {
-            this.streamNumber = streamNumber;
-            this.indexNode = indexNode;
-            this.evalNode = evalNode;
-            this.randomAccessGetter = randomAccessGetter;
-            this.relativeAccessGetter = relativeAccessGetter;
-            isConstantIndex = constantIndex;
-            this.constantIndexNumber = constantIndexNumber;
-            isTail = tail;
+            this._streamNumber = streamNumber;
+            this._indexNode = indexNode;
+            this._evalNode = evalNode;
+            this._randomAccessGetter = randomAccessGetter;
+            this._relativeAccessGetter = relativeAccessGetter;
+            _isConstantIndex = constantIndex;
+            this._constantIndexNumber = constantIndexNumber;
+            _isTail = tail;
         }
 
         public object Evaluate(
@@ -58,10 +58,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             }
 
             // Substitute original event with prior event, evaluate inner expression
-            EventBean originalEvent = eventsPerStream[streamNumber];
-            eventsPerStream[streamNumber] = substituteEvent;
-            object evalResult = evalNode.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-            eventsPerStream[streamNumber] = originalEvent;
+            EventBean originalEvent = eventsPerStream[_streamNumber];
+            eventsPerStream[_streamNumber] = substituteEvent;
+            object evalResult = _evalNode.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+            eventsPerStream[_streamNumber] = originalEvent;
 
             return evalResult;
         }
@@ -98,12 +98,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
         {
             // Use constant if supplied
             int? index;
-            if (isConstantIndex) {
-                index = constantIndexNumber;
+            if (_isConstantIndex) {
+                index = _constantIndexNumber;
             }
             else {
                 // evaluate first child, which returns the index
-                object indexResult = indexNode.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                object indexResult = _indexNode.Evaluate(eventsPerStream, true, exprEvaluatorContext);
                 if (indexResult == null) {
                     return null;
                 }
@@ -113,9 +113,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
 
             // access based on index returned
             EventBean substituteEvent;
-            if (randomAccessGetter != null) {
-                RandomAccessByIndex randomAccess = randomAccessGetter.Accessor;
-                if (!isTail) {
+            if (_randomAccessGetter != null) {
+                RandomAccessByIndex randomAccess = _randomAccessGetter.Accessor;
+                if (!_isTail) {
                     substituteEvent = randomAccess.GetNewData(index.Value);
                 }
                 else {
@@ -123,13 +123,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                 }
             }
             else {
-                EventBean evalEvent = eventsPerStream[streamNumber];
-                RelativeAccessByEventNIndex relativeAccess = relativeAccessGetter.GetAccessor(evalEvent);
+                EventBean evalEvent = eventsPerStream[_streamNumber];
+                RelativeAccessByEventNIndex relativeAccess = _relativeAccessGetter.GetAccessor(evalEvent);
                 if (relativeAccess == null) {
                     return null;
                 }
 
-                if (!isTail) {
+                if (!_isTail) {
                     substituteEvent = relativeAccess.GetRelativeToEvent(evalEvent, index.Value);
                 }
                 else {

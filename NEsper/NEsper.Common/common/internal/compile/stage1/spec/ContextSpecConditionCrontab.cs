@@ -23,23 +23,23 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     public class ContextSpecConditionCrontab : ContextSpecCondition,
         ScheduleHandleCallbackProvider
     {
-        private ExprForge[] forges;
+        private ExprForge[][] forges;
 
         public ContextSpecConditionCrontab(
-            IList<ExprNode> crontab,
+            IList<IList<ExprNode>> crontabs,
             bool immediate)
         {
-            Crontab = crontab;
+            Crontabs = crontabs;
             IsImmediate = immediate;
         }
 
-        public IList<ExprNode> Crontab { get; }
+        public IList<IList<ExprNode>> Crontabs { get; }
 
         public int ScheduleCallbackId { get; set; } = -1;
 
         public bool IsImmediate { get; }
 
-        public ExprForge[] Forges {
+        public ExprForge[][] ForgesPerCrontab {
             set => forges = value;
         }
 
@@ -52,18 +52,26 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 throw new IllegalStateException("Unassigned schedule callback id");
             }
 
-            var method = parent.MakeChild(typeof(ContextConditionDescriptorCrontab), GetType(), classScope);
+            var method = parent
+                .MakeChild(typeof(ContextConditionDescriptorCrontab), GetType(), classScope);
             method.Block
                 .DeclareVar<ContextConditionDescriptorCrontab>(
                     "condition",
                     NewInstance(typeof(ContextConditionDescriptorCrontab)))
                 .SetProperty(
                     Ref("condition"),
-                    "Evaluators",
+                    "EvaluatorsPerCrontab",
                     ExprNodeUtilityCodegen.CodegenEvaluators(forges, method, GetType(), classScope))
-                .SetProperty(Ref("condition"), "ScheduleCallbackId", Constant(ScheduleCallbackId))
-                .SetProperty(Ref("condition"), "IsImmediate", Constant(IsImmediate))
-                .MethodReturn(Ref("condition"));
+                .SetProperty(
+                    Ref("condition"),
+                    "ScheduleCallbackId",
+                    Constant(ScheduleCallbackId))
+                .SetProperty(
+                    Ref("condition"),
+                    "IsImmediate",
+                    Constant(IsImmediate))
+                .MethodReturn(
+                    Ref("condition"));
             return LocalMethod(method);
         }
     }

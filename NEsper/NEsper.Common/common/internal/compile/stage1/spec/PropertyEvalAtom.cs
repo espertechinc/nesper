@@ -28,8 +28,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="optionalWhereClause">where clause, if any</param>
         public PropertyEvalAtom(
             ExprNode splitterExpression,
-            String optionalResultEventType,
-            String optionalAsName,
+            string optionalResultEventType,
+            string optionalAsName,
             SelectClauseSpecRaw optionalSelectClause,
             ExprNode optionalWhereClause)
         {

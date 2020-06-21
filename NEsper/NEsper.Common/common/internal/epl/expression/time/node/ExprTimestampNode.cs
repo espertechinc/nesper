@@ -100,7 +100,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write("current_timestamp()");
         }

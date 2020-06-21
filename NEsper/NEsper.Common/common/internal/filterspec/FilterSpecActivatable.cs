@@ -11,6 +11,7 @@ using System.IO;
 using System.Text;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
@@ -28,7 +29,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         ///     property names or mismatcing filter operators are found.
         /// </summary>
         /// <param name="eventType">is the event type</param>
-        /// <param name="filterParameters">is a list of filter parameters</param>
+        /// <param name="plan">plan is a list of filter parameters, i.e. paths and triplets</param>
         /// <param name="eventTypeName">is the name of the event type</param>
         /// <param name="optionalPropertyEvaluator">optional if evaluating properties returned by filtered events</param>
         /// <param name="filterCallbackId">filter id</param>
@@ -36,13 +37,13 @@ namespace com.espertech.esper.common.@internal.filterspec
         public FilterSpecActivatable(
             EventType eventType,
             string eventTypeName,
-            FilterSpecParam[][] filterParameters,
+            FilterSpecPlan plan,
             PropertyEvaluator optionalPropertyEvaluator,
             int filterCallbackId)
         {
             FilterForEventType = eventType;
             FilterForEventTypeName = eventTypeName;
-            Parameters = filterParameters;
+            Plan = plan;
             OptionalPropertyEvaluator = optionalPropertyEvaluator;
             if (filterCallbackId == -1) {
                 throw new ArgumentException("Filter callback id is unassigned");
@@ -58,10 +59,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         public EventType FilterForEventType { get; }
 
         /// <summary>
-        ///     Returns list of filter parameters.
+        ///     Returns the filter plan.  The plan is a list of filter parameters, i.e. paths and triplets
         /// </summary>
-        /// <returns>list of filter params</returns>
-        public FilterSpecParam[][] Parameters { get; }
+        public FilterSpecPlan Plan { get; }
 
         /// <summary>
         ///     Returns the event type name.
@@ -91,13 +91,23 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public int FilterCallbackId { get; }
 
+        
+        /// <summary>
+        /// Returns the values for the filter, using the supplied result events to ask filter parameters
+        /// for the value to filter for.
+        /// </summary>
+        /// <param name="matchedEvents">contains the result events to use for determining filter values</param>
+        /// <param name="addendum">context addendum</param>
+        /// <param name="exprEvaluatorContext">context</param>
+        /// <param name="filterEvalEnv">env</param>
+        /// <returns>filter values, or null when negated</returns>
         public FilterValueSetParam[][] GetValueSet(
             MatchedEventMap matchedEvents,
             FilterValueSetParam[][] addendum,
             ExprEvaluatorContext exprEvaluatorContext,
             StatementContextFilterEvalEnv filterEvalEnv)
         {
-            var valueList = EvaluateValueSet(Parameters, matchedEvents, exprEvaluatorContext, filterEvalEnv);
+            var valueList = Plan.EvaluateValueSet(matchedEvents, exprEvaluatorContext, filterEvalEnv);
             if (addendum != null) {
                 valueList = FilterAddendumUtil.MultiplyAddendum(addendum, valueList);
             }
@@ -105,133 +115,27 @@ namespace com.espertech.esper.common.@internal.filterspec
             return valueList;
         }
 
-
-        public static FilterValueSetParam[][] EvaluateValueSet(
-            FilterSpecParam[][] parameters,
-            MatchedEventMap matchedEvents,
-            AgentInstanceContext agentInstanceContext)
-        {
-            return EvaluateValueSet(
-                parameters,
-                matchedEvents,
-                agentInstanceContext,
-                agentInstanceContext.StatementContextFilterEvalEnv);
-        }
-
-        public static FilterValueSetParam[][] EvaluateValueSet(
-            FilterSpecParam[][] parameters,
-            MatchedEventMap matchedEvents,
-            ExprEvaluatorContext exprEvaluatorContext,
-            StatementContextFilterEvalEnv filterEvalEnv)
-        {
-            var valueList = new FilterValueSetParam[parameters.Length][];
-            for (var i = 0; i < parameters.Length; i++) {
-                valueList[i] = new FilterValueSetParam[parameters[i].Length];
-                PopulateValueSet(valueList[i], matchedEvents, parameters[i], exprEvaluatorContext, filterEvalEnv);
-            }
-
-            return valueList;
-        }
-
-        private static void PopulateValueSet(
-            FilterValueSetParam[] valueList,
-            MatchedEventMap matchedEvents,
-            FilterSpecParam[] specParams,
-            ExprEvaluatorContext exprEvaluatorContext,
-            StatementContextFilterEvalEnv filterEvalEnv)
-        {
-            // Ask each filter specification parameter for the actual value to filter for
-            var count = 0;
-            foreach (var specParam in specParams) {
-                var filterForValue = specParam.GetFilterValue(matchedEvents, exprEvaluatorContext, filterEvalEnv);
-                valueList[count] = new FilterValueSetParamImpl(
-                    specParam.Lookupable,
-                    specParam.FilterOperator,
-                    filterForValue);
-                count++;
-            }
-        }
-
-
         public override string ToString()
         {
             var stringBuilder = new StringBuilder();
             return stringBuilder
                 .Append("FilterSpecActivatable type=" + FilterForEventType)
-                .Append(" parameters=" + Parameters.RenderAny())
+                .Append(" parameters=" + Plan)
                 .ToString();
         }
 
 
         public override bool Equals(object obj)
         {
-            if (this == obj) {
-                return true;
-            }
-
-            if (!(obj is FilterSpecActivatable)) {
-                return false;
-            }
-
-            var other = (FilterSpecActivatable) obj;
-            if (!EqualsTypeAndFilter(other)) {
-                return false;
-            }
-
-            if (OptionalPropertyEvaluator == null && other.OptionalPropertyEvaluator == null) {
-                return true;
-            }
-
-            if (OptionalPropertyEvaluator != null && other.OptionalPropertyEvaluator == null) {
-                return false;
-            }
-
-            if (OptionalPropertyEvaluator == null && other.OptionalPropertyEvaluator != null) {
-                return false;
-            }
-
-            return OptionalPropertyEvaluator.CompareTo(other.OptionalPropertyEvaluator);
-        }
-
-
-        /// <summary>
-        ///     Returns the values for the filter, using the supplied result events to ask filter parameters
-        ///     for the value to filter for.
-        /// </summary>
-        /// <returns>filter values</returns>
-        public bool EqualsTypeAndFilter(FilterSpecActivatable other)
-        {
-            if (FilterForEventType != other.FilterForEventType) {
-                return false;
-            }
-
-            if (Parameters.Length != other.Parameters.Length) {
-                return false;
-            }
-
-            for (var i = 0; i < Parameters.Length; i++) {
-                var lineThis = Parameters[i];
-                var lineOther = other.Parameters[i];
-                if (lineThis.Length != lineOther.Length) {
-                    return false;
-                }
-
-                for (var j = 0; j < lineThis.Length; j++) {
-                    if (!lineThis[j].Equals(lineOther[j])) {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
+            return (this == obj); // identity only
         }
 
         public override int GetHashCode()
         {
             var hashCode = FilterForEventType.GetHashCode();
-            foreach (var paramLine in Parameters) {
-                foreach (var param in paramLine) {
-                    hashCode ^= 31 * param.GetHashCode();
+            foreach (var path in Plan.Paths) {
+                foreach (var triplet in path.Triplets) {
+                    hashCode ^= 31 * triplet.Param.GetHashCode();
                 }
             }
 
@@ -242,12 +146,12 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
             var writer = new StringWriter();
             writer.Write(FilterForEventType.Name);
-            if (Parameters != null && Parameters.Length > 0) {
+            if (Plan.Paths != null && Plan.Paths.Length > 0) {
                 writer.Write('(');
                 var delimiter = "";
-                foreach (var paramLine in Parameters) {
+                foreach (var path in Plan.Paths) {
                     writer.Write(delimiter);
-                    WriteFilter(writer, paramLine);
+                    WriteFilter(writer, path);
                     delimiter = " or ";
                 }
 
@@ -259,13 +163,13 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         private static void WriteFilter(
             TextWriter writer,
-            FilterSpecParam[] paramLine)
+            FilterSpecPlanPath path)
         {
             var delimiter = "";
-            foreach (var param in paramLine) {
+            foreach (var triplet in path.Triplets) {
                 writer.Write(delimiter);
-                writer.Write(param.Lookupable.Expression);
-                writer.Write(param.FilterOperator.GetTextualOp());
+                writer.Write(triplet.Param.Lkupable.Expression);
+                writer.Write(triplet.Param.FilterOperator.GetTextualOp());
                 writer.Write("...");
                 delimiter = ",";
             }

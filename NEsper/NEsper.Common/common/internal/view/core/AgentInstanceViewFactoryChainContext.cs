@@ -53,13 +53,11 @@ namespace com.espertech.esper.common.@internal.view.core
 
         public StatementContext StatementContext => AgentInstanceContext.StatementContext;
 
-        public RuntimeSettingsService RuntimeSettingsService =>
-            AgentInstanceContext.StatementContext.RuntimeSettingsService;
+        public RuntimeSettingsService RuntimeSettingsService => AgentInstanceContext.StatementContext.RuntimeSettingsService;
 
         public Attribute[] Annotations => AgentInstanceContext.StatementContext.Annotations;
 
-        public EPStatementAgentInstanceHandle EpStatementAgentInstanceHandle =>
-            AgentInstanceContext.EpStatementAgentInstanceHandle;
+        public EPStatementAgentInstanceHandle EpStatementAgentInstanceHandle => AgentInstanceContext.EpStatementAgentInstanceHandle;
 
         public bool IsRemoveStream { get; set; }
 
@@ -67,11 +65,9 @@ namespace com.espertech.esper.common.@internal.view.core
 
         public EventBeanTypedEventFactory EventBeanTypedEventFactory => AgentInstanceContext.EventBeanTypedEventFactory;
 
-        public RuntimeExtensionServices RuntimeExtensionServices =>
-            AgentInstanceContext.RuntimeExtensionServicesContext;
+        public RuntimeExtensionServices RuntimeExtensionServices => AgentInstanceContext.RuntimeExtensionServicesContext;
 
-        public ImportServiceRuntime ImportService =>
-            AgentInstanceContext.ImportServiceRuntime;
+        public ImportServiceRuntime ImportService => AgentInstanceContext.ImportServiceRuntime;
 
         public string StatementName => AgentInstanceContext.StatementName;
 
@@ -95,15 +91,20 @@ namespace com.espertech.esper.common.@internal.view.core
 
         public TableExprEvaluatorContext TableExprEvaluatorContext => AgentInstanceContext.TableExprEvaluatorContext;
 
-        public ExpressionResultCacheService ExpressionResultCacheService =>
-            AgentInstanceContext.ExpressionResultCacheService;
+        public ExpressionResultCacheService ExpressionResultCacheService => AgentInstanceContext.ExpressionResultCacheService;
 
-        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext =>
-            AgentInstanceContext.AllocateAgentInstanceScriptContext;
+        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext => AgentInstanceContext.AllocateAgentInstanceScriptContext;
 
         public AuditProvider AuditProvider => AgentInstanceContext.AuditProvider;
 
         public InstrumentationCommon InstrumentationProvider => AgentInstanceContext.InstrumentationProvider;
+
+        public ExceptionHandlingService ExceptionHandlingService => AgentInstanceContext.ExceptionHandlingService;
+
+        public object FilterReboolConstant {
+            get => null;
+            set { }
+        }
 
         public static AgentInstanceViewFactoryChainContext Create(
             ViewFactory[] viewFactoryChain,

@@ -23,18 +23,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprRelationalOpNodeForgeEval : ExprEvaluator
     {
-        private readonly ExprRelationalOpNodeForge forge;
-        private readonly ExprEvaluator left;
-        private readonly ExprEvaluator right;
+        private readonly ExprRelationalOpNodeForge _forge;
+        private readonly ExprEvaluator _left;
+        private readonly ExprEvaluator _right;
 
         public ExprRelationalOpNodeForgeEval(
             ExprRelationalOpNodeForge forge,
             ExprEvaluator left,
             ExprEvaluator right)
         {
-            this.forge = forge;
-            this.left = left;
-            this.right = right;
+            this._forge = forge;
+            this._left = left;
+            this._right = right;
         }
 
         public object Evaluate(
@@ -42,17 +42,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var lvalue = left.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var lvalue = _left.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (lvalue == null) {
                 return null;
             }
 
-            var rvalue = right.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var rvalue = _right.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (rvalue == null) {
                 return null;
             }
 
-            return forge.Computer.Compare(lvalue, rvalue);
+            return _forge.Computer.Compare(lvalue, rvalue);
         }
 
         public static CodegenExpression Codegen(

@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.epl.expression.chain;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.join.analyze;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
@@ -18,13 +19,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
     ///     Represents an Dot-operator expression, for use when "(expression).method(...).method(...)"
     /// </summary>
     public interface ExprDotNode : ExprNode,
-        FilterExprAnalyzerAffectorProvider
+        FilterExprAnalyzerAffectorProvider,
+        ExprNodeWithChainSpec
     {
         int? StreamReferencedIfAny { get; }
 
-        IList<ExprChainedSpec> ChainSpec { get; }
+        IList<Chainable> ChainSpec { get; set; }
 
         VariableMetaData IsVariableOpGetName(VariableCompileTimeResolver variableCompileTimeResolver);
+        
+        bool IsLocalInlinedClass { get; }
     }
 
     public class ExprDotNodeConstants

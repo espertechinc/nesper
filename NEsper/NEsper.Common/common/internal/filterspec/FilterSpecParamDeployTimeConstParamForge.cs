@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -73,10 +74,15 @@ namespace com.espertech.esper.common.@internal.filterspec
                 value = _numberCoercer.CoerceCodegenMayNullBoxed(value, _returnType, method, classScope);
             }
 
-            getFilterValue.Block.BlockReturn(value);
+            getFilterValue.Block.BlockReturn(FilterValueSetParamImpl.CodegenNew(value));
 
             method.Block.MethodReturn(param);
             return method;
+        }
+        
+        public override void ValueExprToString(StringBuilder @out, int i) {
+            @out.Append("deploy-time constant ");
+            _deployTimeConstant.RenderForFilterPlan(@out);
         }
     }
 } // end of namespace

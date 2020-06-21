@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+using System.Text;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -168,7 +169,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                         classScope));
             }
 
-            getFilterValue.Block.BlockReturn(Ref("value"));
+            getFilterValue.Block.BlockReturn(FilterValueSetParamImpl.CodegenNew(Ref("value")));
 
             method.Block.MethodReturn(param);
             return method;
@@ -212,6 +213,13 @@ namespace com.espertech.esper.common.@internal.filterspec
             var result = base.GetHashCode();
             result = 31 * result + ResultEventProperty.GetHashCode();
             return result;
+        }
+        
+        public override void ValueExprToString(StringBuilder @out, int i)
+        {
+            @out.Append("indexed event property '")
+                .Append(ResultEventProperty)
+                .Append("'");
         }
     }
 } // end of namespace

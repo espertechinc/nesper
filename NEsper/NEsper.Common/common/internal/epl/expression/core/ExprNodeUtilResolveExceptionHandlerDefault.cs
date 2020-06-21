@@ -8,30 +8,32 @@
 
 using System;
 
+using com.espertech.esper.common.client;
+
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     public class ExprNodeUtilResolveExceptionHandlerDefault : ExprNodeUtilResolveExceptionHandler
     {
-        private readonly string resolvedExpression;
-        private readonly bool configuredAsSingleRow;
+        private readonly bool _configuredAsSingleRow;
+        private readonly string _resolvedExpression;
 
         public ExprNodeUtilResolveExceptionHandlerDefault(
             string resolvedExpression,
             bool configuredAsSingleRow)
         {
-            this.resolvedExpression = resolvedExpression;
-            this.configuredAsSingleRow = configuredAsSingleRow;
+            _resolvedExpression = resolvedExpression;
+            _configuredAsSingleRow = configuredAsSingleRow;
         }
 
         public ExprValidationException Handle(Exception e)
         {
             string message;
-            if (configuredAsSingleRow) {
+            if (e is EPException || _configuredAsSingleRow) {
                 message = e.Message;
             }
             else {
                 message = "Failed to resolve '" +
-                          resolvedExpression +
+                          _resolvedExpression +
                           "' to a property, single-row function, aggregation function, script, stream or class name";
             }
 

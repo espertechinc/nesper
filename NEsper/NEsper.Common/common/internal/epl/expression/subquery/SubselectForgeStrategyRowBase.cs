@@ -134,7 +134,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     symbols.GetAddMatchingEvents(method));
                 {
                     foreachEvent
-                        .Increment("index")
+                        .IncrementRef("index")
                         .AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("@event"))
                         .DeclareVar<object[]>(
                             "results",

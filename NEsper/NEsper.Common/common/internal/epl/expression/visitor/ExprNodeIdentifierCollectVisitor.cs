@@ -57,5 +57,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
 
             ExprProperties.Add(identNode);
         }
+
+        public void Reset()
+        {
+            ExprProperties.Clear();
+        }
     }
 }

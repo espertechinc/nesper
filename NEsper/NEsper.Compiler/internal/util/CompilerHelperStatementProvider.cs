@@ -336,13 +336,13 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             IList<CodegenClass> sorted = new List<CodegenClass>(classes.Count);
             foreach (var clazz in classes) {
-                if (clazz.InterfaceImplemented == typeof(StatementFields)) {
+                if (clazz.OptionalInterfaceImplemented == typeof(StatementFields)) {
                     sorted.Add(clazz);
                 }
             }
 
             foreach (var clazz in classes) {
-                if (clazz.InterfaceImplemented != typeof(StatementFields)) {
+                if (clazz.OptionalInterfaceImplemented != typeof(StatementFields)) {
                     sorted.Add(clazz);
                 }
             }

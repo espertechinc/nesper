@@ -23,16 +23,16 @@ namespace com.espertech.esper.common.@internal.collection
     /// decrements the reference count for the key, and removes the key if the reference count reached zero.
     /// Null values are not allowed as keys.
     /// </summary>
-    public class RefCountedMap<K, V>
+    public class RefCountedMap<TK, TV>
     {
-        private readonly IDictionary<K, Pair<V, int>> _refMap;
+        private readonly IDictionary<TK, Pair<TV, int>> _refMap;
 
         /// <summary>
         /// Constructor.
         /// </summary>
         public RefCountedMap()
         {
-            _refMap = new Dictionary<K, Pair<V, int>>();
+            _refMap = new Dictionary<TK, Pair<TV, int>>();
         }
 
 
@@ -40,10 +40,10 @@ namespace com.espertech.esper.common.@internal.collection
         /// Gets or sets the item with the specified key.
         /// </summary>
         /// <value></value>
-        public virtual V this[K key] {
+        public virtual TV this[TK key] {
             get {
-                if (!_refMap.TryGetValue(key, out Pair<V, int> refValue)) {
-                    return default(V);
+                if (!_refMap.TryGetValue(key, out Pair<TV, int> refValue)) {
+                    return default(TV);
                 }
 
                 return refValue.First;
@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.collection
                     throw new IllegalStateException("Value value already in collection");
                 }
 
-                Pair<V, int> refValue = new Pair<V, int>(value, 1);
+                Pair<TV, int> refValue = new Pair<TV, int>(value, 1);
                 _refMap[key] = refValue;
 
                 //return val;
@@ -66,11 +66,11 @@ namespace com.espertech.esper.common.@internal.collection
         }
 
         public bool TryGetValue(
-            K key,
-            out V value)
+            TK key,
+            out TV value)
         {
-            if (!_refMap.TryGetValue(key, out Pair<V, int> refValue)) {
-                value = default(V);
+            if (!_refMap.TryGetValue(key, out Pair<TV, int> refValue)) {
+                value = default(TV);
                 return false;
             }
 
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.collection
             return true;
         }
 
-        public bool Contains(K key)
+        public bool Contains(TK key)
         {
             return _refMap.ContainsKey(key);
         }
@@ -90,8 +90,8 @@ namespace com.espertech.esper.common.@internal.collection
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         public void Put(
-            K key,
-            V value)
+            TK key,
+            TV value)
         {
             this[key] = value;
         }
@@ -101,9 +101,9 @@ namespace com.espertech.esper.common.@internal.collection
         /// </summary>
         /// <param name="key">is the key to increase the ref count for
         /// </param>
-        public void Reference(K key)
+        public void Reference(TK key)
         {
-            Pair<V, int> refValue;
+            Pair<TV, int> refValue;
             if (!_refMap.TryGetValue(key, out refValue)) {
                 throw new IllegalStateException("Value value not found in collection");
             }
@@ -119,9 +119,9 @@ namespace com.espertech.esper.common.@internal.collection
         /// </param>
         /// <returns> true to indicate the reference count reached zero, false to indicate more references to the key exist.
         /// </returns>
-        public virtual bool Dereference(K key)
+        public virtual bool Dereference(TK key)
         {
-            Pair<V, int> refValue;
+            Pair<TV, int> refValue;
             if (!_refMap.TryGetValue(key, out refValue)) {
                 throw new IllegalStateException("Value value not found in collection");
             }

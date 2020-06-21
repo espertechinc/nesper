@@ -35,6 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
         public bool IsDistinct { get; set; }
 
+        public EventPropertyValueGetter DistinctKeyGetter { get; set; }
+        
         public TimePeriodCompute AfterTimePeriod { get; set; }
 
         public int? AfterConditionNumberOfEvents { get; set; }

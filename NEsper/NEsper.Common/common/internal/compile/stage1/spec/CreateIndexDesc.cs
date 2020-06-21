@@ -24,8 +24,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="columns">properties to index</param>
         public CreateIndexDesc(
             bool isUnique,
-            String indexName,
-            String windowName,
+            string indexName,
+            string windowName,
             IList<CreateIndexItem> columns)
         {
             IsUnique = isUnique;

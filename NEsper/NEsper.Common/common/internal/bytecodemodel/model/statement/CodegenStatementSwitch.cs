@@ -12,38 +12,45 @@ using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
     public class CodegenStatementSwitch : CodegenStatementWBlockBase
     {
-        private readonly string @ref;
-        private readonly int[] options;
-        private readonly CodegenBlock[] blocks;
-        private readonly bool blocksReturnValues;
+        private readonly CodegenExpression _switchExpression;
+        private readonly CodegenExpression[] _options;
+        private readonly CodegenBlock[] _blocks;
+        private readonly CodegenBlock _defaultBlock;
+        private readonly bool _blocksReturnValues;
+        private readonly bool _withDefaultUnsupported;
 
         public CodegenStatementSwitch(
             CodegenBlock parent,
-            string @ref,
-            int[] options,
-            bool blocksReturnValues)
+            CodegenExpression switchExpression,
+            CodegenExpression[] options,
+            bool blocksReturnValues,
+            bool withDefaultUnsupported)
             : base(parent)
         {
-            this.@ref = @ref;
-            this.options = options;
-            blocks = new CodegenBlock[options.Length];
+            _switchExpression = switchExpression;
+            _options = options;
+            _blocks = new CodegenBlock[options.Length];
             for (int i = 0; i < options.Length; i++) {
-                blocks[i] = new CodegenBlock(this);
+                _blocks[i] = new CodegenBlock(this);
             }
 
-            this.blocksReturnValues = blocksReturnValues;
+            _blocksReturnValues = blocksReturnValues;
+            _withDefaultUnsupported = withDefaultUnsupported;
+            _defaultBlock = new CodegenBlock(this);
         }
 
-        public CodegenBlock[] Blocks {
-            get => blocks;
-        }
+        public CodegenBlock[] Blocks => _blocks;
+
+        public CodegenBlock DefaultBlock => _defaultBlock;
 
         public override void Render(
             StringBuilder builder,
@@ -51,21 +58,19 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             int level,
             CodegenIndent indent)
         {
-            builder
-                .Append("switch(")
-                .Append(@ref)
-                .Append(") {\n");
+            builder.Append("switch(");
+            _switchExpression.Render(builder, isInnerClass, level, indent);
+            builder.Append(") {\n");
 
-            for (int i = 0; i < options.Length; i++) {
+            for (int i = 0; i < _options.Length; i++) {
                 indent.Indent(builder, level + 1);
-                builder
-                    .Append("case ")
-                    .Append(options[i])
-                    .Append(": {\n");
+                builder.Append("case ");
+                _options[i].Render(builder, isInnerClass, level, indent); 
+                builder.Append(": {\n");
 
-                blocks[i].Render(builder, isInnerClass, level + 2, indent);
+                _blocks[i].Render(builder, isInnerClass, level + 2, indent);
 
-                if (!blocksReturnValues) {
+                if (!_blocksReturnValues) {
                     indent.Indent(builder, level + 2);
                     builder.Append("break;\n");
                 }
@@ -74,8 +79,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
                 builder.Append("}\n");
             }
 
-            indent.Indent(builder, level + 1);
-            builder.Append("default: throw new UnsupportedOperationException();\n");
+            builder.Append("default: ");
+            if (_withDefaultUnsupported) {
+                indent.Indent(builder, level + 1);
+                builder.Append("throw new UnsupportedOperationException();\n");
+            }
+            else {
+                _defaultBlock.Render(builder, isInnerClass, level + 2, indent);
+            }
 
             indent.Indent(builder, level);
             builder.Append("}\n");
@@ -83,9 +94,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 
         public override void MergeClasses(ISet<Type> classes)
         {
-            for (int i = 0; i < blocks.Length; i++) {
-                blocks[i].MergeClasses(classes);
-            }
+            _switchExpression.MergeClasses(classes);
+            _blocks.ForEach(b => b.MergeClasses(classes));
+            _options.ForEach(o => o.MergeClasses(classes));
+            _defaultBlock?.MergeClasses(classes);
+        }
+
+        public void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            consumer.Invoke(_switchExpression);
+            _blocks.ForEach(b => b.TraverseExpressions(consumer));
+            _options.ForEach(o => consumer.Invoke(o));
+            _defaultBlock?.TraverseExpressions(consumer);
         }
     }
 } // end of namespace

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.@internal.@event.bean.service;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.core
 {
@@ -38,6 +39,17 @@ namespace com.espertech.esper.common.@internal.@event.core
             BeanEventTypeFactory beanEventTypeFactory,
             EventTypeNameResolver eventTypeNameResolver)
         {
+            // If we are wrapping an underlying type that is itself a wrapper, then this is a special case
+            if (underlyingEventType is WrapperEventType underlyingWrapperType) {
+                // the underlying type becomes the type already wrapped
+                // properties are a superset of the wrapped properties and the additional properties
+                underlyingEventType = underlyingWrapperType.UnderlyingEventType;
+                var propertiesSuperset = new Dictionary<string, object>();
+                propertiesSuperset.PutAll(underlyingWrapperType.UnderlyingMapType.Types);
+                propertiesSuperset.PutAll(propertyTypesMayPrimitive);
+                propertyTypesMayPrimitive = propertiesSuperset;
+            }
+            
             IDictionary<string, object> verified = BaseNestableEventUtil.ResolvePropertyTypes(
                 propertyTypesMayPrimitive,
                 eventTypeNameResolver);

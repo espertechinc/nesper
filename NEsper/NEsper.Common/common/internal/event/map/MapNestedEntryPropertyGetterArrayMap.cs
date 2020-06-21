@@ -38,6 +38,11 @@ namespace com.espertech.esper.common.@internal.@event.map
             return BaseNestableEventUtil.HandleNestedValueArrayWithMap(value, index, getter);
         }
 
+        public override bool HandleNestedValueExists(object value)
+        {
+            return BaseNestableEventUtil.HandleNestedValueArrayWithMapExists(value, index, getter);
+        }
+
         public override object HandleNestedValueFragment(object value)
         {
             return BaseNestableEventUtil.HandleBNNestedValueArrayWithMapFragment(
@@ -54,6 +59,21 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return BaseNestableEventUtil.HandleNestedValueArrayWithMapCode(
+                index,
+                getter,
+                name,
+                codegenMethodScope,
+                codegenClassScope,
+                GetType());
+        }
+
+
+        public CodegenExpression HandleNestedValueExistsCodegen(
+            CodegenExpression name,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return BaseNestableEventUtil.HandleNestedValueArrayWithMapExistsCode(
                 index,
                 getter,
                 name,

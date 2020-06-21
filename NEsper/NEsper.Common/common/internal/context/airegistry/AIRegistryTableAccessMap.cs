@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.compat.collections;
@@ -80,6 +81,16 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             ExprEvaluatorContext context)
         {
             return services.Get(context.AgentInstanceId).EvaluateTypableSingle(eventsPerStream, isNewData, context);
+        }
+
+        public AggregationRow GetAggregationRow(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return services
+                .Get(context.AgentInstanceId)
+                .GetAggregationRow(eventsPerStream, isNewData, context);
         }
 
         public int InstanceCount => services.Count;

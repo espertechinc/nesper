@@ -66,23 +66,21 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         public ExprDotForge DotForge {
             get => this;
         }
-
+        
         public CodegenExpression Codegen(
-            CodegenExpression inner,
+            CodegenExpression inner, 
             Type innerType,
-            CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol,
-            CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope)
         {
-            Type type = EPTypeHelper.GetCodegenReturnType(returnType);
+            var type = EPTypeHelper.GetCodegenReturnType(returnType);
             if (innerType == typeof(EventBean)) {
-                return CodegenLegoCast.CastSafeFromObjectType(
-                    type,
-                    getter.EventBeanGetCodegen(inner, codegenMethodScope, codegenClassScope));
+                return CodegenLegoCast.CastSafeFromObjectType(type, getter.EventBeanGetCodegen(inner, parent, classScope));
             }
 
-            CodegenMethod methodNode = codegenMethodScope
-                .MakeChild(type, typeof(ExprDotForgeProperty), codegenClassScope)
+            CodegenMethod methodNode = parent
+                .MakeChild(type, typeof(ExprDotForgeProperty), classScope)
                 .AddParam(innerType, "target");
 
             methodNode.Block
@@ -90,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 .BlockReturn(
                     CodegenLegoCast.CastSafeFromObjectType(
                         type,
-                        getter.EventBeanGetCodegen(Cast(typeof(EventBean), inner), methodNode, codegenClassScope)))
+                        getter.EventBeanGetCodegen(Cast(typeof(EventBean), inner), methodNode, classScope)))
                 .MethodReturn(ConstantNull());
             return LocalMethod(methodNode, inner);
         }

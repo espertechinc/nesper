@@ -10,7 +10,10 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
+using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.path
@@ -19,14 +22,14 @@ namespace com.espertech.esper.common.@internal.@event.path
     {
         void RegisterMap(
             EventTypeMetadata metadata,
-            LinkedHashMap<string, object> properties,
+            IDictionary<string, object> properties,
             string[] superTypes,
             string startTimestampPropertyName,
             string endTimestampPropertyName);
 
         void RegisterObjectArray(
             EventTypeMetadata metadata,
-            LinkedHashMap<string, object> properties,
+            IDictionary<string, object> properties,
             string[] superTypes,
             string startTimestampPropertyName,
             string endTimestampPropertyName);
@@ -34,7 +37,7 @@ namespace com.espertech.esper.common.@internal.@event.path
         void RegisterWrapper(
             EventTypeMetadata metadata,
             EventType underlying,
-            LinkedHashMap<string, object> properties);
+            IDictionary<string, object> properties);
 
         void RegisterBean(
             EventTypeMetadata metadata,
@@ -49,13 +52,31 @@ namespace com.espertech.esper.common.@internal.@event.path
             string representsFragmentOfProperty,
             string representsOriginalTypeName);
 
+        void RegisterXMLNewType(
+            EventTypeMetadata metadata,
+            ConfigurationCommonEventTypeXMLDOM config);
+
         void RegisterAvro(
             EventTypeMetadata metadata,
-            string schemaJson);
+            string schemaJson,
+            string[] superTypes);
+
+        void RegisterJson(
+            EventTypeMetadata metadata,
+            IDictionary<string, object> properties,
+            string[] superTypes,
+            string startTimestampPropertyName,
+            string endTimestampPropertyName,
+            JsonEventTypeDetail detail);
 
         void RegisterVariant(
             EventTypeMetadata metadata,
             EventType[] variants,
             bool any);
+
+        void RegisterSerde(
+            EventTypeMetadata metadata,
+            DataInputOutputSerde<object> underlyingSerde,
+            Type underlyingClass);
     }
 } // end of namespace

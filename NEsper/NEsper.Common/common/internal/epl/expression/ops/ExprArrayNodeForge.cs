@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public ExprArrayNodeForge(
             ExprArrayNode parent,
             Type arrayReturnType,
-            object[] constantResult)
+            object constantResult)
         {
             _constantResult = constantResult;
             Parent = parent;

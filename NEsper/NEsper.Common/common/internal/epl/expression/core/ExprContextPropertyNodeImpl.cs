@@ -12,7 +12,9 @@ using System.IO;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.context.compile;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
+using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.compat;
@@ -131,8 +133,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
+            writer.Write("context.");
             writer.Write(PropertyName);
         }
 
@@ -150,6 +155,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             var that = (ExprContextPropertyNodeImpl) node;
             return PropertyName.Equals(that.PropertyName);
+        }
+        
+        public ExprEnumerationForgeDesc GetEnumerationForge(
+            StreamTypeService streamTypeService,
+            ContextCompileTimeDescriptor contextDescriptor)
+        {
+            var eventType = (EventTypeSPI) contextDescriptor.ContextPropertyRegistry.ContextEventType;
+            if (eventType == null) {
+                return null;
+            }
+            var fragmentEventType = eventType.GetFragmentType(PropertyName);
+            if (fragmentEventType == null || fragmentEventType.IsIndexed) {
+                return null;
+            }
+            var forge = new ExprContextPropertyNodeFragmentEnumerationForge(
+                PropertyName, fragmentEventType.FragmentType, getter);
+            return new ExprEnumerationForgeDesc(forge, true, -1);
+
         }
     }
 } // end of namespace

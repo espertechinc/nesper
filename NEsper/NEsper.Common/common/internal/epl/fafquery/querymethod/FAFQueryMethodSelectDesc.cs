@@ -10,13 +10,17 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
+using Antlr4.Runtime.Misc;
+
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.select;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.expression.subquery;
 using com.espertech.esper.common.@internal.epl.expression.table;
 using com.espertech.esper.common.@internal.epl.fafquery.processor;
 using com.espertech.esper.common.@internal.epl.historical.common;
@@ -27,6 +31,7 @@ using com.espertech.esper.common.@internal.epl.join.querygraph;
 using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
+using com.espertech.esper.common.@internal.epl.subselect;
 using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.common.@internal.metrics.audit;
 using com.espertech.esper.common.@internal.statement.helper;
@@ -62,6 +67,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 HasTableAccess |= streamSpec is TableQueryStreamSpec;
             }
 
+            HasTableAccess |= StatementLifecycleSvcUtil.IsSubqueryWithTable(
+                statementSpec.SubselectNodes, services.TableCompileTimeResolver);
             IsDistinct = statementSpec.SelectClauseCompiled.IsDistinct;
 
             FAFQueryMethodHelper.ValidateFAFQuery(statementSpec);
@@ -69,6 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             var numStreams = statementSpec.StreamSpecs.Length;
             var typesPerStream = new EventType[numStreams];
             var namesPerStream = new string[numStreams];
+            var eventTypeNames = new string[numStreams];
             Processors = new FireAndForgetProcessorForge[numStreams];
             ConsumerFilters = new ExprNode[numStreams];
 
@@ -96,6 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 
                 namesPerStream[i] = streamName;
                 typesPerStream[i] = Processors[i].EventTypeRspInputEvents;
+                eventTypeNames[i] = typesPerStream[i].Name;
 
                 IList<ExprNode> consumerFilterExprs;
                 if (streamSpec is NamedWindowConsumerStreamSpec) {
@@ -138,6 +147,20 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                     }
                 }
             }
+            
+            // handle subselects
+            // first we create streams for subselects, if there are any
+            var @base = new StatementBaseInfo(compilable, statementSpec, null, statementRawInfo, null);
+            var subqueryNamedWindowConsumers = new List<NamedWindowConsumerStreamSpec>();
+            SubSelectActivationDesc subSelectActivationDesc = SubSelectHelperActivations.CreateSubSelectActivation(
+                Collections.emptyList(), subqueryNamedWindowConsumers, @base, services);
+            IDictionary<ExprSubselectNode, SubSelectActivationPlan> subselectActivation = subSelectActivationDesc.getSubselects();
+            AdditionalForgeables.AddAll(subSelectActivationDesc.getAdditionalForgeables());
+
+            SubSelectHelperForgePlan subSelectForgePlan = SubSelectHelperForgePlanner.PlanSubSelect(
+                @base, subselectActivation, namesPerStream, typesPerStream, eventTypeNames, services);
+            SubselectForges = subSelectForgePlan.Subselects;
+            AdditionalForgeables.AddAll(subSelectForgePlan.getAdditionalForgeables());
 
             // obtain result set processor
             var isIStreamOnly = new bool[namesPerStream.Length];
@@ -217,5 +240,11 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
         public IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> TableAccessForges { get; }
 
         public bool IsDistinct { get; }
+        
+        public MultiKeyClassRef DistinctMultiKey { get; }
+        
+        public IList<StmtClassForgeableFactory> AdditionalForgeables { get; } = new List<StmtClassForgeableFactory>();
+        
+        public IDictionary<ExprSubselectNode, SubSelectFactoryForge> SubselectForges { get; }
     }
 } // end of namespace

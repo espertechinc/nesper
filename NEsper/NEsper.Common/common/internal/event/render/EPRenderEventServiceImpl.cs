@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.render;
+using com.espertech.esper.common.@internal.@event.json.core;
 
 namespace com.espertech.esper.common.@internal.@event.render
 {
@@ -26,6 +27,12 @@ namespace com.espertech.esper.common.@internal.@event.render
             EventType eventType,
             JSONRenderingOptions options)
         {
+            if (eventType is JsonEventType) {
+                return JSONEventRendererJsonEventType.INSTANCE;
+            }
+            if (options == null) {
+                options = new JSONRenderingOptions();
+            }
             return new JSONRendererImpl(eventType, options);
         }
 
@@ -36,7 +43,7 @@ namespace com.espertech.esper.common.@internal.@event.render
         /// <returns>JSON format renderer</returns>
         public JSONEventRenderer GetJSONRenderer(EventType eventType)
         {
-            return new JSONRendererImpl(eventType, new JSONRenderingOptions());
+            return GetJSONRenderer(eventType, null);
         }
 
         /// <summary>

@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
                         return factory.method.Invoke(target, new object[] {lookupValues});
 
                     case MethodTargetStrategyStaticMethodInvokeType.MULTIKEY:
-                        return factory.method.Invoke(target, ((HashableMultiKey) lookupValues).Keys);
+                        return factory.method.Invoke(target, (object[]) lookupValues);
 
                     default:
                         throw new IllegalStateException("Unrecognized value for " + factory.invokeType);

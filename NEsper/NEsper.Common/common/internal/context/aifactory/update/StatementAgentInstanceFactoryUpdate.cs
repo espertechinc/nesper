@@ -52,13 +52,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
             AgentInstanceContext agentInstanceContext,
             bool isRecoveringResilient)
         {
-            IList<AgentInstanceStopCallback> stopCallbacks = new List<AgentInstanceStopCallback>();
+            IList<AgentInstanceMgmtCallback> stopCallbacks = new List<AgentInstanceMgmtCallback>();
             stopCallbacks.Add(
-                new ProxyAgentInstanceStopCallback {
-                    ProcStop = services => {
-                        agentInstanceContext.InternalEventRouter.RemovePreprocessing(desc.EventType, desc);
-                    }
-                });
+                new ProxyAgentInstanceMgmtCallback(
+                    services => agentInstanceContext.InternalEventRouter.RemovePreprocessing(desc.EventType, desc),
+                    services => { }));
 
             var subselectActivations = SubSelectHelperStart.StartSubselects(
                 subselects,
@@ -70,7 +68,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
             agentInstanceContext.InternalEventRouter.AddPreprocessing(
                 desc,
                 viewable,
-                agentInstanceContext.AgentInstanceLock,
+                agentInstanceContext.StatementContext,
                 hasSubselect);
 
             var stopCallback = AgentInstanceUtil.FinalizeSafeStopCallbacks(stopCallbacks);

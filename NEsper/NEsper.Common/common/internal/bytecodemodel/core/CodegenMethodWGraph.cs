@@ -31,7 +31,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             CodegenBlock block,
             bool isPublic,
             bool isOverride,
-            bool isStatic)
+            bool isStatic,
+            CodegenMethod originator)
         {
             Name = name;
             Footprint = footprint;
@@ -39,6 +40,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             IsPublic = isPublic;
             IsOverride = isOverride;
             IsStatic = isStatic;
+            Originator = originator;
         }
 
         public string Name { get; }
@@ -52,6 +54,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         public bool IsPublic { get; set; }
 
         public bool IsStatic { get; set; }
+        
+        public CodegenMethod Originator { get; set;  }
 
         public void MergeClasses(ISet<Type> classes)
         {

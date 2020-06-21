@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     [Serializable]
     public class GraphOperatorDetail
     {
-        public GraphOperatorDetail(IDictionary<String, Object> configs)
+        public GraphOperatorDetail(IDictionary<string, object> configs)
         {
             Configs = configs;
         }

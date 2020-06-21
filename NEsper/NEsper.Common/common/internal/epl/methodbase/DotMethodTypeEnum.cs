@@ -13,7 +13,8 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
     public enum DotMethodTypeEnum
     {
         ENUM,
-        DATETIME
+        DATETIME,
+        AGGMETHOD
     };
 
     public static class DotMethodTypeEnumExtensions
@@ -27,6 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
                 case DotMethodTypeEnum.DATETIME:
                     return "date-time";
 
+                case DotMethodTypeEnum.AGGMETHOD:
+                    return "aggregation";
+                
                 default:
                     throw new ArgumentException("invalid value", "value");
             }

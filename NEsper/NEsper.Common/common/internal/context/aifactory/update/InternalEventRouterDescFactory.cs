@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,19 +7,22 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
+using com.espertech.esper.common.@internal.epl.expression.assign;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.update
 {
-    /// <summary>
-    ///     Routing implementation that allows to pre-process events.
-    /// </summary>
-    public class InternalEventRouterDescFactory
+	/// <summary>
+	///     Routing implementation that allows to pre-process events.
+	/// </summary>
+	public class InternalEventRouterDescFactory
     {
         public static InternalEventRouterDescForge GetValidatePreprocessing(
             EventType eventType,
@@ -27,50 +30,112 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
             Attribute[] annotations)
         {
             if (!(eventType is EventTypeSPI)) {
-                throw new ExprValidationException(
-                    "Update statements require the event type to implement the " + typeof(EventTypeSPI) + " interface");
+                throw new ExprValidationException("Update statements require the event type to implement the " + typeof(EventTypeSPI) + " interface");
             }
 
             var eventTypeSPI = (EventTypeSPI) eventType;
 
-            var size = desc.Assignments.Count;
-            var wideners = new TypeWidenerSPI[size];
-            var properties = new string[size];
-            var expressions = new ExprNode[size];
-            for (var i = 0; i < size; i++) {
+            var wideners = new List<TypeWidenerSPI>();
+            var properties = new List<string>();
+            var propertiesTouched = new List<string>();
+            var expressions = new List<ExprNode>();
+            var specialWriters = new List<InternalEventRouterWriterForge>();
+
+            for (var i = 0; i < desc.Assignments.Count; i++) {
                 var onSet = desc.Assignments[i];
-                var assignmentPair = ExprNodeUtilityValidate.CheckGetAssignmentToProp(onSet.Expression);
-                if (assignmentPair == null) {
-                    throw new ExprValidationException(
-                        "Missing property assignment expression in assignment number " + i);
-                }
-
-                properties[i] = assignmentPair.First;
-                expressions[i] = assignmentPair.Second;
-                var writableProperty = eventTypeSPI.GetWritableProperty(assignmentPair.First);
-
-                if (writableProperty == null) {
-                    throw new ExprValidationException(
-                        "Property '" + assignmentPair.First + "' is not available for write access");
-                }
+                var assignmentDesc = onSet.Validated;
 
                 try {
-                    wideners[i] = TypeWidenerFactory.GetCheckPropertyAssignType(
-                        ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(assignmentPair.Second),
-                        assignmentPair.Second.Forge.EvaluationType,
-                        writableProperty.PropertyType,
-                        assignmentPair.First,
-                        false,
-                        null,
-                        null);
+                    if (assignmentDesc is ExprAssignmentStraight assignment) {
+                        var lhs = assignment.Lhs;
+
+                        if (lhs is ExprAssignmentLHSIdent ident) {
+                            var propertyName = ident.Ident;
+                            var writableProperty = eventTypeSPI.GetWritableProperty(propertyName);
+                            if (writableProperty == null) {
+                                throw new ExprValidationException("Property '" + propertyName + "' is not available for write access");
+                            }
+
+                            TypeWidenerSPI widener;
+                            try {
+                                widener = TypeWidenerFactory.GetCheckPropertyAssignType(
+                                    ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(assignment.Rhs),
+                                    assignment.Rhs.Forge.EvaluationType,
+                                    writableProperty.PropertyType,
+                                    propertyName,
+                                    false,
+                                    null,
+                                    null);
+                            }
+                            catch (TypeWidenerException ex) {
+                                throw new ExprValidationException(ex.Message, ex);
+                            }
+
+                            properties.Add(propertyName);
+                            propertiesTouched.Add(propertyName);
+                            expressions.Add(assignment.Rhs);
+                            wideners.Add(widener);
+                        }
+                        else if (lhs is ExprAssignmentLHSIdentWSubprop subprop) {
+                            throw new ExprValidationException("Property '" + subprop.SubpropertyName + "' is not available for write access");
+                        }
+                        else if (lhs is ExprAssignmentLHSArrayElement arrayElement) {
+                            var propertyName = lhs.Ident;
+                            var writableProperty = eventTypeSPI.GetWritableProperty(propertyName);
+                            if (writableProperty == null) {
+                                throw new ExprValidationException("Property '" + propertyName + "' is not available for write access");
+                            }
+
+                            if (!writableProperty.PropertyType.IsArray) {
+                                throw new ExprValidationException("Property '" + propertyName + "' type is not array");
+                            }
+
+                            TypeWidenerSPI widener;
+                            try {
+                                widener = TypeWidenerFactory.GetCheckPropertyAssignType(
+                                    ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(assignment.Rhs),
+                                    assignment.Rhs.Forge.EvaluationType,
+                                    writableProperty.PropertyType.GetElementType(),
+                                    propertyName,
+                                    false,
+                                    null,
+                                    null);
+                            }
+                            catch (TypeWidenerException ex) {
+                                throw new ExprValidationException(ex.Message, ex);
+                            }
+
+                            var special = new InternalEventRouterWriterArrayElementForge(
+                                arrayElement.IndexExpression,
+                                assignment.Rhs,
+                                widener,
+                                propertyName);
+                            specialWriters.Add(special);
+                        }
+                        else {
+                            throw new IllegalStateException("Unrecognized left hande side assignment " + lhs);
+                        }
+                    }
+                    else if (assignmentDesc is ExprAssignmentCurly curly) {
+                        var special = new InternalEventRouterWriterCurlyForge(curly.Expression);
+                        specialWriters.Add(special);
+                    }
+                    else {
+                        throw new IllegalStateException("Unrecognized assignment " + assignmentDesc);
+                    }
                 }
-                catch (TypeWidenerException ex) {
-                    throw new ExprValidationException(ex.Message, ex);
+                catch (ExprValidationException ex) {
+                    throw new ExprValidationException(
+                        "Failed to validate assignment expression '" +
+                        ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(assignmentDesc.OriginalExpression) +
+                        "': " +
+                        ex.Message,
+                        ex);
                 }
             }
 
             // check copy-able
-            var copyMethod = eventTypeSPI.GetCopyMethodForge(properties);
+            var copyMethod = eventTypeSPI.GetCopyMethodForge(propertiesTouched.ToArray());
             if (copyMethod == null) {
                 throw new ExprValidationException(
                     "The update-clause requires the underlying event representation to support copy (via Serializable by default)");
@@ -78,12 +143,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
 
             return new InternalEventRouterDescForge(
                 copyMethod,
-                wideners,
+                wideners.ToArray(),
                 eventType,
                 annotations,
                 desc.OptionalWhereClause,
-                properties,
-                expressions);
+                properties.ToArray(),
+                expressions.ToArray(),
+                specialWriters.ToArray());
         }
     }
 } // end of namespace

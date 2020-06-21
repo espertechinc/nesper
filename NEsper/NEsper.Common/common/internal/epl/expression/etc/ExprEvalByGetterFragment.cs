@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
     public class ExprEvalByGetterFragment : ExprForge,
         ExprNodeRenderable
     {
-        private readonly FragmentEventType fragmentType;
+        private readonly FragmentEventType _fragmentType;
 
         public ExprEvalByGetterFragment(
             int streamNum,
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             StreamNum = streamNum;
             Getter = getter;
             EvaluationType = returnType;
-            this.fragmentType = fragmentType;
+            this._fragmentType = fragmentType;
         }
 
         public EventPropertyGetterSPI Getter { get; }
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var result = fragmentType.IsIndexed ? typeof(EventBean[]) : typeof(EventBean);
+            var result = _fragmentType.IsIndexed ? typeof(EventBean[]) : typeof(EventBean);
             var methodNode = codegenMethodScope.MakeChild(result, typeof(ExprEvalByGetterFragment), codegenClassScope);
 
             var refEPS = exprSymbol.GetAddEPS(methodNode);
@@ -68,9 +68,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public void ToEPL(
-            TextWriter writer,
-            ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(GetType().Name);
         }

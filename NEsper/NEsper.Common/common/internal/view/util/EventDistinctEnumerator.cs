@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.view.util
     {
         public static IEnumerator<EventBean> For(
             IEnumerator<EventBean> sourceIterator,
-            EventType eventType)
+            EventPropertyValueGetter distinctKeyGetter)
         {
             if (sourceIterator != null && sourceIterator.MoveNext()) {
                 // there is at least one event...
@@ -40,27 +40,11 @@ namespace com.espertech.esper.common.@internal.view.util
                 }
 
                 // Determine the reader that we need to use for this use case
-                var eventBeanReader = GetEventBeanReader(eventType);
-                var unique = EventBeanUtility.GetDistinctByProp(events, eventBeanReader);
+                var unique = EventBeanUtility.GetDistinctByProp(events, distinctKeyGetter);
                 return unique.GetEnumerator();
             }
 
             return EnumerationHelper.Empty<EventBean>();
-        }
-
-        private static EventBeanReader GetEventBeanReader(EventType eventType)
-        {
-            EventBeanReader eventBeanReader = null;
-
-            if (eventType is EventTypeSPI) {
-                eventBeanReader = ((EventTypeSPI) eventType).Reader;
-            }
-
-            if (eventBeanReader == null) {
-                eventBeanReader = new EventBeanReaderDefaultImpl(eventType);
-            }
-
-            return eventBeanReader;
         }
     }
 } // end of namespace

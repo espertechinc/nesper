@@ -20,11 +20,11 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         public static IDictionary<int, SubSelectFactoryResult> StartSubselects(
             IDictionary<int, SubSelectFactory> subselects,
             AgentInstanceContext agentInstanceContext,
-            IList<AgentInstanceStopCallback> stopCallbacks,
+            IList<AgentInstanceMgmtCallback> stopCallbacks,
             bool isRecoveringResilient)
         {
             if (subselects == null || subselects.IsEmpty()) {
-                return new EmptyDictionary<int, SubSelectFactoryResult>();
+                return EmptyDictionary<int, SubSelectFactoryResult>.Instance;
             }
 
             IDictionary<int, SubSelectFactoryResult>

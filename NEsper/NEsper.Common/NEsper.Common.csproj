@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net462;netstandard2.1</TargetFrameworks>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -29,14 +30,39 @@
   <ItemGroup>
     <ProjectReference Include="..\NEsper.Compat\NEsper.Compat.csproj" />
     <ProjectReference Include="..\NEsper.Grammar\NEsper.Grammar.csproj" />
+    <ProjectReference Include="NEsper.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(NetFramework)'!='true'">
     <Compile Remove="common\internal\db\drivers\DbDriverODBC.cs" />
     <Compile Remove="common\internal\db\drivers\DbDriverSqlServer.cs" />
+    <Compile Remove="common\internal\compile\stage3\StmtClassForgable.cs" />
+    <Compile Remove="common\internal\compile\stage3\StmtClassForgableAIFactoryProviderBase.cs" />
+    <Compile Remove="common\internal\compile\stage3\StmtClassForgableRSPFactoryProvider.cs" />
+    <Compile Remove="common\internal\compile\stage3\StmtClassForgableStmtFields.cs" />
+    <Compile Remove="common\internal\compile\stage3\StmtClassForgableStmtProvider.cs" />
+    <Compile Remove="common\internal\compile\stage3\StmtClassForgableType.cs" />
+    <Compile Remove="common\internal\compile\stage2\FilterSpecCompilerPlanner.cs" />
+    <Compile Remove="common\internal\compile\stage2\FilterSpecCompilerMakeParamUtil.cs" />
+    <Compile Remove="common\internal\epl\expression\table\ExprTableIdentNodeSubpropAccessor.cs" />
+    <Compile Remove="common\internal\epl\expression\table\ExprTableAccessNodeSubpropAccessor.cs" />
+    <Compile Remove="common\internal\epl\expression\core\ExprChainedSpec.cs" />
+    <Compile Remove="common\client\json\minimaljson\**" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Microsoft.CodeAnalysis.CSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="common\internal\epl\expression\chain" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="common\client\json\minimaljson\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="common\client\json\minimaljson\**" />
   </ItemGroup>
 </Project>

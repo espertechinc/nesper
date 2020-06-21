@@ -20,15 +20,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprLikeNodeForgeConstEval : ExprEvaluator
     {
-        private readonly ExprLikeNodeForgeConst forge;
-        private readonly ExprEvaluator lhsEval;
+        private readonly ExprLikeNodeForgeConst _forge;
+        private readonly ExprEvaluator _lhsEval;
 
         internal ExprLikeNodeForgeConstEval(
             ExprLikeNodeForgeConst forge,
             ExprEvaluator lhsEval)
         {
-            this.forge = forge;
-            this.lhsEval = lhsEval;
+            this._forge = forge;
+            this._lhsEval = lhsEval;
         }
 
         public object Evaluate(
@@ -36,17 +36,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var value = lhsEval.Evaluate(eventsPerStream, isNewData, context);
+            var value = _lhsEval.Evaluate(eventsPerStream, isNewData, context);
 
             if (value == null) {
                 return null;
             }
 
-            if (forge.IsNumericValue) {
+            if (_forge.IsNumericValue) {
                 value = value.ToString();
             }
 
-            return forge.ForgeRenderable.IsNot ^ forge.LikeUtil.CompareTo((string) value);
+            return _forge.ForgeRenderable.IsNot ^ _forge.LikeUtil.CompareTo((string) value);
         }
 
         public static CodegenMethod Codegen(

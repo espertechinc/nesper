@@ -6,42 +6,35 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+using com.espertech.esper.common.@internal.compile.stage3;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 {
     public class CreateWindowCompileResult
     {
-        private readonly FilterSpecCompiled filterSpecCompiled;
-        private readonly SelectClauseSpecRaw selectClauseSpecRaw;
-        private readonly EventType asEventType;
-
         public CreateWindowCompileResult(
             FilterSpecCompiled filterSpecCompiled,
             SelectClauseSpecRaw selectClauseSpecRaw,
-            EventType asEventType)
+            EventType asEventType,
+            IList<StmtClassForgeableFactory> additionalForgeables)
         {
-            this.filterSpecCompiled = filterSpecCompiled;
-            this.selectClauseSpecRaw = selectClauseSpecRaw;
-            this.asEventType = asEventType;
+            FilterSpecCompiled = filterSpecCompiled;
+            SelectClauseSpecRaw = selectClauseSpecRaw;
+            AsEventType = asEventType;
+            AdditionalForgeables = additionalForgeables;
         }
 
-        public FilterSpecCompiled FilterSpecCompiled {
-            get => filterSpecCompiled;
-        }
+        public FilterSpecCompiled FilterSpecCompiled { get; }
 
-        public SelectClauseSpecRaw SelectClauseSpecRaw {
-            get => selectClauseSpecRaw;
-        }
+        public SelectClauseSpecRaw SelectClauseSpecRaw { get; }
 
-        public EventType AsEventType {
-            get => asEventType;
-        }
+        public EventType AsEventType { get; }
+        
+        public IList<StmtClassForgeableFactory> AdditionalForgeables { get; }
     }
 } // end of namespace

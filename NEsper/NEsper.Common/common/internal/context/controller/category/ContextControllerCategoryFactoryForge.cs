@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -37,7 +39,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
             new ContextControllerCategoryValidation(detail.FilterSpecCompiled.FilterForEventType);
 
         public override void ValidateGetContextProps(
-            LinkedHashMap<string, object> props,
+            IDictionary<string, object> props,
             string contextName,
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
@@ -64,8 +66,16 @@ namespace com.espertech.esper.common.@internal.context.controller.category
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Get(EPStatementInitServicesConstants.CONTEXTSERVICEFACTORY)
                         .Add("CategoryFactory"))
-                .SetProperty(Ref("factory"), "CategorySpec", detail.MakeCodegen(method, symbols, classScope))
+                .SetProperty(
+                    Ref("factory"),
+                    "ContextName",
+                    Constant(Context.ContextName))
+                .SetProperty(
+                    Ref("factory"),
+                    "CategorySpec",
+                    detail.MakeCodegen(method, symbols, classScope))
                 .MethodReturn(Ref("factory"));
+            
             return method;
         }
     }

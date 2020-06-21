@@ -18,6 +18,12 @@ namespace com.espertech.esper.common.@internal.type
     [Serializable]
     public enum ScheduleUnit
     {
+        /// <summary>Microsecond</summary>
+        MICROSECONDS,
+        
+        /// <summary>Millisecond</summary>
+        MILLISECONDS,
+        
         /// <summary> Second.</summary>
         SECONDS,
 
@@ -45,6 +51,10 @@ namespace com.espertech.esper.common.@internal.type
         public static int Min(this ScheduleUnit value)
         {
             switch (value) {
+                case ScheduleUnit.MICROSECONDS:
+                    return 0;
+                case ScheduleUnit.MILLISECONDS:
+                    return 0;
                 case ScheduleUnit.SECONDS:
                     return 0;
                 case ScheduleUnit.MINUTES:
@@ -69,6 +79,10 @@ namespace com.espertech.esper.common.@internal.type
         {
             switch (value)
             {
+                case ScheduleUnit.MICROSECONDS:
+                    return 999;
+                case ScheduleUnit.MILLISECONDS:
+                    return 999;
                 case ScheduleUnit.SECONDS:
                     return 59;
                 case ScheduleUnit.MINUTES:

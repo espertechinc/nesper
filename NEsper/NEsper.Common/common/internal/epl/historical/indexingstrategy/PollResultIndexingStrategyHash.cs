@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.index.hash;
@@ -45,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
 
         public void Init()
         {
-            factory = new PropertyHashedEventTableFactory(StreamNum, PropertyNames, false, null, ValueGetter);
+            factory = new PropertyHashedEventTableFactory(StreamNum, PropertyNames, false, null, ValueGetter, null);
         }
     }
 } // end of namespace

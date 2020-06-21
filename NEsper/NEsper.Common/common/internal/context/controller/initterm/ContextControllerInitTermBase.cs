@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                 this,
                 this,
                 false);
-            endCondition.Activate(optionalTriggeringEvent, this);
+            endCondition.Activate(optionalTriggeringEvent, this, optionalTriggeringPattern);
 
             var partitionKey = ContextControllerInitTermUtil.BuildPartitionKey(
                 optionalTriggeringEvent,
@@ -113,6 +113,37 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             initTermSvc.EndCreate(endConditionPath, subpathIdOrCPId, endCondition, partitionKey);
 
             return result.AgentInstances;
+        }
+
+        public void Transfer(
+            IntSeqKey path,
+            bool transferChildContexts,
+            AgentInstanceTransferServices xfer)
+        {
+            ContextControllerCondition start = initTermSvc.MgmtGetStartCondition(path);
+            if (start != null) {
+                start.Transfer(xfer);
+            }
+
+            initTermSvc.EndVisitConditions(
+                path,
+                (
+                    condition,
+                    subPathId) => {
+                    if (condition != null) {
+                        condition.transfer(xfer);
+                    }
+                });
+
+            if (transferChildContexts) {
+                VisitPartitions(
+                    path,
+                    (
+                        partitionKey,
+                        subpathOrCPIds) => {
+                        realization.TransferRecursive(path, subpathOrCPIds, this, xfer);
+                    });
+            }
         }
     }
 } // end of namespace

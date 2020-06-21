@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.resultset.@select.typable;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
@@ -22,17 +23,17 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.expression.etc
 {
-    public class ExprEvalEnumerationAtBeanColl : ExprForge
+    public class ExprEvalEnumerationAtBeanColl : ExprForge, SelectExprProcessorTypableForge
     {
-        internal readonly ExprEnumerationForge enumerationForge;
-        private readonly EventType eventTypeColl;
+        private readonly ExprEnumerationForge _enumerationForge;
+        private readonly EventType _eventTypeColl;
 
         public ExprEvalEnumerationAtBeanColl(
             ExprEnumerationForge enumerationForge,
             EventType eventTypeColl)
         {
-            this.enumerationForge = enumerationForge;
-            this.eventTypeColl = eventTypeColl;
+            this._enumerationForge = enumerationForge;
+            this._eventTypeColl = eventTypeColl;
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -52,8 +53,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             methodNode.Block
                 .DeclareVar<FlexCollection>(
                     "result",
-                    FlexWrap(enumerationForge.EvaluateGetROCollectionEventsCodegen(methodNode, exprSymbol, codegenClassScope)))
-                .IfRefNullReturnNull(Ref("result"))
+                    FlexWrap(_enumerationForge.EvaluateGetROCollectionEventsCodegen(methodNode, exprSymbol, codegenClassScope)))
+                .IfNullReturnNull(Ref("result"))
                 .MethodReturn(ExprDotMethod(ExprDotName(Ref("result"), "EventBeanCollection"), "ToArray"));
             return LocalMethod(methodNode);
         }
@@ -63,11 +64,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         }
 
         public Type EvaluationType {
-            get => TypeHelper.GetArrayType(eventTypeColl.UnderlyingType);
+            get => typeof(EventBean[]);
+        }
+
+        public Type UnderlyingEvaluationType {
+            get => TypeHelper.GetArrayType(_eventTypeColl.UnderlyingType);
         }
 
         public ExprNodeRenderable ExprForgeRenderable {
-            get => enumerationForge.EnumForgeRenderable;
+            get => _enumerationForge.EnumForgeRenderable;
         }
     }
 } // end of namespace

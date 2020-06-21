@@ -28,8 +28,9 @@ namespace com.espertech.esper.common.@internal.context.controller.core
             int nestingLevel,
             object partitionKey,
             ContextControllerStatementDesc optionalStatementDesc,
+            IDictionary<int, ContextControllerStatementDesc> statements,
             AgentInstanceContext agentInstanceContextStatement);
-
+        
         public abstract void PopulateContextProperties(
             IDictionary<string, object> props,
             object allPartitionKey);

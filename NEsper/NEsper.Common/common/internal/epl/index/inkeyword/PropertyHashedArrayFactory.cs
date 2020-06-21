@@ -19,12 +19,12 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
 {
     public class PropertyHashedArrayFactory : EventTableFactory
     {
-        protected internal readonly PropertyHashedEventTableFactory[] factories;
-        protected internal readonly string optionalIndexName;
-        protected internal readonly EventPropertyValueGetter[] propertyGetters;
-        protected internal readonly string[] propertyNames;
-        protected internal readonly int streamNum;
-        protected internal readonly bool unique;
+        private readonly PropertyHashedEventTableFactory[] factories;
+        private readonly string optionalIndexName;
+        private readonly EventPropertyValueGetter[] propertyGetters;
+        private readonly string[] propertyNames;
+        private readonly int streamNum;
+        private readonly bool unique;
 
         public PropertyHashedArrayFactory(
             int streamNum,
@@ -45,7 +45,8 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
                     new[] {propertyNames[i]},
                     unique,
                     null,
-                    propertyGetters[i]);
+                    propertyGetters[i],
+                    null);
             }
         }
 

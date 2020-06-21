@@ -279,7 +279,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(EventBean), typeof(AggregatorAccessSortedMinMaxByEver), classScope);
-            method.Block.MethodReturn(RefCol("currentMinMaxBean", column));
+            method.Block.MethodReturn(MemberCol("currentMinMaxBean", column));
             return LocalMethod(method);
         }
     }

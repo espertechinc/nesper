@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde;
@@ -22,13 +23,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             DataInputOutputSerdeWCollation<AggregationRow> rowSerde,
             Type[] groupKeyTypes,
             ExprEvaluator groupKeyEval,
-            bool isDefaultLevel)
+            bool isDefaultLevel,
+            DataInputOutputSerde<object> keySerde)
         {
             RowFactory = rowFactory;
             RowSerde = rowSerde;
             GroupKeyTypes = groupKeyTypes;
             GroupKeyEval = groupKeyEval;
             IsDefaultLevel = isDefaultLevel;
+            KeySerde = keySerde;
         }
 
         public AggregationRowFactory RowFactory { get; }
@@ -40,5 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
         public ExprEvaluator GroupKeyEval { get; }
 
         public bool IsDefaultLevel { get; }
+        
+        public DataInputOutputSerde<object> KeySerde { get; }
     }
 } // end of namespace

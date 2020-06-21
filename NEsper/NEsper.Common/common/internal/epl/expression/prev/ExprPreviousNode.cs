@@ -596,19 +596,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             return method;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(PreviousType.ToString().ToLowerInvariant());
             writer.Write("(");
             if (PreviousType == ExprPreviousNodePreviousType.PREVCOUNT ||
                 PreviousType == ExprPreviousNodePreviousType.PREVWINDOW) {
-                ChildNodes[1].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+                ChildNodes[1].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
             }
             else {
-                ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+                ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
                 if (ChildNodes.Length > 1) {
                     writer.Write(",");
-                    ChildNodes[1].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+                    ChildNodes[1].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
                 }
             }
 

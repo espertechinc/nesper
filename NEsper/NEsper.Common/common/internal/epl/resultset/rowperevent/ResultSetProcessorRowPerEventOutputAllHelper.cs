@@ -25,8 +25,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             bool isGenerateSynthetic);
 
         void ProcessJoin(
-            ISet<MultiKey<EventBean>> newEvents,
-            ISet<MultiKey<EventBean>> oldEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents,
             bool isGenerateSynthetic);
 
         UniformPair<EventBean[]> Output();

@@ -21,37 +21,27 @@ namespace com.espertech.esper.common.@internal.epl.output.view
     /// </summary>
     public class OutputProcessViewDirectDistinctOrAfterFactory : OutputProcessViewDirectFactory
     {
-        internal readonly int? afterConditionNumberOfEvents;
-
-        internal readonly TimePeriodCompute afterTimePeriod;
-
         public OutputProcessViewDirectDistinctOrAfterFactory(
             OutputStrategyPostProcessFactory postProcessFactory,
             bool distinct,
+            EventPropertyValueGetter distinctKeyGetter,
             TimePeriodCompute afterTimePeriod,
             int? afterConditionNumberOfEvents,
             EventType resultEventType)
             : base(postProcessFactory)
         {
             IsDistinct = distinct;
-            this.afterTimePeriod = afterTimePeriod;
-            this.afterConditionNumberOfEvents = afterConditionNumberOfEvents;
-
-            if (IsDistinct) {
-                if (resultEventType is EventTypeSPI) {
-                    var eventTypeSPI = (EventTypeSPI) resultEventType;
-                    EventBeanReader = eventTypeSPI.Reader;
-                }
-
-                if (EventBeanReader == null) {
-                    EventBeanReader = new EventBeanReaderDefaultImpl(resultEventType);
-                }
-            }
+            DistinctKeyGetter = distinctKeyGetter;
+            this.AfterTimePeriod = afterTimePeriod;
+            this.AfterConditionNumberOfEvents = afterConditionNumberOfEvents;
         }
-
+        public EventPropertyValueGetter DistinctKeyGetter { get; set; }
+        
         public bool IsDistinct { get; }
 
-        public EventBeanReader EventBeanReader { get; }
+        public int? AfterConditionNumberOfEvents { get; }
+
+        public TimePeriodCompute AfterTimePeriod { get; }
 
         public override OutputProcessView MakeView(
             ResultSetProcessor resultSetProcessor,
@@ -59,13 +49,13 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         {
             var isAfterConditionSatisfied = true;
             long? afterConditionTime = null;
-            if (afterConditionNumberOfEvents != null) {
+            if (AfterConditionNumberOfEvents != null) {
                 isAfterConditionSatisfied = false;
             }
-            else if (afterTimePeriod != null) {
+            else if (AfterTimePeriod != null) {
                 isAfterConditionSatisfied = false;
                 var time = agentInstanceContext.TimeProvider.Time;
-                var delta = afterTimePeriod.DeltaAdd(time, null, true, agentInstanceContext);
+                var delta = AfterTimePeriod.DeltaAdd(time, null, true, agentInstanceContext);
                 afterConditionTime = time + delta;
             }
 
@@ -74,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                     agentInstanceContext,
                     resultSetProcessor,
                     afterConditionTime,
-                    afterConditionNumberOfEvents,
+                    AfterConditionNumberOfEvents,
                     isAfterConditionSatisfied,
                     this);
             }
@@ -84,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 agentInstanceContext,
                 resultSetProcessor,
                 afterConditionTime,
-                afterConditionNumberOfEvents,
+                AfterConditionNumberOfEvents,
                 isAfterConditionSatisfied,
                 this,
                 postProcess);

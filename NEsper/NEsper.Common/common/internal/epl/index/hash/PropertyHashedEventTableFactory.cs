@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.compat.collections;
@@ -22,19 +23,22 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
         internal readonly string[] PropertyNames;
         internal readonly int StreamNum;
         internal readonly bool Unique;
+        internal readonly MultiKeyFromObjectArray MultiKeyTransform;
 
         public PropertyHashedEventTableFactory(
             int streamNum,
             string[] propertyNames,
             bool unique,
             string optionalIndexName,
-            EventPropertyValueGetter propertyGetter)
+            EventPropertyValueGetter propertyGetter,
+            MultiKeyFromObjectArray multiKeyTransform)
         {
             StreamNum = streamNum;
             PropertyNames = propertyNames;
             Unique = unique;
             OptionalIndexName = optionalIndexName;
             PropertyGetter = propertyGetter;
+            MultiKeyTransform = multiKeyTransform;
 
             if (propertyGetter == null) {
                 throw new ArgumentException("Property-getter is null");

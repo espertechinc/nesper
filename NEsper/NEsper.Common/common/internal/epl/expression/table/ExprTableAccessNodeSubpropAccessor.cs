@@ -138,11 +138,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             }
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
-            ToPrecedenceFreeEPLInternal(writer, SubpropName);
+            ToPrecedenceFreeEPLInternal(writer, SubpropName, flags);
             writer.Write(".");
-            aggregateAccessMultiValueNode.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+            aggregateAccessMultiValueNode.ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
         }
 
         protected override bool EqualsNodeInternal(ExprTableAccessNode other)

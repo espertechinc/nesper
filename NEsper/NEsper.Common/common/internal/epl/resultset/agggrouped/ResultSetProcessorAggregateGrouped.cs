@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             bool isNewData);
 
         object[] GenerateGroupKeyArrayJoin(
-            ISet<MultiKey<EventBean>> newData,
+            ISet<MultiKeyArrayOfKeys<EventBean>> newData,
             bool isNewData);
 
         object[] GenerateGroupKeyArrayView(
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             EventBean[] eventsPerStream);
 
         void GenerateOutputBatchedJoinUnkeyed(
-            ISet<MultiKey<EventBean>> outputEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> outputEvents,
             object[] groupByKeys,
             bool isNewData,
             bool isSynthesize,
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             EventBean[] eventsPerStream);
 
         void GenerateOutputBatchedJoinPerKey(
-            ISet<MultiKey<EventBean>> outputEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> outputEvents,
             object[] groupByKeys,
             bool isNewData,
             bool isSynthesize,

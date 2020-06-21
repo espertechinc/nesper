@@ -17,17 +17,17 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
     {
         public OnTriggerPlan(
             StmtClassForgableAIFactoryProviderBase factory,
-            IList<StmtClassForgable> forgables,
+            IList<StmtClassForgable> forgeables,
             SelectSubscriberDescriptor subscriberDescriptor)
         {
             Factory = factory;
-            Forgables = forgables;
+            Forgeables = forgeables;
             SubscriberDescriptor = subscriberDescriptor;
         }
 
         public StmtClassForgableAIFactoryProviderBase Factory { get; }
 
-        public IList<StmtClassForgable> Forgables { get; }
+        public IList<StmtClassForgable> Forgeables { get; }
 
         public SelectSubscriberDescriptor SubscriberDescriptor { get; }
     }

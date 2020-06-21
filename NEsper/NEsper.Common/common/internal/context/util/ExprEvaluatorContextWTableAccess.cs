@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.metrics.audit;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.schedule;
+using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading.locks;
@@ -36,64 +37,36 @@ namespace com.espertech.esper.common.@internal.context.util
             this.tableExprEvaluatorContext = tableExprEvaluatorContext;
         }
 
-        public string StatementName {
-            get => context.StatementName;
-        }
+        public string StatementName => context.StatementName;
 
-        public string RuntimeURI {
-            get => context.RuntimeURI;
-        }
+        public string RuntimeURI => context.RuntimeURI;
 
-        public int StatementId {
-            get => context.StatementId;
-        }
+        public int StatementId => context.StatementId;
 
-        public string DeploymentId {
-            get => context.DeploymentId;
-        }
+        public string DeploymentId => context.DeploymentId;
 
-        public TimeProvider TimeProvider {
-            get => context.TimeProvider;
-        }
+        public TimeProvider TimeProvider => context.TimeProvider;
 
-        public ExpressionResultCacheService ExpressionResultCacheService {
-            get => context.ExpressionResultCacheService;
-        }
+        public ExpressionResultCacheService ExpressionResultCacheService => context.ExpressionResultCacheService;
 
-        public int AgentInstanceId {
-            get => context.AgentInstanceId;
-        }
+        public int AgentInstanceId => context.AgentInstanceId;
 
-        public EventBean ContextProperties {
-            get => context.ContextProperties;
-        }
+        public EventBean ContextProperties => context.ContextProperties;
 
-        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext {
-            get => context.AllocateAgentInstanceScriptContext;
-        }
+        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext => context.AllocateAgentInstanceScriptContext;
 
-        public IReaderWriterLock AgentInstanceLock {
-            get => context.AgentInstanceLock;
-        }
+        public IReaderWriterLock AgentInstanceLock => context.AgentInstanceLock;
 
-        public TableExprEvaluatorContext TableExprEvaluatorContext {
-            get => tableExprEvaluatorContext;
-        }
+        public TableExprEvaluatorContext TableExprEvaluatorContext => tableExprEvaluatorContext;
 
-        public object UserObjectCompileTime {
-            get => context.UserObjectCompileTime;
-        }
+        public object UserObjectCompileTime => context.UserObjectCompileTime;
 
-        public EventBeanService EventBeanService {
-            get => context.EventBeanService;
-        }
+        public EventBeanService EventBeanService => context.EventBeanService;
 
-        public AuditProvider AuditProvider {
-            get => context.AuditProvider;
-        }
+        public AuditProvider AuditProvider => context.AuditProvider;
 
-        public InstrumentationCommon InstrumentationProvider {
-            get => context.InstrumentationProvider;
-        }
+        public InstrumentationCommon InstrumentationProvider => context.InstrumentationProvider;
+
+        public ExceptionHandlingService ExceptionHandlingService => context.ExceptionHandlingService;
     }
 } // end of namespace

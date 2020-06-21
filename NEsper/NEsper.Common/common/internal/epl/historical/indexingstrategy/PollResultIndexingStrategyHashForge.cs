@@ -11,6 +11,7 @@ using System;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.@event.core;
 
@@ -20,21 +21,24 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
 {
     public class PollResultIndexingStrategyHashForge : PollResultIndexingStrategyForge
     {
-        private readonly Type[] coercionTypes;
-        private readonly EventType eventType;
-        private readonly string[] propertyNames;
-        private readonly int streamNum;
+        private readonly Type[] _coercionTypes;
+        private readonly EventType _eventType;
+        private readonly string[] _propertyNames;
+        private readonly int _streamNum;
+        private readonly MultiKeyClassRef _multiKeyClasses;
 
         public PollResultIndexingStrategyHashForge(
             int streamNum,
             EventType eventType,
             string[] propertyNames,
-            Type[] coercionTypes)
+            Type[] coercionTypes,
+            MultiKeyClassRef multiKeyClasses)
         {
-            this.streamNum = streamNum;
-            this.eventType = eventType;
-            this.propertyNames = propertyNames;
-            this.coercionTypes = coercionTypes;
+            _streamNum = streamNum;
+            _eventType = eventType;
+            _propertyNames = propertyNames;
+            _coercionTypes = coercionTypes;
+            _multiKeyClasses = multiKeyClasses;
         }
 
         public string ToQueryPlan()
@@ -49,23 +53,23 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         {
             var method = parent.MakeChild(typeof(PollResultIndexingStrategyHash), GetType(), classScope);
 
-            var propertyGetters = EventTypeUtility.GetGetters(eventType, propertyNames);
-            var propertyTypes = EventTypeUtility.GetPropertyTypes(eventType, propertyNames);
-            var valueGetter = EventTypeUtility.CodegenGetterMayMultiKeyWCoerce(
-                eventType,
+            var propertyGetters = EventTypeUtility.GetGetters(_eventType, _propertyNames);
+            var propertyTypes = EventTypeUtility.GetPropertyTypes(_eventType, _propertyNames);
+            var valueGetter = MultiKeyCodegen.CodegenGetterMayMultiKey(
+                _eventType,
                 propertyGetters,
                 propertyTypes,
-                coercionTypes,
+                _coercionTypes,
+                _multiKeyClasses,
                 method,
-                GetType(),
                 classScope);
 
             method.Block
                 .DeclareVar<PollResultIndexingStrategyHash>(
                     "strat",
                     NewInstance(typeof(PollResultIndexingStrategyHash)))
-                .SetProperty(Ref("strat"), "StreamNum", Constant(streamNum))
-                .SetProperty(Ref("strat"), "PropertyNames", Constant(propertyNames))
+                .SetProperty(Ref("strat"), "StreamNum", Constant(_streamNum))
+                .SetProperty(Ref("strat"), "PropertyNames", Constant(_propertyNames))
                 .SetProperty(Ref("strat"), "ValueGetter", valueGetter)
                 .ExprDotMethod(Ref("strat"), "Init")
                 .MethodReturn(Ref("strat"));

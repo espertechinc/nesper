@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -90,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
         }
 
         public static CodegenExpression CodegenInvokeExpression(
-            object optionalTargetObject,
+            ValueAndFieldDesc optionalTargetObject,
             MethodInfo reflectionMethod,
             StaticMethodCodegenArgDesc[] args,
             CodegenClassScope codegenClassScope)
@@ -115,14 +116,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
                 return StaticMethod(reflectionMethod.DeclaringType, reflectionMethod.Name, expressions);
             }
 
-            if (optionalTargetObject.GetType().IsEnum) {
+            if (optionalTargetObject.Value != null && optionalTargetObject.Value.GetType().IsEnum) {
                 return ExprDotMethod(
-                    EnumValue(optionalTargetObject.GetType(), optionalTargetObject.ToString()),
+                    EnumValue(optionalTargetObject.Value.GetType(), optionalTargetObject.Value.ToString()),
                     reflectionMethod.Name,
                     expressions);
             }
 
-            return ExprDotMethod(Constant(optionalTargetObject), reflectionMethod.Name, expressions);
+            return ExprDotMethod(
+                PublicConstValue(optionalTargetObject.Field.DeclaringType, optionalTargetObject.Field.Name),
+                reflectionMethod.Name,
+                expressions);
         }
     }
 } // end of namespace

@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             var createDataFlowDesc = statementSpec.Raw.CreateDataFlowDesc;
             services.DataFlowCompileTimeRegistry.NewDataFlow(createDataFlowDesc.GraphName);
 
-            string eventTypeName = services.EventTypeNameGeneratorStatement.AnonymousTypeName;
+            var eventTypeName = services.EventTypeNameGeneratorStatement.AnonymousTypeName;
             var metadata = new EventTypeMetadata(
                 eventTypeName,
                 @base.ModuleName,
@@ -91,13 +91,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
             var codegenEnv = new DataFlowOpForgeCodegenEnv(@namespace, classPostfix);
 
-            var dataflowForge = BuildForge(createDataFlowDesc, codegenEnv, @base, services);
+            var dataflowForge = BuildForge(createDataFlowDesc, codegenEnv, @namespace, @base, services);
 
             var namespaceScope = new CodegenNamespaceScope(
                 @namespace,
                 statementFieldsClassName,
                 services.IsInstrumented);
-            var fieldsForgable = new StmtClassForgableStmtFields(
+            var fieldsForgable = new StmtClassForgeableStmtFields(
                 statementFieldsClassName,
                 namespaceScope,
                 0);
@@ -108,7 +108,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             var forge =
                 new StatementAgentInstanceFactoryCreateDataflowForge(eventType, dataflowForge);
             var aiFactoryForgable =
-                new StmtClassForgableAIFactoryProviderCreateDataflow(
+                new StmtClassForgeableAIFactoryProviderCreateDataflow(
                     aiFactoryProviderClassName, 
                     namespaceScope, 
                     forge);
@@ -125,16 +125,19 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 services);
             var statementProviderClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
-            var stmtProvider = new StmtClassForgableStmtProvider(
+            var stmtProvider = new StmtClassForgeableStmtProvider(
                 aiFactoryProviderClassName,
                 statementProviderClassName,
                 informationals,
                 namespaceScope);
 
-            IList<StmtClassForgable> forgables = new List<StmtClassForgable>();
-            forgables.Add(aiFactoryForgable);
-            forgables.Add(stmtProvider);
-            forgables.Add(fieldsForgable);
+            IList<StmtClassForgeable> forgeables = new List<StmtClassForgeable>();
+            foreach (StmtClassForgeableFactory additional in dataflowForge.AdditionalForgables) {
+                forgeables.Add(additional.Make(namespaceScope, classPostfix));
+            }
+            forgeables.Add(aiFactoryForgable);
+            forgeables.Add(stmtProvider);
+            forgeables.Add(fieldsForgable);
 
             // compiled filter spec list
             IList<FilterSpecCompiled> filterSpecCompileds = new List<FilterSpecCompiled>();
@@ -152,16 +155,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             IList<ScheduleHandleCallbackProvider> scheduleds = new List<ScheduleHandleCallbackProvider>();
 
             // add additional forgeables
-            foreach (StmtForgeMethodResult additional in dataflowForge.AdditionalForgables) {
+            foreach (StmtForgeMethodResult additional in dataflowForge.Forgables) {
                 foreach (var v in Enumerable.Reverse(additional.Forgables)) {
-                    forgables.Insert(0, v);
+                    forgeables.Insert(0, v);
                 }
 
                 scheduleds.AddAll(additional.Scheduleds);
             }
 
             return new StmtForgeMethodResult(
-                forgables,
+                forgeables,
                 filterSpecCompileds,
                 scheduleds,
                 namedWindowConsumers,
@@ -171,11 +174,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         private static DataflowDescForge BuildForge(
             CreateDataFlowDesc desc,
             DataFlowOpForgeCodegenEnv codegenEnv,
+            string @namespace,
             StatementBaseInfo @base,
             StatementCompileTimeServices services)
         {
             // basic validation
             Validate(desc);
+            
+            var additionalForgeables = new List<StmtClassForgeableFactory>();
 
             // compile operator annotations
             IDictionary<object, Attribute[]> operatorAnnotations = new Dictionary<object, Attribute[]>();
@@ -199,7 +205,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             }
 
             // resolve types
-            var declaredTypes = ResolveTypes(desc, @base, services);
+            var resolveTypesResult = ResolveTypes(desc, @namespace, @base, services);
+            var declaredTypes = resolveTypesResult.Types;
+            additionalForgeables.AddAll(resolveTypesResult.AdditionalForgeables);
 
             // resolve operator classes
             var operatorMetadata = ResolveMetadata(
@@ -251,7 +259,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 operatorBuildOrder,
                 operatorForges,
                 initForgesResult.LogicalChannels,
-                initForgesResult.AdditionalForgables);
+                initForgesResult.Forgables, 
+                additionalForgeables);
         }
 
         private static InitForgesResult DetermineChannelsInitForges(
@@ -306,7 +315,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             // We do this in operator build order.
             IDictionary<int, IList<LogicalChannelProducingPortCompiled>> compiledOutputPorts =
                 new Dictionary<int, IList<LogicalChannelProducingPortCompiled>>();
-            IList<StmtForgeMethodResult> additionalForgables = new List<StmtForgeMethodResult>();
+            IList<StmtForgeMethodResult> additionalForgeables = new List<StmtForgeMethodResult>();
             foreach (var operatorNum in operatorBuildOrder) {
                 var metadata = operatorMetadata.Get(operatorNum);
                 var operatorForge = operatorForges.Get(operatorNum);
@@ -335,8 +344,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 GraphTypeDesc[] typesPerOutput = null;
                 if (initializeResult != null) {
                     typesPerOutput = initializeResult.TypeDescriptors;
-                    if (initializeResult.AdditionalForgables != null) {
-                        additionalForgables.Add(initializeResult.AdditionalForgables);
+                    if (initializeResult.AdditionalForgeables != null) {
+                        additionalForgeables.Add(initializeResult.AdditionalForgeables);
                     }
                 }
 
@@ -415,7 +424,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 }
             }
 
-            return new InitForgesResult(channels, additionalForgables);
+            return new InitForgesResult(channels, additionalForgeables);
         }
 
         private static IDictionary<int, DataFlowOperatorForge> InstantiateOperatorForges(
@@ -575,12 +584,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 Type forgeClass = null;
                 try {
                     var forgeClassName = operatorCaseName + "Forge";
-                    forgeClass = services.ImportServiceCompileTime.ResolveClass(forgeClassName, false);
+                    forgeClass = services.ImportServiceCompileTime.ResolveClass(forgeClassName, false, services.ClassProvidedExtension);
                 }
                 catch (ImportException e) {
                     try {
                         var forgeClassName = operatorCaseName;
-                        forgeClass = services.ImportServiceCompileTime.ResolveClass(forgeClassName, false);
+                        forgeClass = services.ImportServiceCompileTime.ResolveClass(forgeClassName, false, services.ClassProvidedExtension);
                     }
                     catch (ImportException) {
                         // expected
@@ -611,18 +620,22 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             return operatorClasses;
         }
 
-        private static IDictionary<string, EventType> ResolveTypes(
+        private static ResolveTypesResult ResolveTypes(
             CreateDataFlowDesc desc,
             StatementBaseInfo @base,
             StatementCompileTimeServices services)
         {
             IDictionary<string, EventType> types = new Dictionary<string, EventType>();
+            IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>();
+
             foreach (var spec in desc.Schemas) {
-                var eventType = EventTypeUtility.CreateNonVariantType(true, spec, @base, services);
+                EventTypeForgeablesPair forgeablesPair = EventTypeUtility.CreateNonVariantType(true, spec, @base, services);
+                additionalForgeables.AddAll(forgeablesPair.AdditionalForgeables);
+                EventType eventType = forgeablesPair.EventType;
                 types.Put(spec.SchemaName, eventType);
             }
 
-            return types;
+            return new ResolveTypesResult(types, additionalForgeables);
         }
 
         private static void Validate(CreateDataFlowDesc desc)
@@ -935,7 +948,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                             services.ImportServiceCompileTime.ClassForNameProvider);
                         if (clazz == null) {
                             try {
-                                clazz = services.ImportServiceCompileTime.ResolveClass(typeName, false);
+                                clazz = services.ImportServiceCompileTime.ResolveClass(typeName, false, services.ClassProvidedExtension);
                             }
                             catch (ImportException) {
                                 throw new EPRuntimeException("Failed to resolve type '" + typeName + "'");
@@ -1365,18 +1378,31 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             return outputPorts;
         }
 
-        private class InitForgesResult
+        internal class InitForgesResult
         {
-            public InitForgesResult(
+            internal InitForgesResult(
                 IList<LogicalChannel> logicalChannels,
-                IList<StmtForgeMethodResult> additionalForgables)
+                IList<StmtForgeMethodResult> forgables)
             {
                 LogicalChannels = logicalChannels;
-                AdditionalForgables = additionalForgables;
+                Forgables = forgables;
             }
 
-            public IList<LogicalChannel> LogicalChannels { get; }
-            public IList<StmtForgeMethodResult> AdditionalForgables { get; }
+            internal IList<LogicalChannel> LogicalChannels { get; }
+            internal IList<StmtForgeMethodResult> Forgables { get; }
+        }
+        
+        internal class ResolveTypesResult
+        {
+            internal ResolveTypesResult(IDictionary<String, EventType> types, IList<StmtClassForgeableFactory> additionalForgeables)
+            {
+                Types = types;
+                AdditionalForgeables = additionalForgeables;
+            }
+
+            internal IDictionary<string, EventType> Types { get; }
+
+            internal IList<StmtClassForgeableFactory> AdditionalForgeables { get; }
         }
     }
 } // end of namespace

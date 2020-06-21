@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -64,6 +66,13 @@ namespace com.espertech.esper.common.@internal.filterspec
         public override int GetHashCode()
         {
             return 0;
+        }
+        
+        public void ValueToString(StringBuilder @out)
+        {
+            @out.Append("runtime constant expression '")
+                .Append(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(_runtimeConstant))
+                .Append("'");
         }
     }
 } // end of namespace

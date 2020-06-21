@@ -25,6 +25,15 @@ namespace com.espertech.esper.common.client.hook.aggfunc
         /// <returns>strategy</returns>
         public InjectionStrategy InjectionStrategyAggregationFunctionFactory { get; private set; }
 
+        public AggregationFunctionModeManaged()
+        {
+        }
+
+        public AggregationFunctionModeManaged(InjectionStrategy injectionStrategyAggregationFunctionFactory)
+        {
+            InjectionStrategyAggregationFunctionFactory = injectionStrategyAggregationFunctionFactory;
+        }
+
         /// <summary>
         ///     Returns indicator whether a serializer-deserialize to provide read and write methods is provided by
         ///     <seealso cref="Serde" />

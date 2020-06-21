@@ -12,24 +12,24 @@ using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
     public class CodegenStatementAssignCompound : CodegenStatementBase
     {
-        private readonly CodegenExpression assignment;
-
-        private readonly CodegenExpressionRef expressionRef;
-        private readonly string @operator;
+        private readonly CodegenExpression _assignment;
+        private readonly CodegenExpression _lhs;
+        private readonly string _operator;
 
         public CodegenStatementAssignCompound(
-            CodegenExpressionRef expressionRef,
+            CodegenExpression lhs,
             string @operator,
             CodegenExpression assignment)
         {
-            this.expressionRef = expressionRef;
-            this.@operator = @operator;
-            this.assignment = assignment;
+            _lhs = lhs;
+            _operator = @operator;
+            _assignment = assignment;
         }
 
         public override void RenderStatement(
@@ -37,15 +37,21 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             bool isInnerClass)
         {
             var indent = new CodegenIndent(true);
-            expressionRef.Render(builder, isInnerClass, 1, indent);
-            builder.Append(@operator);
+            _lhs.Render(builder, isInnerClass, 1, indent);
+            builder.Append(_operator);
             builder.Append("=");
-            assignment.Render(builder, isInnerClass, 1, indent);
+            _assignment.Render(builder, isInnerClass, 1, indent);
         }
 
         public override void MergeClasses(ISet<Type> classes)
         {
-            assignment.MergeClasses(classes);
+            _assignment.MergeClasses(classes);
+        }
+        
+        public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            consumer.Invoke(_lhs);
+            consumer.Invoke(_assignment);
         }
     }
 } // end of namespace

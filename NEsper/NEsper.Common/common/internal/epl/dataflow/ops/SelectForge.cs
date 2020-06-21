@@ -138,7 +138,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                     eventType,
                     streamAlias,
                     new IList<FilterSpecParamForge>[] {
-                        new EmptyList<FilterSpecParamForge>()
+                        EmptyList<FilterSpecParamForge>.Instance
                     },
                     null);
                 ViewSpec[] viewSpecs = select.StreamSpecs[streamNum].ViewSpecs;
@@ -177,9 +177,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                 selectClauseCompiled,
                 mergedAnnotations,
                 groupByExpressions,
-                new EmptyList<ExprSubselectNode>(),
-                new EmptyList<ExprDeclaredNode>(),
-                new EmptyList<ExprTableAccessNode>());
+                EmptyList<ExprSubselectNode>.Instance,
+                EmptyList<ExprDeclaredNode>.Instance,
+                EmptyList<ExprTableAccessNode>.Instance);
             var dataflowClassPostfix = context.CodegenEnv.ClassPostfix + "__dfo" + context.OperatorNumber;
             var containerStatement = context.Base.StatementSpec;
             context.Base.StatementSpec = compiled;
@@ -200,7 +200,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
 
             var initializeResult = new DataFlowOpForgeInitializeResult();
             initializeResult.TypeDescriptors = new[] {new GraphTypeDesc(false, true, outputEventType)};
-            initializeResult.AdditionalForgables = forablesResult.ForgeResult;
+            initializeResult.AdditionalForgeables = forablesResult.ForgeResult;
 
             foreach (StmtClassForgable forgable in forablesResult.ForgeResult.Forgables) {
                 if (forgable.ForgableType == StmtClassForgableType.AIFACTORYPROVIDER) {

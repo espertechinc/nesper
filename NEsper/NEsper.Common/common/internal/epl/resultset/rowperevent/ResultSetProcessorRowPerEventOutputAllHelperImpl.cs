@@ -38,8 +38,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
         }
 
         public void ProcessJoin(
-            ISet<MultiKey<EventBean>> newEvents,
-            ISet<MultiKey<EventBean>> oldEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents,
             bool isGenerateSynthetic)
         {
             UniformPair<EventBean[]> pair = processor.ProcessJoinResult(newEvents, oldEvents, isGenerateSynthetic);

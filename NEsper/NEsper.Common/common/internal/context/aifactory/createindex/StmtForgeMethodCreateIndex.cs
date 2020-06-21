@@ -12,6 +12,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -19,15 +20,12 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.compile;
 using com.espertech.esper.common.@internal.epl.join.lookup;
-using com.espertech.esper.common.@internal.epl.join.queryplan;
-using com.espertech.esper.common.@internal.epl.lookup;
 using com.espertech.esper.common.@internal.epl.lookupplansubord;
-using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
-using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.schedule;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createindex
@@ -37,11 +35,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
     /// </summary>
     public class StmtForgeMethodCreateIndex : StmtForgeMethod
     {
-        private readonly StatementBaseInfo @base;
+        private readonly StatementBaseInfo _base;
 
         public StmtForgeMethodCreateIndex(StatementBaseInfo @base)
         {
-            this.@base = @base;
+            this._base = @base;
         }
 
         public StmtForgeMethodResult Make(
@@ -49,7 +47,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
             string classPostfix,
             StatementCompileTimeServices services)
         {
-            var spec = @base.StatementSpec.Raw.CreateIndexDesc;
+            var spec = _base.StatementSpec.Raw.CreateIndexDesc;
 
             var infraName = spec.WindowName;
             var namedWindow = services.NamedWindowCompileTimeResolver.Resolve(infraName);
@@ -88,7 +86,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
                 namedWindow == null,
                 infraName,
                 infraContextName,
-                @base.StatementSpec.Raw.OptionalContextName,
+                _base.StatementSpec.Raw.OptionalContextName,
                 true);
 
             // validate index
@@ -97,7 +95,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
                 spec.IsUnique,
                 spec.Columns,
                 indexedEventType,
-                @base.StatementRawInfo,
+                _base.StatementRawInfo,
                 services);
             var advancedIndexDesc = explicitIndexDesc.AdvancedIndexProvisionDesc == null
                 ? null
@@ -115,22 +113,34 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
                 infraVisibility,
                 namedWindow != null,
                 spec.IndexName,
-                @base.ModuleName);
+                _base.ModuleName);
             services.IndexCompileTimeRegistry.NewIndex(indexKey, new IndexDetailForge(imk, explicitIndexDesc));
 
             // add index current named window information
             if (namedWindow != null) {
-                namedWindow.AddIndex(spec.IndexName, @base.ModuleName, imk, explicitIndexDesc.ToRuntime());
+                namedWindow.AddIndex(spec.IndexName, _base.ModuleName, imk, explicitIndexDesc.ToRuntime());
             }
             else {
-                table.AddIndex(spec.IndexName, @base.ModuleName, imk, explicitIndexDesc.ToRuntime());
+                table.AddIndex(spec.IndexName, _base.ModuleName, imk, explicitIndexDesc.ToRuntime());
             }
 
+            // determine multikey plan
+            MultiKeyPlan multiKeyPlan = MultiKeyPlanner.PlanMultiKey(
+                explicitIndexDesc.HashTypes, false, _base.StatementRawInfo, services.SerdeResolver);
+            explicitIndexDesc.HashMultiKeyClasses = multiKeyPlan.ClassRef;
+            DataInputOutputSerdeForge[] rangeSerdes = new DataInputOutputSerdeForge[explicitIndexDesc.RangeProps.Length];
+            for (int i = 0; i < explicitIndexDesc.RangeProps.Length; i++) {
+                rangeSerdes[i] = services.SerdeResolver.SerdeForIndexBtree(
+                    explicitIndexDesc.RangeTypes[i], _base.StatementRawInfo);
+            }
+            explicitIndexDesc.RangeSerdes = rangeSerdes;
+
+            
             var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementFields), classPostfix);
             var namespaceScope = new CodegenNamespaceScope(
                 @namespace, statementFieldsClassName, services.IsInstrumented);
-            var fieldsForgable = new StmtClassForgableStmtFields(statementFieldsClassName, namespaceScope, 0);
+            var fieldsForgeable = new StmtClassForgeableStmtFields(statementFieldsClassName, namespaceScope, 0);
 
             var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementAIFactoryProvider),
@@ -138,44 +148,47 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
             var forge = new StatementAgentInstanceFactoryCreateIndexForge(
                 indexedEventType,
                 spec.IndexName,
-                @base.ModuleName,
+                _base.ModuleName,
                 explicitIndexDesc,
                 imk,
                 namedWindow,
                 table);
-            var aiFactoryForgable = new StmtClassForgableAIFactoryProviderCreateIndex(
+            var aiFactoryForgeable = new StmtClassForgeableAIFactoryProviderCreateIndex(
                 aiFactoryProviderClassName,
                 namespaceScope,
                 forge);
 
             var selectSubscriberDescriptor = new SelectSubscriberDescriptor();
             var informationals = StatementInformationalsUtil.GetInformationals(
-                @base,
-                new EmptyList<FilterSpecCompiled>(),
-                new EmptyList<ScheduleHandleCallbackProvider>(),
-                new EmptyList<NamedWindowConsumerStreamSpec>(),
+                _base,
+                EmptyList<FilterSpecCompiled>.Instance,
+                EmptyList<ScheduleHandleCallbackProvider>.Instance,
+                EmptyList<NamedWindowConsumerStreamSpec>.Instance,
                 true,
                 selectSubscriberDescriptor,
                 namespaceScope,
                 services);
             var statementProviderClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
-            var stmtProvider = new StmtClassForgableStmtProvider(
+            var stmtProvider = new StmtClassForgeableStmtProvider(
                 aiFactoryProviderClassName,
                 statementProviderClassName,
                 informationals,
                 namespaceScope);
 
-            IList<StmtClassForgable> forgables = new List<StmtClassForgable>();
-            forgables.Add(fieldsForgable);
-            forgables.Add(aiFactoryForgable);
-            forgables.Add(stmtProvider);
+            var forgeables = new List<StmtClassForgeable>();
+            foreach (var additional in multiKeyPlan.MultiKeyForgeables) {
+                forgeables.Add(additional.Make(namespaceScope, classPostfix));
+            }
+            forgeables.Add(fieldsForgeable);
+            forgeables.Add(aiFactoryForgeable);
+            forgeables.Add(stmtProvider);
             return new StmtForgeMethodResult(
-                forgables,
-                new EmptyList<FilterSpecCompiled>(),
-                new EmptyList<ScheduleHandleCallbackProvider>(),
-                new EmptyList<NamedWindowConsumerStreamSpec>(),
-                new EmptyList<FilterSpecParamExprNodeForge>());
+                forgeables,
+                EmptyList<FilterSpecCompiled>.Instance,
+                EmptyList<ScheduleHandleCallbackProvider>.Instance,
+                EmptyList<NamedWindowConsumerStreamSpec>.Instance,
+                EmptyList<FilterSpecParamExprNodeForge>.Instance);
         }
     }
 } // end of namespace

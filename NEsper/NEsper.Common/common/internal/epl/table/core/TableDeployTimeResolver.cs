@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             if (visibility == NameAccessModifier.PRIVATE) {
                 deploymentId = services.DeploymentId;
             }
-            else if (visibility == NameAccessModifier.PUBLIC) {
+            else if (visibility == NameAccessModifier.PUBLIC || visibility == NameAccessModifier.INTERNAL) {
                 deploymentId = services.TablePathRegistry.GetDeploymentId(tableName, optionalModuleName);
                 if (deploymentId == null) {
                     throw new EPException("Failed to resolve path table '" + tableName + "'");

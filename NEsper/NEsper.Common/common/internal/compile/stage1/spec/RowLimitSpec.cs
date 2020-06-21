@@ -22,8 +22,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         public RowLimitSpec(
             int? numRows,
             int? optionalOffset,
-            String numRowsVariable,
-            String optionalOffsetVariable)
+            string numRowsVariable,
+            string optionalOffsetVariable)
         {
             NumRows = numRows;
             OptionalOffset = optionalOffset;

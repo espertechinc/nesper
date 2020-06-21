@@ -19,10 +19,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprLikeNodeFormNonconstEval : ExprEvaluator
     {
-        private readonly ExprLikeNodeForgeNonconst form;
-        private readonly ExprEvaluator lhsEval;
-        private readonly ExprEvaluator optionalEscapeEval;
-        private readonly ExprEvaluator patternEval;
+        private readonly ExprLikeNodeForgeNonconst _form;
+        private readonly ExprEvaluator _lhsEval;
+        private readonly ExprEvaluator _optionalEscapeEval;
+        private readonly ExprEvaluator _patternEval;
 
         public ExprLikeNodeFormNonconstEval(
             ExprLikeNodeForgeNonconst forge,
@@ -30,10 +30,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprEvaluator patternEval,
             ExprEvaluator optionalEscapeEval)
         {
-            form = forge;
-            this.lhsEval = lhsEval;
-            this.patternEval = patternEval;
-            this.optionalEscapeEval = optionalEscapeEval;
+            _form = forge;
+            this._lhsEval = lhsEval;
+            this._patternEval = patternEval;
+            this._optionalEscapeEval = optionalEscapeEval;
         }
 
         public object Evaluate(
@@ -41,14 +41,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var pattern = (string) patternEval.Evaluate(eventsPerStream, isNewData, context);
+            var pattern = (string) _patternEval.Evaluate(eventsPerStream, isNewData, context);
             if (pattern == null) {
                 return null;
             }
 
             var es = '\\';
-            if (optionalEscapeEval != null) {
-                var escapeString = (string) optionalEscapeEval.Evaluate(eventsPerStream, isNewData, context);
+            if (_optionalEscapeEval != null) {
+                var escapeString = (string) _optionalEscapeEval.Evaluate(eventsPerStream, isNewData, context);
                 if (!string.IsNullOrEmpty(escapeString)) {
                     es = escapeString[0];
                 }
@@ -56,16 +56,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             var likeUtil = new LikeUtil(pattern, es, false);
 
-            var value = lhsEval.Evaluate(eventsPerStream, isNewData, context);
+            var value = _lhsEval.Evaluate(eventsPerStream, isNewData, context);
             if (value == null) {
                 return null;
             }
 
-            if (form.IsNumericValue) {
+            if (_form.IsNumericValue) {
                 value = value.ToString();
             }
 
-            var result = form.ForgeRenderable.IsNot ^ likeUtil.CompareTo((string) value);
+            var result = _form.ForgeRenderable.IsNot ^ likeUtil.CompareTo((string) value);
 
             return result;
         }

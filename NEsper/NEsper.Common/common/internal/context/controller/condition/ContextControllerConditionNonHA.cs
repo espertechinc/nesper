@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.context.controller.condition
@@ -16,7 +18,8 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
 
         bool Activate(
             EventBean optionalTriggeringEvent,
-            ContextControllerEndConditionMatchEventProvider endConditionMatchEventProvider);
+            ContextControllerEndConditionMatchEventProvider endConditionMatchEventProvider,
+            IDictionary<string, object> optionalTriggeringPattern);
 
         void Deactivate();
     }

@@ -26,5 +26,7 @@ namespace com.espertech.esper.common.@internal.@event.util
         /// </summary>
         /// <param name="theEvent">routed event</param>
         void RouteEventBean(EventBean theEvent);
+        
+        string URI { get; }
     }
 } // end of namespace

@@ -15,7 +15,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.name;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.epl.resultset.codegen;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.compat;
 
@@ -30,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
         ExprEvaluator,
         ExprForgeInstrumentable
     {
-        private CodegenFieldName priorStrategyFieldName;
+        private CodegenFieldName _priorStrategyFieldName;
 
         public int StreamNumber { get; private set; }
 
@@ -72,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
 
             // see ExprPriorEvalStrategyBase
             CodegenExpression future = codegenClassScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
-                priorStrategyFieldName,
+                _priorStrategyFieldName,
                 typeof(PriorEvalStrategy));
 
             var innerMethod = LocalMethod(
@@ -164,16 +163,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
             }
 
             validationContext.ViewResourceDelegate.AddPriorNodeRequest(this);
-            priorStrategyFieldName = validationContext.MemberNames.PriorStrategy(StreamNumber);
+            _priorStrategyFieldName = validationContext.MemberNames.PriorStrategy(StreamNumber);
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write("prior(");
-            ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+            ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
             writer.Write(',');
-            ChildNodes[1].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+            ChildNodes[1].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
             writer.Write(')');
         }
 

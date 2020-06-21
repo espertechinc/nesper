@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.collection
             get { return _keys; }
         }
 
-        public override bool Equals(Object o)
+        public override bool Equals(object o)
         {
             if (this == o)
                 return true;

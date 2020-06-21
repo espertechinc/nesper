@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.@event.path
 
         public void RegisterMap(
             EventTypeMetadata metadata,
-            LinkedHashMap<string, object> properties,
+            IDictionary<string, object> properties,
             string[] superTypes,
             string startTimestampPropertyName,
             string endTimestampPropertyName)
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.@event.path
 
         public void RegisterObjectArray(
             EventTypeMetadata metadata,
-            LinkedHashMap<string, object> properties,
+            IDictionary<string, object> properties,
             string[] superTypes,
             string startTimestampPropertyName,
             string endTimestampPropertyName)
@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.@event.path
         public void RegisterWrapper(
             EventTypeMetadata metadata,
             EventType underlying,
-            LinkedHashMap<string, object> properties)
+            IDictionary<string, object> properties)
         {
             var eventType = eventTypeFactory.CreateWrapper(
                 metadata,
@@ -165,7 +165,9 @@ namespace com.espertech.esper.common.@internal.@event.path
             EventType eventType = eventTypeAvroHandler.NewEventTypeFromJson(
                 metadata,
                 eventBeanTypedEventFactory,
-                schemaJson);
+                schemaJson,
+                TODO,
+                TODO);
             HandleRegister(eventType);
         }
 

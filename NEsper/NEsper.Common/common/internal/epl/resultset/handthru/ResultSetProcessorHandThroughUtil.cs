@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
         /// <returns>output events, one for each input event</returns>
         public static EventBean[] GetSelectEventsNoHavingHandThruJoin(
             SelectExprProcessor exprProcessor,
-            ISet<MultiKey<EventBean>> events,
+            ISet<MultiKeyArrayOfKeys<EventBean>> events,
             bool isNewData,
             bool isSynthesize,
             ExprEvaluatorContext agentInstanceContext)
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
 
             EventBean[] result = new EventBean[length];
             int count = 0;
-            foreach (MultiKey<EventBean> key in events)
+            foreach (MultiKeyArrayOfKeys<EventBean> key in events)
             {
                 EventBean[] eventsPerStream = key.Array;
                 result[count] = exprProcessor.Process(eventsPerStream, isNewData, isSynthesize, agentInstanceContext);

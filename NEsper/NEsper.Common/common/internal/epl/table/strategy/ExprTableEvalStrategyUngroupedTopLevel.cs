@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             return ExprTableEvalStrategyUtil.EvalMap(
                 @event,
                 row,
-                factory.Table.MetaData.Columns,
+                Factory.Table.MetaData.Columns,
                 eventsPerStream,
                 isNewData,
                 context);
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             }
 
             AggregationRow row = ExprTableEvalStrategyUtil.GetRow(@event);
-            IDictionary<string, TableMetadataColumn> items = factory.Table.MetaData.Columns;
+            IDictionary<string, TableMetadataColumn> items = Factory.Table.MetaData.Columns;
             return ExprTableEvalStrategyUtil.EvalTypable(@event, row, items, eventsPerStream, isNewData, context);
         }
 

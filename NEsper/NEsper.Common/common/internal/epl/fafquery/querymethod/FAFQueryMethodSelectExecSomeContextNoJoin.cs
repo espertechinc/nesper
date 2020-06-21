@@ -63,13 +63,14 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 select.ResultSetProcessorFactoryProvider,
                 agentInstanceContext,
                 assignerSetter,
-                select.TableAccesses);
+                select.TableAccesses,
+                select.Subselects);
 
             if (select.WhereClause != null) {
                 events = Filtered(events, select.WhereClause, agentInstanceContext);
             }
 
-            return ProcessedNonJoin(resultSetProcessor, events, select.EventBeanReaderDistinct);
+            return ProcessedNonJoin(resultSetProcessor, events, select.DistinctKeyGetter);
         }
     }
 } // end of namespace

@@ -432,10 +432,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
 
             {
                 var forEach = method.Block.ForEach(
-                    typeof(UniformPair<ISet<MultiKey<EventBean>>>), "pair", REF_JOINEVENTSSET);
+                    typeof(UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>), "pair", REF_JOINEVENTSSET);
                 forEach
-                    .DeclareVar<ISet<MultiKey<EventBean>>>("newData", ExprDotName(Ref("pair"), "First"))
-                    .DeclareVar<ISet<MultiKey<EventBean>>>("oldData", ExprDotName(Ref("pair"), "Second"));
+                    .DeclareVar<ISet<MultiKeyArrayOfKeys<EventBean>>>("newData", ExprDotName(Ref("pair"), "First"))
+                    .DeclareVar<ISet<MultiKeyArrayOfKeys<EventBean>>>("oldData", ExprDotName(Ref("pair"), "Second"));
                 if (forge.IsUnidirectional) {
                     forEach.ExprDotMethod(Ref("this"), "Clear");
                 }
@@ -582,10 +582,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
 
             {
                 var forEach = method.Block
-                    .ForEach(typeof(UniformPair<ISet<MultiKey<EventBean>>>), "pair", REF_JOINEVENTSSET);
+                    .ForEach(typeof(UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>), "pair", REF_JOINEVENTSSET);
                 forEach
-                    .DeclareVar<ISet<MultiKey<EventBean>>>("newData",ExprDotName(Ref("pair"), "First"))
-                    .DeclareVar<ISet<MultiKey<EventBean>>>("oldData",ExprDotName(Ref("pair"), "Second"));
+                    .DeclareVar<ISet<MultiKeyArrayOfKeys<EventBean>>>("newData",ExprDotName(Ref("pair"), "First"))
+                    .DeclareVar<ISet<MultiKeyArrayOfKeys<EventBean>>>("oldData",ExprDotName(Ref("pair"), "Second"));
 
                 if (forge.IsUnidirectional) {
                     forEach.ExprDotMethod(Ref("this"), "Clear");

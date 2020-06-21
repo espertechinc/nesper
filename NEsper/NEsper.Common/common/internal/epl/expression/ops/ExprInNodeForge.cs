@@ -24,11 +24,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     /// </summary>
     public class ExprInNodeForge : ExprForgeInstrumentable
     {
-        private readonly ExprInNodeImpl parent;
-        private readonly bool mustCoerce;
-        private readonly Coercer coercer;
-        private readonly Type coercionType;
-        private readonly bool hasCollectionOrArray;
+        private readonly ExprInNodeImpl _parent;
+        private readonly bool _mustCoerce;
+        private readonly Coercer _coercer;
+        private readonly Type _coercionType;
+        private readonly bool _hasCollectionOrArray;
 
         public ExprInNodeForge(
             ExprInNodeImpl parent,
@@ -37,17 +37,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Type coercionType,
             bool hasCollectionOrArray)
         {
-            this.parent = parent;
-            this.mustCoerce = mustCoerce;
-            this.coercer = coercer;
-            this.coercionType = coercionType;
-            this.hasCollectionOrArray = hasCollectionOrArray;
+            this._parent = parent;
+            this._mustCoerce = mustCoerce;
+            this._coercer = coercer;
+            this._coercionType = coercionType;
+            this._hasCollectionOrArray = hasCollectionOrArray;
         }
 
         public ExprEvaluator ExprEvaluator {
             get {
-                ExprEvaluator[] evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(parent.ChildNodes);
-                if (hasCollectionOrArray) {
+                ExprEvaluator[] evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(_parent.ChildNodes);
+                if (_hasCollectionOrArray) {
                     return new ExprInNodeForgeEvalWColl(this, evaluators);
                 }
 
@@ -88,23 +88,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
         public ExprInNodeImpl ForgeRenderable {
-            get => parent;
+            get => _parent;
         }
 
         public bool IsMustCoerce {
-            get => mustCoerce;
+            get => _mustCoerce;
         }
 
         public Coercer Coercer {
-            get => coercer;
+            get => _coercer;
         }
 
         public Type CoercionType {
-            get => coercionType;
+            get => _coercionType;
         }
 
         public bool HasCollectionOrArray {
-            get => hasCollectionOrArray;
+            get => _hasCollectionOrArray;
         }
 
         public ExprForgeConstantType ForgeConstantType {

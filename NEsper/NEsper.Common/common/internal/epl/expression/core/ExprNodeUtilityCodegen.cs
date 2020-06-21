@@ -27,6 +27,39 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     public class ExprNodeUtilityCodegen
     {
+        public static CodegenExpression CodegenExpressionMayCoerce(
+            ExprForge forge, 
+            Type targetType,
+            CodegenMethod exprMethod,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope classScope)
+        {
+            CodegenExpression expr = forge.EvaluateCodegen(forge.EvaluationType, exprMethod, exprSymbol, classScope);
+            return ExprNodeUtilityCodegen.CodegenCoerce(expr, forge.EvaluationType, targetType, false);
+        }
+
+        public static CodegenExpression CodegenCoerce(
+            CodegenExpression expression,
+            Type exprType,
+            Type targetType,
+            bool alwaysCast)
+        {
+            if (targetType == null) {
+                return expression;
+            }
+
+            if (exprType.GetBoxedType() == targetType.GetBoxedType()) {
+                return alwaysCast ? Cast(targetType, expression) : expression;
+            }
+
+            var coercer = SimpleNumberCoercerFactory.GetCoercer(exprType, targetType.GetBoxedType());
+            if (exprType.IsPrimitive || alwaysCast) {
+                expression = Cast(exprType.GetBoxedType(), expression);
+            }
+
+            return coercer.CoerceCodegen(expression, exprType);
+        }
+
         public static CodegenExpression CodegenEvaluator(
             ExprForge forge,
             CodegenMethod method,
@@ -39,6 +72,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             if (forge.EvaluationType == null) {
                 lambda.Block.BlockReturn(ConstantNull());
                 return NewInstance<ProxyExprEvaluator>(lambda);
+            }
+            else if (forge.EvaluationType == typeof(void)) {
+                // TBD
+                CodegenMethod evalMethod = CodegenLegoMethodExpression.CodegenExpression(forge, method, classScope);
+                lambda.Block.BlockReturn(
+                    LocalMethod(evalMethod, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
+                    //MethodReturn(ConstantNull()));
+                
             }
             else {
                 var evalMethod = CodegenLegoMethodExpression.CodegenExpression(forge, method, classScope, true);
@@ -62,6 +103,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return CodegenEvaluators(ExprNodeUtilityQuery.GetForges(expressions), parent, originator, classScope);
         }
 
+        public static CodegenExpression CodegenEvaluators(
+            ExprForge[][] expressions,
+            CodegenMethodScope parent,
+            Type originator,
+            CodegenClassScope classScope)
+        {
+            var init = new CodegenExpression[expressions.Length];
+            for (int i = 0; i < init.Length; i++) {
+                init[i] = CodegenEvaluators(expressions[i], parent, originator, classScope);
+            }
+            return NewArrayWithInit(typeof(ExprEvaluator[]), init);
+        }
+        
         public static CodegenExpression CodegenEvaluators(
             IList<ExprForge> expressions,
             CodegenMethodScope parent,
@@ -106,7 +160,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             var evaluator = NewInstance<ProxyExprEvaluator>(evaluate);
             
             //var evaluator = NewAnonymousClass(method.Block, typeof(ExprEvaluator));
-            //var evaluate = CodegenMethod.MakeParentNode(typeof(object), generator, classScope).AddParam(PARAMS);
+            //var evaluate = CodegenMethod.MakeParentNode(typeof(object), generator, classScope)
+				.AddParam(PARAMS);
             //evaluator.AddMethod("Evaluate", evaluate);
 
             var result = ConstantNull();
@@ -128,77 +183,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return evaluator;
         }
 
-        public static CodegenExpression CodegenEvaluatorMayMultiKeyWCoerce(
-            IList<ExprForge> forges,
-            IList<Type> optCoercionTypes,
-            CodegenMethod method,
-            Type generator,
-            CodegenClassScope classScope)
-        {
-            if (forges.Count == 1) {
-                return CodegenEvaluatorWCoerce(
-                    forges[0],
-                    optCoercionTypes?[0],
-                    method,
-                    generator,
-                    classScope);
-            }
-
-            var evaluate = new CodegenExpressionLambda(method.Block).WithParams(PARAMS);
-            var evaluator = NewInstance<ProxyExprEvaluator>(evaluate);
-            
-            //var evaluator = NewAnonymousClass(method.Block, typeof(ExprEvaluator));
-            //var evaluate = CodegenMethod.MakeParentNode<object>(generator, classScope).AddParam(PARAMS);
-            //evaluator.AddMethod("Evaluate", evaluate);
-
-            var exprSymbol = new ExprForgeCodegenSymbol(true, null);
-
-            var exprMethod = method.MakeChildWithScope(
-                    typeof(object),
-                    typeof(CodegenLegoMethodExpression),
-                    exprSymbol,
-                    classScope)
-                .AddParam(PARAMS);
-
-            var exprBlock = exprMethod.Block;
-
-            var expressions = new CodegenExpression[forges.Count];
-            for (var i = 0; i < forges.Count; i++) {
-                expressions[i] = forges[i].EvaluateCodegen(
-                        forges[i].EvaluationType,
-                        exprMethod,
-                        exprSymbol,
-                        classScope);
-            }
-
-            exprSymbol.DerivedSymbolsCodegen(exprMethod, exprBlock, classScope);
-
-            exprBlock.DeclareVar<object[]>(
-                    "values",
-                    NewArrayByLength(typeof(object), Constant(forges.Count)))
-                .DeclareVar<HashableMultiKey>("valuesMk", NewInstance<HashableMultiKey>(Ref("values")));
-            for (var i = 0; i < forges.Count; i++) {
-                var result = expressions[i];
-                if (optCoercionTypes != null &&
-                    forges[i].EvaluationType.GetBoxedType() != optCoercionTypes[i].GetBoxedType()) {
-                    var coercer = SimpleNumberCoercerFactory.GetCoercer(
-                        forges[i].EvaluationType,
-                        optCoercionTypes[i].GetBoxedType());
-                    var name = "result_" + i;
-                    exprBlock.DeclareVar(forges[i].EvaluationType, name, expressions[i]);
-                    result = coercer.CoerceCodegen(Ref(name), forges[i].EvaluationType);
-                }
-
-                exprBlock.AssignArrayElement("values", Constant(i), result);
-            }
-
-            exprBlock.ReturnMethodOrBlock(Ref("valuesMk"));
-            evaluate.Block.ReturnMethodOrBlock(
-                LocalMethod(exprMethod, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
-
-            return evaluator;
-        }
-
         public static CodegenExpression CodegenEvaluatorObjectArray(
             IList<ExprForge> forges,
             CodegenMethod method,
@@ -208,7 +192,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             var exprSymbol = new ExprForgeCodegenSymbol(true, null);
 
             //var evaluator = NewAnonymousClass(method.Block, typeof(ExprEvaluator));
-            //var evaluate = CodegenMethod.MakeParentNode<object>(generator, classScope).AddParam(PARAMS);
+            //var evaluate = CodegenMethod.MakeParentNode<object>(generator, classScope)
+				.AddParam(PARAMS);
             //evaluator.AddMethod("Evaluate", evaluate);
 
             var exprMethod = method
@@ -255,26 +240,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return NewInstance<ProxyExprEvaluator>(evaluate);
         }
 
-        public static CodegenExpression CodegenEvaluatorMayMultiKeyPropPerStream(
-            IList<EventType> outerStreamTypesZeroIndexed,
-            string[] propertyNames,
-            Type[] optionalCoercionTypes,
-            int[] keyStreamNums,
-            CodegenMethod method,
-            Type generator,
-            CodegenClassScope classScope)
-        {
-            var forges = new ExprForge[propertyNames.Length];
-            for (var i = 0; i < propertyNames.Length; i++) {
-                var node = new ExprIdentNodeImpl(
-                    outerStreamTypesZeroIndexed[keyStreamNums[i]],
-                    propertyNames[i],
-                    keyStreamNums[i]);
-                forges[i] = node.Forge;
-            }
-
-            return CodegenEvaluatorMayMultiKeyWCoerce(forges, optionalCoercionTypes, method, generator, classScope);
-        }
 
         public static CodegenMethod CodegenMapSelect(
             IList<ExprNode> selectClause,

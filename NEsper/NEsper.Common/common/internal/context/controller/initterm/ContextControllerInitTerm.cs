@@ -150,5 +150,29 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 
             map.Add(tag, triggeringEvent);
         }
+        
+        public void PopulateEndConditionFromTrigger(MatchedEventMap map, IDictionary<String, Object> matchedEventMap) {
+            // compute correlated termination
+            ContextConditionDescriptor start = factory.InitTermSpec.StartCondition;
+            if (!(start is ContextConditionDescriptorPattern)) {
+                return;
+            }
+            ContextConditionDescriptorPattern pattern = (ContextConditionDescriptorPattern) start;
+            foreach (String tagged in pattern.TaggedEvents) {
+                PopulatePattern(tagged, map, matchedEventMap);
+            }
+            foreach (String array in pattern.ArrayEvents) {
+                PopulatePattern(array, map, matchedEventMap);
+            }
+        }
+
+        private void PopulatePattern(String tagged, MatchedEventMap map, IDictionary<String, Object> matchedEventMap) {
+            if (matchedEventMap.TryGetValue(tagged, out var value)) {
+                int tag = map.Meta.GetTagFor(tagged);
+                if (tag != -1) {
+                    map.Add(tag, value);
+                }
+            }
+        }
     }
 } // end of namespace

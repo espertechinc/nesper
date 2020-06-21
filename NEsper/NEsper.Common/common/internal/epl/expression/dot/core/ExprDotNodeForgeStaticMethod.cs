@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.join.analyze;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.rettype;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.core
@@ -33,8 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprDotForge[] chainForges,
             ExprDotStaticMethodWrap resultWrapLambda,
             bool rethrowExceptions,
-            object targetObject,
-            string optionalStatementName)
+            ValueAndFieldDesc targetObject,
+            string optionalStatementName,
+            bool isLocalInlinedClass)
         {
             ExprForgeRenderable = parent;
             IsReturnsConstantResult = isReturnsConstantResult;
@@ -53,6 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             IsRethrowExceptions = rethrowExceptions;
             TargetObject = targetObject;
             OptionalStatementName = optionalStatementName;
+            IsLocalInlinedClass = isLocalInlinedClass;
         }
 
         public string ClassOrPropertyName { get; }
@@ -67,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public ExprDotStaticMethodWrap ResultWrapLambda { get; }
 
-        public object TargetObject { get; }
+        public ValueAndFieldDesc TargetObject { get; }
 
         public override ExprNodeRenderable ExprForgeRenderable { get; }
 
@@ -82,6 +85,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         public string OptionalStatementName { get; }
 
         public override ExprEvaluator ExprEvaluator => throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
+
+        public override bool IsLocalInlinedClass { get; }
 
         public override Type EvaluationType {
             get {

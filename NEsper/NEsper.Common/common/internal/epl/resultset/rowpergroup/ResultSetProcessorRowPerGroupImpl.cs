@@ -110,7 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 
             method.Block
                 .IfCondition(Not(ExprDotMethod(REF_NEWDATA, "IsEmpty")))
-                .ForEach(typeof(MultiKey<EventBean>), "aNewEvent", REF_NEWDATA)
+                .ForEach(typeof(MultiKeyArrayOfKeys<EventBean>), "aNewEvent", REF_NEWDATA)
                 .DeclareVar<EventBean[]>(
                     "eventsPerStream",
                     Cast(typeof(EventBean[]), ExprDotName(Ref("aNewEvent"), "Array")))
@@ -126,7 +126,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 .BlockEnd()
                 .BlockEnd()
                 .IfCondition(And(NotEqualsNull(REF_OLDDATA), Not(ExprDotMethod(REF_OLDDATA, "IsEmpty"))))
-                .ForEach(typeof(MultiKey<EventBean>), "anOldEvent", REF_OLDDATA)
+                .ForEach(typeof(MultiKeyArrayOfKeys<EventBean>), "anOldEvent", REF_OLDDATA)
                 .DeclareVar<EventBean[]>(
                     "eventsPerStream",
                     Cast(typeof(EventBean[]), ExprDotName(Ref("anOldEvent"), "Array")))
@@ -358,7 +358,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                                 Cast(typeof(EventBean), ExprDotName(Ref("entry"), "Value"))));
                     }
 
-                    forEach.Increment("count")
+                    forEach.IncrementRef("count")
                         .BlockEnd();
                 }
 
@@ -674,7 +674,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         forEach.AssignArrayElement("currentGenerators", Ref("count"), Ref("eventsPerStream"));
                     }
 
-                    forEach.Increment("count")
+                    forEach.IncrementRef("count")
                         .BlockEnd();
                 }
 
@@ -762,7 +762,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     .DeclareVar<int>("count", Constant(0));
 
                 methodNode.Block
-                    .ForEach(typeof(MultiKey<EventBean>), "eventsPerStream", Ref("resultSet"))
+                    .ForEach(typeof(MultiKeyArrayOfKeys<EventBean>), "eventsPerStream", Ref("resultSet"))
                     .DeclareVar<EventBean[]>(
                         "eps",
                         ExprDotName(Ref("eventsPerStream"), "Array"))
@@ -772,7 +772,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         "Put",
                         ArrayAtIndex(Ref("keys"), Ref("count")),
                         Ref("eps"))
-                    .Increment("count")
+                    .IncrementRef("count")
                     .BlockEnd();
                 
                 methodNode.Block.MethodReturn(Ref("keys"));
@@ -782,7 +782,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 typeof(object[]),
                 "GenerateGroupKeyArrayJoinTakingMapCodegen",
                 CodegenNamedParam.From(
-                    typeof(ISet<MultiKey<EventBean>>), "resultSet",
+                    typeof(ISet<MultiKeyArrayOfKeys<EventBean>>), "resultSet",
                     typeof(IDictionary<object, EventBean[]>), "eventPerKey",
                     typeof(bool), NAME_ISNEWDATA),
                 typeof(ResultSetProcessorRowPerGroupImpl),
@@ -1232,11 +1232,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 NewInstance(typeof(Dictionary<object, EventBean[]>)));
             {
                 var forEach = method.Block
-                    .ForEach(typeof(UniformPair<ISet<MultiKey<EventBean>>>), "pair", REF_JOINEVENTSSET);
-                forEach.DeclareVar<ISet<MultiKey<EventBean>>>(
+                    .ForEach(typeof(UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>), "pair", REF_JOINEVENTSSET);
+                forEach.DeclareVar<ISet<MultiKeyArrayOfKeys<EventBean>>>(
                         "newData",
                         ExprDotName(Ref("pair"), "First"))
-                    .DeclareVar<ISet<MultiKey<EventBean>>>(
+                    .DeclareVar<ISet<MultiKeyArrayOfKeys<EventBean>>>(
                         "oldData",
                         ExprDotName(Ref("pair"), "Second"));
 
@@ -1248,7 +1248,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     var ifNewData = forEach.IfCondition(NotEqualsNull(Ref("newData")));
                     {
                         var forNew = ifNewData.ForEach(
-                            typeof(MultiKey<EventBean>),
+                            typeof(MultiKeyArrayOfKeys<EventBean>),
                             "aNewData",
                             Ref("newData"));
                         forNew.DeclareVar<EventBean[]>(
@@ -1285,7 +1285,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     var ifOldData = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
                     {
                         var forOld = ifOldData.ForEach(
-                            typeof(MultiKey<EventBean>),
+                            typeof(MultiKeyArrayOfKeys<EventBean>),
                             "anOldData",
                             Ref("oldData"));
                         forOld.DeclareVar<EventBean[]>(
@@ -1385,14 +1385,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             if (forge.OptionalHavingNode == null) {
                 {
                     var forEach = method.Block.ForEach(
-                        typeof(UniformPair<ISet<MultiKey<EventBean>>>),
+                        typeof(UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>),
                         "pair",
                         REF_JOINEVENTSSET);
                     forEach
-                        .DeclareVar<ISet<MultiKey<EventBean>>>(
+                        .DeclareVar<ISet<MultiKeyArrayOfKeys<EventBean>>>(
                             "newData",
                             ExprDotName(Ref("pair"), "First"))
-                        .DeclareVar<ISet<MultiKey<EventBean>>>(
+                        .DeclareVar<ISet<MultiKeyArrayOfKeys<EventBean>>>(
                             "oldData",
                             ExprDotName(Ref("pair"), "Second"));
 
@@ -1400,7 +1400,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         var ifNewData = forEach.IfCondition(NotEqualsNull(Ref("newData")));
                         {
                             var forloop = ifNewData.ForEach(
-                                typeof(MultiKey<EventBean>),
+                                typeof(MultiKeyArrayOfKeys<EventBean>),
                                 "aNewData",
                                 Ref("newData"));
                             forloop.DeclareVar<EventBean[]>(
@@ -1452,7 +1452,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         var ifOldData = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
                         {
                             var forloop = ifOldData.ForEach(
-                                typeof(MultiKey<EventBean>),
+                                typeof(MultiKeyArrayOfKeys<EventBean>),
                                 "anOldData",
                                 Ref("oldData"));
                             forloop.DeclareVar<EventBean[]>(
@@ -1506,13 +1506,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 method.Block.ExprDotMethod(Ref("groupRepsView"), "Clear");
                 {
                     var forEach = method.Block.ForEach(
-                        typeof(UniformPair<ISet<MultiKey<EventBean>>>),
+                        typeof(UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>),
                         "pair",
                         REF_JOINEVENTSSET);
-                    forEach.DeclareVar<ISet<MultiKey<EventBean>>>(
+                    forEach.DeclareVar<ISet<MultiKeyArrayOfKeys<EventBean>>>(
                             "newData",
                             ExprDotName(Ref("pair"), "First"))
-                        .DeclareVar<ISet<MultiKey<EventBean>>>(
+                        .DeclareVar<ISet<MultiKeyArrayOfKeys<EventBean>>>(
                             "oldData",
                             ExprDotName(Ref("pair"), "Second"))
                         .DeclareVar<object[]>(
@@ -1536,7 +1536,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         ifNewData.DeclareVar<int>("count", Constant(0));
                         {
                             var forloop = ifNewData.ForEach(
-                                typeof(MultiKey<EventBean>),
+                                typeof(MultiKeyArrayOfKeys<EventBean>),
                                 "aNewData",
                                 Ref("newData"));
                             forloop.DeclareVar<object>(
@@ -1558,7 +1558,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                                             Ref("eventsPerStream"),
                                             ConstantTrue(),
                                             REF_AGENTINSTANCECONTEXT)))
-                                .Increment("count")
+                                .IncrementRef("count")
                                 .BlockContinue();
 
                             forloop.DeclareVar<OutputConditionPolled>(
@@ -1592,7 +1592,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                                     Ref("oldEventsSortKey"));
                             }
 
-                            forloop.Increment("count");
+                            forloop.IncrementRef("count");
                         }
                     }
 
@@ -1601,7 +1601,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             .DeclareVar<int>("count", Constant(0));
                         {
                             var forloop = ifOldData.ForEach(
-                                typeof(MultiKey<EventBean>),
+                                typeof(MultiKeyArrayOfKeys<EventBean>),
                                 "anOldData",
                                 Ref("oldData"));
                             forloop.DeclareVar<object>(
@@ -1623,7 +1623,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                                             Ref("eventsPerStream"),
                                             ConstantFalse(),
                                             REF_AGENTINSTANCECONTEXT)))
-                                .Increment("count")
+                                .IncrementRef("count")
                                 .BlockContinue();
 
                             forloop.DeclareVar<OutputConditionPolled>(
@@ -1657,7 +1657,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                                     Ref("oldEventsSortKey"));
                             }
 
-                            forloop.Increment("count");
+                            forloop.IncrementRef("count");
                         }
                     }
                 }
@@ -1727,11 +1727,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             }
 
             {
-                var forLoop = method.Block.ForEach(typeof(UniformPair<ISet<MultiKey<EventBean>>>), "pair", REF_JOINEVENTSSET);
-                forLoop.DeclareVar<ISet<MultiKey<EventBean>>>(
+                var forLoop = method.Block.ForEach(typeof(UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>), "pair", REF_JOINEVENTSSET);
+                forLoop.DeclareVar<ISet<MultiKeyArrayOfKeys<EventBean>>>(
                         "newData",
                         ExprDotName(Ref("pair"), "First"))
-                    .DeclareVar<ISet<MultiKey<EventBean>>>(
+                    .DeclareVar<ISet<MultiKeyArrayOfKeys<EventBean>>>(
                         "oldData",
                         ExprDotName(Ref("pair"), "Second"));
 
@@ -1743,7 +1743,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     var ifNewData = forLoop.IfCondition(NotEqualsNull(Ref("newData")));
                     {
                         var forNew = ifNewData.ForEach(
-                            typeof(MultiKey<EventBean>),
+                            typeof(MultiKeyArrayOfKeys<EventBean>),
                             "aNewData",
                             Ref("newData"));
                         forNew.DeclareVar<EventBean[]>(
@@ -1784,7 +1784,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     var ifOldData = forLoop.IfCondition(NotEqualsNull(Ref("oldData")));
                     {
                         var forOld = ifOldData.ForEach(
-                            typeof(MultiKey<EventBean>),
+                            typeof(MultiKeyArrayOfKeys<EventBean>),
                             "anOldData",
                             Ref("oldData"));
                         forOld.DeclareVar<EventBean[]>(
@@ -1860,11 +1860,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 
             {
                 var forEach = method.Block
-                    .ForEach(typeof(UniformPair<ISet<MultiKey<EventBean>>>), "pair", REF_JOINEVENTSSET);
-                forEach.DeclareVar<ISet<MultiKey<EventBean>>>(
+                    .ForEach(typeof(UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>), "pair", REF_JOINEVENTSSET);
+                forEach.DeclareVar<ISet<MultiKeyArrayOfKeys<EventBean>>>(
                         "newData",
                         ExprDotName(Ref("pair"), "First"))
-                    .DeclareVar<ISet<MultiKey<EventBean>>>(
+                    .DeclareVar<ISet<MultiKeyArrayOfKeys<EventBean>>>(
                         "oldData",
                         ExprDotName(Ref("pair"), "Second"));
 

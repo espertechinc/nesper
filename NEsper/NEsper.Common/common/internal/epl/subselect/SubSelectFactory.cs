@@ -65,6 +65,13 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             strategyFactory.Ready(statementContext, activator.EventType);
         }
 
+        public void Ready(
+            SubSelectStrategyFactoryContext subselectFactoryContext,
+            bool recovery)
+        {
+            strategyFactory.Ready(subselectFactoryContext, activator.EventType);
+        }
+
         public AIRegistryRequirementSubquery RegistryRequirements {
             get => new AIRegistryRequirementSubquery(
                 hasAggregation,

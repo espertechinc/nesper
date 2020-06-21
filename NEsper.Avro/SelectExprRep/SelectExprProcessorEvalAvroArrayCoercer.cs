@@ -76,9 +76,9 @@ namespace NEsper.Avro.SelectExprRep
 
         public ExprNodeRenderable ExprForgeRenderable => ForgeRenderable;
 
-        public void ToEPL(
-            TextWriter writer,
-            ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(GetType().Name);
         }

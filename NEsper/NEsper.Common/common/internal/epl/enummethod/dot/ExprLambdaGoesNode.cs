@@ -79,7 +79,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             return false;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
         }
     }

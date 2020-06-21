@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
     {
         public StatementAgentInstanceFactoryCreateVariableResult(
             Viewable finalView,
-            AgentInstanceStopCallback stopCallback,
+            AgentInstanceMgmtCallback stopCallback,
             AgentInstanceContext agentInstanceContext)
             :
             base(
@@ -32,7 +32,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
                 null,
                 null,
                 Collections.GetEmptyMap<int, ExprTableEvalStrategy>(),
-                Collections.GetEmptyList<StatementAgentInstancePreload>())
+                Collections.GetEmptyList<StatementAgentInstancePreload>(),
+                null)
         {
         }
     }

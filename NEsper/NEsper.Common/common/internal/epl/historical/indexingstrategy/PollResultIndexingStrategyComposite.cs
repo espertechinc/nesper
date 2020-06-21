@@ -59,6 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
                 OptionalKeyedProps,
                 OptKeyCoercedTypes,
                 HashGetter,
+                null,
                 RangeProps,
                 OptRangeCoercedTypes,
                 RangeGetters);

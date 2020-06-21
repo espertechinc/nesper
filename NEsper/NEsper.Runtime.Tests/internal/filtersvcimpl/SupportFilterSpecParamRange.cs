@@ -62,7 +62,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             ExprEvaluatorContext exprEvaluatorContext,
             StatementContextFilterEvalEnv filterEvalEnv)
         {
-            if (Lookupable.ReturnType == typeof(string))
+            if (Lkupable.ReturnType == typeof(string))
             {
                 return new StringRange(
                     (string) Min.GetFilterValue(matchedEvents, exprEvaluatorContext, filterEvalEnv),

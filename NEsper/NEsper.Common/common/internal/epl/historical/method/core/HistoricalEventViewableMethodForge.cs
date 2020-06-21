@@ -14,6 +14,7 @@ using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -47,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
             this.metadata = metadata;
         }
 
-        public override void Validate(
+        public override IList<StmtClassForgeableFactory> Validate(
             StreamTypeService typeService,
             StatementBaseInfo @base,
             StatementCompileTimeServices services)
@@ -58,7 +59,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 .Build();
 
             var visitor = new ExprNodeIdentifierAndStreamRefVisitor(true);
-            IList<ExprNode> validatedInputParameters = new List<ExprNode>();
+            var validatedInputParameters = new List<ExprNode>();
+
             foreach (var exprNode in methodStreamSpec.Expressions) {
                 var validated = ExprNodeUtilityValidate.GetValidatedSubtree(
                     ExprNodeOrigin.METHODINVJOIN,
@@ -70,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
 
             // determine required streams
             foreach (ExprNodePropOrStreamDesc @ref in visitor.Refs) {
-                subordinateStreams.Add(@ref.StreamNum);
+                SubordinateStreams.Add(@ref.StreamNum);
             }
 
             // class-based evaluation
@@ -104,19 +106,24 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                     methodStreamSpec.MethodName,
                     @base.StatementRawInfo,
                     services);
-                inputParamEvaluators = desc.ChildForges;
+                InputParamEvaluators = desc.ChildForges;
                 targetMethod = desc.ReflectionMethod;
             }
             else {
                 // script-based evaluation
-                inputParamEvaluators =
-                    ExprNodeUtilityQuery.GetForges(ExprNodeUtilityQuery.ToArray(validatedInputParameters));
+                InputParamEvaluators = ExprNodeUtilityQuery.GetForges(ExprNodeUtilityQuery.ToArray(validatedInputParameters));
             }
+            
+            // plan multikey
+            MultiKeyPlan multiKeyPlan = MultiKeyPlanner.PlanMultiKey(InputParamEvaluators, false, @base.StatementRawInfo, services.SerdeResolver);
+            MultiKeyClassRef = multiKeyPlan.ClassRef;
 
             Pair<MethodTargetStrategyForge, MethodConversionStrategyForge> strategies =
-                PollExecStrategyPlanner.Plan(metadata, targetMethod, eventType);
+                PollExecStrategyPlanner.Plan(metadata, targetMethod, EventType);
             target = strategies.First;
             conversion = strategies.Second;
+            
+            return multiKeyPlan.MultiKeyForgeables;
         }
 
         public override Type TypeOfImplementation()

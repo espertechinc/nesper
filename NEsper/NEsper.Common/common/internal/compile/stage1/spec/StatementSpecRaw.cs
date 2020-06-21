@@ -20,9 +20,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     [Serializable]
     public class StatementSpecRaw
     {
-        private static int _gid = 0;
-        private int _id = ++_gid;
-        
         /// <summary>
         ///     Ctor.
         /// </summary>
@@ -168,10 +165,14 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         public string OptionalContextName { get; set; }
 
         public IList<ExpressionScriptProvided> ScriptExpressions { get; set; }
+        
+        public IList<String> ClassProvidedList { get; set; }
 
         public CreateDataFlowDesc CreateDataFlowDesc { get; set; }
 
         public CreateExpressionDesc CreateExpressionDesc { get; set; }
+        
+        public String CreateClassProvided { get; set; }
 
         public FireAndForgetSpec FireAndForgetSpec {
             get;
@@ -194,4 +195,4 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             set => SelectStreamSelectorEnum = value;
         }
     }
-} // end of namespace
+} // end of namespac

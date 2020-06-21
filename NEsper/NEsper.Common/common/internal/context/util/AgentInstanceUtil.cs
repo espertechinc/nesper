@@ -15,6 +15,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.exception;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.airegistry;
+using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.mgr;
 using com.espertech.esper.common.@internal.epl.output.core;
 using com.espertech.esper.common.@internal.@event.core;
@@ -71,6 +72,7 @@ namespace com.espertech.esper.common.@internal.context.util
         public static void ContextPartitionTerminate(
             int agentInstanceId,
             ContextControllerStatementDesc statementDesc,
+            ContextController[] contextControllers,
             IDictionary<string, object> terminationProperties,
             bool leaveLocksAcquired,
             IList<AgentInstance> agentInstancesLocksHeld)
@@ -81,7 +83,17 @@ namespace com.espertech.esper.common.@internal.context.util
 
             if (terminationProperties != null) {
                 var mappedEventBean = (MappedEventBean) holder.AgentInstanceContext.ContextProperties;
-                mappedEventBean.Properties.PutAll(terminationProperties);
+                if (contextControllers.Length == 1) {
+                    mappedEventBean.Properties.PutAll(terminationProperties);
+                }
+                else {
+                    var lastController = contextControllers[contextControllers.Length - 1];
+                    var lastContextName = lastController.Factory.FactoryEnv.ContextName;
+                    var inner = (IDictionary<string, object>) mappedEventBean.Properties.Get(lastContextName);
+                    if (inner != null) {
+                        inner.PutAll(terminationProperties);
+                    }
+                }
             }
 
             // we are not removing statement resources from memory as they may still be used for the same event
@@ -98,7 +110,7 @@ namespace com.espertech.esper.common.@internal.context.util
         }
 
         public static void Stop(
-            AgentInstanceStopCallback stopCallback,
+            AgentInstanceMgmtCallback stopCallback,
             AgentInstanceContext agentInstanceContext,
             Viewable finalView,
             bool isStatementStop,
@@ -145,7 +157,7 @@ namespace com.espertech.esper.common.@internal.context.util
         }
 
         public static void StopSafe(
-            AgentInstanceStopCallback stopMethod,
+            AgentInstanceMgmtCallback stopMethod,
             AgentInstanceContext agentInstanceContext)
         {
             var stopServices = new AgentInstanceStopServices(agentInstanceContext);
@@ -174,25 +186,11 @@ namespace com.espertech.esper.common.@internal.context.util
             }
         }
 
-        public static AgentInstanceStopCallback FinalizeSafeStopCallbacks(
-            IList<AgentInstanceStopCallback> stopCallbacks)
+        public static AgentInstanceMgmtCallback FinalizeSafeStopCallbacks(
+            IList<AgentInstanceMgmtCallback> stopCallbacks)
         {
             var stopCallbackArray = stopCallbacks.ToArray();
-            return new ProxyAgentInstanceStopCallback() {
-                ProcStop = (services) => {
-                    foreach (var callback in stopCallbackArray) {
-                        try {
-                            callback.Stop(services);
-                        }
-                        catch (EPException) {
-                            throw;
-                        }
-                        catch (Exception e) {
-                            HandleStopException(e, services.AgentInstanceContext);
-                        }
-                    }
-                },
-            };
+            return new AgentInstanceFinalizedMgmtCallback(stopCallbackArray);
         }
 
         private static void HandleStopException(
@@ -246,7 +244,6 @@ namespace com.espertech.esper.common.@internal.context.util
                 statementContext.StatementInformationals.InstrumentationProvider;
             var agentInstanceContext = new AgentInstanceContext(
                 statementContext,
-                agentInstanceId,
                 agentInstanceHandle,
                 agentInstanceFilterProxy,
                 contextProperties,
@@ -290,6 +287,9 @@ namespace com.espertech.esper.common.@internal.context.util
                             preload.ExecutePreload();
                         }
                     }
+                    
+                    // handle any pattern-match-event that was produced during startup, relevant for "timer:interval(0)" in conjunction with contexts
+                    startResult.PostContextMergeRunnable?.Invoke();
 
                     var holder =
                         services.StatementResourceHolderBuilder.Build(agentInstanceContext, startResult);
@@ -297,7 +297,7 @@ namespace com.espertech.esper.common.@internal.context.util
                         agentInstanceId,
                         holder);
 
-                    // instantiate
+                    // instantiated
                     return startResult;
                 }
                 finally {
@@ -320,7 +320,8 @@ namespace com.espertech.esper.common.@internal.context.util
             agentInstanceContext.FilterService.Evaluate(
                 theEvent,
                 callbacks,
-                agentInstanceContext.StatementContext.StatementId);
+                agentInstanceContext.StatementContext.StatementId,
+                agentInstanceContext);
 
             try {
                 agentInstanceContext.VariableManagementService.SetLocalVersion();
@@ -355,6 +356,53 @@ namespace com.espertech.esper.common.@internal.context.util
                 statementContext.Annotations,
                 statementContext.IsStatelessSelect,
                 statementContext.StatementType);
+        }
+
+        internal class AgentInstanceFinalizedMgmtCallback : AgentInstanceMgmtCallback
+        {
+            private readonly AgentInstanceMgmtCallback[] _mgmtCallbackArray;
+
+            internal AgentInstanceFinalizedMgmtCallback(AgentInstanceMgmtCallback[] mgmtCallbackArray)
+            {
+                this._mgmtCallbackArray = mgmtCallbackArray;
+            }
+
+            public void Stop(AgentInstanceStopServices services)
+            {
+                foreach (AgentInstanceMgmtCallback callback in _mgmtCallbackArray) {
+                    try {
+                        callback.Stop(services);
+                    }
+                    catch (EPException) {
+                        throw;
+                    }
+                    catch (Exception e) {
+                        HandleStopException(e, services.AgentInstanceContext);
+                    }
+                }
+            }
+
+            public void Transfer(AgentInstanceTransferServices services)
+            {
+                foreach (AgentInstanceMgmtCallback callback in _mgmtCallbackArray) {
+                    try {
+                        callback.Transfer(services);
+                    }
+                    catch (EPException) {
+                        throw;
+                    }
+                    catch (Exception e) {
+                        services
+                            .AgentInstanceContext
+                            .ExceptionHandlingService
+                            .HandleException(
+                                e,
+                                services.AgentInstanceContext.EpStatementAgentInstanceHandle,
+                                ExceptionHandlerExceptionType.STAGE,
+                                null);
+                    }
+                }
+            }
         }
     }
 } // end of namespace

@@ -37,7 +37,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         private readonly BeanEventType _beanEventType;
 
         private readonly BeanInstantiatorForge _beanInstantiator;
-        private readonly bool _hasPrimitiveTypes;
         private readonly bool[] _primitiveType;
         private readonly WriteablePropertyDescriptor[] _properties;
         private readonly MemberInfo[] _writeMembersReflection;
@@ -63,15 +62,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 
             _writeMembersReflection = new MemberInfo[properties.Length];
 
-            var primitiveTypeCheck = false;
             _primitiveType = new bool[properties.Length];
             for (var i = 0; i < properties.Length; i++) {
                 _writeMembersReflection[i] = properties[i].WriteMember;
                 _primitiveType[i] = properties[i].PropertyType.IsValueType && properties[i].PropertyType.CanNotBeNull();
-                primitiveTypeCheck |= _primitiveType[i];
             }
-
-            _hasPrimitiveTypes = primitiveTypeCheck;
         }
 
         public EventBeanManufacturer GetManufacturer(EventBeanTypedEventFactory eventBeanTypedEventFactory)

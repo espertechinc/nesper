@@ -78,10 +78,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             get => false;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write("instanceof(");
-            this.ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+            this.ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
             writer.Write(",");
 
             string delimiter = "";

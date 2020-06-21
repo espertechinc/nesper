@@ -31,17 +31,22 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 {
     public class CodegenBlock
     {
-        private readonly CodegenCtor parentCtor;
-        private readonly CodegenMethod parentMethodNode;
-        private readonly CodegenStatementWBlockBase parentWBlock;
-        private bool closed;
+        private readonly CodegenCtor _parentCtor;
+        private readonly CodegenMethod _parentMethodNode;
+        private readonly CodegenStatementWBlockBase _parentWBlock;
+        private bool _closed;
 
-        private IList<CodegenStatement> statements = new List<CodegenStatement>(4);
+        private IList<CodegenStatement> _statements = new List<CodegenStatement>(4);
 
         /// <summary>
         /// Returns the current set of statements.
         /// </summary>
-        public IList<CodegenStatement> Statements => statements;
+        public IList<CodegenStatement> Statements => _statements;
+
+        /// <summary>
+        /// Returns true if the block is closed.
+        /// </summary>
+        public bool IsClosed => _closed;
 
         //private BlockSyntax blockSyntax;
 
@@ -50,9 +55,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             CodegenMethod parentMethodNode,
             CodegenStatementWBlockBase parentWBlock)
         {
-            this.parentCtor = parentCtor;
-            this.parentMethodNode = parentMethodNode;
-            this.parentWBlock = parentWBlock;
+            this._parentCtor = parentCtor;
+            this._parentMethodNode = parentMethodNode;
+            this._parentWBlock = parentWBlock;
         }
 
         public CodegenBlock()
@@ -77,13 +82,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public bool IsEmpty()
         {
-            return statements.IsEmpty();
+            return _statements.IsEmpty();
             //return blockSyntax.Statements.IsNullOrEmpty();
         }
 
         public bool IsNotEmpty()
         {
-            return statements.IsNotEmpty();
+            return _statements.IsNotEmpty();
             //return !blockSyntax.Statements.IsNullOrEmpty();
         }
 
@@ -91,35 +96,35 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         {
             CheckClosed();
 
-            statements.Add(new CodegenStatementExpression(expression));
+            _statements.Add(new CodegenStatementExpression(expression));
             return this;
         }
 
-        public CodegenBlock Decrement(CodegenExpressionRef expression)
+        public CodegenBlock Decrement(CodegenExpression expression)
         {
             CheckClosed();
-            statements.Add(new CodegenStatementExpression(CodegenExpressionBuilder.Decrement(expression)));
+            _statements.Add(new CodegenStatementExpression(CodegenExpressionBuilder.Decrement(expression)));
             return this;
         }
 
-        public CodegenBlock Decrement(string @ref)
+        public CodegenBlock DecrementRef(string @ref)
         {
             CheckClosed();
-            statements.Add(new CodegenStatementExpression(CodegenExpressionBuilder.Decrement(@ref)));
+            _statements.Add(new CodegenStatementExpression(CodegenExpressionBuilder.DecrementRef(@ref)));
             return this;
         }
 
-        public CodegenBlock Increment(CodegenExpressionRef expression)
+        public CodegenBlock Increment(CodegenExpression expression)
         {
             CheckClosed();
-            statements.Add(new CodegenStatementExpression(CodegenExpressionBuilder.Increment(expression)));
+            _statements.Add(new CodegenStatementExpression(CodegenExpressionBuilder.Increment(expression)));
             return this;
         }
 
-        public CodegenBlock Increment(string @ref)
+        public CodegenBlock IncrementRef(string @ref)
         {
             CheckClosed();
-            statements.Add(new CodegenStatementExpression(CodegenExpressionBuilder.Increment(@ref)));
+            _statements.Add(new CodegenStatementExpression(CodegenExpressionBuilder.IncrementRef(@ref)));
             return this;
         }
 
@@ -128,7 +133,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             object constant)
         {
             CheckClosed();
-            statements.Add(new CodegenStatementIfConditionReturnConst(condition, constant));
+            _statements.Add(new CodegenStatementIfConditionReturnConst(condition, constant));
             return this;
         }
 
@@ -159,9 +164,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return IfCondition(EqualsNull(Ref(@ref)));
         }
 
-        public CodegenBlock IfRefNull(CodegenExpressionRef @ref)
+        public CodegenBlock IfNull(CodegenExpression expression)
         {
-            return IfCondition(EqualsNull(@ref));
+            return IfCondition(EqualsNull(expression));
         }
 
         public CodegenBlock IfRefNotNull(string @ref)
@@ -173,7 +178,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         {
             CheckClosed();
             var builder = new CodegenStatementIf(this);
-            statements.Add(builder);
+            _statements.Add(builder);
             return builder.IfBlock(condition);
         }
 
@@ -181,7 +186,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         {
             CheckClosed();
             var builder = new CodegenStatementSynchronized(this, expression);
-            statements.Add(builder);
+            _statements.Add(builder);
             return builder.MakeBlock();
         }
 
@@ -193,7 +198,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             var forStmt = new CodegenStatementForIntSimple(this, name, upperLimit);
             var block = new CodegenBlock(forStmt);
             forStmt.Block = block;
-            statements.Add(forStmt);
+            _statements.Add(forStmt);
             return block;
         }
 
@@ -208,7 +213,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             var forStmt = new CodegenStatementFor(this, type, name, initialization, termination, increment);
             var block = new CodegenBlock(forStmt);
             forStmt.Block = block;
-            statements.Add(forStmt);
+            _statements.Add(forStmt);
             return block;
         }
 
@@ -221,10 +226,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             var forStmt = new CodegenStatementForEach(this, type, name, target);
             var block = new CodegenBlock(forStmt);
             forStmt.Block = block;
-            statements.Add(forStmt);
+            _statements.Add(forStmt);
             return block;
         }
-        
+
         public CodegenBlock ForEach<T>(
             string name,
             CodegenExpression target)
@@ -234,7 +239,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             var forStmt = new CodegenStatementForEach(this, type, name, target);
             var block = new CodegenBlock(forStmt);
             forStmt.Block = block;
-            statements.Add(forStmt);
+            _statements.Add(forStmt);
             return block;
         }
 
@@ -246,7 +251,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             var forStmt = new CodegenStatementForEach(this, name, target);
             var block = new CodegenBlock(forStmt);
             forStmt.Block = block;
-            statements.Add(forStmt);
+            _statements.Add(forStmt);
             return block;
         }
 
@@ -256,7 +261,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             var tryCatch = new CodegenStatementTryCatch(this);
             var block = new CodegenBlock(tryCatch);
             tryCatch.Try = block;
-            statements.Add(tryCatch);
+            _statements.Add(tryCatch);
             return block;
         }
 
@@ -273,7 +278,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             string rhsName)
         {
             CheckClosed();
-            statements.Add(new CodegenStatementDeclareVarWCast(clazz, var, rhsName));
+            _statements.Add(new CodegenStatementDeclareVarWCast(clazz, var, rhsName));
             return this;
         }
 
@@ -289,8 +294,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             string var,
             CodegenExpression initializer)
         {
+            if (initializer == null) {
+                throw new ArgumentNullException(nameof(initializer));
+            }
+
             CheckClosed();
-            statements.Add(new CodegenStatementDeclareVar(clazz, var, initializer));
+            _statements.Add(new CodegenStatementDeclareVar(clazz, var, initializer));
             return this;
         }
 
@@ -299,8 +308,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             string var,
             CodegenExpression initializer)
         {
+            if (initializer == null) {
+                throw new ArgumentNullException(nameof(initializer));
+            }
+
             CheckClosed();
-            statements.Add(new CodegenStatementDeclareVar(typeName, var, initializer));
+            _statements.Add(new CodegenStatementDeclareVar(typeName, var, initializer));
             return this;
         }
 
@@ -328,7 +341,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             string var)
         {
             CheckClosed();
-            statements.Add(new CodegenStatementDeclareVar(clazz, var, null));
+            _statements.Add(new CodegenStatementDeclareVar(clazz, var, null));
             return this;
         }
 
@@ -344,7 +357,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             string var)
         {
             CheckClosed();
-            statements.Add(new CodegenStatementDeclareVarNull(clazz, var));
+            _statements.Add(new CodegenStatementDeclareVarNull(clazz, var));
+            return this;
+        }
+
+        public CodegenBlock SuperCtor(params CodegenExpression[] parameters)
+        {
+            CheckClosed();
+            _statements.Add(new CodegenStatementSuperCtor(parameters));
             return this;
         }
 
@@ -353,7 +373,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             CodegenExpression assignment)
         {
             CheckClosed();
-            statements.Add(new CodegenStatementAssignNamed(@ref, assignment));
+            _statements.Add(new CodegenStatementAssignNamed(Ref(@ref), assignment));
+            return this;
+        }
+
+        public CodegenBlock AssignMember(
+            string @ref,
+            CodegenExpression assignment)
+        {
+            CheckClosed();
+            _statements.Add(new CodegenStatementAssignNamed(Member(@ref), assignment));
             return this;
         }
 
@@ -362,14 +391,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             CodegenExpression assignment)
         {
             CheckClosed();
-            statements.Add(new CodegenStatementAssignRef(@ref, assignment));
+            _statements.Add(new CodegenStatementAssignRef(@ref, assignment));
             return this;
         }
 
         public CodegenBlock BreakLoop()
         {
             CheckClosed();
-            statements.Add(CodegenStatementBreakLoop.INSTANCE);
+            _statements.Add(CodegenStatementBreakLoop.INSTANCE);
             return this;
         }
 
@@ -388,7 +417,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             CodegenExpression assignment)
         {
             CheckClosed();
-            statements.Add(new CodegenStatementAssignArrayElement2Dim(Ref(@ref), indexOne, indexTwo, assignment));
+            _statements.Add(new CodegenStatementAssignArrayElement2Dim(Ref(@ref), indexOne, indexTwo, assignment));
             return this;
         }
 
@@ -398,7 +427,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             CodegenExpression assignment)
         {
             CheckClosed();
-            statements.Add(new CodegenStatementAssignArrayElement(@ref, index, assignment));
+            _statements.Add(new CodegenStatementAssignArrayElement(@ref, index, assignment));
             return this;
         }
 
@@ -440,7 +469,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public CodegenBlock IfRefNullReturnFalse(string @ref)
         {
             CheckClosed();
-            statements.Add(new CodegenStatementIfRefNullReturnFalse(@ref));
+            _statements.Add(new CodegenStatementIfRefNullReturnFalse(@ref));
             return this;
         }
 
@@ -450,178 +479,154 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             object constant)
         {
             CheckClosed();
-            statements.Add(new CodegenStatementIfRefNotTypeReturnConst(@ref, type, constant));
+            _statements.Add(new CodegenStatementIfRefNotTypeReturnConst(@ref, type, constant));
             return this;
         }
 
         public CodegenBlock IfRefNullReturnNull(string @ref)
         {
             CheckClosed();
-            statements.Add(new CodegenStatementIfRefNullReturnNull(Ref(@ref)));
+            _statements.Add(new CodegenStatementIfNullReturnNull(Ref(@ref)));
             return this;
         }
 
-        public CodegenBlock IfRefNullReturnNull(CodegenExpressionRef @ref)
+        public CodegenBlock IfNullReturnNull(CodegenExpression @ref)
         {
             CheckClosed();
-            statements.Add(new CodegenStatementIfRefNullReturnNull(@ref));
+            _statements.Add(new CodegenStatementIfNullReturnNull(@ref));
             return this;
         }
 
-        public CodegenBlock IfRefNullThrowException(
-            CodegenExpressionRef @ref,
+        public CodegenBlock IfNullThrowException(
+            CodegenExpression @ref,
             CodegenExpression exceptionGenerator)
         {
-            return IfRefNull(@ref).BlockThrow(exceptionGenerator);
+            return IfNull(@ref).BlockThrow(exceptionGenerator);
         }
 
-        public CodegenBlock IfRefNullThrowException(
-            CodegenExpressionRef @ref,
+        public CodegenBlock IfNullThrowException(
+            CodegenExpression @ref,
             string message)
         {
-            return IfRefNullThrowException(@ref, NewInstance<EPException>(Constant(message)));
+            return IfNullThrowException(@ref, NewInstance<EPException>(Constant(message)));
         }
 
-        public CodegenBlock IfRefNullThrowException(CodegenExpressionRef @ref)
+        public CodegenBlock IfNullThrowException(CodegenExpressionRef @ref)
         {
-            return IfRefNullThrowException(@ref, "Null value encountered - not expected or allowed");
+            return IfNullThrowException(@ref, "Null value encountered - not expected or allowed");
         }
-        
+
         public CodegenBlock BlockReturn(CodegenExpression expression)
         {
-            if (parentWBlock == null) {
+            if (_parentWBlock == null) {
                 throw new IllegalStateException("No codeblock parent, use 'params methodReturn[] instead");
             }
 
             CheckClosed();
-            closed = true;
-            statements.Add(new CodegenStatementReturnExpression(expression));
+            _closed = true;
+            _statements.Add(new CodegenStatementReturnExpression(expression));
 
-            return parentWBlock.Parent;
+            return _parentWBlock.Parent;
         }
 
         public CodegenBlock BlockReturnNoValue()
         {
-            if (parentWBlock == null) {
+            if (_parentWBlock == null) {
                 throw new IllegalStateException("No codeblock parent, use 'params methodReturn[] instead");
             }
 
             CheckClosed();
-            closed = true;
-            statements.Add(CodegenStatementReturnNoValue.INSTANCE);
-            return parentWBlock.Parent;
+            _closed = true;
+            _statements.Add(CodegenStatementReturnNoValue.INSTANCE);
+            return _parentWBlock.Parent;
         }
 
         public CodegenStatementTryCatch TryReturn(CodegenExpression expression)
         {
-            if (parentWBlock == null) {
+            if (_parentWBlock == null) {
                 throw new IllegalStateException("No codeblock parent, use 'params methodReturn[] instead");
             }
 
-            if (!(parentWBlock is CodegenStatementTryCatch)) {
+            if (!(_parentWBlock is CodegenStatementTryCatch)) {
                 throw new IllegalStateException("Codeblock parent is not try-catch");
             }
 
             CheckClosed();
-            closed = true;
-            statements.Add(new CodegenStatementReturnExpression(expression));
-            return (CodegenStatementTryCatch) parentWBlock;
+            _closed = true;
+            _statements.Add(new CodegenStatementReturnExpression(expression));
+            return (CodegenStatementTryCatch) _parentWBlock;
         }
 
         public CodegenStatementTryCatch TryEnd()
         {
-            if (parentWBlock == null) {
+            if (_parentWBlock == null) {
                 throw new IllegalStateException("No codeblock parent, use 'params methodReturn[] instead");
             }
 
-            if (!(parentWBlock is CodegenStatementTryCatch)) {
+            if (!(_parentWBlock is CodegenStatementTryCatch)) {
                 throw new IllegalStateException("Codeblock parent is not try-catch");
             }
 
-            closed = true;
-            return (CodegenStatementTryCatch) parentWBlock;
+            _closed = true;
+            return (CodegenStatementTryCatch) _parentWBlock;
         }
 
         public CodegenBlock BlockThrow(CodegenExpression expression)
         {
-            if (parentWBlock == null) {
+            if (_parentWBlock == null) {
                 throw new IllegalStateException("No codeblock parent, use 'params methodReturn[] instead");
             }
 
             CheckClosed();
-            closed = true;
-            statements.Add(new CodegenStatementThrow(expression));
-            return parentWBlock.Parent;
+            _closed = true;
+            _statements.Add(new CodegenStatementThrow(expression));
+            return _parentWBlock.Parent;
         }
 
         public CodegenBlock BlockEnd()
         {
-            if (parentWBlock == null) {
+            if (_parentWBlock == null) {
                 throw new IllegalStateException("No codeblock parent, use 'params methodReturn[] instead");
             }
 
             CheckClosed();
-            closed = true;
-            return parentWBlock.Parent;
+            _closed = true;
+            return _parentWBlock.Parent;
         }
 
         public CodegenMethod MethodThrowUnsupported()
         {
-            if (parentMethodNode == null) {
+            if (_parentMethodNode == null) {
                 throw new IllegalStateException("No method parent, use 'blockReturn...' instead");
             }
 
             CheckClosed();
-            closed = true;
-            statements.Add(new CodegenStatementThrow(NewInstance(typeof(UnsupportedOperationException))));
-            return parentMethodNode;
+            _closed = true;
+            _statements.Add(new CodegenStatementThrow(NewInstance(typeof(UnsupportedOperationException))));
+            return _parentMethodNode;
         }
-
-#if false
-        public CodegenMethod MethodThrow(CodegenExpression expression)
-        {
-            if (parentMethodNode == null) {
-                throw new IllegalStateException("No method parent, use 'blockReturn...' instead");
-            }
-
-            CheckClosed();
-            closed = true;
-            statements.Add(new CodegenStatementThrow(expression));
-            return parentMethodNode;
-        }
-#endif
 
         public CodegenMethod MethodReturn(CodegenExpression expression)
         {
-            if (parentMethodNode == null) {
+            if (_parentMethodNode == null) {
                 throw new IllegalStateException("No method parent, use 'blockReturn...' instead");
             }
 
             CheckClosed();
-            closed = true;
-            statements.Add(new CodegenStatementReturnExpression(expression));
-            return parentMethodNode;
+            _closed = true;
+            _statements.Add(new CodegenStatementReturnExpression(expression));
+            return _parentMethodNode;
         }
 
         public CodegenMethod MethodEnd()
         {
-            if (parentMethodNode == null) {
+            if (_parentMethodNode == null) {
                 throw new IllegalStateException("No method node parent, use 'params blockReturn[] instead");
             }
 
             CheckClosed();
-            closed = true;
-            return parentMethodNode;
-        }
-
-        public void CtorEnd()
-        {
-            if (parentCtor == null) {
-                throw new IllegalStateException("No ctor node parent");
-            }
-
-            CheckClosed();
-            closed = true;
+            _closed = true;
+            return _parentMethodNode;
         }
 
         public void Render(
@@ -630,7 +635,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             int level,
             CodegenIndent indent)
         {
-            foreach (var statement in statements) {
+            foreach (var statement in _statements) {
                 indent.Indent(builder, level);
                 statement.Render(builder, isInnerClass, level, indent);
             }
@@ -638,14 +643,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public void MergeClasses(ISet<Type> classes)
         {
-            foreach (var statement in statements) {
+            foreach (var statement in _statements) {
                 statement.MergeClasses(classes);
             }
         }
 
         private void CheckClosed()
         {
-            if (closed) {
+            if (_closed) {
                 throw new IllegalStateException("Code block already closed");
             }
         }
@@ -653,59 +658,59 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public CodegenBlock IfElseIf(CodegenExpression condition)
         {
             CheckClosed();
-            closed = true;
-            if (parentMethodNode != null) {
+            _closed = true;
+            if (_parentMethodNode != null) {
                 throw new IllegalStateException("If-block-end in method?");
             }
 
-            if (!(parentWBlock is CodegenStatementIf)) {
+            if (!(_parentWBlock is CodegenStatementIf)) {
                 throw new IllegalStateException("If-block-end in method?");
             }
 
-            var ifBuilder = (CodegenStatementIf) parentWBlock;
+            var ifBuilder = (CodegenStatementIf) _parentWBlock;
             return ifBuilder.AddElseIf(condition);
         }
 
         public CodegenBlock IfElse()
         {
-            closed = true;
-            if (parentMethodNode != null) {
+            _closed = true;
+            if (_parentMethodNode != null) {
                 throw new IllegalStateException("If-block-end in method?");
             }
 
-            if (!(parentWBlock is CodegenStatementIf)) {
+            if (!(_parentWBlock is CodegenStatementIf)) {
                 throw new IllegalStateException("If-block-end in method?");
             }
 
-            var ifBuilder = (CodegenStatementIf) parentWBlock;
+            var ifBuilder = (CodegenStatementIf) _parentWBlock;
             return ifBuilder.AddElse();
         }
 
         public void IfReturn(CodegenExpression result)
         {
             CheckClosed();
-            closed = true;
-            if (parentMethodNode != null) {
+            _closed = true;
+            if (_parentMethodNode != null) {
                 throw new IllegalStateException("If-block-end in method?");
             }
 
-            if (!(parentWBlock is CodegenStatementIf)) {
+            if (!(_parentWBlock is CodegenStatementIf)) {
                 throw new IllegalStateException("If-block-end in method?");
             }
 
-            statements.Add(new CodegenStatementReturnExpression(result));
+            _statements.Add(new CodegenStatementReturnExpression(result));
         }
 
         public CodegenBlock BlockContinue()
         {
             CheckClosed();
-            closed = true;
-            if (parentMethodNode != null) {
+            _closed = true;
+            if (_parentMethodNode != null) {
                 throw new IllegalStateException("If-block-end in method?");
             }
 
-            statements.Add(CodegenStatementContinue.INSTANCE);
-            return parentWBlock.Parent;
+            _statements.Add(CodegenStatementContinue.INSTANCE);
+            return _parentWBlock.Parent;
         }
 
         public CodegenBlock WhileLoop(CodegenExpression expression)
@@ -713,14 +718,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return WhileOrDoLoop(expression, true);
         }
 
-        public CodegenBlock DoLoop(CodegenExpression expression)
-        {
-            return WhileOrDoLoop(expression, false);
-        }
-
         public void ReturnMethodOrBlock(CodegenExpression expression)
         {
-            if (parentMethodNode != null) {
+            if (_parentMethodNode != null) {
                 MethodReturn(expression);
             }
             else {
@@ -729,30 +729,46 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         }
 
         public CodegenBlock[] SwitchBlockOfLength(
-            string @ref,
+            CodegenExpression switchExpression,
             int length,
-            bool withDefaultUnsupported)
+            bool blocksReturnValues)
         {
-            CheckClosed();
-            var options = new int[length];
-            for (var i = 1; i < length; i++) {
-                options[i] = i;
+            var expressions = new CodegenExpression[length];
+            for (var i = 0; i < length; i++) {
+                expressions[i] = Constant(i);
             }
 
-            var switchStmt = new CodegenStatementSwitch(this, @ref, options, withDefaultUnsupported);
-            statements.Add(switchStmt);
-            return switchStmt.Blocks;
+            return SwitchBlockExpressions(switchExpression, expressions, blocksReturnValues, true).Blocks;
         }
 
         public CodegenBlock[] SwitchBlockOptions(
-            string @ref,
+            CodegenExpression switchExpression,
             int[] options,
+            bool blocksReturnValues)
+        {
+            var expressions = new CodegenExpression[options.Length];
+            for (var i = 0; i < expressions.Length; i++) {
+                expressions[i] = Constant(options[i]);
+            }
+
+            return SwitchBlockExpressions(switchExpression, expressions, blocksReturnValues, true).Blocks;
+        }
+
+        public CodegenStatementSwitch SwitchBlockExpressions(
+            CodegenExpression switchExpression,
+            CodegenExpression[] expressions,
+            bool blocksReturnValues,
             bool withDefaultUnsupported)
         {
             CheckClosed();
-            var switchStmt = new CodegenStatementSwitch(this, @ref, options, withDefaultUnsupported);
-            statements.Add(switchStmt);
-            return switchStmt.Blocks;
+            var switchStmt = new CodegenStatementSwitch(
+                this,
+                switchExpression,
+                expressions,
+                blocksReturnValues,
+                withDefaultUnsupported);
+            _statements.Add(switchStmt);
+            return switchStmt;
         }
 
         public CodegenBlock Apply(Consumer<CodegenBlock> consumer)
@@ -773,14 +789,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return this;
         }
 
-        public CodegenBlock ApplyConditional(
-            bool flag,
-            Consumer<CodegenBlock> consumer)
+        public CodegenBlock AssignCompound(
+            CodegenExpression expression,
+            String @operator,
+            CodegenExpression assignment)
         {
-            if (flag) {
-                Apply(consumer);
-            }
-
+            CheckClosed();
+            _statements.Add(new CodegenStatementAssignCompound(expression, @operator, assignment));
             return this;
         }
 
@@ -790,7 +805,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             CodegenExpression assignment)
         {
             CheckClosed();
-            statements.Add(new CodegenStatementAssignCompound(expressionRef, @operator, assignment));
+            _statements.Add(new CodegenStatementAssignCompound(expressionRef, @operator, assignment));
             return this;
         }
 
@@ -808,22 +823,23 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             CheckClosed();
             var stackFrames = stackTrace.GetFrames();
             var stackFrameCount = Math.Min(stackFrames.Length, 5);
-            for (int ii = 1; ii < stackFrameCount; ii++) {
-                string comment = string.Format(
+            for (var ii = 1; ii < stackFrameCount; ii++) {
+                var comment = string.Format(
                     "#{3}: File: {0}, Line: {1}, Method: {2}",
                     stackFrames[ii].GetFileName(),
                     stackFrames[ii].GetFileLineNumber(),
                     stackFrames[ii].GetMethod().Name,
                     ii);
-                statements.Add(new CodegenStatementCommentFullLine(comment));
+                _statements.Add(new CodegenStatementCommentFullLine(comment));
             }
+
             return this;
         }
 
         public CodegenBlock CommentFullLine(string comment)
         {
             CheckClosed();
-            statements.Add(new CodegenStatementCommentFullLine(comment));
+            _statements.Add(new CodegenStatementCommentFullLine(comment));
             return this;
         }
 
@@ -835,7 +851,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             var whileStmt = new CodegenStatementWhileOrDo(this, expression, isWhile);
             var block = new CodegenBlock(whileStmt);
             whileStmt.Block = block;
-            statements.Add(whileStmt);
+            _statements.Add(whileStmt);
             return block;
         }
 
@@ -854,13 +870,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             Consumer<CodegenBlock> bodyProvider)
         {
             CheckClosed();
-            statements.Add(
+            _statements.Add(
                 new CodegenExpressionLambda(this)
                     .WithParams(argNamesProvider.Invoke())
                     .WithBody(bodyProvider));
             return this;
         }
-        
+
         public BlockSyntax CodegenSyntax()
         {
             throw new NotImplementedException();
@@ -875,6 +891,52 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             Array.Copy(@params, 0, passThroughParams, 1, @params.Length);
             // Console.WriteLine -
             return StaticMethod(typeof(CompatExtensions), "Debug", passThroughParams);
+        }
+        
+        public bool HasInstanceAccess(Func<CodegenMethod, bool> permittedMethods) {
+            var consumer = new InstanceAccessConsumer(permittedMethods);
+            foreach (var statement in _statements) {
+                statement.TraverseExpressions(consumer.Accept);
+                if (consumer.hasInstanceAccess) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public void TraverseExpressions(Consumer<CodegenExpression> consumer) {
+            foreach (var statement in _statements) {
+                statement.TraverseExpressions(consumer);
+            }
+        }
+
+        private class InstanceAccessConsumer
+        {
+            internal readonly Func<CodegenMethod, bool> permittedMethod;
+            internal bool hasInstanceAccess = false;
+
+            public InstanceAccessConsumer(Func<CodegenMethod, bool> permittedMethod)
+            {
+                this.permittedMethod = permittedMethod;
+            }
+
+            public void Accept(CodegenExpression codegenExpression)
+            {
+                if (codegenExpression is CodegenExpressionMember) {
+                    hasInstanceAccess = true;
+                    return;
+                }
+
+                if (codegenExpression is CodegenExpressionLocalMethod) {
+                    var localMethod = (CodegenExpressionLocalMethod) codegenExpression;
+                    if (!permittedMethod.Invoke(localMethod.MethodNode)) {
+                        hasInstanceAccess = true;
+                        return;
+                    }
+                }
+
+                codegenExpression.TraverseExpressions(this.Accept);
+            }
         }
     }
 } // end of namespace

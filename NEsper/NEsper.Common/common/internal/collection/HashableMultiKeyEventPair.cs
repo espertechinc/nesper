@@ -22,9 +22,9 @@ namespace com.espertech.esper.common.@internal.collection
     [Serializable]
     public sealed class HashableMultiKeyEventPair
     {
-        [NonSerialized] private readonly EventBean eventBean;
-        private readonly int hashCode;
-        [NonSerialized] private readonly object[] keys;
+        [NonSerialized] private readonly EventBean _eventBean;
+        private readonly int _hashCode;
+        [NonSerialized] private readonly object[] _keys;
 
         /// <summary>
         ///     Constructor for multiple keys supplied in an object array.
@@ -47,28 +47,28 @@ namespace com.espertech.esper.common.@internal.collection
                 }
             }
 
-            hashCode = total;
-            this.keys = keys;
-            this.eventBean = eventBean;
+            _hashCode = total;
+            this._keys = keys;
+            this._eventBean = eventBean;
         }
 
         /// <summary>
         ///     Returns the event.
         /// </summary>
         /// <returns>event</returns>
-        public EventBean EventBean => eventBean;
+        public EventBean EventBean => _eventBean;
 
         /// <summary>
         ///     Returns the number of key objects.
         /// </summary>
         /// <value>size of key object array</value>
-        public int Count => keys.Length;
+        public int Count => _keys.Length;
 
         /// <summary>
         ///     Returns keys.
         /// </summary>
         /// <value>keys object array</value>
-        public object[] Keys => keys;
+        public object[] Keys => _keys;
 
         /// <summary>
         ///     Returns the key object at the specified position.
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// <returns>key object at position</returns>
         public object Get(int index)
         {
-            return keys[index];
+            return _keys[index];
         }
 
         public override bool Equals(object other)
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.collection
             }
 
             if (other is HashableMultiKeyEventPair otherKeys) {
-                return CompatExtensions.AreEqual(keys, otherKeys.keys);
+                return CompatExtensions.AreEqual(_keys, otherKeys._keys);
             }
 
             return false;
@@ -95,12 +95,12 @@ namespace com.espertech.esper.common.@internal.collection
 
         public override int GetHashCode()
         {
-            return hashCode;
+            return _hashCode;
         }
 
         public override string ToString()
         {
-            return "MultiKeyUntyped" + keys.RenderAny();
+            return "MultiKeyUntyped" + _keys.RenderAny();
         }
     }
 } // end of namespace

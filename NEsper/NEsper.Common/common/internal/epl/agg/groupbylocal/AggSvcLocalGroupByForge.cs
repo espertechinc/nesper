@@ -404,7 +404,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             var method = parent.MakeChild(typeof(int), GetType(), classScope);
             method.Block.DeclareVar<int>("size", Constant(0))
                 .IfCondition(NotEqualsNull(REF_AGGREGATORSTOPLEVEL))
-                .Increment("size")
+                .IncrementRef("size")
                 .BlockEnd();
             for (var i = 0; i < localGroupByPlan.AllLevelsForges.Length; i++) {
                 method.Block.AssignCompound(

@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             StatementContext statementContext);
 
         bool CheckUpdateAfterCondition(
-            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
             StatementContext statementContext);
 
         bool CheckUpdateAfterCondition(

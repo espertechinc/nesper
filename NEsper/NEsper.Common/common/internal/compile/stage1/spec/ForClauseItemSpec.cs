@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     public class ForClauseItemSpec
     {
         public ForClauseItemSpec(
-            String keyword,
+            string keyword,
             IList<ExprNode> expressions)
         {
             Keyword = keyword;

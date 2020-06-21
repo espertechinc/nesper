@@ -34,6 +34,9 @@ namespace com.espertech.esper.common.@internal.collection
         public static readonly PathRegistryObjectType INDEX =
             new PathRegistryObjectType("index", "An");
 
+        public static readonly PathRegistryObjectType CLASSPROVIDED =
+            new PathRegistryObjectType("application-inlined class", "An");
+
         private PathRegistryObjectType(
             string name,
             string prefix)

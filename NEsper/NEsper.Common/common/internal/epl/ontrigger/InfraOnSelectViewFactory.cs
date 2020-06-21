@@ -30,8 +30,8 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         public InfraOnSelectViewFactory(
             EventType infraEventType,
             bool addToFront,
-            EventBeanReader eventBeanReader,
             bool isDistinct,
+            EventPropertyValueGetter distinctKeyGetter,
             bool selectAndDelete,
             StreamSelector? optionalStreamSelector,
             Table optionalInsertIntoTable,
@@ -40,8 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             : base(infraEventType)
         {
             IsAddToFront = addToFront;
-            EventBeanReader = eventBeanReader;
             IsDistinct = isDistinct;
+            DistinctKeyGetter = distinctKeyGetter;
             IsSelectAndDelete = selectAndDelete;
             OptionalStreamSelector = optionalStreamSelector;
             this.optionalInsertIntoTable = optionalInsertIntoTable;
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             this.resultSetProcessorPrototype = resultSetProcessorPrototype;
         }
 
-        public EventBeanReader EventBeanReader { get; }
+        public EventPropertyValueGetter DistinctKeyGetter { get; }
 
         public StreamSelector? OptionalStreamSelector { get; }
 

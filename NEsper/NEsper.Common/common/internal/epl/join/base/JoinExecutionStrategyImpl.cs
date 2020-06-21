@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             }
         }
 
-        public ISet<MultiKey<EventBean>> StaticJoin()
+        public ISet<MultiKeyArrayOfKeys<EventBean>> StaticJoin()
         {
             var joinSet = composer.StaticJoin();
             if (optionalFilter != null) {
@@ -82,8 +82,8 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         }
 
         private void ProcessFilter(
-            ISet<MultiKey<EventBean>> newEvents,
-            ISet<MultiKey<EventBean>> oldEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             Filter(optionalFilter, newEvents, true, exprEvaluatorContext);

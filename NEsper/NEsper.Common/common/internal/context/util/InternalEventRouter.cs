@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.context.util
         void AddPreprocessing(
             InternalEventRouterDesc internalEventRouterDesc,
             InternalRoutePreprocessView outputView,
-            IReaderWriterLock agentInstanceLock,
+            StatementContext statementContext,
             bool hasSubselect);
 
         void RemovePreprocessing(

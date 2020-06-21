@@ -139,11 +139,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
             }
         }
 
-        public void ToEPL(
-            TextWriter writer,
-            ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence,
+            ExprNodeRenderableFlags flags)
         {
-            typable.ExprForgeRenderable.ToEPL(writer, parentPrecedence);
+            typable.ExprForgeRenderable.ToEPL(writer, parentPrecedence, flags);
         }
 
         public ExprNodeRenderable ExprForgeRenderable {

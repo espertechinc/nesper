@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 .WhileLoop(ExprDotMethod(Ref("it"), "MoveNext"))
                 .DeclareVar<EventBean>("bean", Cast(typeof(EventBean), ExprDotName(Ref("it"), "Current")))
                 .AssignArrayElement(Ref("array"), Ref("count"), Cast(componentType, ExprDotUnderlying(Ref("bean"))))
-                .Increment("count")
+                .IncrementRef("count")
                 .BlockEnd()
                 .MethodReturn(Ref("array"));
         }

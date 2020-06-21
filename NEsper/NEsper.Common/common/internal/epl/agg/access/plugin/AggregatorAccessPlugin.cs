@@ -110,7 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
 
         public static CodegenExpression CodegenGetAccessTableState(int column)
         {
-            return RefCol("state", column);
+            return MemberCol("state", column);
         }
     }
 } // end of namespace

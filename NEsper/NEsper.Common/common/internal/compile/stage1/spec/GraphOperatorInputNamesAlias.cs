@@ -14,8 +14,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     public class GraphOperatorInputNamesAlias
     {
         public GraphOperatorInputNamesAlias(
-            String[] inputStreamNames,
-            String optionalAsName)
+            string[] inputStreamNames,
+            string optionalAsName)
         {
             InputStreamNames = inputStreamNames;
             OptionalAsName = optionalAsName;

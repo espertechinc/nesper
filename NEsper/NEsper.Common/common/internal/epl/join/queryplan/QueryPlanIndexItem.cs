@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.service;
 using com.espertech.esper.common.@internal.epl.join.lookup;
 using com.espertech.esper.common.@internal.epl.lookup;
@@ -28,18 +30,24 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             string[] hashProps,
             Type[] hashPropTypes,
             EventPropertyValueGetter hashGetter,
+            MultiKeyFromObjectArray transformFireAndForget,
+            DataInputOutputSerde<object> hashKeySerde,
             string[] rangeProps,
             Type[] rangePropTypes,
             EventPropertyValueGetter[] rangeGetters,
+            DataInputOutputSerde<object>[] rangeKeySerdes,
             bool unique,
             EventAdvancedIndexProvisionRuntime advancedIndexProvisionDesc)
         {
             HashProps = hashProps;
             HashPropTypes = hashPropTypes;
             HashGetter = hashGetter;
+            HashKeySerde = hashKeySerde;
             RangeProps = rangeProps == null || rangeProps.Length == 0 ? null : rangeProps;
             RangePropTypes = rangePropTypes;
             RangeGetters = rangeGetters;
+            RangeKeySerdes = rangeKeySerdes;
+            TransformFireAndForget = transformFireAndForget;
             IsUnique = unique;
             AdvancedIndexProvisionDesc = advancedIndexProvisionDesc;
         }
@@ -47,6 +55,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         public string[] HashProps { get; }
 
         public EventPropertyValueGetter HashGetter { get; }
+        
+        public MultiKeyFromObjectArray TransformFireAndForget { get; }
+        
+        public DataInputOutputSerde<object> HashKeySerde { get; }
 
         public Type[] HashPropTypes { get; }
 
@@ -55,6 +67,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         public Type[] RangePropTypes { get; }
 
         public EventPropertyValueGetter[] RangeGetters { get; }
+        
+        public DataInputOutputSerde<Object>[] RangeKeySerdes { get; }
 
         public bool IsUnique { get; }
 

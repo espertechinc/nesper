@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
         {
             return new StatementAgentInstanceFactoryCreateSchemaResult(
                 viewable,
-                AgentInstanceStopCallbackNoAction.INSTANCE,
+                AgentInstanceMgmtCallbackNoAction.INSTANCE,
                 agentInstanceContext);
         }
 

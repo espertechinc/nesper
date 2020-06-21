@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                         REF_EPS,
                         REF_ISNEWDATA,
                         REF_EXPREVALCONTEXT))
-                .Increment("count")
+                .IncrementRef("count")
                 .BlockEnd()
                 .MethodReturn(Ref("array"));
         }

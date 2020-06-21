@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             var methodNode = codegenMethodScope.MakeChild(
                 typeof(bool?),
-                typeof(ExprEqualsNodeForgeNCEvalEquals),
+                typeof(ExprEqualsNodeForgeNCForgeEquals),
                 codegenClassScope);
             var block = methodNode.Block;
 

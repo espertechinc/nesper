@@ -220,7 +220,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 return EventBeanUtility.CreateNativeFragmentType(
                     genericPropX.GenericType,
                     genericPropX.Generic,
-                    _beanEventTypeFactory);
+                    _beanEventTypeFactory,
+                    Stem.IsPublicFields);
             }
 
             var prop = PropertyParser.ParseAndWalkLaxToSimple(propertyExpression);
@@ -237,7 +238,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             return EventBeanUtility.CreateNativeFragmentType(
                 genericProp.GenericType,
                 genericProp.Generic,
-                _beanEventTypeFactory);
+                _beanEventTypeFactory,
+                Stem.IsPublicFields);
         }
 
         public EventPropertyDescriptor GetWritableProperty(string propertyName)
@@ -290,8 +292,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         }
 
         public ICollection<EventType> DeepSuperTypesCollection { get; }
-
-        public EventBeanReader Reader => new BeanEventBeanReader(this);
 
         public EventBeanCopyMethodForge GetCopyMethodForge(string[] properties)
         {

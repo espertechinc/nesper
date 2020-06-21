@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         {
             return new StatementAgentInstanceFactoryCreateDataflowResult(
                 viewable,
-                AgentInstanceStopCallbackNoAction.INSTANCE,
+                AgentInstanceMgmtCallbackNoAction.INSTANCE,
                 agentInstanceContext,
                 dataflow);
         }

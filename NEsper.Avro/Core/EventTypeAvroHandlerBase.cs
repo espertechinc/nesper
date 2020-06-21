@@ -133,7 +133,9 @@ namespace NEsper.Avro.Core
         public AvroSchemaEventType NewEventTypeFromJson(
             EventTypeMetadata metadata,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            string schemaJson)
+            string schemaJson,
+            IList<EventType> superTypes,
+            ISet<EventType> deepSuperTypes)
         {
             Console.WriteLine("Schema: {0}", schemaJson);
             var schema = Schema.Parse(schemaJson);

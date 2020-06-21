@@ -11,14 +11,11 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
-using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.compat.collections;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-
-using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationExtensions;
 
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
@@ -27,8 +24,21 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
     public class CodegenClass
     {
         public CodegenClass(
-            Type interfaceClass,
-            string @namespace,
+            CodegenClassType classType,
+            Type optionalInterfaceImplemented,
+            string className,
+            CodegenClassScope codegenClassScope,
+            IList<CodegenTypedParam> explicitMembers,
+            CodegenCtor optionalCtor,
+            CodegenClassMethods methods,
+            CodegenClassProperties properties,
+            IList<CodegenInnerClass> innerClasses)
+            : this(classType, className, codegenClassScope, explicitMembers, optionalCtor, methods, properties, innerClasses)
+        {
+            BaseList.AssignType(optionalInterfaceImplemented);
+        }
+        public CodegenClass(
+            CodegenClassType classType,
             string className,
             CodegenClassScope codegenClassScope,
             IList<CodegenTypedParam> explicitMembers,
@@ -37,9 +47,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             CodegenClassProperties properties,
             IList<CodegenInnerClass> innerClasses)
         {
-            Namespace = @namespace;
+            BaseList = new CodegenClassBaseList();
+            ClassType = classType;
+            Namespace = codegenClassScope.NamespaceScope.Namespace;
             ClassName = className;
-            InterfaceImplemented = interfaceClass;
             OptionalCtor = optionalCtor;
             ExplicitMembers = explicitMembers;
             Methods = methods;
@@ -49,12 +60,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             allInnerClasses.AddAll(codegenClassScope.AdditionalInnerClasses);
             InnerClasses = allInnerClasses;
         }
+        
+        public CodegenClassType ClassType { get; }
 
         public string Namespace { get; }
 
         public string ClassName { get; }
-
-        public Type InterfaceImplemented { get; }
+        
+        public CodegenClassBaseList BaseList { get; }
 
         public IList<CodegenTypedParam> ExplicitMembers { get; }
 
@@ -74,11 +87,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public CodegenCtor OptionalCtor { get; }
 
+        public void AddInnerClass(CodegenInnerClass innerClass)
+        {
+            InnerClasses.Add(innerClass);
+        }
+
         public ISet<Type> GetReferencedClasses()
         {
             ISet<Type> classes = new HashSet<Type>();
             AddReferencedClasses(
-                InterfaceImplemented, 
+                BaseList,
                 Methods, 
                 Properties,
                 classes);
@@ -87,7 +105,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
             foreach (var inner in InnerClasses) {
                 AddReferencedClasses(
-                    inner.InterfaceImplemented, 
+                    inner.BaseList, 
                     inner.Methods, 
                     inner.Properties,
                     classes);
@@ -99,14 +117,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         }
 
         private static void AddReferencedClasses(
-            Type interfaceImplemented,
+            CodegenClassBaseList baseList,
             CodegenClassMethods methods,
             CodegenClassProperties properties,
             ISet<Type> classes)
         {
-            if (interfaceImplemented != null) {
-                classes.AddToSet(interfaceImplemented);
-            }
+            baseList.AddReferenced(classes);
 
             methods.PublicMethods.ForEach(m => m.MergeClasses(classes));
             methods.PrivateMethods.ForEach(m => m.MergeClasses(classes));
@@ -132,11 +148,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         private BaseListSyntax GetBaseListSyntax()
         {
             var baseList = BaseList();
-            if (InterfaceImplemented != null)
-            {
-                var baseTypeName = GetNameForType(InterfaceImplemented);
-                baseList.Types.Add(SimpleBaseType(baseTypeName));
-            }
             return baseList;
         }
 

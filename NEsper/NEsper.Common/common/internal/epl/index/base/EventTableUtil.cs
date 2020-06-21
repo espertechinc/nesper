@@ -6,7 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.join.queryplan;
 
@@ -22,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
         /// <param name="optionalIndexName">index name</param>
         /// <param name="agentInstanceContext">context</param>
         /// <param name="item">plan item</param>
-        /// <param name="optionalSerde">serde if any</param>
+        /// <param name="optionalValueSerde">value serde if any</param>
         /// <param name="isFireAndForget">indicates fire-and-forget</param>
         /// <param name="unique">indicates unique</param>
         /// <param name="coerceOnAddOnly">indicator whether to coerce on value-add</param>
@@ -35,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             bool coerceOnAddOnly,
             bool unique,
             string optionalIndexName,
-            object optionalSerde,
+            DataInputOutputSerde<Object> optionalValueSerde,
             bool isFireAndForget)
         {
             var indexProps = item.HashProps;
@@ -44,6 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             var rangeProps = item.RangeProps;
             var rangeTypes = item.RangePropTypes;
             var rangeGetters = item.RangeGetters;
+            var rangeKeySerdes = item.RangeKeySerdes;
             var eventTableIndexService = agentInstanceContext.StatementContext.EventTableIndexService;
 
             EventTable table;
@@ -61,9 +65,9 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
                     var factory = eventTableIndexService.CreateUnindexed(
                         indexedStreamNum,
                         eventType,
-                        optionalSerde,
+                        optionalValueSerde,
                         isFireAndForget,
-                        agentInstanceContext.StatementContext);
+                        agentInstanceContext.StatementContext.EventTableFactoryContext);
                     table = factory.MakeEventTables(agentInstanceContext, null)[0];
                 }
                 else {
@@ -72,12 +76,14 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
                         eventType,
                         indexProps,
                         indexTypes,
+                        item.TransformFireAndForget,
+                        item.HashKeySerde,
                         unique,
                         optionalIndexName,
                         indexGetter,
-                        optionalSerde,
+                        optionalValueSerde,
                         isFireAndForget,
-                        agentInstanceContext.StatementContext);
+                        agentInstanceContext.StatementContext.EventTableFactoryContext);
                     table = factory.MakeEventTables(agentInstanceContext, null)[0];
                 }
             }
@@ -89,9 +95,11 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
                         rangeProps[0],
                         rangeTypes[0],
                         rangeGetters[0],
-                        optionalSerde,
+                        rangeKeySerdes[0],
+                        optionalValueSerde,
                         isFireAndForget,
-                        agentInstanceContext.StatementContext);
+                        agentInstanceContext.StatementContext.EventTableFactoryContext);
+
                     table = factory.MakeEventTables(agentInstanceContext, null)[0];
                 }
                 else {
@@ -101,10 +109,13 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
                         indexProps,
                         indexTypes,
                         indexGetter,
+                        item.TransformFireAndForget,
+                        item.HashKeySerde,
                         rangeProps,
                         rangeTypes,
                         rangeGetters,
-                        optionalSerde,
+                        rangeKeySerdes,
+                        optionalValueSerde,
                         isFireAndForget);
                     return factory.MakeEventTables(agentInstanceContext, null)[0];
                 }

@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.join.querygraph;
@@ -19,17 +20,19 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
     public class HistoricalIndexLookupStrategyCompositeForge : HistoricalIndexLookupStrategyForge
     {
         private readonly ExprForge[] evaluators;
-
         private readonly int lookupStream;
+        private readonly MultiKeyClassRef multiKeyClasses;
         private readonly QueryGraphValueEntryRangeForge[] ranges;
 
         public HistoricalIndexLookupStrategyCompositeForge(
             int lookupStream,
             ExprForge[] evaluators,
+            MultiKeyClassRef multiKeyClasses,
             QueryGraphValueEntryRangeForge[] ranges)
         {
             this.lookupStream = lookupStream;
             this.evaluators = evaluators;
+            this.multiKeyClasses = multiKeyClasses;
             this.ranges = ranges;
         }
 
@@ -55,20 +58,14 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
                     ranges[i].Make(null, method, symbols, classScope));
             }
 
+            var hashGetter = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(evaluators, null, multiKeyClasses, method, classScope);
+            
             method.Block
                 .DeclareVar<HistoricalIndexLookupStrategyComposite>(
                     "strat",
                     NewInstance(typeof(HistoricalIndexLookupStrategyComposite)))
                 .SetProperty(Ref("strat"), "LookupStream", Constant(lookupStream))
-                .SetProperty(
-                    Ref("strat"),
-                    "HashGetter",
-                    ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
-                        evaluators,
-                        null,
-                        method,
-                        GetType(),
-                        classScope))
+                .SetProperty(Ref("strat"), "HashGetter", hashGetter)
                 .SetProperty(Ref("strat"), "RangeProps", Ref("rangeGetters"))
                 .ExprDotMethod(Ref("strat"), "Init")
                 .MethodReturn(Ref("strat"));

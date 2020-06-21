@@ -18,9 +18,9 @@ namespace com.espertech.esper.common.@internal.filterspec
     {
         public FilterSpecLookupableAdvancedIndex(
             string expression,
-            EventPropertyGetter getter,
+            ExprEventEvaluator getter,
             Type returnType)
-            : base(expression, getter, returnType, true)
+            : base(expression, getter, null, returnType, true, null)
         {
         }
 

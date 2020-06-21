@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.compat.function;
+
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
     public class CodegenChainPropertyElement : CodegenChainElement
@@ -30,6 +32,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         }
 
         public override void MergeClasses(ISet<Type> classes)
+        {
+        }
+        
+        public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
         }
     }

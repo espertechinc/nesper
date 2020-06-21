@@ -56,6 +56,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             }
 
             var namedWindowTypeName = onTriggerDesc.WindowName;
+            var additionalForgeables = new List<StmtClassForgeableFactory>();
 
             // Materialize sub-select views
             // 0 - named window stream
@@ -64,13 +65,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             string[] subselectStreamNames = {zeroStreamAliasName, streamSpec.OptionalStreamName};
             EventType[] subselectEventTypes = {namedWindowOrTableType, activatorResult.ActivatorResultEventType};
             string[] subselectEventTypeNames = {namedWindowTypeName, activatorResult.TriggerEventTypeName};
-            var subselectForges = SubSelectHelperForgePlanner.PlanSubSelect(
+
+            var subselectForgePlan = SubSelectHelperForgePlanner.PlanSubSelect(
                 @base,
                 subselectActivation,
                 subselectStreamNames,
                 subselectEventTypes,
                 subselectEventTypeNames,
                 services);
+            IDictionary<ExprSubselectNode, SubSelectFactoryForge> subselectForges = subselectForgePlan.Subselects;
+            additionalForgeables.AddAll(subselectForgePlan.AdditionalForgeables);
 
             var typeService = new StreamTypeServiceImpl(
                 new[] {namedWindowOrTableType, activatorResult.ActivatorResultEventType},
@@ -103,11 +107,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                     .WithAllowBindingConsumption(true)
                     .Build();
                 foreach (var assignment in updateDesc.Assignments) {
-                    var validated = ExprNodeUtilityValidate.GetValidatedAssignment(assignment, validationContext);
-                    assignment.Expression = validated;
-                    EPStatementStartMethodHelperValidate.ValidateNoAggregations(
-                        validated,
-                        "Aggregation functions may not be used within an on-update-clause");
+                    ExprNodeUtilityValidate.ValidateAssignment(false, ExprNodeOrigin.UPDATEASSIGN, assignment, validationContext);
                 }
             }
 
@@ -163,6 +163,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                 true,
                 @base.StatementRawInfo,
                 services);
+            additionalForgeables.AddAll(resultSetProcessorPrototype.AdditionalForgeables);
 
             // plan table access
             var tableAccessForges = ExprTableEvalHelperPlan.PlanTableAccess(@base.StatementSpec.TableAccessNodes);
@@ -172,7 +173,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                 tableAccessForges,
                 resultSetProcessorPrototype,
                 validatedJoin,
-                zeroStreamAliasName);
+                zeroStreamAliasName,
+                additionalForgeables);
         }
 
         protected internal static ExprNode ValidateJoinNamedWindow(
@@ -186,8 +188,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             string filteredTypeName,
             string optionalTableName,
             StatementRawInfo statementRawInfo,
-            StatementCompileTimeServices compileTimeServices
-        )
+            StatementCompileTimeServices compileTimeServices)
         {
             if (deleteJoinExpr == null) {
                 return null;
@@ -271,6 +272,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                         matchValidStreams,
                         exprNodeErrorMessage,
                         true,
+                        false,
                         statementRawInfo,
                         services);
                     if (!matchedItem.IsMatchedUnmatched) {
@@ -289,6 +291,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                                 twoStreamTypeSvc,
                                 exprNodeErrorMessage,
                                 true,
+                                false,
                                 statementRawInfo,
                                 services);
                         }
@@ -302,19 +305,17 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                                 twoStreamTypeSvc,
                                 exprNodeErrorMessage,
                                 true,
+                                false,
                                 statementRawInfo,
                                 services);
                         }
 
                         foreach (var assignment in update.Assignments) {
-                            assignment.Expression = EPStatementStartMethodHelperValidate.ValidateExprNoAgg(
-                                ExprNodeOrigin.UPDATEASSIGN,
-                                assignment.Expression,
-                                assignmentStreamTypeSvc,
-                                exprNodeErrorMessage,
-                                true,
-                                statementRawInfo,
-                                services);
+                            var validationContext = new ExprValidationContextBuilder(assignmentStreamTypeSvc, statementRawInfo, services)
+                                .WithAllowBindingConsumption(true)
+                                .WithAllowTableAggReset(true)
+                                .Build();
+                            ExprNodeUtilityValidate.ValidateAssignment(false, ExprNodeOrigin.UPDATEASSIGN, assignment, validationContext);
                         }
                     }
                     else if (item is OnTriggerMergeActionInsert) {
@@ -333,6 +334,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                                 insertTypeSvc,
                                 exprNodeErrorMessage,
                                 true,
+                                false,
                                 statementRawInfo,
                                 services);
                         }

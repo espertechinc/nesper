@@ -23,15 +23,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprEqualsAllAnyNodeForgeEvalAnyWColl : ExprEvaluator
     {
-        private readonly ExprEvaluator[] evaluators;
-        private readonly ExprEqualsAllAnyNodeForge forge;
+        private readonly ExprEvaluator[] _evaluators;
+        private readonly ExprEqualsAllAnyNodeForge _forge;
 
         public ExprEqualsAllAnyNodeForgeEvalAnyWColl(
             ExprEqualsAllAnyNodeForge forge,
             ExprEvaluator[] evaluators)
         {
-            this.forge = forge;
-            this.evaluators = evaluators;
+            this._forge = forge;
+            this._evaluators = evaluators;
         }
 
         public object Evaluate(
@@ -39,8 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var result = EvaluateInternal(eventsPerStream, isNewData, exprEvaluatorContext);
-            return result;
+            return EvaluateInternal(eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         private object EvaluateInternal(
@@ -48,11 +47,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var leftResult = evaluators[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var leftResult = _evaluators[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
             // coerce early if testing without collections
-            if (forge.IsMustCoerce && leftResult != null) {
-                leftResult = forge.Coercer.CoerceBoxed(leftResult);
+            if (_forge.IsMustCoerce && leftResult != null) {
+                leftResult = _forge.Coercer.CoerceBoxed(leftResult);
             }
 
             return CompareAny(leftResult, eventsPerStream, isNewData, exprEvaluatorContext);
@@ -64,12 +63,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var isNot = forge.ForgeRenderable.IsNot;
-            var len = forge.ForgeRenderable.ChildNodes.Length - 1;
+            var isNot = _forge.ForgeRenderable.IsNot;
+            var len = _forge.ForgeRenderable.ChildNodes.Length - 1;
             var hasNonNullRow = false;
             var hasNullRow = false;
             for (var i = 1; i <= len; i++) {
-                var rightResult = evaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                var rightResult = _evaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (rightResult == null) {
                     hasNullRow = true;
@@ -90,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         }
 
                         hasNonNullRow = true;
-                        if (!forge.IsMustCoerce) {
+                        if (!_forge.IsMustCoerce) {
                             if (!isNot && leftResult.Equals(item) || isNot && !leftResult.Equals(item)) {
                                 return true;
                             }
@@ -100,8 +99,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                 continue;
                             }
 
-                            var left = forge.Coercer.CoerceBoxed(leftResult);
-                            var right = forge.Coercer.CoerceBoxed(item);
+                            var left = _forge.Coercer.CoerceBoxed(leftResult);
+                            var right = _forge.Coercer.CoerceBoxed(item);
                             if (!isNot && left.Equals(right) || isNot && !left.Equals(right)) {
                                 return true;
                             }
@@ -138,14 +137,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     }
 
                     hasNonNullRow = true;
-                    if (!forge.IsMustCoerce) {
+                    if (!_forge.IsMustCoerce) {
                         if (!isNot && leftResult.Equals(rightResult) || isNot && !leftResult.Equals(rightResult)) {
                             return true;
                         }
                     }
                     else {
-                        var left = forge.Coercer.CoerceBoxed(leftResult);
-                        var right = forge.Coercer.CoerceBoxed(rightResult);
+                        var left = _forge.Coercer.CoerceBoxed(leftResult);
+                        var right = _forge.Coercer.CoerceBoxed(rightResult);
                         if (!isNot && left.Equals(right) || isNot && !left.Equals(right)) {
                             return true;
                         }

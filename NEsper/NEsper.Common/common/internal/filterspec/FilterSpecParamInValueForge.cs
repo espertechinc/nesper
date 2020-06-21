@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text;
 
 namespace com.espertech.esper.common.@internal.filterspec
 {
@@ -15,5 +16,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         Type ReturnType { get; }
 
         bool IsConstant { get; }
+        
+        void ValueToString(StringBuilder @out);
     }
 } // end of namespace

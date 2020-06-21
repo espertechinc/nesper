@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
     ///     Interface for views that poll data based on information from other streams.
     /// </summary>
     public interface HistoricalEventViewable : Viewable,
-        AgentInstanceStopCallback
+        AgentInstanceMgmtCallback
     {
 #if INHERITED
         EventType EventType { get; }

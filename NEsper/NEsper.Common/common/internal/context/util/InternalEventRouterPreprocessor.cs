@@ -6,14 +6,18 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.context.aifactory.update;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
+using com.espertech.esper.common.@internal.statement.resource;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
@@ -172,7 +176,9 @@ namespace com.espertech.esper.common.@internal.context.util
             // evaluate
             object[] values;
             if (entry.IsSubselect) {
-                using (entry.AgentInstanceLock.AcquireWriteLock())
+                StatementResourceHolder holder = entry.StatementContext.StatementCPCacheService.MakeOrGetEntryCanNull(
+                    StatementCPCacheService.DEFAULT_AGENT_INSTANCE_ID, entry.StatementContext);
+                using (holder.AgentInstanceContext.AgentInstanceLock.AcquireWriteLock())
                 {
                     values = ObtainValues(eventsPerStream, entry, exprEvaluatorContext, instrumentation);
                 }
@@ -183,6 +189,36 @@ namespace com.espertech.esper.common.@internal.context.util
 
             // apply
             entry.Writer.Write(values, theEvent);
+            
+            if (entry.SpecialPropWriters.Length > 0) {
+                foreach (var special in entry.SpecialPropWriters) {
+                    if (special is InternalEventRouterWriterArrayElement array) {
+                        var value = array.RhsExpression.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                        if ((value != null) && (array.TypeWidener != null)) {
+                            value = array.TypeWidener.Widen(value);
+                        }
+                        var arrayValue = theEvent.Get(array.PropertyName);
+                        if (arrayValue is Array asArrayValue) {
+                            var index = array.IndexExpression.Evaluate(eventsPerStream, true, exprEvaluatorContext).AsBoxedInt32();
+                            if (index != null) {
+                                int len = asArrayValue.Length;
+                                if (index < len) {
+                                    if (value != null || !asArrayValue.GetType().GetElementType().IsPrimitive) {
+                                        asArrayValue.SetValue(value, index.Value);
+                                    }
+                                } else {
+                                    throw new EPException("Array length " + len + " less than index " + index + " for property '" + array.PropertyName + "'");
+                                }
+                            }
+                        }
+                    } else if (special is InternalEventRouterWriterCurly) {
+                        InternalEventRouterWriterCurly curly = (InternalEventRouterWriterCurly) special;
+                        curly.Expression.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                    } else {
+                        throw new IllegalStateException("Unrecognized writer " + special);
+                    }
+                }
+            }
         }
 
         private object[] ObtainValues(

@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
@@ -15,11 +16,13 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.xml;
@@ -111,6 +114,13 @@ namespace com.espertech.esper.common.@internal.@event.xml
             set => _namespaceContext = value;
         }
 
+        public DataInputOutputSerde<object> UnderlyingBindingDIO
+        {
+            get => null;
+            set => throw new UnsupportedOperationException("XML event type does not receive a serde");
+        }
+
+
         /// <summary>
         /// Creates a new XPath expression object from the text representation.
         /// </summary>
@@ -133,8 +143,6 @@ namespace com.espertech.esper.common.@internal.@event.xml
         public ConfigurationCommonEventTypeXMLDOM ConfigurationEventTypeXMLDOM { get; }
 
         public override EventPropertyDescriptor[] WriteableProperties => new EventPropertyDescriptor[0];
-
-        public override EventBeanReader Reader => null;
 
         public override string StartTimestampPropertyName => _startTimestampPropertyName;
 

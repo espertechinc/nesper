@@ -73,9 +73,9 @@ namespace NEsper.Avro.SelectExprRep
             return CodegenExpressionBuilder.LocalMethod(methodNode);
         }
 
-        public void ToEPL(
-            TextWriter writer,
-            ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(GetType().Name);
         }

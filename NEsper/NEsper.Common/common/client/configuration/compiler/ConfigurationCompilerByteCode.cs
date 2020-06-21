@@ -26,6 +26,29 @@ namespace com.espertech.esper.common.client.configuration.compiler
         private NameAccessModifier accessModifierTable = NameAccessModifier.PRIVATE;
         private NameAccessModifier accessModifierVariable = NameAccessModifier.PRIVATE;
         private EventTypeBusModifier busModifierEventType = EventTypeBusModifier.NONBUS;
+        
+        /// <summary>
+        /// Returns the number of threads available for parallel compilation of multiple EPL statements.
+        /// The default is 8 threads.
+        /// </summary>
+        public int ThreadPoolCompilerNumThreads { get; set; } = 8;
+
+        /// <summary>
+        /// Returns the capacity of the parallel compiler semaphore, or null if none defined
+        /// (null is the default and is the unbounded case).
+        /// </summary>
+        public int? ThreadPoolCompilerCapacity { get; set; } = null;
+
+        /// <summary>
+        /// Returns the maximum number of methods per class, which defaults to 16k. The lower limit
+        /// for this number is 1000.
+        /// </summary>
+        public int MaxMethodsPerClass { get; set; } = 16 * 1024;
+        
+        /// <summary>
+        /// Returns the flag whether the compiler allows inlined classes.
+        /// </summary>
+        public bool IsAllowInlinedClass { get; set; } = false;
 
         /// <summary>
         ///     Returns indicator whether the binary class code should include debug symbols

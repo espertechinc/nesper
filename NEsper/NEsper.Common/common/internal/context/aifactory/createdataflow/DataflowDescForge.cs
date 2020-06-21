@@ -26,12 +26,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 {
     public class DataflowDescForge
     {
-        private readonly string dataflowName;
-        private readonly IDictionary<string, EventType> declaredTypes;
-        private readonly IList<LogicalChannel> logicalChannels;
-        private readonly ISet<int> operatorBuildOrder;
-        private readonly IDictionary<int, OperatorMetadataDescriptor> operatorMetadata;
-
+        private readonly string _dataflowName;
+        private readonly IDictionary<string, EventType> _declaredTypes;
+        private readonly IList<LogicalChannel> _logicalChannels;
+        private readonly ISet<int> _operatorBuildOrder;
+        private readonly IDictionary<int, OperatorMetadataDescriptor> _operatorMetadata;
+        
         public DataflowDescForge(
             string dataflowName,
             IDictionary<string, EventType> declaredTypes,
@@ -39,20 +39,24 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             ISet<int> operatorBuildOrder,
             IDictionary<int, DataFlowOperatorForge> operatorFactories,
             IList<LogicalChannel> logicalChannels,
-            IList<StmtForgeMethodResult> additionalForgables)
+            IList<StmtForgeMethodResult> forgables,
+            IList<StmtClassForgeableFactory> additionalForgables)
         {
-            this.dataflowName = dataflowName;
-            this.declaredTypes = declaredTypes;
-            this.operatorMetadata = operatorMetadata;
-            this.operatorBuildOrder = operatorBuildOrder;
+            _dataflowName = dataflowName;
+            _declaredTypes = declaredTypes;
+            _operatorMetadata = operatorMetadata;
+            _operatorBuildOrder = operatorBuildOrder;
             OperatorFactories = operatorFactories;
-            this.logicalChannels = logicalChannels;
+            _logicalChannels = logicalChannels;
+            Forgables = forgables;
             AdditionalForgables = additionalForgables;
         }
 
         public IDictionary<int, DataFlowOperatorForge> OperatorFactories { get; }
 
-        public IList<StmtForgeMethodResult> AdditionalForgables { get; }
+        public IList<StmtForgeMethodResult> Forgables { get; }
+
+        public IList<StmtClassForgeableFactory> AdditionalForgables { get; }
 
         public CodegenExpression Make(
             CodegenMethodScope parent,
@@ -62,18 +66,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             var method = parent.MakeChild(typeof(DataflowDesc), GetType(), classScope);
             method.Block
                 .DeclareVar<DataflowDesc>("df", NewInstance(typeof(DataflowDesc)))
-                .SetProperty(Ref("df"), "DataflowName", Constant(dataflowName))
-                .SetProperty(Ref("df"), "DeclaredTypes", MakeTypes(declaredTypes, method, symbols, classScope))
-                .SetProperty(Ref("df"), "OperatorMetadata", MakeOpMeta(operatorMetadata, method, symbols, classScope))
+                .SetProperty(Ref("df"), "DataflowName", Constant(_dataflowName))
+                .SetProperty(Ref("df"), "DeclaredTypes", MakeTypes(_declaredTypes, method, symbols, classScope))
+                .SetProperty(Ref("df"), "OperatorMetadata", MakeOpMeta(_operatorMetadata, method, symbols, classScope))
                 .SetProperty(
                     Ref("df"),
                     "OperatorBuildOrder",
-                    MakeOpBuildOrder(operatorBuildOrder, method, symbols, classScope))
+                    MakeOpBuildOrder(_operatorBuildOrder, method, symbols, classScope))
                 .SetProperty(
                     Ref("df"),
                     "OperatorFactories",
                     MakeOpFactories(OperatorFactories, method, symbols, classScope))
-                .SetProperty(Ref("df"), "LogicalChannels", MakeOpChannels(logicalChannels, method, symbols, classScope))
+                .SetProperty(Ref("df"), "LogicalChannels", MakeOpChannels(_logicalChannels, method, symbols, classScope))
                 .MethodReturn(Ref("df"));
             return LocalMethod(method);
         }

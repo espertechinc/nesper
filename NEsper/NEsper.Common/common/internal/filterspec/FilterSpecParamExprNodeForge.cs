@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
@@ -195,15 +196,17 @@ namespace com.espertech.esper.common.@internal.filterspec
             }
 
             getFilterValue.Block
-                .BlockReturn(
-                  ExprDotMethod(
+                .DeclareVar<object>(
+                    "value",
+                    ExprDotMethod(
                         ExprDotName(Ref("node"), "FilterBooleanExpressionFactory"),
                         "Make",
                         Ref("node"), // FilterSpecParamExprNode filterSpecParamExprNode
                         Ref("events"), // EventBean[] events
                         REF_EXPREVALCONTEXT, // ExprEvaluatorContext exprEvaluatorContext
                         ExprDotName(REF_EXPREVALCONTEXT, "AgentInstanceId"), // int agentInstanceId
-                        REF_STMTCTXFILTEREVALENV));
+                        REF_STMTCTXFILTEREVALENV))
+                .BlockReturn(FilterValueSetParamImpl.CodegenNew(Ref("value")));
 
             // expression evaluator
             var evaluator = ExprNodeUtilityCodegen.CodegenEvaluatorNoCoerce(
@@ -274,6 +277,20 @@ namespace com.espertech.esper.common.@internal.filterspec
 
             method.Block.MethodReturn(Ref("node"));
             return method;
+        }
+
+        public override void ValueExprToString(
+            StringBuilder @out,
+            int i)
+        {
+            @out.Append("expression '")
+                .Append(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(ExprNode))
+                .Append("'");
+        }
+
+        public static String ValueExprToString(String expression)
+        {
+            return "expression '" + expression + "'";
         }
 
         private EventType FindMayNull(

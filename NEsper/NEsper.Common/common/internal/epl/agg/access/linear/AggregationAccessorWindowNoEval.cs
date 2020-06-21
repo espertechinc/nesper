@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                     Ref("array"),
                     Ref("count"),
                     Cast(forge.ComponentType, ExprDotUnderlying(Ref("bean"))))
-                .Increment("count")
+                .IncrementRef("count")
                 .BlockEnd()
                 .MethodReturn(Ref("array"));
         }

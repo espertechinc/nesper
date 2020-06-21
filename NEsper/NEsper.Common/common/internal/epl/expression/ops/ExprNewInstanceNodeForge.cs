@@ -18,22 +18,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprNewInstanceNodeForge : ExprForge
     {
-        private readonly InstanceManufacturerFactory manufacturerFactory;
+        private readonly InstanceManufacturerFactory _manufacturerFactory;
 
-        private readonly ExprNewInstanceNode parent;
+        private readonly ExprNewInstanceNode _parent;
 
         public ExprNewInstanceNodeForge(
             ExprNewInstanceNode parent,
             Type targetClass,
             InstanceManufacturerFactory manufacturerFactory)
         {
-            this.parent = parent;
+            this._parent = parent;
             EvaluationType = targetClass;
-            this.manufacturerFactory = manufacturerFactory;
+            this._manufacturerFactory = manufacturerFactory;
         }
 
         public ExprEvaluator ExprEvaluator =>
-            new ExprNewInstanceNodeForgeEval(this, manufacturerFactory.MakeEvaluator());
+            new ExprNewInstanceNodeForgeEval(this, _manufacturerFactory.MakeEvaluator());
 
         public CodegenExpression EvaluateCodegen(
             Type requiredType,
@@ -41,12 +41,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return manufacturerFactory.Codegen(this, codegenMethodScope, exprSymbol, codegenClassScope);
+            return _manufacturerFactory.Codegen(this, codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
         public Type EvaluationType { get; }
 
-        public ExprNodeRenderable ExprForgeRenderable => parent;
+        public ExprNodeRenderable ExprForgeRenderable => _parent;
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
     }

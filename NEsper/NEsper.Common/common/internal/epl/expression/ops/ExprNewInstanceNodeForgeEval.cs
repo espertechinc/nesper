@@ -17,15 +17,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     /// </summary>
     public class ExprNewInstanceNodeForgeEval : ExprEvaluator
     {
-        private readonly ExprNewInstanceNodeForge forge;
-        private readonly InstanceManufacturer manufacturer;
+        private readonly ExprNewInstanceNodeForge _forge;
+        private readonly InstanceManufacturer _manufacturer;
 
         public ExprNewInstanceNodeForgeEval(
             ExprNewInstanceNodeForge forge,
             InstanceManufacturer manufacturer)
         {
-            this.forge = forge;
-            this.manufacturer = manufacturer;
+            this._forge = forge;
+            this._manufacturer = manufacturer;
         }
 
         public object Evaluate(
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            return manufacturer.Make(eventsPerStream, isNewData, exprEvaluatorContext);
+            return _manufacturer.Make(eventsPerStream, isNewData, exprEvaluatorContext);
         }
     }
 } // end of namespace

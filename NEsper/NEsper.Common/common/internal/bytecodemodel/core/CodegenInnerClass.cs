@@ -15,23 +15,42 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
     {
         public CodegenInnerClass(
             string className,
-            Type interfaceImplemented,
+            Type optionalInterfaceImplemented,
             CodegenCtor ctor,
             IList<CodegenTypedParam> explicitMembers,
             CodegenClassMethods methods,
             CodegenClassProperties properties)
+            : this(className, ctor, explicitMembers, methods, properties)
         {
+            if (optionalInterfaceImplemented != null) {
+            }
+            
             ClassName = className;
-            InterfaceImplemented = interfaceImplemented;
+            BaseList.AssignType(optionalInterfaceImplemented);
             Ctor = ctor;
             ExplicitMembers = explicitMembers;
             Methods = methods;
             Properties = properties;
         }
 
+        public CodegenInnerClass(
+            string className,
+            CodegenCtor ctor,
+            IList<CodegenTypedParam> explicitMembers,
+            CodegenClassMethods methods,
+            CodegenClassProperties properties)
+        {
+            ClassName = className;
+            BaseList = new CodegenClassBaseList();
+            Ctor = ctor;
+            ExplicitMembers = explicitMembers;
+            Methods = methods;
+            Properties = properties;
+        }
+        
         public string ClassName { get; }
 
-        public Type InterfaceImplemented { get; }
+        public CodegenClassBaseList BaseList { get; }
 
         public IList<CodegenTypedParam> ExplicitMembers { get; }
 

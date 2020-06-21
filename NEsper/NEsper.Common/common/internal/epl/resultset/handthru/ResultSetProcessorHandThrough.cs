@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
                     "result",
                     ExprDotMethod(
                         Ref("this"), "ProcessJoinResult", REF_JOINSET,
-                        StaticMethod(typeof(Collections), "GetEmptySet", new[] { typeof(MultiKey<EventBean>) }),
+                        StaticMethod(typeof(Collections), "GetEmptySet", new[] { typeof(MultiKeyArrayOfKeys<EventBean>) }),
                         Constant(true)))
                 .MethodReturn(
                     NewInstance<ArrayEventEnumerator>(

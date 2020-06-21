@@ -13,23 +13,24 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.resultset.@select.typable;
 using com.espertech.esper.common.@internal.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.etc
 {
-    public class ExprEvalEnumerationSingleToCollForge : ExprForge
+    public class ExprEvalEnumerationSingleToCollForge : ExprForge, SelectExprProcessorTypableForge
     {
-        internal readonly ExprEnumerationForge enumerationForge;
-        private readonly EventType targetType;
+        private readonly ExprEnumerationForge _;
+        private readonly EventType _targetType;
 
         public ExprEvalEnumerationSingleToCollForge(
             ExprEnumerationForge enumerationForge,
             EventType targetType)
         {
-            this.enumerationForge = enumerationForge;
-            this.targetType = targetType;
+            this._ = enumerationForge;
+            this._targetType = targetType;
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -50,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             methodNode.Block
                 .DeclareVar<EventBean>(
                     "@event",
-                    enumerationForge.EvaluateGetEventBeanCodegen(methodNode, exprSymbol, codegenClassScope))
+                    _.EvaluateGetEventBeanCodegen(methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("@event")
                 .DeclareVar<EventBean[]>("events", NewArrayByLength(typeof(EventBean), Constant(1)))
                 .AssignArrayElement(Ref("events"), Constant(0), Ref("@event"))
@@ -63,11 +64,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         }
 
         public Type EvaluationType {
-            get => TypeHelper.GetArrayType(targetType.UnderlyingType);
+            get => typeof(EventBean[]);
+        }
+
+        public Type UnderlyingEvaluationType {
+            get => TypeHelper.GetArrayType(_targetType.UnderlyingType);
         }
 
         public ExprNodeRenderable ExprForgeRenderable {
-            get => enumerationForge.EnumForgeRenderable;
+            get => _.EnumForgeRenderable;
         }
     }
 } // end of namespace

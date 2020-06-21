@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
     {
         public StatementAgentInstanceFactoryUpdateResult(
             Viewable finalView,
-            AgentInstanceStopCallback stopCallback,
+            AgentInstanceMgmtCallback stopCallback,
             AgentInstanceContext agentInstanceContext,
             IDictionary<int, SubSelectFactoryResult> subselectActivations)
             : base(
@@ -33,7 +33,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
                 null,
                 null,
                 null,
-                Collections.GetEmptyList<StatementAgentInstancePreload>())
+                EmptyList<StatementAgentInstancePreload>.Instance, 
+                null)
         {
         }
     }

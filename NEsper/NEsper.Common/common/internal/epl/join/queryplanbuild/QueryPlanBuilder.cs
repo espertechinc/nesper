@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
     {
         private static readonly ILog QUERY_PLAN_LOG = LogManager.GetLogger(AuditPath.QUERYPLAN_LOG);
 
-        public static QueryPlanForge GetPlan(
+        public static QueryPlanForgeDesc GetPlan(
             EventType[] typesPerStream,
             OuterJoinDesc[] outerJoinDescList,
             QueryGraphForge queryGraph,
@@ -65,18 +65,19 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     outerJoinType = outerJoinDescList[0].OuterJoinType;
                 }
 
-                QueryPlanForge queryPlanForge = TwoStreamQueryPlanBuilder.Build(
+                QueryPlanForgeDesc queryPlan = TwoStreamQueryPlanBuilder.Build(
                     typesPerStream,
                     queryGraph,
                     outerJoinType,
-                    streamJoinAnalysisResult);
-                RemoveUnidirectionalAndTable(queryPlanForge, streamJoinAnalysisResult);
+                    streamJoinAnalysisResult,
+                    statementRawInfo);
+                RemoveUnidirectionalAndTable(queryPlan.Forge, streamJoinAnalysisResult);
 
                 if (Log.IsDebugEnabled) {
-                    Log.Debug(methodName + "2-Stream queryPlan=" + queryPlanForge);
+                    Log.Debug(methodName + "2-Stream queryPlan=" + queryPlan);
                 }
 
-                return queryPlanForge;
+                return queryPlan;
             }
 
             bool hasPreferMergeJoin = HintEnum.PREFER_MERGE_JOIN.GetHint(statementRawInfo.Annotations) != null;
@@ -85,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                                    OuterJoinDesc.ConsistsOfAllInnerJoins(outerJoinDescList);
 
             if (isAllInnerJoins && !hasPreferMergeJoin) {
-                QueryPlanForge queryPlanForge = NStreamQueryPlanBuilder.Build(
+                QueryPlanForgeDesc queryPlan = NStreamQueryPlanBuilder.Build(
                     queryGraph,
                     typesPerStream,
                     historicalViewableDesc,
@@ -94,16 +95,18 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     hasForceNestedIter,
                     streamJoinAnalysisResult.UniqueKeys,
                     streamJoinAnalysisResult.TablesPerStream,
-                    streamJoinAnalysisResult);
+                    streamJoinAnalysisResult,
+                    statementRawInfo,
+                    services.SerdeResolver);
 
-                if (queryPlanForge != null) {
-                    RemoveUnidirectionalAndTable(queryPlanForge, streamJoinAnalysisResult);
+                if (queryPlan != null) {
+                    RemoveUnidirectionalAndTable(queryPlan.Forge, streamJoinAnalysisResult);
 
                     if (Log.IsDebugEnabled) {
-                        Log.Debug(methodName + "N-Stream inner-join queryPlan=" + queryPlanForge);
+                        Log.Debug(methodName + "N-Stream inner-join queryPlan=" + queryPlan);
                     }
 
-                    return queryPlanForge;
+                    return queryPlan;
                 }
 
                 if (isQueryPlanLogging && QUERY_PLAN_LOG.IsInfoEnabled) {
@@ -111,7 +114,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 }
             }
 
-            QueryPlanForge queryPlan = NStreamOuterQueryPlanBuilder.Build(
+            QueryPlanForgeDesc queryPlanX = NStreamOuterQueryPlanBuilder.Build(
                 queryGraph,
                 outerJoinDescList,
                 streamNames,
@@ -124,8 +127,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 streamJoinAnalysisResult,
                 statementRawInfo,
                 services);
-            RemoveUnidirectionalAndTable(queryPlan, streamJoinAnalysisResult);
-            return queryPlan;
+            RemoveUnidirectionalAndTable(queryPlanX.Forge, streamJoinAnalysisResult);
+            return queryPlanX;
         }
 
         // Remove plans for non-unidirectional streams

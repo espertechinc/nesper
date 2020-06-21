@@ -26,19 +26,22 @@ namespace com.espertech.esper.common.@internal.context.compile
         private readonly ContextCompileTimeRegistry locals;
         private readonly PathRegistry<string, ContextMetaData> path;
         private readonly ModuleDependenciesCompileTime moduleDependencies;
+        private readonly bool isFireAndForget;
 
         public ContextCompileTimeResolverImpl(
             string moduleName,
             ICollection<string> moduleUses,
             ContextCompileTimeRegistry locals,
             PathRegistry<string, ContextMetaData> path,
-            ModuleDependenciesCompileTime moduleDependencies)
+            ModuleDependenciesCompileTime moduleDependencies,
+            bool isFireAndForget)
         {
             this.moduleName = moduleName;
             this.moduleUses = moduleUses;
             this.locals = locals;
             this.path = path;
             this.moduleDependencies = moduleDependencies;
+            this.isFireAndForget = isFireAndForget;
         }
 
         public ContextMetaData GetContextInfo(string contextName)
@@ -52,10 +55,11 @@ namespace com.espertech.esper.common.@internal.context.compile
             try {
                 Pair<ContextMetaData, string> pair = path.GetAnyModuleExpectSingle(contextName, moduleUses);
                 if (pair != null) {
-                    if (!NameAccessModifierExtensions.Visible(
-                        pair.First.ContextVisibility,
-                        pair.First.ContextModuleName,
-                        moduleName)) {
+                    if (!isFireAndForget &&
+                        !NameAccessModifierExtensions.Visible(
+                            pair.First.ContextVisibility,
+                            pair.First.ContextModuleName,
+                            moduleName)) {
                         return null;
                     }
 

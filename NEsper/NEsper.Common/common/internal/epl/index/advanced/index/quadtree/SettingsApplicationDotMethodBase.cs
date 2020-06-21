@@ -170,8 +170,8 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 throw GetIndexNameMessage("invalid chained index expression");
             }
 
-            IList<ExprNode> @params = dotNode.ChainSpec[0].Parameters;
-            string indexTypeName = dotNode.ChainSpec[0].Name;
+            IList<ExprNode> @params = dotNode.ChainSpec[0].GetParametersOrEmpty();
+            string indexTypeName = dotNode.ChainSpec[0].GetRootNameOrEmptyString();
             optionalIndexName = node.Prototype.Name;
 
             AdvancedIndexFactoryProvider provider = null;

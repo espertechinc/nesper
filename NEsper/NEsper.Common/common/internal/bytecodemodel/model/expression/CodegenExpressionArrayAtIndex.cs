@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
@@ -43,6 +44,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         {
             _expression.MergeClasses(classes);
             _index.MergeClasses(classes);
+        }
+        
+        public void TraverseExpressions(Consumer<CodegenExpression> consumer) {
+            consumer.Invoke(_expression);
+            consumer.Invoke(_index);
         }
     }
 } // end of namespace

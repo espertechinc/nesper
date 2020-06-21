@@ -30,9 +30,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
         protected override CodegenExpression[] InstrumentationQParams => new CodegenExpression[0];
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
-            ToPrecedenceFreeEPLInternal(writer);
+            ToPrecedenceFreeEPLInternal(writer, flags);
             writer.Write(".Keys()");
         }
 

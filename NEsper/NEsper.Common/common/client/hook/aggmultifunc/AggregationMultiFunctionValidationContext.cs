@@ -10,7 +10,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.configuration.compiler;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.hook.aggmultifunc
@@ -34,7 +33,6 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         /// <param name="statementName">statement name</param>
         /// <param name="validationContext">validation context</param>
         /// <param name="config">configuration</param>
-        /// <param name="optionalTableColumnRead">optional table column name</param>
         /// <param name="allParameterExpressions">all parameters</param>
         /// <param name="optionalFilterExpression">optional filter parameter</param>
         public AggregationMultiFunctionValidationContext(
@@ -44,7 +42,6 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
             string statementName,
             ExprValidationContext validationContext,
             ConfigurationCompilerPlugInAggregationMultiFunction config,
-            TableMetadataColumnAggregation optionalTableColumnRead,
             ExprNode[] allParameterExpressions,
             ExprNode optionalFilterExpression)
         {
@@ -54,7 +51,6 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
             StatementName = statementName;
             ValidationContext = validationContext;
             Config = config;
-            OptionalTableColumnRead = optionalTableColumnRead;
             AllParameterExpressions = allParameterExpressions;
             OptionalFilterExpression = optionalFilterExpression;
         }
@@ -107,12 +103,6 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         /// </summary>
         /// <returns>filter expression</returns>
         public ExprNode OptionalFilterExpression { get; }
-
-        /// <summary>
-        ///     Returns table column information when used with tables
-        /// </summary>
-        /// <returns>table column</returns>
-        public TableMetadataColumnAggregation OptionalTableColumnRead { get; }
 
         /// <summary>
         ///     Gets the named parameters as a list

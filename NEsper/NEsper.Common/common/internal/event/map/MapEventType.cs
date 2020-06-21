@@ -46,13 +46,12 @@ namespace com.espertech.esper.common.@internal.@event.map
                 startTimestampPropertyName,
                 endTimestampPropertyName,
                 GETTER_FACTORY,
-                beanEventTypeFactory)
+                beanEventTypeFactory,
+                false)
         {
         }
 
         public override Type UnderlyingType => typeof(IDictionary<string, object>);
-
-        public override EventBeanReader Reader => new MapEventBeanReader(this);
 
         public override EventPropertyDescriptor[] WriteableProperties {
             get {
@@ -104,10 +103,16 @@ namespace com.espertech.esper.common.@internal.@event.map
 
             var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
             if (property is MappedProperty mapProp) {
+                if (!PropertyItems.ContainsKey(mapProp.PropertyNameAtomic)) {
+                    return null;
+                }
                 return new MapEventBeanPropertyWriterMapProp(mapProp.PropertyNameAtomic, mapProp.Key);
             }
 
             if (property is IndexedProperty indexedProp) {
+                if (!PropertyItems.ContainsKey(indexedProp.PropertyNameAtomic)) {
+                    return null;
+                }
                 return new MapEventBeanPropertyWriterIndexedProp(indexedProp.PropertyNameAtomic, indexedProp.Index);
             }
 

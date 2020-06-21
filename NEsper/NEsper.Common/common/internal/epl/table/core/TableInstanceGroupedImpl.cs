@@ -6,8 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
@@ -118,7 +120,34 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             return CreateRowIntoTable(groupByKey);
         }
 
-        public override ICollection<object> GroupKeys => rows.Keys;
+        public ICollection<object> GroupKeysMayMultiKey => rows.Keys;
+
+        public override ICollection<object> GroupKeys {
+            get {
+                var keyTypes = table.MetaData.KeyTypes;
+                if (keyTypes.Length == 1 && !keyTypes[0].IsArray) {
+                    return rows.Keys;
+                }
+
+                List<object> keys;
+
+                if (keyTypes.Length == 1) {
+                    var col = table.MetaData.KeyColNums[0];
+                    keys = rows.Values
+                        .Select(bean => bean.Properties[col])
+                        .ToList();
+                }
+                else {
+                    var cols = table.MetaData.KeyColNums;
+                    keys = rows.Values
+                        .Select(bean => cols.Select(index => bean.Properties[index]).ToArray())
+                        .Cast<object>()
+                        .ToList();
+                }
+
+                return keys;
+            }
+        }
 
         public override void HandleRowUpdated(ObjectArrayBackedEventBean updatedEvent)
         {

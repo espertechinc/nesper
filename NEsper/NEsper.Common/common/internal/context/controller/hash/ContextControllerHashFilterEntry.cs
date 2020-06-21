@@ -93,5 +93,13 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
         public EPStatementHandleCallbackFilter FilterHandle {
             get => filterHandle;
         }
+
+        public void Transfer(
+            FilterSpecActivatable activatable,
+            AgentInstanceTransferServices xfer)
+        {
+            xfer.AgentInstanceContext.FilterService.Remove(filterHandle, activatable.FilterForEventType, filterValueSet);
+            xfer.TargetFilterService.Add(activatable.FilterForEventType, filterValueSet, filterHandle);
+        }
     }
 } // end of namespace

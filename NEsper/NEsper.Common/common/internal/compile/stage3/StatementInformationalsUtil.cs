@@ -131,6 +131,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 selectSubscriberDescriptor.SelectClauseColumnNames,
                 selectSubscriberDescriptor.IsForClauseDelivery,
                 selectSubscriberDescriptor.GroupDelivery,
+                selectSubscriberDescriptor.GroupDeliveryMultiKey,
                 properties,
                 @base.StatementSpec.Raw.MatchRecognizeSpec != null,
                 services.IsInstrumented,
@@ -142,7 +143,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         private static bool IsNeedDedup(IList<FilterSpecCompiled> filterSpecCompileds)
         {
             foreach (var provider in filterSpecCompileds) {
-                if (provider.Parameters.Length > 1) {
+                if (provider.Parameters.Paths.Length > 1) {
                     return true;
                 }
             }

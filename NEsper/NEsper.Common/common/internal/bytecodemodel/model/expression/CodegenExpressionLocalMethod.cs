@@ -14,16 +14,16 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
     public class CodegenExpressionLocalMethod : CodegenExpression
     {
-        private static int _gid = 0;
-
-        private readonly int _id = ++_gid;
         private readonly CodegenMethod _methodNode;
         private readonly IList<CodegenExpression> _parameters;
+
+        internal CodegenMethod MethodNode => _methodNode;
 
         public CodegenExpressionLocalMethod(
             CodegenMethod methodNode,
@@ -46,7 +46,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             if (_methodNode.AssignedMethod == null) {
                 throw new IllegalStateException("Method has no assignment for " + _methodNode.AdditionalDebugInfo);
             }
-
+            if (_methodNode.AssignedProviderClassName != null) {
+                builder.Append(_methodNode.AssignedProviderClassName);
+                builder.Append(".");
+            }
+            
             builder.Append(_methodNode.AssignedMethod.Name).Append("(");
             var delimiter = "";
 
@@ -73,6 +77,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         {
             _methodNode.MergeClasses(classes);
             _parameters.For(p => p.MergeClasses(classes));
+        }
+        
+        public void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            CodegenExpressionBuilder.TraverseMultiple(_parameters, consumer);
         }
     }
 } // end of namespace

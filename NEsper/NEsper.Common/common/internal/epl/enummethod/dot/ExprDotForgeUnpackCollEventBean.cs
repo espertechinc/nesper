@@ -51,13 +51,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         public CodegenExpression Codegen(
             CodegenExpression inner,
             Type innerType,
-            CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol,
-            CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope) 
         {
             var returnType = typeof(ICollection<EventBean>);
-            CodegenMethod methodNode = codegenMethodScope
-                .MakeChild(returnType, typeof(ExprDotForgeUnpackCollEventBean), codegenClassScope)
+            CodegenMethod methodNode = parent
+                .MakeChild(returnType, typeof(ExprDotForgeUnpackCollEventBean), classScope)
                 .AddParam(typeof(FlexCollection), "target");
 
             methodNode.Block

@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         private readonly string propertyName;
         private readonly string statementName;
 
-        protected internal ExprDotNodeForgePropertyExpr(
+        internal ExprDotNodeForgePropertyExpr(
             ExprDotNodeImpl parent,
             string statementName,
             string propertyName,
@@ -81,6 +81,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public override ExprNodeRenderable ExprForgeRenderable => Parent;
 
+        public override bool IsLocalInlinedClass {
+            get => false;
+        }
+        
         public override CodegenExpression EvaluateCodegenUninstrumented(
             Type requiredType,
             CodegenMethodScope codegenMethodScope,

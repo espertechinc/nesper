@@ -101,7 +101,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 else if (methodStreamSpec.ClassName == null) { // must be either UDF or script
                     Pair<Type, ImportSingleRowDesc> udf;
                     try {
-                        udf = classpathImportService.ResolveSingleRow(methodStreamSpec.MethodName);
+                        udf = classpathImportService.ResolveSingleRow(
+                            methodStreamSpec.MethodName,
+                            services.ClassProvidedExtension);
                     }
                     catch (ImportException ex) {
                         throw new ExprValidationException(
@@ -118,7 +120,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 else {
                     methodReflection = classpathImportService.ResolveMethodOverloadChecked(
                         methodStreamSpec.ClassName,
-                        methodStreamSpec.MethodName);
+                        methodStreamSpec.MethodName,
+                        services.ClassProvidedExtension);
                     strategy = MethodPollingExecStrategyEnum.TARGET_CONST;
                 }
             }
@@ -393,7 +396,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                         getterMethodName,
                         new Type[0],
                         new bool[0],
-                        new bool[0]);
+                        new bool[0],
+                        ExtensionClassEmpty.INSTANCE);
                 }
             }
             catch (Exception) {

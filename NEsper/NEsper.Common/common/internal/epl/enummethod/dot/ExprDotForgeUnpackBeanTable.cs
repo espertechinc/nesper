@@ -50,21 +50,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         public CodegenExpression Codegen(
             CodegenExpression inner,
             Type innerType,
-            CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol,
-            CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope) 
         {
-            CodegenExpression eventToPublic = TableDeployTimeResolver.MakeTableEventToPublicField(
-                tableMetadata,
-                codegenClassScope,
-                this.GetType());
-            CodegenMethod methodNode = codegenMethodScope
-                .MakeChild(typeof(object[]), typeof(ExprDotForgeUnpackBeanTable), codegenClassScope)
+            CodegenExpression eventToPublic = TableDeployTimeResolver.MakeTableEventToPublicField(tableMetadata, classScope, GetType());
+            CodegenMethod methodNode = parent
+                .MakeChild(typeof(Object[]), typeof(ExprDotForgeUnpackBeanTable), classScope)
                 .AddParam(typeof(EventBean), "target");
 
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
-            CodegenExpression refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
-            CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
+            CodegenExpressionRef refEPS = symbols.GetAddEPS(methodNode);
+            CodegenExpression refIsNewData = symbols.GetAddIsNewData(methodNode);
+            CodegenExpressionRef refExprEvalCtx = symbols.GetAddExprEvalCtx(methodNode);
 
             methodNode.Block
                 .IfRefNullReturnNull("target")

@@ -20,15 +20,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprConcatNodeForgeEvalWNew : ExprEvaluator
     {
-        private readonly ExprEvaluator[] evaluators;
-        private readonly ExprConcatNodeForge forge;
+        private readonly ExprEvaluator[] _evaluators;
+        private readonly ExprConcatNodeForge _forge;
 
         internal ExprConcatNodeForgeEvalWNew(
             ExprConcatNodeForge forge,
             ExprEvaluator[] evaluators)
         {
-            this.forge = forge;
-            this.evaluators = evaluators;
+            this._forge = forge;
+            this._evaluators = evaluators;
         }
 
         public object Evaluate(
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprEvaluatorContext context)
         {
             var buffer = new StringBuilder();
-            return Evaluate(eventsPerStream, isNewData, context, buffer, evaluators, forge);
+            return Evaluate(eventsPerStream, isNewData, context, buffer, _evaluators, _forge);
         }
 
         protected internal static string Evaluate(

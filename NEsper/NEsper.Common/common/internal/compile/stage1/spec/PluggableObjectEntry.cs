@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
         public PluggableObjectEntry(
             PluggableObjectType type,
-            Object customConfigs)
+            object customConfigs)
         {
             PluggableType = type;
             CustomConfigs = customConfigs;

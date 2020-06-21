@@ -48,6 +48,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprDotForge[] forgesUnpacking,
             bool checkedUnpackEvent)
         {
+            if (forgesUnpacking.Length == 0) {
+                throw new ArgumentException("Empty forges-unpacking");
+            }
+            
             Parent = parent;
             FilterExprAnalyzerAffector = filterExprAnalyzerAffector;
             StreamNumReferenced = streamNumReferenced;
@@ -171,6 +175,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         public override ExprNodeRenderable ExprForgeRenderable => Parent;
 
         public ExprNodeRenderable EnumForgeRenderable => Parent;
+
+        public override bool IsLocalInlinedClass => false;
 
         public override CodegenExpression EvaluateCodegen(
             Type requiredType,

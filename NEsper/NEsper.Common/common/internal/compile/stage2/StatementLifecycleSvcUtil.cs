@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return tableCompileTimeResolver.Resolve(statementSpecRaw.InsertIntoDesc.EventTypeName) != null;
         }
 
-        private static bool IsSubqueryWithTable(
+        public static bool IsSubqueryWithTable(
             IList<ExprSubselectNode> subselectNodes,
             TableCompileTimeResolver tableCompileTimeResolver)
         {

@@ -84,9 +84,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
         public static void ApplyAggJoinResultKeyedJoin(
             AggregationService aggregationService,
             AgentInstanceContext agentInstanceContext,
-            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
             object[] newDataMultiKey,
-            ISet<MultiKey<EventBean>> oldEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents,
             object[] oldDataMultiKey)
         {
             // update aggregates
@@ -239,7 +239,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
                         "keys",
                         NewArrayByLength(typeof(object), ExprDotName(Ref("resultSet"), "Count")))
                     .DeclareVar<int>("count", Constant(0))
-                    .ForEach(typeof(MultiKey<EventBean>), "eventsPerStream", Ref("resultSet"))
+                    .ForEach(typeof(MultiKeyArrayOfKeys<EventBean>), "eventsPerStream", Ref("resultSet"))
                     .AssignArrayElement(
                         "keys",
                         Ref("count"),
@@ -247,14 +247,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
                             generateGroupKeySingle,
                             ExprDotName(Ref("eventsPerStream"), "Array"),
                             ExprForgeCodegenNames.REF_ISNEWDATA))
-                    .Increment("count")
+                    .IncrementRef("count")
                     .BlockEnd()
                     .MethodReturn(Ref("keys"));
             };
             return instance.Methods.AddMethod(
                 typeof(object[]),
                 "GenerateGroupKeyArrayJoin",
-                CodegenNamedParam.From(typeof(ISet<MultiKey<EventBean>>), "resultSet", typeof(bool), "isNewData"),
+                CodegenNamedParam.From(typeof(ISet<MultiKeyArrayOfKeys<EventBean>>), "resultSet", typeof(bool), "isNewData"),
                 typeof(ResultSetProcessorRowPerEventImpl),
                 classScope,
                 code);

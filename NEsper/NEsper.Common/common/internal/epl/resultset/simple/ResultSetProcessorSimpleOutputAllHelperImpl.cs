@@ -17,10 +17,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
 {
     public class ResultSetProcessorSimpleOutputAllHelperImpl : ResultSetProcessorSimpleOutputAllHelper
     {
-        private readonly Deque<MultiKey<EventBean>> eventsNewJoin = new ArrayDeque<MultiKey<EventBean>>(2);
+        private readonly Deque<MultiKeyArrayOfKeys<EventBean>> eventsNewJoin = new ArrayDeque<MultiKeyArrayOfKeys<EventBean>>(2);
 
         private readonly Deque<EventBean> eventsNewView = new ArrayDeque<EventBean>(2);
-        private readonly Deque<MultiKey<EventBean>> eventsOldJoin = new ArrayDeque<MultiKey<EventBean>>(2);
+        private readonly Deque<MultiKeyArrayOfKeys<EventBean>> eventsOldJoin = new ArrayDeque<MultiKeyArrayOfKeys<EventBean>>(2);
         private readonly Deque<EventBean> eventsOldView = new ArrayDeque<EventBean>(2);
         private readonly ResultSetProcessorSimple processor;
 
@@ -73,8 +73,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
         }
 
         public void ProcessJoin(
-            ISet<MultiKey<EventBean>> newEvents,
-            ISet<MultiKey<EventBean>> oldEvents)
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents)
         {
             if (!processor.HasHavingClause) {
                 AddToJoin(newEvents, oldEvents);
@@ -146,8 +146,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
         }
 
         private void AddToJoin(
-            ISet<MultiKey<EventBean>> newEvents,
-            ISet<MultiKey<EventBean>> oldEvents)
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents)
         {
             EventBeanUtility.AddToCollection(newEvents, eventsNewJoin);
             EventBeanUtility.AddToCollection(oldEvents, eventsOldJoin);

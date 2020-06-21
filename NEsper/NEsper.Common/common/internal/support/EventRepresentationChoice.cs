@@ -20,107 +20,84 @@ namespace com.espertech.esper.common.@internal.support
 {
     public enum EventRepresentationChoice
     {
-        ARRAY,
+        OBJECTARRAY,
         MAP,
         AVRO,
+        JSON,
+        JSONCLASSPROVIDED,
         DEFAULT
     }
 
     public static class EventRepresentationChoiceExtensions
     {
-        public static string GetUndName(this EventRepresentationChoice enumValue)
+        public static string GetPublicName(this EventRepresentationChoice enumValue)
         {
-            return GetUnderlyingType(enumValue).GetName();
+            if (enumValue == EventRepresentationChoice.DEFAULT) {
+                return GetUnderlyingType(enumValue).GetName();
+            }
+            else {
+                return enumValue.GetName();
+            }
         }
 
         public static string GetAnnotationText(this EventRepresentationChoice enumValue)
         {
-            switch (enumValue) {
-                case EventRepresentationChoice.ARRAY:
-                    return "@EventRepresentation('objectarray')";
-
-                case EventRepresentationChoice.MAP:
-                    return "@EventRepresentation('map')";
-
-                case EventRepresentationChoice.AVRO:
-                    return "@EventRepresentation('avro')";
-
-                case EventRepresentationChoice.DEFAULT:
-                    return "";
+            return enumValue switch {
+                EventRepresentationChoice.OBJECTARRAY => "@EventRepresentation('objectarray')",
+                EventRepresentationChoice.MAP => "@EventRepresentation('map')",
+                EventRepresentationChoice.AVRO => "@EventRepresentation('avro')",
+                EventRepresentationChoice.JSON => "@EventRepresentation('json')",
+                EventRepresentationChoice.JSONCLASSPROVIDED => throw new UnsupportedOperationException("For Json-Provided please use getAnnotationTextWJsonProvided(class)"),
+                EventRepresentationChoice.DEFAULT => "",
+                _ => throw new ArgumentException("invalid value for EnumValue", nameof(enumValue))
+            };
+        }
+        
+        public static string GetAnnotationTextWJsonProvided(this EventRepresentationChoice enumValue, Type jsonProvidedClass) {
+            if (enumValue == EventRepresentationChoice.JSONCLASSPROVIDED) {
+                return "@JsonSchema(className='" + jsonProvidedClass.Name + "') " + 
+                       "@EventRepresentation('json')";
             }
 
-            throw new ArgumentException("invalid value for EnumValue", nameof(enumValue));
+            return GetAnnotationText(enumValue);
         }
 
-        public static string GetOutputTypeCreateSchemaName(this EventRepresentationChoice enumValue)
+        public static EventUnderlyingType GetUnderlyingType(this EventRepresentationChoice enumValue)
         {
-            switch (enumValue) {
-                case EventRepresentationChoice.ARRAY:
-                    return " objectarray";
+            return enumValue switch {
+                EventRepresentationChoice.OBJECTARRAY => EventUnderlyingType.OBJECTARRAY,
+                EventRepresentationChoice.MAP => EventUnderlyingType.MAP,
+                EventRepresentationChoice.AVRO => EventUnderlyingType.AVRO,
+                EventRepresentationChoice.JSON => EventUnderlyingType.JSON,
+                EventRepresentationChoice.JSONCLASSPROVIDED => EventUnderlyingType.JSON,
+                EventRepresentationChoice.DEFAULT => EventUnderlyingTypeExtensions.GetDefault(),
+                _ => throw new ArgumentException("invalid value for EnumValue", nameof(enumValue))
+            };
+        }
 
-                case EventRepresentationChoice.MAP:
-                    return " map";
-
-                case EventRepresentationChoice.AVRO:
-                    return " avro";
-
-                case EventRepresentationChoice.DEFAULT:
-                    return "";
-            }
-
-            throw new ArgumentException("invalid value for EnumValue", nameof(enumValue));
+        public static Type GetOutputTypeClass(this EventRepresentationChoice enumValue)
+        {
+            return GetUnderlyingType(enumValue).GetUnderlyingClass();
         }
 
         public static string GetOutputTypeClassName(this EventRepresentationChoice enumValue)
         {
-            switch (enumValue) {
-                case EventRepresentationChoice.ARRAY:
-                    return EventUnderlyingType.OBJECTARRAY.GetUnderlyingClassName();
-
-                case EventRepresentationChoice.MAP:
-                    return EventUnderlyingType.MAP.GetUnderlyingClassName();
-
-                case EventRepresentationChoice.AVRO:
-                    return EventUnderlyingType.AVRO.GetUnderlyingClassName();
-
-                case EventRepresentationChoice.DEFAULT:
-                    return EventUnderlyingTypeExtensions.GetDefault().GetUnderlyingClassName();
-            }
-
-            throw new ArgumentException("invalid value for EnumValue", nameof(enumValue));
+            return GetUnderlyingType(enumValue).GetUnderlyingClassName();
         }
-
-
-        public static EventUnderlyingType GetUnderlyingType(this EventRepresentationChoice enumValue)
-        {
-            switch (enumValue) {
-                case EventRepresentationChoice.ARRAY:
-                    return EventUnderlyingType.OBJECTARRAY;
-
-                case EventRepresentationChoice.MAP:
-                    return EventUnderlyingType.MAP;
-
-                case EventRepresentationChoice.AVRO:
-                    return EventUnderlyingType.AVRO;
-
-                case EventRepresentationChoice.DEFAULT:
-                    return EventUnderlyingTypeExtensions.GetDefault();
-            }
-
-            throw new ArgumentException("invalid value for EnumValue", nameof(enumValue));
-        }
-
 
         public static bool MatchesClass(
             this EventRepresentationChoice enumValue,
             Type representationType)
         {
-            var outputTypeClassName = GetOutputTypeClassName(enumValue);
+            var underlyingType = GetUnderlyingType(enumValue);
+            var outputTypeClass = underlyingType.GetUnderlyingClass();
+            var outputTypeClassName = underlyingType.GetUnderlyingClassName();
             var supers = new HashSet<Type>();
             TypeHelper.GetBase(representationType, supers);
             supers.Add(representationType);
             foreach (Type clazz in supers) {
-                if (clazz.FullName == outputTypeClassName) {
+                if ((clazz.FullName == outputTypeClassName) ||
+                    (outputTypeClass != null && TypeHelper.IsSubclassOrImplementsInterface(clazz, outputTypeClass))) {
                     return true;
                 }
             }
@@ -132,7 +109,7 @@ namespace com.espertech.esper.common.@internal.support
         {
             var configured = configuration.Common.EventMeta.DefaultEventRepresentation;
             if (configured == EventUnderlyingType.OBJECTARRAY) {
-                return EventRepresentationChoice.ARRAY;
+                return EventRepresentationChoice.OBJECTARRAY;
             }
             else if (configured == EventUnderlyingType.AVRO) {
                 return EventRepresentationChoice.AVRO;
@@ -143,7 +120,7 @@ namespace com.espertech.esper.common.@internal.support
 
         public static bool IsObjectArrayEvent(this EventRepresentationChoice enumValue)
         {
-            return enumValue == EventRepresentationChoice.ARRAY;
+            return enumValue == EventRepresentationChoice.OBJECTARRAY;
         }
 
         public static bool IsMapEvent(this EventRepresentationChoice enumValue)
@@ -169,15 +146,45 @@ namespace com.espertech.esper.common.@internal.support
             }
 
             var part = new AnnotationPart("EventRepresentation");
-            if (enumValue == EventRepresentationChoice.ARRAY) {
-                part.AddValue("objectarray");
-            }
+            switch (enumValue) {
+                case EventRepresentationChoice.OBJECTARRAY:
+                    part.AddValue("objectarray");
+                    break;
 
-            if (enumValue == EventRepresentationChoice.AVRO) {
-                part.AddValue("avro");
+                case EventRepresentationChoice.AVRO:
+                    part.AddValue("avro");
+                    break;
+
+                case EventRepresentationChoice.JSON:
+                case EventRepresentationChoice.JSONCLASSPROVIDED:
+                    part.AddValue("json");
+                    break;
+
             }
 
             model.Annotations = Collections.SingletonList(part);
+        }
+
+        public static bool IsAvroOrJsonEvent(this EventRepresentationChoice enumValue)
+        {
+            switch (enumValue) {
+                case EventRepresentationChoice.AVRO:
+                case EventRepresentationChoice.JSON:
+                case EventRepresentationChoice.JSONCLASSPROVIDED:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public static bool IsJsonEvent(this EventRepresentationChoice enumValue)
+        {
+            return enumValue == EventRepresentationChoice.JSON;
+        }
+
+        public static bool IsJsonProvidedClassEvent(this EventRepresentationChoice enumValue)
+        {
+            return enumValue == EventRepresentationChoice.JSONCLASSPROVIDED;
         }
 
         public static bool IsAvroEvent(this EventRepresentationChoice enumValue)

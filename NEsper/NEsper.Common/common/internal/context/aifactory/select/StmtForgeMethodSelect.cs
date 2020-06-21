@@ -12,11 +12,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 {
     public class StmtForgeMethodSelect : StmtForgeMethod
     {
-        private readonly StatementBaseInfo @base;
+        private readonly StatementBaseInfo _base;
 
         public StmtForgeMethodSelect(StatementBaseInfo @base)
         {
-            this.@base = @base;
+            this._base = @base;
         }
 
         public StmtForgeMethodResult Make(
@@ -24,14 +24,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             string classPostfix,
             StatementCompileTimeServices services)
         {
-            StmtForgeMethodSelectResult forgablesResult = StmtForgeMethodSelectUtil.Make(
+            var forgeablesResult = StmtForgeMethodSelectUtil.Make(
                 services.Container,
                 false,
                 @namespace,
                 classPostfix,
-                @base,
+                _base,
                 services);
-            return forgablesResult.ForgeResult;
+            return forgeablesResult.ForgeResult;
         }
     }
 } // end of namespace

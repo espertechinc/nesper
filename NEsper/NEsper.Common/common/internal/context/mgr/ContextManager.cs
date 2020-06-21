@@ -25,7 +25,10 @@ namespace com.espertech.esper.common.@internal.context.mgr
             ContextControllerStatementDesc statement,
             bool recovery);
 
-        void StopStatement(ContextControllerStatementDesc statement);
+        void StopStatement(
+            int statementId,
+            string statementName,
+            string statementDeploymentId);
 
         int CountStatements(Func<StatementContext, Boolean> filter);
 

@@ -114,5 +114,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 exprSymbol,
                 codegenClassScope).Build();
         }
+
+        public override bool IsLocalInlinedClass => false;
     }
 } // end of namespace

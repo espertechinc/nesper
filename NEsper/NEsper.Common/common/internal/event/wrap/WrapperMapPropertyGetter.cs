@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -94,7 +95,20 @@ namespace com.espertech.esper.common.@internal.@event.wrap
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            throw ImplementationNotProvided();
+            CodegenMethod method = codegenMethodScope
+                .MakeChild(typeof(object), GetType(), codegenClassScope)
+                .AddParam(typeof(object), "und");
+            // TBD - fix this, this type is not right... below
+            if (wrapperEventType.UnderlyingType == typeof(Pair<object, object>)) {
+                method
+                    .Block
+                    .DeclareVarWCast(typeof(Pair<object, object>), "pair", "und")
+                    .DeclareVar<IDictionary<string, object>>("wrapped", ExprDotName(Ref("pair"), "Second"))
+                    .MethodReturn(mapGetter.UnderlyingGetCodegen(Ref("wrapped"), codegenMethodScope, codegenClassScope));
+            } else {
+                method.Block.MethodReturn(ConstantNull());
+            }
+            return LocalMethod(method, Ref("und"));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(

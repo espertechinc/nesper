@@ -161,7 +161,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
             var sourceCollection = instance.EventCollection;
             using (IEnumerator<EventBean> enumerator = sourceCollection.GetEnumerator()) {
                 if (!enumerator.MoveNext()) {
-                    return new EmptyList<EventBean>();
+                    return EmptyList<EventBean>.Instance;
                 }
 
                 var deque = new ArrayDeque<EventBean>(sourceCollection.Count);

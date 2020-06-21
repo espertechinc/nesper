@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
@@ -100,6 +101,17 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             }
 
             _optionalElse?.MergeClasses(classes);
+        }
+
+        public void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            foreach (CodegenStatementIfConditionBlock pair in _blocks) {
+                pair.TraverseExpressions(consumer);
+            }
+
+            if (_optionalElse != null) {
+                _optionalElse.TraverseExpressions(consumer);
+            }
         }
     }
 } // end of namespace

@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.@internal.serde;
 
 namespace com.espertech.esper.common.@internal.epl.table.core
@@ -16,6 +18,10 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             DataInputOutputSerdeWCollation<object>[] column,
             DataInputOutputSerdeWCollation<object> aggregations)
         {
+            if (column == null || aggregations == null) {
+                throw new ArgumentException("Expected serdes not received");
+            }
+
             ColumnStartingZero = column;
             Aggregations = aggregations;
         }

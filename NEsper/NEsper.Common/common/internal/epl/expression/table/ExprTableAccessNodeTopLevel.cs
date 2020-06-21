@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         ExprTypableReturnEval,
         ExprForge
     {
-        private LinkedHashMap<string, object> eventType;
+        private LinkedHashMap<string, object> _eventType;
 
         public ExprTableAccessNodeTopLevel(string tableName)
             : base(tableName)
@@ -42,11 +42,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
         protected override string InstrumentationQName => "ExprTableTop";
 
-        protected override CodegenExpression[] InstrumentationQParams => new[] {Constant(tableMeta.TableName)};
+        protected override CodegenExpression[] InstrumentationQParams => new[] {
+            Constant(TableMeta.TableName)
+        };
 
         public override ExprTableEvalStrategyFactoryForge TableAccessFactoryForge {
             get {
-                var forge = new ExprTableEvalStrategyFactoryForge(tableMeta, groupKeyEvaluators);
+                var tableMeta = TableMeta;
+                var forge = new ExprTableEvalStrategyFactoryForge(tableMeta, GroupKeyEvaluators);
                 forge.StrategyEnum = tableMeta.IsKeyed
                     ? ExprTableEvalStrategyEnum.GROUPED_TOP
                     : ExprTableEvalStrategyEnum.UNGROUPED_TOP;
@@ -72,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
         public override Type EvaluationType => typeof(IDictionary<string, object>);
 
-        public IDictionary<string, object> RowProperties => eventType;
+        public IDictionary<string, object> RowProperties => _eventType;
 
         public bool? IsMultirow => false;
 
@@ -96,17 +99,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
         protected override void ValidateBindingInternal(ExprValidationContext validationContext)
         {
+            var tableMeta = TableMeta;
             ValidateGroupKeys(tableMeta, validationContext);
-            eventType = new LinkedHashMap<string, object>();
+            _eventType = new LinkedHashMap<string, object>();
             foreach (var entry in tableMeta.Columns) {
                 var classResult = tableMeta.PublicEventType.GetPropertyType(entry.Key);
-                eventType.Put(entry.Key, classResult);
+                _eventType.Put(entry.Key, classResult);
             }
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
-            ToPrecedenceFreeEPLInternal(writer);
+            ToPrecedenceFreeEPLInternal(writer, flags);
         }
 
         protected override bool EqualsNodeInternal(ExprTableAccessNode other)

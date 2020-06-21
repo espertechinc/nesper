@@ -29,20 +29,21 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
     public class EventBeanUpdateHelperForge
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly EventBeanCopyMethodForge copyMethod;
-        private readonly EventType eventType;
+        
+        private readonly EventBeanCopyMethodForge _copyMethod;
+        private readonly EventType _eventType;
 
         public EventBeanUpdateHelperForge(
             EventType eventType,
             EventBeanCopyMethodForge copyMethod,
             EventBeanUpdateItemForge[] updateItems)
         {
-            this.eventType = eventType;
-            this.copyMethod = copyMethod;
+            this._eventType = eventType;
+            this._copyMethod = copyMethod;
             UpdateItems = updateItems;
         }
 
-        public bool IsRequiresStream2InitialValueEvent => copyMethod != null;
+        public bool IsRequiresStream2InitialValueEvent => _copyMethod != null;
 
         public string[] UpdateItemsPropertyNames {
             get {
@@ -66,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
             var copyMethodField = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventBeanCopyMethod),
-                copyMethod.MakeCopyMethodClassScoped(classScope));
+                _copyMethod.MakeCopyMethodClassScoped(classScope));
 
             var method = scope.MakeChild(typeof(EventBeanUpdateHelperWCopy), GetType(), classScope);
             var updateInternal = MakeUpdateInternal(method, classScope);
@@ -181,30 +182,37 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                     exprSymbol,
                     classScope)
                 .AddParam(PARAMS);
-            var expressions = new CodegenExpression[UpdateItems.Length];
-            var types = new Type[UpdateItems.Length];
-            for (var i = 0; i < UpdateItems.Length; i++) {
-                types[i] = UpdateItems[i].Expression.EvaluationType;
-                expressions[i] = UpdateItems[i]
-                    .Expression.EvaluateCodegen(
-                        types[i],
-                        exprMethod,
-                        exprSymbol,
-                        classScope);
+
+            var updateItems = UpdateItems;
+            var types = new Type[updateItems.Length];
+            for (var i = 0; i < updateItems.Length; i++) {
+                types[i] = updateItems[i].Expression.EvaluationType;
+            }
+            
+            EventBeanUpdateItemForgeWExpressions[] forgeExpressions = new EventBeanUpdateItemForgeWExpressions[updateItems.Length];
+            for (int i = 0; i < updateItems.Length; i++) {
+                var targetType = updateItems[i].IsUseUntypedAssignment ? typeof(object) : types[i];
+                forgeExpressions[i] = updateItems[i].toExpression(targetType, exprMethod, exprSymbol, classScope);
             }
 
             exprSymbol.DerivedSymbolsCodegen(method, method.Block, classScope);
 
             method.Block.DeclareVar(
-                eventType.UnderlyingType,
+                _eventType.UnderlyingType,
                 "und",
-                Cast(eventType.UnderlyingType, ExprDotUnderlying(Ref("target"))));
+                Cast(_eventType.UnderlyingType, ExprDotUnderlying(Ref("target"))));
 
-            for (var i = 0; i < UpdateItems.Length; i++) {
-                var updateItem = UpdateItems[i];
+            for (var i = 0; i < updateItems.Length; i++) {
+                var targetType = updateItems[i].IsUseUntypedAssignment ? typeof(object) : types[i];
+                var updateItem = updateItems[i];
+                CodegenExpression rhs = forgeExpressions[i].getRhsExpression();
+                if (updateItems[i].IsUseTriggeringEvent) {
+                    rhs = ArrayAtIndex(Ref(NAME_EPS), Constant(1));
+                }
+                
                 method.Block.Apply(Instblock(classScope, "qInfraUpdateRHSExpr", Constant(i)));
                 
-                if (types[i] == null && updateItem.OptionalWriter != null) {
+                if (types[i] == null && updateItem.OptionalWriter != null && updateItem.OptionalArray == null) {
                     method.Block.Expression(
                         updateItem.OptionalWriter.WriteCodegen(
                             ConstantNull(),
@@ -217,13 +225,13 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
 
                 if (types[i] == typeof(void) || updateItem.OptionalWriter == null) {
                     method.Block
-                        .Expression(expressions[i])
+                        .Expression(rhs)
                         .Apply(Instblock(classScope, "aInfraUpdateRHSExpr", ConstantNull()));
                     continue;
                 }
 
                 var @ref = Ref("r" + i);
-                method.Block.DeclareVar(types[i], @ref.Ref, expressions[i]);
+                method.Block.DeclareVar(targetType, @ref.Ref, rhs);
 
                 CodegenExpression assigned = @ref;
                 if (updateItem.OptionalWidener != null) {
@@ -234,31 +242,75 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                     assigned = Unbox(assigned, types[i]);
                 }
 
-                if (types[i].CanBeNull() && updateItem.IsNotNullableField) {
-                    method.Block
-                        .IfRefNull(@ref)
-                        .StaticMethod(
-                            typeof(EventBeanUpdateHelperForge),
-                            "LogWarnWhenNullAndNotNullable",
-                            Constant(updateItem.OptionalPropertyName))
+                if (updateItem.OptionalArray != null) {
+                    // handle array value with array index expression
+                    CodegenExpressionRef index = Ref("i" + i);
+                    CodegenExpressionRef array = Ref("a" + i);
+                    EventBeanUpdateItemArray arraySet = updateItem.OptionalArray;
+                    CodegenBlock arrayBlock;
+
+                    var elementType = arraySet.ArrayType.GetElementType();
+                    var arrayOfPrimitiveNullRHS = elementType.IsPrimitive && (types[i] == null || !types[i].IsPrimitive);
+                    if (arrayOfPrimitiveNullRHS) {
+                        arrayBlock = method.Block
+                            .IfNull(@ref)
+                            .StaticMethod(typeof(EventBeanUpdateHelperForge), "LogWarnWhenNullAndNotNullable", Constant(updateItem.OptionalPropertyName))
+                            .IfElse();
+                    }
+                    else {
+                        arrayBlock = method.Block;
+                    }
+
+                    arrayBlock
+                        .DeclareVar<int?>(index.Ref, forgeExpressions[i].OptionalArrayExpressions.Index)
+                        .IfRefNotNull(index.Ref)
+                        .DeclareVar(arraySet.ArrayType, array.Ref, forgeExpressions[i].OptionalArrayExpressions.ArrayGet)
+                        .IfRefNotNull(array.Ref)
+                        .IfCondition(Relational(index, CodegenExpressionRelational.CodegenRelational.LT, ArrayLength(array)))
+                        .AssignArrayElement(array, Cast<int>(index), assigned)
                         .IfElse()
-                        .Expression(
+                        .BlockThrow(
+                            NewInstance<EPException>(
+                                Concat(
+                                    Constant("Array length "),
+                                    ArrayLength(array),
+                                    Constant(" less than index "),
+                                    index,
+                                    Constant(" for property '" + updateItems[i].OptionalArray.PropertyName + "'"))))
+                        .BlockEnd()
+                        .BlockEnd();
+
+                    if (arrayOfPrimitiveNullRHS) {
+                        arrayBlock.BlockEnd();
+                    }
+                }
+                else {
+                    if (types[i].CanBeNull() && updateItem.IsNotNullableField) {
+                        method.Block
+                            .IfNull(@ref)
+                            .StaticMethod(
+                                typeof(EventBeanUpdateHelperForge),
+                                "LogWarnWhenNullAndNotNullable",
+                                Constant(updateItem.OptionalPropertyName))
+                            .IfElse()
+                            .Expression(
+                                updateItem.OptionalWriter.WriteCodegen(
+                                    assigned,
+                                    Ref("und"),
+                                    Ref("target"),
+                                    method,
+                                    classScope))
+                            .BlockEnd();
+                    }
+                    else {
+                        method.Block.Expression(
                             updateItem.OptionalWriter.WriteCodegen(
                                 assigned,
                                 Ref("und"),
                                 Ref("target"),
                                 method,
-                                classScope))
-                        .BlockEnd();
-                }
-                else {
-                    method.Block.Expression(
-                        updateItem.OptionalWriter.WriteCodegen(
-                            assigned,
-                            Ref("und"),
-                            Ref("target"),
-                            method,
-                            classScope));
+                                classScope));
+                    }
                 }
 
                 method.Block.Apply(Instblock(classScope, "aInfraUpdateRHSExpr", assigned));
@@ -276,7 +328,7 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
             Log.Warn(
                 "Null value returned by expression for assignment to property '" +
                 propertyName +
-                " is ignored as the property type is not nullable for expression");
+                "' is ignored as the property type is not nullable for expression");
         }
     }
 } // end of namespace

@@ -6,10 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.util;
@@ -55,13 +57,13 @@ namespace com.espertech.esper.common.@internal.view.sort
             this.optionalSortedRandomAccess = optionalSortedRandomAccess;
             agentInstanceContext = agentInstanceViewFactoryContext.AgentInstanceContext;
 
-            sortedEvents = new OrderedDictionary<object, object>(factory.comparator);
+            sortedEvents = new OrderedDictionary<object, object>(factory.IComparer);
         }
 
         public ViewFactory ViewFactory => factory;
 
         public override EventType EventType => parent.EventType;
-
+        
         public override void Update(
             EventBean[] newData,
             EventBean[] oldData)
@@ -184,7 +186,7 @@ namespace com.espertech.esper.common.@internal.view.sort
         {
             return GetType().Name +
                    " isDescending=" +
-                   factory.isDescendingValues.RenderAny() +
+                   factory.IsDescendingValues.RenderAny() +
                    " sortWindowSize=" +
                    sortWindowSize;
         }
@@ -192,13 +194,13 @@ namespace com.espertech.esper.common.@internal.view.sort
         protected object GetSortValues(EventBean theEvent)
         {
             eventsPerStream[0] = theEvent;
-            if (factory.sortCriteriaEvaluators.Length == 1) {
-                return factory.sortCriteriaEvaluators[0].Evaluate(eventsPerStream, true, agentInstanceContext);
+            if (factory.SortCriteriaEvaluators.Length == 1) {
+                return factory.SortCriteriaEvaluators[0].Evaluate(eventsPerStream, true, agentInstanceContext);
             }
 
-            var result = new object[factory.sortCriteriaEvaluators.Length];
+            var result = new object[factory.SortCriteriaEvaluators.Length];
             var count = 0;
-            foreach (var expr in factory.sortCriteriaEvaluators) {
+            foreach (var expr in factory.SortCriteriaEvaluators) {
                 result[count++] = expr.Evaluate(eventsPerStream, true, agentInstanceContext);
             }
 

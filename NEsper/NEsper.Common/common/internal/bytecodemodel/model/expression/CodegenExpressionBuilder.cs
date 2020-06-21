@@ -13,8 +13,10 @@ using System.Text;
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
@@ -25,11 +27,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return new CodegenExpressionRef(@ref);
         }
 
-        public static CodegenExpressionRefWCol RefCol(
+        public static CodegenExpressionMember Member(string @ref)
+        {
+            return new CodegenExpressionMember(@ref);
+        }
+
+        public static CodegenExpressionMemberWCol MemberCol(
             string @ref,
             int column)
         {
-            return new CodegenExpressionRefWCol(@ref, column);
+            return new CodegenExpressionMemberWCol(@ref, column);
         }
 
         public static CodegenExpression Op(
@@ -54,6 +61,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             params CodegenExpression[] more)
         {
             return new CodegenExpressionAndOr(false, first, second, more);
+        }
+
+        public static CodegenExpression Concat(params CodegenExpression[] stringExpressions)
+        {
+            return new CodegenExpressionConcat(stringExpressions);
         }
 
         public static CodegenExpression Unbox<T>(
@@ -198,6 +210,20 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return new CodegenExpressionConstant(constant);
         }
 
+        public static CodegenExpression MapOfConstant(IDictionary<string, object> constants) {
+            if (constants == null) {
+                return ConstantNull();
+            }
+            var expressions = new CodegenExpression[constants.Count * 2];
+            var count = 0;
+            foreach (var entry in constants) {
+                expressions[count] = Constant(entry.Key);
+                expressions[count + 1] = Constant(entry.Value);
+                count += 2;
+            }
+            return StaticMethod(typeof(CollectionUtil), "BuildMap", expressions);
+        }
+
         public static CodegenExpressionField Field(CodegenField field)
         {
             return new CodegenExpressionField(field);
@@ -228,11 +254,24 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return CodegenExpressionNoOp.INSTANCE;
         }
 
+        public static CodegenExpression CastUnderlying<T>(
+            CodegenExpression expression)
+        {
+            return CastUnderlying(typeof(T), expression);
+        }
+
         public static CodegenExpression CastUnderlying(
             Type clazz,
             CodegenExpression expression)
         {
             return new CodegenExpressionCastUnderlying(clazz, expression);
+        }
+
+        public static CodegenExpression CastUnderlying(
+            string clazzName,
+            CodegenExpression expression)
+        {
+            return new CodegenExpressionCastUnderlying(clazzName, expression);
         }
 
         public static CodegenExpression InstanceOf(
@@ -264,24 +303,24 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return new CodegenExpressionCastRef(clazz, @ref);
         }
 
-        public static CodegenExpression Increment(string @ref)
+        public static CodegenExpression IncrementRef(string @ref)
         {
-            return new CodegenExpressionIncrementDecrementName(@ref, true);
+            return Increment(Ref(@ref));
         }
 
-        public static CodegenExpression Increment(CodegenExpressionRef @ref)
+        public static CodegenExpression Increment(CodegenExpression expression)
         {
-            return new CodegenExpressionIncrementDecrementRef(@ref, true);
+            return new CodegenExpressionIncrementDecrement(expression, true);
         }
 
-        public static CodegenExpression Decrement(string @ref)
+        public static CodegenExpression DecrementRef(string @ref)
         {
-            return new CodegenExpressionIncrementDecrementName(@ref, false);
+            return Decrement(Ref(@ref));
         }
 
-        public static CodegenExpression Decrement(CodegenExpressionRef @ref)
+        public static CodegenExpression Decrement(CodegenExpression expression)
         {
-            return new CodegenExpressionIncrementDecrementRef(@ref, false);
+            return new CodegenExpressionIncrementDecrement(expression, false);
         }
 
         public static CodegenExpression Conditional(
@@ -518,6 +557,32 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         {
             foreach (var expression in expressions) {
                 expression.MergeClasses(classes);
+            }
+        }
+
+        public static void TraverseMultiple(
+            CodegenExpression[] expressions,
+            Consumer<CodegenExpression> consumer)
+        {
+            if (expressions == null) {
+                return;
+            }
+
+            foreach (var expression in expressions) {
+                consumer.Invoke(expression);
+            }
+        }
+
+        public static void TraverseMultiple(
+            ICollection<CodegenExpression> expressions,
+            Consumer<CodegenExpression> consumer)
+        {
+            if (expressions == null) {
+                return;
+            }
+
+            foreach (var expression in expressions) {
+                consumer.Invoke(expression);
             }
         }
     }

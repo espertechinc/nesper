@@ -109,5 +109,12 @@ namespace com.espertech.esper.compat.collections
 
             return false;
         }
+
+        public static bool DeepEquals(
+            object[] left,
+            object[] right)
+        {
+            return CompatExtensions.DeepEquals(left, right);
+        }
     }
 }

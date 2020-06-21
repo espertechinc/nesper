@@ -17,24 +17,33 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
     /// </summary>
     public class AggregationMultiFunctionStateModeManaged : AggregationMultiFunctionStateMode
     {
+        public AggregationMultiFunctionStateModeManaged()
+        {
+        }
+
+        public AggregationMultiFunctionStateModeManaged(InjectionStrategy injectionStrategyAggregationStateFactory)
+        {
+            InjectionStrategyAggregationStateFactory = injectionStrategyAggregationStateFactory;
+        }
+
         /// <summary>
         ///     Returns the injection strategy for the aggregation state factory
         /// </summary>
         /// <returns>strategy</returns>
-        public InjectionStrategy InjectionStrategyAggregationStateFactory { get; private set; }
+        public InjectionStrategy InjectionStrategyAggregationStateFactory { get; set; }
 
         /// <summary>
         ///     Returns indicator whether a serializer-deserialize to provide read and write methods is provided by
         ///     <seealso cref="Serde" />
         /// </summary>
         /// <value>ha-indicator</value>
-        public bool HasHA { get; private set; }
+        public bool HasHA { get; set; }
 
         /// <summary>
         ///     Returns the class providing the serde
         /// </summary>
         /// <returns>serde class</returns>
-        public Type Serde { get; private set; }
+        public Type Serde { get; set; }
 
         /// <summary>
         ///     Sets the injection strategy for the aggregation state factory

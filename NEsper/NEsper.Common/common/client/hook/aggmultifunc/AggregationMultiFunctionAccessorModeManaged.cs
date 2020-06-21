@@ -19,14 +19,22 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
     /// </summary>
     public class AggregationMultiFunctionAccessorModeManaged : AggregationMultiFunctionAccessorMode
     {
-        private InjectionStrategy injectionStrategyAggregationAccessorFactory;
+        private InjectionStrategy _injectionStrategyAggregationAccessorFactory;
 
+        public AggregationMultiFunctionAccessorModeManaged() {
+        }
+
+        public AggregationMultiFunctionAccessorModeManaged(InjectionStrategy injectionStrategyAggregationAccessorFactory) {
+            this._injectionStrategyAggregationAccessorFactory = injectionStrategyAggregationAccessorFactory;
+        }
+        
         /// <summary>
         /// Returns the injection strategy for the aggregation accessor factory
         /// </summary>
         /// <returns>strategy</returns>
         public InjectionStrategy InjectionStrategyAggregationAccessorFactory {
-            get => injectionStrategyAggregationAccessorFactory;
+            get => _injectionStrategyAggregationAccessorFactory;
+            set => _injectionStrategyAggregationAccessorFactory = value;
         }
 
         /// <summary>
@@ -37,7 +45,7 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         public AggregationMultiFunctionAccessorModeManaged SetInjectionStrategyAggregationAccessorFactory(
             InjectionStrategy strategy)
         {
-            this.injectionStrategyAggregationAccessorFactory = strategy;
+            this._injectionStrategyAggregationAccessorFactory = strategy;
             return this;
         }
     }

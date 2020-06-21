@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -123,10 +124,21 @@ namespace com.espertech.esper.common.@internal.filterspec
             getFilterValue.Block
                 .DeclareVar<object>("min", _min.MakeCodegen(classScope, method))
                 .DeclareVar<object>("max", _max.MakeCodegen(classScope, method))
-                .BlockReturn(NewInstance(returnType, Cast(castType, Ref("min")), Cast(castType, Ref("max"))));
+                .DeclareVar<object>("value", NewInstance(returnType, Cast(castType, Ref("min")), Cast(castType, Ref("max"))))
+                .BlockReturn(FilterValueSetParamImpl.CodegenNew(Ref("value")));
 
             method.Block.MethodReturn(param);
             return method;
+        }
+
+        public override void ValueExprToString(
+            StringBuilder @out,
+            int i)
+        {
+            @out.Append("lower ");
+            _min.ValueToString(@out);
+            @out.Append(" upper ");
+            _max.ValueToString(@out);
         }
     }
 } // end of namespace

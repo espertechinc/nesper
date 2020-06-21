@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.context.activator;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.subquery;
@@ -36,6 +37,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
         private readonly TableMetaData optionalInsertIntoTable;
         private readonly string resultSetProcessorProviderClassName;
         private readonly bool selectAndDelete;
+        private readonly MultiKeyClassRef distinctMultiKey;
 
         public StatementAgentInstanceFactoryOnTriggerInfraSelectForge(
             ViewableActivatorForge activator,
@@ -50,7 +52,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             bool addToFront,
             TableMetaData optionalInsertIntoTable,
             bool selectAndDelete,
-            bool distinct)
+            bool distinct,
+            MultiKeyClassRef distinctMultiKey)
             : base(activator, resultEventType, subselects, tableAccesses, null, namedWindow, table, queryPlanForge)
 
         {
@@ -60,6 +63,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             this.optionalInsertIntoTable = optionalInsertIntoTable;
             this.selectAndDelete = selectAndDelete;
             this.distinct = distinct;
+            this.distinctMultiKey = distinctMultiKey;
         }
 
         public override Type TypeOfSubclass()
@@ -78,13 +82,22 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                     saiff,
                     "ResultSetProcessorFactoryProvider",
                     NewInstance(
-                        resultSetProcessorProviderClassName, 
+                        resultSetProcessorProviderClassName,
                         symbols.GetAddInitSvc(method),
                         Ref("statementFields")))
                 .SetProperty(saiff, "IsInsertInto", Constant(insertInto))
                 .SetProperty(saiff, "IsAddToFront", Constant(addToFront))
                 .SetProperty(saiff, "IsSelectAndDelete", Constant(selectAndDelete))
                 .SetProperty(saiff, "IsDistinct", Constant(distinct))
+                .SetProperty(
+                    saiff,
+                    "DistinctKeySetter",
+                    MultiKeyCodegen.CodegenGetterEventDistinct(
+                        distinct,
+                        ResultEventType,
+                        distinctMultiKey,
+                        method,
+                        classScope))
                 .SetProperty(
                     saiff,
                     "OptionalInsertIntoTable",

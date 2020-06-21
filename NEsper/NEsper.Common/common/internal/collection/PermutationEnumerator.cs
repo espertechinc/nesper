@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.collection
             */
 
             var result = new int[numElements];
-            var outList = new List<Int32>();
+            var outList = new List<int>();
             for (int i = 0; i < numElements; i++) {
                 outList.Add(i);
             }

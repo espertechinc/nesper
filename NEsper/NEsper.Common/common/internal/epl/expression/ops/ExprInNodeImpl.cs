@@ -25,9 +25,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     public class ExprInNodeImpl : ExprNodeBase,
         ExprInNode
     {
-        private readonly bool isNotIn;
+        private readonly bool _isNotIn;
 
-        [NonSerialized] private ExprInNodeForge forge;
+        [NonSerialized] private ExprInNodeForge _forge;
 
         /// <summary>
         /// Ctor.
@@ -35,18 +35,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         /// <param name="isNotIn">is true for "not in" and false for "in"</param>
         public ExprInNodeImpl(bool isNotIn)
         {
-            this.isNotIn = isNotIn;
+            this._isNotIn = isNotIn;
         }
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
         public override ExprForge Forge {
-            get => forge;
+            get => _forge;
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         /// </summary>
         /// <returns>false for "val in (a,b,c)" or true for "val not in (a,b,c)"</returns>
         public bool IsNotIn {
-            get => isNotIn;
+            get => _isNotIn;
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)
@@ -130,7 +130,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
             }
 
-            forge = new ExprInNodeForge(this, mustCoerce, coercer, coercionType, hasCollectionOrArray);
+            _forge = new ExprInNodeForge(this, mustCoerce, coercer, coercionType, hasCollectionOrArray);
         }
 
         public bool IsConstantResult {
@@ -146,14 +146,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             ExprInNodeImpl other = (ExprInNodeImpl) node;
-            return other.isNotIn == isNotIn;
+            return other._isNotIn == _isNotIn;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             string delimiter = "";
-            ChildNodes[0].ToEPL(writer, Precedence);
-            if (isNotIn) {
+            ChildNodes[0].ToEPL(writer, Precedence, flags);
+            if (_isNotIn) {
                 writer.Write(" not in (");
             }
             else {
@@ -163,7 +164,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             for (int ii = 1 ; ii < ChildNodes.Length; ii++) {
                 var inSetValueExpr = ChildNodes[ii];
                 writer.Write(delimiter);
-                inSetValueExpr.ToEPL(writer, Precedence);
+                inSetValueExpr.ToEPL(writer, Precedence, flags);
                 delimiter = ",";
             }
 

@@ -64,7 +64,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             ExprNodeUtilityPrint.ToExpressionStringWFunctionName("grouping_id", ChildNodes, writer);
         }

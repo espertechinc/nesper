@@ -14,5 +14,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
     {
         public IList<CodegenPropertyWGraph> PublicProperties { get; } = new List<CodegenPropertyWGraph>();
         public IList<CodegenPropertyWGraph> PrivateProperties { get; } = new List<CodegenPropertyWGraph>();
+        public int Count => PublicProperties.Count + PrivateProperties.Count;
     }
 } // end of namespace

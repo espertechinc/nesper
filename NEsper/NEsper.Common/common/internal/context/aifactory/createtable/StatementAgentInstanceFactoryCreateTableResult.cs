@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
     {
         public StatementAgentInstanceFactoryCreateTableResult(
             Viewable finalView,
-            AgentInstanceStopCallback stopCallback,
+            AgentInstanceMgmtCallback stopCallback,
             AgentInstanceContext agentInstanceContext,
             TableInstance tableInstance)
             : base(
@@ -33,7 +33,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                 null,
                 null,
                 Collections.GetEmptyMap<int, ExprTableEvalStrategy>(),
-                Collections.GetEmptyList<StatementAgentInstancePreload>())
+                Collections.GetEmptyList<StatementAgentInstancePreload>(),
+                null)
         {
             TableInstance = tableInstance;
         }

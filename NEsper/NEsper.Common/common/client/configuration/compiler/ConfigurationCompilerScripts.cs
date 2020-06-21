@@ -21,5 +21,10 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// </summary>
         /// <value>dialect</value>
         public string DefaultDialect { get; set; } = "js";
+        
+        /// <summary>
+        /// Returns true if scripting is allowed.
+        /// </summary>
+        public bool IsEnabled { get; set; }
     }
 } // end of namespace

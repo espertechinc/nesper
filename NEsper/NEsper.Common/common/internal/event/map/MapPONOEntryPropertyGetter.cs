@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.getter;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -72,7 +73,7 @@ namespace com.espertech.esper.common.@internal.@event.map
         {
             return true; // Property exists as the property is not dynamic (unchecked)
         }
-
+        
         public override object Get(EventBean obj)
         {
             return GetMap(BaseNestableEventUtil.CheckedCastUnderlyingMap(obj));

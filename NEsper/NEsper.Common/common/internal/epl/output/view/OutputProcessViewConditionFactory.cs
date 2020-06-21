@@ -27,6 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             : base(
                 spec.PostProcessFactory,
                 spec.IsDistinct,
+                spec.DistinctKeyGetter,
                 spec.AfterTimePeriod,
                 spec.AfterConditionNumberOfEvents,
                 spec.ResultEventType)

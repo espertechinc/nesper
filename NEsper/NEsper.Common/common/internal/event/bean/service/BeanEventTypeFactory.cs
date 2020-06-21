@@ -22,6 +22,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
         EventBeanTypedEventFactory EventBeanTypedEventFactory { get; }
 
         EventTypeFactory EventTypeFactory { get; }
-        BeanEventType GetCreateBeanType(Type clazz);
+        BeanEventType GetCreateBeanType(Type clazz, bool publicFields);
     }
 } // end of namespace

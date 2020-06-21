@@ -6,11 +6,14 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -48,63 +51,19 @@ namespace com.espertech.esper.common.@internal.filterspec
             CodegenMethodScope parent,
             SAIFFInitializeSymbolWEventType symbols);
 
-        public static FilterSpecParamForge[] ToArray(ICollection<FilterSpecParamForge> coll)
+        public abstract void ValueExprToString(StringBuilder @out, int indent);
+
+        public void AppendFilterPlanParam(StringBuilder buf)
         {
-            if (coll.IsEmpty()) {
-                return EMPTY_PARAM_ARRAY;
-            }
-
-            return coll.ToArray();
-        }
-
-        public static CodegenMethod MakeParamArrayArrayCodegen(
-            FilterSpecParamForge[][] forges,
-            CodegenClassScope classScope,
-            CodegenMethod parent)
-        {
-            var symbolsWithType = new SAIFFInitializeSymbolWEventType();
-            var method = parent
-                .MakeChildWithScope(
-                    typeof(FilterSpecParam[][]),
-                    typeof(FilterSpecParamForge),
-                    symbolsWithType,
-                    classScope)
-                .AddParam(typeof(EventType), SAIFFInitializeSymbolWEventType.REF_EVENTTYPE.Ref)
-                .AddParam(
-                    typeof(EPStatementInitServices),
-                    SAIFFInitializeSymbol.REF_STMTINITSVC.Ref);
-            method.Block.DeclareVar<FilterSpecParam[][]>(
-                "parameters",
-                NewArrayByLength(typeof(FilterSpecParam[]), Constant(forges.Length)));
-
-            for (var i = 0; i < forges.Length; i++) {
-                method.Block.AssignArrayElement(
-                    "parameters",
-                    Constant(i),
-                    LocalMethod(MakeParamArrayCodegen(forges[i], classScope, method, symbolsWithType)));
-            }
-
-            method.Block.MethodReturn(Ref("parameters"));
-            return method;
-        }
-
-        private static CodegenMethod MakeParamArrayCodegen(
-            FilterSpecParamForge[] forges,
-            CodegenClassScope classScope,
-            CodegenMethod parent,
-            SAIFFInitializeSymbolWEventType symbolsWithType)
-        {
-            var method = parent.MakeChild(typeof(FilterSpecParam[]), typeof(FilterSpecParamForge), classScope);
-            method.Block.DeclareVar<FilterSpecParam[]>(
-                "items",
-                NewArrayByLength(typeof(FilterSpecParam), Constant(forges.Length)));
-            for (var i = 0; i < forges.Length; i++) {
-                var makeParam = forges[i].MakeCodegen(classScope, method, symbolsWithType);
-                method.Block.AssignArrayElement("items", Constant(i), LocalMethod(makeParam));
-            }
-
-            method.Block.MethodReturn(Ref("items"));
-            return method;
+            buf.Append("      -lookupable: ")
+                .Append(lookupable.Expression)
+                .Append(FilterSpecCompiler.NEWLINE);
+            buf.Append("      -operator: ")
+                .Append(filterOperator.GetTextualOp())
+                .Append(FilterSpecCompiler.NEWLINE);
+            buf.Append("      -value-expression: ");
+            ValueExprToString(buf, 8);
+            buf.Append(FilterSpecCompiler.NEWLINE);
         }
     }
 } // end of namespace

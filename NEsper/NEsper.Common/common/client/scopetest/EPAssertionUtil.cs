@@ -860,12 +860,12 @@ namespace com.espertech.esper.common.client.scopetest
 
             // For each expected object find a received object
             var numMatches = 0;
-            var foundReceived = new bool[actual.Length];
+            var received = new bool[actual.Length];
             foreach (var expectedObject in expected) {
                 var found = false;
                 for (var i = 0; i < actual.Length; i++) {
                     // Ignore found received objects
-                    if (foundReceived[i]) {
+                    if (received[i]) {
                         continue;
                     }
 
@@ -873,7 +873,7 @@ namespace com.espertech.esper.common.client.scopetest
                     if (match) {
                         found = true;
                         numMatches++;
-                        foundReceived[i] = true;
+                        received[i] = true;
                         break;
                     }
                 }
@@ -904,12 +904,12 @@ namespace com.espertech.esper.common.client.scopetest
 
             // For each expected object find a received object
             var numMatches = 0;
-            var foundReceived = new bool[actual.Length];
+            var received = new bool[actual.Length];
             foreach (var expectedArr in expected) {
                 var found = false;
                 for (var i = 0; i < actual.Length; i++) {
                     // Ignore found received objects
-                    if (foundReceived[i]) {
+                    if (received[i]) {
                         continue;
                     }
 
@@ -918,7 +918,7 @@ namespace com.espertech.esper.common.client.scopetest
                         found = true;
                         numMatches++;
                         // Blank out received object so as to not match again
-                        foundReceived[i] = true;
+                        received[i] = true;
                         break;
                     }
                 }

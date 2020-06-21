@@ -195,7 +195,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 typeof(AggregatorAccessLinearJoin),
                 CodegenSymbolProviderEmpty.INSTANCE,
                 classScope);
-            method.Block.IfRefNull(array)
+            method.Block.IfNull(array)
                 .InstanceMethod(initArray)
                 .BlockEnd()
                 .MethodReturn(
@@ -220,7 +220,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 typeof(AggregatorAccessLinearJoin),
                 CodegenSymbolProviderEmpty.INSTANCE,
                 classScope);
-            method.Block.IfRefNull(array)
+            method.Block.IfNull(array)
                 .InstanceMethod(initArray)
                 .BlockEnd()
                 .MethodReturn(StaticMethod(typeof(CompatExtensions), "AsList", array));
@@ -275,7 +275,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .IfRefNull("value")
                 .ExprDotMethod(refSet, "Put", Ref("theEvent"), Constant(1))
                 .BlockReturnNoValue()
-                .Increment("value")
+                .IncrementRef("value")
                 .ExprDotMethod(refSet, "Put", Ref("theEvent"), Ref("value"));
             return method;
         }
@@ -297,7 +297,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .IfCondition(EqualsIdentity(Ref("value"), Constant(1)))
                 .ExprDotMethod(refSet, "Remove", Ref("theEvent"))
                 .BlockReturnNoValue()
-                .Decrement("value")
+                .DecrementRef("value")
                 .ExprDotMethod(refSet, "Put", Ref("theEvent"), Ref("value"));
             return method;
         }

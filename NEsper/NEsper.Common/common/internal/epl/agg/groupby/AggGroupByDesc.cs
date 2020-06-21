@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 
@@ -18,13 +19,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             bool isUnidirectional,
             bool isFireAndForget,
             bool isOnSelect,
-            ExprNode[] groupByNodes)
+            ExprNode[] groupByNodes,
+            MultiKeyClassRef groupByMultiKey)
         {
             RowStateForgeDescs = rowStateForgeDescs;
             IsUnidirectional = isUnidirectional;
             IsFireAndForget = isFireAndForget;
             IsOnSelect = isOnSelect;
             GroupByNodes = groupByNodes;
+            GroupByMultiKey = groupByMultiKey;
         }
 
         public AggregationRowStateForgeDesc RowStateForgeDescs { get; }
@@ -48,6 +51,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
         public bool IsReclaimAged { get; set; }
 
         public ExprNode[] GroupByNodes { get; }
+        
+        public MultiKeyClassRef GroupByMultiKey { get; }
 
         public void SetReclaimEvaluationFunctionMaxAge(
             AggSvcGroupByReclaimAgedEvalFuncFactoryForge reclaimEvaluationFunctionMaxAge)

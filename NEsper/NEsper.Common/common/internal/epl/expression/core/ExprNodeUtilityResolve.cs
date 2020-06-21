@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             var childEvalsEventBeanReturnTypesForges = new ExprForge[parameters.Count];
             var allConstants = true;
             foreach (var childNode in parameters) {
-                if (!EnumMethodEnumExtensions.IsEnumerationMethod(methodName) && childNode is ExprLambdaGoesNode) {
+                if (!EnumMethodResolver.IsEnumerationMethod(methodName, services.ImportServiceCompileTime) && childNode is ExprLambdaGoesNode) {
                     throw new ExprValidationException(
                         "Unexpected lambda-expression encountered as parameter to UDF or static method '" +
                         methodName +
@@ -135,7 +135,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         methodName,
                         paramTypes,
                         allowEventBeanType,
-                        allowEventBeanCollType);
+                        allowEventBeanCollType,
+                        services.ClassProvidedExtension);
                 }
             }
             catch (Exception e) {
@@ -187,11 +188,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     childForges = rewrittenForges;
                 }
 
-                var pair = ExprNodeUtilityMake.MakeVarargArrayEval(method, childForges);
-                childForges = pair.First;
+                childForges = ExprNodeUtilityMake.MakeVarargArrayForges(method, childForges);
             }
 
-            return new ExprNodeUtilMethodDesc(allConstants, childForges, method);
+            var localInlinedClass = services.ClassProvidedExtension.IsLocalInlinedClass(method.DeclaringType);
+            return new ExprNodeUtilMethodDesc(allConstants, childForges, method, localInlinedClass);
         }
     }
 } // end of namespace

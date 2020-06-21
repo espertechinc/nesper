@@ -18,5 +18,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         Type ConstantType { get; }
 
         object ConstantValue { get; }
+
+        string StringConstantWhenProvided { get; }
     }
 } // end of namespace

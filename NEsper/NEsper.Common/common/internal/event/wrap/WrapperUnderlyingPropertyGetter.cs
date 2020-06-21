@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -18,10 +19,12 @@ namespace com.espertech.esper.common.@internal.@event.wrap
 {
     public class WrapperUnderlyingPropertyGetter : EventPropertyGetterSPI
     {
+        private readonly WrapperEventType wrapperEventType;
         private readonly EventPropertyGetterSPI underlyingGetter;
 
-        public WrapperUnderlyingPropertyGetter(EventPropertyGetterSPI underlyingGetter)
+        public WrapperUnderlyingPropertyGetter(WrapperEventType wrapperEventType, EventPropertyGetterSPI underlyingGetter)
         {
+            this.wrapperEventType = wrapperEventType;
             this.underlyingGetter = underlyingGetter;
         }
 
@@ -89,7 +92,25 @@ namespace com.espertech.esper.common.@internal.@event.wrap
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            throw ImplementationNotProvided();
+
+            CodegenMethod method = codegenMethodScope
+                .MakeChild(typeof(object), GetType(), codegenClassScope)
+                .AddParam(typeof(object), "und");
+            var undType = wrapperEventType.UnderlyingEventType.UnderlyingType;
+            // TBD - fix this, this type is not right... below
+            if (wrapperEventType.UnderlyingType == typeof(Pair<object, object>)) {
+                method.Block
+                    .DeclareVarWCast(typeof(Pair<object, object>), "pair", "und")
+                    .DeclareVar(undType, "wrapped", Cast(undType, ExprDotName(Ref("pair"), "First")))
+                    .MethodReturn(underlyingGetter.UnderlyingGetCodegen(Ref("wrapped"), codegenMethodScope, codegenClassScope));
+                return LocalMethod(method, Ref("und"));
+            }
+            else {
+                method.Block
+                    .DeclareVar(undType, "wrapped", Cast(undType, Ref("und")))
+                    .MethodReturn(underlyingGetter.UnderlyingGetCodegen(Ref("wrapped"), codegenMethodScope, codegenClassScope));
+                return LocalMethod(method, Ref("und"));
+            }
         }
 
         public CodegenExpression UnderlyingExistsCodegen(

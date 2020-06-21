@@ -37,25 +37,25 @@ namespace com.espertech.esper.common.@internal.view.timebatch
     ///     In that case also, no next callback is scheduled with the scheduling service until the next event arrives.
     /// </summary>
     public class TimeBatchView : ViewSupport,
-        AgentInstanceStopCallback,
+        AgentInstanceMgmtCallback,
         DataWindowView
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly AgentInstanceContext agentInstanceContext;
+        private readonly AgentInstanceContext _agentInstanceContext;
 
         // View parameters
-        private readonly TimeBatchViewFactory factory;
-        private readonly long scheduleSlot;
-        private readonly TimePeriodProvide timePeriodProvide;
-        private readonly ViewUpdatedCollection viewUpdatedCollection;
-        private ArrayDeque<EventBean> currentBatch = new ArrayDeque<EventBean>();
-        private long? currentReferencePoint;
+        private readonly TimeBatchViewFactory _factory;
+        private readonly long _scheduleSlot;
+        private readonly TimePeriodProvide _timePeriodProvide;
+        private readonly ViewUpdatedCollection _viewUpdatedCollection;
+        private ArrayDeque<EventBean> _currentBatch = new ArrayDeque<EventBean>();
+        private long? _currentReferencePoint;
 
         // Current running parameters
-        private EPStatementHandleCallbackSchedule handle;
-        private bool isCallbackScheduled;
-        private ArrayDeque<EventBean> lastBatch;
+        private EPStatementHandleCallbackSchedule _handle;
+        private bool _isCallbackScheduled;
+        private ArrayDeque<EventBean> _lastBatch;
 
         public TimeBatchView(
             TimeBatchViewFactory factory,
@@ -63,35 +63,39 @@ namespace com.espertech.esper.common.@internal.view.timebatch
             ViewUpdatedCollection viewUpdatedCollection,
             TimePeriodProvide timePeriodProvide)
         {
-            this.agentInstanceContext = agentInstanceContext.AgentInstanceContext;
-            this.factory = factory;
-            this.viewUpdatedCollection = viewUpdatedCollection;
-            scheduleSlot = agentInstanceContext.StatementContext.ScheduleBucket.AllocateSlot();
-            this.timePeriodProvide = timePeriodProvide;
+            _agentInstanceContext = agentInstanceContext.AgentInstanceContext;
+            _factory = factory;
+            _viewUpdatedCollection = viewUpdatedCollection;
+            _scheduleSlot = agentInstanceContext.StatementContext.ScheduleBucket.AllocateSlot();
+            _timePeriodProvide = timePeriodProvide;
 
             // schedule the first callback
             if (factory.isStartEager) {
-                if (currentReferencePoint == null) {
-                    currentReferencePoint = agentInstanceContext.StatementContext.SchedulingService.Time;
+                if (_currentReferencePoint == null) {
+                    _currentReferencePoint = agentInstanceContext.StatementContext.SchedulingService.Time;
                 }
 
                 ScheduleCallback();
-                isCallbackScheduled = true;
+                _isCallbackScheduled = true;
             }
         }
 
-        public ViewFactory ViewFactory => factory;
+        public ViewFactory ViewFactory => _factory;
 
         public void Stop(AgentInstanceStopServices services)
         {
-            if (handle != null) {
-                agentInstanceContext.AuditProvider.ScheduleRemove(
-                    agentInstanceContext,
-                    handle,
+            if (_handle != null) {
+                _agentInstanceContext.AuditProvider.ScheduleRemove(
+                    _agentInstanceContext,
+                    _handle,
                     ScheduleObjectType.view,
-                    factory.ViewName);
-                agentInstanceContext.StatementContext.SchedulingService.Remove(handle, scheduleSlot);
+                    _factory.ViewName);
+                _agentInstanceContext.StatementContext.SchedulingService.Remove(_handle, _scheduleSlot);
             }
+        }
+
+        public void Transfer(AgentInstanceTransferServices services)
+        {
         }
 
         public override EventType EventType => Parent.EventType;
@@ -100,49 +104,49 @@ namespace com.espertech.esper.common.@internal.view.timebatch
             EventBean[] newData,
             EventBean[] oldData)
         {
-            agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, factory);
-            agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(factory, newData, oldData);
+            _agentInstanceContext.AuditProvider.View(newData, oldData, _agentInstanceContext, _factory);
+            _agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(_factory, newData, oldData);
 
             // we don't care about removed data from a prior view
             if (newData == null || newData.Length == 0) {
-                agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
+                _agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
                 return;
             }
 
             // If we have an empty window about to be filled for the first time, schedule a callback
-            if (currentBatch.IsEmpty()) {
-                if (currentReferencePoint == null) {
-                    currentReferencePoint = factory.optionalReferencePoint;
-                    if (currentReferencePoint == null) {
-                        currentReferencePoint = agentInstanceContext.StatementContext.SchedulingService.Time;
+            if (_currentBatch.IsEmpty()) {
+                if (_currentReferencePoint == null) {
+                    _currentReferencePoint = _factory.optionalReferencePoint;
+                    if (_currentReferencePoint == null) {
+                        _currentReferencePoint = _agentInstanceContext.StatementContext.SchedulingService.Time;
                     }
                 }
 
                 // Schedule the next callback if there is none currently scheduled
-                if (!isCallbackScheduled) {
+                if (!_isCallbackScheduled) {
                     ScheduleCallback();
-                    isCallbackScheduled = true;
+                    _isCallbackScheduled = true;
                 }
             }
 
             // add data points to the timeWindow
             foreach (var newEvent in newData) {
-                currentBatch.Add(newEvent);
+                _currentBatch.Add(newEvent);
             }
 
             // We do not update child views, since we batch the events.
-            agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
+            _agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
         }
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return currentBatch.GetEnumerator();
+            return _currentBatch.GetEnumerator();
         }
 
         public void VisitView(ViewDataVisitor viewDataVisitor)
         {
-            viewDataVisitor.VisitPrimary(currentBatch, true, factory.ViewName, null);
-            viewDataVisitor.VisitPrimary(lastBatch, true, factory.ViewName, null);
+            viewDataVisitor.VisitPrimary(_currentBatch, true, _factory.ViewName, null);
+            viewDataVisitor.VisitPrimary(_lastBatch, true, _factory.ViewName, null);
         }
 
         /// <summary>
@@ -151,45 +155,45 @@ namespace com.espertech.esper.common.@internal.view.timebatch
         /// </summary>
         private void SendBatch()
         {
-            isCallbackScheduled = false;
+            _isCallbackScheduled = false;
 
             // If there are child views and the batch was filled, fireStatementStopped update method
             if (Child != null) {
                 // Convert to object arrays
                 EventBean[] newData = null;
                 EventBean[] oldData = null;
-                if (!currentBatch.IsEmpty()) {
-                    newData = currentBatch.ToArray();
+                if (!_currentBatch.IsEmpty()) {
+                    newData = _currentBatch.ToArray();
                 }
 
-                if (lastBatch != null && !lastBatch.IsEmpty()) {
-                    oldData = lastBatch.ToArray();
+                if (_lastBatch != null && !_lastBatch.IsEmpty()) {
+                    oldData = _lastBatch.ToArray();
                 }
 
                 // Post new data (current batch) and old data (prior batch)
-                if (viewUpdatedCollection != null) {
-                    viewUpdatedCollection.Update(newData, oldData);
+                if (_viewUpdatedCollection != null) {
+                    _viewUpdatedCollection.Update(newData, oldData);
                 }
 
-                if (newData != null || oldData != null || factory.isForceUpdate) {
-                    agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, newData, oldData);
+                if (newData != null || oldData != null || _factory.isForceUpdate) {
+                    _agentInstanceContext.InstrumentationProvider.QViewIndicate(_factory, newData, oldData);
                     Child.Update(newData, oldData);
-                    agentInstanceContext.InstrumentationProvider.AViewIndicate();
+                    _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                 }
             }
 
             // Only if forceOutput is enabled or
             // there have been any events in this or the last interval do we schedule a callback,
             // such as to not waste resources when no events arrive.
-            if (!currentBatch.IsEmpty() ||
-                lastBatch != null && !lastBatch.IsEmpty() ||
-                factory.isForceUpdate) {
+            if (!_currentBatch.IsEmpty() ||
+                _lastBatch != null && !_lastBatch.IsEmpty() ||
+                _factory.isForceUpdate) {
                 ScheduleCallback();
-                isCallbackScheduled = true;
+                _isCallbackScheduled = true;
             }
 
-            lastBatch = currentBatch;
-            currentBatch = new ArrayDeque<EventBean>();
+            _lastBatch = _currentBatch;
+            _currentBatch = new ArrayDeque<EventBean>();
         }
 
         /// <summary>
@@ -198,55 +202,55 @@ namespace com.espertech.esper.common.@internal.view.timebatch
         /// <returns>true if empty</returns>
         public bool IsEmpty()
         {
-            if (lastBatch != null) {
-                if (!lastBatch.IsEmpty()) {
+            if (_lastBatch != null) {
+                if (!_lastBatch.IsEmpty()) {
                     return false;
                 }
             }
 
-            return currentBatch.IsEmpty();
+            return _currentBatch.IsEmpty();
         }
 
         public override string ToString()
         {
             return GetType().Name +
                    " initialReferencePoint=" +
-                   factory.optionalReferencePoint;
+                   _factory.optionalReferencePoint;
         }
 
         private void ScheduleCallback()
         {
-            var current = agentInstanceContext.StatementContext.SchedulingService.Time;
-            TimePeriodDeltaResult deltaWReference = timePeriodProvide.DeltaAddWReference(
+            var current = _agentInstanceContext.StatementContext.SchedulingService.Time;
+            TimePeriodDeltaResult deltaWReference = _timePeriodProvide.DeltaAddWReference(
                 current,
-                currentReferencePoint.Value,
+                _currentReferencePoint.Value,
                 null,
                 true,
-                agentInstanceContext);
+                _agentInstanceContext);
             long afterTime = deltaWReference.Delta;
-            currentReferencePoint = deltaWReference.LastReference;
+            _currentReferencePoint = deltaWReference.LastReference;
 
             ScheduleHandleCallback callback = new ProxyScheduleHandleCallback {
                 ProcScheduledTrigger = () => {
-                    agentInstanceContext.AuditProvider.ScheduleFire(
-                        agentInstanceContext,
+                    _agentInstanceContext.AuditProvider.ScheduleFire(
+                        _agentInstanceContext,
                         ScheduleObjectType.view,
-                        factory.ViewName);
-                    agentInstanceContext.InstrumentationProvider.QViewScheduledEval(factory);
+                        _factory.ViewName);
+                    _agentInstanceContext.InstrumentationProvider.QViewScheduledEval(_factory);
                     SendBatch();
-                    agentInstanceContext.InstrumentationProvider.AViewScheduledEval();
+                    _agentInstanceContext.InstrumentationProvider.AViewScheduledEval();
                 }
             };
-            handle = new EPStatementHandleCallbackSchedule(
-                agentInstanceContext.EpStatementAgentInstanceHandle,
+            _handle = new EPStatementHandleCallbackSchedule(
+                _agentInstanceContext.EpStatementAgentInstanceHandle,
                 callback);
-            agentInstanceContext.AuditProvider.ScheduleAdd(
+            _agentInstanceContext.AuditProvider.ScheduleAdd(
                 afterTime,
-                agentInstanceContext,
-                handle,
+                _agentInstanceContext,
+                _handle,
                 ScheduleObjectType.view,
-                factory.ViewName);
-            agentInstanceContext.StatementContext.SchedulingService.Add(afterTime, handle, scheduleSlot);
+                _factory.ViewName);
+            _agentInstanceContext.StatementContext.SchedulingService.Add(afterTime, _handle, _scheduleSlot);
         }
     }
 } // end of namespace

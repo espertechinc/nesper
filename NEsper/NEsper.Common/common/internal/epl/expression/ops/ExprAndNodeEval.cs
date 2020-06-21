@@ -19,15 +19,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprAndNodeEval : ExprEvaluator
     {
-        private readonly ExprEvaluator[] evaluators;
-        private readonly ExprAndNodeImpl parent;
+        private readonly ExprEvaluator[] _evaluators;
+        private readonly ExprAndNodeImpl _parent;
 
         public ExprAndNodeEval(
             ExprAndNodeImpl parent,
             ExprEvaluator[] evaluators)
         {
-            this.parent = parent;
-            this.evaluators = evaluators;
+            this._parent = parent;
+            this._evaluators = evaluators;
         }
 
         public object Evaluate(
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprEvaluatorContext exprEvaluatorContext)
         {
             bool? result = true;
-            foreach (var child in evaluators) {
+            foreach (var child in _evaluators) {
                 var evaluated = child.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                 if (evaluated == null) {
                     result = null;

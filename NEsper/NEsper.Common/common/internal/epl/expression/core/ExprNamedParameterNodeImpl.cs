@@ -64,7 +64,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public string ParameterName { get; }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(ParameterName);
             writer.Write(":");

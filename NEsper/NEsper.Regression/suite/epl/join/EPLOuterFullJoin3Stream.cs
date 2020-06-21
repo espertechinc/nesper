@@ -467,7 +467,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                TryAssertionFullJoin_2sides_multicolumn(env, EventRepresentationChoice.ARRAY);
+                TryAssertionFullJoin_2sides_multicolumn(env, EventRepresentationChoice.OBJECTARRAY);
                 TryAssertionFullJoin_2sides_multicolumn(env, EventRepresentationChoice.MAP);
                 TryAssertionFullJoin_2sides_multicolumn(env, EventRepresentationChoice.DEFAULT);
             }

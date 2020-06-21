@@ -21,8 +21,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         private readonly StatementRawInfo _statementRawInfo;
         private readonly StreamTypeService _streamTypeService;
         private bool _aggregationFutureNameAlreadySet;
-        private bool _allowBindingConsumption;
         private bool _allowRollupFunctions;
+        private bool _allowBindingConsumption;
+        private bool _allowTableAggReset;
         private ContextCompileTimeDescriptor _contextDescriptor;
         private bool _disablePropertyExpressionEventCollCache;
         private string _intoTableName;
@@ -73,6 +74,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return this;
         }
 
+        public ExprValidationContextBuilder WithAllowTableAggReset(bool allowTableAggReset)
+        {
+            _allowTableAggReset = allowTableAggReset;
+            return this;
+        }
+
         public ExprValidationContextBuilder WithIntoTableName(string intoTableName)
         {
             _intoTableName = intoTableName;
@@ -112,6 +119,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 _disablePropertyExpressionEventCollCache,
                 _allowRollupFunctions,
                 _allowBindingConsumption,
+                _allowTableAggReset,
                 _isResettingAggregations,
                 _intoTableName,
                 _isFilterExpression,

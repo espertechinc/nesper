@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         public void Run(RegressionEnvironment env)
         {
-            RunAssertion(env, EventRepresentationChoice.ARRAY, "");
+            RunAssertion(env, EventRepresentationChoice.OBJECTARRAY, "");
             RunAssertion(env, EventRepresentationChoice.MAP, "");
             RunAssertion(
                 env,

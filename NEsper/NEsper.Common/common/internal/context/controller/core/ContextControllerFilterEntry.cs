@@ -7,11 +7,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.filterspec;
 
 namespace com.espertech.esper.common.@internal.context.controller.core
 {
     public interface ContextControllerFilterEntry
     {
         EPStatementHandleCallbackFilter FilterHandle { get; }
+
+        void Transfer(
+            FilterSpecActivatable filterSpecActivatable,
+            AgentInstanceTransferServices xfer);
     }
 } // end of namespace

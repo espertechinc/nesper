@@ -36,8 +36,8 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         }
 
         public override void Process(
-            ISet<MultiKey<EventBean>> newEvents,
-            ISet<MultiKey<EventBean>> oldEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
         }

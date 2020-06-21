@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                 this,
                 this,
                 true);
-            bool isTriggeringEventMatchesFilter = startCondition.Activate(optionalTriggeringEvent, null);
+            bool isTriggeringEventMatchesFilter = startCondition.Activate(optionalTriggeringEvent, null, optionalTriggeringPattern);
             initTermSvc.MgmtUpdSetStartCondition(path, startCondition);
 
             if (isTriggeringEventMatchesFilter || startCondition.IsImmediate) {
@@ -147,7 +147,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 
             // For overlapping mode, make sure we activate again or stay activated
             if (!startCondition.IsRunning) {
-                startCondition.Activate(optionalTriggeringEvent, null);
+                startCondition.Activate(optionalTriggeringEvent, null, optionalTriggeringPattern);
             }
 
             IList<AgentInstance> agentInstances = InstantiateAndActivateEndCondition(

@@ -9,6 +9,8 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+
 namespace com.espertech.esper.common.client.configuration.compiler
 {
     /// <summary>
@@ -62,5 +64,13 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// </summary>
         /// <value>additional optional properties</value>
         public IDictionary<string, object> AdditionalConfiguredProperties { get; set; }
+        
+        public CodegenExpression ToCodegenExpression() {
+            return CodegenExpressionBuilder.NewInstance(
+                typeof(ConfigurationCompilerPlugInAggregationMultiFunction),
+                CodegenExpressionBuilder.Constant(FunctionNames),
+                CodegenExpressionBuilder.Constant(MultiFunctionForgeClassName),
+                CodegenExpressionBuilder.MapOfConstant(AdditionalConfiguredProperties));
+        }
     }
 } // end of namespace

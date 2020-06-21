@@ -42,10 +42,6 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
         public void AddRootType(SchemaXMLEventType type)
         {
-            if (type.Metadata.AccessModifier != NameAccessModifier.PRECONFIGURED) {
-                throw new IllegalStateException("Type '" + type.Name + "' is not public");
-            }
-
             if (rootTypes == null) {
                 rootTypes = new Dictionary<string, SchemaXMLEventType>();
             }

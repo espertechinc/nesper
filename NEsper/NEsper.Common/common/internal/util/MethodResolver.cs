@@ -421,6 +421,10 @@ namespace com.espertech.esper.common.@internal.util
                     continue;
                 }
 
+                if (!method.IsPublic) {
+                    continue;
+                }
+                
                 // Check the name
                 if (method.Name != methodName) {
                     continue;

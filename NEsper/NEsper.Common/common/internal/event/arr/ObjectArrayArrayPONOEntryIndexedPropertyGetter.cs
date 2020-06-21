@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.bean.getter;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
@@ -73,7 +74,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         public override bool IsExistsProperty(EventBean eventBean)
         {
             var array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
-            return array.Length > index;
+            return CollectionUtil.ArrayExistsAtIndex(array[propertyIndex], index);
         }
 
         public override CodegenExpression EventBeanGetCodegen(
@@ -104,10 +105,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
-                GetType(),
-                "GetArrayValue",
-                underlyingExpression,
-                Constant(propertyIndex),
+                typeof(CollectionUtil),
+                "ArrayExistsAtIndex",
+                ArrayAtIndex(underlyingExpression, Constant(propertyIndex)),
                 Constant(index));
         }
 

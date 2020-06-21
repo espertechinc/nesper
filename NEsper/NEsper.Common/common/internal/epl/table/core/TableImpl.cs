@@ -28,7 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.table.core
                 metaData.KeyColumns,
                 true,
                 metaData.TableName,
-                primaryKeyGetter);
+                primaryKeyGetter,
+                PrimaryKeyObjectArrayTransform);
         }
 
         public override TableInstance GetTableInstance(int agentInstanceId)

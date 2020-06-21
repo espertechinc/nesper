@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.client.soda
                 }
             }
 
-            chain.Add(new DotExpressionItem(method, parameterList, false));
+            chain.Add(new DotExpressionItemCall(method, parameterList));
         }
 
         /// <summary>

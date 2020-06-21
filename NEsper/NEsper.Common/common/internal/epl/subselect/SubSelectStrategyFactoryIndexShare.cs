@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         }
 
         public void Ready(
-            StatementContext statementContext,
+            SubSelectStrategyFactoryContext subselectFactoryContext,
             EventType eventType)
         {
             // no action
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         public SubSelectStrategyRealization Instantiate(
             Viewable viewableRoot,
             AgentInstanceContext agentInstanceContext,
-            IList<AgentInstanceStopCallback> stopCallbackList,
+            IList<AgentInstanceMgmtCallback> stopCallbackList,
             int subqueryNumber,
             bool isRecoveringResilient)
         {
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 
                 var aggregationServiceStoppable = aggregationService;
                 stopCallbackList.Add(
-                    new ProxyAgentInstanceStopCallback {
+                    new ProxyAgentInstanceMgmtCallback {
                         ProcStop = services => { aggregationServiceStoppable.Stop(); }
                     });
 

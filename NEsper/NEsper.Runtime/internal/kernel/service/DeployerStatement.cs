@@ -95,7 +95,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 statementDestroyCallback = new ProxyStatementDestroyCallback()
                 {
                     ProcDestroy = (destroyServices, statementContext) => {
-                        services.ContextManagementService.StoppedStatement(contextDeploymentId, contextName, statement);
+                        services.ContextManagementService.StoppedStatement(contextDeploymentId, contextName, TODO, TODO, TODO);
                         statementAgentInstanceFactory.StatementDestroy(lightweight.StatementContext);
                     },
                 };

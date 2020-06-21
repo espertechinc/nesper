@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
         {
             // context was created - reevaluate for the given event
             ArrayDeque<FilterHandle> callbacks = new ArrayDeque<FilterHandle>(2);
-            agentInstanceContextCreate.FilterService.Evaluate(theEvent, callbacks); // evaluates for ALL statements
+            agentInstanceContextCreate.FilterService.Evaluate(theEvent, callbacks, agentInstanceContextCreate); // evaluates for ALL statements
             if (callbacks.IsEmpty()) {
                 return;
             }

@@ -59,7 +59,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.instrumentation
 
 	    void AOutputProcessNonBuffered();
 
-	    void QOutputProcessNonBufferedJoin(ISet<MultiKey<EventBean>> newEvents, ISet<MultiKey<EventBean>> oldEvents);
+	    void QOutputProcessNonBufferedJoin(ISet<MultiKeyArrayOfKeys<EventBean>> newEvents, ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents);
 
 	    void AOutputProcessNonBufferedJoin();
 

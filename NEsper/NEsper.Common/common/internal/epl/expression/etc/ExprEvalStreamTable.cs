@@ -25,18 +25,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         ExprEvaluator,
         ExprNodeRenderable
     {
-        private readonly int streamNum;
-        private readonly Type returnType;
-        private readonly TableMetaData tableMetadata;
+        private readonly int _streamNum;
+        private readonly Type _returnType;
+        private readonly TableMetaData _tableMetadata;
 
         public ExprEvalStreamTable(
             int streamNum,
             Type returnType,
             TableMetaData tableMetadata)
         {
-            this.streamNum = streamNum;
-            this.returnType = returnType;
-            this.tableMetadata = tableMetadata;
+            this._streamNum = streamNum;
+            this._returnType = returnType;
+            this._tableMetadata = tableMetadata;
         }
 
         public object Evaluate(
@@ -54,14 +54,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             CodegenClassScope codegenClassScope)
         {
             CodegenExpressionInstanceField eventToPublic =
-                TableDeployTimeResolver.MakeTableEventToPublicField(tableMetadata, codegenClassScope, this.GetType());
+                TableDeployTimeResolver.MakeTableEventToPublicField(_tableMetadata, codegenClassScope, this.GetType());
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
             CodegenExpression refIsNewData = exprSymbol.GetAddIsNewData(codegenMethodScope);
             CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
             return StaticMethod(
                 typeof(ExprEvalStreamTable),
                 "EvaluateConvertTableEventToUnd",
-                Constant(streamNum),
+                Constant(_streamNum),
                 eventToPublic,
                 refEPS,
                 refIsNewData,
@@ -97,16 +97,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         }
 
         public Type EvaluationType {
-            get => returnType;
+            get => _returnType;
         }
 
         public ExprNodeRenderable ExprForgeRenderable {
             get => this;
         }
 
-        public void ToEPL(
-            TextWriter writer,
-            ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(this.GetType().Name);
         }

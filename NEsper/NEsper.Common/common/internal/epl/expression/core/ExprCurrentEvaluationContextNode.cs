@@ -85,7 +85,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 exprEvaluatorContext.UserObjectCompileTime);
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write("current_evaluation_context()");
         }
@@ -94,11 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprCurrentEvaluationContextNode)) {
-                return false;
-            }
-
-            return true;
+            return node is ExprCurrentEvaluationContextNode;
         }
     }
 } // end of namespace

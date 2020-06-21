@@ -1,5 +1,5 @@
-///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+﻿///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,20 +13,20 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.activator;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.epl.join.@base;
+using com.espertech.esper.common.@internal.epl.@join.@base;
 using com.espertech.esper.common.@internal.epl.namedwindow.consume;
 using com.espertech.esper.common.@internal.util;
 
-namespace com.espertech.esper.common.@internal.context.aifactory.select
+namespace com.espertech.esper.common.@internal.context.aifactory.@select
 {
     public partial class StatementAgentInstanceFactorySelect
     {
-        private class NamedWindowConsumerPreload : StatementAgentInstancePreload
+        public class NamedWindowConsumerPreload : StatementAgentInstancePreload
         {
-            private readonly AgentInstanceContext agentInstanceContext;
-            private readonly NamedWindowConsumerView consumer;
-            private readonly JoinPreloadMethod joinPreloadMethod;
-            private readonly ViewableActivatorNamedWindow nwActivator;
+            private readonly ViewableActivatorNamedWindow _nwActivator;
+            private readonly NamedWindowConsumerView _consumer;
+            private readonly AgentInstanceContext _agentInstanceContext;
+            private readonly JoinPreloadMethod _joinPreloadMethod;
 
             public NamedWindowConsumerPreload(
                 ViewableActivatorNamedWindow nwActivator,
@@ -34,34 +34,28 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 AgentInstanceContext agentInstanceContext,
                 JoinPreloadMethod joinPreloadMethod)
             {
-                this.nwActivator = nwActivator;
-                this.consumer = consumer;
-                this.agentInstanceContext = agentInstanceContext;
-                this.joinPreloadMethod = joinPreloadMethod;
+                this._nwActivator = nwActivator;
+                this._consumer = consumer;
+                this._agentInstanceContext = agentInstanceContext;
+                this._joinPreloadMethod = joinPreloadMethod;
             }
 
             public void ExecutePreload()
             {
-                if (nwActivator.NamedWindowContextName != null &&
-                    !nwActivator.NamedWindowContextName.Equals(agentInstanceContext.StatementContext.ContextName)) {
+                if (_nwActivator.NamedWindowContextName != null &&
+                    !_nwActivator.NamedWindowContextName.Equals(_agentInstanceContext.StatementContext.ContextName)) {
                     return;
                 }
 
-                var snapshot = consumer.ConsumerCallback.Snapshot(
-                    nwActivator.FilterQueryGraph,
-                    agentInstanceContext.Annotations);
+                ICollection<EventBean> snapshot = _consumer.ConsumerCallback.Snapshot(_nwActivator.FilterQueryGraph, _agentInstanceContext.Annotations);
 
                 EventBean[] events;
-                if (consumer.Filter == null) {
+                if (_consumer.Filter == null) {
                     events = CollectionUtil.ToArrayEvents(snapshot);
                 }
                 else {
                     IList<EventBean> eventsInWindow = new List<EventBean>(snapshot.Count);
-                    ExprNodeUtilityEvaluate.ApplyFilterExpressionIterable(
-                        snapshot.GetEnumerator(),
-                        consumer.Filter,
-                        agentInstanceContext,
-                        eventsInWindow);
+                    ExprNodeUtilityEvaluate.ApplyFilterExpressionIterable(snapshot.GetEnumerator(), _consumer.Filter, _agentInstanceContext, eventsInWindow);
                     events = eventsInWindow.ToArray();
                 }
 
@@ -69,12 +63,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     return;
                 }
 
-                consumer.Update(events, null);
+                _consumer.Update(events, null);
 
-                if (joinPreloadMethod != null &&
-                    !joinPreloadMethod.IsPreloading &&
-                    agentInstanceContext.EpStatementAgentInstanceHandle.OptionalDispatchable != null) {
-                    agentInstanceContext.EpStatementAgentInstanceHandle.OptionalDispatchable.Execute();
+                if (_joinPreloadMethod != null &&
+                    !_joinPreloadMethod.IsPreloading &&
+                    _agentInstanceContext.EpStatementAgentInstanceHandle.OptionalDispatchable != null) {
+                    _agentInstanceContext.EpStatementAgentInstanceHandle.OptionalDispatchable.Execute();
                 }
             }
         }

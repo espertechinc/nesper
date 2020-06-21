@@ -39,6 +39,18 @@ namespace com.espertech.esper.common.@internal.util
                 func.Invoke(b);
             }
         }
+        
+        public static void ParseOptionalInteger(
+            XmlElement element,
+            string name,
+            Consumer<int> func)
+        {
+            var str = GetOptionalAttribute(element, name);
+            if (str != null) {
+                func.Invoke(ParseInteger(name, str));
+            }
+        }
+        
         public static void ParseRequiredAttribute(
             XmlElement element,
             string name,
@@ -98,6 +110,20 @@ namespace com.espertech.esper.common.@internal.util
             catch (Exception t) {
                 throw new ConfigurationException(
                     "Failed to parse value for '" + name + "' value '" + str + "' as boolean: " + t.Message,
+                    t);
+            }
+        }
+
+        private static int ParseInteger(
+            string name,
+            string str)
+        {
+            try {
+                return int.Parse(str);
+            }
+            catch (Exception t) {
+                throw new ConfigurationException(
+                    "Failed to parse value for '" + name + "' value '" + str + "' as integer: " + t.Message,
                     t);
             }
         }

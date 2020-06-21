@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.join.exec.composite;
@@ -39,12 +40,14 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
         internal readonly EventPropertyValueGetter[] RangeGetters;
         internal readonly string[] RangeProps;
         internal readonly int StreamNum;
+        internal readonly MultiKeyFromObjectArray TransformFireAndForget;
 
         public PropertyCompositeEventTableFactory(
             int streamNum,
             string[] optionalKeyedProps,
             Type[] optKeyCoercedTypes,
             EventPropertyValueGetter hashGetter,
+            MultiKeyFromObjectArray transformFireAndForget,
             string[] rangeProps,
             Type[] optRangeCoercedTypes,
             EventPropertyValueGetter[] rangeGetters)
@@ -53,6 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             this.OptionalKeyedProps = optionalKeyedProps;
             this.OptKeyCoercedTypes = optKeyCoercedTypes;
             this.HashGetter = hashGetter;
+            this.TransformFireAndForget = transformFireAndForget;
             this.RangeProps = rangeProps;
             this.OptRangeCoercedTypes = optRangeCoercedTypes;
             this.RangeGetters = rangeGetters;

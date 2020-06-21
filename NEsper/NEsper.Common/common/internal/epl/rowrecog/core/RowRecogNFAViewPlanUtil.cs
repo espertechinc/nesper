@@ -548,12 +548,12 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 EventType[] typesPerStream = {allTypes[entry.Key]};
                 var desc = AggregationServiceFactoryFactory.GetService(
                     entry.Value,
-                    new EmptyDictionary<ExprNode, string>(),
+                    EmptyDictionary<ExprNode, string>.Instance,
                     declareds,
                     new ExprNode[0],
-                    new EmptyList<ExprAggregateNode>(),
-                    new EmptyList<ExprAggregateNode>(),
-                    new EmptyList<ExprAggregateNodeGroupKey>(),
+                    EmptyList<ExprAggregateNode>.Instance,
+                    EmptyList<ExprAggregateNode>.Instance,
+                    EmptyList<ExprAggregateNodeGroupKey>.Instance,
                     false,
                     @base.StatementRawInfo.Annotations,
                     services.VariableCompileTimeResolver,

@@ -169,7 +169,7 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
                     methodUsedName,
                     type.GetTypeName(),
                     false,
-                    found.Type,
+                    found.ParamType,
                     found.SpecificType,
                     provided.ReturnType,
                     i,

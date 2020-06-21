@@ -12,6 +12,8 @@ using System.Xml;
 using System.Xml.XPath;
 
 using com.espertech.esper.common.client.util;
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
@@ -19,24 +21,28 @@ namespace com.espertech.esper.common.client.configuration.common
 {
     /// <summary>
     ///     Configuration object for enabling the runtime to process events represented as XML DOM document nodes.
-    ///     <para />
+    ///     <para>
     ///     Use this class to configure the runtime for processing of XML DOM objects that represent events
     ///     and contain all the data for event properties used by statements.
-    ///     <para />
+    ///     </para>
+    ///     <para>
     ///     Minimally required is the root element name which allows the runtime to map the document
     ///     to the event type that has been named in an EPL or pattern statement.
-    ///     <para />
+    ///     </para>
+    ///     <para>
     ///     Event properties that are results of XPath expressions can be made known to the runtime via this class.
     ///     For XPath expressions that must refer to namespace prefixes those prefixes and their
     ///     namespace name must be supplied to the runtime. A default namespace can be supplied as well.
-    ///     <para />
+    ///     </para>
+    ///     <para>
     ///     By supplying a schema resource the runtime can interrogate the schema, allowing the runtime to
     ///     verify event properties and return event properties in the type defined by the schema.
     ///     When a schema resource is supplied, the optional root element namespace defines the namespace in case the
     ///     root element name occurs in multiple namespaces.
+    ///     </para>
     /// </summary>
     [Serializable]
-    public class ConfigurationCommonEventTypeXMLDOM
+    public partial class ConfigurationCommonEventTypeXMLDOM
     {
         /// <summary>
         ///     Ctor.
@@ -88,7 +94,7 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Returns a map of property name and descriptor for XPath-expression properties.
         /// </summary>
         /// <value>XPath property information</value>
-        public IDictionary<string, XPathPropertyDesc> XPathProperties { get; }
+        public IDictionary<string, XPathPropertyDesc> XPathProperties { get; set;  }
 
         /// <summary>
         ///     Returns false to indicate that property expressions are evaluated by the DOM-walker
@@ -117,7 +123,7 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Returns the namespace prefixes in a map of prefix as key and namespace name as value.
         /// </summary>
         /// <value>namespace prefixes</value>
-        public IDictionary<string, string> NamespacePrefixes { get; }
+        public IDictionary<string, string> NamespacePrefixes { get; set; }
 
         /// <summary>
         ///     When set to true (the default), indicates that when properties are compiled to XPath expressions that the
@@ -258,6 +264,30 @@ namespace com.espertech.esper.common.client.configuration.common
             NamespacePrefixes.PutAll(prefixNamespaceMap);
         }
 
+        public CodegenExpression ToCodegenExpression(
+            CodegenMethodScope parent,
+            CodegenClassScope scope)
+        {
+            CodegenSetterBuilderItemConsumer<XPathPropertyDesc> xPathBuild = (o, parentXPath, scopeXPath) => o.ToExpression(parentXPath, scopeXPath);
+            return new CodegenSetterBuilder(typeof(ConfigurationCommonEventTypeXMLDOM), typeof(ConfigurationCommonEventTypeXMLDOM), "xmlconfig", parent, scope)
+                .Constant("rootElementName", RootElementName)
+                .Map("xPathProperties", XPathProperties, xPathBuild)
+                .MapOfConstants("namespacePrefixes", NamespacePrefixes)
+                .Constant("schemaResource", SchemaResource)
+                .Constant("schemaText", SchemaText)
+                .Constant("eventSenderValidatesRoot", IsEventSenderValidatesRoot)
+                .Constant("autoFragment", IsAutoFragment)
+                .Constant("xPathPropertyExpr", IsXPathPropertyExpr)
+                .Constant("xPathFunctionResolver", XPathFunctionResolver)
+                .Constant("xPathVariableResolver", XPathVariableResolver)
+                .Constant("xPathResolvePropertiesAbsolute", IsXPathResolvePropertiesAbsolute)
+                .Constant("defaultNamespace", DefaultNamespace)
+                .Constant("rootElementNamespace", RootElementNamespace)
+                .Constant("startTimestampPropertyName", StartTimestampPropertyName)
+                .Constant("endTimestampPropertyName", EndTimestampPropertyName)
+                .Build();
+        }
+
         public override bool Equals(object otherObj)
         {
             if (!(otherObj is ConfigurationCommonEventTypeXMLDOM)) {
@@ -284,97 +314,6 @@ namespace com.espertech.esper.common.client.configuration.common
         public override int GetHashCode()
         {
             return RootElementName.GetHashCode();
-        }
-
-        /// <summary>
-        ///     Descriptor class for event properties that are resolved via XPath-expression.
-        /// </summary>
-        [Serializable]
-        public class XPathPropertyDesc
-        {
-            /// <summary>
-            ///     Ctor.
-            /// </summary>
-            /// <param name="name">is the event property name</param>
-            /// <param name="xPath">is an arbitrary XPath expression</param>
-            /// <param name="type">a constant obtained from System.Xml.XPath.XPathResultType.</param>
-            public XPathPropertyDesc(
-                string name,
-                string xPath,
-                XPathResultType type)
-            {
-                Name = name;
-                XPath = xPath;
-                Type = type;
-            }
-
-            /// <summary>
-            ///     Ctor.
-            /// </summary>
-            /// <param name="name">is the event property name</param>
-            /// <param name="xPath">is an arbitrary XPath expression</param>
-            /// <param name="type">a constant obtained from System.Xml.XPath.XPathResultType.</param>
-            /// <param name="optionalCastToType">if non-null then the return value of the xpath expression is cast to this value</param>
-            public XPathPropertyDesc(
-                string name,
-                string xPath,
-                XPathResultType type,
-                Type optionalCastToType)
-            {
-                Name = name;
-                XPath = xPath;
-                Type = type;
-                OptionalCastToType = optionalCastToType;
-            }
-
-            /// <summary>
-            ///     Ctor.
-            /// </summary>
-            /// <param name="name">is the event property name</param>
-            /// <param name="xPath">is an arbitrary XPath expression</param>
-            /// <param name="type">a constant obtained from System.Xml.XPath.XPathResultType.</param>
-            /// <param name="eventTypeName">the name of an event type that represents the fragmented property value</param>
-            public XPathPropertyDesc(
-                string name,
-                string xPath,
-                XPathResultType type,
-                string eventTypeName)
-            {
-                Name = name;
-                XPath = xPath;
-                Type = type;
-                OptionalEventTypeName = eventTypeName;
-            }
-
-            /// <summary>
-            ///     Returns the event property name.
-            /// </summary>
-            /// <returns>event property name</returns>
-            public string Name { get; }
-
-            /// <summary>
-            ///     Returns the XPath expression.
-            /// </summary>
-            /// <returns>XPath expression</returns>
-            public string XPath { get; }
-
-            /// <summary>
-            ///     Returns the XPathResultType representing the event property type.
-            /// </summary>
-            /// <returns>type information</returns>
-            public XPathResultType Type { get; }
-
-            /// <summary>
-            ///     Returns the class that the return value of the xpath expression is cast to, or null if no casting.
-            /// </summary>
-            /// <returns>class to cast result of xpath expression to</returns>
-            public Type OptionalCastToType { get; }
-
-            /// <summary>
-            ///     Returns the event type name assigned to the explicit property.
-            /// </summary>
-            /// <returns>type name</returns>
-            public string OptionalEventTypeName { get; }
         }
     }
 } // end of namespace

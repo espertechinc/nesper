@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         filterEval.EvaluateCodegen(typeof(bool?), method, symbols, classScope));
                 }
 
-                @foreach.IfRefNullReturnNull(left);
+                @foreach.IfNullReturnNull(left);
 
                 Type valueRightType;
                 if (selectEval != null) {

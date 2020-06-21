@@ -85,8 +85,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
         }
 
         public void ProcessJoin(
-            ISet<MultiKey<EventBean>> newData,
-            ISet<MultiKey<EventBean>> oldData,
+            ISet<MultiKeyArrayOfKeys<EventBean>> newData,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldData,
             bool isGenerateSynthetic)
         {
             var newDataMultiKey = processor.GenerateGroupKeyArrayJoin(newData, true);

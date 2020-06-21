@@ -136,7 +136,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
                     }
                 }
                 catch (ExprValidationException ex) {
-                    throw new ExprValidationException("Error validating expression: " + ex.Message, ex);
+                    throw new ExprValidationException("Failed to validate expression: " + ex.Message, ex);
                 }
             }
 
@@ -247,7 +247,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
                                 var message =
                                     "Outer join ON-clause columns must refer to properties of the same joined streams" +
                                     " when using multiple columns in the on-clause";
-                                throw new ExprValidationException("Error validating outer-join expression: " + message);
+                                throw new ExprValidationException("Failed to validate outer-join expression: " + message);
                             }
                         }
                     }
@@ -284,7 +284,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
                 ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.JOINON, equalsNode, validationContext);
             }
             catch (ExprValidationException ex) {
-                throw new ExprValidationException("Error validating outer-join expression: " + ex.Message, ex);
+                throw new ExprValidationException("Failed to validate outer-join expression: " + ex.Message, ex);
             }
 
             // Make sure we have left-hand-side and right-hand-side refering to different streams
@@ -292,7 +292,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
             var streamIdRight = rightNode.StreamId;
             if (streamIdLeft == streamIdRight) {
                 var message = "Outer join ON-clause cannot refer to properties of the same stream";
-                throw new ExprValidationException("Error validating outer-join expression: " + message);
+                throw new ExprValidationException("Failed to validate outer-join expression: " + message);
             }
 
             // Make sure one of the properties refers to the acutual stream currently being joined
@@ -301,7 +301,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
                 var message = "Outer join ON-clause must refer to at least one property of the joined stream" +
                               " for stream " +
                               expectedStreamJoined;
-                throw new ExprValidationException("Error validating outer-join expression: " + message);
+                throw new ExprValidationException("Failed to validate outer-join expression: " + message);
             }
 
             // Make sure neither of the streams refer to a 'future' stream
@@ -319,7 +319,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
                               " '" +
                               badPropertyName +
                               "', expecting the current or a prior stream scope";
-                throw new ExprValidationException("Error validating outer-join expression: " + message);
+                throw new ExprValidationException("Failed to validate outer-join expression: " + message);
             }
 
             return new UniformPair<int>(streamIdLeft, streamIdRight);

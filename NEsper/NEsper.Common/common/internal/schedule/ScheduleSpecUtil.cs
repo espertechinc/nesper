@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.schedule
         /// <returns>crontab schedule</returns>
         public static ScheduleSpec ComputeValues(object[] args)
         {
-            if (args.Length <= 4 || args.Length >= 8) {
+            if (args.Length <= 4 || args.Length >= 10) {
                 throw new ScheduleParameterException(GetExpressionCountException(args.Length));
             }
 
@@ -105,6 +105,12 @@ namespace com.espertech.esper.common.@internal.schedule
 
                     timezone = (string) args[6];
                 }
+            }
+            if (args.Length > 7) {
+                unitMap.Put(ScheduleUnit.MILLISECONDS, ComputeValues(args[7], ScheduleUnit.MILLISECONDS));
+            }
+            if (args.Length > 8) {
+                unitMap.Put(ScheduleUnit.MICROSECONDS, ComputeValues(args[8], ScheduleUnit.MICROSECONDS));
             }
 
             var optionalDayOfMonthOp = GetOptionalSpecialOp(daysOfMonth);

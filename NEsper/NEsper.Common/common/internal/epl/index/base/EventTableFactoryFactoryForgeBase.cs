@@ -55,7 +55,6 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             IList<CodegenExpression> @params = new List<CodegenExpression>();
             @params.Add(Constant(indexedStreamNum));
             @params.Add(Constant(subqueryNum));
-            @params.Add(ConstantNull());
             @params.Add(Constant(isFireAndForget));
             @params.AddAll(AdditionalParams(method, symbols, classScope));
             method.Block.MethodReturn(NewInstance(TypeOf(), @params.ToArray()));

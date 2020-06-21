@@ -35,15 +35,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
     ///     current state,
     ///     using a column number assigned to the node.
     ///     <para />
-    ///     Concrete subclasses must supply an aggregation state prototype node AggregationMethod that reflects
-    ///     each group's (there may be group-by critera) current aggregation state.
+    ///     Concrete subclasses must supply an aggregation state prototype node that reflects
+    ///     each group's (there may be group-by criteria) current aggregation state.
     /// </summary>
     public abstract class ExprAggregateNodeBase : ExprNodeBase,
         ExprEvaluator,
         ExprAggregateNode,
         ExprForgeInstrumentable
     {
-        private AggregationForgeFactory aggregationMethodFactory;
+        private AggregationForgeFactory aggregationForgeFactory;
         internal CodegenFieldName aggregationResultFutureMemberName;
 
         internal int column = -1;
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             ValidatePositionals(validationContext);
-            aggregationMethodFactory = ValidateAggregationChild(validationContext);
+            aggregationForgeFactory = ValidateAggregationChild(validationContext);
             if (!validationContext.IsAggregationFutureNameAlreadySet) {
                 aggregationResultFutureMemberName = validationContext.MemberNames.AggregationResultFutureRef();
             }
@@ -240,21 +240,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
         /// <value>prototype aggregation state as a factory for aggregation states per group-by key value</value>
         public AggregationForgeFactory Factory {
             get {
-                if (aggregationMethodFactory == null) {
+                if (aggregationForgeFactory == null) {
                     throw new IllegalStateException("Aggregation method has not been set");
                 }
 
-                return aggregationMethodFactory;
+                return aggregationForgeFactory;
             }
         }
 
         public Type EvaluationType {
             get {
-                if (aggregationMethodFactory == null) {
+                if (aggregationForgeFactory == null) {
                     throw new IllegalStateException("Aggregation method has not been set");
                 }
 
-                return aggregationMethodFactory.ResultType;
+                return aggregationForgeFactory.ResultType;
             }
         }
 
@@ -301,7 +301,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             return new ExprValidationException(message);
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(AggregationFunctionName);
             writer.Write('(');
@@ -311,13 +313,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             }
 
             if (ChildNodes.Length > 0) {
-                ChildNodes[0].ToEPL(writer, Precedence);
+                ChildNodes[0].ToEPL(writer, Precedence, flags);
 
                 var delimiter = ",";
                 for (var i = 1; i < ChildNodes.Length; i++) {
                     writer.Write(delimiter);
                     delimiter = ",";
-                    ChildNodes[i].ToEPL(writer, Precedence);
+                    ChildNodes[i].ToEPL(writer, Precedence, flags);
                 }
             }
             else {
@@ -340,9 +342,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             }
         }
 
-        protected internal virtual bool IsExprTextWildcardWhenNoParams => true;
+        public bool IsExprTextWildcardWhenNoParams => true;
 
-        protected internal CodegenExpression GetAggFuture(CodegenClassScope codegenClassScope)
+        public CodegenExpression GetAggFuture(CodegenClassScope codegenClassScope)
         {
             var statementFields = Ref(ResultSetProcessorCodegenNames.NAME_STATEMENT_FIELDS);
             var fieldExpression = codegenClassScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(

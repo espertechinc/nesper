@@ -15,15 +15,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprConcatNodeEvalWNew : ExprEvaluator
     {
-        private readonly ExprEvaluator[] evaluators;
-        private readonly ExprConcatNode parent;
+        private readonly ExprEvaluator[] _evaluators;
+        private readonly ExprConcatNode _parent;
 
         public ExprConcatNodeEvalWNew(
             ExprConcatNode parent,
             ExprEvaluator[] evaluators)
         {
-            this.parent = parent;
-            this.evaluators = evaluators;
+            this._parent = parent;
+            this._evaluators = evaluators;
         }
 
         public object Evaluate(
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprEvaluatorContext context)
         {
             var buffer = new StringBuilder();
-            return Evaluate(eventsPerStream, isNewData, context, buffer, evaluators, parent);
+            return Evaluate(eventsPerStream, isNewData, context, buffer, _evaluators, _parent);
         }
 
         protected internal static string Evaluate(

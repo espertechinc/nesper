@@ -22,6 +22,7 @@ using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.context.mgr
 {
@@ -122,9 +123,11 @@ namespace com.espertech.esper.common.@internal.context.mgr
             }
         }
 
-        public void StopStatement(ContextControllerStatementDesc statement)
+        public void StopStatement(
+            int statementId,
+            string statementName,
+            string statementDeploymentId)
         {
-            var statementId = statement.Lightweight.StatementContext.StatementId;
             if (!Statements.ContainsKey(statementId)) {
                 return;
             }
@@ -136,8 +139,8 @@ namespace com.espertech.esper.common.@internal.context.mgr
                     StatementContextCreate.RuntimeURI,
                     ContextRuntimeDescriptor.ContextDeploymentId,
                     ContextRuntimeDescriptor.ContextName,
-                    statement.Lightweight.StatementContext.DeploymentId,
-                    statement.Lightweight.StatementContext.StatementName),
+                    statementDeploymentId, 
+                    statementName),
                 (
                     listener,
                     context) => listener.OnContextStatementRemoved(context));
@@ -356,13 +359,13 @@ namespace com.espertech.esper.common.@internal.context.mgr
             ContextControllerStatementDesc statement,
             object[] contextPartitionKeys)
         {
-            Func<AgentInstanceContext, IDictionary<FilterSpecActivatable, FilterValueSetParam[][]>> generator =
-                agentInstanceContext =>
-                    ContextManagerUtil.ComputeAddendumForStatement(
-                        statement,
-                        ContextDefinition.ControllerFactories,
-                        contextPartitionKeys,
-                        agentInstanceContext);
+            Supplier<IDictionary<FilterSpecActivatable, FilterValueSetParam[][]>> generator = () =>
+                ContextManagerUtil.ComputeAddendumForStatement(
+                    statement,
+                    Statements,
+                    ContextDefinition.ControllerFactories,
+                    contextPartitionKeys,
+                    Realization.AgentInstanceContextCreate);
             return new AgentInstanceFilterProxyImpl(generator);
         }
 

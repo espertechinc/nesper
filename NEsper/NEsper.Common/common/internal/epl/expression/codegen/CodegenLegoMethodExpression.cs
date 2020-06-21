@@ -35,34 +35,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             return LocalMethod(expressionMethod, eps, isNewData, exprEvalCtx);
         }
 
-        public static void CodegenBooleanExpressionReturnNullIfNullOrNotPass(
-            ExprForge forge,
-            CodegenClassScope classScope,
-            CodegenMethod parent,
-            CodegenExpression eps,
-            CodegenExpression isNewData,
-            CodegenExpression exprEvalCtx)
-        {
-            CheckEvaluationType(forge);
-            var expressionMethod = CodegenBooleanExpressionBoxedToPrimitive(forge, parent, classScope);
-            CodegenExpression evaluation = LocalMethod(expressionMethod, eps, isNewData, exprEvalCtx);
-            parent.Block.IfCondition(Not(evaluation)).BlockReturn(ConstantNull());
-        }
-
-        public static void CodegenBooleanExpressionReturnIfNullOrNotPass(
-            ExprForge forge,
-            CodegenClassScope classScope,
-            CodegenMethod parent,
-            CodegenExpression eps,
-            CodegenExpression isNewData,
-            CodegenExpression exprEvalCtx)
-        {
-            CheckEvaluationType(forge);
-            var expressionMethod = CodegenBooleanExpressionBoxedToPrimitive(forge, parent, classScope);
-            CodegenExpression evaluation = LocalMethod(expressionMethod, eps, isNewData, exprEvalCtx);
-            parent.Block.IfCondition(Not(evaluation)).BlockReturnNoValue();
-        }
-
         public static CodegenMethod CodegenExpression(
             ExprForge forge,
             CodegenMethod parent,
@@ -85,7 +57,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
                 evaluationType,
                 forge.EvaluateCodegen(evaluationType, exprMethod, exprSymbol, classScope));
             exprSymbol.DerivedSymbolsCodegen(parent, exprMethod.Block, classScope);
-            exprMethod.Block.MethodReturn(expression);
+
+            if (evaluationType != typeof(void)) {
+                exprMethod.Block.MethodReturn(expression);
+            }
+            else {
+                exprMethod.Block.Expression(expression);
+            }
+
             return exprMethod;
         }
 

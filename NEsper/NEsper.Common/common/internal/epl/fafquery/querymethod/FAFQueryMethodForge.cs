@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 {
     public interface FAFQueryMethodForge
     {
-        IList<StmtClassForgable> MakeForgables(
+        IList<StmtClassForgeable> MakeForgeables(
             string queryMethodProviderClassName,
             string classPostfix,
             CodegenNamespaceScope namespaceScope);

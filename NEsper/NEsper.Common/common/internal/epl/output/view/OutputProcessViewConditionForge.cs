@@ -8,8 +8,11 @@
 
 using System.Collections.Generic;
 
+using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
@@ -33,6 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         private readonly EventType[] _eventTypes;
         private readonly bool _hasAfter;
         private readonly bool _isDistinct;
+        private readonly MultiKeyClassRef _distinctMultiKey;
         private readonly OutputConditionFactoryForge _outputConditionFactoryForge;
         private readonly OutputStrategyPostProcessForge _outputStrategyPostProcessForge;
         private readonly EventType _resultEventType;
@@ -44,6 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         public OutputProcessViewConditionForge(
             OutputStrategyPostProcessForge outputStrategyPostProcessForge,
             bool isDistinct,
+            MultiKeyClassRef distinctMultiKey,
             ExprTimePeriod afterTimePeriodExpr,
             int? afterNumberOfEvents,
             OutputConditionFactoryForge outputConditionFactoryForge,
@@ -58,6 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         {
             _outputStrategyPostProcessForge = outputStrategyPostProcessForge;
             _isDistinct = isDistinct;
+            _distinctMultiKey = distinctMultiKey;
             _afterTimePeriodExpr = afterTimePeriodExpr;
             _afterNumberOfEvents = afterNumberOfEvents;
             _outputConditionFactoryForge = outputConditionFactoryForge;
@@ -117,6 +123,11 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                     spec,
                     "IsDistinct",
                     Constant(_isDistinct))
+                .SetProperty(
+                    spec,
+                    "DistinctKeyGetter",
+                    MultiKeyCodegen.CodegenGetterEventDistinct(
+                        _isDistinct, _resultEventType, _distinctMultiKey, method, classScope))
                 .SetProperty(
                     spec,
                     "ResultEventType",

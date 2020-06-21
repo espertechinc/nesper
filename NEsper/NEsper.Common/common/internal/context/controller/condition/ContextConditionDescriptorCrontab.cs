@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.context.controller.initterm;
 using com.espertech.esper.common.@internal.context.mgr;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
@@ -19,7 +20,7 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
     {
         public int ScheduleCallbackId { get; set; } = -1;
 
-        public ExprEvaluator[] Evaluators { get; set; }
+        public ExprEvaluator[][] EvaluatorsPerCrontab { get; set; }
 
         public bool IsImmediate { get; set; }
 
@@ -30,14 +31,13 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
 
         public long? GetExpectedEndTime(
             ContextManagerRealization realization,
-            ScheduleSpec scheduleSpec)
+            ScheduleSpec[] scheduleSpecs)
         {
-            var classpathImportService = realization.AgentInstanceContextCreate.ImportServiceRuntime;
-            return ScheduleComputeHelper.ComputeNextOccurance(
-                scheduleSpec,
+            var importService = realization.AgentInstanceContextCreate.ImportServiceRuntime;
+            return ContextControllerInitTermUtil.ComputeScheduleMinimumNextOccurance(
+                scheduleSpecs,
                 realization.AgentInstanceContextCreate.TimeProvider.Time,
-                classpathImportService.TimeZone,
-                classpathImportService.TimeAbacus);
+                importService);
         }
     }
 } // end of namespace

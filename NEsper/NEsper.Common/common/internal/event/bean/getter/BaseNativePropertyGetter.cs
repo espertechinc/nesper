@@ -81,15 +81,30 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 return null;
             }
 
+            return GetFragmentFromObject(@object);
+        }
+
+        public object GetFragmentFromValue(object valueReturnedByGet)
+        {
+            DetermineFragmentable();
+            if (!_isFragmentable) {
+                return null;
+            }
+
+            return GetFragmentFromObject(valueReturnedByGet);
+        }
+
+        private object GetFragmentFromObject(object value)
+        {
             if (_isArray) {
-                return ToFragmentArray((object[]) @object, _fragmentEventType, _eventBeanTypedEventFactory);
+                return ToFragmentArray((object[]) value, _fragmentEventType, _eventBeanTypedEventFactory);
             }
-
-            if (_isIterable) {
-                return ToFragmentIterable(@object, _fragmentEventType, _eventBeanTypedEventFactory);
+            else if (_isIterable) {
+                return ToFragmentIterable(value, _fragmentEventType, _eventBeanTypedEventFactory);
             }
-
-            return _eventBeanTypedEventFactory.AdapterForTypedObject(@object, _fragmentEventType);
+            else {
+                return _eventBeanTypedEventFactory.AdapterForTypedObject(value, _fragmentEventType);
+            }
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
@@ -205,12 +220,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             if (objectType.IsArray) {
                 if (objectType.GetElementType().IsFragmentableType()) {
                     isArray = true;
-                    fragmentEventType = beanEventTypeFactory.GetCreateBeanType(objectType.GetElementType());
+                    fragmentEventType = beanEventTypeFactory.GetCreateBeanType(objectType.GetElementType(), false);
                 }
             }
             else {
                 if (objectType.IsFragmentableType()) {
-                    fragmentEventType = beanEventTypeFactory.GetCreateBeanType(objectType);
+                    fragmentEventType = beanEventTypeFactory.GetCreateBeanType(objectType, false);
                 }
             }
 
@@ -274,7 +289,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 
             var events = new ArrayDeque<EventBean>();
             do {
-                object next = enumerator.Current;
+                var next = enumerator.Current;
                 if (next == null) {
                     continue;
                 }
@@ -327,7 +342,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             if (_fragmentEventType == null) {
                 if (_fragmentClassType.IsFragmentableType()) {
-                    _fragmentEventType = _beanEventTypeFactory.GetCreateBeanType(_fragmentClassType);
+                    _fragmentEventType = _beanEventTypeFactory.GetCreateBeanType(_fragmentClassType, false);
                 }
                 else {
                     _isFragmentable = false;

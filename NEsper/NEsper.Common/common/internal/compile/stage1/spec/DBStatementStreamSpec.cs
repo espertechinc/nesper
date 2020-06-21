@@ -28,11 +28,11 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="sqlWithSubsParams">is the SQL with placeholder parameters</param>
         /// <param name="metadataSQL">is the sample SQL to retrieve statement metadata, if any was supplied</param>
         public DBStatementStreamSpec(
-            String optionalStreamName,
+            string optionalStreamName,
             ViewSpec[] viewSpecs,
-            String databaseName,
-            String sqlWithSubsParams,
-            String metadataSQL)
+            string databaseName,
+            string sqlWithSubsParams,
+            string metadataSQL)
             : base(optionalStreamName, viewSpecs, StreamSpecOptions.DEFAULT)
         {
             DatabaseName = databaseName;

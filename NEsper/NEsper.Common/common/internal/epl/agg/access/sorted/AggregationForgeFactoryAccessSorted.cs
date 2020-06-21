@@ -52,7 +52,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         public override ExprAggregateNodeBase AggregationExpression => Parent;
 
         public override AggregationPortableValidation AggregationPortableValidation =>
-            new AggregationPortableValidationSorted(Parent.AggregationFunctionName, ContainedEventType);
+            new AggregationPortableValidationSorted(
+                Parent.AggregationFunctionName,
+                ContainedEventType,
+                OptionalSortedStateDesc?.CriteriaTypes);
 
         public EventType ContainedEventType { get; }
 

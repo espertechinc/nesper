@@ -62,6 +62,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public ExprDotForge[] ChainForge { get; }
 
+        public override bool IsLocalInlinedClass => false;
+        
         public override CodegenExpression EvaluateCodegenUninstrumented(
             Type requiredType,
             CodegenMethodScope codegenMethodScope,

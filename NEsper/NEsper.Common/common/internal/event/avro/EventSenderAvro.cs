@@ -61,11 +61,6 @@ namespace com.espertech.esper.common.@internal.@event.avro
 
         public void RouteEvent(object theEvent)
         {
-            if (!theEvent.GetType().IsArray) {
-                throw new EPException(
-                    "Unexpected event object of type " + theEvent.GetType().CleanName() + ", expected Object[]");
-            }
-
             var eventBean = eventBeanTypedEventFactory.AdapterForTypedAvro(theEvent, eventType);
             runtimeEventSender.RouteEventBean(eventBean);
         }

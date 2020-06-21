@@ -39,11 +39,11 @@ namespace com.espertech.esper.common.@internal.collection
     ///   The algorithm adds 1 to the right and overflows until done.
     /// </p>
     /// </summary>
-    public class CombinationEnumeration : IEnumerator<Object[]>
+    public class CombinationEnumeration : IEnumerator<object[]>
     {
         private readonly IEnumerator<object[]> _subEnumerator;
 
-        public CombinationEnumeration(Object[][] combinations)
+        public CombinationEnumeration(object[][] combinations)
         {
             _subEnumerator = New(combinations).GetEnumerator();
         }
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// </summary>
         /// <param name="combinations"></param>
         /// <returns></returns>
-        public static IEnumerable<Object[]> New(Object[][] combinations)
+        public static IEnumerable<object[]> New(object[][] combinations)
         {
             if (combinations.Any(element => element == null || element.Length < 1)) {
                 throw new ArgumentException("Expecting non-null element of minimum length 1");
@@ -71,11 +71,11 @@ namespace com.espertech.esper.common.@internal.collection
             return NewInternal(combinations);
         }
 
-        public static IEnumerable<Object[]> FromZeroBasedRanges(int[] zeroBasedRanges)
+        public static IEnumerable<object[]> FromZeroBasedRanges(int[] zeroBasedRanges)
         {
-            var combinations = new Object[zeroBasedRanges.Length][];
+            var combinations = new object[zeroBasedRanges.Length][];
             for (int i = 0; i < zeroBasedRanges.Length; i++) {
-                combinations[i] = new Object[zeroBasedRanges[i]];
+                combinations[i] = new object[zeroBasedRanges[i]];
                 for (int j = 0; j < zeroBasedRanges[i]; j++) {
                     combinations[i][j] = j;
                 }
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.collection
         private static IEnumerable<object[]> NewInternal(object[][] combinations)
         {
             var current = new int[combinations.Length];
-            var prototype = new Object[combinations.Length];
+            var prototype = new object[combinations.Length];
             var hasMore = true;
 
             while (hasMore) {

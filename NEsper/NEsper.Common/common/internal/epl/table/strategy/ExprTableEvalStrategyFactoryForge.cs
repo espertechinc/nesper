@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -20,40 +21,40 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
 {
     public class ExprTableEvalStrategyFactoryForge
     {
-        private readonly TableMetaData tableMeta;
-        private readonly ExprForge[] optionalGroupKeys;
-        private ExprTableEvalStrategyEnum strategyEnum;
-        private int aggColumnNum = -1;
-        private int propertyIndex = -1;
-        private ExprEnumerationGivenEventForge optionalEnumEval;
-        private AggregationTableAccessAggReaderForge accessAggStrategy;
+        private readonly TableMetaData _tableMeta;
+        private readonly ExprForge[] _optionalGroupKeys;
+        private ExprTableEvalStrategyEnum _strategyEnum;
+        private int _aggColumnNum = -1;
+        private int _propertyIndex = -1;
+        private ExprEnumerationGivenEventForge _optionalEnumEval;
+        private AggregationMethodForge _aggregationMethod;
 
         public ExprTableEvalStrategyFactoryForge(
             TableMetaData tableMeta,
             ExprForge[] optionalGroupKeys)
         {
-            this.tableMeta = tableMeta;
-            this.optionalGroupKeys = optionalGroupKeys;
+            _tableMeta = tableMeta;
+            _optionalGroupKeys = optionalGroupKeys;
         }
 
         public ExprTableEvalStrategyEnum StrategyEnum {
-            set { this.strategyEnum = value; }
+            set => _strategyEnum = value;
         }
 
         public int PropertyIndex {
-            set { this.propertyIndex = value; }
+            set => _propertyIndex = value;
         }
 
         public ExprEnumerationGivenEventForge OptionalEnumEval {
-            set { this.optionalEnumEval = value; }
+            set => _optionalEnumEval = value;
         }
 
         public int AggColumnNum {
-            set { this.aggColumnNum = value; }
+            set => _aggColumnNum = value;
         }
 
-        public AggregationTableAccessAggReaderForge AccessAggStrategy {
-            set { this.accessAggStrategy = value; }
+        public AggregationMethodForge AggregationMethodForge {
+            set => _aggregationMethod = value;
         }
 
         public CodegenExpression Make(
@@ -61,47 +62,34 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(ExprTableEvalStrategyFactory), this.GetType(), classScope);
+            CodegenMethod method = parent.MakeChild(typeof(ExprTableEvalStrategyFactory), GetType(), classScope);
+            CodegenExpression groupKeyEval = ConstantNull();
+            if (_optionalGroupKeys != null && _optionalGroupKeys.Length > 0) {
+                groupKeyEval = MultiKeyCodegen.CodegenEvaluatorReturnObjectOrArrayWCoerce(
+                    _optionalGroupKeys, _tableMeta.KeyTypes, true, method, GetType(), classScope);
+            }
+
+            CodegenExpression optionalEnumEval = ConstantNull();
+            if (_optionalEnumEval != null) {
+                optionalEnumEval = ExprNodeUtilityCodegen.CodegenExprEnumEval(_optionalEnumEval, method, symbols, classScope, GetType());
+            }
+
+            CodegenExpression aggregationMethodEval = ConstantNull();
+            if (_aggregationMethod != null) {
+                aggregationMethodEval = _aggregationMethod.CodegenCreateReader(method, symbols, classScope);
+            }
+
             method.Block
-                .DeclareVar<ExprTableEvalStrategyFactory>(
-                    "factory",
-                    NewInstance(typeof(ExprTableEvalStrategyFactory)))
-                .SetProperty(Ref("factory"), "StrategyEnum", Constant(strategyEnum))
-                .SetProperty(
-                    Ref("factory"),
-                    "Table",
-                    TableDeployTimeResolver.MakeResolveTable(tableMeta, symbols.GetAddInitSvc(method)))
-                .SetProperty(
-                    Ref("factory"),
-                    "GroupKeyEval",
-                    optionalGroupKeys == null || optionalGroupKeys.Length == 0
-                        ? ConstantNull()
-                        : ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
-                            optionalGroupKeys,
-                            tableMeta.KeyTypes,
-                            method,
-                            this.GetType(),
-                            classScope))
-                .SetProperty(Ref("factory"), "AggColumnNum", Constant(aggColumnNum))
-                .SetProperty(Ref("factory"), "PropertyIndex", Constant(propertyIndex))
-                .SetProperty(
-                    Ref("factory"),
-                    "OptionalEnumEval",
-                    optionalEnumEval == null
-                        ? ConstantNull()
-                        : ExprNodeUtilityCodegen.CodegenExprEnumEval(
-                            optionalEnumEval,
-                            method,
-                            symbols,
-                            classScope,
-                            this.GetType()))
-                .SetProperty(
-                    Ref("factory"),
-                    "AccessAggReader",
-                    accessAggStrategy == null
-                        ? ConstantNull()
-                        : accessAggStrategy.CodegenCreateReader(method, symbols, classScope))
+                .DeclareVar<ExprTableEvalStrategyFactory>("factory", NewInstance(typeof(ExprTableEvalStrategyFactory)))
+                .SetProperty(Ref("factory"), "StrategyEnum", Constant(_strategyEnum))
+                .SetProperty(Ref("factory"), "Table", TableDeployTimeResolver.MakeResolveTable(_tableMeta, symbols.GetAddInitSvc(method)))
+                .SetProperty(Ref("factory"), "GroupKeyEval", groupKeyEval)
+                .SetProperty(Ref("factory"), "AggColumnNum", Constant(_aggColumnNum))
+                .SetProperty(Ref("factory"), "PropertyIndex", Constant(_propertyIndex))
+                .SetProperty(Ref("factory"), "OptionalEnumEval", optionalEnumEval)
+                .SetProperty(Ref("factory"), "AggregationMethod", aggregationMethodEval)
                 .MethodReturn(Ref("factory"));
+
             return LocalMethod(method);
         }
     }

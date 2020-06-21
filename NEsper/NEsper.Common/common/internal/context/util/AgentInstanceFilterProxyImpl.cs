@@ -11,31 +11,34 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
     public class AgentInstanceFilterProxyImpl : AgentInstanceFilterProxy
     {
-        private readonly Func<AgentInstanceContext, IDictionary<FilterSpecActivatable, FilterValueSetParam[][]>>
-            generator;
+        private Supplier<IDictionary<FilterSpecActivatable, FilterValueSetParam[][]>> _generator;
+        private IDictionary<FilterSpecActivatable, FilterValueSetParam[][]> _addendumMap;
 
-        private IDictionary<FilterSpecActivatable, FilterValueSetParam[][]> addendumMap;
-
-        public AgentInstanceFilterProxyImpl(
-            Func<AgentInstanceContext, IDictionary<FilterSpecActivatable, FilterValueSetParam[][]>> generator)
+        public AgentInstanceFilterProxyImpl(Supplier<IDictionary<FilterSpecActivatable, FilterValueSetParam[][]>> generator)
         {
-            this.generator = generator;
+            this._generator = generator;
         }
 
         public FilterValueSetParam[][] GetAddendumFilters(
             FilterSpecActivatable filterSpec,
             AgentInstanceContext agentInstanceContext)
         {
-            if (addendumMap == null) {
-                addendumMap = generator.Invoke(agentInstanceContext);
+            if (_addendumMap == null) {
+                _addendumMap = _generator.Invoke();
+                if (_addendumMap.IsEmpty()) {
+                    _addendumMap = EmptyDictionary<FilterSpecActivatable, FilterValueSetParam[][]>.Instance;
+                }
+
+                _generator = null;
             }
 
-            return addendumMap.Get(filterSpec);
+            return _addendumMap.Get(filterSpec);
         }
     }
 } // end of namespace

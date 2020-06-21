@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.view.timewin
     /// </summary>
     public class TimeWindowView : ViewSupport,
         DataWindowView,
-        AgentInstanceStopCallback
+        AgentInstanceMgmtCallback
     {
         private readonly AgentInstanceContext agentInstanceContext;
         private readonly EPStatementHandleCallbackSchedule handle;
@@ -94,6 +94,10 @@ namespace com.espertech.esper.common.@internal.view.timewin
                     timeWindowViewFactory.ViewName);
                 agentInstanceContext.StatementContext.SchedulingService.Remove(handle, scheduleSlot);
             }
+        }
+        
+        public void Transfer(AgentInstanceTransferServices services)
+        {
         }
 
         public override EventType EventType => Parent.EventType;
@@ -182,21 +186,23 @@ namespace com.espertech.esper.common.@internal.view.timewin
 
         private void ScheduleExpiryCallback()
         {
-            // If we still have events in the window, schedule new callback
-            if (timeWindow.IsEmpty()) {
+            long scheduleTime = ComputeScheduleTime();
+            if (scheduleTime == -1) {
                 return;
+            }
+
+            ScheduleCallback(scheduleTime);
+        }
+
+        private long ComputeScheduleTime()
+        {
+            if (timeWindow.IsEmpty()) {
+                return -1;
             }
 
             var oldestTimestamp = timeWindow.OldestTimestamp;
             var currentTimestamp = agentInstanceContext.StatementContext.SchedulingService.Time;
-            long scheduleTime = timePeriodProvide.DeltaAdd(
-                                    oldestTimestamp.Value,
-                                    null,
-                                    true,
-                                    agentInstanceContext) +
-                                oldestTimestamp.Value -
-                                currentTimestamp;
-            ScheduleCallback(scheduleTime);
+            return timePeriodProvide.DeltaAdd(oldestTimestamp, null, true, agentInstanceContext) + oldestTimestamp - currentTimestamp;
         }
 
         private void ScheduleCallback(long timeAfterCurrentTime)

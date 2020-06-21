@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using System.Text;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
@@ -75,18 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
             CodegenClassScope classScope)
         {
             var methodNode = parent.MakeChild(EvaluationType, typeof(ExprVariableNodeImpl), classScope);
-
-            CodegenExpression readerExpression;
-            if (VariableMetadata.OptionalContextName == null) {
-                readerExpression =
-                    classScope.AddOrGetDefaultFieldSharable(new VariableReaderCodegenFieldSharable(VariableMetadata));
-            }
-            else {
-                var field = classScope.AddOrGetDefaultFieldSharable(
-                    new VariableReaderPerCPCodegenFieldSharable(VariableMetadata));
-                var cpid = ExprDotName(symbols.GetAddExprEvalCtx(methodNode), "AgentInstanceId");
-                readerExpression = Cast(typeof(VariableReader), ExprDotMethod(field, "Get", cpid));
-            }
+            var readerExpression = GetReaderExpression(VariableMetadata, methodNode, symbols, classScope);
 
             var block = methodNode.Block
                 .DeclareVar<VariableReader>("reader", readerExpression);
@@ -113,6 +103,27 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
             }
 
             return LocalMethod(methodNode);
+        }
+
+        public static CodegenExpression GetReaderExpression(
+            VariableMetaData variableMeta,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope)
+        {
+            CodegenExpression readerExpression;
+            if (variableMeta.OptionalContextName == null) {
+                readerExpression = classScope
+                    .AddOrGetDefaultFieldSharable(new VariableReaderCodegenFieldSharable(VariableMetadata));
+            }
+            else {
+                var field = classScope.AddOrGetDefaultFieldSharable(
+                    new VariableReaderPerCPCodegenFieldSharable(VariableMetadata));
+                var cpid = ExprDotName(symbols.GetAddExprEvalCtx(methodNode), "AgentInstanceId");
+                readerExpression = Cast(typeof(VariableReader), ExprDotMethod(field, "Get", cpid));
+            }
+
+            return readerExpression;
         }
 
         public CodegenExpression EvaluateCodegen(
@@ -221,7 +232,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
             }
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(VariableMetadata.VariableName);
             if (optSubPropName != null) {
@@ -245,6 +258,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
             }
 
             return that.VariableMetadata.VariableName.Equals(VariableMetadata.VariableName);
+        }
+
+
+        public void RenderForFilterPlan(StringBuilder @out)
+        {
+            @out.Append("variable '");
+            @out.Append(VariableNameWithSubProp);
+            @out.Append("'");
         }
 
         public string VariableNameWithSubProp {

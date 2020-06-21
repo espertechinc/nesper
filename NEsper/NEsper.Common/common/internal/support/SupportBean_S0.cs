@@ -86,6 +86,8 @@ namespace com.espertech.esper.common.@internal.support
         public string P02 { get; set; }
 
         public string P03 { get; set; }
+        
+        public int Value { get; set; }
 
         public string GetP00()
         {

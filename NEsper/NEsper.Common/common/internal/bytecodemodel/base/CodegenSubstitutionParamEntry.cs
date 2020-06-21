@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             }
 
             enclosingBlock.DeclareVar<int>("zidx", Op(Ref("index"), "-", Constant(1)));
-            var blocks = enclosingBlock.SwitchBlockOfLength("zidx", fields.Count, false);
+            var blocks = enclosingBlock.SwitchBlockOfLength(Ref("zidx"), fields.Count, false);
             for (var i = 0; i < blocks.Length; i++) {
                 CodegenSubstitutionParamEntry param = fields[i];
                 blocks[i].AssignRef(

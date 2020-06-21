@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.settings
 
             Type clazz;
             try {
-                clazz = importService.ResolveClass(hookClass, false);
+                clazz = importService.ResolveClass(hookClass, false, ExtensionClassEmpty.INSTANCE);
             }
             catch (Exception e) {
                 throw new ExprValidationException(

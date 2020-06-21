@@ -190,7 +190,7 @@ namespace com.espertech.esper.common.client.dataflow.util
 
             Type theClass;
             try {
-                theClass = context.AgentInstanceContext.ImportServiceRuntime.ResolveClass(className, false);
+                theClass = context.AgentInstanceContext.ImportServiceRuntime.ResolveClass(className, false, ExtensionClassEmpty.INSTANCE);
             }
             catch (ImportException e) {
                 throw new EPException("Failed to find class for parameter '" + name + "': " + e.Message, e);

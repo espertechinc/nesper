@@ -14,6 +14,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
+using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
@@ -73,6 +74,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             }
 
             _optionalInitializer?.MergeClasses(classes);
+        }
+        
+        public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            if (_optionalInitializer != null) {
+                consumer.Invoke(_optionalInitializer);
+            }
         }
     }
 } // end of namespace

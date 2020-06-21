@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.common.@internal.epl.expression.assign;
 using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
@@ -28,5 +29,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <summary>Returns the expression providing the new variable value, or null if none </summary>
         /// <value>assignment expression</value>
         public ExprNode Expression { get; set; }
+        
+        public ExprAssignment Validated { get; set; }
     }
 }

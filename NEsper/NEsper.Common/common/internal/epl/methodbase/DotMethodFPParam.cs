@@ -14,34 +14,43 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
 {
     public class DotMethodFPParam
     {
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="lambdaParamNum">
+        ///   number of parameters that are lambda-parameters, i.e. zero for no-lambda, or 1 for "a =&gt; ..." or
+        ///    2 for "(a,b) =&gt; ..."</param>
+        /// <param name="description">parameter description</param>
+        /// <param name="paramType">parameter type</param>
+        /// <exception cref="ArgumentException"></exception>
         public DotMethodFPParam(
             int lambdaParamNum,
             string description,
-            EPLExpressionParamType type)
+            EPLExpressionParamType paramType)
         {
             LambdaParamNum = lambdaParamNum;
             Description = description;
-            Type = type;
+            ParamType = paramType;
             SpecificType = null;
-            if (type == EPLExpressionParamType.SPECIFIC) {
+            if (paramType == EPLExpressionParamType.SPECIFIC) {
                 throw new ArgumentException("Invalid ctor for specific-type parameter");
             }
         }
 
         public DotMethodFPParam(
             string description,
-            EPLExpressionParamType type)
-            : this(description, type, null)
+            EPLExpressionParamType paramType)
+            : this(description, paramType, null)
         {
         }
 
         public DotMethodFPParam(
             string description,
-            EPLExpressionParamType type,
+            EPLExpressionParamType paramType,
             params Type[] specificType)
         {
             Description = description;
-            Type = type;
+            ParamType = paramType;
             SpecificType = specificType;
             LambdaParamNum = 0;
         }
@@ -50,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
 
         public string Description { get; }
 
-        public EPLExpressionParamType Type { get; }
+        public EPLExpressionParamType ParamType { get; }
 
         public Type[] SpecificType { get; }
     }

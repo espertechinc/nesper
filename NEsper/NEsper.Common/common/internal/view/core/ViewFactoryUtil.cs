@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.view.core
             ViewFactory[] factories,
             Viewable eventStreamParent,
             AgentInstanceViewFactoryChainContext viewFactoryChainContext,
-            IList<AgentInstanceStopCallback> stopCallbacks)
+            IList<AgentInstanceMgmtCallback> stopCallbacks)
         {
             if (factories.Length == 0) {
                 return new ViewablePair(eventStreamParent, eventStreamParent);
@@ -58,8 +58,8 @@ namespace com.espertech.esper.common.@internal.view.core
 
             foreach (var viewFactory in factories) {
                 var view = viewFactory.MakeView(viewFactoryChainContext);
-                if (view is AgentInstanceStopCallback) {
-                    stopCallbacks.Add((AgentInstanceStopCallback) view);
+                if (view is AgentInstanceMgmtCallback) {
+                    stopCallbacks.Add((AgentInstanceMgmtCallback) view);
                 }
 
                 current.Child = view;

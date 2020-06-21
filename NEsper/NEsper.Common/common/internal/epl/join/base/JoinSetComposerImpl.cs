@@ -31,10 +31,10 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         private readonly bool joinRemoveStream;
         internal readonly QueryStrategy[] queryStrategies;
         internal readonly EventTable[][] repositories;
-        internal ISet<MultiKey<EventBean>> newResults = new LinkedHashSet<MultiKey<EventBean>>();
-
+        
         // Set semantic eliminates duplicates in result set, use Linked set to preserve order
-        internal ISet<MultiKey<EventBean>> oldResults = new LinkedHashSet<MultiKey<EventBean>>();
+        internal ISet<MultiKeyArrayOfKeys<EventBean>> oldResults = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
+        internal ISet<MultiKeyArrayOfKeys<EventBean>> newResults = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
 
         public JoinSetComposerImpl(
             bool allowInitIndex,
@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             }
         }
 
-        public virtual UniformPair<ISet<MultiKey<EventBean>>> Join(
+        public virtual UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>> Join(
             EventBean[][] newDataPerStream,
             EventBean[][] oldDataPerStream,
             ExprEvaluatorContext exprEvaluatorContext)
@@ -157,12 +157,12 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             }
 
             instrumentationCommon.AJoinCompositionWinToWin(newResults, oldResults);
-            return new UniformPair<ISet<MultiKey<EventBean>>>(newResults, oldResults);
+            return new UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>(newResults, oldResults);
         }
 
-        public virtual ISet<MultiKey<EventBean>> StaticJoin()
+        public virtual ISet<MultiKeyArrayOfKeys<EventBean>> StaticJoin()
         {
-            ISet<MultiKey<EventBean>> result = new LinkedHashSet<MultiKey<EventBean>>();
+            ISet<MultiKeyArrayOfKeys<EventBean>> result = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
             var lookupEvents = new EventBean[1];
 
             // for each stream, perform query strategy

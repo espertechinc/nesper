@@ -81,18 +81,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         public CodegenExpression Codegen(
             CodegenExpression inner,
             Type innerType,
-            CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol,
-            CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope)
         {
             if (type == DuckType.WRAPARRAY) {
                 return ExprDotMethodForgeNoDuckEvalWrapArray.CodegenWrapArray(
                     this,
                     inner,
                     innerType,
-                    codegenMethodScope,
-                    exprSymbol,
-                    codegenClassScope);
+                    parent,
+                    symbols,
+                    classScope);
             }
 
             if (type == DuckType.PLAIN) {
@@ -100,18 +100,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     this,
                     inner,
                     innerType,
-                    codegenMethodScope,
-                    exprSymbol,
-                    codegenClassScope);
+                    parent,
+                    symbols,
+                    classScope);
             }
 
             return ExprDotMethodForgeNoDuckEvalUnderlying.CodegenUnderlying(
                 this,
                 inner,
                 innerType,
-                codegenMethodScope,
-                exprSymbol,
-                codegenClassScope);
+                parent,
+                symbols,
+                classScope);
         }
     }
 } // end of namespace

@@ -18,10 +18,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
     public class ResultSetProcessorSimpleOutputLastHelperImpl : ResultSetProcessorSimpleOutputLastHelper
     {
         private readonly ResultSetProcessorSimple processor;
-        private MultiKey<EventBean> outputLastIStreamBufJoin;
+        private MultiKeyArrayOfKeys<EventBean> outputLastIStreamBufJoin;
 
         private EventBean outputLastIStreamBufView;
-        private MultiKey<EventBean> outputLastRStreamBufJoin;
+        private MultiKeyArrayOfKeys<EventBean> outputLastRStreamBufJoin;
         private EventBean outputLastRStreamBufView;
 
         public ResultSetProcessorSimpleOutputLastHelperImpl(ResultSetProcessorSimple processor)
@@ -79,8 +79,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
         }
 
         public void ProcessJoin(
-            ISet<MultiKey<EventBean>> newEvents,
-            ISet<MultiKey<EventBean>> oldEvents)
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents)
         {
             if (!processor.HasHavingClause) {
                 if (newEvents != null && !newEvents.IsEmpty()) {

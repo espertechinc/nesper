@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
@@ -62,12 +63,16 @@ namespace com.espertech.esper.common.@internal.epl.table.core
 
             int[] groupKeyColNums = table.MetaData.KeyColNums;
             if (groupKeyColNums.Length == 1) {
-                data[groupKeyColNums[0]] = groupKeys;
+                if (groupKeys is MultiKeyArrayWrap multiKeyArrayWrap) {
+                    data[groupKeyColNums[0]] = multiKeyArrayWrap.Array;
+                } else {
+                    data[groupKeyColNums[0]] = groupKeys;
+                }
             }
             else {
-                var mk = (HashableMultiKey) groupKeys;
+                var mk = (MultiKey) groupKeys;
                 for (var i = 0; i < groupKeyColNums.Length; i++) {
-                    data[groupKeyColNums[i]] = mk.Keys[i];
+                    data[groupKeyColNums[i]] = mk.GetKey(i);
                 }
             }
 

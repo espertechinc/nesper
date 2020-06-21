@@ -6,12 +6,16 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.context.mgr;
+using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.fafquery.processor;
+using com.espertech.esper.common.@internal.epl.subselect;
+using com.espertech.esper.common.@internal.settings;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 {
@@ -32,6 +36,25 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
         public static EPException RuntimeDestroyed()
         {
             return new EPException("Runtime has already been destroyed");
+        }
+        
+        public static void InitializeSubselects(
+            StatementContextRuntimeServices svc,
+            Attribute[] annotations, 
+            IDictionary<int, SubSelectFactory> subselects)
+        {
+            EventTableFactoryFactoryContext tableFactoryContext = new ProxyEventTableFactoryFactoryContext(
+                () => svc.EventTableIndexService,
+                () => svc.RuntimeSettingsService,
+                () => annotations);
+
+            SubSelectStrategyFactoryContext context = new ProxySubSelectStrategyFactoryContext(
+                () => svc.EventTableIndexService,
+                () => tableFactoryContext);
+            
+            foreach (var subselect in subselects) {
+                subselect.Value.Ready(context, false);
+            }
         }
     }
 } // end of namespace

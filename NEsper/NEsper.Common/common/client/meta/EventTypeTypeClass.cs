@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 namespace com.espertech.esper.common.client.meta
 {
     /// <summary>
@@ -112,5 +114,19 @@ namespace com.espertech.esper.common.client.meta
         ///     An event type for exclude-plan evaluation.
         /// </summary>
         EXCLUDEPLANHINTDERIVED
+    }
+
+    public static class EventTypeTypeClassExtensions
+    {
+        /// <summary>
+        /// Returns true if the event type type-class represents a table.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static bool IsTable(this EventTypeTypeClass value)
+        {
+            return value == EventTypeTypeClass.TABLE_PUBLIC ||
+                   value == EventTypeTypeClass.TABLE_INTERNAL;
+        }
     }
 } // end of namespace

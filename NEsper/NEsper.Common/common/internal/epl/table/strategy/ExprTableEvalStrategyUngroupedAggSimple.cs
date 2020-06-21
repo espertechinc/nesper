@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             }
 
             AggregationRow aggs = ExprTableEvalStrategyUtil.GetRow(row);
-            return aggs.GetValue(factory.AggColumnNum, eventsPerStream, isNewData, exprEvaluatorContext);
+            return aggs.GetValue(Factory.AggColumnNum, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         public override ICollection<EventBean> EvaluateGetROCollectionEvents(
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             }
 
             AggregationRow aggs = ExprTableEvalStrategyUtil.GetRow(row);
-            return aggs.GetCollectionOfEvents(factory.AggColumnNum, eventsPerStream, isNewData, context);
+            return aggs.GetCollectionOfEvents(Factory.AggColumnNum, eventsPerStream, isNewData, context);
         }
 
         public override EventBean EvaluateGetEventBean(

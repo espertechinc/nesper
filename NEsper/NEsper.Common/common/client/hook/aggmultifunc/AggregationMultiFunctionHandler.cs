@@ -115,7 +115,8 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         /// <summary>
         ///     Describes to the compiler how it should manage code for providing table column reader.
         /// </summary>
-        /// <value>mode object</value>
-        AggregationMultiFunctionTableReaderMode TableReaderMode { get; }
+        /// <param name="ctx"></param>
+        /// <returns>mode object</returns>
+        AggregationMultiFunctionAggregationMethodMode GetAggregationMethodMode(AggregationMultiFunctionAggregationMethodContext ctx);
     }
 } // end of namespace

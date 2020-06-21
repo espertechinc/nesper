@@ -74,6 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                     outputLimitSpec.AndAfterTerminateExpr,
                     outputLimitSpec.AndAfterTerminateThenExpressions,
                     isStartConditionOnCreation,
+                    statementRawInfo,
                     services);
             }
 
@@ -104,6 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                     outputLimitSpec.AndAfterTerminateExpr,
                     outputLimitSpec.AndAfterTerminateThenExpressions,
                     isStartConditionOnCreation,
+                    statementRawInfo,
                     services);
             }
 

@@ -47,17 +47,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         public CodegenExpression Codegen(
             CodegenExpression inner,
             Type innerType,
-            CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol,
-            CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope)
         {
             return ExprDotForgeArrayGetEval.Codegen(
                 this,
                 inner,
                 innerType,
-                codegenMethodScope,
-                exprSymbol,
-                codegenClassScope);
+                parent,
+                symbols,
+                classScope);
         }
 
         public ExprForge IndexExpression {

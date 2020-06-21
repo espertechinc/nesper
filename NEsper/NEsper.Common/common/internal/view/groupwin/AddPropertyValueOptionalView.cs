@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.@event.core;
@@ -22,7 +23,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
     ///     This view simply adds a property to the events posted to it. This is useful for the group-merge views.
     /// </summary>
     public class AddPropertyValueOptionalView : ViewSupport,
-        AgentInstanceStopCallback
+        AgentInstanceMgmtCallback
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(AddPropertyValueOptionalView));
 
@@ -135,23 +136,22 @@ namespace com.espertech.esper.common.@internal.view.groupwin
         /// <param name="targetEventType">new event type</param>
         /// <param name="eventAdapterService">service for generating events and handling event types</param>
         /// <returns>event with added property</returns>
-        protected internal static EventBean AddProperty(
+        internal static EventBean AddProperty(
             EventBean originalEvent,
             string[] propertyNames,
             object propertyValues,
             EventType targetEventType,
             EventBeanTypedEventFactory eventAdapterService)
         {
-            IDictionary<string, object> values = new Dictionary<string, object>();
-            if (propertyValues is HashableMultiKey) {
-                var props = (HashableMultiKey) propertyValues;
-                var propertyValuesArr = props.Keys;
-
-                for (var i = 0; i < propertyNames.Length; i++) {
-                    values.Put(propertyNames[i], propertyValuesArr[i]);
+            var values = new Dictionary<string, object>();
+            if (propertyValues is MultiKey props) {
+                for (int i = 0; i < propertyNames.Length; i++) {
+                    values.Put(propertyNames[i], props.GetKey(i));
                 }
-            }
-            else {
+            } else {
+                if (propertyValues is MultiKeyArrayWrap multiKeyArrayWrap) {
+                    propertyValues = multiKeyArrayWrap.Array;
+                }
                 values.Put(propertyNames[0], propertyValues);
             }
 
@@ -160,11 +160,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         public override string ToString()
         {
-            return GetType().Name +
-                   " propertyNames=" +
-                   groupByViewFactory.criteriaEvals.RenderAny() +
-                   " propertyValue=" +
-                   propertyValues;
+            return GetType().Name + " propertyValue=" + propertyValues;
         }
     }
 } // end of namespace

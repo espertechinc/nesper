@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.view.access;
@@ -24,51 +25,32 @@ namespace com.espertech.esper.common.@internal.view.sort
     public class SortWindowViewFactory : DataWindowViewFactory,
         DataWindowViewWithPrevious
     {
-        protected internal IComparer<object> comparator;
-        protected internal EventType eventType;
-        protected internal bool[] isDescendingValues;
-        protected internal ExprEvaluator sizeEvaluator;
-        protected internal ExprEvaluator[] sortCriteriaEvaluators;
-        protected internal Type[] sortCriteriaTypes;
-        protected internal bool useCollatorSort;
+        private EventType _eventType;
 
         public EventType EventType {
-            get => eventType;
-            set => eventType = value;
+            get => _eventType;
+            set => _eventType = value;
         }
 
-        public ExprEvaluator[] SortCriteriaEvaluators {
-            get => sortCriteriaEvaluators;
-            set => sortCriteriaEvaluators = value;
-        }
+        public ExprEvaluator[] SortCriteriaEvaluators { get; set; }
 
-        public ExprEvaluator SizeEvaluator
-        {
-            get => sizeEvaluator;
-            set => sizeEvaluator = value;
-        }
+        public ExprEvaluator SizeEvaluator { get; set; }
 
-        public IComparer<object> IComparer => comparator;
+        public IComparer<object> IComparer { get; set; }
 
-        public bool[] IsDescendingValues {
-            get => isDescendingValues;
-            set => isDescendingValues = value;
-        }
+        public bool[] IsDescendingValues { get; set; }
 
         public bool IsUseCollatorSort {
-            get => useCollatorSort;
-            set => useCollatorSort = value;
+            get => UseCollatorSort;
+            set => UseCollatorSort = value;
         }
 
-        public Type[] SortCriteriaTypes {
-            get => sortCriteriaTypes;
-            set => sortCriteriaTypes = value;
-        }
+        public Type[] SortCriteriaTypes { get; set; }
 
-        public bool UseCollatorSort {
-            get => useCollatorSort;
-            set => useCollatorSort = value;
-        }
+        public bool UseCollatorSort { get; set; }
+
+        public DataInputOutputSerde<object>[] SortSerdes { get; set; }
+
 
         public string ViewName => ViewEnum.SORT_WINDOW.GetViewName();
 
@@ -76,17 +58,17 @@ namespace com.espertech.esper.common.@internal.view.sort
             ViewFactoryContext viewFactoryContext,
             EPStatementInitServices services)
         {
-            comparator = ExprNodeUtilityMake.GetComparatorHashableMultiKeys(
-                sortCriteriaTypes,
-                useCollatorSort,
-                isDescendingValues); // hashable-key comparator since we may remove sort keys
+            IComparer = ExprNodeUtilityMake.GetComparatorHashableMultiKeys(
+                SortCriteriaTypes,
+                UseCollatorSort,
+                IsDescendingValues); // hashable-key comparator since we may remove sort keys
         }
 
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
             var sortWindowSize = ViewFactoryUtil.EvaluateSizeParam(
                 ViewName,
-                sizeEvaluator,
+                SizeEvaluator,
                 agentInstanceViewFactoryContext.AgentInstanceContext);
             IStreamSortRankRandomAccess sortedRandomAccess =
                 agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory

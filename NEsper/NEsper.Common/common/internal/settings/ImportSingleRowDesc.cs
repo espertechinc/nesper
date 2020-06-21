@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client.configuration.compiler;
+using com.espertech.esper.common.client.hook.singlerowfunc;
 
 namespace com.espertech.esper.common.@internal.settings
 {
@@ -18,6 +19,16 @@ namespace com.espertech.esper.common.@internal.settings
     [Serializable]
     public class ImportSingleRowDesc
     {
+        public ImportSingleRowDesc(Type clazz, ExtensionSingleRowFunctionAttribute anno) : this(
+                clazz.FullName,
+                anno.MethodName,
+                anno.ValueCache,
+                anno.FilterOptimizable,
+                anno.RethrowExceptions,
+                anno.EventTypeName)
+        {
+        }
+        
         public ImportSingleRowDesc(
             string className,
             string methodName,

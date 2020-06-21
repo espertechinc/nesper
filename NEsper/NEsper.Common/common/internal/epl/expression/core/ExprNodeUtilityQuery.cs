@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.collection;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.epl.expression.chain;
 using com.espertech.esper.common.@internal.epl.expression.declared.compiletime;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
 using com.espertech.esper.compat;
@@ -22,6 +24,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     {
         public static readonly ExprNode[] EMPTY_EXPR_ARRAY = new ExprNode[0];
         public static readonly ExprForge[] EMPTY_FORGE_ARRAY = new ExprForge[0];
+
+        public static ExprForge[] ForgesForProperties(
+            EventType[] eventTypes,
+            String[] propertyNames,
+            int[] keyStreamNums)
+        {
+            ExprForge[] forges = new ExprForge[propertyNames.Length];
+            for (int i = 0; i < propertyNames.Length; i++) {
+                ExprIdentNodeImpl node = new ExprIdentNodeImpl(eventTypes[keyStreamNums[i]], propertyNames[i], keyStreamNums[i]);
+                forges[i] = node.Forge;
+            }
+
+            return forges;
+        }
 
         public static bool IsConstant(ExprNode exprNode)
         {
@@ -261,11 +277,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return false;
         }
 
-        public static IList<ExprNode> CollectChainParameters(IList<ExprChainedSpec> chainSpec)
+        public static IList<ExprNode> CollectChainParameters(IList<Chainable> chainSpec)
         {
             IList<ExprNode> result = new List<ExprNode>();
             foreach (var chainElement in chainSpec) {
-                result.AddAll(chainElement.Parameters);
+                chainElement.AddParametersTo(result);
             }
 
             return result;
@@ -273,29 +289,29 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public static void AcceptChain(
             ExprNodeVisitor visitor,
-            IList<ExprChainedSpec> chainSpec)
+            IList<Chainable> chainSpec)
         {
             foreach (var chain in chainSpec) {
-                AcceptParams(visitor, chain.Parameters);
+                chain.Accept(visitor);
             }
         }
 
         public static void AcceptChain(
             ExprNodeVisitorWithParent visitor,
-            IList<ExprChainedSpec> chainSpec)
+            IList<Chainable> chainSpec)
         {
             foreach (var chain in chainSpec) {
-                AcceptParams(visitor, chain.Parameters);
+                chain.Accept(visitor);
             }
         }
 
         public static void AcceptChain(
             ExprNodeVisitorWithParent visitor,
-            IList<ExprChainedSpec> chainSpec,
+            IList<Chainable> chainSpec,
             ExprNode parent)
         {
             foreach (var chain in chainSpec) {
-                AcceptParams(visitor, chain.Parameters, parent);
+                chain.Accept(visitor, parent);
             }
         }
 
@@ -307,7 +323,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 new Dictionary<ExprDeclaredNode, IList<ExprDeclaredNode>>();
             foreach (var node in declaredExpressions) {
                 visitor.Reset();
-                node.Accept(visitor);
+                node.AcceptNoVisitParams(visitor);
                 foreach (var called in visitor.DeclaredExpressions) {
                     if (called == node) {
                         continue;

@@ -9,6 +9,8 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.index.hash;
@@ -33,6 +35,12 @@ namespace com.espertech.esper.common.@internal.epl.table.core
 
         TableSerdes TableSerdes { get; set; }
 
+        DataInputOutputSerde<object> PrimaryKeySerde { get; set; }
+
+        MultiKeyFromObjectArray PrimaryKeyObjectArrayTransform { get; set; }
+
+        MultiKeyFromMultiKey PrimaryKeyIntoTableTransform { get; set; }
+        
         AggregationRowFactory AggregationRowFactory { get; set; }
 
         StatementContext StatementContextCreateTable { get; set; }

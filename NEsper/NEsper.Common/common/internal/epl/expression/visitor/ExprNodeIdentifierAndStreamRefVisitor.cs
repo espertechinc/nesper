@@ -18,7 +18,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
     public class ExprNodeIdentifierAndStreamRefVisitor : ExprNodeVisitor
     {
         private readonly bool _isVisitAggregateNodes;
-        private List<ExprNodePropOrStreamDesc> _refs;
+        private IList<ExprNodePropOrStreamDesc> _refs;
+        private bool _hasWildcardOrStreamAlias;
 
         public ExprNodeIdentifierAndStreamRefVisitor(bool isVisitAggregateNodes)
         {
@@ -64,15 +65,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
                 if (stream != null) {
                     _refs.Add(new ExprNodePropOrStreamExprDesc(stream.Value, streamRefNode));
                 }
+                
+                if (exprNode is ExprWildcard || exprNode is ExprStreamUnderlyingNode) {
+                    _hasWildcardOrStreamAlias = true;
+                }
             }
         }
 
         public void Reset()
         {
-            if (_refs != null) {
-                _refs.Clear();
-            }
+            _refs?.Clear();
         }
+
+
+        public bool IsWalkDeclExprParam => false;
+
+        public bool HasWildcardOrStreamAlias => _hasWildcardOrStreamAlias;
 
         private void CheckAllocatedRefs()
         {

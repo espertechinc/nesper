@@ -61,7 +61,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 select.ResultSetProcessorFactoryProvider,
                 agentInstanceContext,
                 assignerSetter,
-                select.TableAccesses);
+                select.TableAccesses,
+                select.Subselects);
 
             // determine join
             JoinSetComposerDesc joinSetComposerDesc = select.JoinSetComposerPrototype.Create(
@@ -77,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 newDataPerStream[i] = snapshots[i].ToArray();
             }
 
-            UniformPair<ISet<MultiKey<EventBean>>> result = joinComposer.Join(
+            UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>> result = joinComposer.Join(
                 newDataPerStream,
                 oldDataPerStream,
                 agentInstanceContext);
@@ -91,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 
             UniformPair<EventBean[]> results = resultSetProcessor.ProcessJoinResult(result.First, null, true);
 
-            EventBean[] distinct = EventBeanUtility.GetDistinctByProp(results.First, select.EventBeanReaderDistinct);
+            EventBean[] distinct = EventBeanUtility.GetDistinctByProp(results.First, select.DistinctKeyGetter);
 
             return new EPPreparedQueryResult(resultSetProcessor.ResultEventType, distinct);
         }

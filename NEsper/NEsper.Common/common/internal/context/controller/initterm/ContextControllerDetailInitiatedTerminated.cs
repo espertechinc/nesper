@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.context.controller.condition;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -25,5 +26,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
         public ExprEvaluator DistinctEval { get; set; }
 
         public Type[] DistinctTypes { get; set; }
+        
+        public DataInputOutputSerde<object> DistinctSerde { get; set; }
     }
 } // end of namespace

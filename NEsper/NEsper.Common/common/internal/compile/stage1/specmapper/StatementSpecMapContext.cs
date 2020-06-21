@@ -11,8 +11,10 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.compiler;
 using com.espertech.esper.common.client.hook.aggmultifunc;
+using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.compile;
+using com.espertech.esper.common.@internal.epl.classprovided.compiletime;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.declared.compiletime;
 using com.espertech.esper.common.@internal.epl.expression.table;
@@ -34,15 +36,28 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
     public class StatementSpecMapContext
     {
         private IDictionary<string, ExpressionDeclItem> expressionDeclarations;
-        private IDictionary<string, ExpressionScriptProvided> scripts;
 
         public StatementSpecMapContext(
             ContextCompileTimeDescriptor contextCompileTimeDescriptor,
-            StatementSpecMapEnv mapEnv)
+            StatementSpecMapEnv mapEnv,
+            LazyAllocatedMap<HashableMultiKey, AggregationMultiFunctionForge> plugInAggregations,
+            IList<ExpressionScriptProvided> scriptExpressions)
         {
             VariableNames = new HashSet<string>();
             MapEnv = mapEnv;
             ContextCompileTimeDescriptor = contextCompileTimeDescriptor;
+            this.PlugInAggregations = plugInAggregations;
+            Scripts = scriptExpressions;
+        }
+
+        public StatementSpecMapContext(
+            ContextCompileTimeDescriptor contextCompileTimeDescriptor,
+            StatementSpecMapEnv mapEnv) : this(
+            contextCompileTimeDescriptor,
+            mapEnv,
+            new LazyAllocatedMap<HashableMultiKey, AggregationMultiFunctionForge>(),
+            new List<ExpressionScriptProvided>(1))
+        {
         }
 
         public VariableCompileTimeResolver VariableCompileTimeResolver => MapEnv.VariableCompileTimeResolver;
@@ -65,6 +80,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
         /// <returns>variables</returns>
         public ISet<string> VariableNames { get; }
 
+
         public IDictionary<string, ExpressionDeclItem> ExpressionDeclarations {
             get {
                 if (expressionDeclarations == null) {
@@ -75,15 +91,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             }
         }
 
-        public IDictionary<string, ExpressionScriptProvided> Scripts {
-            get {
-                if (scripts == null) {
-                    return Collections.GetEmptyMap<string, ExpressionScriptProvided>();
-                }
-
-                return scripts;
-            }
-        }
+        public IList<ExpressionScriptProvided> Scripts { get; }
 
         public string ContextName { get; set; }
 
@@ -92,7 +100,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
 
         public TableCompileTimeResolver TableCompileTimeResolver => MapEnv.TableCompileTimeResolver;
 
-        public PlugInAggregationsMap PlugInAggregations { get; } = new PlugInAggregationsMap();
+        public LazyAllocatedMap<HashableMultiKey, AggregationMultiFunctionForge> PlugInAggregations { get; }
 
         public ContextCompileTimeDescriptor ContextCompileTimeDescriptor { get; }
 
@@ -104,7 +112,28 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
 
         public IList<ExprSubstitutionNode> SubstitutionNodes { get; } = new List<ExprSubstitutionNode>();
 
-        public void AddExpressionDeclarations(ExpressionDeclItem item)
+        public ClassProvidedExtension ClassProvidedExtension => MapEnv.ClassProvidedExtension;
+
+        public void Add(StatementSpecMapContext other)
+        {
+            TableExpressions.AddAll(other.TableExpressions);
+            VariableNames.AddAll(other.VariableNames);
+        }
+
+        public void AddExpressionDeclarations(ExpressionDeclDesc expressionDeclarations)
+        {
+            foreach (ExpressionDeclItem item in expressionDeclarations.Expressions) {
+                AddExpressionDeclaration(item);
+            }
+        }
+
+        public void AddTo(StatementSpecRaw statementSpec)
+        {
+            statementSpec.TableExpressions.AddAll(TableExpressions);
+            statementSpec.ReferencedVariables.AddAll(VariableNames);
+        }
+
+        public void AddExpressionDeclaration(ExpressionDeclItem item)
         {
             if (expressionDeclarations == null) {
                 expressionDeclarations = new Dictionary<string, ExpressionDeclItem>();
@@ -115,11 +144,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
 
         public void AddScript(ExpressionScriptProvided item)
         {
-            if (scripts == null) {
-                scripts = new Dictionary<string, ExpressionScriptProvided>();
-            }
-
-            scripts.Put(item.Name, item);
+            Scripts.Add(item);
         }
     }
 } // end of namespace

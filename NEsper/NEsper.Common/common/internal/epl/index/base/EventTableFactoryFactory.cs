@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.subselect;
 
 namespace com.espertech.esper.common.@internal.epl.index.@base
 {
@@ -15,6 +16,6 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
     {
         EventTableFactory Create(
             EventType eventType,
-            StatementContext statementContext);
+            EventTableFactoryFactoryContext eventTableFactoryContext);
     }
 } // end of namespace

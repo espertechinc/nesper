@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             // no action
         }
 
-        public override UniformPair<ISet<MultiKey<EventBean>>> Join(
+        public override UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>> Join(
             EventBean[][] newDataPerStream,
             EventBean[][] oldDataPerStream,
             ExprEvaluatorContext exprEvaluatorContext)
@@ -100,10 +100,10 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
                 }
             }
 
-            return new UniformPair<ISet<MultiKey<EventBean>>>(newResults, oldResults);
+            return new UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>(newResults, oldResults);
         }
 
-        public override ISet<MultiKey<EventBean>> StaticJoin()
+        public override ISet<MultiKeyArrayOfKeys<EventBean>> StaticJoin()
         {
             // no action
             return null;

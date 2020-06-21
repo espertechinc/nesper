@@ -6,9 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.core;
+using com.espertech.esper.common.@internal.context.controller.initterm;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.schedule;
 
@@ -30,14 +33,14 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
         public ContextControllerConditionCrontabImpl(
             IntSeqKey conditionPath,
             long scheduleSlot,
-            ScheduleSpec scheduleSpec,
+            ScheduleSpec[] schedulesSpecs,
             ContextConditionDescriptorCrontab crontab,
             ContextControllerConditionCallback callback,
             ContextController controller)
         {
             this.conditionPath = conditionPath;
             this.scheduleSlot = scheduleSlot;
-            Schedule = scheduleSpec;
+            Schedules = schedulesSpecs;
             this.crontab = crontab;
             this.callback = callback;
             this.controller = controller;
@@ -45,11 +48,12 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
 
         public ContextConditionDescriptor Descriptor => crontab;
 
-        public ScheduleSpec Schedule { get; }
+        public ScheduleSpec[] Schedules { get; }
 
         public bool Activate(
             EventBean optionalTriggeringEvent,
-            ContextControllerEndConditionMatchEventProvider endConditionMatchEventProvider)
+            ContextControllerEndConditionMatchEventProvider endConditionMatchEventProvider, 
+            IDictionary<string, object> optionalTriggeringPattern)
         {
             ScheduleHandleCallback scheduleCallback = new ProxyScheduleHandleCallback {
                 ProcScheduledTrigger = () => {
@@ -71,11 +75,8 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             scheduleHandle = new EPStatementHandleCallbackSchedule(
                 agentInstanceContext.EpStatementAgentInstanceHandle,
                 scheduleCallback);
-            long nextScheduledTime = ScheduleComputeHelper.ComputeDeltaNextOccurance(
-                Schedule,
-                agentInstanceContext.TimeProvider.Time,
-                agentInstanceContext.ImportServiceRuntime.TimeZone,
-                agentInstanceContext.ImportServiceRuntime.TimeAbacus);
+            long nextScheduledTime = ContextControllerInitTermUtil.ComputeScheduleMinimumDelta(
+                Schedules, agentInstanceContext.TimeProvider.Time, agentInstanceContext.ImportServiceRuntime);
             agentInstanceContext.AuditProvider.ScheduleAdd(
                 nextScheduledTime,
                 agentInstanceContext,
@@ -101,10 +102,14 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             scheduleHandle = null;
         }
 
+        public void Transfer(AgentInstanceTransferServices xfer)
+        {
+        }
+
         public bool IsImmediate => crontab.IsImmediate;
 
         public bool IsRunning => scheduleHandle != null;
 
-        public long? ExpectedEndTime => crontab.GetExpectedEndTime(controller.Realization, Schedule);
+        public long? ExpectedEndTime => crontab.GetExpectedEndTime(controller.Realization, Schedules);
     }
 } // end of namespace

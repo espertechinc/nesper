@@ -59,13 +59,13 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
 
             // build join result
             // use linked hash set to retain order of join results for last/first/window to work most intuitively
-            ISet<MultiKey<EventBean>> newEvents =
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents =
                 OnExprViewNamedWindowSelect.BuildJoinResult(triggerEvents, matchingEvents);
 
             // process matches
             UniformPair<EventBean[]> pair = resultSetProcessor.ProcessJoinResult(
                 newEvents,
-                Collections.GetEmptySet<MultiKey<EventBean>>(),
+                Collections.GetEmptySet<MultiKeyArrayOfKeys<EventBean>>(),
                 false);
             EventBean[] newData = pair?.First;
 

@@ -19,11 +19,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
     /// </summary>
     public class ExprPriorEvalStrategyRandomAccess : PriorEvalStrategy
     {
-        [NonSerialized] private readonly RandomAccessByIndex randomAccess;
+        [NonSerialized] private readonly RandomAccessByIndex _randomAccess;
 
         public ExprPriorEvalStrategyRandomAccess(RandomAccessByIndex randomAccess)
         {
-            this.randomAccess = randomAccess;
+            this._randomAccess = randomAccess;
         }
 
         public EventBean GetSubstituteEvent(
@@ -35,10 +35,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
             int streamNum)
         {
             if (isNewData) {
-                return randomAccess.GetNewData(constantIndexNumber);
+                return _randomAccess.GetNewData(constantIndexNumber);
             }
 
-            return randomAccess.GetOldData(constantIndexNumber);
+            return _randomAccess.GetOldData(constantIndexNumber);
         }
     }
 } // end of namespace

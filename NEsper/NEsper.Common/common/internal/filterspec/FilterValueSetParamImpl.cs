@@ -9,7 +9,11 @@
 using System;
 using System.IO;
 
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+using static com.espertech.esper.common.@internal.filterspec.FilterSpecParam;
 
 namespace com.espertech.esper.common.@internal.filterspec
 {
@@ -59,6 +63,11 @@ namespace com.espertech.esper.common.@internal.filterspec
                    ", filterValue=" +
                    FilterForValue +
                    '}';
+        }
+
+        public static CodegenExpression CodegenNew(CodegenExpression filterForValue)
+        {
+            return NewInstance<FilterValueSetParamImpl>(REF_LOOKUPABLE, REF_FILTEROPERATOR, filterForValue);
         }
     }
 } // end of namespace

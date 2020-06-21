@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.util
         /// <param name="orig">is the object to be copied, must be serializable</param>
         /// <returns>copied object</returns>
         /// <throws>IOException if the streams returned an exception</throws>
-        /// <throws>ClassNotFoundException if the de-serialize fails</throws>
+        /// <throws>TypeLoadException if the de-serialize fails</throws>
         public T Copy<T>(T orig)
         {
             // Create the formatter

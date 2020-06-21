@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
 
         public StatementAgentInstanceFactoryCreateContextResult(
             Viewable finalView,
-            AgentInstanceStopCallback stopCallback,
+            AgentInstanceMgmtCallback stopCallback,
             AgentInstanceContext agentInstanceContext,
             AggregationService optionalAggegationService,
             IDictionary<int, SubSelectFactoryResult> subselectStrategies,
@@ -50,7 +50,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                 previousGetterStrategies,
                 regexExprPreviousEvalStrategy,
                 tableAccessStrategies,
-                preloadList)
+                preloadList,
+                null)
 
         {
             this.contextManagerRealization = contextManagerRealization;

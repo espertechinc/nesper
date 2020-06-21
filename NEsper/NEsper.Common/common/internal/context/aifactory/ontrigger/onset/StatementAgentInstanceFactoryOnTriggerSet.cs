@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
 
         public override InfraOnExprBaseViewResult DetermineOnExprView(
             AgentInstanceContext agentInstanceContext,
-            IList<AgentInstanceStopCallback> stopCallbacks,
+            IList<AgentInstanceMgmtCallback> stopCallbacks,
             bool isRecoveringReslient)
         {
             var view = new OnSetVariableView(this, agentInstanceContext);

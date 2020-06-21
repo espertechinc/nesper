@@ -6,7 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.expression.subquery;
 using com.espertech.esper.common.@internal.epl.expression.table;
 
 namespace com.espertech.esper.common.@internal.epl.expression.visitor
@@ -24,6 +26,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
         {
             if (exprNode is ExprTableAccessNode) {
                 HasTableAccess = true;
+            }
+            if (exprNode is ExprSubselectNode) {
+                var subselect = (ExprSubselectNode) exprNode;
+                if (subselect.RawEventType != null) {
+                    HasTableAccess |= subselect.RawEventType.Metadata.TypeClass.IsTable();
+                }
             }
         }
     }

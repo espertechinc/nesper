@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -76,7 +77,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             //    .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
             //inner.AddMethod("GetFilterValue", getFilterValue);
 
-            getFilterValue.Block.BlockReturn(Constant(FilterConstant));
+            getFilterValue.Block.BlockReturn(FilterValueSetParamImpl.CodegenNew(Constant(FilterConstant)));
 
             method.Block.MethodReturn(inner);
             return method;
@@ -115,6 +116,32 @@ namespace com.espertech.esper.common.@internal.filterspec
             var result = base.GetHashCode();
             result = 31 * result + (FilterConstant != null ? FilterConstant.GetHashCode() : 0);
             return result;
+        }
+
+        public override void ValueExprToString(
+            StringBuilder @out,
+            int i)
+        {
+            ValueExprToString(@out, FilterConstant);
+        }
+
+        public static void ValueExprToString(
+            StringBuilder @out,
+            Object constant)
+        {
+            var constantType = constant?.GetType();
+            var constantTypeName = constantType?.CleanName();
+            
+            @out.Append("constant ");
+            CodegenExpressionUtil.RenderConstant(@out, constant, Collections.emptyMap());
+            @out.Append(" type ").Append(constantTypeName);
+        }
+
+        public static String ValueExprToString(Object constant)
+        {
+            var builder = new StringBuilder();
+            ValueExprToString(builder, constant);
+            return builder.ToString();
         }
     }
 } // end of namespace

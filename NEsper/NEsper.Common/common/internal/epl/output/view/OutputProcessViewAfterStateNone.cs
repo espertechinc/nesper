@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         }
 
         public bool CheckUpdateAfterCondition(
-            ISet<MultiKey<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
             StatementContext statementContext)
         {
             return true;

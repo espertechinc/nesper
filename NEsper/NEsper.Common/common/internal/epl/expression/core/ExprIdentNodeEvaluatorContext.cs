@@ -22,18 +22,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     public class ExprIdentNodeEvaluatorContext : ExprIdentNodeEvaluator
     {
-        private readonly int streamNum;
-        private readonly Type resultType;
-        private readonly EventPropertyGetterSPI getter;
+        private readonly int _streamNum;
+        private readonly Type _resultType;
+        private readonly EventPropertyGetterSPI _getter;
+        private readonly EventTypeSPI _eventType;
 
         public ExprIdentNodeEvaluatorContext(
             int streamNum,
             Type resultType,
-            EventPropertyGetterSPI getter)
+            EventPropertyGetterSPI getter,
+            EventTypeSPI eventType)
         {
-            this.streamNum = streamNum;
-            this.resultType = resultType;
-            this.getter = getter;
+            _streamNum = streamNum;
+            _resultType = resultType;
+            _getter = getter;
+            _eventType = eventType;
         }
 
         public bool EvaluatePropertyExists(
@@ -44,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         }
 
         public int StreamNum {
-            get => streamNum;
+            get => _streamNum;
         }
 
         public object Evaluate(
@@ -53,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprEvaluatorContext context)
         {
             if (context.ContextProperties != null) {
-                return getter.Get(context.ContextProperties);
+                return _getter.Get(context.ContextProperties);
             }
 
             return null;
@@ -65,15 +68,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(resultType, this.GetType(), codegenClassScope);
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(_resultType, GetType(), codegenClassScope);
             CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
 
             methodNode.Block
                 .IfCondition(NotEqualsNull(refExprEvalCtx))
                 .BlockReturn(
                     CodegenLegoCast.CastSafeFromObjectType(
-                        resultType,
-                        getter.EventBeanGetCodegen(
+                        _resultType,
+                        _getter.EventBeanGetCodegen(
                             ExprDotName(refExprEvalCtx, "ContextProperties"),
                             methodNode,
                             codegenClassScope)))
@@ -81,20 +84,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return LocalMethod(methodNode);
         }
 
-        public Type EvaluationType {
-            get => resultType;
-        }
+        public Type EvaluationType => _resultType;
 
-        public EventPropertyGetterSPI Getter {
-            get => getter;
-        }
+        public EventPropertyGetterSPI Getter => _getter;
 
-        public bool IsContextEvaluated {
-            get => true;
-        }
+        public bool IsContextEvaluated => true;
 
         public bool OptionalEvent {
             set { }
         }
+
+        public EventTypeSPI EventType => _eventType;
     }
 } // end of namespace

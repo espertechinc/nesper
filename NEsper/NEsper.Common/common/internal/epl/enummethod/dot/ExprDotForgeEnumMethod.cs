@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
     {
         void Init(
             int? streamOfProviderIfApplicable,
-            EnumMethodEnum lambda,
+            EnumMethodDesc lambda,
             string lambdaUsedName,
             EPType currentInputType,
             IList<ExprNode> parameters,

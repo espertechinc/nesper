@@ -67,7 +67,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 
         public override bool IsExistsProperty(EventBean eventBean)
         {
-            return true; // Property exists as the property is not dynamic (unchecked)
+            var underlying = eventBean.Underlying;
+            return GetBeanPropExistsInternal(underlying, _key);
         }
 
         public override Type BeanPropType => TypeHelper.GetGenericReturnTypeMap(_method, false);
@@ -90,7 +91,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ConstantTrue();
+            return UnderlyingExistsCodegen(CastUnderlying(TargetType, beanExpression), codegenMethodScope, codegenClassScope);
         }
 
         public override CodegenExpression UnderlyingGetCodegen(
@@ -109,7 +110,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ConstantTrue();
+            return LocalMethod(
+                GetBeanPropExistsInternalCodegen(
+                    codegenMethodScope,
+                    BeanPropType,
+                    TargetType,
+                    _method,
+                    codegenClassScope),
+                underlyingExpression,
+                Constant(_key));
         }
 
         public object Get(
@@ -137,11 +146,47 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             try {
                 var result = _method.Invoke(@object, null);
-                var resultMap = result.AsObjectDictionary();
-                return resultMap?.Get(key);
+                return CollectionUtil.GetMapValueChecked(result, key);
             }
             catch (InvalidCastException e) {
                 throw PropertyUtility.GetMismatchException(_method, @object, e);
+            }
+            catch (TargetException e) {
+                throw PropertyUtility.GetTargetException(_method, e);
+            }
+            catch (TargetInvocationException e) {
+                throw PropertyUtility.GetTargetException(_method, e);
+            }
+            catch (MemberAccessException e) {
+                throw PropertyUtility.GetMemberAccessException(_method, e);
+            }
+            catch (ArgumentException e) {
+                throw PropertyUtility.GetArgumentException(_method, e);
+            }
+        }
+
+        public bool GetBeanPropExistsInternal(
+            object @object,
+            object key)
+        {
+            try {
+                var result = _method.Invoke(@object, null);
+                return CollectionUtil.GetMapKeyExistsChecked(result, key);
+            }
+            catch (InvalidCastException e) {
+                throw PropertyUtility.GetMismatchException(_method, @object, e);
+            }
+            catch (TargetException e) {
+                throw PropertyUtility.GetTargetException(_method, e);
+            }
+            catch (TargetInvocationException e) {
+                throw PropertyUtility.GetTargetException(_method, e);
+            }
+            catch (MemberAccessException e) {
+                throw PropertyUtility.GetMemberAccessException(_method, e);
+            }
+            catch (ArgumentException e) {
+                throw PropertyUtility.GetArgumentException(_method, e);
             }
         }
 
@@ -161,6 +206,26 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                     StaticMethod(typeof(CompatExtensions), "AsObjectDictionary", Ref("result")))
                 .IfRefNullReturnNull("resultMap")
                 .MethodReturn(Cast(beanPropType, ExprDotMethod(Ref("resultMap"), "Get", Ref("key"))));
+        }
+
+        private static CodegenMethod GetBeanPropExistsInternalCodegen(
+            CodegenMethodScope codegenMethodScope,
+            Type beanPropType,
+            Type targetType,
+            MethodInfo method,
+            CodegenClassScope codegenClassScope)
+        {
+            return codegenMethodScope
+                .MakeChild(typeof(bool), typeof(KeyedMapMethodPropertyGetter), codegenClassScope)
+                .AddParam(targetType, "@object")
+                .AddParam(typeof(object), "key")
+                .Block
+                .DeclareVar(method.ReturnType, "result", ExprDotMethod(Ref("@object"), method.Name))
+                .DeclareVar<IDictionary<object, object>>(
+                    "resultMap",
+                    StaticMethod(typeof(CompatExtensions), "AsObjectDictionary", Ref("result")))
+                .IfRefNullReturnFalse("resultMap")
+                .MethodReturn(ExprDotMethod(Ref("resultMap"), "ContainsKey", Ref("key")));
         }
 
         public override string ToString()

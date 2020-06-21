@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -79,6 +81,17 @@ namespace com.espertech.esper.common.@internal.filterspec
 
             return _xEval.Equals(other._xEval) &&
                    _yEval.Equals(other._yEval);
+        }
+
+        public override void ValueExprToString(
+            StringBuilder @out,
+            int i)
+        {
+            @out.Append("Point-Region ");
+            @out.Append("x ");
+            _xEval.ValueToString(@out);
+            @out.Append("y ");
+            _yEval.ValueToString(@out);
         }
     }
 } // end of namespace

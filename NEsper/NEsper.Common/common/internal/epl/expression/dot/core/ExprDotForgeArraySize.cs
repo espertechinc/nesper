@@ -49,11 +49,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         public CodegenExpression Codegen(
             CodegenExpression inner,
             Type innerType,
-            CodegenMethodScope codegenMethodScope,
-            ExprForgeCodegenSymbol exprSymbol,
-            CodegenClassScope codegenClassScope)
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope)
         {
-            var method = codegenMethodScope.MakeChild(typeof(int?), typeof(ExprDotForgeArraySize), codegenClassScope)
+            var method = parent.MakeChild(typeof(int?), typeof(ExprDotForgeArraySize), classScope)
                 .AddParam(innerType, "target")
                 .Block
                 .IfRefNullReturnNull("target")

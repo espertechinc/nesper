@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.join.strategy
         /// <param name="exprEvaluatorContext">expression evaluation context</param>
         void Lookup(
             EventBean[] lookupEvents,
-            ICollection<MultiKey<EventBean>> joinSet,
+            ICollection<MultiKeyArrayOfKeys<EventBean>> joinSet,
             ExprEvaluatorContext exprEvaluatorContext);
     }
 }

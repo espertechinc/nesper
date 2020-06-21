@@ -654,7 +654,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    EventRepresentationChoice.ARRAY.GetAnnotationText() +
+                    EventRepresentationChoice.OBJECTARRAY.GetAnnotationText() +
                     " create window MyNWWindowObjectArray#keepall (p0 int)",
                     path);
                 env.CompileDeploy(
@@ -668,7 +668,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                TryAssertionBeanBacked(env, EventRepresentationChoice.ARRAY);
+                TryAssertionBeanBacked(env, EventRepresentationChoice.OBJECTARRAY);
                 TryAssertionBeanBacked(env, EventRepresentationChoice.MAP);
                 TryAssertionBeanBacked(env, EventRepresentationChoice.DEFAULT);
 

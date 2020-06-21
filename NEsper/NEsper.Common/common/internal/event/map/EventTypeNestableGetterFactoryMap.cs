@@ -20,10 +20,10 @@ namespace com.espertech.esper.common.@internal.@event.map
 {
     public class EventTypeNestableGetterFactoryMap : EventTypeNestableGetterFactory
     {
-        public EventPropertyGetterSPI GetPropertyProvidedGetter(
+        public EventPropertyGetterSPI GetPropertyDynamicGetter(
             IDictionary<string, object> nestableTypes,
             string propertyName,
-            Property prop,
+            DynamicProperty prop,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
         {
@@ -71,12 +71,13 @@ namespace com.espertech.esper.common.@internal.@event.map
             string propertyNameAtomic,
             int index,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            EventType innerType)
+            EventType innerType,
+            BeanEventTypeFactory beanEventTypeFactory)
         {
             return new MapArrayPropertyGetter(propertyNameAtomic, index, eventBeanTypedEventFactory, innerType);
         }
 
-        public EventPropertyGetterSPI GetGetterIndexedPONO(
+        public EventPropertyGetterSPI GetGetterIndexedClassArray(
             string propertyNameAtomic,
             int index,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
@@ -212,6 +213,13 @@ namespace com.espertech.esper.common.@internal.@event.map
                 nestedGetter);
         }
 
+        public EventPropertyGetterSPI GetGetterRootedDynamicNested(
+            Property prop,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventTypeFactory beanEventTypeFactory)
+        {
+            return prop.GetGetterMap(null, eventBeanTypedEventFactory, beanEventTypeFactory);
+        }
 
         EventPropertyGetterSPI EventTypeNestableGetterFactory.GetGetterEventBean(
             string name,

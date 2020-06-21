@@ -36,6 +36,10 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 
+using com.espertech.esper.common.@internal.epl.expression.assign;
+using com.espertech.esper.common.@internal.epl.expression.chain;
+using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.@event.propertyparser.PropertyParserNoDep;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -62,22 +66,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ValidatePlainExpression(origin, expression, summaryVisitor);
         }
 
-        public static ExprNode GetValidatedAssignment(
-            OnTriggerSetAssignment assignment,
+        public static void ValidateAssignment(
+            bool allowLHSVariables,
+            ExprNodeOrigin origin,
+            OnTriggerSetAssignment spec,
             ExprValidationContext validationContext)
         {
-            Pair<string, ExprNode> strictAssignment = CheckGetAssignmentToVariableOrProp(assignment.Expression);
-            if (strictAssignment != null) {
-                ExprNode validatedRightSide = GetValidatedSubtreeInternal(
-                    strictAssignment.Second,
-                    validationContext,
-                    true);
-                assignment.Expression.SetChildNode(1, validatedRightSide);
-                return assignment.Expression;
+            // equals-assignments are "a=1" and "a[1]=2" and such
+            // they are not "a.reset()"
+            ExprAssignment assignment = CheckGetStraightAssignment(spec.Expression, allowLHSVariables);
+            if (assignment == null) {
+                assignment = new ExprAssignmentCurly(spec.Expression);
             }
-            else {
-                return GetValidatedSubtreeInternal(assignment.Expression, validationContext, true);
-            }
+
+            assignment.Validate(origin, validationContext);
+            spec.Validated = assignment;
         }
 
         /// <summary>
@@ -147,13 +150,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         text = "'" + text + "'";
                     }
 
-                    var errorText = string.Format(
-                        "Failed to validate {0} expression {1}: {2}",
-                        origin.GetClauseName(),
-                        text,
-                        ex.Message);
-
-                    throw new ExprValidationException(errorText, ex);
+                    throw MakeValidationExWExpression(origin, text, ex);
                 }
                 catch (ExprValidationException) {
                     throw;
@@ -168,6 +165,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
                 throw;
             }
+        }
+
+        public static ExprValidationException MakeValidationExWExpression(
+            ExprNodeOrigin origin,
+            String text,
+            ExprValidationException ex)
+        {
+            return new ExprValidationException(
+                $"Failed to validate {origin.GetClauseName()} expression {text}: {ex.Message}",
+                ex);
         }
 
         public static bool ValidateNamedExpectType(
@@ -375,20 +382,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public static void Validate(
             ExprNodeOrigin origin,
-            IList<ExprChainedSpec> chainSpec,
+            List<Chainable> chainSpec,
             ExprValidationContext validationContext)
         {
             // validate all parameters
-            foreach (ExprChainedSpec chainElement in chainSpec) {
-                IList<ExprNode> validated = new List<ExprNode>();
-                foreach (ExprNode expr in chainElement.Parameters) {
-                    validated.Add(GetValidatedSubtree(origin, expr, validationContext));
-                    if (expr is ExprNamedParameterNode) {
-                        throw new ExprValidationException("Named parameters are not allowed");
-                    }
-                }
-
-                chainElement.Parameters = validated;
+            foreach (Chainable chainElement in chainSpec) {
+                chainElement.Validate(origin, validationContext);
             }
         }
 
@@ -443,11 +442,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             // If there is a class name, assume a static method is possible.
             if (parse.ClassName != null) {
-                IList<ExprNode> parameters =
-                    Collections.SingletonList((ExprNode) new ExprConstantNodeImpl(parse.ArgString));
-                IList<ExprChainedSpec> chain = new List<ExprChainedSpec>();
-                chain.Add(new ExprChainedSpec(parse.ClassName, Collections.GetEmptyList<ExprNode>(), false));
-                chain.Add(new ExprChainedSpec(parse.MethodName, parameters, false));
+                IList<ExprNode> parameters = Collections.SingletonList<ExprNode>(new ExprConstantNodeImpl(parse.ArgString));
+                IList<Chainable> chain = new List<Chainable>();
+                chain.Add(new ChainableName(parse.ClassName));
+                chain.Add(new ChainableCall(parse.MethodName, parameters));
+
                 ConfigurationCompilerExpression exprConfig =
                     validationContext.StatementCompileTimeService.Configuration.Compiler.Expression;
                 ExprNode result = new ExprDotNodeImpl(chain, exprConfig.IsDuckTyping, exprConfig.IsUdfCache);
@@ -468,12 +467,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             // There is no class name, try a single-row function
             string functionName = parse.MethodName;
             try {
-                Pair<Type, ImportSingleRowDesc> classMethodPair =
-                    validationContext.ImportService.ResolveSingleRow(functionName);
-                IList<ExprNode> parameters =
-                    Collections.SingletonList((ExprNode) new ExprConstantNodeImpl(parse.ArgString));
-                IList<ExprChainedSpec> chain = Collections.SingletonList(
-                    new ExprChainedSpec(classMethodPair.Second.MethodName, parameters, false));
+                Pair<Type, ImportSingleRowDesc> classMethodPair = validationContext.ImportService
+                    .ResolveSingleRow(functionName, validationContext.ClassProvidedExtension);
+                IList<ExprNode> parameters = Collections.SingletonList<ExprNode>(new ExprConstantNodeImpl(parse.ArgString));
+                IList<Chainable> chain = Collections.SingletonList<Chainable>(new ChainableCall(classMethodPair.Second.MethodName, parameters));
+                
                 ExprNode result = new ExprPlugInSingleRowNode(
                     functionName,
                     classMethodPair.First,
@@ -503,8 +501,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             // Try an aggregation function factory
             try {
-                AggregationFunctionForge aggregationForge =
-                    validationContext.ImportService.ResolveAggregationFunction(parse.MethodName);
+                AggregationFunctionForge aggregationForge = validationContext.ImportService.ResolveAggregationFunction(
+                    parse.MethodName, validationContext.ClassProvidedExtension);
                 ExprNode result = new ExprPlugInAggNode(false, aggregationForge, parse.MethodName);
                 result.AddChildNode(new ExprConstantNodeImpl(parse.ArgString));
 
@@ -552,18 +550,107 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         }
 
         private static ExprConstantNode ResolveIdentAsEnumConst(
-            string constant,
-            ImportServiceCompileTime importService)
+            string constant, 
+            ImportServiceCompileTime classpathImportService,
+            ExtensionClass classpathExtension)
         {
-            EnumValue enumValue =
-                ImportCompileTimeUtil.ResolveIdentAsEnum(constant, importService, false);
-            if (enumValue != null) {
-                return new ExprConstantNodeImpl(enumValue);
+            var enumValue = ImportCompileTimeUtil.ResolveIdentAsEnum(constant, classpathImportService, classpathExtension, false);
+            return enumValue != null ? new ExprConstantNodeImpl(enumValue) : null;
+        }
+
+        private static ExprAssignment CheckGetStraightAssignment(
+            ExprNode node,
+            bool allowLHSVariables)
+        {
+            Pair<String, ExprNode> prop = CheckGetAssignmentToProp(node);
+            if (prop != null) {
+                return new ExprAssignmentStraight(node, new ExprAssignmentLHSIdent(prop.First), prop.Second);
+            }
+
+            if (!(node is ExprEqualsNode)) {
+                return null;
+            }
+
+            ExprEqualsNode equals = (ExprEqualsNode) node;
+            ExprNode lhs = equals.ChildNodes[0];
+            ExprNode rhs = equals.ChildNodes[1];
+
+            if (lhs is ExprVariableNode) {
+                ExprVariableNode variableNode = (ExprVariableNode) equals.ChildNodes[0];
+                if (!allowLHSVariables) {
+                    throw new ExprValidationException(
+                        "Left-hand-side does not allow variables for variable '" + variableNode.VariableMetadata.VariableName + "'");
+                }
+
+                String variableNameWSubprop = variableNode.VariableNameWithSubProp;
+                String variableName = variableNameWSubprop;
+                String subPropertyName = null;
+                int indexOfDot = variableNameWSubprop.IndexOf('.');
+                if (indexOfDot != -1) {
+                    subPropertyName = variableNameWSubprop.Substring(indexOfDot + 1);
+                    variableName = variableNameWSubprop.Substring(0, indexOfDot);
+                }
+
+                ExprAssignmentLHS lhsAssign;
+                if (subPropertyName != null) {
+                    lhsAssign = new ExprAssignmentLHSIdentWSubprop(variableName, subPropertyName);
+                }
+                else {
+                    lhsAssign = new ExprAssignmentLHSIdent(variableName);
+                }
+
+                return new ExprAssignmentStraight(node, lhsAssign, rhs);
+            }
+
+            if (lhs is ExprDotNode dot) {
+                var chainables = dot.ChainSpec;
+                if (chainables.Count == 2 &&
+                    chainables[0] is ChainableName name &&
+                    chainables[1] is ChainableArray array) {
+                    return new ExprAssignmentStraight(node, new ExprAssignmentLHSArrayElement(name.Name, array.Indexes), rhs);
+                }
+
+                if (allowLHSVariables &&
+                    dot.ChildNodes[0] is ExprVariableNode variableNode &&
+                    chainables.Count == 1 &&
+                    chainables[0] is ChainableArray chainableArray) {
+                    return new ExprAssignmentStraight(
+                        node,
+                        new ExprAssignmentLHSArrayElement(
+                            variableNode.VariableMetadata.VariableName,
+                            chainableArray.Indexes),
+                        rhs);
+                }
+
+                throw new ExprValidationException(
+                    "Unrecognized left-hand-side assignment '" + ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(dot) + "'");
+            }
+
+            if (lhs is ExprTableAccessNode) {
+                throw new ExprValidationException("Table access expression not allowed on the left hand side, please remove the table prefix");
             }
 
             return null;
         }
 
+        private static Pair<String, ExprNode> CheckGetAssignmentToProp(ExprNode node)
+        {
+            if (node is ExprEqualsNode equals) {
+                if (@equals.ChildNodes[0] is ExprIdentNode identNode) {
+                    return new Pair<string, ExprNode>(identNode.FullUnresolvedName, @equals.ChildNodes[1]);
+                }
+            }
+
+            return null;
+        }
+
+        public static ExprEqualsNode GetEqualsNodeIfAssignment(ExprNode node)
+        {
+            return node is ExprEqualsNode equalsNode ? equalsNode : null;
+        }
+
+
+#if DEPRECATED
         public static Pair<string, ExprNode> CheckGetAssignmentToVariableOrProp(ExprNode node)
         {
             Pair<string, ExprNode> prop = CheckGetAssignmentToProp(node);
@@ -603,6 +690,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprIdentNode identNode = (ExprIdentNode) equals.ChildNodes[0];
             return new Pair<string, ExprNode>(identNode.FullUnresolvedName, equals.ChildNodes[1]);
         }
+#endif
 
         public static void ValidateNoSpecialsGroupByExpressions(ExprNode[] groupByNodes)
         {

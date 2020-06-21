@@ -26,8 +26,8 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         /// <param name="oldEvents">set of event tuples representing old data</param>
         /// <param name="exprEvaluatorContext">expression evaluation context</param>
         void Process(
-            ISet<MultiKey<EventBean>> newEvents,
-            ISet<MultiKey<EventBean>> oldEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents,
             ExprEvaluatorContext exprEvaluatorContext);
     }
 } // end of namespace

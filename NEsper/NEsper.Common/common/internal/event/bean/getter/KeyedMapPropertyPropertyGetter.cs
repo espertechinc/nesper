@@ -49,9 +49,16 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             _property = property;
         }
 
+        public object Get(
+            EventBean eventBean,
+            string mapKey)
+        {
+            return PropertyGetterHelper.GetPropertyMap(_property, eventBean.Underlying, mapKey);
+        }
+
         public object GetBeanProp(object @object)
         {
-            return GetBeanPropInternal(@object, _key);
+            return PropertyGetterHelper.GetPropertyMap(_property, @object, _key);
         }
 
         public bool IsBeanExistsProperty(object @object)
@@ -112,13 +119,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return ConstantTrue();
         }
 
-        public object Get(
-            EventBean eventBean,
-            string mapKey)
-        {
-            return GetBeanPropInternal(eventBean.Underlying, mapKey);
-        }
-
         public CodegenExpression EventBeanGetMappedCodegen(
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope,
@@ -129,20 +129,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 GetBeanPropInternalCodegen(codegenMethodScope, codegenClassScope),
                 CastUnderlying(TargetType, beanExpression),
                 key);
-        }
-
-        public object GetBeanPropInternal(
-            object @object,
-            object key)
-        {
-            try {
-                var result = _property.GetValue(@object);
-                var resultMap = result.AsObjectDictionary();
-                return resultMap?.Get(key);
-            }
-            catch (InvalidCastException e) {
-                throw PropertyUtility.GetMismatchException(_property, @object, e);
-            }
         }
 
         private CodegenMethod GetBeanPropInternalCodegen(

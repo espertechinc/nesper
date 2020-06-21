@@ -27,19 +27,22 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.path
         private readonly NamedWindowCompileTimeRegistry locals;
         private readonly PathRegistry<string, NamedWindowMetaData> path;
         private readonly ModuleDependenciesCompileTime moduleDependencies;
+        private readonly bool isFireAndForget;
 
         public NamedWindowCompileTimeResolverImpl(
             string moduleName,
             ICollection<string> moduleUses,
             NamedWindowCompileTimeRegistry locals,
             PathRegistry<string, NamedWindowMetaData> path,
-            ModuleDependenciesCompileTime moduleDependencies)
+            ModuleDependenciesCompileTime moduleDependencies,
+            bool isFireAndForget)
         {
             this.moduleName = moduleName;
             this.moduleUses = moduleUses;
             this.locals = locals;
             this.path = path;
             this.moduleDependencies = moduleDependencies;
+            this.isFireAndForget = isFireAndForget;
         }
 
         public NamedWindowMetaData Resolve(string namedWindowName)
@@ -53,7 +56,8 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.path
             try {
                 var pair = path.GetAnyModuleExpectSingle(namedWindowName, moduleUses);
                 if (pair != null) {
-                    if (!NameAccessModifierExtensions.Visible(
+                    if (!isFireAndForget &&
+                        !NameAccessModifierExtensions.Visible(
                         pair.First.EventType.Metadata.AccessModifier,
                         pair.First.NamedWindowModuleName,
                         moduleName)) {

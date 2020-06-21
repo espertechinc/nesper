@@ -291,7 +291,7 @@ namespace com.espertech.esper.common.client.configuration.common
                         try {
                             sqlTypeInt = Int32.Parse(sqlType);
                         }
-                        catch (NumberFormatException ex) {
+                        catch (FormatException ex) {
                             throw new ConfigurationException("Error converting sql type '" + sqlType + "' to integer SqlTypes constant");
                         }
 

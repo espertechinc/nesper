@@ -27,9 +27,9 @@ namespace com.espertech.esper.common.@internal.filterspec
     public abstract class FilterSpecParam
     {
         public static readonly CodegenExpressionRef REF_MATCHEDEVENTMAP = new CodegenExpressionRef("matchedEvents");
-
-        public static readonly CodegenExpressionRef REF_STMTCTXFILTEREVALENV =
-            new CodegenExpressionRef("stmtCtxFilterEnv");
+        public static readonly CodegenExpressionRef REF_STMTCTXFILTEREVALENV = new CodegenExpressionRef("stmtCtxFilterEnv");
+        public static readonly CodegenExpressionRef REF_LOOKUPABLE = new CodegenExpressionRef("lkupable"); // see name below
+        public static readonly CodegenExpressionRef REF_FILTEROPERATOR = new CodegenExpressionRef("filterOperator"); // see name below
 
         public static readonly IList<CodegenNamedParam> GET_FILTER_VALUE_FP = CodegenNamedParam.From(
             typeof(MatchedEventMap),
@@ -48,21 +48,21 @@ namespace com.espertech.esper.common.@internal.filterspec
         public static readonly FilterSpecParam[] EMPTY_PARAM_ARRAY = new FilterSpecParam[0];
         public static readonly FilterValueSetParam[] EMPTY_VALUE_ARRAY = new FilterValueSetParam[0];
 
-        internal readonly ExprFilterSpecLookupable lookupable;
+        internal readonly ExprFilterSpecLookupable lkupable;
 
         protected FilterSpecParam(
             ExprFilterSpecLookupable lookupable,
             FilterOperator filterOperator)
         {
-            this.lookupable = lookupable;
+            this.lkupable = lookupable;
             FilterOperator = filterOperator;
         }
 
-        public ExprFilterSpecLookupable Lookupable => lookupable;
+        public ExprFilterSpecLookupable Lkupable => lkupable;
 
         public FilterOperator FilterOperator { get; }
 
-        public abstract object GetFilterValue(
+        public abstract FilterValueSetParam GetFilterValue(
             MatchedEventMap matchedEvents,
             ExprEvaluatorContext exprEvaluatorContext,
             StatementContextFilterEvalEnv filterEvalEnv);
@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
             return "FilterSpecParam" +
                    " lookupable=" +
-                   lookupable +
+                   lkupable +
                    " filterOp=" +
                    FilterOperator;
         }
@@ -88,15 +88,15 @@ namespace com.espertech.esper.common.@internal.filterspec
 
     public class ProxyFilterSpecParam : FilterSpecParam
     {
-        public delegate object GetFilterValueFunc(
+        public delegate FilterValueSetParam GetFilterValueFunc(
             MatchedEventMap matchedEvents,
             ExprEvaluatorContext exprEvaluatorContext,
             StatementContextFilterEvalEnv filterEvalEnv);
 
         public ProxyFilterSpecParam(
-            ExprFilterSpecLookupable lookupable,
+            ExprFilterSpecLookupable lkupable,
             FilterOperator filterOperator,
-            GetFilterValueFunc getFilterValueFunc) : base(lookupable, filterOperator)
+            GetFilterValueFunc getFilterValueFunc) : base(lkupable, filterOperator)
         {
             ProcGetFilterValue = getFilterValueFunc;
         }
@@ -104,7 +104,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public GetFilterValueFunc ProcGetFilterValue;
 
-        public override object GetFilterValue(
+        public override FilterValueSetParam GetFilterValue(
             MatchedEventMap matchedEvents,
             ExprEvaluatorContext exprEvaluatorContext,
             StatementContextFilterEvalEnv filterEvalEnv)

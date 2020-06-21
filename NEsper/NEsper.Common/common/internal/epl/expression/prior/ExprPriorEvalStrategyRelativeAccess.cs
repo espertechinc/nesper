@@ -21,11 +21,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
     /// </summary>
     public class ExprPriorEvalStrategyRelativeAccess : PriorEvalStrategy
     {
-        [NonSerialized] private readonly RelativeAccessByEventNIndex relativeAccess;
+        [NonSerialized] private readonly RelativeAccessByEventNIndex _relativeAccess;
 
         public ExprPriorEvalStrategyRelativeAccess(RelativeAccessByEventNIndex relativeAccess)
         {
-            this.relativeAccess = relativeAccess;
+            this._relativeAccess = relativeAccess;
         }
 
         public EventBean GetSubstituteEvent(
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
             ExprEvaluatorContext exprEvaluatorContext,
             int streamNum)
         {
-            return relativeAccess.GetRelativeToEvent(originalEvent, relativeIndex);
+            return _relativeAccess.GetRelativeToEvent(originalEvent, relativeIndex);
         }
     }
 } // end of namespace

@@ -42,23 +42,15 @@ namespace com.espertech.esper.common.client.module
             CharPosEnd = charPosEnd;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ModuleItem"/> class.
-        /// </summary>
-        /// <param name="model">The statement object model.</param>
-        /// <param name="isCommentOnly">if set to <c>true</c> [is comment only].</param>
-        /// <param name="lineNumber">The line number.</param>
-        /// <param name="charPosStart">The character position start.</param>
-        /// <param name="charPosEnd">The character position end.</param>
         public ModuleItem(
             EPStatementObjectModel model,
-            bool isCommentOnly,
+            bool commentOnly,
             int lineNumber,
             int charPosStart,
             int charPosEnd)
         {
             Model = model;
-            IsCommentOnly = isCommentOnly;
+            IsCommentOnly = commentOnly;
             LineNumber = lineNumber;
             CharPosStart = charPosStart;
             CharPosEnd = charPosEnd;

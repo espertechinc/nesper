@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.serde.runtime.@event;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.path
@@ -28,17 +29,20 @@ namespace com.espertech.esper.common.@internal.@event.path
         private readonly IDictionary<string, EventType> locals;
         private readonly PathRegistry<string, EventType> path;
         private readonly EventTypeNameResolver publics;
+        private readonly EventSerdeFactory eventSerdeFactory;
 
         public EventTypeResolverImpl(
             IDictionary<string, EventType> locals,
             PathRegistry<string, EventType> path,
             EventTypeNameResolver publics,
-            BeanEventTypeFactoryPrivate beanEventTypeFactoryPrivate)
+            BeanEventTypeFactoryPrivate beanEventTypeFactoryPrivate,
+            EventSerdeFactory eventSerdeFactory)
         {
             this.locals = locals;
             this.path = path;
             this.publics = publics;
             this.beanEventTypeFactoryPrivate = beanEventTypeFactoryPrivate;
+            this.eventSerdeFactory = eventSerdeFactory;
         }
 
         public EventType GetTypeByName(string typeName)
@@ -62,12 +66,28 @@ namespace com.espertech.esper.common.@internal.@event.path
             }
         }
 
-        public BeanEventType ResolvePrivateBean(Type clazz)
+        public BeanEventType ResolvePrivateBean(
+            Type clazz,
+            bool publicFields)
         {
-            return beanEventTypeFactoryPrivate.GetCreateBeanType(clazz);
+            return beanEventTypeFactoryPrivate.GetCreateBeanType(clazz, publicFields);
         }
 
         public EventType Resolve(EventTypeMetadata metadata)
+        {
+            return Resolve(metadata, publics, locals, path);
+        }
+
+        public EventSerdeFactory GetEventSerdeFactory()
+        {
+            return eventSerdeFactory;
+        }
+
+        public static EventType Resolve(
+            EventTypeMetadata metadata,
+            EventTypeNameResolver publics,
+            IDictionary<String, EventType> locals,
+            PathRegistry<String, EventType> path)
         {
             EventType type;
             // public can only see public

@@ -148,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                TryAssertionMapTranspose(env, EventRepresentationChoice.ARRAY);
+                TryAssertionMapTranspose(env, EventRepresentationChoice.OBJECTARRAY);
                 TryAssertionMapTranspose(env, EventRepresentationChoice.MAP);
                 TryAssertionMapTranspose(env, EventRepresentationChoice.DEFAULT);
             }

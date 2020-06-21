@@ -50,9 +50,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             get => this;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
-            ExprNodeUtilityPrint.ToExpressionStringWFunctionName("grouping", this.ChildNodes, writer);
+            ExprNodeUtilityPrint.ToExpressionStringWFunctionName("grouping", ChildNodes, writer);
         }
 
         public ExprForgeConstantType ForgeConstantType {

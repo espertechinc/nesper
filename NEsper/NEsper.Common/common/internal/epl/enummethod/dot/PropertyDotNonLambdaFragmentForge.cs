@@ -25,15 +25,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         ExprNodeRenderable
     {
         private readonly EventPropertyGetterSPI getter;
-
         private readonly int streamId;
+        private readonly bool array;
 
         public PropertyDotNonLambdaFragmentForge(
             int streamId,
-            EventPropertyGetterSPI getter)
+            EventPropertyGetterSPI getter,
+            bool array)
         {
             this.streamId = streamId;
             this.getter = getter;
+            this.array = array;
         }
 
         public object Evaluate(
@@ -51,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
         public ExprEvaluator ExprEvaluator => this;
 
-        public Type EvaluationType => typeof(EventBean);
+        public Type EvaluationType => array? typeof(EventBean[]) : typeof(EventBean);
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
@@ -61,27 +63,23 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var methodNode = codegenMethodScope.MakeChild(
-                typeof(EventBean),
-                typeof(PropertyDotNonLambdaFragmentForge),
-                codegenClassScope);
+            var returnType = array ? typeof(EventBean[]) : typeof(EventBean);
+            var methodNode = codegenMethodScope
+                .MakeChild(returnType, typeof(PropertyDotNonLambdaFragmentForge), codegenClassScope);
 
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamId)))
                 .IfRefNullReturnNull("@event")
-                .MethodReturn(
-                    Cast(
-                        typeof(EventBean),
-                        getter.EventBeanFragmentCodegen(Ref("@event"), methodNode, codegenClassScope)));
+                .MethodReturn(Cast(returnType, getter.EventBeanFragmentCodegen(Ref("@event"), methodNode, codegenClassScope)));
             return LocalMethod(methodNode);
         }
 
         public ExprNodeRenderable ExprForgeRenderable => this;
 
-        public void ToEPL(
-            TextWriter writer,
-            ExprPrecedenceEnum parentPrecedence)
+        public void ToEPL(TextWriter writer,
+            ExprPrecedenceEnum parentPrecedence,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(GetType().Name);
         }

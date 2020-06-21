@@ -8,8 +8,9 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.collection;
+using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.client.soda;
+using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage1.specmapper;
 using com.espertech.esper.common.@internal.context.compile;
@@ -27,7 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             IList<ExprNode> parameters,
             ICollection<ExpressionDeclItem> stmtLocalExpressions,
             ContextCompileTimeDescriptor contextCompileTimeDescriptor,
-            StatementSpecMapEnv mapEnv)
+            StatementSpecMapEnv mapEnv,
+            LazyAllocatedMap<HashableMultiKey, AggregationMultiFunctionForge> plugInAggregations,
+            IList<ExpressionScriptProvided> scripts)
         {
             // Find among local expressions
             if (!stmtLocalExpressions.IsEmpty()) {
@@ -37,7 +40,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                             declNode.OptionalSoda,
                             stmtLocalExpressions,
                             contextCompileTimeDescriptor,
-                            mapEnv);
+                            mapEnv,
+                            plugInAggregations,
+                            scripts);
                         var declared = new ExprDeclaredNodeImpl(
                             declNode,
                             parameters,
@@ -53,11 +58,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             if (found != null) {
                 var expression = found.OptionalSoda;
                 if (expression == null) {
-                    byte[] bytes = found.OptionalSodaBytes.Invoke();
+                    var bytes = found.OptionalSodaBytes.Invoke();
                     expression = (Expression) SerializerUtil.ByteArrToObject(bytes);
                 }
 
-                var pair = GetExprDeclaredNode(expression, stmtLocalExpressions, contextCompileTimeDescriptor, mapEnv);
+                var pair = GetExprDeclaredNode(expression, stmtLocalExpressions, contextCompileTimeDescriptor, mapEnv, plugInAggregations, scripts);
                 var declared = new ExprDeclaredNodeImpl(found, parameters, contextCompileTimeDescriptor, pair.First);
                 return new Pair<ExprDeclaredNodeImpl, StatementSpecMapContext>(declared, pair.Second);
             }
@@ -69,11 +74,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             Expression expression,
             ICollection<ExpressionDeclItem> stmtLocalExpressions,
             ContextCompileTimeDescriptor contextCompileTimeDescriptor,
-            StatementSpecMapEnv mapEnv)
+            StatementSpecMapEnv mapEnv,
+            LazyAllocatedMap<HashableMultiKey, AggregationMultiFunctionForge> plugInAggregations,
+            IList<ExpressionScriptProvided> scripts)
         {
-            var mapContext = new StatementSpecMapContext(contextCompileTimeDescriptor, mapEnv);
+            var mapContext = new StatementSpecMapContext(contextCompileTimeDescriptor, mapEnv, plugInAggregations, scripts);
             foreach (var item in stmtLocalExpressions) {
-                mapContext.AddExpressionDeclarations(item);
+                mapContext.AddExpressionDeclaration(item);
             }
 
             var body = StatementSpecMapper.MapExpression(expression, mapContext);

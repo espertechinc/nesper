@@ -45,15 +45,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 
         public object GetBeanProp(object @object)
         {
-            try {
-                return _field.GetValue(@object);
-            }
-            catch (ArgumentException e) {
-                throw PropertyUtility.GetArgumentException(_field, e);
-            }
-            catch (MemberAccessException e) {
-                throw PropertyUtility.GetMemberAccessException(_field, e);
-            }
+            return FieldGetterHelper.GetFieldSimple(_field, @object);
         }
 
         public bool IsBeanExistsProperty(object @object)

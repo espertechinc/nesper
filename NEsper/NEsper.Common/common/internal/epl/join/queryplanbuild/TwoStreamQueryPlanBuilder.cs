@@ -7,12 +7,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.compile.stage2;
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.select;
 using com.espertech.esper.common.@internal.epl.join.querygraph;
 using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -32,42 +36,53 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         /// <param name="typesPerStream">event types for each stream</param>
         /// <param name="streamJoinAnalysisResult">stream join analysis</param>
         /// <returns>query plan</returns>
-        public static QueryPlanForge Build(
+        public static QueryPlanForgeDesc Build(
             EventType[] typesPerStream,
             QueryGraphForge queryGraph,
             OuterJoinType? optionalOuterJoinType,
-            StreamJoinAnalysisResultCompileTime streamJoinAnalysisResult)
+            StreamJoinAnalysisResultCompileTime streamJoinAnalysisResult,
+            StatementRawInfo raw)
         {
-            string[][][] uniqueIndexProps = streamJoinAnalysisResult.UniqueKeys;
-            TableMetaData[] tablesPerStream = streamJoinAnalysisResult.TablesPerStream;
+            var uniqueIndexProps = streamJoinAnalysisResult.UniqueKeys;
+            var tablesPerStream = streamJoinAnalysisResult.TablesPerStream;
+            var additionalForgeable = new List<StmtClassForgeableFactory>();
 
-            QueryPlanIndexForge[] indexSpecs = QueryPlanIndexBuilder.BuildIndexSpec(
+            var indexSpecs = QueryPlanIndexBuilder.BuildIndexSpec(
                 queryGraph,
                 typesPerStream,
                 uniqueIndexProps);
 
-            QueryPlanNodeForge[] execNodeSpecs = new QueryPlanNodeForge[2];
-            TableLookupPlanForge[] lookupPlans = new TableLookupPlanForge[2];
+            var execNodeSpecs = new QueryPlanNodeForge[2];
+            var lookupPlans = new TableLookupPlanForge[2];
 
             // plan lookup from 1 to zero
-            lookupPlans[1] = NStreamQueryPlanBuilder.CreateLookupPlan(
+            TableLookupPlanDesc plan1to0 = NStreamQueryPlanBuilder.CreateLookupPlan(
                 queryGraph,
                 1,
                 0,
                 streamJoinAnalysisResult.IsVirtualDW(0),
                 indexSpecs[0],
                 typesPerStream,
-                tablesPerStream[0]);
+                tablesPerStream[0],
+                raw,
+                SerdeCompileTimeResolverNonHA.INSTANCE);
+            lookupPlans[1] = plan1to0.Forge;
+            additionalForgeable.AddAll(plan1to0.AdditionalForgeables);
 
             // plan lookup from zero to 1
-            lookupPlans[0] = NStreamQueryPlanBuilder.CreateLookupPlan(
+            TableLookupPlanDesc plan0to1 = NStreamQueryPlanBuilder.CreateLookupPlan(
                 queryGraph,
                 0,
                 1,
                 streamJoinAnalysisResult.IsVirtualDW(1),
                 indexSpecs[1],
                 typesPerStream,
-                tablesPerStream[1]);
+                tablesPerStream[1],
+                raw,
+                SerdeCompileTimeResolverNonHA.INSTANCE);
+            lookupPlans[0] = plan0to1.Forge;
+            additionalForgeable.AddAll(plan0to1.AdditionalForgeables);
+
             execNodeSpecs[0] = new TableLookupNodeForge(lookupPlans[0]);
             execNodeSpecs[1] = new TableLookupNodeForge(lookupPlans[1]);
 
@@ -83,7 +98,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 }
             }
 
-            return new QueryPlanForge(indexSpecs, execNodeSpecs);
+            var forge = new QueryPlanForge(indexSpecs, execNodeSpecs);
+            return new QueryPlanForgeDesc(forge, additionalForgeable);
         }
     }
 } // end of namespace

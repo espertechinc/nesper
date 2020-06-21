@@ -54,19 +54,20 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
             }
 
             EPLValidationUtil.ValidateTableExists(services.TableCompileTimeResolver, spec.SchemaName);
-            var eventType = HandleCreateSchema(spec, services);
+            EventTypeForgeablesPair eventTypeForgeablesPair = HandleCreateSchema(spec, services);
 
             var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementFields), classPostfix);
             var namespaceScope = new CodegenNamespaceScope(
                 @namespace, statementFieldsClassName, services.IsInstrumented);
-            var fieldsForgable = new StmtClassForgableStmtFields(statementFieldsClassName, namespaceScope, 0);
+            var fieldsForgable = new StmtClassForgeableStmtFields(statementFieldsClassName, namespaceScope, 0);
 
             var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementAIFactoryProvider),
                 classPostfix);
-            var forge = new StatementAgentInstanceFactoryCreateSchemaForge(eventType);
-            var aiFactoryForgable = new StmtClassForgableAIFactoryProviderCreateSchema(
+            var forge = new StatementAgentInstanceFactoryCreateSchemaForge(
+                eventTypeForgeablesPair.EventType);
+            var aiFactoryForgeable = new StmtClassForgeableAIFactoryProviderCreateSchema(
                 aiFactoryProviderClassName,
                 namespaceScope,
                 forge);
@@ -74,45 +75,48 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
             var selectSubscriberDescriptor = new SelectSubscriberDescriptor();
             var informationals = StatementInformationalsUtil.GetInformationals(
                 @base,
-                new EmptyList<FilterSpecCompiled>(),
-                new EmptyList<ScheduleHandleCallbackProvider>(),
-                new EmptyList<NamedWindowConsumerStreamSpec>(),
+                EmptyList<FilterSpecCompiled>.Instance,
+                EmptyList<ScheduleHandleCallbackProvider>.Instance,
+                EmptyList<NamedWindowConsumerStreamSpec>.Instance,
                 false,
                 selectSubscriberDescriptor,
                 namespaceScope,
                 services);
             var statementProviderClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
-            var stmtProvider = new StmtClassForgableStmtProvider(
+            var stmtProvider = new StmtClassForgeableStmtProvider(
                 aiFactoryProviderClassName,
                 statementProviderClassName,
                 informationals,
                 namespaceScope);
 
-            IList<StmtClassForgable> forgables = new List<StmtClassForgable>();
+            var forgables = new List<StmtClassForgeable>();
+            eventTypeForgeablesPair.AdditionalForgeables.ForEach(
+                a => forgables.Add(a.Make(namespaceScope, classPostfix)));
             forgables.Add(fieldsForgable);
-            forgables.Add(aiFactoryForgable);
+            forgables.Add(aiFactoryForgeable);
             forgables.Add(stmtProvider);
             return new StmtForgeMethodResult(
                 forgables,
-                new EmptyList<FilterSpecCompiled>(),
-                new EmptyList<ScheduleHandleCallbackProvider>(),
-                new EmptyList<NamedWindowConsumerStreamSpec>(),
-                new EmptyList<FilterSpecParamExprNodeForge>());
+                EmptyList<FilterSpecCompiled>.Instance,
+                EmptyList<ScheduleHandleCallbackProvider>.Instance,
+                EmptyList<NamedWindowConsumerStreamSpec>.Instance,
+                EmptyList<FilterSpecParamExprNodeForge>.Instance);
         }
 
-        private EventType HandleCreateSchema(
+        private EventTypeForgeablesPair HandleCreateSchema(
             CreateSchemaDesc spec,
             StatementCompileTimeServices services)
         {
-            EventType eventType;
+            EventTypeForgeablesPair pair;
 
             try {
                 if (spec.AssignedType != AssignedType.VARIANT) {
-                    eventType = EventTypeUtility.CreateNonVariantType(false, spec, @base, services);
+                    pair = EventTypeUtility.CreateNonVariantType(false, spec, @base, services);
                 }
                 else {
-                    eventType = HandleVariantType(spec, services);
+                    var eventType = HandleVariantType(spec, services);  
+                    pair = new EventTypeForgeablesPair(eventType, EmptyList<StmtClassForgeableFactory>.Instance);
                 }
             }
             catch (EPException) {
@@ -122,7 +126,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
                 throw new ExprValidationException(ex.Message, ex);
             }
 
-            return eventType;
+            return pair;
         }
 
         private EventType HandleVariantType(

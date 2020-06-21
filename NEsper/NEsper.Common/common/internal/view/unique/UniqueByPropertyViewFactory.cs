@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.view.core;
@@ -22,24 +23,13 @@ namespace com.espertech.esper.common.@internal.view.unique
     {
         public const string NAME = "Unique-By";
 
-        private ExprEvaluator[] criteriaEvals;
-        private Type[] criteriaTypes;
-        private EventType eventType;
+        public EventType EventType { get; set; }
 
-        public EventType EventType {
-            get => eventType;
-            set => eventType = value;
-        }
+        public ExprEvaluator CriteriaEval { get; set; }
 
-        public ExprEvaluator[] CriteriaEvals {
-            get => criteriaEvals;
-            set => criteriaEvals = value;
-        }
+        public Type[] CriteriaTypes { get; set; }
 
-        public Type[] CriteriaTypes {
-            get => criteriaTypes;
-            set => criteriaTypes = value;
-        }
+        public DataInputOutputSerde<object> KeySerde { get; set; }
 
         public string ViewName => ViewEnum.UNIQUE_BY_PROPERTY.GetViewName();
 

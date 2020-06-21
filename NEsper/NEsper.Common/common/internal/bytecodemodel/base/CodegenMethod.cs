@@ -18,6 +18,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -80,6 +81,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public ISet<string> DeepParameters { get; set; }
 
         public CodegenMethodWGraph AssignedMethod { get; set; }
+        
+        public String AssignedProviderClassName { get; set;  }
 
         public bool IsStatic { get; set; }
 
@@ -246,6 +249,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 param.MergeClasses(classes);
             }
         }
+        
+        public void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            Block.TraverseExpressions(consumer);
+        }
 
         public CodegenMethod AddParam<T>(
             string name)
@@ -358,6 +366,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public ICollection<CodegenExpressionLambda> GetLambdas()
         {
             return Block.Statements.OfType<CodegenExpressionLambda>().ToList();
+        }
+
+        public override string ToString()
+        {
+            return AssignedMethod == null
+                ? "CodegenMethod"
+                : "CodegenMethod{name=" + AssignedMethod.Name + "}";
         }
     }
 } // end of namespace

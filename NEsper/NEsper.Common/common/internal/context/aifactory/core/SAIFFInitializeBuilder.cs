@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.UI;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -232,13 +233,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
 
         public CodegenExpression Build()
         {
+            return LocalMethod(BuildMethod());
+        }
+
+        public CodegenMethod BuildMethod()
+        {
             if (closed) {
                 throw new IllegalStateException("Builder already completed build");
             }
 
             closed = true;
             method.Block.MethodReturn(Ref(refName));
-            return LocalMethod(method);
+            return method;
         }
     }
 } // end of namespace

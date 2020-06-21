@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.view.expression
     public abstract class ExpressionViewBase
         : ViewSupport,
             DataWindowView,
-            AgentInstanceStopCallback,
+            AgentInstanceMgmtCallback,
             VariableChangeCallback
     {
         internal readonly AgentInstanceContext agentInstanceContext;
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.view.expression
                         agentInstanceId,
                         this);
                     agentInstanceContext.AgentInstanceContext.AddTerminationCallback(
-                        new ProxyAgentInstanceStopCallback {
+                        new ProxyAgentInstanceMgmtCallback {
                             ProcStop = services => {
                                 services.AgentInstanceContext.VariableManagementService
                                     .UnregisterCallback(variableDepId, variableName, agentInstanceId, this);

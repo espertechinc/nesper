@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
                 }
                 else
                 {
-                    return new EmptyList<EventBean>();
+                    return EmptyList<EventBean>.Instance;
                 }
             }
         }

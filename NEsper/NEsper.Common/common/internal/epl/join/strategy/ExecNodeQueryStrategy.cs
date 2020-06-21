@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.join.strategy
 
         public void Lookup(
             EventBean[] lookupEvents,
-            ICollection<MultiKey<EventBean>> joinSet,
+            ICollection<MultiKeyArrayOfKeys<EventBean>> joinSet,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             if (lookupEvents == null || lookupEvents.Length == 0) {
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.join.strategy
 
                 // Convert results into unique set
                 foreach (var row in results) {
-                    joinSet.Add(new MultiKey<EventBean>(row));
+                    joinSet.Add(new MultiKeyArrayOfKeys<EventBean>(row));
                 }
 
                 results.Clear();

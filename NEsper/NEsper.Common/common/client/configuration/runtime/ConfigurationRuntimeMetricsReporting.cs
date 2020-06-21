@@ -16,7 +16,7 @@ using com.espertech.esper.compat.collections;
 namespace com.espertech.esper.common.client.configuration.runtime
 {
     /// <summary>
-    ///     Configuratiom for metrics reporting.
+    ///     Configuration for metrics reporting.
     /// </summary>
     [Serializable]
     public class ConfigurationRuntimeMetricsReporting

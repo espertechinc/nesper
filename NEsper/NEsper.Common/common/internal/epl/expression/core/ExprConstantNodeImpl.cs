@@ -31,27 +31,36 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         ExprEvaluator,
         ExprForgeInstrumentable
     {
-        private readonly EnumValue enumValue;
+        private object _value;
+        private readonly Type _clazz;
+        private readonly EnumValue _enumValue;
+        private readonly string _stringConstantWhenProvided;
 
         /// <summary>
         ///     Ctor.
         /// </summary>
         /// <param name="value">is the constant's value.</param>
-        public ExprConstantNodeImpl(object value)
+        public ExprConstantNodeImpl(object value, string stringConstantWhenProvided)
         {
-            ConstantValue = value;
+            _value = value;
+            _stringConstantWhenProvided = stringConstantWhenProvided;
             if (value == null) {
-                EvaluationType = null;
+                _clazz = null;
             }
             else {
-                EvaluationType = value.GetType().GetPrimitiveType();
+                _clazz = value.GetType().GetPrimitiveType();
             }
+        }
+
+        public ExprConstantNodeImpl(object value) : this(value, (string) null)
+        {
         }
 
         public ExprConstantNodeImpl(EnumValue enumValue)
         {
-            this.enumValue = enumValue;
-            EvaluationType = enumValue.EnumField.FieldType;
+            _stringConstantWhenProvided = null;
+            _enumValue = enumValue;
+            _clazz = enumValue.EnumField.FieldType;
             try {
                 ConstantValue = enumValue.EnumField.GetValue(null);
             }
@@ -69,12 +78,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             object value,
             Type valueType)
         {
-            ConstantValue = value;
+            _stringConstantWhenProvided = null;
+            _value = value;
             if (value == null) {
-                EvaluationType = valueType.GetBoxedType();
+                _clazz = valueType.GetBoxedType();
             }
             else {
-                EvaluationType = value.GetType().GetPrimitiveType();
+                _clazz = value.GetType().GetPrimitiveType();
             }
         }
 
@@ -84,19 +94,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// <param name="clazz">the type of the constant null.</param>
         public ExprConstantNodeImpl(Type clazz)
         {
-            EvaluationType = clazz.GetBoxedType();
-            ConstantValue = null;
+            _clazz = clazz.GetBoxedType();
+            _value = null;
+            _stringConstantWhenProvided = null;
         }
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.COMPILETIMECONST;
 
         public ExprEvaluator ExprEvaluator => this;
 
-        public Type EvaluationType { get; }
+        public Type EvaluationType => _clazz;
 
         public ExprNodeRenderable ExprForgeRenderable => this;
 
         public override ExprForge Forge => this;
+
+        public string StringConstantWhenProvided => _stringConstantWhenProvided;
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
@@ -107,7 +120,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         ///     Returns the constant's value.
         /// </summary>
         /// <returns>value of constant</returns>
-        public object ConstantValue { get; set; }
+        public object ConstantValue {
+            get => _value;
+            set => _value = value;
+        }
 
         public Type ConstantType => EvaluationType;
 
@@ -170,19 +186,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            if (ConstantValue == null) {
+            if (_value == null) {
                 return ConstantNull();
             }
 
-            if (ConstantValue.GetType().IsEnum) {
-                return EnumValue(ConstantValue.GetType(), ConstantValue.ToString());
+            if (_enumValue != null) {
+                return PublicConstValue(_enumValue.EnumClass, _enumValue.EnumField.Name);
             }
 
-            if (enumValue != null) {
-                return PublicConstValue(enumValue.EnumClass, enumValue.EnumField.Name);
+            if (_value.GetType().IsEnum) {
+                return EnumValue(_value.GetType(), _value.ToString());
             }
 
-            return Constant(ConstantValue);
+            return Constant(_value);
         }
 
         public bool IsConstantResult => true;
@@ -196,7 +212,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ConstantValue = value;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             if (ConstantValue is string) {
                 writer.Write("\"" + ConstantValue + '\"');

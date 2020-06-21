@@ -43,6 +43,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             int nestingLevel,
             object partitionKey,
             ContextControllerStatementDesc optionalStatementDesc,
+            IDictionary<int, ContextControllerStatementDesc> statements,
             AgentInstanceContext agentInstanceContextStatement)
         {
             // none

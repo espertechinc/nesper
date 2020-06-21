@@ -33,6 +33,15 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
     {
         public Action<IDictionary<string, object>, EventBean> ProcMatchFound;
 
+        public ProxyPatternMatchCallback()
+        {
+        }
+
+        public ProxyPatternMatchCallback(Action<IDictionary<string, object>, EventBean> procMatchFound)
+        {
+            ProcMatchFound = procMatchFound;
+        }
+
         public void MatchFound(
             IDictionary<string, object> matchEvent,
             EventBean optionalTriggeringEvent)

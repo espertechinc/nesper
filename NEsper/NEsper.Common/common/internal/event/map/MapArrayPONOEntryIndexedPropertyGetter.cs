@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.bean.getter;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -28,8 +29,8 @@ namespace com.espertech.esper.common.@internal.@event.map
         MapEventPropertyGetter,
         MapEventPropertyGetterAndIndexed
     {
-        private readonly int index;
-        private readonly string propertyMap;
+        private readonly string _propertyMap;
+        private readonly int _index;
 
         public MapArrayPONOEntryIndexedPropertyGetter(
             string propertyMap,
@@ -39,22 +40,61 @@ namespace com.espertech.esper.common.@internal.@event.map
             Type returnType)
             : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType, null)
         {
-            this.propertyMap = propertyMap;
-            this.index = index;
+            _propertyMap = propertyMap;
+            _index = index;
         }
-
-        public override Type TargetType => typeof(IDictionary<string, object>);
-
-        public override Type BeanPropType => typeof(object);
 
         public object GetMap(IDictionary<string, object> map)
         {
-            return GetMapInternal(map, index);
+            return GetMapInternal(map, _index);
+        }
+
+        private object GetMapInternal(
+            IDictionary<string, object> map,
+            int index)
+        {
+            // If the map does not contain the key, this is allowed and represented as null
+            var value = map.Get(_propertyMap);
+            return BaseNestableEventUtil.GetBNArrayValueAtIndexWithNullCheck(value, index);
+        }
+
+        private CodegenMethod GetMapInternalCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return codegenMethodScope
+                .MakeChild(typeof(object), GetType(), codegenClassScope)
+                .AddParam(typeof(IDictionary<string, object>), "map")
+                .AddParam(typeof(int), "index")
+                .Block
+                .DeclareVar(typeof(object), "value", ExprDotMethod(Ref("map"), "Get", Constant(_propertyMap)))
+                .MethodReturn(StaticMethod(typeof(BaseNestableEventUtil), "GetBNArrayValueAtIndexWithNullCheck", Ref("value"), Ref("index")));
+        }
+
+        private CodegenMethod ExistsMapInternalCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return codegenMethodScope
+                .MakeChild(typeof(bool), GetType(), codegenClassScope)
+                .AddParam(typeof(IDictionary<string, object>), "map")
+                .AddParam(typeof(int), "index")
+                .Block
+                .DeclareVar(typeof(object), "value", ExprDotMethod(Ref("map"), "Get", Constant(_propertyMap)))
+                .MethodReturn(StaticMethod(typeof(CollectionUtil), "ArrayExistsAtIndex", Ref("value"), Ref("index")));
         }
 
         public bool IsMapExistsProperty(IDictionary<string, object> map)
         {
-            return map.ContainsKey(propertyMap);
+            return map.ContainsKey(_propertyMap);
+        }
+
+        public object Get(
+            EventBean eventBean,
+            int index)
+        {
+            IDictionary<string, object> map = BaseNestableEventUtil.CheckedCastUnderlyingMap(eventBean);
+            return GetMapInternal(map, index);
         }
 
         public override object Get(EventBean obj)
@@ -65,7 +105,8 @@ namespace com.espertech.esper.common.@internal.@event.map
         public override bool IsExistsProperty(EventBean eventBean)
         {
             var map = BaseNestableEventUtil.CheckedCastUnderlyingMap(eventBean);
-            return map.ContainsKey(propertyMap);
+            object array = map.Get(_propertyMap);
+            return CollectionUtil.ArrayExistsAtIndex(array, _index);
         }
 
         public override CodegenExpression EventBeanGetCodegen(
@@ -73,10 +114,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(
-                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
-                codegenMethodScope,
-                codegenClassScope);
+            return UnderlyingGetCodegen(CastUnderlying(typeof(IDictionary<string, object>), beanExpression), codegenMethodScope, codegenClassScope);
         }
 
         public override CodegenExpression EventBeanExistsCodegen(
@@ -84,10 +122,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingExistsCodegen(
-                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
-                codegenMethodScope,
-                codegenClassScope);
+            return UnderlyingExistsCodegen(CastUnderlying(typeof(IDictionary<string, object>), beanExpression), codegenMethodScope, codegenClassScope);
         }
 
         public override CodegenExpression UnderlyingGetCodegen(
@@ -95,10 +130,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return LocalMethod(
-                GetMapInternalCodegen(codegenMethodScope, codegenClassScope),
-                underlyingExpression,
-                Constant(index));
+            return LocalMethod(GetMapInternalCodegen(codegenMethodScope, codegenClassScope), underlyingExpression, Constant(_index));
         }
 
         public override CodegenExpression UnderlyingExistsCodegen(
@@ -106,15 +138,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotMethod(underlyingExpression, "CheckedContainsKey", Constant(propertyMap));
-        }
-
-        public object Get(
-            EventBean eventBean,
-            int index)
-        {
-            var map = BaseNestableEventUtil.CheckedCastUnderlyingMap(eventBean);
-            return GetMapInternal(map, index);
+            return LocalMethod(ExistsMapInternalCodegen(codegenMethodScope, codegenClassScope), underlyingExpression, Constant(_index));
         }
 
         public CodegenExpression EventBeanGetIndexedCodegen(
@@ -129,30 +153,8 @@ namespace com.espertech.esper.common.@internal.@event.map
                 key);
         }
 
-        private object GetMapInternal(
-            IDictionary<string, object> map,
-            int index)
-        {
-            // If the map does not contain the key, this is allowed and represented as null
-            var value = map.Get(propertyMap);
-            return BaseNestableEventUtil.GetBNArrayValueAtIndexWithNullCheck(value, index);
-        }
+        public override Type TargetType => typeof(IDictionary<string, object>);
 
-        private CodegenMethod GetMapInternalCodegen(
-            CodegenMethodScope codegenMethodScope,
-            CodegenClassScope codegenClassScope)
-        {
-            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(IDictionary<string, object>), "map")
-                .AddParam(typeof(int), "index")
-                .Block
-                .DeclareVar<object>("value", ExprDotMethod(Ref("map"), "Get", Constant(propertyMap)))
-                .MethodReturn(
-                    StaticMethod(
-                        typeof(BaseNestableEventUtil),
-                        "GetBNArrayValueAtIndexWithNullCheck",
-                        Ref("value"),
-                        Ref("index")));
-        }
+        public override Type BeanPropType => typeof(object);
     }
 } // end of namespace

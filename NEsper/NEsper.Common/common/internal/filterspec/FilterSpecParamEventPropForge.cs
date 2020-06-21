@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -196,10 +197,18 @@ namespace com.espertech.esper.common.@internal.filterspec
                         classScope));
             }
 
-            getFilterValue.Block.BlockReturn(Ref("value"));
+            getFilterValue.Block.BlockReturn(FilterValueSetParamImpl.CodegenNew(Ref("value")));
 
             method.Block.MethodReturn(param);
             return method;
+        }
+        
+        
+        public override void ValueExprToString(StringBuilder @out, int i)
+        {
+            @out.Append("event property '")
+                .Append(ResultEventProperty)
+                .Append("'");
         }
     }
 } // end of namespace

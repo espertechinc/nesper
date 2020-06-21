@@ -17,20 +17,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprConcatNodeEvalThreadLocal : ExprEvaluator
     {
-        private readonly StringBuilder buffer;
-        private readonly ExprEvaluator[] evaluators;
-        private readonly IThreadLocal<StringBuilder> localBuffer;
-        private readonly ExprConcatNode parent;
+        private readonly StringBuilder _buffer;
+        private readonly ExprEvaluator[] _evaluators;
+        private readonly IThreadLocal<StringBuilder> _localBuffer;
+        private readonly ExprConcatNode _parent;
 
         public ExprConcatNodeEvalThreadLocal(
             ExprConcatNode parent,
             ExprEvaluator[] evaluators)
         {
-            localBuffer = new SystemThreadLocal<StringBuilder>(() => new StringBuilder());
-            buffer = localBuffer.GetOrCreate();
-            this.parent = parent;
-            this.evaluators = evaluators;
-            buffer = localBuffer.GetOrCreate();
+            _localBuffer = new SystemThreadLocal<StringBuilder>(() => new StringBuilder());
+            _buffer = _localBuffer.GetOrCreate();
+            this._parent = parent;
+            this._evaluators = evaluators;
+            _buffer = _localBuffer.GetOrCreate();
         }
 
         public object Evaluate(
@@ -38,8 +38,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            buffer.Length = 0;
-            return ExprConcatNodeEvalWNew.Evaluate(eventsPerStream, isNewData, context, buffer, evaluators, parent);
+            _buffer.Length = 0;
+            return ExprConcatNodeEvalWNew.Evaluate(eventsPerStream, isNewData, context, _buffer, _evaluators, _parent);
         }
     }
 } // end of namespace

@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -17,9 +18,11 @@ using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.introspect;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.@event.variant;
 using com.espertech.esper.common.@internal.@event.xml;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.@event.eventtypefactory
@@ -152,6 +155,33 @@ namespace com.espertech.esper.common.@internal.@event.eventtypefactory
             VariantSpec spec)
         {
             return new VariantEventType(metadata, spec);
+        }
+
+        public JsonEventType CreateJson(
+            EventTypeMetadata metadata,
+            IDictionary<String, Object> properties,
+            string[] superTypes,
+            string startTimestampPropertyName,
+            string endTimestampPropertyName,
+            BeanEventTypeFactory beanEventTypeFactory,
+            EventTypeNameResolver eventTypeNameResolver,
+            JsonEventTypeDetail detail)
+        {
+            var st = EventTypeUtility.GetSuperTypesDepthFirst(superTypes, EventUnderlyingType.JSON, eventTypeNameResolver);
+            properties = BaseNestableEventUtil.ResolvePropertyTypes(properties, eventTypeNameResolver);
+            var getterFactoryJson = new EventTypeNestableGetterFactoryJson(detail);
+            // We use a null-stand-in class as the actual underlying class is provided later
+            return new JsonEventType(
+                metadata,
+                properties,
+                st.First,
+                st.Second,
+                startTimestampPropertyName,
+                endTimestampPropertyName,
+                getterFactoryJson,
+                beanEventTypeFactory,
+                detail,
+                null);
         }
 
         public static EventTypeFactoryImpl GetInstance(IContainer container)

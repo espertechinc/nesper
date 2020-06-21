@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.settings
             Exception ex,
             string deploymentId,
             string statementName,
-            string epl,
+            string optionalEPL,
             ExceptionHandlerExceptionType type,
             EventBean optionalCurrentEvent)
         {
@@ -117,9 +117,9 @@ namespace com.espertech.esper.common.@internal.settings
                 writer.Write("statement '");
                 writer.Write(statementName);
                 writer.Write("'");
-                if (epl != null) {
+                if (optionalEPL != null) {
                     writer.Write(" expression '");
-                    writer.Write(epl);
+                    writer.Write(optionalEPL);
                     writer.Write("'");
                 }
 
@@ -147,7 +147,7 @@ namespace com.espertech.esper.common.@internal.settings
                             ex,
                             deploymentId,
                             statementName,
-                            epl,
+                            optionalEPL,
                             type,
                             optionalCurrentEvent)
                     });

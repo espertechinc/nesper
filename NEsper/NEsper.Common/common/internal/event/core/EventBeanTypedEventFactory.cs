@@ -39,6 +39,10 @@ namespace com.espertech.esper.common.@internal.@event.core
             EventBean decoratedUnderlying,
             IDictionary<string, object> map,
             EventType wrapperEventType);
+
+        EventBean AdapterForTypedJson(
+            object underlying,
+            EventType eventType);
     }
 
     public class EventBeanTypedEventFactoryConstants

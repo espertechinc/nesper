@@ -12,7 +12,9 @@ using System.IO;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.context.compile;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
+using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.compat;
 
@@ -192,12 +194,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                    streamNum;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(StreamName);
             if (isWildcard) {
                 writer.Write(".*");
             }
+        }
+        
+        public ExprEnumerationForgeDesc GetEnumerationForge(StreamTypeService streamTypeService, ContextCompileTimeDescriptor contextDescriptor) {
+            return new ExprEnumerationForgeDesc(
+                new ExprStreamUnderlyingNodeEnumerationForge(StreamName, streamNum, eventType),
+                streamTypeService.IStreamOnly[StreamId],
+                StreamId);
         }
     }
 } // end of namespace

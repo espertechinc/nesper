@@ -51,7 +51,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             FAFQueryMethodProvider queryMethodProvider = fafProvider.QueryMethodProvider;
             EPRuntimeHelperFAF.ValidateSubstitutionParams(queryMethodProvider);
             FAFQueryMethod queryMethod = queryMethodProvider.QueryMethod;
-            queryMethod.Ready();
+            queryMethod.Ready(TODO);
             return new EPPreparedQueryImpl(serviceStatusProvider, queryMethodProvider, queryMethod, services);
         }
 
@@ -60,7 +60,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             FAFProvider fafProvider = EPRuntimeHelperFAF.QueryMethod(compiled, services);
             FAFQueryMethodProvider queryMethodProvider = fafProvider.QueryMethodProvider;
             FAFQueryMethod queryMethod = queryMethodProvider.QueryMethod;
-            queryMethod.Ready();
+            queryMethod.Ready(TODO);
             return new EPFireAndForgetPreparedQueryParameterizedImpl(serviceStatusProvider, queryMethodProvider.SubstitutionFieldSetter, queryMethod, queryMethodProvider.QueryInformationals);
         }
 
@@ -95,7 +95,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             FAFQueryMethodProvider queryMethodProvider = fafProvider.QueryMethodProvider;
             EPRuntimeHelperFAF.ValidateSubstitutionParams(queryMethodProvider);
             FAFQueryMethod queryMethod = queryMethodProvider.QueryMethod;
-            queryMethod.Ready();
+            queryMethod.Ready(TODO);
             EPPreparedQueryResult result = queryMethod.Execute(serviceStatusProvider, queryMethodProvider.SubstitutionFieldSetter, contextPartitionSelectors, services.ContextManagementService);
             return new EPQueryResultImpl(result);
         }

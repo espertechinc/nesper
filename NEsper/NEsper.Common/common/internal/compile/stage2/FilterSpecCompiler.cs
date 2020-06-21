@@ -6,11 +6,14 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
 
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.contained;
@@ -19,6 +22,7 @@ using com.espertech.esper.common.@internal.epl.expression.visitor;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.epl.subselect;
 using com.espertech.esper.common.@internal.filterspec;
+using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
@@ -31,13 +35,14 @@ namespace com.espertech.esper.common.@internal.compile.stage2
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public static FilterSpecCompiled MakeFilterSpec(
+        public static FilterSpecCompiledDesc MakeFilterSpec(
             EventType eventType,
             string eventTypeName,
             IList<ExprNode> filterExpessions,
             PropertyEvalSpec optionalPropertyEvalSpec,
             IDictionary<string, Pair<EventType, string>> taggedEventTypes,
             IDictionary<string, Pair<EventType, string>> arrayEventTypes,
+            ISet<string> allTagNamesOrdered,
             StreamTypeService streamTypeService,
             string optionalStreamName,
             StatementRawInfo statementRawInfo,
@@ -45,7 +50,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         {
             // Validate all nodes, make sure each returns a boolean and types are good;
             // Also decompose all AND super nodes into individual expressions
-            var validatedNodes = ValidateAllowSubquery(
+            var validatedDesc = ValidateAllowSubquery(
                 ExprNodeOrigin.FILTER,
                 filterExpessions,
                 streamTypeService,
@@ -54,41 +59,45 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 statementRawInfo,
                 services);
             return Build(
-                validatedNodes,
+                validatedDesc,
                 eventType,
                 eventTypeName,
                 optionalPropertyEvalSpec,
                 taggedEventTypes,
                 arrayEventTypes,
+                allTagNamesOrdered,
                 streamTypeService,
                 optionalStreamName,
                 statementRawInfo,
                 services);
         }
 
-        public static FilterSpecCompiled Build(
-            IList<ExprNode> validatedNodes,
+        public static FilterSpecCompiledDesc Build(
+            FilterSpecValidatedDesc validatedDesc,
             EventType eventType,
             string eventTypeName,
             PropertyEvalSpec optionalPropertyEvalSpec,
             IDictionary<string, Pair<EventType, string>> taggedEventTypes,
             IDictionary<string, Pair<EventType, string>> arrayEventTypes,
+            ISet<string> allTagNamesOrdered,
             StreamTypeService streamTypeService,
             string optionalStreamName,
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices compileTimeServices)
         {
-            return BuildNoStmtCtx(
-                validatedNodes,
+            var compiled = BuildNoStmtCtx(
+                validatedDesc.Expressions,
                 eventType,
                 eventTypeName,
                 optionalStreamName,
                 optionalPropertyEvalSpec,
                 taggedEventTypes,
                 arrayEventTypes,
+                allTagNamesOrdered,
                 streamTypeService,
                 statementRawInfo,
                 compileTimeServices);
+            return new FilterSpecCompiledDesc(compiled, validatedDesc.AdditionalForgeables);
         }
 
         public static FilterSpecCompiled BuildNoStmtCtx(
@@ -99,10 +108,10 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             PropertyEvalSpec optionalPropertyEvalSpec,
             IDictionary<string, Pair<EventType, string>> taggedEventTypes,
             IDictionary<string, Pair<EventType, string>> arrayEventTypes,
+            ISet<string> allTagNamesOrdered,
             StreamTypeService streamTypeService,
             StatementRawInfo statementRawInfo,
-            StatementCompileTimeServices compileTimeServices
-        )
+            StatementCompileTimeServices compileTimeServices)
         {
             PropertyEvaluatorForge optionalPropertyEvaluator = null;
             if (optionalPropertyEvalSpec != null) {
@@ -114,23 +123,40 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     compileTimeServices);
             }
 
+            // unwind "and" and "or"
+            var unwound = FilterSpecCompilerIndexPlannerUnwindAndOr.UnwindAndOr(validatedNodes);
+
             var args = new FilterSpecCompilerArgs(
                 taggedEventTypes,
                 arrayEventTypes,
+                allTagNamesOrdered,
                 streamTypeService,
                 null,
                 statementRawInfo,
                 compileTimeServices);
-            IList<FilterSpecParamForge>[] spec = FilterSpecCompilerPlanner.PlanFilterParameters(validatedNodes, args);
+            var plan = FilterSpecCompilerIndexPlanner.PlanFilterParameters(unwound, args);
 
-            if (Log.IsDebugEnabled) {
-                Log.Debug(".makeFilterSpec spec=" + spec);
+            var hook = (FilterSpecCompileHook?) ImportUtil.GetAnnotationHook(
+                statementRawInfo.Annotations,
+                HookType.INTERNAL_FILTERSPEC,
+                typeof(FilterSpecCompileHook),
+                compileTimeServices.ImportServiceCompileTime);
+            if (hook != null) {
+                hook.FilterIndexPlan(eventType, unwound, plan);
             }
 
-            return new FilterSpecCompiled(eventType, eventTypeName, spec, optionalPropertyEvaluator);
+            if (compileTimeServices.Configuration.Compiler.Logging.IsEnableFilterPlan) {
+                LogFilterPlans(unwound, plan, eventType, optionalStreamName, statementRawInfo);
+            }
+
+            if (Log.IsDebugEnabled) {
+                Log.Debug(".makeFilterSpec spec=" + plan);
+            }
+
+            return new FilterSpecCompiled(eventType, eventTypeName, plan, optionalPropertyEvaluator);
         }
 
-        public static IList<ExprNode> ValidateAllowSubquery(
+        public static FilterSpecValidatedDesc ValidateAllowSubquery(
             ExprNodeOrigin exprNodeOrigin,
             IList<ExprNode> exprNodes,
             StreamTypeService streamTypeService,
@@ -140,6 +166,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             StatementCompileTimeServices services)
         {
             IList<ExprNode> validatedNodes = new List<ExprNode>();
+            IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>();
 
             ExprValidationContext validationContext =
                 new ExprValidationContextBuilder(streamTypeService, statementRawInfo, services)
@@ -156,7 +183,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     // The outer event type is the filtered-type itself
                     foreach (var subselect in visitor.Subselects) {
                         try {
-                            SubSelectHelperFilters.HandleSubselectSelectClauses(
+                            var subselectAdditionalForgeables = SubSelectHelperFilters.HandleSubselectSelectClauses(
                                 subselect,
                                 streamTypeService.EventTypes[0],
                                 streamTypeService.StreamNames[0],
@@ -165,6 +192,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                                 arrayEventTypes,
                                 statementRawInfo,
                                 services);
+                            additionalForgeables.AddAll(subselectAdditionalForgeables);
                         }
                         catch (ExprValidationException ex) {
                             throw new ExprValidationException(
@@ -188,7 +216,43 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 }
             }
 
-            return validatedNodes;
+            return new FilterSpecValidatedDesc(validatedNodes, additionalForgeables);
+        }
+        
+        private static void LogFilterPlans(
+            IList<ExprNode> validatedNodes,
+            FilterSpecPlanForge plan,
+            EventType eventType,
+            string optionalStreamName,
+            StatementRawInfo statementRawInfo)
+        {
+            var buf = new StringBuilder();
+            buf
+                .Append("Filter plan for statement '")
+                .Append(statementRawInfo.StatementName)
+                .Append("' filtering event type '")
+                .Append(eventType.Name + "'");
+
+            if (optionalStreamName != null) {
+                buf.Append(" alias '" + optionalStreamName + "'");
+            }
+            if (validatedNodes.IsEmpty()) {
+                buf.Append(" empty");
+            } else {
+                var andNode = ExprNodeUtilityMake.ConnectExpressionsByLogicalAndWhenNeeded(validatedNodes);
+                var expression = ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(andNode);
+                buf
+                    .Append(" expression '")
+                    .Append(expression)
+                    .Append("' for ")
+                    .Append(plan.Paths.Length)
+                    .Append(" paths");
+            }
+            buf.Append(Environment.NewLine);
+
+            plan.AppendPlan(buf);
+
+            Log.Info(buf.ToString());
         }
     }
 } // end of namespace

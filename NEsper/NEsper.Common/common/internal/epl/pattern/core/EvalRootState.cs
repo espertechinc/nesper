@@ -27,4 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             bool startRecoverable,
             MatchedEventMap beginState);
     }
+
+    public class EvalRootStateConstants
+    {
+        public static EvalRootState[] EMPTY = new EvalRootState[0];
+    }
 } // end of namespace

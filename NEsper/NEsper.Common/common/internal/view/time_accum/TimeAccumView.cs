@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.view.time_accum
     /// </summary>
     public class TimeAccumView : ViewSupport,
         DataWindowView,
-        AgentInstanceStopCallback
+        AgentInstanceMgmtCallback
     {
         private readonly AgentInstanceContext agentInstanceContext;
 

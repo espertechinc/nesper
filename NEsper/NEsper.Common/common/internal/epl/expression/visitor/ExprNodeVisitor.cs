@@ -28,5 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
         /// <param name="exprNode">is the expression node to visit
         /// </param>
         void Visit(ExprNode exprNode);
+        
+        bool IsWalkDeclExprParam => true;
     }
 }

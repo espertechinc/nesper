@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             bool audit)
         {
             if (parent.IsDistinct) {
-                newData = EventBeanUtility.GetDistinctByProp(newData, parent.EventBeanReader);
+                newData = EventBeanUtility.GetDistinctByProp(newData, parent.DistinctKeyGetter);
             }
 
             if (tableInstanceInsertInto != null) {

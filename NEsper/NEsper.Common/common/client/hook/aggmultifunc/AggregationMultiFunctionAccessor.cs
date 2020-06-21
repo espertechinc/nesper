@@ -50,7 +50,10 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
             AggregationMultiFunctionState state,
             EventBean[] eventsPerStream,
             bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext);
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return null;
+        }
 
         /// <summary>
         /// Return the aggregation state value consisting of a single event.
@@ -64,7 +67,10 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
             AggregationMultiFunctionState state,
             EventBean[] eventsPerStream,
             bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext);
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return null;
+        }
 
         /// <summary>
         /// Return the aggregation state value consisting of a collection of scalar values.
@@ -78,6 +84,9 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
             AggregationMultiFunctionState state,
             EventBean[] eventsPerStream,
             bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext);
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return null;
+        }
     }
 } // end of namespace

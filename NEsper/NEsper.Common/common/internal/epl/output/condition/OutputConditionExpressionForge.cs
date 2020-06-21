@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
+using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
@@ -47,6 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             ExprNode andWhenTerminatedExpr,
             IList<OnTriggerSetAssignment> afterTerminateAssignments,
             bool isStartConditionOnCreation,
+            StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
             whenExpressionNodeEval = whenExpressionNode;
@@ -83,15 +85,20 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             isUsingBuiltinProperties = containsBuiltinProperties;
 
             if (assignments != null && !assignments.IsEmpty()) {
-                variableReadWritePackage = new VariableReadWritePackageForge(assignments, services);
+                variableReadWritePackage = new VariableReadWritePackageForge(
+                    assignments,
+                    statementRawInfo.StatementName,
+                    services);
             }
             else {
                 variableReadWritePackage = null;
             }
 
             if (afterTerminateAssignments != null) {
-                variableReadWritePackageAfterTerminated =
-                    new VariableReadWritePackageForge(afterTerminateAssignments, services);
+                variableReadWritePackageAfterTerminated = new VariableReadWritePackageForge(
+                    afterTerminateAssignments,
+                    statementRawInfo.StatementName,
+                    services);
             }
             else {
                 variableReadWritePackageAfterTerminated = null;

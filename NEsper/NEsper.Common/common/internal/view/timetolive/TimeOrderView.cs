@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.view.timetolive
     /// </summary>
     public class TimeOrderView : ViewSupport,
         DataWindowView,
-        AgentInstanceStopCallback
+        AgentInstanceMgmtCallback
     {
         private readonly AgentInstanceContext agentInstanceContext;
         private readonly TimeOrderViewFactory factory;

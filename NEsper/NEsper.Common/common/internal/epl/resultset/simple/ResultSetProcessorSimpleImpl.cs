@@ -172,7 +172,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                         Ref("this"),
                         "ProcessJoinResult",
                         REF_JOINSET,
-                        StaticMethod(typeof(Collections), "GetEmptySet", new[] {typeof(MultiKey<EventBean>)}),
+                        StaticMethod(typeof(Collections), "GetEmptySet", new[] {typeof(MultiKeyArrayOfKeys<EventBean>)}),
                         ConstantTrue()))
                 .IfRefNull("result")
                 .BlockReturn(
@@ -299,7 +299,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             CodegenMethod method)
         {
             if (!forge.IsOutputLast) {
-                method.Block.DeclareVar<UniformPair<ISet<MultiKey<EventBean>>>>(
+                method.Block.DeclareVar<UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>>(
                         "pair",
                         StaticMethod(
                             typeof(EventBeanUtility),

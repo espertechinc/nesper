@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
         /// <value>set of stream numbers</value>
         SortedSet<int> RequiredStreams { get; }
 
-        void Validate(
+        IList<StmtClassForgeableFactory> Validate(
             StreamTypeService typeService,
             StatementBaseInfo @base,
             StatementCompileTimeServices services);

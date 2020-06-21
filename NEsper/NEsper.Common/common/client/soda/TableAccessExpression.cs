@@ -23,7 +23,6 @@ namespace com.espertech.esper.common.client.soda
         private string _tableName;
         private IList<Expression> _keyExpressions;
         private string _optionalColumn;
-        private Expression _optionalAggregate;
 
         /// <summary>
         /// Ctor.
@@ -38,7 +37,6 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="tableName">the table name</param>
         /// <param name="keyExpressions">the list of key expressions for each table primary key in the same order as declared</param>
         /// <param name="optionalColumn">optional column name</param>
-        /// <param name="optionalAggregate">optional aggregation function</param>
         public TableAccessExpression(
             string tableName,
             IList<Expression> keyExpressions,
@@ -48,7 +46,6 @@ namespace com.espertech.esper.common.client.soda
             this._tableName = tableName;
             this._keyExpressions = keyExpressions;
             this._optionalColumn = optionalColumn;
-            this._optionalAggregate = optionalAggregate;
         }
 
         public override ExpressionPrecedenceEnum Precedence
@@ -70,12 +67,6 @@ namespace com.espertech.esper.common.client.soda
             {
                 writer.Write(".");
                 writer.Write(_optionalColumn);
-            }
-
-            if (_optionalAggregate != null)
-            {
-                writer.Write(".");
-                _optionalAggregate.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
         }
 
@@ -133,25 +124,6 @@ namespace com.espertech.esper.common.client.soda
         public TableAccessExpression SetOptionalColumn(string optionalColumn)
         {
             this._optionalColumn = optionalColumn;
-            return this;
-        }
-
-        /// <summary>
-        /// Returns the optional table column aggregation accessor to use.
-        /// </summary>
-        /// <returns>table column aggregation accessor</returns>
-        public Expression OptionalAggregate {
-            get => _optionalAggregate;
-            set => _optionalAggregate = value;
-        }
-
-        /// <summary>
-        /// Sets the optional table column aggregation accessor to use.
-        /// </summary>
-        /// <param name="optionalAggregate">table column aggregation accessor</param>
-        public TableAccessExpression SetOptionalAggregate(Expression optionalAggregate)
-        {
-            this._optionalAggregate = optionalAggregate;
             return this;
         }
     }

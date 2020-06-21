@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -57,6 +58,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                 : table.TableVisibility;
             ValidateOnExpressionContext(planDesc.ContextName, infraContextName, infraTitle);
 
+            List<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>();
+
             // validate expressions and plan subselects
             var validationResult = OnTriggerPlanValidator.ValidateOnTriggerPlan(
                 infraEventType,
@@ -66,6 +69,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                 planDesc.SubselectActivation,
                 @base,
                 services);
+            additionalForgeables.AddAll(validationResult.AdditionalForgeables);
 
             var validatedJoin = validationResult.ValidatedJoin;
             var activatorResultEventType = planDesc.ActivatorResult.ActivatorResultEventType;
@@ -85,7 +89,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
 
             // query plan
             var onlyUseExistingIndexes = table != null;
-            SubordinateWMatchExprQueryPlanForge queryPlan = SubordinateQueryPlanner.PlanOnExpression(
+            SubordinateWMatchExprQueryPlanResult planResult = SubordinateQueryPlanner.PlanOnExpression(
                 validatedJoin,
                 activatorResultEventType,
                 indexHint,
@@ -99,7 +103,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                 onlyUseExistingIndexes,
                 @base.StatementRawInfo,
                 services);
-
+            SubordinateWMatchExprQueryPlanForge queryPlan = planResult.Forge;
+            additionalForgeables.AddAll(planResult.AdditionalForgeables);
+            
             // indicate index dependencies
             if (queryPlan.Indexes != null && infraVisibility == NameAccessModifier.PUBLIC) {
                 foreach (var index in queryPlan.Indexes) {
@@ -119,7 +125,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             var subselectForges = validationResult.SubselectForges;
             var tableAccessForges = validationResult.TableAccessForges;
 
-            IList<StmtClassForgable> forgables = new List<StmtClassForgable>(2);
+            IList<StmtClassForgeable> forgeables = new List<StmtClassForgeable>(2);
             StatementAgentInstanceFactoryOnTriggerInfraBaseForge forge;
             var classNameRSP = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(ResultSetProcessorFactoryProvider),
@@ -144,6 +150,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
 
                 var selectAndDelete = planDesc.OnTriggerDesc.IsDeleteAndSelect;
                 var distinct = @base.StatementSpec.SelectClauseCompiled.IsDistinct;
+                MultiKeyPlan distinctMultiKeyPlan = MultiKeyPlanner.PlanMultiKeyDistinct(
+                    distinct,
+                    outputEventType,
+                    @base.StatementRawInfo,
+                    services.SerdeResolver);
+                additionalForgeables.AddAll(distinctMultiKeyPlan.MultiKeyForgeables);
                 forge = new StatementAgentInstanceFactoryOnTriggerInfraSelectForge(
                     activator,
                     outputEventType,
@@ -157,7 +169,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                     addToFront,
                     optionalInsertIntoTable,
                     selectAndDelete,
-                    distinct);
+                    distinct,
+                    distinctMultiKeyPlan.ClassRef);
             }
             else {
                 var defaultSelectAllSpec = new StatementSpecCompiled();
@@ -241,8 +254,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                 }
             }
 
-            forgables.Add(
-                new StmtClassForgableRSPFactoryProvider(
+            forgeables.Add(
+                new StmtClassForgeableRSPFactoryProvider(
                     classNameRSP,
                     resultSetProcessor,
                     namespaceScope,
@@ -256,11 +269,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                 @base.StatementSpec.Annotations,
                 services.ImportServiceCompileTime);
 
-            var onTrigger = new StmtClassForgableAIFactoryProviderOnTrigger(className, namespaceScope, forge);
-            return new OnTriggerPlan(onTrigger, forgables, resultSetProcessor.SelectSubscriberDescriptor);
+            StmtClassForgeableAIFactoryProviderOnTrigger onTrigger = new StmtClassForgeableAIFactoryProviderOnTrigger(className, namespaceScope, forge);
+            return new OnTriggerPlan(onTrigger, forgeables, resultSetProcessor.SelectSubscriberDescriptor, additionalForgeables);
         }
 
-        protected internal static void ValidateOnExpressionContext(
+        internal static void ValidateOnExpressionContext(
             string onExprContextName,
             string desiredContextName,
             string title)
@@ -279,12 +292,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             }
 
             if (!onExprContextName.Equals(desiredContextName)) {
-                throw new ExprValidationException(
-                    "Cannot create on-trigger expression: " +
-                    title +
-                    " was declared with context " +
-                    desiredContextName.RenderAny() +
-                    ", please use the same context instead");
+                string text = desiredContextName == null ?
+                    "without a context" :
+                    "with context '" + desiredContextName + "', please use the same context instead";
+                throw new ExprValidationException($"Cannot create on-trigger expression: {title} was declared {text}");
             }
         }
     }

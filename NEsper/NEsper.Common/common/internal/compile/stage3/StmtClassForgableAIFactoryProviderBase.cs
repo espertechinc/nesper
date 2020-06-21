@@ -20,6 +20,7 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.compile.stage3
 {
+    // StmtClassForgeableAIFactoryProviderBase
     public abstract class StmtClassForgableAIFactoryProviderBase : StmtClassForgable
     {
         public const string MEMBERNAME_ID = "uid";

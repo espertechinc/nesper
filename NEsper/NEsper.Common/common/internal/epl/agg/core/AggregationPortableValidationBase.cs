@@ -8,9 +8,11 @@
 
 using System;
 
+using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
+using com.espertech.esper.common.@internal.epl.expression.core;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -18,6 +20,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 {
     public abstract class AggregationPortableValidationBase : AggregationPortableValidation
     {
+        public const string INVALID_TABLE_AGG_RESET = "The table aggregation'reset' method is only available for the on-merge update action";
+        public const string INVALID_TABLE_AGG_RESET_PARAMS = "The table aggregation 'reset' method does not allow parameters";
+        
         protected AggregationPortableValidationBase()
         {
         }
@@ -73,6 +78,40 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         {
             this.IsDistinct = distinct;
             return this;
+        }
+
+        public bool IsAggregationMethod(
+            string name,
+            ExprNode[] parameters,
+            ExprValidationContext validationContext)
+        {
+            return false;
+        }
+
+        public AggregationMultiFunctionMethodDesc ValidateAggregationMethod(
+            ExprValidationContext validationContext,
+            string aggMethodName,
+            ExprNode[] parameters)
+        {
+            if (String.Equals(aggMethodName, "reset", StringComparison.InvariantCultureIgnoreCase)) {
+                if (!validationContext.IsAllowTableAggReset) {
+                    throw new ExprValidationException(INVALID_TABLE_AGG_RESET);
+                }
+
+                if (parameters.Length != 0) {
+                    throw new ExprValidationException(INVALID_TABLE_AGG_RESET_PARAMS);
+                }
+
+                AggregationMethodForge reader = new ProxyAggregationMethodForge(
+                    () => typeof(void),
+                    (
+                        parent,
+                        symbols,
+                        classScope) => ConstantNull());
+                return new AggregationMultiFunctionMethodDesc(reader, null, null, null);
+            }
+
+            throw new ExprValidationException("Aggregation-method not supported for this type of aggregation");
         }
     }
 } // end of namespace

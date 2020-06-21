@@ -24,12 +24,12 @@ namespace com.espertech.esper.common.client.dataflow.core
         private bool _cpuStatistics;
         private string _dataFlowInstanceId;
         private object _dataFlowInstanceUserObject;
-        private EPDataFlowExceptionHandler _exceptionHandler;
-        private EPDataFlowOperatorProvider _operatorProvider;
+        [NonSerialized] private EPDataFlowOperatorProvider _operatorProvider;
+        [NonSerialized] private EPDataFlowOperatorParameterProvider _parameterProvider;
+        [NonSerialized] private EPDataFlowExceptionHandler _exceptionHandler;
+        [NonSerialized] private EPRuntimeEventProcessWrapped _surrogateEventSender;
         private bool _operatorStatistics;
-        private EPDataFlowOperatorParameterProvider _parameterProvider;
         private IDictionary<string, object> _parametersUrIs;
-        private EPRuntimeEventProcessWrapped _surrogateEventSender;
 
         /// <summary>
         ///     Returns the operator provider.

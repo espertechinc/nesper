@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// <returns>
         /// true if the specified <see cref="T:System.Object"></see> is equal to the current <see cref="T:System.Object"></see>; otherwise, false.
         /// </returns>
-        public override bool Equals(Object obj)
+        public override bool Equals(object obj)
         {
             if (this == obj) {
                 return true;
@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// <returns>
         /// A <see cref="T:System.String"></see> that represents the current <see cref="T:System.Object"></see>.
         /// </returns>
-        public override String ToString()
+        public override string ToString()
         {
             return "Pair [" + First + ':' + Second + ']';
         }

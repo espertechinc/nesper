@@ -29,15 +29,17 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            AggregationRow aggs = GetRow(eventsPerStream, isNewData, exprEvaluatorContext);
-            return aggs == null
-                ? null
-                : factory.AccessAggReader.GetValue(
-                    factory.AggColumnNum,
-                    aggs,
-                    eventsPerStream,
-                    isNewData,
-                    exprEvaluatorContext);
+            AggregationRow aggs = GetAggregationRow(eventsPerStream, isNewData, exprEvaluatorContext);
+            if (aggs == null) {
+                return null;
+            }
+
+            return Factory.AggregationMethod.GetValue(
+                Factory.AggColumnNum,
+                aggs,
+                eventsPerStream,
+                isNewData,
+                exprEvaluatorContext);
         }
 
         public override ICollection<EventBean> EvaluateGetROCollectionEvents(
@@ -45,13 +47,17 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            AggregationRow aggs = GetRow(eventsPerStream, isNewData, context);
+            AggregationRow aggs = GetAggregationRow(eventsPerStream, isNewData, context);
             if (aggs == null) {
                 return null;
             }
 
-            return factory.AccessAggReader
-                .GetValueCollectionEvents(factory.AggColumnNum, aggs, eventsPerStream, isNewData, context);
+            return Factory.AggregationMethod.GetValueCollectionEvents(
+                Factory.AggColumnNum,
+                aggs,
+                eventsPerStream,
+                isNewData,
+                context);
         }
 
         public override EventBean EvaluateGetEventBean(
@@ -59,13 +65,13 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            AggregationRow aggs = GetRow(eventsPerStream, isNewData, context);
+            AggregationRow aggs = GetAggregationRow(eventsPerStream, isNewData, context);
             if (aggs == null) {
                 return null;
             }
 
-            return factory.AccessAggReader.GetValueEventBean(
-                factory.AggColumnNum,
+            return Factory.AggregationMethod.GetValueEventBean(
+                Factory.AggColumnNum,
                 aggs,
                 eventsPerStream,
                 isNewData,
@@ -77,13 +83,13 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            AggregationRow aggs = GetRow(eventsPerStream, isNewData, context);
+            AggregationRow aggs = GetAggregationRow(eventsPerStream, isNewData, context);
             if (aggs == null) {
                 return null;
             }
 
-            return factory.AccessAggReader.GetValueCollectionScalar(
-                factory.AggColumnNum,
+            return Factory.AggregationMethod.GetValueCollectionScalar(
+                Factory.AggColumnNum,
                 aggs,
                 eventsPerStream,
                 isNewData,
@@ -96,20 +102,6 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             ExprEvaluatorContext context)
         {
             return null;
-        }
-
-        private AggregationRow GetRow(
-            EventBean[] eventsPerStream,
-            bool isNewData,
-            ExprEvaluatorContext context)
-        {
-            object groupKey = factory.GroupKeyEval.Evaluate(eventsPerStream, isNewData, context);
-            ObjectArrayBackedEventBean row = LockTableReadAndGet(groupKey, context);
-            if (row == null) {
-                return null;
-            }
-
-            return ExprTableEvalStrategyUtil.GetRow(row);
         }
     }
 } // end of namespace

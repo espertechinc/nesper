@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.statement.resource
     {
         public StatementResourceHolder(
             AgentInstanceContext agentInstanceContext,
-            AgentInstanceStopCallback agentInstanceStopCallback,
+            AgentInstanceMgmtCallback agentInstanceStopCallback,
             Viewable finalView,
             AggregationService aggregationService,
             PriorEvalStrategy[] priorEvalStrategies,
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.statement.resource
             RowRecogPreviousStrategy = rowRecogPreviousStrategy;
         }
 
-        public AgentInstanceStopCallback AgentInstanceStopCallback { get; }
+        public AgentInstanceMgmtCallback AgentInstanceStopCallback { get; }
 
         public Viewable FinalView { get; }
 

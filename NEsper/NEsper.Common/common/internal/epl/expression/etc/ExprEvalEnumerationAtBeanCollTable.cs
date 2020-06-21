@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.resultset.@select.typable;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.util;
@@ -23,17 +24,17 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.expression.etc
 {
-    public class ExprEvalEnumerationAtBeanCollTable : ExprForge
+    public class ExprEvalEnumerationAtBeanCollTable : ExprForge, SelectExprProcessorTypableForge
     {
-        internal readonly ExprEnumerationForge enumerationForge;
-        internal readonly TableMetaData table;
+        private readonly ExprEnumerationForge _enumerationForge;
+        private readonly TableMetaData _table;
 
         public ExprEvalEnumerationAtBeanCollTable(
             ExprEnumerationForge enumerationForge,
             TableMetaData table)
         {
-            this.enumerationForge = enumerationForge;
-            this.table = table;
+            this._enumerationForge = enumerationForge;
+            this._table = table;
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -60,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             CodegenClassScope codegenClassScope)
         {
             var eventToPublic =
-                TableDeployTimeResolver.MakeTableEventToPublicField(table, codegenClassScope, this.GetType());
+                TableDeployTimeResolver.MakeTableEventToPublicField(_table, codegenClassScope, this.GetType());
             var methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean[]),
                 this.GetType(),
@@ -73,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             methodNode.Block
                 .DeclareVar<object>(
                     "result",
-                    enumerationForge.EvaluateGetROCollectionEventsCodegen(methodNode, exprSymbol, codegenClassScope))
+                    _enumerationForge.EvaluateGetROCollectionEventsCodegen(methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("result")
                 .MethodReturn(
                     StaticMethod(
@@ -88,11 +89,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         }
 
         public Type EvaluationType {
-            get => TypeHelper.GetArrayType(table.PublicEventType.UnderlyingType);
+            get => typeof(EventBean[]);
+        }
+
+        public Type UnderlyingEvaluationType {
+            get => TypeHelper.GetArrayType(_table.PublicEventType.UnderlyingType);
         }
 
         public ExprNodeRenderable ExprForgeRenderable {
-            get => enumerationForge.EnumForgeRenderable;
+            get => _enumerationForge.EnumForgeRenderable;
         }
 
         public static EventBean[] ConvertToTableTypeImpl(

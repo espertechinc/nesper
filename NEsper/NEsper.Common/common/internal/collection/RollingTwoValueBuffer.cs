@@ -10,13 +10,13 @@ using System;
 
 namespace com.espertech.esper.common.@internal.collection
 {
-    public class RollingTwoValueBuffer<A, B>
+    public class RollingTwoValueBuffer<TA, TB>
     {
         private int _nextFreeIndex;
 
         public RollingTwoValueBuffer(
-            A[] bufferA,
-            B[] bufferB)
+            TA[] bufferA,
+            TB[] bufferB)
         {
             if (bufferA.Length != bufferB.Length || bufferA.Length == 0) {
                 throw new ArgumentException("Minimum buffer size is 1, buffer sizes must be identical");
@@ -27,13 +27,13 @@ namespace com.espertech.esper.common.@internal.collection
             _nextFreeIndex = 0;
         }
 
-        public A[] BufferA { get; private set; }
+        public TA[] BufferA { get; private set; }
 
-        public B[] BufferB { get; private set; }
+        public TB[] BufferB { get; private set; }
 
         public void Add(
-            A valueA,
-            B valueB)
+            TA valueA,
+            TB valueB)
         {
             BufferA[_nextFreeIndex] = valueA;
             BufferB[_nextFreeIndex] = valueB;

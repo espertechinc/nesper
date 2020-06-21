@@ -9,6 +9,7 @@
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.epl.expression.declared.compiletime
@@ -26,21 +27,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
         {
         }
 
-        public override EventBean[] GetEventsPerStreamRewritten(EventBean[] eventsPerStream)
+        public override EventBean[] GetEventsPerStreamRewritten(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context)
         {
             return eventsPerStream;
         }
 
         protected override CodegenExpression CodegenEventsPerStreamRewritten(
-            CodegenExpression eventsPerStream,
             CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return eventsPerStream;
+            return exprSymbol.GetAddEPS(codegenMethodScope);
         }
 
-        public override ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public override ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
     }
 } // end of namespace

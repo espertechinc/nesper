@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
@@ -43,6 +44,7 @@ using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.schedule;
+using com.espertech.esper.common.@internal.serde.compiletime.eventtype;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.statement.helper;
 using com.espertech.esper.common.@internal.view.access;
@@ -64,11 +66,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             StatementBaseInfo @base,
             StatementCompileTimeServices services)
         {
-            IList<FilterSpecCompiled> filterSpecCompileds = new List<FilterSpecCompiled>();
-            IList<ScheduleHandleCallbackProvider> scheduleHandleCallbackProviders =
-                new List<ScheduleHandleCallbackProvider>();
-            IList<NamedWindowConsumerStreamSpec> namedWindowConsumers = new List<NamedWindowConsumerStreamSpec>();
+            var filterSpecCompileds = new List<FilterSpecCompiled>();
+            var scheduleHandleCallbackProviders = new List<ScheduleHandleCallbackProvider>();
+            var namedWindowConsumers = new List<NamedWindowConsumerStreamSpec>();
             var statementSpec = @base.StatementSpec;
+            var additionalForgeables = new List<StmtClassForgeableFactory>();
 
             var streamNames = StatementForgeMethodSelectUtil.DetermineStreamNames(statementSpec.StreamSpecs);
             var numStreams = streamNames.Length;
@@ -77,17 +79,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             }
 
             // first we create streams for subselects, if there are any
-            var subselectActivation =
-                SubSelectHelperActivations.CreateSubSelectActivation(
-                    filterSpecCompileds,
-                    namedWindowConsumers,
-                    @base,
-                    services);
+            SubSelectActivationDesc subSelectActivationDesc = SubSelectHelperActivations.CreateSubSelectActivation(
+                filterSpecCompileds, namedWindowConsumers, @base, services);
+            IDictionary<ExprSubselectNode, SubSelectActivationPlan> subselectActivation = subSelectActivationDesc.Subselects;
+            additionalForgeables.AddAll(subSelectActivationDesc.AdditionalForgeables);
 
             // verify for joins that required views are present
-            var joinAnalysisResult = StatementForgeMethodSelectUtil.VerifyJoinViews(
-                statementSpec,
-                services.NamedWindowCompileTimeResolver);
+            StreamJoinAnalysisResultCompileTime joinAnalysisResult = VerifyJoinViews(statementSpec);
 
             var streamEventTypes = new EventType[statementSpec.StreamSpecs.Length];
             var eventTypeNames = new string[numStreams];
@@ -100,10 +98,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 var streamSpec = statementSpec.StreamSpecs[stream];
                 var isCanIterateUnbound = streamSpec.ViewSpecs.Length == 0 &&
                                           (services.Configuration.Compiler.ViewResources.IsIterableUnbound ||
-                                           AnnotationUtil.FindAnnotation(
-                                               statementSpec.Annotations,
-                                               typeof(IterableUnboundAttribute)) !=
-                                           null);
+                                           AnnotationUtil.HasAnnotation(statementSpec.Annotations, typeof(IterableUnboundAttribute)));
+
                 var args = new ViewFactoryForgeArgs(
                     stream,
                     false,
@@ -119,6 +115,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     eventTypeNames[stream] = dfResult.EventTypeName;
                     viewableActivatorForges[stream] = dfResult.ViewableActivatorForge;
                     viewForges[stream] = dfResult.ViewForges;
+                    additionalForgeables.AddAll(dfResult.AdditionalForgeables);
                 }
                 else if (streamSpec is FilterStreamSpecCompiled) {
                     var filterStreamSpec = (FilterStreamSpecCompiled) statementSpec.StreamSpecs[stream];
@@ -132,10 +129,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                         stream,
                         false,
                         -1);
-                    viewForges[stream] = ViewFactoryForgeUtil.CreateForges(
-                        streamSpec.ViewSpecs,
-                        args,
-                        streamEventTypes[stream]);
+                    ViewFactoryForgeDesc viewForgeDesc = ViewFactoryForgeUtil.CreateForges(streamSpec.ViewSpecs, args, streamEventTypes[stream]);
+                    viewForges[stream] = viewForgeDesc.Forges;
+                    additionalForgeables.AddAll(viewForgeDesc.MultikeyForges);
                     filterSpecCompileds.Add(filterSpecCompiled);
                 }
                 else if (streamSpec is PatternStreamSpecCompiled) {
@@ -157,7 +153,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                         patternContext,
                         isCanIterateUnbound);
                     streamEventTypes[stream] = patternType;
-                    viewForges[stream] = ViewFactoryForgeUtil.CreateForges(streamSpec.ViewSpecs, args, patternType);
+                    ViewFactoryForgeDesc viewForgeDesc = ViewFactoryForgeUtil.CreateForges(streamSpec.ViewSpecs, args, patternType);
+                    viewForges[stream] = viewForgeDesc.Forges;
+                    additionalForgeables.AddAll(viewForgeDesc.MultikeyForges);
                 }
                 else if (streamSpec is NamedWindowConsumerStreamSpec) {
                     var namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
@@ -195,7 +193,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     isNamedWindow[stream] = true;
 
                     // Consumers to named windows cannot declare a data window view onto the named window to avoid duplicate remove streams
-                    viewForges[stream] = ViewFactoryForgeUtil.CreateForges(streamSpec.ViewSpecs, args, namedWindowType);
+                    ViewFactoryForgeDesc viewForgeDesc = ViewFactoryForgeUtil.CreateForges(streamSpec.ViewSpecs, args, namedWindowType);
+                    viewForges[stream] = viewForgeDesc.Forges;
+                    additionalForgeables.AddAll(viewForgeDesc.MultikeyForges);
+
                     EPStatementStartMethodHelperValidate.ValidateNoDataWindowOnNamedWindow(viewForges[stream]);
                 }
                 else if (streamSpec is TableQueryStreamSpec) {
@@ -272,6 +273,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 else {
                     throw new IllegalStateException("Unrecognized stream " + streamSpec);
                 }
+                
+                // plan serde for iterate-unbound
+                if (isCanIterateUnbound) {
+                    var serdeForgeables = SerdeEventTypeUtility.Plan(
+                        streamEventTypes[stream], @base.StatementRawInfo, services.SerdeEventTypeRegistry, services.SerdeResolver));
+                    additionalForgeables.AddAll(serdeForgeables);
+                }
             }
 
             // handle match-recognize pattern
@@ -289,10 +297,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 var eventType = viewForges[0].IsEmpty()
                     ? streamEventTypes[0]
                     : viewForges[0][(viewForges[0].Count - 1)].EventType;
-                var desc = RowRecogNFAViewPlanUtil.ValidateAndPlan(container, eventType, isUnbound, @base, services);
-                var factoryForge = new RowRecogNFAViewFactoryForge(desc);
-                scheduleHandleCallbackProviders.Add(factoryForge);
-                viewForges[0].Add(factoryForge);
+                
+                RowRecogPlan plan = RowRecogNFAViewPlanUtil.ValidateAndPlan(eventType, isUnbound, @base, services);
+                var forge = new RowRecogNFAViewFactoryForge(plan.getForge());
+                additionalForgeables.AddAll(plan.getAdditionalForgeables());
+                scheduleHandleCallbackProviders.Add(forge);
+                viewForges[0].Add(forge);
+                var serdeForgeables = SerdeEventTypeUtility.Plan(
+                    eventType, @base.StatementRawInfo, services.SerdeEventTypeRegistry, services.SerdeResolver);
+                additionalForgeables.AddAll(serdeForgeables);
             }
 
             // Obtain event types from view factory chains
@@ -306,13 +319,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             joinAnalysisResult.AddUniquenessInfo(viewForges, statementSpec.Annotations);
 
             // plan sub-selects
-            var subselectForges = SubSelectHelperForgePlanner.PlanSubSelect(
-                @base,
-                subselectActivation,
-                streamNames,
-                streamEventTypes,
-                eventTypeNames,
-                services);
+            SubSelectHelperForgePlan subselectForgePlan = SubSelectHelperForgePlanner.PlanSubSelect(
+                @base, subselectActivation, streamNames, streamEventTypes, eventTypeNames, services);
+            var subselectForges = subselectForgePlan.Subselects;
+            additionalForgeables.AddAll(subselectForgePlan.AdditionalForgeables);
+
             DetermineViewSchedules(subselectForges, scheduleHandleCallbackProviders);
 
             // determine view schedules
@@ -338,7 +349,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 }
 
                 scheduleHandleCallbackProviders.Add(historicalEventViewable);
-                historicalEventViewable.Validate(typeService, @base, services);
+                IList<StmtClassForgeableFactory> forgeables = historicalEventViewable.Validate(typeService, @base, services);
+                additionalForgeables.AddAll(forgeables);
                 historicalViewableDesc.SetHistorical(stream, historicalEventViewable.RequiredStreams);
                 if (historicalEventViewable.RequiredStreams.Contains(stream)) {
                     throw new ExprValidationException(
@@ -355,7 +367,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 viewResourceDelegateExpr,
                 @base.StatementRawInfo,
                 services);
-            var whereClauseForge = whereClauseValidated == null ? null : whereClauseValidated.Forge;
+            var whereClauseForge = whereClauseValidated?.Forge;
 
             // Obtain result set processor
             var resultSetProcessorDesc = ResultSetProcessorFactoryFactory.GetProcessorPrototype(
@@ -369,6 +381,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 false,
                 @base.StatementRawInfo,
                 services);
+            additionalForgeables.AddAll(resultSetProcessorDesc.AdditionalForgeables);
 
             // Handle 'prior' function nodes in terms of view requirements
             var viewResourceDelegateDesc =
@@ -377,26 +390,29 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             if (hasPrior) {
                 for (var stream = 0; stream < numStreams; stream++) {
                     if (!viewResourceDelegateDesc[stream].PriorRequests.IsEmpty()) {
-                        viewForges[stream]
-                            .Add(
-                                new PriorEventViewForge(viewForges[stream].IsEmpty(), streamEventTypes[stream]));
+                        viewForges[stream].Add(new PriorEventViewForge(viewForges[stream].IsEmpty(), streamEventTypes[stream]));
+                        var serdeForgeables = SerdeEventTypeUtility.Plan(
+                            streamEventTypes[stream], @base.StatementRawInfo, services.SerdeEventTypeRegistry, services.SerdeResolver);
+                        additionalForgeables.AddAll(serdeForgeables);
                     }
                 }
             }
 
-            var outputProcessViewFactoryForge = OutputProcessViewForgeFactory.Make(
+            var outputProcessDesc = OutputProcessViewForgeFactory.Make(
                 typeService.EventTypes,
                 resultSetProcessorDesc.ResultEventType,
                 resultSetProcessorDesc.ResultSetProcessorType,
                 statementSpec,
                 @base.StatementRawInfo,
                 services);
+            var outputProcessViewFactoryForge = outputProcessDesc.Forge;
+            additionalForgeables.AddAll(outputProcessDesc.AdditionalForgeables);
             outputProcessViewFactoryForge.CollectSchedules(scheduleHandleCallbackProviders);
 
             JoinSetComposerPrototypeForge joinForge = null;
             if (numStreams > 1) {
                 var hasAggregations = !resultSetProcessorDesc.AggregationServiceForgeDesc.Expressions.IsEmpty();
-                joinForge = JoinSetComposerPrototypeForgeFactory.MakeComposerPrototype(
+                var desc = JoinSetComposerPrototypeForgeFactory.MakeComposerPrototype(
                     statementSpec,
                     joinAnalysisResult,
                     typeService,
@@ -405,6 +421,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     hasAggregations,
                     @base.StatementRawInfo,
                     services);
+                joinForge = desc.Forge;
+                additionalForgeables.AddAll(desc.AdditionalForgeables);
                 HandleIndexDependencies(joinForge.OptionalQueryPlan, services);
             }
 
@@ -435,7 +453,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
             //var statementFieldsClassName = namespaceScope.FieldsClassNameOptional;
 
-            var forge = new StatementAgentInstanceFactorySelectForge(
+            var forgeX = new StatementAgentInstanceFactorySelectForge(
                 typeService.StreamNames,
                 viewableActivatorForges,
                 resultSetProcessorProviderClassName,
@@ -454,30 +472,27 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 statementFieldsClassName,
                 services.IsInstrumented);
 
-            var forgables = new List<StmtClassForgable>();
-            forgables.Add(
-                new StmtClassForgableRSPFactoryProvider(
+            var forgeablesX = additionalForgeables
+                .Select(additional => additional.Make(namespaceScope, classPostfix))
+                .ToList();
+
+            forgeablesX.Add(
+                new StmtClassForgeableRSPFactoryProvider(
                     resultSetProcessorProviderClassName,
                     resultSetProcessorDesc,
                     namespaceScope,
                     @base.StatementRawInfo));
-            forgables.Add(
-                new StmtClassForgableOPVFactoryProvider(
+            forgeablesX.Add(
+                new StmtClassForgeableOPVFactoryProvider(
                     outputProcessViewProviderClassName,
                     outputProcessViewFactoryForge,
                     namespaceScope,
                     numStreams,
                     @base.StatementRawInfo));
-            forgables.Add(
-                new StmtClassForgableAIFactoryProviderSelect(
-                    statementAIFactoryProviderClassName,
-                    namespaceScope,
-                    forge));
-            forgables.Add(
-                new StmtClassForgableStmtFields(
-                    statementFieldsClassName, 
-                    namespaceScope, 
-                    numStreams));
+            forgeablesX.Add(
+                new StmtClassForgeableAIFactoryProviderSelect(statementAIFactoryProviderClassName, namespaceScope, forgeX));
+            forgeablesX.Add(
+                new StmtClassForgeableStmtFields(statementFieldsClassName, namespaceScope, numStreams));
 
             if (!dataflowOperator) {
                 var informationals = StatementInformationalsUtil.GetInformationals(
@@ -489,23 +504,17 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     resultSetProcessorDesc.SelectSubscriberDescriptor,
                     namespaceScope,
                     services);
-                forgables.Add(
-                    new StmtClassForgableStmtProvider(
-                        statementAIFactoryProviderClassName,
-                        statementProviderClassName,
-                        informationals,
-                        namespaceScope));
+                forgeablesX.Add(
+                    new StmtClassForgeableStmtProvider(statementAIFactoryProviderClassName, statementProviderClassName, informationals, namespaceScope));
             }
 
-            var forgableResult = new StmtForgeMethodResult(
-                forgables,
+            var forgeableResult = new StmtForgeMethodResult(
+                forgeablesX,
                 filterSpecCompileds,
                 scheduleHandleCallbackProviders,
                 namedWindowConsumers,
-                FilterSpecCompiled.MakeExprNodeList(
-                    filterSpecCompileds,
-                    Collections.GetEmptyList<FilterSpecParamExprNodeForge>()));
-            return new StmtForgeMethodSelectResult(forgableResult, resultSetProcessorDesc.ResultEventType, numStreams);
+                FilterSpecCompiled.MakeExprNodeList(filterSpecCompileds, EmptyList<FilterSpecParamExprNodeForge>.Instance));
+            return new StmtForgeMethodSelectResult(forgeableResult, resultSetProcessorDesc.ResultEventType, numStreams);
         }
 
         private static DataFlowActivationResult HandleDataflowActivation(
@@ -521,9 +530,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             var filterSpecCompiled = filterStreamSpec.FilterSpecCompiled;
             var eventType = filterSpecCompiled.ResultEventType;
             var typeName = filterStreamSpec.FilterSpecCompiled.FilterForEventTypeName;
-            var views = ViewFactoryForgeUtil.CreateForges(streamSpec.ViewSpecs, args, eventType);
+            ViewFactoryForgeDesc viewForgeDesc = ViewFactoryForgeUtil.CreateForges(streamSpec.ViewSpecs, args, eventType);
+            var views = viewForgeDesc.Forges;
             var viewableActivator = new ViewableActivatorDataFlowForge(eventType);
-            return new DataFlowActivationResult(eventType, typeName, viewableActivator, views);
+            return new DataFlowActivationResult(eventType, typeName, viewableActivator, views, viewForgeDesc.MultikeyForges);
         }
 
         private static void DetermineViewSchedules(
@@ -606,12 +616,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 EventType streamEventType,
                 string eventTypeName,
                 ViewableActivatorForge viewableActivatorForge,
-                IList<ViewFactoryForge> viewForges)
+                IList<ViewFactoryForge> viewForges,
+                IList<StmtClassForgeableFactory> additionalForgeables)
             {
                 StreamEventType = streamEventType;
                 EventTypeName = eventTypeName;
                 ViewableActivatorForge = viewableActivatorForge;
                 ViewForges = viewForges;
+                AdditionalForgeables = additionalForgeables;
             }
 
             public EventType StreamEventType { get; }
@@ -621,6 +633,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             public ViewableActivatorForge ViewableActivatorForge { get; }
 
             public IList<ViewFactoryForge> ViewForges { get; }
+            
+            public IList<StmtClassForgeableFactory> AdditionalForgeables { get; }
         }
     }
 } // end of namespace

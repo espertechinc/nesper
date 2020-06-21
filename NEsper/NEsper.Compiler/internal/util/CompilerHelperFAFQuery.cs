@@ -37,7 +37,7 @@ namespace com.espertech.esper.compiler.@internal.util
             var queryMethodProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(FAFQueryMethodProvider),
                 classPostfix);
-            var forgablesQueryMethod = query.MakeForgables(queryMethodProviderClassName, classPostfix, packageScope);
+            var forgablesQueryMethod = query.MakeForgeables(queryMethodProviderClassName, classPostfix, packageScope);
 
             IList<StmtClassForgable> forgables = new List<StmtClassForgable>(forgablesQueryMethod);
             forgables.Add(new StmtClassForgableStmtFields(statementFieldsClassName, packageScope, 0));
@@ -56,7 +56,7 @@ namespace com.espertech.esper.compiler.@internal.util
             classes.Sort(
                 (
                         o1,
-                        o2) => o1.InterfaceImplemented == typeof(StatementFields) ? -1 : 0);
+                        o2) => o1.OptionalInterfaceImplemented == typeof(StatementFields) ? -1 : 0);
 
             var compiler = new RoslynCompiler()
                 .WithCodeLogging(compileTimeServices.Configuration.Compiler.Logging.IsEnableCode)

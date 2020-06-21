@@ -30,15 +30,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     /// </summary>
     public class ExprInNodeForgeEvalWColl : ExprEvaluator
     {
-        private readonly ExprEvaluator[] evaluators;
-        private readonly ExprInNodeForge forge;
+        private readonly ExprEvaluator[] _evaluators;
+        private readonly ExprInNodeForge _forge;
 
         public ExprInNodeForgeEvalWColl(
             ExprInNodeForge forge,
             ExprEvaluator[] evaluators)
         {
-            this.forge = forge;
-            this.evaluators = evaluators;
+            this._forge = forge;
+            this._evaluators = evaluators;
         }
 
         public object Evaluate(
@@ -46,8 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var result = EvaluateInternal(eventsPerStream, isNewData, exprEvaluatorContext);
-            return result;
+            return EvaluateInternal(eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         private bool? EvaluateInternal(
@@ -55,13 +54,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var inPropResult = evaluators[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-            var isNotIn = forge.ForgeRenderable.IsNotIn;
+            var inPropResult = _evaluators[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var isNotIn = _forge.ForgeRenderable.IsNotIn;
 
-            var len = evaluators.Length - 1;
+            var len = _evaluators.Length - 1;
             var hasNullRow = false;
             for (var i = 1; i <= len; i++) {
-                var rightResult = evaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                var rightResult = _evaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (rightResult == null) {
                     continue;
@@ -90,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                             continue;
                         }
 
-                        if (!forge.IsMustCoerce) {
+                        if (!_forge.IsMustCoerce) {
                             if (inPropResult.Equals(item)) {
                                 return !isNotIn;
                             }
@@ -100,8 +99,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                 continue;
                             }
 
-                            var left = forge.Coercer.CoerceBoxed(inPropResult);
-                            var right = forge.Coercer.CoerceBoxed(item);
+                            var left = _forge.Coercer.CoerceBoxed(inPropResult);
+                            var right = _forge.Coercer.CoerceBoxed(item);
                             if (left.Equals(right)) {
                                 return !isNotIn;
                             }
@@ -125,14 +124,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         return null;
                     }
 
-                    if (!forge.IsMustCoerce) {
+                    if (!_forge.IsMustCoerce) {
                         if (inPropResult.Equals(rightResult)) {
                             return !isNotIn;
                         }
                     }
                     else {
-                        var left = forge.Coercer.CoerceBoxed(inPropResult);
-                        var right = forge.Coercer.CoerceBoxed(rightResult);
+                        var left = _forge.Coercer.CoerceBoxed(inPropResult);
+                        var right = _forge.Coercer.CoerceBoxed(rightResult);
                         if (left.Equals(right)) {
                             return !isNotIn;
                         }

@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
 
         public override string ToString()
         {
-            return this.GetType().Name +
+            return GetType().Name +
                    " " +
                    base.ToString() +
                    " keyProperties=" +
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
             CodegenClassScope classScope)
         {
             return Collections.SingletonList<CodegenExpression>(
-                CodegenEvaluator(keyExpr.Forge, method, this.GetType(), classScope));
+                CodegenEvaluator(keyExpr.Forge, method, GetType(), classScope));
         }
     }
 } // end of namespace

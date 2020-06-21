@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -21,12 +23,13 @@ namespace com.espertech.esper.common.@internal.context.controller.core
             FactoryEnv = ctx;
         }
 
+        public ContextControllerFactoryEnv Context => FactoryEnv;
         public ContextControllerFactoryEnv FactoryEnv { get; }
 
         public abstract ContextControllerPortableInfo ValidationInfo { get; }
 
         public abstract void ValidateGetContextProps(
-            LinkedHashMap<string, object> props,
+            IDictionary<string, object> props,
             string contextName,
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services);

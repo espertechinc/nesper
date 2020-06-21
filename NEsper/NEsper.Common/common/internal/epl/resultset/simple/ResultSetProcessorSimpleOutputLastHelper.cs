@@ -21,8 +21,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             EventBean[] oldData);
 
         void ProcessJoin(
-            ISet<MultiKey<EventBean>> newEvents,
-            ISet<MultiKey<EventBean>> oldEvents);
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents);
 
         UniformPair<EventBean[]> OutputView(bool isSynthesize);
 

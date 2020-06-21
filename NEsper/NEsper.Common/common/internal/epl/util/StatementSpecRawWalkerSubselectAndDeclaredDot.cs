@@ -62,6 +62,24 @@ namespace com.espertech.esper.common.@internal.epl.util
 
             // walk streams
             WalkStreamSpecs(spec, visitor);
+
+            // walk FAF
+            WalkFAFSpec(spec.FireAndForgetSpec, visitor);
+        }
+
+        private static void WalkFAFSpec(
+            FireAndForgetSpec fireAndForgetSpec,
+            ExprNodeSubselectDeclaredDotVisitor visitor)
+        {
+            if (fireAndForgetSpec == null) {
+                return;
+            }
+
+            if (fireAndForgetSpec is FireAndForgetSpecUpdate update) {
+                foreach (OnTriggerSetAssignment assignment in update.Assignments) {
+                    assignment.Expression.Accept(visitor);
+                }
+            }
         }
 
         public static void WalkStreamSpecs(

@@ -12,6 +12,7 @@ using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
+using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
@@ -20,6 +21,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
     public class CodegenExpressionCastUnderlying : CodegenExpression
     {
         private readonly Type _clazz;
+        private readonly String _clazzName;
         private readonly CodegenExpression _expression;
 
         public CodegenExpressionCastUnderlying(
@@ -27,6 +29,17 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             CodegenExpression expression)
         {
             _clazz = clazz;
+            _clazzName = null;
+            _expression = expression;
+        }
+
+
+        public CodegenExpressionCastUnderlying(
+            string clazzName,
+            CodegenExpression expression)
+        {
+            _clazz = null;
+            _clazzName = clazzName;
             _expression = expression;
         }
 
@@ -37,7 +50,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             CodegenIndent indent)
         {
             builder.Append("((");
-            AppendClassName(builder, _clazz);
+
+            if (_clazz != null) {
+                AppendClassName(builder, _clazz);
+            }
+            else {
+                builder.Append(_clazzName);
+            }
+
             builder.Append(")");
             _expression.Render(builder, isInnerClass, level, indent);
             builder.Append(".").Append("Underlying)");
@@ -45,8 +65,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void MergeClasses(ISet<Type> classes)
         {
-            classes.AddToSet(_clazz);
+            if (_clazz != null) {
+                classes.AddToSet(_clazz);
+            }
+
             _expression.MergeClasses(classes);
+        }
+
+        public void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            consumer.Invoke(_expression);
         }
     }
 } // end of namespace

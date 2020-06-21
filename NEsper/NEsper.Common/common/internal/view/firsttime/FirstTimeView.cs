@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.view.firsttime
 {
     public class FirstTimeView : ViewSupport,
         DataWindowView,
-        AgentInstanceStopCallback
+        AgentInstanceMgmtCallback
     {
         private readonly AgentInstanceContext agentInstanceContext;
         private readonly FirstTimeViewFactory factory;

@@ -155,7 +155,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             StatementCompileTimeServices compileTimeServices)
         {
             if (SelectClause == null) {
-                return null;
+                return RawEventType;
             }
 
             if (SubselectAggregationType != SubqueryAggregationType.FULLY_AGGREGATED_NOPROPS) {

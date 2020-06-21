@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
                 AnalyzeInNode(inNode, queryGraph);
             }
             else if (topNode is ExprOrNode) {
-                var rewritten = FilterSpecCompilerMakeParamUtil.RewriteOrToInIfApplicable(topNode);
+                var rewritten = FilterSpecCompilerIndexPlannerOrToInRewrite.RewriteOrToInIfApplicable(topNode, true);
                 if (rewritten is ExprInNode) {
                     var inNode = (ExprInNode) rewritten;
                     AnalyzeInNode(inNode, queryGraph);

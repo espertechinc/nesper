@@ -55,34 +55,33 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         /// <param name="resultSetProcessor">processor</param>
         /// <param name="parentView">view</param>
         /// <param name="distinct">flag</param>
+        /// <param name="distinctKeyGetter"></param>
         /// <returns>iterator</returns>
         public static IEnumerator<EventBean> GetEnumerator(
             JoinExecutionStrategy joinExecutionStrategy,
             ResultSetProcessor resultSetProcessor,
             Viewable parentView,
-            bool distinct)
+            bool distinct,
+            EventPropertyValueGetter distinctKeyGetter)
         {
             IEnumerator<EventBean> enumerator;
             EventType eventType;
             if (joinExecutionStrategy != null) {
                 var joinSet = joinExecutionStrategy.StaticJoin();
                 enumerator = resultSetProcessor.GetEnumerator(joinSet);
-                eventType = resultSetProcessor.ResultEventType;
             }
             else if (resultSetProcessor != null) {
                 enumerator = resultSetProcessor.GetEnumerator(parentView);
-                eventType = resultSetProcessor.ResultEventType;
             }
             else {
                 enumerator = parentView.GetEnumerator();
-                eventType = parentView.EventType;
             }
 
             if (!distinct) {
                 return enumerator;
             }
 
-            return EventDistinctEnumerator.For(enumerator, eventType);
+            return EventDistinctEnumerator.For(enumerator, distinctKeyGetter);
         }
     }
 } // end of namespace

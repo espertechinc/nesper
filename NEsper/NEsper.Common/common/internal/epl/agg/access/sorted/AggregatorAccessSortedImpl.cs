@@ -385,8 +385,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 classScope);
             method.Block
                 .DeclareVar<AggregationStateSorted>("state", NewInstance(typeof(AggregationStateSorted)))
-                .SetProperty(Ref("state"), "Size", RefCol("size", column))
-                .SetProperty(Ref("state"), "Sorted", RefCol("sorted", column))
+                .SetProperty(Ref("state"), "Size", MemberCol("size", column))
+                .SetProperty(Ref("state"), "Sorted", MemberCol("sorted", column))
                 .MethodReturn(Ref("state"));
             return LocalMethod(method);
         }

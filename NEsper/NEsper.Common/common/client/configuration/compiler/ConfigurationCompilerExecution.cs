@@ -30,12 +30,30 @@ namespace com.espertech.esper.common.client.configuration.compiler
         public bool IsEnabledDeclaredExprValueCache { get; private set; } = true;
 
         /// <summary>
+        /// Returns the setting instructing the compiler which level of filter index planning to perform (default is ADVANCED).
+        /// Please check the documentation for information on advanced planning.
+        /// </summary>
+        public FilterIndexPlanningEnum FilterIndexPlanning { get; set; } = FilterIndexPlanningEnum.ADVANCED;
+
+        /// <summary>
         ///     Sets indicator whether declared-expression-value-cache is enabled (true by default)
         /// </summary>
         /// <value>indicator</value>
         public bool EnabledDeclaredExprValueCache {
             get => IsEnabledDeclaredExprValueCache;
             set => IsEnabledDeclaredExprValueCache = value;
+        }
+        
+        /// <summary>
+        /// Controls the level of planning of filter indexes from filter expressions.
+        /// </summary>
+        public enum FilterIndexPlanningEnum {
+            /// <summary>No planning for filter indexes</summary>
+            NONE,
+            /// <summary>Only basic planning for filter indexes</summary>
+            BASIC,
+            /// <summary>Advanced planning</summary>
+            ADVANCED
         }
     }
 } // end of namespace

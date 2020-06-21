@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.view.time_accum
     /// </summary>
     public class TimeAccumViewRStream : ViewSupport,
         DataWindowView,
-        AgentInstanceStopCallback
+        AgentInstanceMgmtCallback
     {
         private readonly TimeAccumViewFactory _factory;
         private readonly AgentInstanceContext _agentInstanceContext;

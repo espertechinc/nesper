@@ -24,11 +24,12 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
     {
         private static readonly EventBean[][] NULL_ROWS;
 
-        protected internal ExprEvaluator evaluator;
-        protected internal EventType eventType;
-        protected internal bool hasRequiredStreams;
-        protected internal int scheduleCallbackId;
-        protected internal int streamNumber;
+        private ExprEvaluator _evaluator;
+        private EventType _eventType;
+        private bool _hasRequiredStreams;
+        private int _scheduleCallbackId;
+        private int _streamNumber;
+        private HistoricalEventViewableLookupValueToMultiKey _lookupValueToMultiKey;
 
         static HistoricalEventViewableFactoryBase()
         {
@@ -46,29 +47,34 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
 
         public abstract HistoricalEventViewable Activate(AgentInstanceContext agentInstanceContext);
 
+        public HistoricalEventViewableLookupValueToMultiKey LookupValueToMultiKey {
+            get => _lookupValueToMultiKey;
+            set => _lookupValueToMultiKey = value;
+        }
+
         public bool HasRequiredStreams {
-            get => hasRequiredStreams;
-            set => hasRequiredStreams = value;
+            get => _hasRequiredStreams;
+            set => _hasRequiredStreams = value;
         }
 
         public int ScheduleCallbackId {
-            get => scheduleCallbackId;
-            set => scheduleCallbackId = value;
+            get => _scheduleCallbackId;
+            set => _scheduleCallbackId = value;
         }
 
         public int StreamNumber {
-            get => streamNumber;
-            set => streamNumber = value;
+            get => _streamNumber;
+            set => _streamNumber = value;
         }
 
         public ExprEvaluator Evaluator {
-            get => evaluator;
-            set => evaluator = value;
+            get => _evaluator;
+            set => _evaluator = value;
         }
 
         public EventType EventType {
-            get => eventType;
-            set => eventType = value;
+            get => _eventType;
+            set => _eventType = value;
         }
     }
 } // end of namespace

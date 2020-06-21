@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
 {
@@ -17,14 +18,15 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
         void CollectInto(
             EventBean @event,
             object value,
-            TT target);
+            TT target,
+            ExprEvaluatorContext ctx);
     }
 
     public class ProxyQuadTreeCollector<TT> : QuadTreeCollector<TT>
     {
-        public Action<EventBean, object, TT> ProcCollectInto { get; set; }
+        public Action<EventBean, object, TT, ExprEvaluatorContext> ProcCollectInto { get; set; }
 
-        public ProxyQuadTreeCollector(Action<EventBean, object, TT> procCollectInto)
+        public ProxyQuadTreeCollector(Action<EventBean, object, TT, ExprEvaluatorContext> procCollectInto)
         {
             ProcCollectInto = procCollectInto;
         }
@@ -36,9 +38,10 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
         public void CollectInto(
             EventBean @event,
             object value,
-            TT target)
+            TT target,
+            ExprEvaluatorContext ctx)
         {
-            ProcCollectInto.Invoke(@event, value, target);
+            ProcCollectInto.Invoke(@event, value, target, ctx);
         }
     }
 } // end of namespace

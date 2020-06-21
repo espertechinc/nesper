@@ -12,15 +12,16 @@ using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
     public class CodegenStatementAssignArrayElement2Dim : CodegenStatementBase
     {
-        private readonly CodegenExpression array;
-        private readonly CodegenExpression expression;
-        private readonly CodegenExpression indexOne;
-        private readonly CodegenExpression indexTwo;
+        private readonly CodegenExpression _array;
+        private readonly CodegenExpression _expression;
+        private readonly CodegenExpression _indexOne;
+        private readonly CodegenExpression _indexTwo;
 
         public CodegenStatementAssignArrayElement2Dim(
             CodegenExpression array,
@@ -28,10 +29,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             CodegenExpression indexTwo,
             CodegenExpression expression)
         {
-            this.array = array;
-            this.indexOne = indexOne;
-            this.indexTwo = indexTwo;
-            this.expression = expression;
+            _array = array;
+            _indexOne = indexOne;
+            _indexTwo = indexTwo;
+            _expression = expression;
         }
 
         public override void RenderStatement(
@@ -39,21 +40,29 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             bool isInnerClass)
         {
             var indent = new CodegenIndent(true);
-            array.Render(builder, isInnerClass, 1, indent);
+            _array.Render(builder, isInnerClass, 1, indent);
             builder.Append("[");
-            indexOne.Render(builder, isInnerClass, 1, indent);
+            _indexOne.Render(builder, isInnerClass, 1, indent);
             builder.Append("][");
-            indexTwo.Render(builder, isInnerClass, 1, indent);
+            _indexTwo.Render(builder, isInnerClass, 1, indent);
             builder.Append("]=");
-            expression.Render(builder, isInnerClass, 1, indent);
+            _expression.Render(builder, isInnerClass, 1, indent);
         }
 
         public override void MergeClasses(ISet<Type> classes)
         {
-            array.MergeClasses(classes);
-            indexOne.MergeClasses(classes);
-            indexTwo.MergeClasses(classes);
-            expression.MergeClasses(classes);
+            _array.MergeClasses(classes);
+            _indexOne.MergeClasses(classes);
+            _indexTwo.MergeClasses(classes);
+            _expression.MergeClasses(classes);
+        }
+        
+        public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            consumer.Invoke(_array);
+            consumer.Invoke(_indexOne);
+            consumer.Invoke(_indexTwo);
+            consumer.Invoke(_expression);
         }
     }
 } // end of namespace

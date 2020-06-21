@@ -13,34 +13,35 @@ using System.Text;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
     public class CodegenStatementIfConditionBlock
     {
-        private readonly CodegenExpression condition;
-        private readonly CodegenBlock block;
+        private readonly CodegenExpression _condition;
+        private readonly CodegenBlock _block;
 
         public CodegenStatementIfConditionBlock(
             CodegenExpression condition,
             CodegenBlock block)
         {
-            this.condition = condition;
-            this.block = block;
+            _condition = condition;
+            _block = block;
         }
 
         public CodegenExpression Condition {
-            get => condition;
+            get => _condition;
         }
 
         public CodegenBlock Block {
-            get => block;
+            get => _block;
         }
 
         public void MergeClasses(ISet<Type> classes)
         {
-            condition.MergeClasses(classes);
-            block.MergeClasses(classes);
+            _condition.MergeClasses(classes);
+            _block.MergeClasses(classes);
         }
 
         public void Render(
@@ -50,11 +51,17 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             CodegenIndent indent)
         {
             builder.Append("if (");
-            condition.Render(builder, isInnerClass, level, indent);
+            _condition.Render(builder, isInnerClass, level, indent);
             builder.Append(") {\n");
-            block.Render(builder, isInnerClass, level + 1, indent);
+            _block.Render(builder, isInnerClass, level + 1, indent);
             indent.Indent(builder, level);
             builder.Append("}");
+        }
+
+        public void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            consumer.Invoke(_condition);
+            _block.TraverseExpressions(consumer);
         }
     }
 } // end of namespace

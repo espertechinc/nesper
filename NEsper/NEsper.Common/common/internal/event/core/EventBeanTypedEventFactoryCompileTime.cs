@@ -6,10 +6,16 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Xml;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.@event.arr;
+using com.espertech.esper.common.@internal.@event.bean.core;
+using com.espertech.esper.common.@internal.@event.json.core;
+using com.espertech.esper.common.@internal.@event.map;
+using com.espertech.esper.common.@internal.@event.xml;
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.@event.core
@@ -27,28 +33,35 @@ namespace com.espertech.esper.common.@internal.@event.core
             IDictionary<string, object> value,
             EventType eventType)
         {
-            throw new UnsupportedOperationException();
+            return new MapEventBean(value, eventType);
         }
 
         public ObjectArrayBackedEventBean AdapterForTypedObjectArray(
             object[] value,
             EventType eventType)
         {
-            throw new UnsupportedOperationException();
+            return new ObjectArrayEventBean(value, eventType);
         }
 
         public EventBean AdapterForTypedObject(
             object value,
             EventType eventType)
         {
-            throw new UnsupportedOperationException();
+            return new BeanEventBean(value, eventType);
         }
 
         public EventBean AdapterForTypedDOM(
             XmlNode value,
             EventType eventType)
         {
-            throw new UnsupportedOperationException();
+            return new XMLEventBean(value, eventType);
+        }
+
+        public EventBean AdapterForTypedJson(
+            object underlying,
+            EventType eventType)
+        {
+            return new JsonEventBean(underlying, eventType);
         }
 
         public EventBean AdapterForTypedAvro(
@@ -63,7 +76,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             IDictionary<string, object> map,
             EventType wrapperEventType)
         {
-            throw new UnsupportedOperationException();
+            return new WrapperEventBean(decoratedUnderlying, map, wrapperEventType);
         }
 
         private IllegalStateException GetUnsupported()

@@ -79,24 +79,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 builder.Append(booleanConstant ? "true" : "false");
             }
             else if (constant is Array asArray) {
-                if (asArray.Length == 0) {
-                    builder.Append("new ");
-                    AppendClassName(builder, constant.GetType().GetElementType());
-                    builder.Append("[]{}");
-                }
-                else {
-                    builder.Append("new ");
-                    AppendClassName(builder, constant.GetType().GetElementType());
-                    builder.Append("[] {");
-                    var delimiter = "";
-                    for (var i = 0; i < asArray.Length; i++) {
-                        builder.Append(delimiter);
-                        RenderConstant(builder, asArray.GetValue(i));
-                        delimiter = ",";
-                    }
-
-                    builder.Append("}");
-                }
+                RenderArray(builder, asArray);
             }
             else if (constant.GetType().IsEnum) {
                 AppendClassName(builder, constant.GetType());
@@ -110,6 +93,29 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             }
             else {
                 builder.Append(constant);
+            }
+        }
+
+        private static void RenderArray(StringBuilder builder,
+            Array asArray)
+        {
+            if (asArray.Length == 0) {
+                builder.Append("new ");
+                AppendClassName(builder, asArray.GetType().GetElementType());
+                builder.Append("[]{}");
+            }
+            else {
+                builder.Append("new ");
+                AppendClassName(builder, asArray.GetType().GetElementType());
+                builder.Append("[] {");
+                var delimiter = "";
+                for (var i = 0; i < asArray.Length; i++) {
+                    builder.Append(delimiter);
+                    RenderConstant(builder, asArray.GetValue(i));
+                    delimiter = ",";
+                }
+
+                builder.Append("}");
             }
         }
 

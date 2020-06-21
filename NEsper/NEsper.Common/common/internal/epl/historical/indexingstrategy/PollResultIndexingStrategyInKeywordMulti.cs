@@ -53,7 +53,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
                     new[] {PropertyNames[i]},
                     false,
                     null,
-                    ValueGetters[i]);
+                    ValueGetters[i],
+                    null);
             }
         }
     }

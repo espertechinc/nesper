@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             AgentInstanceContext agentInstanceContext)
         {
             if (tableAccesses == null || tableAccesses.IsEmpty()) {
-                return new EmptyDictionary<int, ExprTableEvalStrategy>();
+                return EmptyDictionary<int, ExprTableEvalStrategy>.Instance;
             }
 
             var writesToTables = agentInstanceContext.StatementContext.StatementInformationals.IsWritesToTables;

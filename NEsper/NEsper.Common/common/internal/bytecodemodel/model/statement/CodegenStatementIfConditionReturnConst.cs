@@ -12,6 +12,7 @@ using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionUtil;
 
@@ -19,15 +20,15 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
     public class CodegenStatementIfConditionReturnConst : CodegenStatementBase
     {
-        private readonly CodegenExpression condition;
-        private readonly object constant;
+        private readonly CodegenExpression _condition;
+        private readonly object _constant;
 
         public CodegenStatementIfConditionReturnConst(
             CodegenExpression condition,
             object constant)
         {
-            this.condition = condition;
-            this.constant = constant;
+            _condition = condition;
+            _constant = constant;
         }
 
         public override void RenderStatement(
@@ -35,14 +36,19 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             bool isInnerClass)
         {
             builder.Append("if (");
-            condition.Render(builder, isInnerClass, 4, new CodegenIndent(true));
+            _condition.Render(builder, isInnerClass, 4, new CodegenIndent(true));
             builder.Append(") return ");
-            RenderConstant(builder, constant);
+            RenderConstant(builder, _constant);
         }
 
         public override void MergeClasses(ISet<Type> classes)
         {
-            condition.MergeClasses(classes);
+            _condition.MergeClasses(classes);
+        }
+
+        public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+            consumer.Invoke(_condition);
         }
     }
 } // end of namespace

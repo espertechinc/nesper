@@ -7,9 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -19,6 +21,8 @@ using com.espertech.esper.common.@internal.epl.output.view;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.util;
+using com.espertech.esper.common.@internal.serde.compiletime.eventtype;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 
 namespace com.espertech.esper.common.@internal.epl.output.core
 {
@@ -27,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
     /// </summary>
     public class OutputProcessViewForgeFactory
     {
-        public static OutputProcessViewFactoryForge Make(
+        public static OutputProcessViewFactoryForgeDesc Make(
             EventType[] typesPerStream,
             EventType resultEventType,
             ResultSetProcessorType resultSetProcessorType,
@@ -42,6 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             bool isDistinct = statementSpec.Raw.SelectClauseSpec.IsDistinct;
             bool isGrouped = statementSpec.GroupByExpressions != null &&
                              statementSpec.GroupByExpressions.GroupByNodes.Length > 0;
+            List<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>();
 
             // determine routing
             bool isRouted = false;
@@ -79,6 +84,14 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                     audit);
             }
 
+            MultiKeyPlan multiKeyPlan = MultiKeyPlanner.PlanMultiKeyDistinct(
+                isDistinct,
+                resultEventType,
+                statementRawInfo,
+                SerdeCompileTimeResolverNonHA.INSTANCE);
+            MultiKeyClassRef distinctMultiKey = multiKeyPlan.ClassRef;
+            additionalForgeables.AddRange(multiKeyPlan.MultiKeyForgeables);
+
             OutputProcessViewFactoryForge outputProcessViewFactoryForge;
             if (outputLimitSpec == null) {
                 if (!isDistinct) {
@@ -96,6 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                     outputProcessViewFactoryForge = new OutputProcessViewDirectDistinctOrAfterFactoryForge(
                         outputStrategyPostProcessForge,
                         isDistinct,
+                        distinctMultiKey,
                         null,
                         null,
                         resultEventType);
@@ -105,6 +119,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                 outputProcessViewFactoryForge = new OutputProcessViewDirectDistinctOrAfterFactoryForge(
                     outputStrategyPostProcessForge,
                     isDistinct,
+                    distinctMultiKey,
                     outputLimitSpec.AfterTimePeriodExpr,
                     outputLimitSpec.AfterNumberOfEvents,
                     resultEventType);
@@ -137,11 +152,22 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                                 hasOptHint,
                                 resultSetProcessorType.IsGrouped());
 
+                    // plan serdes
+                    foreach (EventType eventType in typesPerStream) {
+                        IList<StmtClassForgeableFactory> serdeForgeables = SerdeEventTypeUtility.Plan(
+                            eventType,
+                            statementRawInfo,
+                            services.SerdeEventTypeRegistry,
+                            services.SerdeResolver);
+                        additionalForgeables.AddRange(serdeForgeables);
+                    }
+                    
                     bool terminable = outputLimitSpec.RateType == OutputLimitRateType.TERM ||
                                       outputLimitSpec.IsAndAfterTerminate;
                     outputProcessViewFactoryForge = new OutputProcessViewConditionForge(
                         outputStrategyPostProcessForge,
                         isDistinct,
+                        distinctMultiKey,
                         outputLimitSpec.AfterTimePeriodExpr,
                         outputLimitSpec.AfterNumberOfEvents,
                         outputConditionFactoryForge,
@@ -155,11 +181,11 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                         resultEventType);
                 }
                 catch (Exception ex) {
-                    throw new ExprValidationException("Error in the output rate limiting clause: " + ex.Message, ex);
+                    throw new ExprValidationException("Failed to validate the output rate limiting clause: " + ex.Message, ex);
                 }
             }
-
-            return outputProcessViewFactoryForge;
+            
+            return new OutputProcessViewFactoryForgeDesc(outputProcessViewFactoryForge, additionalForgeables);
         }
 
         public static OutputProcessViewFactoryForge Make()

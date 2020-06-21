@@ -48,7 +48,9 @@ namespace com.espertech.esper.common.@internal.@event.avro
         AvroSchemaEventType NewEventTypeFromJson(
             EventTypeMetadata metadata,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
-            string schemaJson);
+            string schemaJson,
+            IList<EventType> superTypes,
+            ISet<EventType> deepSuperTypes);
 
         EventBean AdapterForTypeAvro(
             object avroGenericDataDotRecord,

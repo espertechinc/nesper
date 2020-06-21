@@ -23,10 +23,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     [Serializable]
     public class ExprMathNode : ExprNodeBase
     {
-        private readonly bool isDivisionByZeroReturnsNull;
-        private readonly bool isIntegerDivision;
+        private readonly bool _isDivisionByZeroReturnsNull;
+        private readonly bool _isIntegerDivision;
 
-        [NonSerialized] private ExprMathNodeForge forge;
+        [NonSerialized] private ExprMathNodeForge _forge;
 
         /// <summary>
         ///     Ctor.
@@ -40,21 +40,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isDivisionByZeroReturnsNull)
         {
             MathArithTypeEnum = mathArithTypeEnum;
-            this.isIntegerDivision = isIntegerDivision;
-            this.isDivisionByZeroReturnsNull = isDivisionByZeroReturnsNull;
+            this._isIntegerDivision = isIntegerDivision;
+            this._isDivisionByZeroReturnsNull = isDivisionByZeroReturnsNull;
         }
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
         public override ExprForge Forge {
             get {
-                CheckValidated(forge);
-                return forge;
+                CheckValidated(_forge);
+                return _forge;
             }
         }
 
@@ -132,7 +132,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 resultType = lhsType.GetArithmaticCoercionType(rhsType);
             }
 
-            if (MathArithTypeEnum == MathArithTypeEnum.DIVIDE && !isIntegerDivision) {
+            if (MathArithTypeEnum == MathArithTypeEnum.DIVIDE && !_isIntegerDivision) {
                 if (!resultType.IsDecimal()) {
                     resultType = typeof(double?);
                 }
@@ -140,7 +140,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             // If ths isDivisionByZeroReturnsNull is set, it requires promotion to boxed types
             // to support passing back null.
-            if (isDivisionByZeroReturnsNull) {
+            if (_isDivisionByZeroReturnsNull) {
                 resultType = resultType.GetBoxedType();
             }
             
@@ -149,18 +149,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 resultType,
                 lhsType,
                 rhsType,
-                isIntegerDivision,
-                isDivisionByZeroReturnsNull,
+                _isIntegerDivision,
+                _isDivisionByZeroReturnsNull,
                 validationContext.ImportService.DefaultMathContext);
-            forge = new ExprMathNodeForge(this, arithTypeEnumComputer, resultType);
+            _forge = new ExprMathNodeForge(this, arithTypeEnumComputer, resultType);
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
-            ChildNodes[0].ToEPL(writer, Precedence);
+            ChildNodes[0].ToEPL(writer, Precedence, flags);
             writer.Write(MathArithTypeEnum.GetExpressionText());
-            ChildNodes[1].ToEPL(writer, Precedence);
+            ChildNodes[1].ToEPL(writer, Precedence, flags);
         }
 
         public override bool EqualsNode(

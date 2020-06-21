@@ -25,7 +25,8 @@ namespace com.espertech.esper.common.@internal.settings
 
         Type ResolveClass(
             string className,
-            bool forAnnotation);
+            bool forAnnotation,
+            ExtensionClass extensionClass);
 
         ConstructorInfo ResolveCtor(
             Type clazz,
@@ -43,7 +44,8 @@ namespace com.espertech.esper.common.@internal.settings
             string methodName,
             Type[] paramTypes,
             bool[] allowEventBeanType,
-            bool[] allowEventBeanCollType);
+            bool[] allowEventBeanCollType,
+            ExtensionClass extensionClass);
 
         Type ResolveClassForBeanEventType(string fullyQualClassName);
     }

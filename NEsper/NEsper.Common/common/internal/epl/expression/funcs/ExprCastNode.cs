@@ -298,15 +298,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write("cast(");
-            ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+            ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
             writer.Write(",");
             ClassIdentifierWArray.ToEPL(writer);
             for (var i = 1; i < ChildNodes.Length; i++) {
                 writer.Write(",");
-                ChildNodes[i].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+                ChildNodes[i].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
             }
 
             writer.Write(')');

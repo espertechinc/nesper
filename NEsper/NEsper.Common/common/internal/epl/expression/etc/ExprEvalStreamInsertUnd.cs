@@ -22,18 +22,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 {
     public class ExprEvalStreamInsertUnd : ExprForgeInstrumentable
     {
-        private readonly ExprStreamUnderlyingNode undNode;
-        private readonly int streamNum;
-        private readonly Type returnType;
+        private readonly ExprStreamUnderlyingNode _undNode;
+        private readonly int _streamNum;
+        private readonly Type _returnType;
 
         public ExprEvalStreamInsertUnd(
             ExprStreamUnderlyingNode undNode,
             int streamNum,
             Type returnType)
         {
-            this.undNode = undNode;
-            this.streamNum = streamNum;
-            this.returnType = returnType;
+            this._undNode = undNode;
+            this._streamNum = streamNum;
+            this._returnType = returnType;
         }
 
         public CodegenExpression EvaluateCodegen(
@@ -59,20 +59,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             CodegenClassScope codegenClassScope)
         {
             CodegenMethod methodNode = codegenMethodScope.MakeChild(
-                typeof(EventBean),
+                _returnType,
                 typeof(ExprEvalStreamInsertUnd),
                 codegenClassScope);
 
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
                 .IfCondition(EqualsNull(refEPS))
-                .BlockReturn(ConstantNull())
-                .MethodReturn(ArrayAtIndex(refEPS, Constant(streamNum)));
+                .DeclareVar<EventBean>("bean", ArrayAtIndex(refEPS, Constant(_streamNum)))
+                .IfRefNullReturnNull("bean")
+                .MethodReturn(Cast(_returnType, ExprDotUnderlying(Ref("bean"))));
+            
             return LocalMethod(methodNode);
         }
 
         public int StreamNum {
-            get => streamNum;
+            get => _streamNum;
         }
 
         public ExprEvaluator ExprEvaluator {
@@ -84,11 +86,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         }
 
         public Type UnderlyingReturnType {
-            get => returnType;
+            get => _returnType;
         }
 
         public ExprNodeRenderable ExprForgeRenderable {
-            get => undNode;
+            get => _undNode;
         }
 
         public ExprForgeConstantType ForgeConstantType {

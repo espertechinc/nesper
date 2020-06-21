@@ -13,6 +13,7 @@ using System.Linq;
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.soda;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.context.compile;
@@ -22,6 +23,7 @@ using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.expression.agg.accessagg;
 using com.espertech.esper.common.@internal.epl.expression.agg.method;
+using com.espertech.esper.common.@internal.epl.expression.chain;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.declared.compiletime;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
@@ -163,6 +165,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             MapFireAndForget(sodaStatement.FireAndForgetClause, raw, mapContext);
             MapExpressionDeclaration(sodaStatement.ExpressionDeclarations, raw, mapContext);
             MapScriptExpressions(sodaStatement.ScriptExpressions, raw, mapContext);
+            MapClassProvidedExpressions(sodaStatement.ClassProvidedExpressions, raw, mapContext);
             MapContextName(sodaStatement.ContextName, raw, mapContext);
             MapUpdateClause(sodaStatement.UpdateClause, raw, mapContext);
             MapCreateContext(sodaStatement.CreateContext, raw, mapContext);
@@ -172,6 +175,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             MapCreateTable(sodaStatement.CreateTable, raw, mapContext);
             MapCreateSchema(sodaStatement.CreateSchema, raw, mapContext);
             MapCreateExpression(sodaStatement.CreateExpression, raw, mapContext);
+            MapCreateClass(sodaStatement.CreateClass, raw, mapContext);
             MapCreateGraph(sodaStatement.CreateDataFlow, raw, mapContext);
             MapOnTrigger(sodaStatement.OnExpr, raw, mapContext);
             var desc = MapInsertInto(sodaStatement.InsertInto);
@@ -188,6 +192,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             MapForClause(sodaStatement.ForClause, raw, mapContext);
             MapSQLParameters(sodaStatement.FromClause, raw, mapContext);
             MapIntoVariableClause(sodaStatement.IntoTableClause, raw, mapContext);
+
             return raw;
         }
 
@@ -206,10 +211,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             StatementSpecRaw raw,
             StatementSpecMapContext mapContext)
         {
-            if (fireAndForgetClause == null) {
-                return;
-            }
-            else if (fireAndForgetClause is FireAndForgetDelete) {
+            if (fireAndForgetClause is FireAndForgetDelete) {
                 raw.FireAndForgetSpec = new FireAndForgetSpecDelete();
             }
             else if (fireAndForgetClause is FireAndForgetInsert insert) {
@@ -224,6 +226,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
 
                 var updspec = new FireAndForgetSpecUpdate(assignments);
                 raw.FireAndForgetSpec = updspec;
+            }
+            else if (fireAndForgetClause == null) {
+                return;
             }
             else {
                 throw new IllegalStateException("Unrecognized fire-and-forget clause " + fireAndForgetClause);
@@ -247,13 +252,13 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             StatementSpecUnMapContext unmapContext)
         {
             var model = new EPStatementObjectModel();
-            var annotations = UnmapAnnotations(statementSpec.Annotations);
-            model.Annotations = annotations;
+
+            model.Annotations = UnmapAnnotations(statementSpec.Annotations);
             UnmapFireAndForget(statementSpec.FireAndForgetSpec, model, unmapContext);
-            var expressionDeclarations = UnmapExpressionDeclarations(statementSpec.ExpressionDeclDesc, unmapContext);
-            model.ExpressionDeclarations = expressionDeclarations;
-            var scripts = UnmapScriptExpressions(statementSpec.ScriptExpressions, unmapContext);
-            model.ScriptExpressions = scripts;
+            model.ExpressionDeclarations = UnmapExpressionDeclarations(statementSpec.ExpressionDeclDesc, unmapContext);
+            model.ScriptExpressions = UnmapScriptExpressions(statementSpec.ScriptExpressions, unmapContext);
+            model.ClassProvidedExpressions = UnmapClassProvidedList(statementSpec.ClassProvidedList, unmapContext);
+            
             UnmapContextName(statementSpec.OptionalContextName, model);
             UnmapCreateContext(statementSpec.CreateContextDesc, model, unmapContext);
             UnmapCreateWindow(statementSpec.CreateWindowDesc, model, unmapContext);
@@ -261,7 +266,11 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             UnmapCreateVariable(statementSpec.CreateVariableDesc, model, unmapContext);
             UnmapCreateTable(statementSpec.CreateTableDesc, model, unmapContext);
             UnmapCreateSchema(statementSpec.CreateSchemaDesc, model, unmapContext);
+            
+            UnmapCreateSchema(statementSpec.CreateSchemaDesc, model, unmapContext);
             UnmapCreateExpression(statementSpec.CreateExpressionDesc, model, unmapContext);
+            UnmapCreateClass(statementSpec.CreateClassProvided, model);
+            
             UnmapCreateGraph(statementSpec.CreateDataFlowDesc, model, unmapContext);
             UnmapUpdateClause(statementSpec.StreamSpecs, statementSpec.UpdateDesc, model, unmapContext);
             UnmapOnClause(statementSpec.OnTriggerDesc, model, unmapContext);
@@ -283,6 +292,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             UnmapForClause(statementSpec.ForClauseSpec, model, unmapContext);
             UnmapSQLParameters(statementSpec.SqlParameters, unmapContext);
             UnmapIntoVariableClause(statementSpec.IntoTableSpec, model, unmapContext);
+
             return model;
         }
 
@@ -326,10 +336,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             EPStatementObjectModel model,
             StatementSpecUnMapContext unmapContext)
         {
-            if (fireAndForgetSpec == null) {
-                return;
-            }
-            else if (fireAndForgetSpec is FireAndForgetSpecDelete) {
+            if (fireAndForgetSpec is FireAndForgetSpecDelete) {
                 model.FireAndForgetClause = new FireAndForgetDelete();
             }
             else if (fireAndForgetSpec is FireAndForgetSpecInsert insert) {
@@ -343,6 +350,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                 }
 
                 model.FireAndForgetClause = faf;
+            }
+            else if (fireAndForgetSpec == null) {
+                return;
             }
             else {
                 throw new IllegalStateException("Unrecognized type of fire-and-forget: " + fireAndForgetSpec);
@@ -493,11 +503,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
         }
 
         private static OnMergeMatchedInsertAction UnmapMergeInsert(
-            OnTriggerMergeActionInsert actionitem,
+            OnTriggerMergeActionInsert insert,
             StatementSpecUnMapContext unmapContext)
         {
-            var insert = (OnTriggerMergeActionInsert) actionitem;
-            IList<string> columnNames = new List<string>(insert.Columns);
+            var columnNames = new List<string>(insert.Columns);
             var select = UnmapSelectClauseElements(insert.SelectClause, unmapContext);
             var optionalCondition = insert.OptionalWhereClause == null
                 ? null
@@ -610,11 +619,11 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                 IList<ContextDescriptorHashSegmentedItem> hashes = new List<ContextDescriptorHashSegmentedItem>();
                 foreach (var item in initSpecHash.Items) {
                     var dot = UnmapChains(
-                        new List<ExprChainedSpec>(Collections.SingletonList(item.Function)),
+                        Collections.SingletonList(item.Function),
                         unmapContext,
                         false)[0];
                     var dotExpression =
-                        new SingleRowMethodExpression(new List<DotExpressionItem>(Collections.SingletonList(dot)));
+                        new SingleRowMethodExpression(Collections.SingletonList<DotExpressionItem>(dot));
                     var filter = UnmapFilter(item.FilterSpecRaw, unmapContext);
                     hashes.Add(new ContextDescriptorHashSegmentedItem(dotExpression, filter));
                 }
@@ -640,8 +649,11 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             StatementSpecUnMapContext unmapContext)
         {
             if (endpoint is ContextSpecConditionCrontab crontab) {
-                var crontabExpr = UnmapExpressionDeep(crontab.Crontab, unmapContext);
-                return new ContextDescriptorConditionCrontab(crontabExpr, crontab.IsImmediate);
+                var crontabExprList = crontab.Crontabs
+                    .Select(crontabItem => UnmapExpressionDeep(crontabItem, unmapContext))
+                    .Cast<IList<Expression>>()
+                    .ToList();
+                return new ContextDescriptorConditionCrontab(crontabExprList, crontab.IsImmediate);
             }
             else if (endpoint is ContextSpecConditionPattern pattern) {
                 var patternExpr = UnmapPatternEvalDeep(pattern.PatternRaw, unmapContext);
@@ -774,6 +786,17 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             model.CreateExpression = clause;
         }
 
+        private static void UnmapCreateClass(
+            String createClassClassText,
+            EPStatementObjectModel model)
+        {
+            if (createClassClassText == null) {
+                return;
+            }
+            
+            model.CreateClass = new CreateClassClause(createClassClassText);
+        }
+        
         private static CreateSchemaClause UnmapCreateSchemaInternal(
             CreateSchemaDesc desc,
             StatementSpecUnMapContext unmapContext)
@@ -921,16 +944,13 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             }
 
             OutputLimitClause clause;
-            var unit = OutputLimitUnit.EVENTS;
             if (outputLimitSpec.RateType == OutputLimitRateType.TIME_PERIOD) {
-                unit = OutputLimitUnit.TIME_PERIOD;
                 var timePeriod = (TimePeriodExpression) UnmapExpressionDeep(
                     outputLimitSpec.TimePeriodExpr,
                     unmapContext);
                 clause = new OutputLimitClause(selector, timePeriod);
             }
             else if (outputLimitSpec.RateType == OutputLimitRateType.AFTER) {
-                unit = OutputLimitUnit.AFTER;
                 if (outputLimitSpec.AfterTimePeriodExpr != null) {
                     var after = (TimePeriodExpression) UnmapExpressionDeep(
                         outputLimitSpec.AfterTimePeriodExpr,
@@ -946,7 +966,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                 }
             }
             else if (outputLimitSpec.RateType == OutputLimitRateType.WHEN_EXPRESSION) {
-                unit = OutputLimitUnit.WHEN_EXPRESSION;
                 var whenExpression = UnmapExpressionDeep(outputLimitSpec.WhenExpressionNode, unmapContext);
                 IList<Assignment> thenAssignments = new List<Assignment>();
                 clause = new OutputLimitClause(selector, whenExpression, thenAssignments);
@@ -958,7 +977,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                 }
             }
             else if (outputLimitSpec.RateType == OutputLimitRateType.CRONTAB) {
-                unit = OutputLimitUnit.CRONTAB_EXPRESSION;
                 var timerAtExpressions = outputLimitSpec.CrontabAtSchedule;
                 var mappedExpr = UnmapExpressionDeep(timerAtExpressions, unmapContext);
                 clause = new OutputLimitClause(selector, mappedExpr.ToArray());
@@ -971,7 +989,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                     selector,
                     outputLimitSpec.Rate,
                     outputLimitSpec.VariableName,
-                    unit);
+                    OutputLimitUnit.EVENTS);
             }
 
             clause.AfterNumberOfEvents = outputLimitSpec.AfterNumberOfEvents;
@@ -1832,25 +1850,23 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             ContextDescriptorCondition condition,
             StatementSpecMapContext mapContext)
         {
-            if (condition is ContextDescriptorConditionCrontab) {
-                var crontab = (ContextDescriptorConditionCrontab) condition;
-                var expr = MapExpressionDeep(crontab.CrontabExpressions, mapContext);
+            if (condition is ContextDescriptorConditionCrontab crontab) {
+                var expr = crontab.CrontabExpressions
+                    .Select(crontabItem => MapExpressionDeep(crontabItem, mapContext))
+                    .ToList();
                 return new ContextSpecConditionCrontab(expr, crontab.IsNow);
             }
-            else if (condition is ContextDescriptorConditionFilter) {
-                var filter = (ContextDescriptorConditionFilter) condition;
+            else if (condition is ContextDescriptorConditionFilter filter) {
                 var filterExpr = MapFilter(filter.Filter, mapContext);
                 return new ContextSpecConditionFilter(filterExpr, filter.OptionalAsName);
             }
 
-            if (condition is ContextDescriptorConditionPattern) {
-                var pattern = (ContextDescriptorConditionPattern) condition;
+            if (condition is ContextDescriptorConditionPattern pattern) {
                 var patternExpr = MapPatternEvalDeep(pattern.Pattern, mapContext);
                 return new ContextSpecConditionPattern(patternExpr, pattern.IsInclusive, pattern.IsNow);
             }
 
-            if (condition is ContextDescriptorConditionTimePeriod) {
-                var timePeriod = (ContextDescriptorConditionTimePeriod) condition;
+            if (condition is ContextDescriptorConditionTimePeriod timePeriod) {
                 var expr = MapExpressionDeep(timePeriod.TimePeriod, mapContext);
                 return new ContextSpecConditionTimePeriod((ExprTimePeriod) expr, timePeriod.IsNow);
             }
@@ -2007,6 +2023,18 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             raw.CreateSchemaDesc = MapCreateSchemaInternal(clause, raw, mapContext);
         }
 
+        private static void MapCreateClass(
+            CreateClassClause clause,
+            StatementSpecRaw raw,
+            StatementSpecMapContext mapContext)
+        {
+            if (clause == null) {
+                return;
+            }
+
+            raw.CreateClassProvided = clause.ClassProvidedExpression.ClassText;
+        }
+        
         private static void MapCreateExpression(
             CreateExpressionClause clause,
             StatementSpecRaw raw,
@@ -2095,9 +2123,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                 else if (value is Expression) {
                     value = MapExpressionDeep((Expression) value, mapContext);
                 }
-                else {
-                    // no action
-                }
 
                 detail.Put(entry.ParameterName, value);
             }
@@ -2125,30 +2150,16 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
 
         private static IList<ColumnDesc> MapColumns(IList<SchemaColumnDesc> columns)
         {
-            if (columns == null) {
-                return null;
-            }
-
-            IList<ColumnDesc> result = new List<ColumnDesc>();
-            foreach (var col in columns) {
-                result.Add(new ColumnDesc(col.Name, col.Type));
-            }
-
-            return result;
+            return columns?
+                .Select(col => new ColumnDesc(col.Name, col.Type))
+                .ToList();
         }
 
         private static IList<SchemaColumnDesc> UnmapColumns(IList<ColumnDesc> columns)
         {
-            if (columns == null) {
-                return null;
-            }
-
-            IList<SchemaColumnDesc> result = new List<SchemaColumnDesc>();
-            foreach (var col in columns) {
-                result.Add(new SchemaColumnDesc(col.Name, col.Type));
-            }
-
-            return result;
+            return columns?
+                .Select(col => new SchemaColumnDesc(col.Name, col.Type))
+                .ToList();
         }
 
         private static InsertIntoDesc MapInsertInto(InsertIntoClause insertInto)
@@ -2408,6 +2419,12 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                     }
                 }
 
+                if (!CodegenExpressionUtil.CanRenderConstant(op.Constant)) {
+                    throw new EPException(
+                        "Invalid constant of type '" + op.Constant.GetType().CleanName() + 
+                        "' encountered as the class has no compiler representation, please use substitution parameters instead");
+                }
+                
                 return new ExprConstantNodeImpl(op.Constant, constantType);
             }
             else if (expr is ConcatExpression) {
@@ -2421,8 +2438,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             else if (expr is SubqueryInExpression) {
                 var sub = (SubqueryInExpression) expr;
                 var rawSubselect = Map(sub.Model, mapContext);
-                var inSub = new ExprSubselectInNode(rawSubselect, sub.IsNotIn);
-                return inSub;
+                return new ExprSubselectInNode(rawSubselect, sub.IsNotIn);
             }
             else if (expr is SubqueryExistsExpression) {
                 var sub = (SubqueryExistsExpression) expr;
@@ -2482,7 +2498,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             else if (expr is StaticMethodExpression) {
                 var method = (StaticMethodExpression) expr;
                 var chained = MapChains(method.Chain, mapContext);
-                chained.Insert(0, new ExprChainedSpec(method.ClassName, Collections.GetEmptyList<ExprNode>(), false));
+                chained.Insert(0, new ChainableCall(method.ClassName, Collections.GetEmptyList<ExprNode>()));
                 return new ExprDotNodeImpl(
                     chained,
                     mapContext.Configuration.Compiler.Expression.IsDuckTyping,
@@ -2528,8 +2544,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             }
             else if (expr is BitwiseOpExpression) {
                 var bit = (BitwiseOpExpression) expr;
-                // return new ExprBitWiseNode(bit.getBinaryOp());
-                throw new UnsupportedOperationException();
+                return new ExprBitWiseNode(bit.BinaryOp);
             }
             else if (expr is ArrayExpression) {
                 return new ExprArrayNode();
@@ -2607,7 +2622,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             }
             else if (expr is NewInstanceOperatorExpression) {
                 var noe = (NewInstanceOperatorExpression) expr;
-                return new ExprNewInstanceNode(noe.ClassName);
+                return new ExprNewInstanceNode(noe.ClassName, noe.NumArrayDimensions);
             }
             else if (expr is CompareListExpression) {
                 var exp = (CompareListExpression) expr;
@@ -2632,11 +2647,12 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                 }
 
                 var chain = MapChains(single.Chain, mapContext);
-                var functionName = chain[0].Name;
+                var call = (ChainableCall) chain[0];
+                var functionName = call.Name;
 
                 Pair<Type, ImportSingleRowDesc> pair;
                 try {
-                    pair = mapContext.ImportService.ResolveSingleRow(functionName);
+                    pair = mapContext.ImportService.ResolveSingleRow(functionName, mapContext.ClassProvidedExtension);
                 }
                 catch (Exception e) {
                     throw new ArgumentException(
@@ -2647,7 +2663,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                         e);
                 }
 
-                chain[0].Name = pair.Second.MethodName;
+                call.Name = pair.Second.MethodName;
                 return new ExprPlugInSingleRowNode(functionName, pair.First, chain, pair.Second);
             }
             else if (expr is PlugInProjectionExpression) {
@@ -2656,7 +2672,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                     mapContext.ImportService,
                     node.IsDistinct,
                     node.FunctionName,
-                    mapContext.PlugInAggregations);
+                    mapContext.PlugInAggregations,
+                    mapContext.ClassProvidedExtension);
                 if (exprNode == null) {
                     throw new EPException("Error resolving aggregation function named '" + node.FunctionName + "'");
                 }
@@ -2699,7 +2716,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                 return new ExprNumberSetCronParam(@operator);
             }
             else if (expr is AccessProjectionExpressionBase) {
-                var theBase = (AccessProjectionExpressionBase) expr;
                 AggregationAccessorLinearType type;
                 if (expr is FirstProjectionExpression) {
                     type = AggregationAccessorLinearType.FIRST;
@@ -2715,66 +2731,17 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             }
             else if (expr is DotExpression) {
                 var theBase = (DotExpression) expr;
+                // the first chain element may itself be nested:
+                //   chain.get(0)="table.a" (looks like a class name)
+                //   chain.get(1)="doit()"
+
                 var chain = MapChains(theBase.Chain, mapContext);
-
-                // determine table use
-                IList<ExprChainedSpec> workChain = new List<ExprChainedSpec>(chain);
-                var tableNameCandidate = workChain[0].Name;
-                var pair = TableCompileTimeUtil.CheckTableNameGetLibFunc(
-                    mapContext.TableCompileTimeResolver,
-                    mapContext.ImportService,
-                    mapContext.PlugInAggregations,
-                    tableNameCandidate,
-                    workChain);
-                if (pair != null) {
-                    mapContext.TableExpressions.Add(pair.First);
-                    if (pair.Second.IsEmpty()) {
-                        return pair.First;
-                    }
-
-                    ExprDotNode dotNode = new ExprDotNodeImpl(
-                        pair.Second,
-                        mapContext.Configuration.Compiler.Expression.IsDuckTyping,
-                        mapContext.Configuration.Compiler.Expression.IsUdfCache);
-                    dotNode.AddChildNode(pair.First);
-                    return dotNode;
+                if (!chain.IsEmpty() && Chainable.IsPlainPropertyChain(chain[0])) {
+                    var elementized = Chainable.ChainForDot(chain[0]);
+                    elementized.AddAll(chain.SubList(1, chain.Count));
+                    chain = elementized;
                 }
-
-                if (chain.Count == 1) {
-                    var name = chain[0].Name;
-                    var declared = ExprDeclaredHelper.GetExistsDeclaredExpr(
-                        name,
-                        chain[0].Parameters,
-                        mapContext.ExpressionDeclarations.Values,
-                        mapContext.ContextCompileTimeDescriptor,
-                        mapContext.MapEnv);
-                    if (declared != null) {
-                        mapContext.TableExpressions.AddAll(declared.Second.TableExpressions);
-                        mapContext.VariableNames.AddAll(declared.Second.VariableNames);
-                        return declared.First;
-                    }
-
-                    var script = ExprDeclaredHelper.GetExistsScript(
-                        mapContext.Configuration.Compiler.Scripts.DefaultDialect,
-                        name,
-                        chain[0].Parameters,
-                        mapContext.Scripts.Values,
-                        mapContext.MapEnv);
-                    if (script != null) {
-                        return script;
-                    }
-                }
-
-                ExprDotNode dotNodeX = new ExprDotNodeImpl(
-                    chain,
-                    mapContext.Configuration.Compiler.Expression.IsDuckTyping,
-                    mapContext.Configuration.Compiler.Expression.IsUdfCache);
-                var variable = dotNodeX.IsVariableOpGetName(mapContext.VariableCompileTimeResolver);
-                if (variable != null) {
-                    mapContext.VariableNames.Add(variable.VariableName);
-                }
-
-                return dotNodeX;
+                return ChainableWalkHelper.ProcessDot(true, expr.Children.IsEmpty(), chain, mapContext);
             }
             else if (expr is LambdaExpression) {
                 var theBase = (LambdaExpression) expr;
@@ -2799,11 +2766,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
 
                 ExprTableAccessNode tableNode;
                 var tableName = table.TableName;
-                if (b.OptionalAggregate != null) {
-                    var exprNode = MapExpressionDeep(b.OptionalAggregate, mapContext);
-                    tableNode = new ExprTableAccessNodeSubpropAccessor(tableName, b.OptionalColumn, exprNode);
-                }
-                else if (b.OptionalColumn != null) {
+                if (b.OptionalColumn != null) {
                     tableNode = new ExprTableAccessNodeSubprop(tableName, b.OptionalColumn);
                 }
                 else {
@@ -3166,8 +3129,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                 return new TypeOfExpression();
             }
             else if (expr is ExprPlugInSingleRowNode plugInSingleRowNode) {
-                var chain = UnmapChains(plugInSingleRowNode.ChainSpec, unmapContext, false);
-                chain[0].Name = plugInSingleRowNode.FunctionName; // starts with actual function name not mapped on
+                var chain = UnmapChains(plugInSingleRowNode.ChainSpec, unmapContext);
+                if (chain[0] is DotExpressionItemCall dotExpressionItemCall) {
+                    dotExpressionItemCall.Name = plugInSingleRowNode.FunctionName; // we use the actual function name
+                }
                 return new SingleRowMethodExpression(chain);
             }
             else if (expr is ExprPlugInAggNode plugInAggNode) {
@@ -3204,7 +3169,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                 return new CrontabParameterExpression(ScheduleItemType.WILDCARD);
             }
             else if (expr is ExprNewInstanceNode newInstanceNode) {
-                return new NewInstanceOperatorExpression(newInstanceNode.ClassIdent);
+                return new NewInstanceOperatorExpression(
+                    newInstanceNode.ClassIdent,
+                    newInstanceNode.NumArrayDimensions);
             }
             else if (expr is ExprNewStructNode newStructNode) {
                 return new NewOperatorExpression(new List<string>(newStructNode.ColumnNames));
@@ -3264,7 +3231,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             else if (expr is ExprDotNode dotNode) {
                 var dotExpr = new DotExpression();
                 foreach (var chain in dotNode.ChainSpec) {
-                    dotExpr.Add(chain.Name, UnmapExpressionDeep(chain.Parameters, unmapContext), chain.IsProperty);
+                    dotExpr.Add(UnmapChainItem(chain, unmapContext));
                 }
 
                 return dotExpr;
@@ -3301,7 +3268,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                     return new TableAccessExpression(
                         topLevel.TableName,
                         UnmapExpressionDeep(topLevel.ChildNodes, unmapContext),
-                        null,
                         null);
                 }
 
@@ -3313,38 +3279,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                         return new TableAccessExpression(
                             subPropNode.TableName,
                             UnmapExpressionDeep(subPropNode.ChildNodes, unmapContext),
-                            subPropNode.SubpropName,
-                            null);
-                    }
-                }
-
-                if (table is ExprTableAccessNodeSubpropAccessor subPropAccessor) {
-                    if (subPropAccessor.ChildNodes.Length == 0) {
-                        var dotExpression = new DotExpression();
-                        dotExpression.Add(
-                            table.TableName + "." + subPropAccessor.SubpropName,
-                            Collections.GetEmptyList<Expression>(),
-                            true);
-                        var @params = UnmapExpressionDeep(
-                            subPropAccessor.AggregateAccessMultiValueNode.ChildNodes,
-                            unmapContext);
-                        var functionName = subPropAccessor.AggregateAccessMultiValueNode.AggregationFunctionName;
-                        if (AggregationAccessorLinearTypeExtensions.FromString(functionName) != null && @params.IsEmpty()) {
-                            @params.Add(new WildcardExpression());
-                        }
-
-                        dotExpression.Add(functionName, @params);
-                        return dotExpression;
-                    }
-                    else {
-                        var aggregate = UnmapExpressionDeep(
-                            subPropAccessor.AggregateAccessMultiValueNode,
-                            unmapContext);
-                        return new TableAccessExpression(
-                            subPropAccessor.TableName,
-                            UnmapExpressionDeep(subPropAccessor.ChildNodes, unmapContext),
-                            subPropAccessor.SubpropName,
-                            aggregate);
+                            subPropNode.SubpropName);
                     }
                 }
 
@@ -3861,6 +3796,19 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             return result;
         }
 
+        private static IList<ClassProvidedExpression> UnmapClassProvidedList(
+            IList<String> classProvidedList,
+            StatementSpecUnMapContext unmapContext)
+        {
+            if (classProvidedList == null || classProvidedList.IsEmpty()) {
+                return EmptyList<ClassProvidedExpression>.Instance;
+            }
+
+            return classProvidedList
+                .Select(text => new ClassProvidedExpression(text))
+                .ToList();
+        }
+        
         private static ScriptExpression UnmapScriptExpression(
             ExpressionScriptProvided script,
             StatementSpecUnMapContext unmapContext)
@@ -3870,8 +3818,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                 returnType = returnType + "[]";
             }
 
-            IList<string> @params = new List<string>();
-            @params.AddAll(script.ParameterNames);
+            IList<string> @params = new List<string>(script.ParameterNames);
             return new ScriptExpression(
                 script.Name,
                 @params,
@@ -3923,7 +3870,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             StatementSpecMapContext mapContext)
         {
             raw.OptionalContextName = contextName;
-            mapContext.ContextName = contextName;
         }
 
         private static void MapExpressionDeclaration(
@@ -3941,7 +3887,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             foreach (var decl in expressionDeclarations) {
                 var item = MapExpressionDeclItem(decl, mapContext);
                 desc.Expressions.Add(item);
-                mapContext.AddExpressionDeclarations(item);
+                mapContext.AddExpressionDeclaration(item);
             }
         }
 
@@ -3974,6 +3920,20 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                 scripts.Add(scriptProvided);
                 mapContext.AddScript(scriptProvided);
             }
+        }
+        
+        private static void MapClassProvidedExpressions(
+            IList<ClassProvidedExpression> classProvidedExpressions,
+            StatementSpecRaw raw,
+            StatementSpecMapContext mapContext)
+        {
+            if (classProvidedExpressions == null || classProvidedExpressions.IsEmpty()) {
+                return;
+            }
+
+            List<String> classes = new List<string>();
+            raw.ClassProvidedList = classes;
+            classes.AddRange(classProvidedExpressions.Select(decl => decl.ClassText));
         }
 
         private static ExpressionScriptProvided MapScriptExpression(
@@ -4089,36 +4049,61 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             }
         }
 
-        private static IList<ExprChainedSpec> MapChains(
+        private static IList<Chainable> MapChains(
             IList<DotExpressionItem> pairs,
             StatementSpecMapContext mapContext)
         {
-            IList<ExprChainedSpec> chains = new List<ExprChainedSpec>();
+            var chains = new List<Chainable>();
             foreach (var item in pairs) {
-                chains.Add(
-                    new ExprChainedSpec(item.Name, MapExpressionDeep(item.Parameters, mapContext), item.IsProperty));
+                chains.Add(MapChainItem(item, mapContext));
             }
 
             return chains;
         }
 
         private static IList<DotExpressionItem> UnmapChains(
-            IList<ExprChainedSpec> pairs,
+            IList<Chainable> pairs,
             StatementSpecUnMapContext unmapContext,
             bool isProperty)
         {
             IList<DotExpressionItem> result = new List<DotExpressionItem>();
             foreach (var chain in pairs) {
-                result.Add(
-                    new DotExpressionItem(
-                        chain.Name,
-                        UnmapExpressionDeep(chain.Parameters, unmapContext),
-                        chain.IsProperty));
+                result.Add(UnmapChainItem(chain, unmapContext));
             }
 
             return result;
         }
 
+        private static DotExpressionItem UnmapChainItem(Chainable chain, StatementSpecUnMapContext unmapContext) {
+            if (chain is ChainableName chainableName) {
+                return new DotExpressionItemName(chainableName.Name);
+            } else if (chain is ChainableArray chainableArray) {
+                var indexes = chainableArray.Indexes;
+                return new DotExpressionItemArray(UnmapExpressionDeep(indexes, unmapContext));
+            } else if (chain is ChainableCall chainableCall) {
+                return new DotExpressionItemCall(
+                    chainableCall.Name,
+                    UnmapExpressionDeep(chainableCall.Parameters, unmapContext));
+            } else {
+                throw new IllegalStateException("Unrecognized chainable " + chain);
+            }
+        }
+
+        private static Chainable MapChainItem(DotExpressionItem item, StatementSpecMapContext mapContext) {
+            if (item is DotExpressionItemName dotExpressionItemName) {
+                return new ChainableName(dotExpressionItemName.Name);
+            } else if (item is DotExpressionItemArray dotExpressionItemArray) {
+                var indexes = dotExpressionItemArray.Indexes;
+                return new ChainableArray(MapExpressionDeep(indexes, mapContext));
+            } else if (item is DotExpressionItemCall dotExpressionItemCall) {
+                return new ChainableCall(
+                    dotExpressionItemCall.Name,
+                    MapExpressionDeep(dotExpressionItemCall.Parameters, mapContext));
+            } else {
+                throw new IllegalStateException("Unrecognized item " + item);
+            }
+        }
+        
         public static ExprNode MapExpression(
             Expression expression,
             StatementSpecMapContext env)

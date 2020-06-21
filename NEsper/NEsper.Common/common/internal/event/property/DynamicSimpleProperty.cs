@@ -47,7 +47,14 @@ namespace com.espertech.esper.common.@internal.@event.property
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
         {
-            return new DynamicSimplePropertyGetter(
+            if (!eventType.Stem.IsPublicFields) {
+                return new DynamicSimplePropertyGetterByMethod(
+                    PropertyNameAtomic,
+                    eventBeanTypedEventFactory,
+                    beanEventTypeFactory);
+            }
+
+            return new DynamicSimplePropertyGetterByField(
                 PropertyNameAtomic,
                 eventBeanTypedEventFactory,
                 beanEventTypeFactory);

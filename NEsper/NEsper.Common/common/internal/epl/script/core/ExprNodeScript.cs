@@ -146,7 +146,9 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 
         public IList<ExprNode> AdditionalNodes => Parameters;
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write(Script.Name);
             ExprNodeUtilityPrint.ToExpressionStringIncludeParen(Parameters, writer);
@@ -182,6 +184,10 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                         Script.Name,
                         Script.ParameterNames.Length,
                         Parameters.Count));
+            }
+
+            if (!validationContext.StatementCompileTimeService.Configuration.Compiler.Scripts.IsEnabled) {
+                throw new ExprValidationException("Script compilation has been disabled by configuration");
             }
 
             // validate all expression parameters
@@ -273,8 +279,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 Script.Name,
                 Script.Expression,
                 Script.ParameterNames,
-                forges,
-                returnType,
+                Parameters.ToArray(),
                 _defaultDialect);
             return null;
         }
@@ -344,7 +349,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 return null;
             }
 
-            if (returnTypeName.Equals("void")) {
+            if (returnTypeName == "void") {
                 return null;
             }
 
@@ -360,7 +365,10 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             }
 
             try {
-                return validationContext.ImportService.ResolveClass(returnTypeName, false);
+                return validationContext.ImportService.ResolveClass(
+                    returnTypeName,
+                    false,
+                    ExtensionClassEmpty.INSTANCE);
             }
             catch (ImportException) {
                 throw new ExprValidationException(

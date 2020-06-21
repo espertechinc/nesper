@@ -137,7 +137,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 return null;
             }
 
-            IEnumerator @enum = ((IEnumerable) value).GetEnumerator();
+            var @enum = ((IEnumerable) value).GetEnumerator();
 
             if (index == 0) {
                 if (@enum.MoveNext()) {

@@ -31,10 +31,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
         ExprForge,
         ExprEvaluator
     {
-        private int assignedIndex;
-        private int? constantIndexNumber;
-        private CodegenFieldName previousStrategyFieldName;
-        private int streamNumber;
+        private int _assignedIndex;
+        private int? _constantIndexNumber;
+        private CodegenFieldName _previousStrategyFieldName;
+        private int _streamNumber;
 
         public override ExprForge Forge => this;
 
@@ -46,13 +46,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
         /// <value>index number</value>
         public int ConstantIndexNumber {
             get {
-                if (constantIndexNumber == null) {
+                if (_constantIndexNumber == null) {
                     var constantNode = ChildNodes[1];
                     var value = constantNode.Forge.ExprEvaluator.Evaluate(null, false, null);
-                    constantIndexNumber = value.AsInt32();
+                    _constantIndexNumber = value.AsInt32();
                 }
 
-                return constantIndexNumber.Value;
+                return _constantIndexNumber.Value;
             }
         }
 
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
         /// </summary>
         /// <value>index</value>
         public int AssignedIndex {
-            set => assignedIndex = value;
+            set => _assignedIndex = value;
         }
 
         public object Evaluate(
@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             var eps = symbols.GetAddEPS(method);
 
             var strategy = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
-                previousStrategyFieldName,
+                _previousStrategyFieldName,
                 typeof(RowRecogPreviousStrategy));
 
             var innerEval = CodegenLegoMethodExpression.CodegenExpression(ChildNodes[0].Forge, method, classScope, true);
@@ -106,15 +106,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                     ExprDotMethod(strategy, "GetAccess", symbols.GetAddExprEvalCtx(method)))
                 .DeclareVar<EventBean>(
                     "substituteEvent",
-                    ExprDotMethod(Ref("access"), "GetPreviousEvent", Constant(assignedIndex)))
+                    ExprDotMethod(Ref("access"), "GetPreviousEvent", Constant(_assignedIndex)))
                 .IfRefNullReturnNull("substituteEvent")
-                .DeclareVar<EventBean>("originalEvent", ArrayAtIndex(eps, Constant(streamNumber)))
-                .AssignArrayElement(eps, Constant(streamNumber), Ref("substituteEvent"))
+                .DeclareVar<EventBean>("originalEvent", ArrayAtIndex(eps, Constant(_streamNumber)))
+                .AssignArrayElement(eps, Constant(_streamNumber), Ref("substituteEvent"))
                 .DeclareVar(
                     evaluationType,
                     "evalResult",
                     LocalMethod(innerEval, eps, symbols.GetAddIsNewData(method), symbols.GetAddExprEvalCtx(method)))
-                .AssignArrayElement(eps, Constant(streamNumber), Ref("originalEvent"))
+                .AssignArrayElement(eps, Constant(_streamNumber), Ref("originalEvent"))
                 .MethodReturn(Ref("evalResult"));
 
             return LocalMethod(method);
@@ -145,24 +145,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                     "Match-Recognize Previous expression requires an integer index parameter or expression as the second parameter");
             }
 
-            constantIndexNumber = value.AsInt32();
+            _constantIndexNumber = value.AsInt32();
 
             // Determine stream number
             var identNode = (ExprIdentNode) ChildNodes[0];
-            streamNumber = identNode.StreamId;
+            _streamNumber = identNode.StreamId;
             var forge = ChildNodes[0].Forge;
             EvaluationType = forge.EvaluationType.GetBoxedType();
-            previousStrategyFieldName = validationContext.MemberNames.PreviousMatchrecognizeStrategy();
+            _previousStrategyFieldName = validationContext.MemberNames.PreviousMatchrecognizeStrategy();
 
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
             writer.Write("prev(");
-            ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+            ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
             writer.Write(',');
-            ChildNodes[1].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+            ChildNodes[1].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
             writer.Write(')');
         }
 

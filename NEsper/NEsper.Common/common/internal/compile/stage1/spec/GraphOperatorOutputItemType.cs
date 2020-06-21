@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     {
         public GraphOperatorOutputItemType(
             bool wildcard,
-            String typeOrClassname,
+            string typeOrClassname,
             IList<GraphOperatorOutputItemType> typeParameters)
         {
             IsWildcard = wildcard;

@@ -9,30 +9,27 @@
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
+using com.espertech.esper.common.@internal.epl.subselect;
 
 namespace com.espertech.esper.common.@internal.epl.index.unindexed
 {
     public class UnindexedEventTableFactoryFactory : EventTableFactoryFactoryBase
     {
-        public UnindexedEventTableFactoryFactory(
-            int indexedStreamNum,
-            int? subqueryNum,
-            object optionalSerde,
-            bool isFireAndForget)
-            : base(indexedStreamNum, subqueryNum, optionalSerde, isFireAndForget)
+        public UnindexedEventTableFactoryFactory(int indexedStreamNum, int? subqueryNum, bool isFireAndForget)
+            : base(indexedStreamNum, subqueryNum, isFireAndForget)
         {
         }
 
         public override EventTableFactory Create(
             EventType eventType,
-            StatementContext statementContext)
+            EventTableFactoryFactoryContext eventTableFactoryContext)
         {
-            return statementContext.EventTableIndexService.CreateUnindexed(
+            return eventTableFactoryContext.EventTableIndexService.CreateUnindexed(
                 indexedStreamNum,
                 eventType,
-                optionalSerde,
+                null,
                 isFireAndForget,
-                statementContext);
+                eventTableFactoryContext);
         }
     }
 } // end of namespace

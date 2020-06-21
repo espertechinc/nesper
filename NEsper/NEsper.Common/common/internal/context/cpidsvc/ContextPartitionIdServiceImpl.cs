@@ -17,6 +17,10 @@ namespace com.espertech.esper.common.@internal.context.cpidsvc
         private readonly IDictionary<int, object[]> cpids = new Dictionary<int, object[]>();
         private int lastAssignedId = -1;
 
+        public ContextPartitionIdServiceImpl()
+        {
+        }
+
         public void Clear()
         {
             cpids.Clear();

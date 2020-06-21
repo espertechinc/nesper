@@ -26,18 +26,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     public abstract class ExprPlugInSingleRowNodeForge : ExprForgeInstrumentable,
         EventPropertyValueGetterForge
     {
-        private readonly ExprPlugInSingleRowNode parent;
+        private readonly ExprPlugInSingleRowNode _parent;
 
         protected ExprPlugInSingleRowNodeForge(
             ExprPlugInSingleRowNode parent,
             bool isReturnsConstantResult)
         {
-            this.parent = parent;
+            this._parent = parent;
             IsReturnsConstantResult = isReturnsConstantResult;
         }
 
         public abstract MethodInfo Method { get; }
 
+        public abstract bool IsLocalInlinedClass { get; }
+        
         public bool IsReturnsConstantResult { get; }
 
         public abstract ExprEvaluator ExprEvaluator { get; }
@@ -73,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
         }
 
-        public ExprNodeRenderable ExprForgeRenderable => parent;
+        public ExprNodeRenderable ExprForgeRenderable => _parent;
 
         public bool HasMethodInvocationContextParam()
         {

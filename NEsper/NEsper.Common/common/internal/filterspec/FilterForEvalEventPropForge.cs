@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -59,14 +60,15 @@ namespace com.espertech.esper.common.@internal.filterspec
             CodegenClassScope classScope,
             CodegenMethodScope parent)
         {
-            var method = parent.MakeChild(typeof(object), GetType(), classScope).AddParam(GET_FILTER_VALUE_FP);
+            var method = parent.MakeChild(typeof(object), GetType(), classScope)
+				.AddParam(GET_FILTER_VALUE_FP);
             var get = _exprIdentNodeEvaluator.Getter.EventBeanGetCodegen(Ref("@event"), method, classScope);
 
             method.Block
                 .DeclareVar<EventBean>(
                     "@event",
                     ExprDotMethod(Ref("matchedEvents"), "GetMatchingEventByTag", Constant(_resultEventAsName)))
-                .IfRefNull(Ref("@event"))
+                .IfNull(Ref("@event"))
                 .BlockThrow(
                     NewInstance<IllegalStateException>(
                         Constant("Matching event named '" + _resultEventAsName + "' not found in event result set")))
@@ -112,6 +114,18 @@ namespace com.espertech.esper.common.@internal.filterspec
         public override int GetHashCode()
         {
             return _resultEventProperty.GetHashCode();
+        }
+        
+        public void ValueToString(StringBuilder @out)
+        {
+            @out.Append("property '")
+                .Append(_resultEventProperty)
+                .Append("'");
+            if (_resultEventAsName != null) {
+                @out.Append(" of '")
+                    .Append(_resultEventAsName)
+                    .Append("'");
+            }
         }
     }
 } // end of namespace

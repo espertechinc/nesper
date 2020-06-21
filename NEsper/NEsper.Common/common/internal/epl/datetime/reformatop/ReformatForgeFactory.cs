@@ -18,18 +18,18 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 {
-    public class ReformatForgeFactory : ForgeFactory
+    public class ReformatForgeFactory : DatetimeMethodProviderForgeFactory
     {
         private static readonly ReformatForge FORMAT_STRING = new ReformatStringFormatForge();
 
         public ReformatForge GetForge(
             EPType inputType,
             TimeAbacus timeAbacus,
-            DateTimeMethodEnum method,
+            DatetimeMethodDesc desc,
             string methodNameUsed,
-            IList<ExprNode> parameters,
-            ExprEvaluatorContext exprEvaluatorContext)
+            IList<ExprNode> parameters)
         {
+            var method = desc.DatetimeMethod;
             if (method == DateTimeMethodEnum.GET) {
                 var fieldNum = CalendarOpUtil.GetEnum(methodNameUsed, parameters[0]);
                 return new ReformatGetFieldForge(fieldNum, timeAbacus);

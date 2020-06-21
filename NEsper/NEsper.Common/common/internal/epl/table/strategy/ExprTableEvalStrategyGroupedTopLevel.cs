@@ -26,10 +26,9 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
         public override object Evaluate(
             EventBean[] eventsPerStream,
             bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext)
+            ExprEvaluatorContext context)
         {
-            object groupKey = factory.GroupKeyEval.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-            ObjectArrayBackedEventBean row = LockTableReadAndGet(groupKey, exprEvaluatorContext);
+            var row = GetRow(eventsPerStream, isNewData, context);
             if (row == null) {
                 return null;
             }
@@ -37,10 +36,10 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             return ExprTableEvalStrategyUtil.EvalMap(
                 row,
                 ExprTableEvalStrategyUtil.GetRow(row),
-                factory.Table.MetaData.Columns,
+                Factory.Table.MetaData.Columns,
                 eventsPerStream,
                 isNewData,
-                exprEvaluatorContext);
+                context);
         }
 
         public override object[] EvaluateTypableSingle(
@@ -48,8 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            object groupKey = factory.GroupKeyEval.Evaluate(eventsPerStream, isNewData, context);
-            ObjectArrayBackedEventBean row = LockTableReadAndGet(groupKey, context);
+            var row = GetRow(eventsPerStream, isNewData, context);
             if (row == null) {
                 return null;
             }
@@ -57,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             return ExprTableEvalStrategyUtil.EvalTypable(
                 row,
                 ExprTableEvalStrategyUtil.GetRow(row),
-                factory.Table.MetaData.Columns,
+                Factory.Table.MetaData.Columns,
                 eventsPerStream,
                 isNewData,
                 context);

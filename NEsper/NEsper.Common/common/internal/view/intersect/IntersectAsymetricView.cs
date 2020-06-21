@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
     /// </summary>
     public class IntersectAsymetricView : ViewSupport,
         LastPostObserver,
-        AgentInstanceStopCallback,
+        AgentInstanceMgmtCallback,
         DataWindowView,
         ViewDataVisitableContainer,
         IntersectViewMarker
@@ -57,8 +57,8 @@ namespace com.espertech.esper.common.@internal.view.intersect
         public void Stop(AgentInstanceStopServices services)
         {
             foreach (var view in views) {
-                if (view is AgentInstanceStopCallback) {
-                    ((AgentInstanceStopCallback) view).Stop(services);
+                if (view is AgentInstanceMgmtCallback) {
+                    ((AgentInstanceMgmtCallback) view).Stop(services);
                 }
             }
         }

@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Text;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -24,16 +26,19 @@ namespace com.espertech.esper.common.@internal.filterspec
     {
         private readonly EventPropertyGetterSPI _getter;
         private readonly Coercer _numberCoercer;
+        private readonly string _propertyName;
 
         public FilterSpecParamContextPropForge(
             ExprFilterSpecLookupableForge lookupable,
             FilterOperator filterOperator,
+            string propertyName,
             EventPropertyGetterSPI getter,
             Coercer numberCoercer)
             : base(lookupable, filterOperator)
         {
             _getter = getter;
             _numberCoercer = numberCoercer;
+            _propertyName = propertyName;
         }
 
         public override CodegenMethod MakeCodegen(
@@ -42,11 +47,10 @@ namespace com.espertech.esper.common.@internal.filterspec
             SAIFFInitializeSymbolWEventType symbols)
         {
             var method = parent.MakeChild(typeof(FilterSpecParam), GetType(), classScope);
-
+            var lookupableExpr = LocalMethod(lookupable.MakeCodegen(method, symbols, classScope));
+            
             method.Block
-                .DeclareVar<ExprFilterSpecLookupable>(
-                    "lookupable",
-                    LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
+                .DeclareVar<ExprFilterSpecLookupable>("lookupable", lookupableExpr)
                 .DeclareVar<FilterOperator>("op", EnumValue(filterOperator));
 
             //var param = NewAnonymousClass(
@@ -68,7 +72,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 
             getFilterValue.Block
                 .DeclareVar<EventBean>("props", ExprDotName(REF_EXPREVALCONTEXT, "ContextProperties"))
-                .IfRefNullReturnNull(Ref("props"))
+                .IfNullReturnNull(Ref("props"))
                 .DeclareVar<object>("result", _getter.EventBeanGetCodegen(Ref("props"), method, classScope));
             if (_numberCoercer != null) {
                 getFilterValue.Block.AssignRef(
@@ -80,10 +84,19 @@ namespace com.espertech.esper.common.@internal.filterspec
                         classScope));
             }
 
-            getFilterValue.Block.BlockReturn(Ref("result"));
+            var returnExpr = FilterValueSetParamImpl.CodegenNew(Ref("result"));
+
+            getFilterValue.Block.BlockReturn(returnExpr);
 
             method.Block.MethodReturn(param);
             return method;
+        }
+        
+        public override void ValueExprToString(StringBuilder @out, int i)
+        {
+            @out.Append("context property '")
+                .Append(_propertyName)
+                .Append("'");
         }
     }
 } // end of namespace

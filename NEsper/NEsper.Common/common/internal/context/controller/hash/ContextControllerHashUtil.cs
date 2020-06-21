@@ -13,8 +13,11 @@ using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.mgr;
+using com.espertech.esper.common.@internal.epl.expression.chain;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
+using com.espertech.esper.common.@internal.serde.serdeset.builtin;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat.collections;
 
@@ -33,20 +36,17 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             }
 
             foreach (var item in hashedSpec.Items) {
-                if (item.Function.Parameters.IsEmpty()) {
-                    throw new ExprValidationException(
-                        "For context '" +
-                        contextName +
-                        "' expected one or more parameters to the hash function, but found no parameter list");
-                }
+                Chainable chainable = item.Function;
 
                 // determine type of hash to use
-                var hashFuncName = item.Function.Name;
+                var hashFuncName = chainable.GetRootNameOrEmptyString();
+                var hashFuncParams = chainable.GetParametersOrEmpty();
                 var hashFunction = HashFunctionEnumExtensions.Determine(contextName, hashFuncName);
                 Pair<Type, ImportSingleRowDesc> hashSingleRowFunction = null;
                 if (hashFunction == null) {
                     try {
-                        hashSingleRowFunction = services.ImportServiceCompileTime.ResolveSingleRow(hashFuncName);
+                        hashSingleRowFunction = services.ImportServiceCompileTime.ResolveSingleRow(
+                            hashFuncName, services.ClassProvidedExtension);
                     }
                     catch (Exception) {
                         // expected
@@ -64,15 +64,20 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                     }
                 }
 
+                if (hashFuncParams.IsEmpty()) {
+                    throw new ExprValidationException(
+                        $"For context '{contextName}' expected one or more parameters to the hash function, but found no parameter list");
+                }
+
                 // get first parameter
-                var paramExpr = item.Function.Parameters[0];
+                var paramExpr = hashFuncParams[0];
                 var paramType = paramExpr.Forge.EvaluationType;
                 EventPropertyValueGetterForge getter;
 
                 if (hashFunction == HashFunctionEnum.CONSISTENT_HASH_CRC32) {
-                    if (item.Function.Parameters.Count > 1 || paramType != typeof(string)) {
+                    if (hashFuncParams.Count > 1 || paramType != typeof(string)) {
                         getter = new ContextControllerHashedGetterCRC32SerializedForge(
-                            item.Function.Parameters,
+                            hashFuncParams,
                             hashedSpec.Granularity);
                     }
                     else {
@@ -81,9 +86,9 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                     }
                 }
                 else if (hashFunction == HashFunctionEnum.HASH_CODE) {
-                    if (item.Function.Parameters.Count > 1) {
+                    if (hashFuncParams.Count > 1) {
                         getter = new ContextControllerHashedGetterHashMultiple(
-                            item.Function.Parameters,
+                            hashFuncParams,
                             hashedSpec.Granularity);
                     }
                     else {
@@ -93,7 +98,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 else if (hashSingleRowFunction != null) {
                     getter = new ContextControllerHashedGetterSingleRowForge(
                         hashSingleRowFunction,
-                        item.Function.Parameters,
+                        hashFuncParams,
                         hashedSpec.Granularity,
                         item.FilterSpecCompiled.FilterForEventType,
                         statementRawInfo,
@@ -104,11 +109,10 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 }
 
                 // create and register expression
-                var expression = item.Function.Name +
-                                 "(" +
-                                 ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(paramExpr) +
-                                 ")";
-                var lookupable = new ExprFilterSpecLookupableForge(expression, getter, typeof(int), true);
+                var expression = hashFuncName + "(" + ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(paramExpr) + ")";
+                var valueSerde = new DataInputOutputSerdeForgeSingleton(typeof(DIONullableIntegerSerde));
+                var eval = new ExprEventEvaluatorForgeFromProp(getter);
+                var lookupable = new ExprFilterSpecLookupableForge(expression, eval, null, typeof(int), true, valueSerde);
                 item.Lookupable = lookupable;
             }
         }

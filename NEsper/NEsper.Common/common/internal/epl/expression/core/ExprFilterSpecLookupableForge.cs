@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -23,27 +24,32 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     public class ExprFilterSpecLookupableForge
     {
-        internal readonly string expression;
-        internal readonly bool isNonPropertyGetter;
-        internal readonly EventPropertyValueGetterForge optionalEventPropForge;
-        internal readonly Type returnType;
+        private readonly string _expression;
+        private readonly ExprEventEvaluatorForge _optionalEventEvalForge;
+        private readonly ExprForge _optionalExprForge;
+        private readonly Type _returnType;
+        private readonly bool _isNonPropertyGetter;
+        private readonly DataInputOutputSerdeForge _valueSerde;
 
         public ExprFilterSpecLookupableForge(
             string expression,
-            EventPropertyValueGetterForge optionalEventPropForge,
+            ExprEventEvaluatorForge optionalEventEvalForge,
+            ExprForge optionalExprForge,
             Type returnType,
-            bool isNonPropertyGetter)
+            bool isNonPropertyGetter,
+            DataInputOutputSerdeForge valueSerde)
         {
-            this.expression = expression;
-            this.optionalEventPropForge = optionalEventPropForge;
-            this.returnType =
-                returnType.GetBoxedType(); // For type consistency for recovery and serde define as boxed type
-            this.isNonPropertyGetter = isNonPropertyGetter;
+            // prefixing the expression ensures the expression resolves to either the event-eval or the expr-eval
+            _expression = optionalExprForge != null ? "." + expression : expression;
+            _optionalEventEvalForge = optionalEventEvalForge;
+            _optionalExprForge = optionalExprForge;
+            _returnType = Boxing.GetBoxedType(returnType); // For type consistency for recovery and serde define as boxed type
+            _isNonPropertyGetter = isNonPropertyGetter;
+            _valueSerde = valueSerde;
         }
+        public Type ReturnType => _returnType;
 
-        public Type ReturnType => returnType;
-
-        public string Expression => expression;
+        public string Expression => _expression;
 
         public virtual CodegenMethod MakeCodegen(
             CodegenMethodScope parent,
@@ -54,34 +60,38 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 typeof(ExprFilterSpecLookupable),
                 typeof(ExprFilterSpecLookupableForge),
                 classScope);
-            CodegenExpression getterExpr;
-            if (optionalEventPropForge != null) {
-                var get = new CodegenExpressionLambda(method.Block)
-                    .WithParams(CodegenNamedParam.From(typeof(EventBean), "bean"));
-                var anonymous = NewInstance<ProxyEventPropertyValueGetter>(get);
-
-                //var anonymous = NewAnonymousClass(method.Block, typeof(EventPropertyValueGetter));
-                //var get = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
-                //    .AddParam(CodegenNamedParam.From(typeof(EventBean), "bean"));
-                //anonymous.AddMethod("Get", get);
-
-                get.Block.BlockReturn(optionalEventPropForge.EventBeanGetCodegen(Ref("bean"), method, classScope));
-                getterExpr = anonymous;
-            }
-            else {
-                getterExpr = ConstantNull();
+            CodegenExpression singleEventEvalExpr = ConstantNull();
+            if (_optionalEventEvalForge != null) {
+                var eval = new CodegenExpressionLambda(method.Block)
+                    .WithParam<EventBean>("bean")
+                    .WithParam<ExprEvaluatorContext>("ctx");
+                var anonymous = NewInstance<ProxyExprEventEvaluator>(eval);
+                eval.Block.BlockReturn(
+                    _optionalEventEvalForge.EventBeanWithCtxGet(Ref("bean"), Ref("ctx"), method, classScope));
+                singleEventEvalExpr = anonymous;
             }
 
-            method.Block.DeclareVar<EventPropertyValueGetter>("getter", getterExpr);
+            CodegenExpression epsEvalExpr = ConstantNull();
+            if (_optionalExprForge != null) {
+                epsEvalExpr = ExprNodeUtilityCodegen.CodegenEvaluator(
+                    _optionalExprForge, method, typeof(ExprFilterSpecLookupableForge), classScope);
+            }
+
+            CodegenExpression serdeExpr = _valueSerde == null ? ConstantNull() : _valueSerde.Codegen(method, classScope, null);
+            CodegenExpression returnTypeExpr = _returnType == null ? ConstantNull() : Typeof(_returnType);
 
             method.Block
+                .DeclareVar<ExprEventEvaluator>("eval", singleEventEvalExpr)
+                .DeclareVar<ExprEvaluator>("expr", epsEvalExpr)
                 .DeclareVar<ExprFilterSpecLookupable>(
                     "lookupable",
                     NewInstance<ExprFilterSpecLookupable>(
-                        Constant(expression),
-                        Ref("getter"),
-                        Typeof(returnType),
-                        Constant(isNonPropertyGetter)))
+                        Constant(_expression),
+                        Ref("eval"),
+                        Ref("expr"),
+                        returnTypeExpr,
+                        Constant(_isNonPropertyGetter),
+                        serdeExpr))
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Get(EPStatementInitServicesConstants.FILTERSHAREDLOOKUPABLEREGISTERY)
@@ -105,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             var that = (ExprFilterSpecLookupableForge) o;
 
-            if (!expression.Equals(that.expression)) {
+            if (!_expression.Equals(that._expression)) {
                 return false;
             }
 
@@ -114,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public override int GetHashCode()
         {
-            return expression.GetHashCode();
+            return _expression.GetHashCode();
         }
     }
 } // end of namespace

@@ -85,10 +85,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         /// <param name="newEvents">new events</param>
         /// <param name="oldEvents">old events</param>
         /// <param name="exprEvaluatorContext">the evaluator context</param>
-
         public override void Process(
-            ISet<MultiKey<EventBean>> newEvents,
-            ISet<MultiKey<EventBean>> oldEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var statementResultService = _agentInstanceContext.StatementResultService;
@@ -125,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return OutputStrategyUtil.GetEnumerator(joinExecutionStrategy, _resultSetProcessor, parentView, false);
+            return OutputStrategyUtil.GetEnumerator(joinExecutionStrategy, _resultSetProcessor, parentView, false, null);
         }
 
         public override void Terminated()

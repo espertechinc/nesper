@@ -13,12 +13,16 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.stage2;
+using com.espertech.esper.common.@internal.compile.stage3;
+using com.espertech.esper.common.@internal.context.compile;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.property;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
@@ -36,12 +40,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         // select s0.myprop params from[] is a simple property with a stream supplied, or a nested property (cannot tell until resolved)
         // select indexed[1] from ...   is a indexed property
 
-        [NonSerialized] private ExprIdentNodeEvaluator evaluator;
-        private string resolvedPropertyName;
+        private string _resolvedPropertyName;
+        private string _resolvedStreamName;
+        private string _streamOrPropertyName;
 
-        private string resolvedStreamName;
-        private string streamOrPropertyName;
-
+        [NonSerialized] private StatementCompileTimeServices _compileTimeServices;
+        [NonSerialized] private ExprIdentNodeEvaluator _evaluator;
+        [NonSerialized] private StatementRawInfo _statementRawInfo;
+        
         /// <summary>
         ///     Ctor.
         /// </summary>
@@ -49,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public ExprIdentNodeImpl(string unresolvedPropertyName)
         {
             UnresolvedPropertyName = unresolvedPropertyName ?? throw new ArgumentException("Property name is null");
-            streamOrPropertyName = null;
+            _streamOrPropertyName = null;
         }
 
         /// <summary>
@@ -63,16 +69,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             string unresolvedPropertyName,
             string streamOrPropertyName)
         {
-            if (unresolvedPropertyName == null) {
-                throw new ArgumentException("Property name is null");
-            }
-
-            if (streamOrPropertyName == null) {
-                throw new ArgumentException("Stream (or property name) name is null");
-            }
-
-            UnresolvedPropertyName = unresolvedPropertyName;
-            this.streamOrPropertyName = streamOrPropertyName;
+            UnresolvedPropertyName = unresolvedPropertyName ?? throw new ArgumentException("Property name is null");
+            _streamOrPropertyName = streamOrPropertyName ?? throw new ArgumentException("Stream (or property name) name is null");
         }
 
         public ExprIdentNodeImpl(
@@ -81,19 +79,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             int streamNumber)
         {
             UnresolvedPropertyName = propertyName;
-            resolvedPropertyName = propertyName;
+            _resolvedPropertyName = propertyName;
             var propertyGetter = ((EventTypeSPI) eventType).GetGetterSPI(propertyName);
             if (propertyGetter == null) {
                 throw new ArgumentException("Ident-node constructor could not locate property " + propertyName);
             }
 
             var propertyType = eventType.GetPropertyType(propertyName);
-            evaluator = new ExprIdentNodeEvaluatorImpl(
+            _evaluator = new ExprIdentNodeEvaluatorImpl(
                 streamNumber,
                 propertyGetter,
                 propertyType.GetBoxedType(),
                 this,
-                eventType,
+                (EventTypeSPI) eventType,
                 true,
                 false);
         }
@@ -104,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public ExprNodeRenderable ExprForgeRenderable => this;
 
-        public Type EvaluationType => evaluator.EvaluationType;
+        public Type EvaluationType => _evaluator.EvaluationType;
 
         public CodegenExpression EvaluateCodegenUninstrumented(
             Type requiredType,
@@ -112,7 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return evaluator.Codegen(requiredType, codegenMethodScope, exprSymbol, codegenClassScope);
+            return _evaluator.Codegen(requiredType, codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
         public CodegenExpression EvaluateCodegen(
@@ -132,11 +130,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return builder.Build();
         }
 
-        public ExprEvaluator ExprEvaluator => evaluator;
+        public ExprEvaluator ExprEvaluator => _evaluator;
 
         public override ExprForge Forge {
             get {
-                if (resolvedPropertyName == null) {
+                if (_resolvedPropertyName == null) {
                     throw CheckValidatedException();
                 }
 
@@ -155,26 +153,31 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// </summary>
         /// <returns>stream name, or property name of a nested property of one of the streams</returns>
         public string StreamOrPropertyName {
-            get => streamOrPropertyName;
-            set => streamOrPropertyName = value;
+            get => _streamOrPropertyName;
+            set => _streamOrPropertyName = value;
         }
 
-        public bool FilterLookupEligible => evaluator.StreamNum == 0 && !evaluator.IsContextEvaluated;
+        public bool FilterLookupEligible => _evaluator.StreamNum == 0 && !_evaluator.IsContextEvaluated;
 
-        public ExprFilterSpecLookupableForge FilterLookupable => new ExprFilterSpecLookupableForge(
-            resolvedPropertyName,
-            evaluator.Getter,
-            evaluator.EvaluationType,
-            false);
+        public ExprFilterSpecLookupableForge FilterLookupable {
+            get {
+                var serde = _compileTimeServices.SerdeResolver.SerdeForFilter(_evaluator.EvaluationType, _statementRawInfo);
+                var eval = new ExprEventEvaluatorForgeFromProp(_evaluator.Getter);
+                return new ExprFilterSpecLookupableForge(_resolvedPropertyName, eval, null, _evaluator.EvaluationType, false, serde);
+            }
+        }
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
+            _compileTimeServices = validationContext.StatementCompileTimeService;
+            _statementRawInfo = validationContext.StatementRawInfo;
+
             // rewrite expression into a table-access expression
             if (validationContext.StreamTypeService.HasTableTypes) {
                 var tableIdentNode = TableCompileTimeUtil.GetTableIdentNode(
                     validationContext.StreamTypeService,
                     UnresolvedPropertyName,
-                    streamOrPropertyName,
+                    _streamOrPropertyName,
                     validationContext.TableCompileTimeResolver);
                 if (tableIdentNode != null) {
                     return tableIdentNode;
@@ -185,17 +188,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             var propertyInfoPair = ExprIdentNodeUtil.GetTypeFromStream(
                 validationContext.StreamTypeService,
                 unescapedPropertyName,
-                streamOrPropertyName,
+                _streamOrPropertyName,
                 false,
                 validationContext.TableCompileTimeResolver);
-            resolvedStreamName = propertyInfoPair.Second;
+            _resolvedStreamName = propertyInfoPair.Second;
             int streamNum = propertyInfoPair.First.StreamNum;
             var propertyType = propertyInfoPair.First.PropertyType; // GetBoxedType()
-            resolvedPropertyName = propertyInfoPair.First.PropertyName;
+            _resolvedPropertyName = propertyInfoPair.First.PropertyName;
             EventType eventType = propertyInfoPair.First.StreamEventType;
             EventPropertyGetterSPI propertyGetter;
             try {
-                propertyGetter = ((EventTypeSPI) eventType).GetGetterSPI(resolvedPropertyName);
+                propertyGetter = ((EventTypeSPI) eventType).GetGetterSPI(_resolvedPropertyName);
             }
             catch (PropertyAccessException ex) {
                 throw new ExprValidationException(
@@ -209,12 +212,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             var audit = AuditEnum.PROPERTY.GetAudit(validationContext.Annotations) != null;
-            evaluator = new ExprIdentNodeEvaluatorImpl(
+            _evaluator = new ExprIdentNodeEvaluatorImpl(
                 streamNum,
                 propertyGetter,
                 propertyType.GetBoxedType(),
                 this,
-                eventType,
+                (EventTypeSPI) eventType,
                 validationContext.StreamTypeService.IsOptionalStreams,
                 audit);
 
@@ -224,15 +227,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 var contextPropertyName =
                     validationContext.ContextDescriptor.ContextPropertyRegistry.GetPartitionContextPropertyName(
                         fromType,
-                        resolvedPropertyName);
+                        _resolvedPropertyName);
                 if (contextPropertyName != null) {
                     var contextType = (EventTypeSPI) validationContext.ContextDescriptor.ContextPropertyRegistry
                         .ContextEventType;
                     var type = contextType.GetPropertyType(contextPropertyName).GetBoxedType();
-                    evaluator = new ExprIdentNodeEvaluatorContext(
+                    _evaluator = new ExprIdentNodeEvaluatorContext(
                         streamNum,
                         type,
-                        contextType.GetGetterSPI(contextPropertyName));
+                        contextType.GetGetterSPI(contextPropertyName),
+                        (EventTypeSPI) eventType);
                 }
             }
 
@@ -256,14 +260,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             var other = (ExprIdentNode) node;
 
             if (ignoreStreamPrefix &&
-                resolvedPropertyName != null &&
+                _resolvedPropertyName != null &&
                 other.ResolvedPropertyName != null &&
-                resolvedPropertyName.Equals(other.ResolvedPropertyName)) {
+                _resolvedPropertyName.Equals(other.ResolvedPropertyName)) {
                 return true;
             }
 
-            if (streamOrPropertyName != null
-                ? !streamOrPropertyName.Equals(other.StreamOrPropertyName)
+            if (_streamOrPropertyName != null
+                ? !_streamOrPropertyName.Equals(other.StreamOrPropertyName)
                 : other.StreamOrPropertyName != null) {
                 return false;
             }
@@ -277,10 +281,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return true;
         }
 
-        public ExprIdentNodeEvaluator ExprEvaluatorIdent => evaluator;
+        public ExprIdentNodeEvaluator ExprEvaluatorIdent => _evaluator;
 
         public bool IsOptionalEvent {
-            set => evaluator.OptionalEvent = value;
+            set => _evaluator.OptionalEvent = value;
         }
 
         /// <summary>
@@ -290,11 +294,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// <value>property name</value>
         public string FullUnresolvedName {
             get {
-                if (streamOrPropertyName == null) {
+                if (_streamOrPropertyName == null) {
                     return UnresolvedPropertyName;
                 }
 
-                return streamOrPropertyName + "." + UnresolvedPropertyName;
+                return _streamOrPropertyName + "." + UnresolvedPropertyName;
             }
         }
 
@@ -304,21 +308,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// <value>stream number</value>
         public int StreamId {
             get {
-                if (evaluator == null) {
+                if (_evaluator == null) {
                     throw new IllegalStateException("Identifier expression has not been validated");
                 }
 
-                return evaluator.StreamNum;
+                return _evaluator.StreamNum;
             }
         }
 
         public Type Type {
             get {
-                if (evaluator == null) {
+                if (_evaluator == null) {
                     throw new IllegalStateException("Identifier expression has not been validated");
                 }
 
-                return evaluator.EvaluationType;
+                return _evaluator.EvaluationType;
             }
         }
 
@@ -328,11 +332,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// <value>stream name</value>
         public string ResolvedStreamName {
             get {
-                if (resolvedStreamName == null) {
+                if (_resolvedStreamName == null) {
                     throw new IllegalStateException("Identifier node has not been validated");
                 }
 
-                return resolvedStreamName;
+                return _resolvedStreamName;
             }
         }
 
@@ -342,11 +346,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// <value>property name</value>
         public string ResolvedPropertyName {
             get {
-                if (resolvedPropertyName == null) {
+                if (_resolvedPropertyName == null) {
                     throw new IllegalStateException("Identifier node has not been validated");
                 }
 
-                return resolvedPropertyName;
+                return _resolvedPropertyName;
             }
         }
 
@@ -356,23 +360,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// <value>root</value>
         public string ResolvedPropertyNameRoot {
             get {
-                if (resolvedPropertyName == null) {
+                if (_resolvedPropertyName == null) {
                     throw new IllegalStateException("Identifier node has not been validated");
                 }
 
-                if (resolvedPropertyName.IndexOf('[') != -1) {
-                    return resolvedPropertyName.Substring(0, resolvedPropertyName.IndexOf('['));
+                if (_resolvedPropertyName.IndexOf('[') != -1) {
+                    return _resolvedPropertyName.Substring(0, _resolvedPropertyName.IndexOf('['));
                 }
 
-                if (resolvedPropertyName.IndexOf('(') != -1) {
-                    return resolvedPropertyName.Substring(0, resolvedPropertyName.IndexOf('('));
+                if (_resolvedPropertyName.IndexOf('(') != -1) {
+                    return _resolvedPropertyName.Substring(0, _resolvedPropertyName.IndexOf('('));
                 }
 
-                if (resolvedPropertyName.IndexOf('.') != -1) {
-                    return resolvedPropertyName.Substring(0, resolvedPropertyName.IndexOf('.'));
+                if (_resolvedPropertyName.IndexOf('.') != -1) {
+                    return _resolvedPropertyName.Substring(0, _resolvedPropertyName.IndexOf('.'));
                 }
 
-                return resolvedPropertyName;
+                return _resolvedPropertyName;
             }
         }
 
@@ -381,27 +385,43 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return "unresolvedPropertyName=" +
                    UnresolvedPropertyName +
                    " streamOrPropertyName=" +
-                   streamOrPropertyName +
+                   _streamOrPropertyName +
                    " resolvedPropertyName=" +
-                   resolvedPropertyName;
+                   _resolvedPropertyName;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
-            ToPrecedenceFreeEPL(writer, streamOrPropertyName, UnresolvedPropertyName);
+            ToPrecedenceFreeEPL(writer, _streamOrPropertyName, UnresolvedPropertyName, flags);
         }
 
         public static void ToPrecedenceFreeEPL(
             TextWriter writer,
             string streamOrPropertyName,
-            string unresolvedPropertyName)
+            string unresolvedPropertyName,
+            ExprNodeRenderableFlags flags)
         {
-            if (streamOrPropertyName != null) {
+            if (streamOrPropertyName != null && flags.IsWithStreamPrefix) {
                 writer.Write(StringValue.UnescapeDot(streamOrPropertyName));
                 writer.Write('.');
             }
 
             writer.Write(StringValue.UnescapeDot(StringValue.UnescapeBacktick(unresolvedPropertyName)));
+        }
+        
+        public ExprEnumerationForgeDesc GetEnumerationForge(
+            StreamTypeService streamTypeService,
+            ContextCompileTimeDescriptor contextDescriptor)
+        {
+            var fragmentEventType = _evaluator.EventType.GetFragmentType(ResolvedPropertyName);
+            if (fragmentEventType == null || fragmentEventType.IsIndexed) {
+                return null;
+            }
+            var forge = new ExprIdentNodeFragmentTypeEnumerationForge(
+                _resolvedPropertyName, StreamId, fragmentEventType.FragmentType, _evaluator.EventType.GetGetterSPI(_resolvedPropertyName));
+            return new ExprEnumerationForgeDesc(forge, streamTypeService.IStreamOnly[StreamId], -1);
         }
     }
 } // end of namespace

@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     public class GraphOperatorOutputItem
     {
         public GraphOperatorOutputItem(
-            String streamName,
+            string streamName,
             IList<GraphOperatorOutputItemType> typeInfo)
         {
             StreamName = streamName;

@@ -30,13 +30,13 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <param name="columns">list of columns, if using column syntax</param>
         /// <param name="asEventTypeName">Name of as event type.</param>
         public CreateWindowDesc(
-            String windowName,
+            string windowName,
             IList<ViewSpec> viewSpecs,
             StreamSpecOptions streamSpecOptions,
             bool insert,
             ExprNode insertFilter,
             IList<ColumnDesc> columns,
-            String asEventTypeName)
+            string asEventTypeName)
         {
             WindowName = windowName;
             ViewSpecs = viewSpecs;
@@ -62,10 +62,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <summary>Returns the expression to filter insert-from events, or null if none supplied. </summary>
         /// <value>insert filter expression</value>
         public ExprNode InsertFilter { get; set; }
-
-        /// <summary>Returns the window name to insert from. </summary>
-        /// <value>window name to insert from</value>
-        public string InsertFromWindow { get; set; }
 
         /// <summary>Returns the options for the stream such as unidirectional, retain-union etc. </summary>
         /// <value>stream options</value>

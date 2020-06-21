@@ -78,6 +78,12 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             return existing.currentSubpath++;
         }
 
+        
+        public ContextControllerCondition MgmtGetStartCondition(IntSeqKey controllerPath)
+        {
+            return mgmt.TryGetValue(controllerPath, out var existing) ? existing.startCondition : null;
+        }
+        
         public void EndCreate(
             IntSeqKey endConditionPath,
             int subpathIdOrCPId,
@@ -117,6 +123,18 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             foreach (var entry in endConditions) {
                 if (controllerPath.IsParentTo(entry.Key)) {
                     partKeyAndCPId.Invoke(entry.Value.PartitionKey, entry.Value.SubpathIdOrCPId);
+                }
+            }
+        }
+
+
+        public void EndVisitConditions(
+            IntSeqKey controllerPath,
+            BiConsumer<ContextControllerConditionNonHA, int> partKeyAndCPId)
+        {
+            foreach (var entry in endConditions) {
+                if (controllerPath.IsParentTo(entry.Key)) {
+                    partKeyAndCPId.Invoke(entry.Value.TerminationCondition, entry.Value.SubpathIdOrCPId);
                 }
             }
         }

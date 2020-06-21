@@ -126,11 +126,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return LocalMethod(methodNode);
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer)
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
+            ExprNodeRenderableFlags flags)
         {
-            ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+            ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
             writer.Write(":");
-            ChildNodes[1].ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
+            ChildNodes[1].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
         }
 
         public override bool EqualsNode(

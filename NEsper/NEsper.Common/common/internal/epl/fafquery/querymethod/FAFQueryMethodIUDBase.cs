@@ -36,6 +36,12 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
         private FireAndForgetProcessor _processor;
         private IDictionary<int, ExprTableEvalStrategyFactory> _tableAccesses;
         private QueryGraph _queryGraph;
+        private IDictionary<int, SubSelectFactory> _subselects;
+
+        public IDictionary<int, SubSelectFactory> Subselects {
+            get => _subselects;
+            set => _subselects = value;
+        }
 
         public string ContextName {
             get => throw new NotImplementedException();
@@ -69,9 +75,11 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 
         public Attribute[] Annotations { get; set; }
 
-        public void Ready()
+        public void Ready(StatementContextRuntimeServices services)
         {
-            // no action
+            if (!_subselects.IsEmpty()) {
+                FAFQueryMethodUtil.InitializeSubselects(services, Annotations, _subselects);
+            }
         }
 
         public EPPreparedQueryResult Execute(
@@ -187,13 +195,21 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             // start table-access
             var tableAccessEvals = ExprTableEvalHelperStart.StartTableAccess(_tableAccesses, agentInstanceContext);
 
+            // start subselects
+            var subselectStopCallbacks = new List<AgentInstanceMgmtCallback>();
+            var subselectActivations = SubSelectHelperStart.StartSubselects(
+                _subselects,
+                agentInstanceContext,
+                subselectStopCallbacks,
+                false);
+
             // assign
             assignerSetter.Assign(
                 new StatementAIFactoryAssignmentsImpl(
                     null,
                     null,
                     null,
-                    Collections.GetEmptyMap<int, SubSelectFactoryResult>(),
+                    subselectActivations,
                     tableAccessEvals,
                     null));
         }

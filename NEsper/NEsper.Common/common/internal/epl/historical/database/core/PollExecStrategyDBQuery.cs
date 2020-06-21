@@ -134,7 +134,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                     inputParameterContext = new SQLInputParameterContext();
                 }
 
-                var mk = _factory.InputParameters.Length == 1 ? null : (HashableMultiKey) lookupValuePerStream;
+                var mk = _factory.InputParameters.Length == 1 ? null : (object[]) lookupValuePerStream;
                 for (var i = 0; i < _factory.InputParameters.Length; i++) {
                     try {
                         object parameter;
@@ -142,7 +142,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                             parameter = lookupValuePerStream;
                         }
                         else {
-                            parameter = mk.Keys[i];
+                            parameter = mk[i];
                         }
 
                         if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsInfoEnabled) {

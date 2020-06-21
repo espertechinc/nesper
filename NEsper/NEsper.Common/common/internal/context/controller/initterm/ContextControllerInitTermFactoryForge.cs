@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -33,7 +35,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
         }
 
         public override void ValidateGetContextProps(
-            LinkedHashMap<string, object> props,
+            IDictionary<string, object> props,
             string contextName,
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)

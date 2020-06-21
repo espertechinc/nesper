@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionUtil;
 
@@ -52,7 +53,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 // Add elements from type arrays to the set
                 if (constantArray is Type[] typeArray) {
                     typeArray.ForEach(t => classes.AddToSet(t));
-                } else if (constantArray is object[] objectArray) {
+                }
+                else if (constantArray is object[] objectArray) {
                     objectArray.OfType<Type>().For(t => classes.AddToSet(t));
                 }
             }
@@ -65,6 +67,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             else if (_constant is Type constantType) {
                 classes.AddToSet(constantType);
             }
+        }
+
+        public void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
+        }
+
+        public static void MergeClassConstant(
+            Object entryValue,
+            Object value)
+        {
         }
     }
 } // end of namespace

@@ -13,7 +13,7 @@ namespace com.espertech.esper.common.@internal.context.util
     public class AgentInstance
     {
         public AgentInstance(
-            AgentInstanceStopCallback stopCallback,
+            AgentInstanceMgmtCallback stopCallback,
             AgentInstanceContext agentInstanceContext,
             Viewable finalView)
         {
@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.context.util
             FinalView = finalView;
         }
 
-        public AgentInstanceStopCallback StopCallback { get; }
+        public AgentInstanceMgmtCallback StopCallback { get; }
 
         public AgentInstanceContext AgentInstanceContext { get; }
 

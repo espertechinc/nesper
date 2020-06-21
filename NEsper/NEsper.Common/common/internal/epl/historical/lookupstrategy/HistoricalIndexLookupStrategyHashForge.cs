@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 
@@ -19,19 +20,21 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
 {
     public class HistoricalIndexLookupStrategyHashForge : HistoricalIndexLookupStrategyForge
     {
-        private readonly Type[] coercionTypes;
-        private readonly ExprForge[] evaluators;
-
-        private readonly int lookupStream;
+        private readonly Type[] _coercionTypes;
+        private readonly ExprForge[] _evaluators;
+        private readonly int _lookupStream;
+        private readonly MultiKeyClassRef _multiKeyClassRef;
 
         public HistoricalIndexLookupStrategyHashForge(
             int lookupStream,
             ExprForge[] evaluators,
-            Type[] coercionTypes)
+            Type[] coercionTypes,
+            MultiKeyClassRef multiKeyClassRef)
         {
-            this.lookupStream = lookupStream;
-            this.evaluators = evaluators;
-            this.coercionTypes = coercionTypes;
+            _lookupStream = lookupStream;
+            _evaluators = evaluators;
+            _coercionTypes = coercionTypes;
+            _multiKeyClassRef = multiKeyClassRef;
         }
 
         public string ToQueryPlan()
@@ -45,21 +48,15 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(HistoricalIndexLookupStrategyHash), GetType(), classScope);
+            var evaluator = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(
+                _evaluators, _coercionTypes, _multiKeyClassRef, method, classScope);
 
             method.Block
                 .DeclareVar<HistoricalIndexLookupStrategyHash>(
                     "strat",
                     NewInstance(typeof(HistoricalIndexLookupStrategyHash)))
-                .SetProperty(Ref("strat"), "LookupStream", Constant(lookupStream))
-                .SetProperty(
-                    Ref("strat"),
-                    "Evaluator",
-                    ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
-                        evaluators,
-                        coercionTypes,
-                        method,
-                        GetType(),
-                        classScope))
+                .SetProperty(Ref("strat"), "LookupStream", Constant(_lookupStream))
+                .SetProperty(Ref("strat"), "Evaluator", evaluator)
                 .MethodReturn(Ref("strat"));
             return LocalMethod(method);
         }

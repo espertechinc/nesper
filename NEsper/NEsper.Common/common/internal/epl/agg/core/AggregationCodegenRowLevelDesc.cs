@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 rowStateDesc.MethodForges,
                 rowStateDesc.OptionalMethodFactories,
                 rowStateDesc.AccessFactoriesForges);
-            var top = new AggregationCodegenRowDetailDesc(state, rowStateDesc.AccessAccessorsForges);
+            var top = new AggregationCodegenRowDetailDesc(state, rowStateDesc.AccessAccessorsForges, null);
             return new AggregationCodegenRowLevelDesc(top, null);
         }
     }

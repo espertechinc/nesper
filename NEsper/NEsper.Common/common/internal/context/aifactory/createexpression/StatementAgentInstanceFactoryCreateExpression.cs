@@ -17,16 +17,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
 {
     public class StatementAgentInstanceFactoryCreateExpression : StatementAgentInstanceFactory
     {
-        private string expressionName;
-        private Viewable viewable;
+        private string _expressionName;
+        private Viewable _viewable;
 
         public string ExpressionName {
-            set => expressionName = value;
+            set => _expressionName = value;
         }
 
         public EventType StatementEventType {
-            get => viewable.EventType;
-            set => viewable = new ViewableDefaultImpl(value);
+            get => _viewable.EventType;
+            set => _viewable = new ViewableDefaultImpl(value);
         }
 
         public void StatementCreate(StatementContext statementContext)
@@ -46,8 +46,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
             bool isRecoveringResilient)
         {
             return new StatementAgentInstanceFactoryCreateExpressionResult(
-                viewable,
-                AgentInstanceStopCallbackNoAction.INSTANCE,
+                _viewable,
+                AgentInstanceMgmtCallbackNoAction.INSTANCE,
                 agentInstanceContext);
         }
 

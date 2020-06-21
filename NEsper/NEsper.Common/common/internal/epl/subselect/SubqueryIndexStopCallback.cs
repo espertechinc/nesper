@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
     ///     Implements a stop callback for use with subqueries to clear their indexes
     ///     when a statement is stopped.
     /// </summary>
-    public class SubqueryIndexStopCallback : AgentInstanceStopCallback
+    public class SubqueryIndexStopCallback : AgentInstanceMgmtCallback
     {
         private readonly EventTable[] eventIndex;
 

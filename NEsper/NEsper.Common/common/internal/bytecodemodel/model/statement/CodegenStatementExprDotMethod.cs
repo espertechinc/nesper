@@ -19,42 +19,42 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
     public class CodegenStatementExprDotMethod : CodegenStatementBase
     {
-        private readonly CodegenExpression expression;
-        private readonly string method;
-        private readonly CodegenExpression[] @params;
+        private readonly CodegenExpression _expression;
+        private readonly string _method;
+        private readonly CodegenExpression[] _params;
 
         public CodegenStatementExprDotMethod(
             CodegenExpression expression,
             string method,
             CodegenExpression[] @params)
         {
-            this.expression = expression;
-            this.method = method;
-            this.@params = @params;
+            _expression = expression;
+            _method = method;
+            _params = @params;
         }
 
         public override void RenderStatement(
             StringBuilder builder,
             bool isInnerClass)
         {
-            if (expression is CodegenExpressionRef) {
-                expression.Render(builder, isInnerClass, 1, new CodegenIndent(true));
+            if (_expression is CodegenExpressionRef) {
+                _expression.Render(builder, isInnerClass, 1, new CodegenIndent(true));
             }
             else {
                 builder.Append("(");
-                expression.Render(builder, isInnerClass, 1, new CodegenIndent(true));
+                _expression.Render(builder, isInnerClass, 1, new CodegenIndent(true));
                 builder.Append(")");
             }
 
-            builder.Append('.').Append(method).Append("(");
-            RenderExpressions(builder, @params, isInnerClass);
+            builder.Append('.').Append(_method).Append("(");
+            RenderExpressions(builder, _params, isInnerClass);
             builder.Append(")");
         }
 
         public override void MergeClasses(ISet<Type> classes)
         {
-            expression.MergeClasses(classes);
-            MergeClassesExpressions(classes, @params);
+            _expression.MergeClasses(classes);
+            MergeClassesExpressions(classes, _params);
         }
     }
 } // end of namespace

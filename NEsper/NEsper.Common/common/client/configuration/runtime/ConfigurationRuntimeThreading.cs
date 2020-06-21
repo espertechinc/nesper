@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
         public bool IsInternalTimerEnabled { get; set; }
 
         /// <summary>
-        ///     Returns the millisecond resolutuion of the internal timer thread.
+        ///     Returns the millisecond resolution of the internal timer thread.
         /// </summary>
         /// <returns>number of msec between timer processing intervals</returns>
         public long InternalTimerMsecResolution { get; set; }

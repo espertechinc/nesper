@@ -24,21 +24,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     public class ExprPlugInSingleRowNodeForgeConst : ExprPlugInSingleRowNodeForge,
         ExprEvaluator
     {
-        private readonly ExprDotNodeForgeStaticMethod inner;
+        private readonly ExprDotNodeForgeStaticMethod _inner;
 
         public ExprPlugInSingleRowNodeForgeConst(
             ExprPlugInSingleRowNode parent,
             ExprDotNodeForgeStaticMethod inner)
             : base(parent, true)
         {
-            this.inner = inner;
+            this._inner = inner;
         }
 
-        public override MethodInfo Method => inner.StaticMethod;
+        public override MethodInfo Method => _inner.StaticMethod;
 
         public override ExprEvaluator ExprEvaluator => this;
 
-        public override Type EvaluationType => inner.StaticMethod.ReturnType;
+        public override Type EvaluationType => _inner.StaticMethod.ReturnType;
 
         public override ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.DEPLOYCONST;
 
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
 
             var initMethod = codegenClassScope.NamespaceScope.InitMethod;
-            var evaluate = CodegenLegoMethodExpression.CodegenExpression(inner, initMethod, codegenClassScope, true);
+            var evaluate = CodegenLegoMethodExpression.CodegenExpression(_inner, initMethod, codegenClassScope, true);
             return codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 EvaluationType,
@@ -86,12 +86,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 .Build();
         }
 
-        public override CodegenExpression EventBeanGetCodegen(
+        public CodegenExpression EventBeanWithCtxGet(
             CodegenExpression beanExpression,
+            CodegenExpression ctxExpression,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return ConstantNull();
         }
+
+        public override bool IsLocalInlinedClass => _inner.IsLocalInlinedClass;
     }
 } // end of namespace

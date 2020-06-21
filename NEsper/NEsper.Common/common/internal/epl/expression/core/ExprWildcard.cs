@@ -11,7 +11,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     /// <summary>
     /// Expression for use as wildcard (*).
     /// </summary>
-    public interface ExprWildcard
+    public interface ExprWildcard : ExprEnumerationForgeProvider
     {
     }
 }

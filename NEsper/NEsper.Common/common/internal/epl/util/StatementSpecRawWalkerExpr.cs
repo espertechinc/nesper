@@ -375,9 +375,10 @@ namespace com.espertech.esper.common.@internal.epl.util
             IList<ExprNode> expressions,
             ContextSpecCondition endpoint)
         {
-            if (endpoint is ContextSpecConditionCrontab) {
-                var crontab = (ContextSpecConditionCrontab) endpoint;
-                expressions.AddAll(crontab.Crontab);
+            if (endpoint is ContextSpecConditionCrontab crontab) {
+                foreach (var crontabItem in crontab.Crontabs) {
+                    expressions.AddAll(crontabItem);
+                }
             }
         }
     }

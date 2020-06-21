@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
     {
         public StatementAgentInstanceFactoryOnTriggerResult(
             Viewable finalView,
-            AgentInstanceStopCallback stopCallback,
+            AgentInstanceMgmtCallback stopCallback,
             AgentInstanceContext agentInstanceContext,
             AggregationService optionalAggegationService,
             IDictionary<int, SubSelectFactoryResult> subselectStrategies,
@@ -47,7 +47,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
                 previousGetterStrategies,
                 regexExprPreviousEvalStrategy,
                 tableAccessStrategies,
-                preloadList)
+                preloadList,
+                PostContextMergeRunnable)
         {
             OptPatternRoot = optPatternRoot;
             ViewableActivationResult = viewableActivationResult;

@@ -62,6 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         typeInformation,
                         Ref("result"),
                         Constant(forge.ChainForge.Length)));
+            
             CodegenExpression chain = ExprDotNodeUtility.EvaluateChainCodegen(
                 methodNode,
                 exprSymbol,
@@ -70,9 +71,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 variableType,
                 forge.ChainForge,
                 forge.ResultWrapLambda);
-            block.DeclareVar(forge.EvaluationType, "returned", chain)
-                .Apply(InstrumentationCode.Instblock(classScope, "aExprDotChain"))
-                .MethodReturn(Ref("returned"));
+
+            if (forge.EvaluationType != typeof(void)) {
+                block.DeclareVar(forge.EvaluationType, "returned", chain)
+                    .Apply(InstrumentationCode.Instblock(classScope, "aExprDotChain"))
+                    .MethodReturn(Ref("returned"));
+            }
+            else {
+                block
+                    .Expression(chain)
+                    .Apply(InstrumentationCode.Instblock(classScope, "aExprDotChain"));
+            }
+
             return LocalMethod(methodNode);
         }
     }
