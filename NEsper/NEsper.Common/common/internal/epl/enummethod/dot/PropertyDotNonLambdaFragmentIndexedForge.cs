@@ -85,18 +85,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 			method.Block
 				.DeclareVar(typeof(EventBean), "event", ArrayAtIndex(refEps, Constant(_streamId)))
 				.IfRefNullReturnNull("event")
-				.DeclareVar(typeof(EventBean[]), "array", Cast(typeof(EventBean[]), _getter.EventBeanFragmentCodegen(@Ref("event"), method, classScope)))
+				.DeclareVar(typeof(EventBean[]), "array", Cast(typeof(EventBean[]), _getter.EventBeanFragmentCodegen(Ref("event"), method, classScope)))
 				.DeclareVar(typeof(int?), "index", _indexExpr.Forge.EvaluateCodegen(typeof(int?), method, symbols, classScope))
 				.IfRefNullReturnNull("index")
-				.IfCondition(Relational(@Ref("index"), CodegenExpressionRelational.CodegenRelational.GE, ArrayLength(@Ref("array"))))
+				.IfCondition(Relational(Ref("index"), CodegenExpressionRelational.CodegenRelational.GE, ArrayLength(Ref("array"))))
 				.BlockThrow(
 					NewInstance(
 						typeof(EPException),
 						Concat(
 							Constant("Array length "),
-							ArrayLength(@Ref("array")),
+							ArrayLength(Ref("array")),
 							Constant(" less than index "),
-							@Ref("index"),
+							Ref("index"),
 							Constant(" for property '" + _propertyName + "'"))))
 				.MethodReturn(CodegenLegoCast.CastSafeFromObjectType(
 					typeof(EventBean), ArrayAtIndex(

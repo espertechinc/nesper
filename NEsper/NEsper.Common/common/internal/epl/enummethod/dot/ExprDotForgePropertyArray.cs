@@ -74,23 +74,23 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 		        .MakeChild(type, typeof(ExprDotForgeProperty), classScope)
 		        .AddParam(innerType, "target").AddParam(typeof(int?), "index");
 
-	        var arrayExpr = CastSafeFromObjectType(_arrayType, _getter.EventBeanGetCodegen(Cast(typeof(EventBean), @Ref("target")), method, classScope));
+	        var arrayExpr = CastSafeFromObjectType(_arrayType, _getter.EventBeanGetCodegen(Cast(typeof(EventBean), Ref("target")), method, classScope));
 
 	        method.Block
 		        .IfNotInstanceOf("target", typeof(EventBean))
 		        .BlockReturn(ConstantNull())
 		        .DeclareVar(_arrayType, "array", arrayExpr)
 		        .IfRefNullReturnNull("index")
-		        .IfCondition(Relational(@Ref("index"), CodegenExpressionRelational.CodegenRelational.GE, ArrayLength(@Ref("array"))))
+		        .IfCondition(Relational(Ref("index"), CodegenExpressionRelational.CodegenRelational.GE, ArrayLength(Ref("array"))))
 		        .BlockThrow(
 			        NewInstance<EPException>(
 				        Concat(
 					        Constant("Array length "),
-					        ArrayLength(@Ref("array")),
+					        ArrayLength(Ref("array")),
 					        Constant(" less than index "),
-					        @Ref("index"),
+					        Ref("index"),
 					        Constant(" for property '" + _propertyName + "'"))))
-		        .MethodReturn(CastSafeFromObjectType(type, ArrayAtIndex(@Ref("array"), Cast(typeof(int), @Ref("index")))));
+		        .MethodReturn(CastSafeFromObjectType(type, ArrayAtIndex(Ref("array"), Cast(typeof(int), Ref("index")))));
 
 	        return LocalMethod(method, inner, _indexExpression.Forge.EvaluateCodegen(typeof(int?), method, symbols, classScope));
 	    }

@@ -39,12 +39,10 @@ namespace com.espertech.esper.common.client.soda
         {
             this._classText = classText;
         }
-        
-        /**
-     * Print part.
-     *
-     * @param writer to write to
-     */
+
+        /// <summary>
+        /// Print part.
+        /// </summary>
         public void ToEPL(TextWriter writer) {
             writer.Write("inlined_class ");
             writer.Write("\"\"\"");

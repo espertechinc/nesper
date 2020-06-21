@@ -193,13 +193,13 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 			
 			method.Block
 				.DeclareVar(typeof(SubSelectStrategyFactoryIndexShare), "s", NewInstance(typeof(SubSelectStrategyFactoryIndexShare)))
-				.SetProperty(@Ref("s"), "Table", tableExpr)
-				.SetProperty(@Ref("s"), "NamedWindow", namedWindowExpr)
-				.SetProperty(@Ref("s"), "AggregationServiceFactory", aggregationServiceFactoryExpr)
-				.SetProperty(@Ref("s"), "FilterExprEval", filterExprEvalExpr)
-				.SetProperty(@Ref("s"), "GroupKeyEval", groupKeyEval)
-				.SetProperty(@Ref("s"), "QueryPlan", queryPlanExpr)
-				.MethodReturn(@Ref("s"));
+				.SetProperty(Ref("s"), "Table", tableExpr)
+				.SetProperty(Ref("s"), "NamedWindow", namedWindowExpr)
+				.SetProperty(Ref("s"), "AggregationServiceFactory", aggregationServiceFactoryExpr)
+				.SetProperty(Ref("s"), "FilterExprEval", filterExprEvalExpr)
+				.SetProperty(Ref("s"), "GroupKeyEval", groupKeyEval)
+				.SetProperty(Ref("s"), "QueryPlan", queryPlanExpr)
+				.MethodReturn(Ref("s"));
 			return LocalMethod(method);
 		}
 
