@@ -16,49 +16,27 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
     public enum CountMinSketchAggType
     {
         STATE,
-        ADD,
-        FREQ,
-        TOPK
+        ADD
     }
 
     public static class CountMinSketchAggTypeExtensions
     {
         public static string GetFuncName(this CountMinSketchAggType enumValue)
         {
-            switch (enumValue) {
-                case CountMinSketchAggType.ADD:
-                    return "countMinSketchAdd";
-
-                case CountMinSketchAggType.FREQ:
-                    return "countMinSketchFrequency";
-
-                case CountMinSketchAggType.STATE:
-                    return "countMinSketch";
-
-                case CountMinSketchAggType.TOPK:
-                    return "countMinSketchTopk";
-            }
-
-            throw new ArgumentException("invalid value for enum value", nameof(enumValue));
+            return enumValue switch {
+                CountMinSketchAggType.ADD => "countMinSketchAdd",
+                CountMinSketchAggType.STATE => "countMinSketch",
+                _ => throw new ArgumentException("invalid value for enum value", nameof(enumValue))
+            };
         }
 
         public static CountMinSketchAggType? FromNameMayMatch(string name)
         {
-            switch (name.ToLowerInvariant()) {
-                case "countminsketchadd":
-                    return CountMinSketchAggType.ADD;
-
-                case "countminsketchfrequency":
-                    return CountMinSketchAggType.FREQ;
-
-                case "countminsketch":
-                    return CountMinSketchAggType.STATE;
-
-                case "countminsketchtopk":
-                    return CountMinSketchAggType.TOPK;
-            }
-
-            return null;
+            return name.ToLowerInvariant() switch {
+                "countminsketchadd" => CountMinSketchAggType.ADD,
+                "countminsketch" => CountMinSketchAggType.STATE
+                _ => null
+            };
         }
     }
 }

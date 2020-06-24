@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 {
     public class FilterSpecCompilerIndexPlannerWidthBasic
     {
-        protected static FilterSpecPlanForge PlanRemainingNodesBasic(
+        internal static FilterSpecPlanForge PlanRemainingNodesBasic(
             FilterSpecParaForgeMap overallExpressions,
             FilterSpecCompilerArgs args,
             int filterServiceMaxFilterWidth)

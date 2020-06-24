@@ -838,7 +838,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     "on SupportBean_A select * from MyInfraInvalid where sum(IntPrimitive) > 100",
-                    "Error validating expression: An aggregate function may not appear in a WHERE clause (use the HAVING clause) [");
+                    "Failed to validate expression: An aggregate function may not appear in a WHERE clause (use the HAVING clause) [");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,

@@ -122,7 +122,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     groupKeyTypes,
                     outputConditionPolledFactory,
                     groupByRollupDesc,
-                    i);
+                    i,
+                    null);
             }
 
             return outputFirstHelpers;

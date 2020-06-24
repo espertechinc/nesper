@@ -14,19 +14,26 @@ using com.espertech.esper.common.@internal.epl.variable.core;
 namespace com.espertech.esper.common.@internal.epl.variable.compiletime
 {
     /// <summary>
-    /// Exception indicating a variable type error.
+    ///     Exception indicating a variable type error.
     /// </summary>
     [Serializable]
     public class VariableTypeException : VariableDeclarationException
     {
         /// <summary>Ctor.</summary>
         /// <param name="msg">the exception message.</param>
-        public VariableTypeException(String msg)
+        public VariableTypeException(string msg)
             : base(msg)
         {
         }
 
-        protected VariableTypeException(SerializationInfo info,
+        public VariableTypeException(
+            string message,
+            Exception innerException) : base(message, innerException)
+        {
+        }
+
+        protected VariableTypeException(
+            SerializationInfo info,
             StreamingContext context) : base(info, context)
         {
         }

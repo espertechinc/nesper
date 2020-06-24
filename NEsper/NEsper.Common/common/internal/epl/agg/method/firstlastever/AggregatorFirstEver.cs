@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.function;
 
@@ -30,8 +31,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
     /// </summary>
     public class AggregatorFirstEver : AggregatorMethodWDistinctWFilterWValueBase
     {
-        private readonly CodegenExpressionRef _isSet;
-        private readonly CodegenExpressionRef _firstValue;
+        private readonly CodegenExpressionMember _isSet;
+        private readonly CodegenExpressionMember _firstValue;
         private readonly CodegenExpressionInstanceField _serde;
         private Type _childType;
 
@@ -42,18 +43,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
             CodegenMemberCol membersColumnized,
             CodegenClassScope classScope,
             Type optionalDistinctValueType,
+            DataInputOutputSerdeForge optionalDistinctSerde,
             bool hasFilter,
             ExprNode optionalFilter,
-            Type childType)
-            : base(
-                factory,
-                col,
-                rowCtor,
-                membersColumnized,
-                classScope,
-                optionalDistinctValueType,
-                hasFilter,
-                optionalFilter)
+            Type childType,
+            DataInputOutputSerdeForge serde)
+            : base(factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter)
         {
             _childType = childType.GetBoxedType();
             _isSet = membersColumnized.AddMember(col, typeof(bool), "isSet");
@@ -62,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
             //   elsewhere which makes assignment problematic.  Revisit this problem when we have more
             //   time.
             _firstValue = membersColumnized.AddMember(col, typeof(object), "firstValue");
-            _serde = classScope.AddOrGetDefaultFieldSharable(new CodegenSharableSerdeClassTyped(VALUE_NULLABLE, childType));
+            _serde = classScope.AddOrGetDefaultFieldSharable(new CodegenSharableSerdeClassTyped(VALUE_NULLABLE, childType, serde, classScope));
         }
 
         protected override void ApplyEvalEnterNonNull(
@@ -132,7 +127,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
         {
             method.Block
                 .Apply(WriteBoolean(output, row, _isSet))
-                .Expression(WriteNullable(RowDotRef(row, _firstValue), _serde, output, unitKey, writer, classScope));
+                .Expression(WriteNullable(RowDotMember(row, _firstValue), _serde, output, unitKey, writer, classScope));
         }
 
         protected override void ReadWODistinct(
@@ -145,7 +140,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
         {
             method.Block
                 .Apply(ReadBoolean(row, _isSet, input))
-                .AssignRef(RowDotRef(row, _firstValue),
+                .AssignRef(RowDotMember(row, _firstValue),
                     Cast(_childType, ReadNullable(_serde, input, unitKey, classScope)));
         }
 

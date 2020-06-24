@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                         REF_GENERATINGEVENTS,
                         ExprForgeCodegenNames.REF_ISNEWDATA,
                         REF_EXPREVALCONTEXT,
-                        REF_AGGREGATIONSVC))
+                        MEMBER_AGGREGATIONSVC))
                 .BlockReturn(NewArrayWithInit(typeof(EventBean), Ref("minmax")))
                 .DeclareVar<EventBean[]>(
                     "sorted",
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                         REF_GENERATINGEVENTS,
                         ExprForgeCodegenNames.REF_ISNEWDATA,
                         REF_EXPREVALCONTEXT,
-                        REF_AGGREGATIONSVC))
+                        MEMBER_AGGREGATIONSVC))
                 .MethodReturn(ExprDotMethod(REF_ROWLIMITPROCESSOR, "ApplyLimit", Ref("sorted")));
         }
 
@@ -87,8 +87,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                         REF_OUTGOINGEVENTS,
                         REF_ORDERCURRENTGENERATORS,
                         ExprForgeCodegenNames.REF_ISNEWDATA,
-                        REF_AGENTINSTANCECONTEXT,
-                        REF_AGGREGATIONSVC))
+                        MEMBER_AGENTINSTANCECONTEXT,
+                        MEMBER_AGGREGATIONSVC))
                 .MethodReturn(ExprDotMethod(REF_ROWLIMITPROCESSOR, "DetermineLimitAndApply", Ref("sorted")));
         }
 
@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                         REF_ORDERGROUPBYKEYS,
                         ExprForgeCodegenNames.REF_ISNEWDATA,
                         REF_EXPREVALCONTEXT,
-                        REF_AGGREGATIONSVC))
+                        MEMBER_AGGREGATIONSVC))
                 .MethodReturn(ExprDotMethod(REF_ROWLIMITPROCESSOR, "DetermineLimitAndApply", Ref("sorted")));
         }
 

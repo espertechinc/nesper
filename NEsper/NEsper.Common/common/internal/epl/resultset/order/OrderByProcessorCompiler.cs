@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                     typeof(OrderByProcessorCompiler),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
-                .AddParam(typeof(AgentInstanceContext), REF_AGENTINSTANCECONTEXT.Ref);
+                .AddParam(typeof(AgentInstanceContext), MEMBER_AGENTINSTANCECONTEXT.Ref);
             forge.InstantiateCodegen(instantiateMethod, classScope);
             
             var ctorParams = Collections.SingletonList(new CodegenTypedParam(providerClassName, "o"));

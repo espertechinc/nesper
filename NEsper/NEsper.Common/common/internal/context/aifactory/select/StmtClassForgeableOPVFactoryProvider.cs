@@ -188,7 +188,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 .AddParam(typeof(ResultSetProcessor), NAME_RESULTSETPROCESSOR)
                 .AddParam(typeof(AgentInstanceContext), NAME_AGENTINSTANCECONTEXT);
             makeViewMethod.Block.MethodReturn(
-                NewInstance(CLASSNAME_OUTPUTPROCESSVIEW, Ref("o"), MEMBER_RESULTSETPROCESSOR, REF_AGENTINSTANCECONTEXT));
+                NewInstance(CLASSNAME_OUTPUTPROCESSVIEW, Ref("o"), MEMBER_RESULTSETPROCESSOR, MEMBER_AGENTINSTANCECONTEXT));
             var methods = new CodegenClassMethods();
             var properties = new CodegenClassProperties();
 

@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportSpatialEventRectangle(rectangle(0).intersects(rectangle(0, 0, 0, 0)))",
-                    "Failed to validate filter expression 'rectangle(0).intersects(rectangle(0...(43 chars)': Error validating left-hand-side method 'rectangle', expected 4 parameters but received 1 parameters");
+                    "Failed to validate filter expression 'rectangle(0).intersects(rectangle(0...(43 chars)': Failed to validate left-hand-side method 'rectangle', expected 4 parameters but received 1 parameters");
             }
         }
 

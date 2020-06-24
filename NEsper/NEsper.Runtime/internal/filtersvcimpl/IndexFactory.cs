@@ -104,6 +104,15 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 return new FilterParamIndexNotIn(lookupable, lockFactory.ObtainNew());
             }
 
+            
+            // Handle re-usable boolean expression
+            if (filterOperator == FilterOperator.REBOOL) {
+                if (lookupable.ReturnType == null) {
+                    return new FilterParamIndexReboolNoValue(lookupable, lockFactory.ObtainNew());
+                }
+                return new FilterParamIndexReboolWithValue(lookupable, lockFactory.ObtainNew());
+            }
+            
             // Handle all boolean expression
             if (filterOperator == FilterOperator.BOOLEAN_EXPRESSION) {
                 return new FilterParamIndexBooleanExpr(lockFactory.ObtainNew());

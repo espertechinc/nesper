@@ -6,17 +6,14 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
+using com.espertech.esper.common.@internal.compile.stage1.specmapper;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.rowrecog.expr;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 {
@@ -26,8 +23,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         private static readonly RowRegexExprNodeCopierNested NESTED_HANDLER = new RowRegexExprNodeCopierNested();
 
         public static RowRecogExprNode Expand(
-            IContainer container,
-            RowRecogExprNode pattern)
+            RowRecogExprNode pattern,
+            ExpressionCopier expressionCopier)
         {
             var visitor = new RowRecogExprNodeVisitorRepeat();
             pattern.Accept(visitor);
@@ -47,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 });
 
             foreach (var permute in permutes) {
-                var alteration = ExpandPermute(container, permute.Permute);
+                var alteration = ExpandPermute(permute.Permute, expressionCopier);
                 var optionalNewParent = Replace(
                     permute.OptionalParent,
                     permute.Permute,
@@ -61,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             var atomPairs = visitor.Atoms;
             foreach (var pair in atomPairs) {
                 var atom = pair.First;
-                var expandedRepeat = ExpandRepeat(container, atom, atom.OptionalRepeat, atom.Type, ATOM_HANDLER);
+                var expandedRepeat = ExpandRepeat(atom, atom.OptionalRepeat, atom.Type, ATOM_HANDLER, expressionCopier);
                 var optionalNewParent = Replace(pair.Second, pair.First, expandedRepeat);
                 if (optionalNewParent != null) {
                     newParentNode = optionalNewParent;
@@ -84,11 +81,12 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             foreach (var pair in nestedPairs) {
                 var nested = pair.Nested;
                 var expandedRepeat = ExpandRepeat(
-                    container,
                     nested,
                     nested.OptionalRepeat,
                     nested.Type,
-                    NESTED_HANDLER);
+                    NESTED_HANDLER,
+                    expressionCopier);
+                
                 var optionalNewParent = Replace(pair.OptionalParent, pair.Nested, expandedRepeat);
                 if (optionalNewParent != null) {
                     newParentNode = optionalNewParent;
@@ -99,10 +97,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         }
 
         private static RowRecogExprNodeAlteration ExpandPermute(
-            IContainer container,
-            RowRecogExprNodePermute permute)
+            RowRecogExprNodePermute permute, 
+            ExpressionCopier expressionCopier)
         {
-            var copier = container.Resolve<IObjectCopier>();
             var e = PermutationEnumerator.Create(permute.ChildNodes.Count);
             var parent = new RowRecogExprNodeAlteration();
             foreach (var indexes in e) {
@@ -110,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 parent.AddChildNode(concat);
                 for (var i = 0; i < indexes.Length; i++) {
                     var toCopy = permute.ChildNodes[indexes[i]];
-                    var copy = CheckedCopy(copier, toCopy);
+                    var copy = toCopy.CheckedCopy(expressionCopier);
                     concat.AddChildNode(copy);
                 }
             }
@@ -147,11 +144,11 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         }
 
         private static IList<RowRecogExprNode> ExpandRepeat(
-            IContainer container,
             RowRecogExprNode node,
             RowRecogExprRepeatDesc repeat,
             RowRecogNFATypeEnum type,
-            RowRegexExprNodeCopier copier)
+            RowRegexExprNodeCopier copier, 
+            ExpressionCopier expressionCopier)
         {
             // handle single-bounds (no ranges)
             IList<RowRecogExprNode> repeated = new List<RowRecogExprNode>();
@@ -160,7 +157,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 var numRepeated = (int) repeat.Single.Forge.ExprEvaluator.Evaluate(null, true, null);
                 ValidateRange(numRepeated, 1, int.MaxValue);
                 for (var i = 0; i < numRepeated; i++) {
-                    var copy = copier.Copy(container, node, type);
+                    var copy = copier.Copy(node, type, expressionCopier);
                     repeated.Add(copy);
                 }
 
@@ -186,7 +183,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 ValidateRange(upper.Value, 1, int.MaxValue);
                 ValidateRange(lower.Value, 1, upper.Value);
                 for (var i = 0; i < lower; i++) {
-                    var copy = copier.Copy(container, node, type);
+                    var copy = copier.Copy(node, type, expressionCopier);
                     repeated.Add(copy);
                 }
 
@@ -203,7 +200,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                         newType = RowRecogNFATypeEnum.ZERO_TO_MANY_RELUCTANT;
                     }
 
-                    var copy = copier.Copy(container, node, newType);
+                    var copy = copier.Copy(node, newType, expressionCopier);
                     repeated.Add(copy);
                 }
 
@@ -214,7 +211,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             if (upper == null) {
                 ValidateRange(lower.Value, 1, int.MaxValue);
                 for (var i = 0; i < lower; i++) {
-                    repeated.Add(copier.Copy(container, node, type));
+                    repeated.Add(copier.Copy(node, type, expressionCopier));
                 }
 
                 // makeInline type optional
@@ -235,7 +232,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     newType = RowRecogNFATypeEnum.ZERO_TO_MANY_RELUCTANT;
                 }
 
-                var copy = copier.Copy(container, node, newType);
+                var copy = copier.Copy(node, newType, expressionCopier);
                 repeated.Add(copy);
                 return repeated;
             }
@@ -255,23 +252,11 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     newType = RowRecogNFATypeEnum.ZERO_TO_MANY_RELUCTANT;
                 }
 
-                var copy = copier.Copy(container, node, newType);
+                var copy = copier.Copy(node, newType, expressionCopier);
                 repeated.Add(copy);
             }
 
             return repeated;
-        }
-
-        private static RowRecogExprNode CheckedCopy(
-            IObjectCopier copier,
-            RowRecogExprNode inner)
-        {
-            try {
-                return copier.Copy(inner);
-            }
-            catch (Exception e) {
-                throw new EPException("Failed to repeat nested match-recognize: " + e.Message, e);
-            }
         }
 
         private static void ValidateRange(
@@ -312,17 +297,17 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         private interface RowRegexExprNodeCopier
         {
             RowRecogExprNode Copy(
-                IContainer container,
                 RowRecogExprNode nodeToCopy,
-                RowRecogNFATypeEnum newType);
+                RowRecogNFATypeEnum newType,
+                ExpressionCopier expressionCopier);
         }
 
         public class RowRegexExprNodeCopierAtom : RowRegexExprNodeCopier
         {
             public RowRecogExprNode Copy(
-                IContainer container,
                 RowRecogExprNode nodeToCopy,
-                RowRecogNFATypeEnum newType)
+                RowRecogNFATypeEnum newType,
+                ExpressionCopier expressionCopier)
             {
                 var atom = (RowRecogExprNodeAtom) nodeToCopy;
                 return new RowRecogExprNodeAtom(atom.Tag, newType, null);
@@ -332,15 +317,14 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         public class RowRegexExprNodeCopierNested : RowRegexExprNodeCopier
         {
             public RowRecogExprNode Copy(
-                IContainer container,
                 RowRecogExprNode nodeToCopy,
-                RowRecogNFATypeEnum newType)
+                RowRecogNFATypeEnum newType,
+                ExpressionCopier expressionCopier)
             {
-                var copier = container.Resolve<IObjectCopier>();
                 var nested = (RowRecogExprNodeNested) nodeToCopy;
                 var nestedCopy = new RowRecogExprNodeNested(newType, null);
                 foreach (var inner in nested.ChildNodes) {
-                    var innerCopy = CheckedCopy(copier, inner);
+                    var innerCopy = inner.CheckedCopy(expressionCopier);
                     nestedCopy.AddChildNode(innerCopy);
                 }
 

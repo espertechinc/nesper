@@ -257,7 +257,9 @@ namespace com.espertech.esper.regressionrun.suite.pattern
                 typeof(ISupportDImpl),
                 typeof(ISupportBCImpl),
                 typeof(ISupportBaseABImpl),
-                typeof(ISupportAImplSuperGImpl)})
+                typeof(ISupportAImplSuperGImpl),
+                typeof(SupportEventWithIntArray)
+            })
             {
                 configuration.Common.AddEventType(clazz.Name, clazz);
             }

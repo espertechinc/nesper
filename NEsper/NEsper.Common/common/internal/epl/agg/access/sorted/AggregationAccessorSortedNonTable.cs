@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         {
             var sorted = (AggregatorAccessSorted) context.AccessStateForge.Aggregator;
             var size = sorted.SizeCodegen();
-            var iterator = max ? sorted.ReverseEnumeratorCodegen : sorted.EnumeratorCodegen();
+            var iterator = max ? sorted.ReverseEnumeratorCodegen() : sorted.EnumeratorCodegen();
 
             context.Method.Block.IfCondition(EqualsIdentity(size, Constant(0)))
                 .BlockReturn(ConstantNull())

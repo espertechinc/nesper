@@ -389,6 +389,42 @@ namespace com.espertech.esper.common.@internal.util
                    type == typeof(int?);
         }
 
+        public static bool IsInt64(this Type type)
+        {
+            return type == typeof(long) ||
+                   type == typeof(long?);
+        }
+
+        public static bool IsInt16(this Type type)
+        {
+            return type == typeof(short) ||
+                   type == typeof(short?);
+        }
+
+        public static bool IsDecimal(this Type type)
+        {
+            return type == typeof(decimal) ||
+                   type == typeof(decimal?);
+        }
+
+        public static bool IsDouble(this Type type)
+        {
+            return type == typeof(double) ||
+                   type == typeof(double?);
+        }
+
+        public static bool IsSingle(this Type type)
+        {
+            return type == typeof(float) ||
+                   type == typeof(float?);
+        }
+
+        public static bool IsBigInteger(this Type type)
+        {
+            return type == typeof(BigInteger) ||
+                   type == typeof(BigInteger?);
+        }
+
         /// <summary>
         ///     Determines whether the specified type is integral.
         /// </summary>
@@ -521,18 +557,6 @@ namespace com.espertech.esper.common.@internal.util
         public static bool IsNumber(this object value)
         {
             return value != null && IsNumeric(value.GetType());
-        }
-
-        public static bool IsDecimal(this Type type)
-        {
-            return type == typeof(decimal) ||
-                   type == typeof(decimal?);
-        }
-
-        public static bool IsBigInteger(this Type type)
-        {
-            return type == typeof(BigInteger) ||
-                   type == typeof(BigInteger?);
         }
 
         /// <summary>

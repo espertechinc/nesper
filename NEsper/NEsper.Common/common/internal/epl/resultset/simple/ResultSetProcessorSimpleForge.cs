@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                 EmptyList<CodegenNamedParam>.Instance,
                 GetType(),
                 classScope,
-                node => node.Block.ReturnMethodOrBlock(REF_AGENTINSTANCECONTEXT));
+                node => node.Block.ReturnMethodOrBlock(MEMBER_AGENTINSTANCECONTEXT));
         }
 
         public void ProcessViewResultCodegen(

@@ -10,9 +10,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Antlr4.Runtime.Misc;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
+using com.espertech.esper.common.@internal.compile.stage2;
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.agg.access.core;
 using com.espertech.esper.common.@internal.epl.agg.groupall;
 using com.espertech.esper.common.@internal.epl.agg.groupby;
@@ -29,6 +34,7 @@ using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.epl.variable.core;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
@@ -48,6 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             IDictionary<ExprNode, string> selectClauseNamedNodes,
             IList<ExprDeclaredNode> declaredExpressions,
             ExprNode[] groupByNodes,
+            MultiKeyClassRef groupByMultiKey,
             IList<ExprAggregateNode> havingAggregateExprNodes,
             IList<ExprAggregateNode> orderByAggregateExprNodes,
             IList<ExprAggregateNodeGroupKey> groupKeyExpressions,
@@ -58,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             ExprNode whereClause,
             ExprNode havingClause,
             EventType[] typesPerStream,
-            AggregationGroupByRollupDesc groupByRollupDesc,
+            AggregationGroupByRollupDescForge groupByRollupDesc,
             string optionalContextName,
             IntoTableSpec intoTableSpec,
             TableCompileTimeResolver tableCompileTimeResolver,
@@ -66,7 +73,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             bool isFireAndForget,
             bool isOnSelect,
             ImportServiceCompileTime importService,
-            string statementName)
+            StatementRawInfo raw,
+            SerdeCompileTimeResolver serdeResolver)
         {
             // No aggregates used, we do not need this service
             if (selectAggregateExprNodes.IsEmpty() && havingAggregateExprNodes.IsEmpty()) {
@@ -76,8 +84,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
                 return new AggregationServiceForgeDesc(
                     AggregationServiceNullFactory.INSTANCE,
-                    Collections.GetEmptyList<AggregationServiceAggExpressionDesc>(),
-                    Collections.GetEmptyList<ExprAggregateNodeGroupKey>());
+                    EmptyList<AggregationServiceAggExpressionDesc>.Instance,
+                    EmptyList<ExprAggregateNodeGroupKey>.Instance,
+                    EmptyList.Instance);
             }
 
             // Validate the absence of "prev" function in where-clause:
@@ -106,17 +115,18 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             // Compile a map of aggregation nodes and equivalent-to aggregation nodes.
             // Equivalent-to functions are for example "select sum(a*b), 5*sum(a*b)".
             // Reducing the total number of aggregation functions.
-            IList<AggregationServiceAggExpressionDesc> aggregations = new List<AggregationServiceAggExpressionDesc>();
+            var aggregations = new List<AggregationServiceAggExpressionDesc>();
+            var intoTableNonRollup = groupByRollupDesc == null && intoTableSpec != null;
             foreach (var selectAggNode in selectAggregateExprNodes) {
-                AddEquivalent(selectAggNode, aggregations);
+                AddEquivalent(selectAggNode, aggregations, intoTableNonRollup);
             }
 
             foreach (var havingAggNode in havingAggregateExprNodes) {
-                AddEquivalent(havingAggNode, aggregations);
+                AddEquivalent(havingAggNode, aggregations, intoTableNonRollup);
             }
 
             foreach (var orderByAggNode in orderByAggregateExprNodes) {
-                AddEquivalent(orderByAggNode, aggregations);
+                AddEquivalent(orderByAggNode, aggregations, intoTableNonRollup);
             }
 
             // Construct a list of evaluation node for the aggregation functions (regular agg).
@@ -171,8 +181,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     methodAggForgesList,
                     declaredExpressions,
                     importService,
-                    statementName,
-                    isFireAndForget);
+                    raw.StatementName);
 
                 // return factory
                 AggregationServiceFactoryForge serviceForgeX = new AggregationServiceFactoryForgeTable(
@@ -180,7 +189,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     bindingMatchResult.MethodPairs,
                     bindingMatchResult.TargetStates,
                     bindingMatchResult.Agents,
-                    groupByRollupDesc);
+                    groupByRollupDesc,
+                    EmptyList.Instance);
                 return new AggregationServiceForgeDesc(serviceForgeX, aggregations, groupKeyExpressions);
             }
 
@@ -215,7 +225,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 aggregations,
                 importService,
                 isFireAndForget,
-                statementName,
+                raw.StatementName,
                 groupByNodes);
             var accessorPairsForge = multiFunctionAggPlan.AccessorPairsForge;
             var accessFactories = multiFunctionAggPlan.StateFactoryForges;
@@ -224,20 +234,24 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
             AggregationServiceFactoryForge serviceForge;
             var useFlags = new AggregationUseFlags(isUnidirectional, isFireAndForget, isOnSelect);
+            var additionalForgeables = new List<StmtClassForgeableFactory>();
 
             // analyze local group by
             AggregationLocalGroupByPlanForge localGroupByPlan = null;
             if (localGroupDesc != null) {
-                localGroupByPlan = AggregationGroupByLocalGroupByAnalyzer.Analyze(
+                AggregationLocalGroupByPlanDesc plan = AggregationGroupByLocalGroupByAnalyzer.Analyze(
                     methodAggForges,
                     methodAggFactories,
                     accessFactories,
                     localGroupDesc,
                     groupByNodes,
+                    groupByMultiKey,
                     accessorPairsForge,
-                    importService,
-                    isFireAndForget,
-                    statementName);
+                    raw,
+                    serdeResolver);
+                localGroupByPlan = plan.Forge;
+                additionalForgeables.AddAll(plan.AdditionalForgeables);
+
                 try {
                     var hook = (AggregationLocalLevelHook) ImportUtil.GetAnnotationHook(
                         annotations,
@@ -274,7 +288,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     isUnidirectional,
                     isFireAndForget,
                     isOnSelect,
-                    groupByNodes);
+                    groupByNodes,
+                    groupByMultiKey);
                 var hasNoReclaim = HintEnum.DISABLE_RECLAIM_GROUP.GetHint(annotations) != null;
                 var reclaimGroupAged = HintEnum.RECLAIM_GROUP_AGED.GetHint(annotations);
                 var reclaimGroupFrequency = HintEnum.RECLAIM_GROUP_AGED.GetHint(annotations);
@@ -312,12 +327,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 }
             }
 
-            return new AggregationServiceForgeDesc(serviceForge, aggregations, groupKeyExpressions);
+            return new AggregationServiceForgeDesc(serviceForge, aggregations, groupKeyExpressions, additionalForgeables);
         }
 
         private static void AddEquivalent(
             ExprAggregateNode aggNodeToAdd,
-            IList<AggregationServiceAggExpressionDesc> equivalencyList)
+            IList<AggregationServiceAggExpressionDesc> equivalencyList,
+            bool intoTableNonRollup)
         {
             // Check any same aggregation nodes among all aggregation clauses
             var foundEquivalent = false;
@@ -364,7 +380,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 break;
             }
 
-            if (!foundEquivalent) {
+            if (!foundEquivalent || intoTableNonRollup) {
                 equivalencyList.Add(new AggregationServiceAggExpressionDesc(aggNodeToAdd, aggNodeToAdd.Factory));
             }
         }
@@ -407,7 +423,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         private static AggregationGroupByLocalGroupDesc AnalyzeLocalGroupBy(
             IList<AggregationServiceAggExpressionDesc> aggregations,
             ExprNode[] groupByNodes,
-            AggregationGroupByRollupDesc groupByRollupDesc,
+            AggregationGroupByRollupDescForge groupByRollupDesc,
             IntoTableSpec intoTableSpec)
         {
             var hasOver = false;
@@ -475,8 +491,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             IList<ExprForge[]> methodAggForgesList,
             IList<ExprDeclaredNode> declaredExpressions,
             ImportService importService,
-            string statementName,
-            bool isFireAndForget)
+            string statementName)
         {
             IDictionary<AggregationServiceAggExpressionDesc, TableMetadataColumnAggregation> methodAggs =
                 new LinkedHashMap<AggregationServiceAggExpressionDesc, TableMetadataColumnAggregation>();

@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 
 		public bool HasPrevious => _viewResourceDelegateDesc.HasPrevious;
 
-		protected static CodegenExpression MakeAggregationService(
+		internal static CodegenExpression MakeAggregationService(
 			int subqueryNumber,
 			AggregationServiceForgeDesc aggregationServiceForgeDesc,
 			CodegenClassScope classScope,

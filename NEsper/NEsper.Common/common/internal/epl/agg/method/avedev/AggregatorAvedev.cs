@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.io;
@@ -27,8 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
 {
     public class AggregatorAvedev : AggregatorMethodWDistinctWFilterWValueBase
     {
-        private readonly CodegenExpressionRef sum;
-        private readonly CodegenExpressionRef valueSet;
+        private readonly CodegenExpressionMember sum;
+        private readonly CodegenExpressionMember valueSet;
 
         public AggregatorAvedev(
             AggregationForgeFactory factory,
@@ -37,6 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
             CodegenMemberCol membersColumnized,
             CodegenClassScope classScope,
             Type optionalDistinctValueType,
+            DataInputOutputSerdeForge optionalDistinctSerde,
             bool hasFilter,
             ExprNode optionalFilter)
             : base(
@@ -46,6 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
                 membersColumnized,
                 classScope,
                 optionalDistinctValueType,
+                optionalDistinctSerde,
                 hasFilter,
                 optionalFilter)
         {
@@ -120,7 +123,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
         {
             method.Block
                 .Apply(WriteDouble(output, row, sum))
-                .StaticMethod(GetType(), "WritePoints", output, RowDotRef(row, valueSet));
+                .StaticMethod(GetType(), "WritePoints", output, RowDotMember(row, valueSet));
         }
 
         protected override void ReadWODistinct(
@@ -133,7 +136,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
         {
             method.Block
                 .Apply(ReadDouble(row, sum, input))
-                .AssignRef(RowDotRef(row, valueSet), StaticMethod(GetType(), "ReadPoints", input));
+                .AssignRef(RowDotMember(row, valueSet), StaticMethod(GetType(), "ReadPoints", input));
         }
 
         /// <summary>

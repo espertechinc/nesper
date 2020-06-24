@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -30,6 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenMemberCol membersColumnized,
             CodegenClassScope classScope,
             Type optionalDistinctValueType,
+            DataInputOutputSerdeForge optionalDistinctSerde,
             bool hasFilter,
             ExprNode optionalFilter)
             : base(
@@ -39,6 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
                 membersColumnized,
                 classScope,
                 optionalDistinctValueType,
+                optionalDistinctSerde,
                 hasFilter,
                 optionalFilter)
         {
@@ -129,7 +132,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
 
             if (distinct != null) {
                 method.Block
-                    .IfCondition(Not(ExprDotMethod(distinct, enter ? "Add" : "Remove", Ref("val"))))
+                    .IfCondition(Not(ExprDotMethod(distinct, enter ? "Add" : "Remove", ToDistinctValueKey(Ref("val")))))
                     .BlockReturnNoValue();
             }
         }
@@ -142,7 +145,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
         {
             method.Block.IfCondition(EqualsNull(value)).BlockReturnNoValue();
             if (distinct != null) {
-                method.Block.IfCondition(Not(ExprDotMethod(distinct, enter ? "Add" : "Remove", value)))
+                method.Block
+                    .IfCondition(Not(ExprDotMethod(distinct, enter ? "Add" : "Remove", ToDistinctValueKey(value))))
                     .BlockReturnNoValue();
             }
         }

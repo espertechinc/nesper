@@ -10,5 +10,6 @@ namespace com.espertech.esper.common.@internal.context.module
 {
     public interface RuntimeExtensionServices
     {
+        bool IsHAEnabled { get; }
     }
 } // end of namespace

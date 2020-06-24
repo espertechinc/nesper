@@ -20,6 +20,7 @@ namespace com.espertech.esper.common.@internal.metrics.audit
             string statementName,
             int agentInstanceId,
             AuditEnum category,
+            long runtimeTime,
             string message)
         {
             RuntimeURI = runtimeURI;
@@ -28,6 +29,7 @@ namespace com.espertech.esper.common.@internal.metrics.audit
             AgentInstanceId = agentInstanceId;
             Category = category;
             Message = message;
+            RuntimeTime = runtimeTime;
         }
 
         public string RuntimeURI { get; }
@@ -38,6 +40,7 @@ namespace com.espertech.esper.common.@internal.metrics.audit
 
         public AuditEnum Category { get; }
 
+        public long RuntimeTime { get; }
         public int AgentInstanceId { get; }
 
         public string Message { get; }

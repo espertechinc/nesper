@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
     {
         public static readonly FilterSpecPlanComputeConditionalPath INSTANCE = new FilterSpecPlanComputeConditionalPath();
 
-        protected FilterValueSetParam[][] Compute(EventBean[] eventsPerStream,
+        protected override FilterValueSetParam[][] Compute(EventBean[] eventsPerStream,
             FilterSpecPlan plan,
             MatchedEventMap matchedEvents,
             ExprEvaluatorContext exprEvaluatorContext,
@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             if (plan.FilterConfirm != null) {
                 var controlResult = (bool) plan.FilterConfirm.Evaluate(eventsPerStream, true, exprEvaluatorContext);
                 if (controlResult != null && controlResult) {
-                    return FilterValueSetParam.EMPTY;
+                    return FilterValueSetParamConstants.EMPTY;
                 }
             }
 

@@ -56,7 +56,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             IList<FilterHandle> matchesList = new List<FilterHandle>();
 
             // Invoke match
-            testIndex.MatchEvent(testEventBean, matchesList);
+            testIndex.MatchEvent(testEventBean, matchesList, null);
 
             Assert.AreEqual(1, matchesList.Count);
             Assert.AreEqual(filterCallback, matchesList[0]);

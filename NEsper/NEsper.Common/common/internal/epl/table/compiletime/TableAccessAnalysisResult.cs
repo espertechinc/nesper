@@ -9,9 +9,12 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.compile.multikey;
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 
 namespace com.espertech.esper.common.@internal.epl.table.compiletime
 {
@@ -20,6 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         public TableAccessAnalysisResult(
             IDictionary<string, TableMetadataColumn> tableColumns,
             ObjectArrayEventType internalEventType,
+            DataInputOutputSerdeForge[] internalEventTypePropertySerdes,
             ObjectArrayEventType publicEventType,
             TableMetadataColumnPairPlainCol[] colsPlain,
             TableMetadataColumnPairAggMethod[] colsAggMethod,
@@ -28,10 +32,13 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             string[] primaryKeyColumns,
             EventPropertyGetterSPI[] primaryKeyGetters,
             Type[] primaryKeyTypes,
-            int[] primaryKeyColNums)
+            int[] primaryKeyColNums,
+            MultiKeyClassRef primaryKeyMultikeyClasses,
+            IList<StmtClassForgeableFactory> additionalForgeables)
         {
             TableColumns = tableColumns;
             InternalEventType = internalEventType;
+            InternalEventTypePropertySerdes = internalEventTypePropertySerdes;
             PublicEventType = publicEventType;
             ColsPlain = colsPlain;
             ColsAggMethod = colsAggMethod;
@@ -41,11 +48,15 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             PrimaryKeyGetters = primaryKeyGetters;
             PrimaryKeyTypes = primaryKeyTypes;
             PrimaryKeyColNums = primaryKeyColNums;
+            PrimaryKeyMultikeyClasses = primaryKeyMultikeyClasses;
+            AdditionalForgeables = additionalForgeables;
         }
 
         public IDictionary<string, TableMetadataColumn> TableColumns { get; }
 
         public ObjectArrayEventType InternalEventType { get; }
+        
+        public DataInputOutputSerdeForge[] InternalEventTypePropertySerdes { get; }
 
         public ObjectArrayEventType PublicEventType { get; }
 
@@ -64,5 +75,10 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         public string[] PrimaryKeyColumns { get; }
 
         public int[] PrimaryKeyColNums { get; }
+        
+        public MultiKeyClassRef PrimaryKeyMultikeyClasses { get; }
+        
+        public IList<StmtClassForgeableFactory> AdditionalForgeables { get; }
+
     }
 } // end of namespace

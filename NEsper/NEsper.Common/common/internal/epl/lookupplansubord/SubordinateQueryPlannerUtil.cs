@@ -162,10 +162,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                 hashesDesc[i] = hashJoinedProps[index];
                 hashPropCoercionTypes[i] = indexedKeyProps[i].CoercionType;
                 var keyForge = hashesDesc[i].HashKey.KeyExpr.Forge;
-                var evaluatorHashkey = keyForge.ExprEvaluator;
-                if (evaluatorHashkey != null &&
-                    indexedKeyProps[i].CoercionType.GetBoxedType() !=
-                    keyForge.EvaluationType.GetBoxedType()) { // we allow null evaluator
+                if (indexedKeyProps[i].CoercionType.GetBoxedType() != keyForge.EvaluationType.GetBoxedType()) {   // we allow null evaluator
                     isCoerceHash = true;
                 }
             }

@@ -57,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 Assert.Fail();
             }
             catch (PropertyAccessException ex) {
-                AssertMessage(ex, "Failed to parse property 'a\u008F': Unexpected token '\u008F'");
+                AssertMessage(ex, "Property named 'a\u008F' is not a valid property name for this type");
             }
         }
 

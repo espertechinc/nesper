@@ -31,14 +31,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'ArrayProperty.where()': Error validating enumeration method 'where' parameter 0: Failed to validate declared expression body expression 'x.BoolPrimitive': Failed to resolve property 'x.BoolPrimitive' to a stream or nested property in a stream [select ArrayProperty.where(x->x.BoolPrimitive) from SupportBeanComplexProps]");
+                "Failed to validate select-clause expression 'ArrayProperty.where()': Failed to validate enumeration method 'where' parameter 0: Failed to validate declared expression body expression 'x.BoolPrimitive': Failed to resolve property 'x.BoolPrimitive' to a stream or nested property in a stream [select ArrayProperty.where(x->x.BoolPrimitive) from SupportBeanComplexProps]");
 
             // property not there
             epl = "select Contained.where(x->x.dummy = 1) from SupportBean_ST0_Container";
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'Contained.where()': Error validating enumeration method 'where' parameter 0: Failed to validate declared expression body expression 'x.dummy=1': Failed to resolve property 'x.dummy' to a stream or nested property in a stream [select Contained.where(x->x.dummy = 1) from SupportBean_ST0_Container]");
+                "Failed to validate select-clause expression 'Contained.where()': Failed to validate enumeration method 'where' parameter 0: Failed to validate declared expression body expression 'x.dummy=1': Failed to resolve property 'x.dummy' to a stream or nested property in a stream [select Contained.where(x->x.dummy = 1) from SupportBean_ST0_Container]");
             epl = "select * from SupportBean(products.where(p -> code = '1'))";
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'Contained.take('a')': Failed to resolve enumeration method, date-time method or mapped property 'Contained.take('a')': Error validating enumeration method 'take', expected a number-type result for expression parameter 0 but received System.String [select Contained.take('a') from SupportBean_ST0_Container]");
+                "Failed to validate select-clause expression 'Contained.take('a')': Failed to resolve enumeration method, date-time method or mapped property 'Contained.take('a')': Failed to validate enumeration method 'take', expected a number-type result for expression parameter 0 but received System.String [select Contained.take('a') from SupportBean_ST0_Container]");
 
             // invalid incompatible params
             epl = "select Contained.take(x -> x.P00) from SupportBean_ST0_Container";
@@ -128,14 +128,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'TheString.where()': Error validating enumeration method 'where' parameter 0: Failed to validate declared expression body expression 'x.BoolPrimitive': Failed to resolve property 'x.BoolPrimitive' to a stream or nested property in a stream [select (select TheString, IntPrimitive from SupportBean#lastevent).where(x->x.BoolPrimitive) from SupportBean_ST0]");
+                "Failed to validate select-clause expression 'TheString.where()': Failed to validate enumeration method 'where' parameter 0: Failed to validate declared expression body expression 'x.BoolPrimitive': Failed to resolve property 'x.BoolPrimitive' to a stream or nested property in a stream [select (select TheString, IntPrimitive from SupportBean#lastevent).where(x->x.BoolPrimitive) from SupportBean_ST0]");
 
             // subselect individual column
             epl = "select (select IntPrimitive from SupportBean#lastevent).where(x->x.BoolPrimitive) from SupportBean_ST0";
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'IntPrimitive.where()': Error validating enumeration method 'where' parameter 0: Failed to validate declared expression body expression 'x.BoolPrimitive': Failed to resolve property 'x.BoolPrimitive' to a stream or nested property in a stream [select (select IntPrimitive from SupportBean#lastevent).where(x->x.BoolPrimitive) from SupportBean_ST0]");
+                "Failed to validate select-clause expression 'IntPrimitive.where()': Failed to validate enumeration method 'where' parameter 0: Failed to validate declared expression body expression 'x.BoolPrimitive': Failed to resolve property 'x.BoolPrimitive' to a stream or nested property in a stream [select (select IntPrimitive from SupportBean#lastevent).where(x->x.BoolPrimitive) from SupportBean_ST0]");
 
             // aggregation
             epl = "select avg(IntPrimitive).where(x->x.BoolPrimitive) from SupportBean_ST0";
@@ -149,35 +149,35 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'Contained.allOf()': Error validating enumeration method 'allOf', expected a boolean-type result for expression parameter 0 but received System.Int32 [select Contained.allOf(x -> 1) from SupportBean_ST0_Container]");
+                "Failed to validate select-clause expression 'Contained.allOf()': Failed to validate enumeration method 'allOf', expected a boolean-type result for expression parameter 0 but received System.Int32 [select Contained.allOf(x -> 1) from SupportBean_ST0_Container]");
 
             // invalid incompatible params
             epl = "select Contained.allOf(x -> 1) from SupportBean_ST0_Container";
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'Contained.allOf()': Error validating enumeration method 'allOf', expected a boolean-type result for expression parameter 0 but received System.Int32 [select Contained.allOf(x -> 1) from SupportBean_ST0_Container]");
+                "Failed to validate select-clause expression 'Contained.allOf()': Failed to validate enumeration method 'allOf', expected a boolean-type result for expression parameter 0 but received System.Int32 [select Contained.allOf(x -> 1) from SupportBean_ST0_Container]");
 
             // invalid incompatible params
             epl = "select Contained.aggregate(0, (result, item) -> result || ',') from SupportBean_ST0_Container";
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 epl,
-                $"Failed to validate select-clause expression 'Contained.aggregate(0,)': Error validating enumeration method 'aggregate' parameter 1: Failed to validate declared expression body expression 'result||\",\"': Implicit conversion from datatype '{typeof(int?).CleanName()}' to System.String is not allowed [select Contained.aggregate(0, (result, item) -> result || ',') from SupportBean_ST0_Container]");
+                $"Failed to validate select-clause expression 'Contained.aggregate(0,)': Failed to validate enumeration method 'aggregate' parameter 1: Failed to validate declared expression body expression 'result||\",\"': Implicit conversion from datatype '{typeof(int?).CleanName()}' to System.String is not allowed [select Contained.aggregate(0, (result, item) -> result || ',') from SupportBean_ST0_Container]");
 
             // invalid incompatible params
             epl = "select Contained.average(x -> x.Id) from SupportBean_ST0_Container";
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'Contained.average()': Error validating enumeration method 'average', expected a number-type result for expression parameter 0 but received System.String [select Contained.average(x -> x.Id) from SupportBean_ST0_Container]");
+                "Failed to validate select-clause expression 'Contained.average()': Failed to validate enumeration method 'average', expected a number-type result for expression parameter 0 but received System.String [select Contained.average(x -> x.Id) from SupportBean_ST0_Container]");
 
             // not a property
             epl = "select Contained.firstof().dummy from SupportBean_ST0_Container";
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'Contained.firstof().dummy()': Failed to resolve method 'dummy': Could not find enumeration method, date-time method or instance method named 'dummy' in class '" +
+                "Failed to validate select-clause expression 'Contained.firstof().dummy()': Failed to resolve method 'dummy': Could not find enumeration method, date-time method, instance method or property named 'dummy' in class '" +
                 typeof(SupportBean_ST0).CleanName() +
                 "' taking no parameters [select Contained.firstof().dummy from SupportBean_ST0_Container]");
         }

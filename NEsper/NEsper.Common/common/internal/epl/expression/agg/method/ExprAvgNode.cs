@@ -13,6 +13,8 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 
 using System;
 
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
+
 namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 {
     /// <summary>
@@ -42,11 +44,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                 optionalFilter = positionalParams[1];
             }
 
-            Type childType = base.ValidateNumericChildAllowFilter(HasFilter);
-            return new AggregationFactoryMethodAvg(
-                this,
-                childType,
-                validationContext.ImportService.DefaultMathContext);
+            var childType = base.ValidateNumericChildAllowFilter(HasFilter);
+            var distinctSerde = isDistinct ? validationContext.SerdeResolver.SerdeForAggregationDistinct(childType, validationContext.StatementRawInfo) : null;
+            return new AggregationForgeFactoryAvg(this, childType, distinctSerde, validationContext.ImportService.DefaultMathContext);
         }
 
         public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)

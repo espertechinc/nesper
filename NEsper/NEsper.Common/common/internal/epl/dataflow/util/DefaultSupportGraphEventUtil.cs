@@ -114,6 +114,11 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
                 {new MyDefaultSupportGraphEvent(1.1d, 1, "one"), new MyDefaultSupportGraphEvent(2.2d, 2, "two")};
         }
 
+        public static object[] GetJsonEvents()
+        {
+            return new object[] {MakeJsonEvent(1.1, 1, "one"), MakeJsonEvent(2.2d, 2, "two")};
+        }
+
         private static ConfigurationCommonEventTypeXMLDOM GetConfig(IResourceManager resourceManager)
         {
             var eventTypeMeta = new ConfigurationCommonEventTypeXMLDOM();
@@ -154,11 +159,23 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             int myInt,
             string myString)
         {
-            IDictionary<string, object> map = new Dictionary<string, object>();
+            var map = new Dictionary<string, object>();
             map.Put("MyDouble", myDouble);
             map.Put("MyInt", myInt);
             map.Put("MyString", myString);
             return map;
+        }
+
+        private static string MakeJsonEvent(
+            double myDouble,
+            int myInt,
+            String myString)
+        {
+            return new JsonObject()
+                .Add("myDouble", myDouble)
+                .Add("myInt", myInt)
+                .Add("myString", myString)
+                .ToString();
         }
 
         public class MyDefaultSupportGraphEvent

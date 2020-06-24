@@ -171,6 +171,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             if (!groupRepsOutputLastUnordRStream.IsEmpty()) {
                 var oldEvents = groupRepsOutputLastUnordRStream.Values;
                 oldEventsArr = oldEvents.ToArray();
+                groupRepsOutputLastUnordRStream.Clear();
             }
 
             if (newEventsArr == null && oldEventsArr == null) {

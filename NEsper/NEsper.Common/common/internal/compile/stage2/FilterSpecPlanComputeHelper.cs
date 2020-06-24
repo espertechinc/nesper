@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return valueList;
         }
 
-        protected static void PopulateValueSet(
+        internal static void PopulateValueSet(
             FilterValueSetParam[] valueList,
             MatchedEventMap matchedEvents,
             FilterSpecPlanPathTriplet[] triplets,

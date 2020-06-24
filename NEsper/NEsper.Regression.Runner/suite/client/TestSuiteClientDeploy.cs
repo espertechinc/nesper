@@ -78,6 +78,26 @@ namespace com.espertech.esper.regressionrun.suite.client
         {
             RegressionRunner.Run(_session, ClientDeployRedefinition.Executions());
         }
+        
+        [Test, RunInApplicationDomain]
+        public void TestClientDeployVersion() {
+            RegressionRunner.Run(_session, ClientDeployVersion.Executions());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestClientDeployClassLoaderOption() {
+            RegressionRunner.Run(_session, ClientDeployClassLoaderOption.Executions());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestClientDeployRollout() {
+            RegressionRunner.Run(_session, ClientDeployRollout.Executions());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestClientDeployListDependencies() {
+            RegressionRunner.Run(_session, ClientDeployListDependencies.Executions());
+        }
 
         private void Configure(Configuration configuration)
         {

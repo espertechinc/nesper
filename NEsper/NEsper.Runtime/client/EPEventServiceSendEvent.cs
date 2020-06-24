@@ -74,5 +74,17 @@ namespace com.espertech.esper.runtime.client
         /// <param name="avroEventTypeName">event type name</param>
         /// <throws>EPException is thrown when the processing of the event lead to an error</throws>
         void SendEventAvro(object avroGenericDataDotRecord, string avroEventTypeName);
+        
+        /// <summary>
+        /// Send an event represented by a String JSON to the runtime.
+        /// <para>
+        /// Use the route method for sending events into the runtime from within UpdateListener code,
+        /// to avoid the possibility of a stack overflow due to nested calls to sendEvent
+        /// (except with the outbound-threading configuration), see {@link EPEventServiceRouteEvent#routeEventJson(String, String)}}).
+        /// </summary>
+        /// <param name="json">is the event to sent to the runtime</param>
+        /// <param name="jsonEventTypeName">event type name</param>
+        /// <throws>EPException is thrown when the processing of the event lead to an error</throws>
+        void SendEventJson(string json, string jsonEventTypeName);
     }
 } // end of namespace

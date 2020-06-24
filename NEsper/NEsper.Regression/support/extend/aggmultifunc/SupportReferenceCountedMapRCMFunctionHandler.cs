@@ -44,8 +44,10 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
                     "eval",
                     parameterExpressions[0]));
 
-        public AggregationMultiFunctionTableReaderMode TableReaderMode =>
+        public AggregationMultiFunctionAggregationMethodMode GetAggregationMethodMode(AggregationMultiFunctionAggregationMethodContext ctx)
+        {
             throw new UnsupportedOperationException(
                 "This aggregation function is not designed for use with table columns");
+        }
     }
 } // end of namespace

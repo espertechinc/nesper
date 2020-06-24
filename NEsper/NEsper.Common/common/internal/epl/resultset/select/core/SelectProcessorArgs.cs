@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.compile;
 using com.espertech.esper.common.@internal.context.module;
+using com.espertech.esper.common.@internal.epl.classprovided.compiletime;
 using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
@@ -23,6 +24,7 @@ using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.@event.avro;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.container;
 
@@ -70,6 +72,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
         public ImportServiceCompileTime ImportService =>
             CompileTimeServices.ImportServiceCompileTime;
+        
+        public ClassProvidedExtension ClassProvidedExtension =>
+            CompileTimeServices.ClassProvidedExtension;
 
         public VariableCompileTimeResolver VariableCompileTimeResolver =>
             CompileTimeServices.VariableCompileTimeResolver;
@@ -108,6 +113,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
         public GroupByRollupInfo GroupByRollupInfo { get; }
 
+        public SerdeCompileTimeResolver SerdeResolver =>
+            CompileTimeServices.SerdeResolver;
+        
         public string ModuleName => StatementRawInfo.ModuleName;
     }
 } // end of namespace

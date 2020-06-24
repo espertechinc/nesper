@@ -13,6 +13,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
@@ -50,13 +51,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             OutputLimitSpec outputLimitSpec,
             bool isSorting,
             bool noDataWindowSingleStream,
-            AggregationGroupByRollupDesc groupByRollupDesc,
+            AggregationGroupByRollupDescForge groupByRollupDesc,
             bool isJoin,
             bool isHistoricalOnly,
             bool iterateUnbounded,
             ResultSetProcessorOutputConditionType? outputConditionType,
             OutputConditionPolledFactoryForge optionalOutputFirstConditionFactory,
-            EventType[] eventTypes)
+            EventType[] eventTypes,
+            MultiKeyClassRef multiKeyClassRef)
         {
             ResultEventType = resultEventType;
             GroupKeyNodeExpressions = groupKeyNodeExpressions;
@@ -77,13 +79,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             OptionalOutputFirstConditionFactory = optionalOutputFirstConditionFactory;
             EventTypes = eventTypes;
             GroupKeyTypes = ExprNodeUtilityQuery.GetExprResultTypes(groupKeyNodeExpressions);
+            MultiKeyClassRef = multiKeyClassRef;
         }
+
+        public MultiKeyClassRef MultiKeyClassRef { get; }
+
+        public CodegenMethod GenerateGroupKeySingle { get; set; }
 
         public EventType ResultEventType { get; }
 
         public OutputLimitSpec OutputLimitSpec { get; }
 
-        public AggregationGroupByRollupDesc GroupByRollupDesc { get; }
+        public AggregationGroupByRollupDescForge GroupByRollupDesc { get; }
 
         public GroupByRollupPerLevelForge PerLevelForges { get; }
 
@@ -124,14 +131,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 "AggregationService",
                 GetType(),
                 classScope,
-                node => node.GetterBlock.BlockReturn(REF_AGGREGATIONSVC));
+                node => node.GetterBlock.BlockReturn(MEMBER_AGGREGATIONSVC));
             instance.Methods.AddMethod(
                 typeof(ExprEvaluatorContext),
                 "GetAgentInstanceContext",
                 EmptyList<CodegenNamedParam>.Instance,
                 GetType(),
                 classScope,
-                node => node.Block.ReturnMethodOrBlock(REF_AGENTINSTANCECONTEXT));
+                node => node.Block.ReturnMethodOrBlock(MEMBER_AGENTINSTANCECONTEXT));
             instance.Properties.AddProperty(
                 typeof(bool),
                 "IsSelectRStream",
@@ -142,7 +149,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             var rollupDesc = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(AggregationGroupByRollupDesc),
-                GroupByRollupDesc.Codegen());
+                GroupByRollupDesc.Codegen(classScope.NamespaceScope.InitMethod, classScope));
+
             instance.Properties.AddProperty(
                 typeof(AggregationGroupByRollupDesc),
                 "GroupByRollupDesc",
@@ -150,8 +158,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 classScope,
                 node => node.GetterBlock.BlockReturn(rollupDesc));
 
+            GenerateGroupKeySingle = ResultSetProcessorGroupedUtil.GenerateGroupKeySingleCodegen(GroupKeyNodeExpressions, MultiKeyClassRef, classScope, instance);
             ResultSetProcessorRowPerGroupRollupImpl.RemovedAggregationGroupKeyCodegen(classScope, instance);
-            ResultSetProcessorGroupedUtil.GenerateGroupKeySingleCodegen(GroupKeyNodeExpressions, classScope, instance);
             ResultSetProcessorRowPerGroupRollupImpl.GenerateOutputBatchedMapUnsortedCodegen(this, instance, classScope);
             ResultSetProcessorRowPerGroupRollupImpl.GenerateOutputBatchedCodegen(this, instance, classScope);
 

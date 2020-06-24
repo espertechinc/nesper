@@ -29,5 +29,12 @@ namespace com.espertech.esper.runtime.client
         /// <param name="eventTypeName">event type name of a preconfigured event type</param>
         /// <returns>event type or null if not found</returns>
         EventType GetEventType(string deploymentId, string eventTypeName);
+        
+        /// <summary>
+        /// Returns the event type that has bus-visibility or null in case that the event type is not found
+        /// </summary>
+        /// <param name="eventTypeName">the event type name</param>
+        /// <returns>event type or null</returns>
+        EventType GetBusEventType(string eventTypeName);
     }
 } // end of namespace

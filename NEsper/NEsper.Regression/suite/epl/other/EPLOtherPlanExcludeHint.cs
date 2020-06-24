@@ -164,6 +164,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                                 SupportExprNodeFactory.MakeKeyed("P10")
                             },
                             null,
+                            null,
                             null))
                     .Get();
                 var eplWithWhereEquals = epl + " where P00 = P10";

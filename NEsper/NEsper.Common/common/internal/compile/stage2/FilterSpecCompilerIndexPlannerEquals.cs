@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 {
     public class FilterSpecCompilerIndexPlannerEquals
     {
-        protected static FilterSpecParamForge HandleEqualsAndRelOp(
+        internal static FilterSpecParamForge HandleEqualsAndRelOp(
             ExprNode constituent,
             IDictionary<string, Pair<EventType, string>> taggedEventTypes,
             IDictionary<string, Pair<EventType, string>> arrayEventTypes,
@@ -76,21 +76,21 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             if (right.Forge.ForgeConstantType.IsCompileTimeConstant && left is ExprFilterOptimizableNode) {
                 var filterOptimizableNode = (ExprFilterOptimizableNode) left;
                 if (filterOptimizableNode.FilterLookupEligible) {
-                    var lookupable = filterOptimizableNode.FilterLookupable;
+                    var lookupableX = filterOptimizableNode.FilterLookupable;
                     var constant = right.Forge.ExprEvaluator.Evaluate(null, true, null);
-                    constant = HandleConstantsCoercion(lookupable, constant);
-                    return new FilterSpecParamConstantForge(lookupable, op, constant);
+                    constant = HandleConstantsCoercion(lookupableX, constant);
+                    return new FilterSpecParamConstantForge(lookupableX, op, constant);
                 }
             }
 
             if (left.Forge.ForgeConstantType.IsCompileTimeConstant && right is ExprFilterOptimizableNode) {
                 var filterOptimizableNode = (ExprFilterOptimizableNode) right;
                 if (filterOptimizableNode.FilterLookupEligible) {
-                    var lookupable = filterOptimizableNode.FilterLookupable;
+                    var lookupableX = filterOptimizableNode.FilterLookupable;
                     var constant = left.Forge.ExprEvaluator.Evaluate(null, true, null);
-                    constant = HandleConstantsCoercion(lookupable, constant);
-                    var opReversed = op.IsComparisonOperator ? op.ReversedRelationalOp() : op;
-                    return new FilterSpecParamConstantForge(lookupable, opReversed, constant);
+                    constant = HandleConstantsCoercion(lookupableX, constant);
+                    var opReversed = op.IsComparisonOperator() ? op.ReversedRelationalOp() : op;
+                    return new FilterSpecParamConstantForge(lookupableX, opReversed, constant);
                 }
             }
 
@@ -112,44 +112,44 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             if (left is ExprFilterOptimizableNode && right is ExprContextPropertyNode) {
                 var filterOptimizableNode = (ExprFilterOptimizableNode) left;
                 var ctxNode = (ExprContextPropertyNode) right;
-                var lookupable = filterOptimizableNode.FilterLookupable;
+                var lookupableX = filterOptimizableNode.FilterLookupable;
                 if (filterOptimizableNode.FilterLookupEligible) {
-                    var numberCoercer = GetNumberCoercer(lookupable.ReturnType, ctxNode.Type, lookupable.Expression);
-                    return new FilterSpecParamContextPropForge(lookupable, op, numberCoercer, ctxNode.PropertyName, ctxNode.Getter);
+                    var numberCoercer = GetNumberCoercer(lookupableX.ReturnType, ctxNode.Type, lookupableX.Expression);
+                    return new FilterSpecParamContextPropForge(lookupableX, op, numberCoercer, ctxNode.PropertyName, ctxNode.Getter);
                 }
             }
 
             if (left is ExprContextPropertyNode && right is ExprFilterOptimizableNode) {
                 var filterOptimizableNode = (ExprFilterOptimizableNode) right;
                 var ctxNode = (ExprContextPropertyNode) left;
-                var lookupable = filterOptimizableNode.FilterLookupable;
+                var lookupableX = filterOptimizableNode.FilterLookupable;
                 if (filterOptimizableNode.FilterLookupEligible) {
                     op = GetReversedOperator(constituent, op); // reverse operators, as the expression is "stream1.prop xyz stream0.prop"
-                    var numberCoercer = GetNumberCoercer(lookupable.ReturnType, ctxNode.Type, lookupable.Expression);
-                    return new FilterSpecParamContextPropForge(lookupable, op, numberCoercer, ctxNode.PropertyName, ctxNode.Getter);
+                    var numberCoercer = GetNumberCoercer(lookupableX.ReturnType, ctxNode.Type, lookupableX.Expression);
+                    return new FilterSpecParamContextPropForge(lookupableX, op, numberCoercer, ctxNode.PropertyName, ctxNode.Getter);
                 }
             }
 
             if (left is ExprFilterOptimizableNode && right.Forge.ForgeConstantType.IsDeployTimeTimeConstant && right is ExprNodeDeployTimeConst) {
                 var filterOptimizableNode = (ExprFilterOptimizableNode) left;
                 var deployTimeConst = (ExprNodeDeployTimeConst) right;
-                var lookupable = filterOptimizableNode.FilterLookupable;
+                var lookupableX = filterOptimizableNode.FilterLookupable;
                 if (filterOptimizableNode.FilterLookupEligible) {
                     var returnType = right.Forge.EvaluationType;
-                    var numberCoercer = GetNumberCoercer(lookupable.ReturnType, returnType, lookupable.Expression);
-                    return new FilterSpecParamDeployTimeConstParamForge(lookupable, op, deployTimeConst, returnType, numberCoercer);
+                    var numberCoercer = GetNumberCoercer(lookupableX.ReturnType, returnType, lookupableX.Expression);
+                    return new FilterSpecParamDeployTimeConstParamForge(lookupableX, op, deployTimeConst, returnType, numberCoercer);
                 }
             }
 
             if (left.Forge.ForgeConstantType.IsDeployTimeTimeConstant && left is ExprNodeDeployTimeConst && right is ExprFilterOptimizableNode) {
                 var filterOptimizableNode = (ExprFilterOptimizableNode) right;
                 var deployTimeConst = (ExprNodeDeployTimeConst) left;
-                var lookupable = filterOptimizableNode.FilterLookupable;
+                var lookupableX = filterOptimizableNode.FilterLookupable;
                 if (filterOptimizableNode.FilterLookupEligible) {
                     var returnType = left.Forge.EvaluationType;
                     op = GetReversedOperator(constituent, op); // reverse operators, as the expression is "stream1.prop xyz stream0.prop"
-                    var numberCoercer = GetNumberCoercer(lookupable.ReturnType, returnType, lookupable.Expression);
-                    return new FilterSpecParamDeployTimeConstParamForge(lookupable, op, deployTimeConst, returnType, numberCoercer);
+                    var numberCoercer = GetNumberCoercer(lookupableX.ReturnType, returnType, lookupableX.Expression);
+                    return new FilterSpecParamDeployTimeConstParamForge(lookupableX, op, deployTimeConst, returnType, numberCoercer);
                 }
             }
 

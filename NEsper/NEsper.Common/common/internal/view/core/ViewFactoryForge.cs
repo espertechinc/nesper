@@ -10,7 +10,9 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.view.core
 {
@@ -31,6 +33,10 @@ namespace com.espertech.esper.common.@internal.view.core
         string ViewName { get; }
 
         void Accept(ViewForgeVisitor visitor);
+
+        IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv);
+
+        IList<ViewFactoryForge> InnerForges { get; }
 
 #if FALSE // MIXIN
         default void accept(ViewForgeVisitor visitor)

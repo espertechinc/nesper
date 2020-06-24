@@ -787,8 +787,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             RowRecogExprNode expanded = null;
             try {
                 expanded = RowRecogPatternExpandUtil.Expand(
-                    env.Container,
-                    spec.Raw.MatchRecognizeSpec.Pattern);
+                    spec.Raw.MatchRecognizeSpec.Pattern,
+                    null);
             }
             catch (ExprValidationException e) {
                 Assert.Fail(e.Message);

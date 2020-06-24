@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Xml;
 using System.Xml.XPath;
 
 using com.espertech.esper.common.client.util;
@@ -268,7 +267,9 @@ namespace com.espertech.esper.common.client.configuration.common
             CodegenMethodScope parent,
             CodegenClassScope scope)
         {
-            CodegenSetterBuilderItemConsumer<XPathPropertyDesc> xPathBuild = (o, parentXPath, scopeXPath) => o.ToExpression(parentXPath, scopeXPath);
+            CodegenSetterBuilderItemConsumer<XPathPropertyDesc> xPathBuild = (o, parentXPath, scopeXPath) => 
+                o.ToCodegenExpression(parentXPath, scopeXPath);
+
             return new CodegenSetterBuilder(typeof(ConfigurationCommonEventTypeXMLDOM), typeof(ConfigurationCommonEventTypeXMLDOM), "xmlconfig", parent, scope)
                 .Constant("rootElementName", RootElementName)
                 .Map("xPathProperties", XPathProperties, xPathBuild)

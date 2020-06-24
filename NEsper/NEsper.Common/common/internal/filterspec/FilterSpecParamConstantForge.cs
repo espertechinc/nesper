@@ -133,7 +133,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             var constantTypeName = constantType?.CleanName();
             
             @out.Append("constant ");
-            CodegenExpressionUtil.RenderConstant(@out, constant, Collections.emptyMap());
+            CodegenExpressionUtil.RenderConstant(@out, constant, EmptyDictionary<string, object>.Instance);
             @out.Append(" type ").Append(constantTypeName);
         }
 

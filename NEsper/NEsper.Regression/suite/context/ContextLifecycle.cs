@@ -145,7 +145,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env,
                     path,
                     "context TenToFive on SupportBean_S0 S0 merge MyWindowTwo mw when matched then update set IntPrimitive = 1",
-                    "Cannot create on-trigger expression: Named window 'MyWindowTwo' was declared with context null, please use the same context instead");
+                    "Cannot create on-trigger expression: Named window 'MyWindowTwo' was declared without a context");
 
                 env.UndeployAll();
             }

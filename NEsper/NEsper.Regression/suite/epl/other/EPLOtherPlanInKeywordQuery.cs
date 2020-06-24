@@ -802,6 +802,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                             GetIndexKey("a"),
                             new[] {SupportExprNodeFactory.MakeKeyed("P00")},
                             null,
+                            null,
                             null))
                     .Get();
                 TryAssertion(env, epl + "where P00 = P10", planEquals);

@@ -25,159 +25,150 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
     public partial class IntervalComputerForgeFactory
     {
         public static IntervalComputerForge Make(
-            DateTimeMethodEnum method,
+            DatetimeMethodDesc method,
             IList<ExprNode> expressions,
             TimeAbacus timeAbacus)
         {
             var parameters = GetParameters(expressions, timeAbacus);
 
-            if (method == DateTimeMethodEnum.BEFORE) {
-                if (parameters.Length == 0) {
+            var dateTimeMethod = method.DatetimeMethod;
+            switch (dateTimeMethod) {
+                case DateTimeMethodEnum.BEFORE when parameters.Length == 0:
                     return new IntervalComputerBeforeNoParamForge();
+
+                case DateTimeMethodEnum.BEFORE: {
+                    var pair =
+                        IntervalStartEndParameterPairForge.FromParamsWithLongMaxEnd(parameters);
+                    if (pair.IsConstant) {
+                        return new IntervalComputerConstantBefore(pair);
+                    }
+
+                    return new IntervalComputerBeforeWithDeltaExprForge(pair);
                 }
 
-                var pair =
-                    IntervalStartEndParameterPairForge.FromParamsWithLongMaxEnd(parameters);
-                if (pair.IsConstant) {
-                    return new IntervalComputerConstantBefore(pair);
-                }
-
-                return new IntervalComputerBeforeWithDeltaExprForge(pair);
-            }
-
-            if (method == DateTimeMethodEnum.AFTER) {
-                if (parameters.Length == 0) {
+                case DateTimeMethodEnum.AFTER when parameters.Length == 0:
                     return new IntervalComputerAfterNoParam();
+
+                case DateTimeMethodEnum.AFTER: {
+                    var pair =
+                        IntervalStartEndParameterPairForge.FromParamsWithLongMaxEnd(parameters);
+                    if (pair.IsConstant) {
+                        return new IntervalComputerConstantAfter(pair);
+                    }
+
+                    return new IntervalComputerAfterWithDeltaExprForge(pair);
                 }
 
-                var pair =
-                    IntervalStartEndParameterPairForge.FromParamsWithLongMaxEnd(parameters);
-                if (pair.IsConstant) {
-                    return new IntervalComputerConstantAfter(pair);
-                }
-
-                return new IntervalComputerAfterWithDeltaExprForge(pair);
-            }
-
-            if (method == DateTimeMethodEnum.COINCIDES) {
-                if (parameters.Length == 0) {
+                case DateTimeMethodEnum.COINCIDES when parameters.Length == 0:
                     return new IntervalComputerCoincidesNoParam();
-                }
 
-                var pair =
-                    IntervalStartEndParameterPairForge.FromParamsWithSameEnd(parameters);
-                if (pair.IsConstant) {
-                    return new IntervalComputerConstantCoincides(pair);
-                }
-
-                return new IntervalComputerCoincidesWithDeltaExprForge(pair);
-            }
-
-            if (method == DateTimeMethodEnum.DURING || method == DateTimeMethodEnum.INCLUDES) {
-                if (parameters.Length == 0) {
-                    if (method == DateTimeMethodEnum.DURING) {
-                        return new IntervalComputerDuringNoParam();
+                case DateTimeMethodEnum.COINCIDES: {
+                    var pair =
+                        IntervalStartEndParameterPairForge.FromParamsWithSameEnd(parameters);
+                    if (pair.IsConstant) {
+                        return new IntervalComputerConstantCoincides(pair);
                     }
 
-                    return new IntervalComputerIncludesNoParam();
+                    return new IntervalComputerCoincidesWithDeltaExprForge(pair);
                 }
 
-                var pair =
-                    IntervalStartEndParameterPairForge.FromParamsWithSameEnd(parameters);
-                if (parameters.Length == 1) {
-                    return new IntervalComputerDuringAndIncludesThresholdForge(
-                        method == DateTimeMethodEnum.DURING,
-                        pair.Start.Forge);
+                case DateTimeMethodEnum.DURING:
+                case DateTimeMethodEnum.INCLUDES: {
+                    if (parameters.Length == 0) {
+                        if (dateTimeMethod == DateTimeMethodEnum.DURING) {
+                            return new IntervalComputerDuringNoParam();
+                        }
+
+                        return new IntervalComputerIncludesNoParam();
+                    }
+
+                    var pair =
+                        IntervalStartEndParameterPairForge.FromParamsWithSameEnd(parameters);
+                    if (parameters.Length == 1) {
+                        return new IntervalComputerDuringAndIncludesThresholdForge(
+                            dateTimeMethod == DateTimeMethodEnum.DURING,
+                            pair.Start.Forge);
+                    }
+
+                    if (parameters.Length == 2) {
+                        return new IntervalComputerDuringAndIncludesMinMax(
+                            dateTimeMethod == DateTimeMethodEnum.DURING,
+                            pair.Start.Forge,
+                            pair.End.Forge);
+                    }
+
+                    return new IntervalComputerDuringMinMaxStartEndForge(
+                        dateTimeMethod == DateTimeMethodEnum.DURING,
+                        GetEvaluators(expressions, timeAbacus));
                 }
 
-                if (parameters.Length == 2) {
-                    return new IntervalComputerDuringAndIncludesMinMax(
-                        method == DateTimeMethodEnum.DURING,
-                        pair.Start.Forge,
-                        pair.End.Forge);
-                }
-
-                return new IntervalComputerDuringMinMaxStartEndForge(
-                    method == DateTimeMethodEnum.DURING,
-                    GetEvaluators(expressions, timeAbacus));
-            }
-
-            if (method == DateTimeMethodEnum.FINISHES) {
-                if (parameters.Length == 0) {
+                case DateTimeMethodEnum.FINISHES when parameters.Length == 0:
                     return new IntervalComputerFinishesNoParam();
-                }
 
-                ValidateConstantThreshold("finishes", parameters[0]);
-                return new IntervalComputerFinishesThresholdForge(parameters[0].Forge);
-            }
+                case DateTimeMethodEnum.FINISHES:
+                    ValidateConstantThreshold("finishes", parameters[0]);
+                    return new IntervalComputerFinishesThresholdForge(parameters[0].Forge);
 
-            if (method == DateTimeMethodEnum.FINISHEDBY) {
-                if (parameters.Length == 0) {
+                case DateTimeMethodEnum.FINISHEDBY when parameters.Length == 0:
                     return new IntervalComputerFinishedByNoParam();
-                }
 
-                ValidateConstantThreshold("finishedby", parameters[0]);
-                return new IntervalComputerFinishedByThresholdForge(parameters[0].Forge);
-            }
+                case DateTimeMethodEnum.FINISHEDBY:
+                    ValidateConstantThreshold("finishedby", parameters[0]);
+                    return new IntervalComputerFinishedByThresholdForge(parameters[0].Forge);
 
-            if (method == DateTimeMethodEnum.MEETS) {
-                if (parameters.Length == 0) {
+                case DateTimeMethodEnum.MEETS when parameters.Length == 0:
                     return new IntervalComputerMeetsNoParam();
-                }
 
-                ValidateConstantThreshold("meets", parameters[0]);
-                return new IntervalComputerMeetsThresholdForge(parameters[0].Forge);
-            }
+                case DateTimeMethodEnum.MEETS:
+                    ValidateConstantThreshold("meets", parameters[0]);
+                    return new IntervalComputerMeetsThresholdForge(parameters[0].Forge);
 
-            if (method == DateTimeMethodEnum.METBY) {
-                if (parameters.Length == 0) {
+                case DateTimeMethodEnum.METBY when parameters.Length == 0:
                     return new IntervalComputerMetByNoParam();
-                }
 
-                ValidateConstantThreshold("metBy", parameters[0]);
-                return new IntervalComputerMetByThresholdForge(parameters[0].Forge);
-            }
+                case DateTimeMethodEnum.METBY:
+                    ValidateConstantThreshold("metBy", parameters[0]);
+                    return new IntervalComputerMetByThresholdForge(parameters[0].Forge);
 
-            if (method == DateTimeMethodEnum.OVERLAPS || method == DateTimeMethodEnum.OVERLAPPEDBY) {
-                if (parameters.Length == 0) {
-                    if (method == DateTimeMethodEnum.OVERLAPS) {
-                        return new IntervalComputerOverlapsNoParam();
+                case DateTimeMethodEnum.OVERLAPS:
+                case DateTimeMethodEnum.OVERLAPPEDBY: {
+                    if (parameters.Length == 0) {
+                        if (dateTimeMethod == DateTimeMethodEnum.OVERLAPS) {
+                            return new IntervalComputerOverlapsNoParam();
+                        }
+
+                        return new IntervalComputerOverlappedByNoParam();
                     }
 
-                    return new IntervalComputerOverlappedByNoParam();
+                    if (parameters.Length == 1) {
+                        return new IntervalComputerOverlapsAndByThreshold(
+                            dateTimeMethod == DateTimeMethodEnum.OVERLAPS,
+                            parameters[0].Forge);
+                    }
+
+                    return new IntervalComputerOverlapsAndByMinMaxForge(
+                        dateTimeMethod == DateTimeMethodEnum.OVERLAPS,
+                        parameters[0].Forge,
+                        parameters[1].Forge);
                 }
 
-                if (parameters.Length == 1) {
-                    return new IntervalComputerOverlapsAndByThreshold(
-                        method == DateTimeMethodEnum.OVERLAPS,
-                        parameters[0].Forge);
-                }
-
-                return new IntervalComputerOverlapsAndByMinMaxForge(
-                    method == DateTimeMethodEnum.OVERLAPS,
-                    parameters[0].Forge,
-                    parameters[1].Forge);
-            }
-
-            if (method == DateTimeMethodEnum.STARTS) {
-                if (parameters.Length == 0) {
+                case DateTimeMethodEnum.STARTS when parameters.Length == 0:
                     return new IntervalComputerStartsNoParam();
-                }
 
-                ValidateConstantThreshold("starts", parameters[0]);
-                return new IntervalComputerStartsThresholdForge(parameters[0].Forge);
-            }
+                case DateTimeMethodEnum.STARTS:
+                    ValidateConstantThreshold("starts", parameters[0]);
+                    return new IntervalComputerStartsThresholdForge(parameters[0].Forge);
 
-            if (method == DateTimeMethodEnum.STARTEDBY) {
-                if (parameters.Length == 0) {
+                case DateTimeMethodEnum.STARTEDBY when parameters.Length == 0:
                     return new IntervalComputerStartedByNoParam();
-                }
 
-                ValidateConstantThreshold("startedBy", parameters[0]);
-                return new IntervalComputerStartedByThresholdForge(parameters[0].Forge);
+                case DateTimeMethodEnum.STARTEDBY:
+                    ValidateConstantThreshold("startedBy", parameters[0]);
+                    return new IntervalComputerStartedByThresholdForge(parameters[0].Forge);
+
+                default:
+                    throw new ArgumentException("Unknown datetime method '" + method + "'");
             }
-
-            throw new ArgumentException("Unknown datetime method '" + method + "'");
         }
 
         private static void ValidateConstantThreshold(

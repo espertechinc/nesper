@@ -120,6 +120,12 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             entry?.AddReferringDeployment(deploymentId);
         }
 
+        public EventTableIndexMetadataEntry GetIndexEntryByName(string indexName) {
+            var entry = FindIndex(indexName);
+            return entry?.Value;
+        }
+
+        
         public IndexMultiKey GetIndexByName(string indexName)
         {
             var entry = FindIndex(indexName);

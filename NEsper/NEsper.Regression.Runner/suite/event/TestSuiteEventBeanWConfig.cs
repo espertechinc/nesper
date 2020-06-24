@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEventBeanPublicAccessors()
+        public void TestEventBeanPublicFields()
         {
             RegressionSession session = RegressionRunner.Session();
 

@@ -55,9 +55,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
         OVERLAPS,
         OVERLAPPEDBY,
         STARTS,
-        STARTEDBY
+        STARTEDBY,
+        PLUGIN
     }
 
+    #if DEPRECATED
     public static class DatetimeMethodEnumHelper
     {
         private static IEnumerable<DateTimeMethodEnum> GetValues()
@@ -354,4 +356,5 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             }
         }
     }
+    #endif
 } // end of namespace

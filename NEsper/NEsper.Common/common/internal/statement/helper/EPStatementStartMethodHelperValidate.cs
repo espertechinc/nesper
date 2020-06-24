@@ -60,12 +60,14 @@ namespace com.espertech.esper.common.@internal.statement.helper
             StreamTypeService streamTypeService,
             string errorMsg,
             bool allowTableConsumption,
+            bool allowTableAggReset,
             StatementRawInfo raw,
             StatementCompileTimeServices compileTimeServices)
         {
             var validationContext = new ExprValidationContextBuilder(streamTypeService, raw, compileTimeServices)
-                .WithAllowBindingConsumption(allowTableConsumption)
-                .Build();
+                    .WithAllowBindingConsumption(allowTableConsumption)
+                    .WithAllowTableAggReset(allowTableAggReset)
+                    .Build();
             var validated = ExprNodeUtilityValidate.GetValidatedSubtree(exprNodeOrigin, exprNode, validationContext);
             ValidateNoAggregations(validated, errorMsg);
             return validated;
@@ -140,9 +142,10 @@ namespace com.espertech.esper.common.@internal.statement.helper
                 }
             }
 
-            if (statementSpec.OutputLimitSpec != null &&
-                (statementSpec.OutputLimitSpec.WhenExpressionNode != null ||
-                 statementSpec.OutputLimitSpec.AndAfterTerminateExpr != null)) {
+            if ((statementSpec.OutputLimitSpec != null) && 
+                (statementSpec.OutputLimitSpec.WhenExpressionNode != null || 
+                 statementSpec.OutputLimitSpec.AndAfterTerminateExpr != null || 
+                 statementSpec.OutputLimitSpec.AndAfterTerminateThenExpressions != null)) {
                 // Validate where clause, initializing nodes to the stream ids used
                 EventType outputLimitType = OutputConditionExpressionTypeUtil.GetBuiltInEventType(
                     statementRawInfo.ModuleName,
@@ -203,12 +206,10 @@ namespace com.espertech.esper.common.@internal.statement.helper
                 }
 
                 // validate then-expression
-                ValidateThenSetAssignments(statementSpec.OutputLimitSpec.ThenExpressions, validationContext);
+                ValidateThenSetAssignments(statementSpec.OutputLimitSpec.ThenExpressions, validationContext, false);
 
                 // validate after-terminated then-expression
-                ValidateThenSetAssignments(
-                    statementSpec.OutputLimitSpec.AndAfterTerminateThenExpressions,
-                    validationContext);
+                ValidateThenSetAssignments(statementSpec.OutputLimitSpec.AndAfterTerminateThenExpressions, validationContext, false);
             }
 
             for (var outerJoinCount = 0; outerJoinCount < statementSpec.OuterJoinDescList.Count; outerJoinCount++) {
@@ -339,16 +340,15 @@ namespace com.espertech.esper.common.@internal.statement.helper
 
         private static void ValidateThenSetAssignments(
             IList<OnTriggerSetAssignment> assignments,
-            ExprValidationContext validationContext)
+            ExprValidationContext validationContext,
+            bool allowRHSAggregation)
         {
             if (assignments == null || assignments.IsEmpty()) {
                 return;
             }
 
             foreach (var assign in assignments) {
-                var node = ExprNodeUtilityValidate.GetValidatedAssignment(assign, validationContext);
-                assign.Expression = node;
-                ValidateNoAggregations(node, "An aggregate function may not appear in a OUTPUT LIMIT clause");
+                ExprNodeUtilityValidate.ValidateAssignment(true, ExprNodeOrigin.UPDATEASSIGN, assign, validationContext);
             }
         }
     }

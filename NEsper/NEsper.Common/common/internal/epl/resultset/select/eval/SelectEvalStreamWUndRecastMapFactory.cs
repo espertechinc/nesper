@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             }
 
             // (B) not completely assignable: find matching properties
-            var writables = EventTypeUtility.GetWriteableProperties(mapResultType, true);
+            var writables = EventTypeUtility.GetWriteableProperties(mapResultType, true, false);
             IList<Item> items = new List<Item>();
             IList<WriteablePropertyDescriptor> written = new List<WriteablePropertyDescriptor>();
 

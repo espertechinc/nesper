@@ -463,6 +463,19 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             return props;
         }
 
+        public static bool HasAnnotation<T>(Attribute[] annotations)
+            where T : Attribute
+        {
+            return FindAnnotation(annotations, typeof(T)) != null;
+        }
+
+        public static bool HasAnnotation(
+            Attribute[] annotations,
+            Type annotationClass)
+        {
+            return FindAnnotation(annotations, annotationClass) != null;
+        }
+        
         public static Attribute FindAnnotation(
             Attribute[] annotations,
             Type annotationClass)
@@ -644,6 +657,26 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                 return NewInstance<AnnotationBusEventType>();
             }
 
+            if (annotation is JsonSchemaAttribute jsonSchema) {
+                return NewInstance<AnnotationJsonSchema>(Constant(jsonSchema.Dynamic), Constant(jsonSchema.ClassName));
+            }
+
+            if (annotation is JsonSchemaFieldAttribute jsonSchemaField) {
+                return NewInstance<AnnotationJsonSchemaField>(Constant(jsonSchemaField.Name), Constant(jsonSchemaField.Adapter));
+            }
+
+            if (annotation is XMLSchemaAttribute xmlSchema) {
+                return AnnotationXMLSchema.ToExpression(xmlSchema, parent, codegenClassScope);
+            }
+
+            if (annotation is XMLSchemaNamespacePrefixAttribute schemaNamespacePrefix) {
+                return AnnotationXMLSchemaNamespacePrefix.ToExpression(schemaNamespacePrefix, parent, codegenClassScope);
+            }
+
+            if (annotation is XMLSchemaFieldAttribute xmlSchemaField) {
+                return AnnotationXMLSchemaField.ToExpression(xmlSchemaField, parent, codegenClassScope);
+            }
+            
             if (annotation.GetType().Namespace == RootNamespace) {
                 throw new IllegalStateException(
                     "Unrecognized annotation residing in the '" +

@@ -476,6 +476,7 @@ namespace com.espertech.esper.common.@internal.metrics.audit
                         ctx.StatementName,
                         ctx.AgentInstanceId,
                         category,
+                        ctx.TimeProvider.Time,
                         message));
             }
         }

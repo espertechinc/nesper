@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 	    }
 
 	    public Pair<Type, string[]> ResolveAggregationMultiFunction(string name) {
-	        Function<ExtensionAggregationMultiFunction, ISet<string>> nameProvision = anno -> {
+	        Func<ExtensionAggregationMultiFunction, ISet<string>> nameProvision = anno -> {
 	            ISet<string> names = new HashSet<>(2);
 	            string[] split = anno.Names().Split(",");
 	            foreach (string nameprovided in split) {
@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 	        path.Traverse(classProvidedByteCodeRemover);
 	    }
 
-	    private static <T> Pair<Type, T> ResolveFromLocalAndPath(string soughtName, ClassProvidedCompileTimeRegistry locals, PathRegistry<string, ClassProvided> path, Type<T> annotationType, string objectName, ISet<string> moduleUses, ModuleDependenciesCompileTime moduleDependencies, Function<T, ISet<string>> namesProvider) {
+	    private static <T> Pair<Type, T> ResolveFromLocalAndPath(string soughtName, ClassProvidedCompileTimeRegistry locals, PathRegistry<string, ClassProvided> path, Type<T> annotationType, string objectName, ISet<string> moduleUses, ModuleDependenciesCompileTime moduleDependencies, Func<T, ISet<string>> namesProvider) {
 	        if (locals.Classes.IsEmpty() && path.IsEmpty()) {
 	            return null;
 	        }
@@ -125,7 +125,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 	        }
 	    }
 
-	    private static <T> Pair<Type, T> ResolveFromLocal(string soughtName, ClassProvidedCompileTimeRegistry locals, Type annotationType, string objectName, Function<T, ISet<string>> namesProvider) {
+	    private static <T> Pair<Type, T> ResolveFromLocal(string soughtName, ClassProvidedCompileTimeRegistry locals, Type annotationType, string objectName, Func<T, ISet<string>> namesProvider) {
 	        IList<Pair<Type, T>> foundLocal = new List<>(2);
 	        foreach (KeyValuePair<string, ClassProvided> entry in locals.Classes.EntrySet()) {
 	            TypeHelper.TraverseAnnotations(entry.Value.ClassesMayNull, annotationType, (clazz, annotation) -> {
@@ -147,7 +147,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 	        return null;
 	    }
 
-	    private static <T> Pair<Type, T> ResolveFromPath(string soughtName, PathRegistry<string, ClassProvided> path, Type annotationType, string objectName, ISet<string> moduleUses, ModuleDependenciesCompileTime moduleDependencies, Function<T, ISet<string>> namesProvider) {
+	    private static <T> Pair<Type, T> ResolveFromPath(string soughtName, PathRegistry<string, ClassProvided> path, Type annotationType, string objectName, ISet<string> moduleUses, ModuleDependenciesCompileTime moduleDependencies, Func<T, ISet<string>> namesProvider) {
 	        IList<PathFunc<T>> foundPath = new List<>(2);
 	        path.TraverseWithModule((moduleName, classProvided) -> {
 	            TypeHelper.TraverseAnnotations(classProvided.ClassesMayNull, annotationType, (clazz, annotation) -> {

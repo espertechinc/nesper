@@ -11,6 +11,8 @@ using System.Xml.XPath;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.client.configuration.common
 {
@@ -112,11 +114,13 @@ namespace com.espertech.esper.common.client.configuration.common
             
             public CodegenExpression ToCodegenExpression(
                 CodegenMethodScope parent,
-                CodegenClassScope scope) 
+                CodegenClassScope scope)
             {
+                var typeExpr = CodegenExpressionBuilder.EnumValue(typeof(XPathResultType), Type.GetName());
+                
                 return new CodegenSetterBuilder(typeof(XPathPropertyDesc), typeof(XPathPropertyDesc), "desc", parent, scope)
                     .Constant("name", Name)
-                    .Expression("type", Type)
+                    .Expression("type", typeExpr)
                     .Constant("xpath", XPath)
                     .Constant("optionalEventTypeName", OptionalEventTypeName)
                     .Constant("optionalCastToType", OptionalCastToType)

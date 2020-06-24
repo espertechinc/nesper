@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 return EMPTY;
             }
 
-            if (args.compileTimeServices.Configuration.Compiler.Execution.FilterIndexPlanning == ConfigurationCompilerExecution.FilterIndexPlanning.NONE) {
+            if (args.compileTimeServices.Configuration.Compiler.Execution.FilterIndexPlanning == ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE) {
                 DecomposeCheckAggregation(validatedNodes);
                 return BuildNoPlan(validatedNodes, args);
             }
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             var hint = HintEnum.MAX_FILTER_WIDTH.GetHint(args.statementRawInfo.Annotations);
             if (hint != null) {
                 var hintValue = HintEnum.MAX_FILTER_WIDTH.GetHintAssignedValue(hint);
-                filterServiceMaxFilterWidth = int?.ParseInt(hintValue);
+                filterServiceMaxFilterWidth = int.Parse(hintValue);
             }
 
             FilterSpecPlanForge plan = null;

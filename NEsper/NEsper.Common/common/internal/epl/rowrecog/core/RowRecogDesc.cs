@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -32,6 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
         public Type[] PartitionEvalTypes { get; set; }
 
+        public DataInputOutputSerde<object> PartitionEvalSerde { get; set; }
         public int[] MultimatchStreamNumToVariable { get; set; }
 
         public ExprEvaluator PartitionEvalMayNull { get; set; }

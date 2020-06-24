@@ -48,7 +48,7 @@ namespace NEsper.Avro.Writer
             }
 
             // (B) not completely assignable: find matching properties
-            var writables = EventTypeUtility.GetWriteableProperties(resultType, true);
+            var writables = EventTypeUtility.GetWriteableProperties(resultType, true, false);
             IList<Item> items = new List<Item>();
             IList<WriteablePropertyDescriptor> written = new List<WriteablePropertyDescriptor>();
 

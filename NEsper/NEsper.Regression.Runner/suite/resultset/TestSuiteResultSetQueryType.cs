@@ -55,7 +55,9 @@ namespace com.espertech.esper.regressionrun.suite.resultset
                 typeof(SupportPriceEvent),
                 typeof(SupportMarketDataIDBean),
                 typeof(SupportBean_A),
-                typeof(SupportBean_B)
+                typeof(SupportBean_B),
+                typeof(SupportEventWithIntArray),
+                typeof(SupportThreeArrayEvent)
             }) {
                 configuration.Common.AddEventType(clazz);
             }

@@ -76,14 +76,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'DateTimeOffset.between(\"a\",\"b\")': Error validating date-time method 'between', expected a long-typed, Date-typed or Calendar-typed result for expression parameter 0 but received System.String");
+                "Failed to validate select-clause expression 'DateTimeOffset.between(\"a\",\"b\")': Failed to validate date-time method 'between', expected a long-typed, Date-typed or Calendar-typed result for expression parameter 0 but received System.String");
 
             // invalid wrong parameter
             epl = "select DateTimeOffset.between(DateTime, DateTime, 1, true) from SupportDateTime";
             TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'DateTimeOffset.between(DateTime,Dat...(48 chars)': Error validating date-time method 'between', expected a boolean-type result for expression parameter 2 but received System.Int32");
+                "Failed to validate select-clause expression 'DateTimeOffset.between(DateTime,Dat...(48 chars)': Failed to validate date-time method 'between', expected a boolean-type result for expression parameter 2 but received System.Int32");
             
             #if NOT_APPLICABLE // use case exercises code that examines DateFormatters on legacy date types - not applicable
             // mismatch parameter to input
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'DateTimeOffset.format(null)': Error validating date-time method 'format', expected any of [System.String, com.espertech.esper.compat.DateFormat, com.espertech.esper.compat.datetime.DateTimeFormat]-type result for expression parameter 0 but received null");
+                "Failed to validate select-clause expression 'DateTimeOffset.format(null)': Failed to validate date-time method 'format', expected any of [System.String, com.espertech.esper.compat.DateFormat, com.espertech.esper.compat.datetime.DateTimeFormat]-type result for expression parameter 0 but received null");
         }
     }
 } // end of namespace

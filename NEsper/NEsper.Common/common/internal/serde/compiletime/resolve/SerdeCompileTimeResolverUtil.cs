@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 		// (1) any serde providers are asked first, first one taking it counts
 		// (2) class implements Externalizable (when allowed)
 		// (3) class implements Serializable (when allowed)
-		protected static SerdeProvision DetermineSerde(
+		internal static SerdeProvision DetermineSerde(
 			Type type,
 			ICollection<SerdeProvider> serdeProviders,
 			bool allowSerializable,
@@ -138,7 +138,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 		{
 			return new DataInputOutputSerdeException(
 				"Failed to find serde for class '" +
-				TypeHelper.GetClassNameFullyQualPretty(clazz) +
+				TypeExtensions.CleanName(clazz) +
 				"' for use with " +
 				additionalInfo +
 				" (" +

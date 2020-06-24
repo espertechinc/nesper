@@ -82,13 +82,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                 "AggregationService",
                 typeof(ResultSetProcessorRowForAll),
                 classScope,
-                node => node.GetterBlock.BlockReturn(REF_AGGREGATIONSVC));
+                node => node.GetterBlock.BlockReturn(MEMBER_AGGREGATIONSVC));
             instance.Properties.AddProperty(
                 typeof(ExprEvaluatorContext),
                 "ExprEvaluatorContext",
                 typeof(ResultSetProcessorRowForAll),
                 classScope,
-                node => node.GetterBlock.BlockReturn(REF_AGENTINSTANCECONTEXT));
+                node => node.GetterBlock.BlockReturn(MEMBER_AGENTINSTANCECONTEXT));
             instance.Properties.AddProperty(
                 typeof(bool),
                 "IsSelectRStream",

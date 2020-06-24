@@ -178,7 +178,8 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 	        throw new UnsupportedOperationException();
 	    }
 
-	    public void ReplaceAll(BiFunction<? super string, ? super object, ?> function) {
+	    public void ReplaceAll(Action<string, object> function)
+	    {
 	        throw new UnsupportedOperationException();
 	    }
 

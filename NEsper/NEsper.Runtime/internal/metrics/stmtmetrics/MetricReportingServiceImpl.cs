@@ -113,7 +113,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.stmtmetrics
 
         public void Route(MetricEvent metricEvent)
         {
-            executionContext.EpRuntimeSendEvent.SendEventBean(metricEvent, metricEvent.GetType().FullName);
+            executionContext.EPRuntimeSendEvent.SendEventBean(metricEvent, metricEvent.GetType().FullName);
         }
 
         public bool IsMetricsReportingEnabled => specification.IsEnableMetricsReporting;

@@ -293,7 +293,7 @@ namespace com.espertech.esper.regressionlib.framework
         {
             var args = new CompilerArguments(env.Configuration);
             args.Path.AddAll(path.Compileds);
-            EPCompilerProvider.Compiler.CompileQuery(epl, args);
+            env.Compiler.CompileQuery(epl, args);
         }
     }
 } // end of namespace

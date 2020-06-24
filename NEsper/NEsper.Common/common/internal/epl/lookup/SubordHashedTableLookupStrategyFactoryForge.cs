@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.join.queryplan;
@@ -36,6 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         private readonly int[] _keyStreamNumbers;
         private readonly int _numStreamsOuter;
         private readonly IList<EventType> _outerStreamTypesZeroIndexed;
+        private readonly MultiKeyClassRef _hashMultikeyClasses;
 
         public SubordHashedTableLookupStrategyFactoryForge(
             bool isNWOnTrigger,
@@ -45,16 +47,18 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             bool isStrictKeys,
             string[] hashStrictKeys,
             int[] keyStreamNumbers,
-            IList<EventType> outerStreamTypesZeroIndexed)
+            IList<EventType> outerStreamTypesZeroIndexed,
+            MultiKeyClassRef hashMultikeyClasses)
         {
             this.isNWOnTrigger = isNWOnTrigger;
-            this._numStreamsOuter = numStreamsOuter;
-            this._hashKeys = hashKeys;
-            this._hashKeyCoercionTypes = hashKeyCoercionTypes;
-            this._isStrictKeys = isStrictKeys;
-            this._hashStrictKeys = hashStrictKeys;
-            this._keyStreamNumbers = keyStreamNumbers;
-            this._outerStreamTypesZeroIndexed = outerStreamTypesZeroIndexed;
+            _numStreamsOuter = numStreamsOuter;
+            _hashKeys = hashKeys;
+            _hashKeyCoercionTypes = hashKeyCoercionTypes;
+            _isStrictKeys = isStrictKeys;
+            _hashStrictKeys = hashStrictKeys;
+            _keyStreamNumbers = keyStreamNumbers;
+            _outerStreamTypesZeroIndexed = outerStreamTypesZeroIndexed;
+            _hashMultikeyClasses = hashMultikeyClasses;
         }
 
         private string[] Expressions {
@@ -90,14 +94,15 @@ namespace com.espertech.esper.common.@internal.epl.lookup
                     }
                 }
 
-                var eval = ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyPropPerStream(
-                    keyStreamTypes,
-                    _hashStrictKeys,
+                var forges = ExprNodeUtilityQuery.ForgesForProperties(
+                    keyStreamTypes, _hashStrictKeys, keyStreamNums);
+                var eval = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(
+                    forges,
                     _hashKeyCoercionTypes.CoercionTypes,
-                    keyStreamNums,
+                    _hashMultikeyClasses,
                     methodNode,
-                    GetType(),
                     classScope);
+
                 methodNode.Block.MethodReturn(
                     NewInstance<SubordHashedTableLookupStrategyPropFactory>(
                         Constant(_hashStrictKeys),
@@ -112,12 +117,13 @@ namespace com.espertech.esper.common.@internal.epl.lookup
                 }
 
                 var expressions = ExprNodeUtilityPrint.ToExpressionStringsMinPrecedence(forges);
-                CodegenExpression eval = ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
+                var eval = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(
                     forges,
                     _hashKeyCoercionTypes.CoercionTypes,
+                    _hashMultikeyClasses,
                     methodNode,
-                    GetType(),
                     classScope);
+                
                 methodNode.Block.MethodReturn(
                     NewInstance<SubordHashedTableLookupStrategyExprFactory>(
                         Constant(expressions),

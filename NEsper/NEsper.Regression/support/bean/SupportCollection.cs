@@ -182,5 +182,10 @@ namespace com.espertech.esper.regressionlib.support.bean
 
             return list.ToArray();
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(Strvals)}: {Strvals.RenderAny()}";
+        }
     }
 } // end of namespace

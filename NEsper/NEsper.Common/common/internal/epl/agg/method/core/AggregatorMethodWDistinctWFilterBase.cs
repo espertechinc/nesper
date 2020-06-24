@@ -12,10 +12,12 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.collection;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
@@ -25,14 +27,18 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
 {
     public abstract class AggregatorMethodWDistinctWFilterBase : AggregatorMethod
     {
-        internal readonly CodegenExpressionRef distinct;
+        internal readonly CodegenExpressionMember distinct;
         private readonly CodegenExpressionInstanceField distinctSerde;
 
-        internal readonly bool
-            hasFilter; // this flag can be true and "optionalFilter" can still be null when declaring a table column
+        // this flag can be true and "optionalFilter" can still be null when declaring a table column
+        private readonly bool hasFilter;
 
-        internal readonly Type optionalDistinctValueType;
-        internal readonly ExprNode optionalFilter;
+        private readonly Type optionalDistinctValueType;
+        private readonly ExprNode optionalFilter;
+
+        public Type OptionalDistinctValueType => optionalDistinctValueType;
+
+        public ExprNode OptionalFilter => optionalFilter;
 
         public abstract void GetValueCodegen(
             CodegenMethod method,
@@ -45,6 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenMemberCol membersColumnized,
             CodegenClassScope classScope,
             Type optionalDistinctValueType,
+            DataInputOutputSerdeForge optionalDistinctSerde,
             bool hasFilter,
             ExprNode optionalFilter)
         {
@@ -56,7 +63,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
                 distinct = membersColumnized.AddMember(col, typeof(RefCountedSet<object>), "distinctSet");
                 rowCtor.Block.AssignRef(distinct, NewInstance(typeof(RefCountedSet<object>)));
                 distinctSerde = classScope.AddOrGetDefaultFieldSharable(
-                    new CodegenSharableSerdeClassTyped(REFCOUNTEDSET, optionalDistinctValueType));
+                    new CodegenSharableSerdeClassTyped(
+                        CodegenSharableSerdeClassTyped.CodegenSharableSerdeName.REFCOUNTEDSET,
+                        optionalDistinctValueType,
+                        optionalDistinctSerde,
+                        classScope));
             }
             else {
                 distinct = null;
@@ -151,7 +162,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenClassScope classScope)
         {
             if (distinct != null) {
-                method.Block.ExprDotMethod(distinctSerde, "Write", RowDotRef(row, distinct), output, unitKey, writer);
+                method.Block.ExprDotMethod(distinctSerde, "Write", RowDotMember(row, distinct), output, unitKey, writer);
             }
 
             WriteWODistinct(row, col, output, unitKey, writer, method, classScope);
@@ -167,11 +178,21 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
         {
             if (distinct != null) {
                 method.Block.AssignRef(
-                    RowDotRef(row, distinct),
+                    RowDotMember(row, distinct),
                     Cast(typeof(RefCountedSet<object>), ExprDotMethod(distinctSerde, "Read", input, unitKey)));
             }
 
             ReadWODistinct(row, col, input, unitKey, method, classScope);
+        }
+
+        protected CodegenExpression ToDistinctValueKey(CodegenExpression distinctValue)
+        {
+            if (!optionalDistinctValueType.IsArray) {
+                return distinctValue;
+            }
+
+            var mktype = MultiKeyPlanner.GetMKClassForComponentType(optionalDistinctValueType.GetElementType());
+            return NewInstance(mktype, Cast(optionalDistinctValueType, distinctValue));
         }
 
         protected abstract void ApplyEvalEnterFiltered(

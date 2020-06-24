@@ -38,12 +38,12 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        return ReadInternal(input);
 	    }
 
-	    protected static void WriteInternal(byte[] @object, DataOutput output) {
+	    internal static void WriteInternal(byte[] @object, DataOutput output) {
 	        output.WriteInt(@object.Length);
 	        output.Write(object);
 	    }
 
-	    protected static byte[] ReadInternal(DataInput input) {
+	    internal static byte[] ReadInternal(DataInput input) {
 	        int len = input.ReadInt();
 	        byte[] array = new byte[len];
 	        input.ReadFully(array);

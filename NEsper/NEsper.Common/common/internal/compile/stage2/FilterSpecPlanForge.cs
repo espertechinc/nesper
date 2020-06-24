@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return method;
         }
 
-        protected static CodegenExpression OptionalEvaluator(
+        internal static CodegenExpression OptionalEvaluator(
             ExprNode node,
             CodegenMethod method,
             CodegenClassScope classScope)
@@ -122,7 +122,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             var convertor = new MatchedEventConvertorForge(
                 args.taggedEventTypes,
                 args.arrayEventTypes,
-                args.AllTagNamesOrdered,
+                args.allTagNamesOrdered,
                 null,
                 true);
             return new FilterSpecPlanForge(new[] {path}, null, topLevelNegation, convertor);
@@ -148,7 +148,11 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             string name,
             ExprNode exprNode)
         {
-            buf.Append("  -").Append(name).Append(": ").Append(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(exprNode)).Append(NEWLINE);
+            buf.Append("  -")
+                .Append(name)
+                .Append(": ")
+                .Append(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(exprNode))
+                .Append(NEWLINE);
         }
     }
 } // end of namespace

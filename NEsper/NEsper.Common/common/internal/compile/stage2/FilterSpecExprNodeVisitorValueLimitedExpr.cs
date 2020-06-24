@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
             else if (exprNode is ExprPlugInSingleRowNode) {
                 var plugIn = (ExprPlugInSingleRowNode) exprNode;
-                if (plugIn.Config != null && plugIn.Config.FilterOptimizable == ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizable.DISABLED) {
+                if (plugIn.Config != null && plugIn.Config.FilterOptimizable == ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.DISABLED) {
                     IsLimited = false;
                 }
             }

@@ -10,15 +10,22 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
+using Antlr4.Runtime.Misc;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.soda;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
+using com.espertech.esper.common.@internal.compile.stage3;
+using com.espertech.esper.common.@internal.epl.expression.chain;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.resultset.select.eval;
 using com.espertech.esper.common.@internal.epl.streamtype;
+using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.variant;
+using com.espertech.esper.common.@internal.serde.compiletime.eventtype;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -38,13 +45,39 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             InsertIntoDesc insertIntoDesc,
             bool withSubscriber)
         {
-            var synthetic = GetProcessorInternal(args, insertIntoDesc);
+            var additionalForgeables = new List<StmtClassForgeableFactory>();
+
+            SelectExprProcessorWInsertTarget synthetic = GetProcessorInternal(args, insertIntoDesc);
+            additionalForgeables.AddRange(synthetic.AdditionalForgeables);
+
+            // plan serdes for variant event types
+            if (synthetic.InsertIntoTargetType is VariantEventType ||
+                synthetic.InsertIntoTargetType is WrapperEventType && 
+                (((WrapperEventType) synthetic.InsertIntoTargetType).UnderlyingEventType is VariantEventType)) {
+                var serdeForgeables = SerdeEventTypeUtility.Plan(
+                    synthetic.Forge.ResultEventType,
+                    args.StatementRawInfo,
+                    args.CompileTimeServices.SerdeEventTypeRegistry,
+                    args.CompileTimeServices.SerdeResolver);
+                additionalForgeables.AddRange(serdeForgeables);
+                foreach (EventType eventType in args.TypeService.EventTypes) {
+                    serdeForgeables = SerdeEventTypeUtility.Plan(
+                        eventType,
+                        args.StatementRawInfo,
+                        args.CompileTimeServices.SerdeEventTypeRegistry,
+                        args.CompileTimeServices.SerdeResolver);
+                    additionalForgeables.AddAll(serdeForgeables);
+                }
+            }
+
             if (args.IsFireAndForget || !withSubscriber) {
-                return new SelectExprProcessorDescriptor(new SelectSubscriberDescriptor(), synthetic);
+                return new SelectExprProcessorDescriptor(new SelectSubscriberDescriptor(), synthetic.Forge, additionalForgeables);
             }
 
             // Handle for-clause delivery contract checking
             ExprNode[] groupedDeliveryExpr = null;
+            MultiKeyClassRef groupedDeliveryMultiKey = null;
+
             var forDelivery = false;
             if (args.ForClauseSpec != null) {
                 foreach (var item in args.ForClauseSpec.Clauses) {
@@ -89,7 +122,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             " for-clause keywords after reserved keyword 'for'");
                     }
 
-                    StreamTypeService type = new StreamTypeServiceImpl(synthetic.ResultEventType, null, false);
+                    StreamTypeService type = new StreamTypeServiceImpl(synthetic.Forge.ResultEventType, null, false);
                     groupedDeliveryExpr = new ExprNode[item.Expressions.Count];
                     var validationContext = new ExprValidationContextBuilder(
                             type,
@@ -105,6 +138,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     }
 
                     forDelivery = true;
+                    
+                    MultiKeyPlan multiKeyPlan = MultiKeyPlanner.PlanMultiKey(
+                        groupedDeliveryExpr, false, args.StatementRawInfo, args.SerdeResolver);
+                    groupedDeliveryMultiKey = multiKeyPlan.ClassRef;
+                    additionalForgeables = multiKeyPlan.MultiKeyForgeables;
                 }
 
                 if (groupedDeliveryExpr != null && groupedDeliveryExpr.Length == 0) {
@@ -117,8 +155,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             SelectExprProcessorForge forge;
 
             if (allowSubscriber) {
-                var bindProcessor = new BindProcessorForge(
-                    synthetic,
+                BindProcessorForge bindProcessor = new BindProcessorForge(
+                    synthetic.Forge,
                     args.SelectionList,
                     args.TypeService.EventTypes,
                     args.TypeService.StreamNames,
@@ -127,18 +165,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     bindProcessor.ExpressionTypes,
                     bindProcessor.ColumnNamesAssigned,
                     forDelivery,
-                    groupedDeliveryExpr);
-                forge = new BindSelectExprProcessorForge(synthetic, bindProcessor);
-            }
-            else {
+                    groupedDeliveryExpr,
+                    groupedDeliveryMultiKey);
+                forge = new BindSelectExprProcessorForge(synthetic.Forge, bindProcessor);
+            } else {
                 descriptor = new SelectSubscriberDescriptor();
-                forge = synthetic;
+                forge = new ListenerOnlySelectExprProcessorForge(synthetic.Forge);
             }
 
-            return new SelectExprProcessorDescriptor(descriptor, forge);
+            return new SelectExprProcessorDescriptor(descriptor, forge, additionalForgeables);
         }
 
-        private static SelectExprProcessorForge GetProcessorInternal(
+        private static SelectExprProcessorWInsertTarget GetProcessorInternal(
             SelectProcessorArgs args,
             InsertIntoDesc insertIntoDesc)
         {
@@ -156,10 +194,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 // For joins
                 if (args.TypeService.StreamNames.Length > 1 && !(insertIntoTarget is VariantEventType)) {
                     Log.Debug(".getProcessor Using SelectExprJoinWildcardProcessor");
-                    return SelectExprJoinWildcardProcessorFactory.Create(
-                        args,
-                        insertIntoDesc,
-                        eventTypeName => eventTypeName);
+                    SelectExprProcessorForgeWForgables pair = SelectExprJoinWildcardProcessorFactory.Create(args, insertIntoDesc, eventTypeName => eventTypeName);
+                    SelectExprProcessorForge forgeX = pair.Forge;
+                    return new SelectExprProcessorWInsertTarget(forgeX, null, pair.AdditionalForgeables);
                 }
 
                 if (insertIntoDesc == null) {
@@ -170,11 +207,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         var table = args.TableCompileTimeResolver.ResolveTableFromEventType(
                             args.TypeService.EventTypes[0]);
                         if (table != null) {
-                            return new SelectEvalWildcardTable(table);
+                            SelectExprProcessorForge forgeX = new SelectEvalWildcardTable(table);
+                            return new SelectExprProcessorWInsertTarget(forgeX, null, EmptyList<StmtClassForgeableFactory>.Instance);
                         }
                     }
 
-                    return new SelectEvalWildcardNonJoin(args.TypeService.EventTypes[0]);
+                    SelectExprProcessorForge forgeOuter = new SelectEvalWildcardNonJoin(args.TypeService.EventTypes[0]);
+                    return new SelectExprProcessorWInsertTarget(forgeOuter, null, EmptyList<StmtClassForgeableFactory>.Instance);
                 }
             }
 
@@ -190,8 +229,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 buckets.SelectedStreams,
                 args,
                 insertIntoDesc);
-            var forge = factory.Forge;
-            return forge;
+            return factory.Forge;
         }
 
         protected internal static void VerifyNameUniqueness(SelectClauseElementCompiled[] selectionList)
@@ -264,12 +302,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             }
 
             var dotNode = (ExprDotNode) selectExpression;
-            if (dotNode.ChainSpec[0].Name.ToLowerInvariant() ==
-                ImportServiceCompileTime.EXT_SINGLEROW_FUNCTION_TRANSPOSE) {
-                return true;
+            var chainSpec = dotNode.ChainSpec;
+            if (dotNode.ChainSpec.IsEmpty()) {
+                return false;
             }
-
-            return false;
+            var first = chainSpec[0];
+            return ImportServiceCompileTimeConstants.EXT_SINGLEROW_FUNCTION_TRANSPOSE.Equals(first.GetRootNameOrEmptyString().ToLowerInvariant());
         }
 
         public class SelectExprBuckets

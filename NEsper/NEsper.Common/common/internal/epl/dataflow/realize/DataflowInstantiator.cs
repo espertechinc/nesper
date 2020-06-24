@@ -46,14 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             var handle = new EPStatementAgentInstanceHandle(statementContext.EpStatementHandle, agentInstanceId, @lock);
             var auditProvider = statementContext.StatementInformationals.AuditProvider;
             var instrumentationProvider = statementContext.StatementInformationals.InstrumentationProvider;
-            var agentInstanceContext = new AgentInstanceContext(
-                statementContext,
-                agentInstanceId,
-                handle,
-                null,
-                null,
-                auditProvider,
-                instrumentationProvider);
+            var agentInstanceContext = new AgentInstanceContext(statementContext, handle, null, null, auditProvider, instrumentationProvider);
 
             // assure variables
             statementContext.VariableManagementService.SetLocalVersion();

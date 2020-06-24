@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
     public class AggregatorAccessCountMinSketch : AggregatorAccess
     {
         private readonly AggregationStateCountMinSketchForge forge;
-        private readonly CodegenExpressionRef state;
+        private readonly CodegenExpressionMember state;
         private readonly CodegenExpressionInstanceField spec;
 
         public AggregatorAccessCountMinSketch(
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.MethodThrowUnsupported();
+            method.Block.AssignRef(state, ExprDotMethod(spec, "MakeAggState"));
         }
 
         public void WriteCodegen(
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
                     typeof(AggregationStateSerdeCountMinSketch),
                     "WriteCountMinSketch",
                     output,
-                    RowDotRef(row, state)));
+                    RowDotMember(row, state)));
         }
 
         public void ReadCodegen(
@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             CodegenClassScope classScope)
         {
             method.Block.AssignRef(
-                RowDotRef(row, state),
+                RowDotMember(row, state),
                 StaticMethod(typeof(AggregationStateSerdeCountMinSketch), "ReadCountMinSketch", input, spec));
         }
 

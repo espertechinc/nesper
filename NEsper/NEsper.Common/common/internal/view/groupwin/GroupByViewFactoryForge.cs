@@ -16,6 +16,8 @@ using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.multikey;
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -39,14 +41,15 @@ namespace com.espertech.esper.common.@internal.view.groupwin
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        internal bool addingProperties; // when adding additional properties to output events
-        internal ExprNode[] criteriaExpressions;
-        internal IList<ViewFactoryForge> groupeds;
-        internal bool isReclaimAged;
-        internal string[] propertyNames;
-        internal long reclaimFrequency;
-        internal long reclaimMaxAge;
-        internal IList<ExprNode> viewParameters;
+        private bool addingProperties; // when adding additional properties to output events
+        private ExprNode[] criteriaExpressions;
+        private IList<ViewFactoryForge> groupeds;
+        private bool isReclaimAged;
+        private string[] propertyNames;
+        private long reclaimFrequency;
+        private long reclaimMaxAge;
+        private IList<ExprNode> viewParameters;
+        private MultiKeyClassRef multiKeyClassNames;
 
         public IList<ViewFactoryForge> Groupeds {
             get => groupeds;
@@ -64,6 +67,8 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             set => eventType = value;
         }
 
+        public IList<ViewFactoryForge> InnerForges => groupeds;
+        
         public override void SetViewParameters(
             IList<ExprNode> parameters,
             ViewForgeEnv viewForgeEnv,
@@ -164,6 +169,13 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             }
         }
 
+        public IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
+        {
+            MultiKeyPlan desc = MultiKeyPlanner.PlanMultiKey(criteriaExpressions, false, viewForgeEnv.StatementRawInfo, viewForgeEnv.SerdeResolver);
+            multiKeyClassNames = desc.ClassRef;
+            return desc.MultiKeyForgeables;
+        }
+        
         internal override Type TypeOfFactory()
         {
             return typeof(GroupByViewFactory);
@@ -203,14 +215,6 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                     Constant(propertyNames))
                 .SetProperty(
                     factory,
-                    "CriteriaEvals",
-                    CodegenEvaluators(criteriaExpressions, method, GetType(), classScope))
-                .SetProperty(
-                    factory,
-                    "CriteriaTypes",
-                    Constant(ExprNodeUtilityQuery.GetExprResultTypes(criteriaExpressions)))
-                .SetProperty(
-                    factory,
                     "Groupeds",
                     LocalMethod(MakeViewFactories(groupeds, GetType(), method, classScope, symbols)))
                 .SetProperty(
@@ -218,6 +222,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                     "EventType",
                     EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF))
                 .SetProperty(factory, "IsAddingProperties", Constant(addingProperties));
+            ViewMultiKeyHelper.Assign(criteriaExpressions, multiKeyClassNames, method, factory, symbols, classScope);
         }
 
         public override void Accept(ViewForgeVisitor visitor)
@@ -252,7 +257,12 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                 fieldNames[i] = name;
                 try {
                     if (!groupedEventType.IsProperty(name)) {
-                        parentContainsMergeKeys = false;
+                        // for ident-nodes we also use the unresolved name as that has the unescaped property name
+                        if (criteriaExpressions[i] is ExprIdentNode identNode) {
+                            if (!(groupedEventType.IsProperty(identNode.UnresolvedPropertyName))) {
+                                parentContainsMergeKeys = false;
+                            }
+                        }
                     }
                 }
                 catch (PropertyAccessException) {

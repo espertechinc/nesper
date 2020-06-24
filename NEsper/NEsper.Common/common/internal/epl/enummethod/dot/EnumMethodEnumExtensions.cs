@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.@internal.epl.enummethod.eval;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.plain.exceptintersectunion;
 using com.espertech.esper.common.@internal.epl.methodbase;
 using com.espertech.esper.compat;
 

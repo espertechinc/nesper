@@ -85,7 +85,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                 optionalFilter = positionalParams[1];
             }
 
-            return new AggregationFactoryMethodMinMax(this, child.Forge.EvaluationType, hasDataWindows);
+            var evaluationType = child.Forge.EvaluationType;
+            var serde = validationContext.SerdeResolver.SerdeForAggregation(evaluationType, validationContext.StatementRawInfo);
+            var distinctSerde = isDistinct ? validationContext.SerdeResolver.SerdeForAggregationDistinct(evaluationType, validationContext.StatementRawInfo) : null;
+            return new AggregationForgeFactoryMinMax(this, evaluationType, hasDataWindows, serde, distinctSerde);
         }
 
         public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)

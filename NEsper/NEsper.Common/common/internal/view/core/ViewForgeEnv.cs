@@ -15,6 +15,8 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.serde.compiletime.eventtype;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.settings;
 
 namespace com.espertech.esper.common.@internal.view.core
@@ -34,8 +36,7 @@ namespace com.espertech.esper.common.@internal.view.core
 
         public BeanEventTypeFactory BeanEventTypeFactoryProtected => args.BeanEventTypeFactoryPrivate;
 
-        public EventTypeCompileTimeRegistry EventTypeModuleCompileTimeRegistry =>
-            args.EventTypeModuleCompileTimeRegistry;
+        public EventTypeCompileTimeRegistry EventTypeModuleCompileTimeRegistry => args.EventTypeModuleCompileTimeRegistry;
 
         public Attribute[] Annotations => args.Annotations;
 
@@ -47,14 +48,16 @@ namespace com.espertech.esper.common.@internal.view.core
 
         public StatementRawInfo StatementRawInfo => args.StatementRawInfo;
 
-        public VariableCompileTimeResolver VariableCompileTimeResolver =>
-            args.CompileTimeServices.VariableCompileTimeResolver;
+        public VariableCompileTimeResolver VariableCompileTimeResolver => args.CompileTimeServices.VariableCompileTimeResolver;
 
         public string ContextName => args.StatementRawInfo.ContextName;
 
-        public EventTypeCompileTimeResolver EventTypeCompileTimeResolver =>
-            args.CompileTimeServices.EventTypeCompileTimeResolver;
+        public EventTypeCompileTimeResolver EventTypeCompileTimeResolver => args.CompileTimeServices.EventTypeCompileTimeResolver;
 
         public string ModuleName => args.StatementRawInfo.ModuleName;
+
+        public SerdeEventTypeCompileTimeRegistry SerdeEventTypeRegistry => args.CompileTimeServices.SerdeEventTypeRegistry;
+
+        public SerdeCompileTimeResolver SerdeResolver => args.CompileTimeServices.SerdeResolver;
     }
 } // end of namespace

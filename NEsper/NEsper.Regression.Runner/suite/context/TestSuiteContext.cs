@@ -43,9 +43,17 @@ namespace com.espertech.esper.regressionrun.suite.context
         private static void Configure(Configuration configuration)
         {
             foreach (var clazz in new[] {
-                typeof(SupportBean), typeof(SupportBean_S0), typeof(SupportBean_S1),
-                typeof(SupportBean_S2), typeof(ISupportBaseAB), typeof(ISupportA), typeof(SupportWebEvent),
-                typeof(ISupportAImpl), typeof(SupportGroupSubgroupEvent)
+                typeof(SupportBean),
+                typeof(SupportBean_S0),
+                typeof(SupportBean_S1),
+                typeof(SupportBean_S2),
+                typeof(SupportBean_S3),
+                typeof(ISupportBaseAB),
+                typeof(ISupportA),
+                typeof(SupportWebEvent),
+                typeof(ISupportAImpl),
+                typeof(SupportGroupSubgroupEvent),
+                typeof(SupportEventWithIntArray)
             }) {
                 configuration.Common.AddEventType(clazz.Name, clazz);
             }

@@ -116,7 +116,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 		/// </summary>
 		/// <param name="cls">is the Java type</param>
 		/// <returns>serde for marshalling and unmarshalling that type</returns>
-		protected static DataInputOutputSerde GetSerde(Type cls)
+		internal static DataInputOutputSerde GetSerde(Type cls)
 		{
 			if (cls.IsPrimitive) {
 				return PRIMITIVES.Get(cls);

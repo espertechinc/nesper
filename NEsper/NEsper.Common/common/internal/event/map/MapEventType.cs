@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             }
         }
 
-        internal override void PostUpdateNestableTypes()
+        internal void PostUpdateNestableTypes()
         {
         }
 

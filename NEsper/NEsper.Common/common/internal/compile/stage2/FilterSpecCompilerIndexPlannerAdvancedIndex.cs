@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 using com.espertech.esper.common.client;
@@ -25,7 +26,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 {
     public class FilterSpecCompilerIndexPlannerAdvancedIndex
     {
-        protected static FilterSpecParamForge HandleAdvancedIndexDescProvider(
+        internal static FilterSpecParamForge HandleAdvancedIndexDescProvider(
             FilterSpecCompilerAdvIndexDescProvider provider,
             IDictionary<string, Pair<EventType, string>> arrayEventTypes,
             string statementName)
@@ -42,25 +43,25 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             var heightGetter = ResolveFilterIndexRequiredGetter(filterDesc.IndexName, keyExpressions[3]);
             var config = (AdvancedIndexConfigContextPartitionQuadTree) filterDesc.IndexSpec;
 
-            var builder = new StringBuilder();
+            var builder = new StringWriter();
             ExprNodeUtilityPrint.ToExpressionString(keyExpressions[0], builder);
-            builder.Append(",");
+            builder.Write(",");
             ExprNodeUtilityPrint.ToExpressionString(keyExpressions[1], builder);
-            builder.Append(",");
+            builder.Write(",");
             ExprNodeUtilityPrint.ToExpressionString(keyExpressions[2], builder);
-            builder.Append(",");
+            builder.Write(",");
             ExprNodeUtilityPrint.ToExpressionString(keyExpressions[3], builder);
-            builder.Append("/");
-            builder.Append(filterDesc.IndexName.ToLowerInvariant());
-            builder.Append("/");
-            builder.Append(filterDesc.IndexType.ToLowerInvariant());
-            builder.Append("/");
+            builder.Write("/");
+            builder.Write(filterDesc.IndexName.ToLowerInvariant());
+            builder.Write("/");
+            builder.Write(filterDesc.IndexType.ToLowerInvariant());
+            builder.Write("/");
             config.ToConfiguration(builder);
             var expression = builder.ToString();
 
             Type returnType;
             switch (filterDesc.IndexType) {
-                case SettingsApplicationDotMethodPointInsideRectange.INDEXTYPE_NAME:
+                case SettingsApplicationDotMethodPointInsideRectangle.INDEXTYPE_NAME:
                     returnType = typeof(XYPoint);
                     break;
 
@@ -119,7 +120,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         private static FilterSpecParamFilterForEvalDoubleForge ResolveFilterIndexDoubleEval(
             string indexName,
             ExprNode indexExpression,
-            LinkedHashMap<string, Pair<EventType, string>> arrayEventTypes,
+            IDictionary<string, Pair<EventType, string>> arrayEventTypes,
             string statementName)
         {
             FilterSpecParamFilterForEvalDoubleForge resolved = null;
@@ -131,7 +132,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 resolved = new FilterForEvalContextPropDoubleForge(node.Getter, node.PropertyName);
             }
             else if (indexExpression.Forge.ForgeConstantType.IsCompileTimeConstant) {
-                double d = ((Number) indexExpression.Forge.ExprEvaluator.Evaluate(null, true, null)).DoubleValue();
+                double d = indexExpression.Forge.ExprEvaluator.Evaluate(null, true, null).AsDouble();
                 resolved = new FilterForEvalConstantDoubleForge(d);
             }
             else if (indexExpression.Forge.ForgeConstantType.IsConstant) {

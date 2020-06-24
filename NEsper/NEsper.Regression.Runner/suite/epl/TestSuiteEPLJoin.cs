@@ -328,7 +328,8 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 typeof(SupportMarketDataBean),
                 typeof(SupportBean_ST0),
                 typeof(SupportBean_ST1),
-                typeof(SupportBeanRange)
+                typeof(SupportBeanRange),
+                typeof(SupportEventWithManyArray)
             })
             {
                 configuration.Common.AddEventType(clazz);

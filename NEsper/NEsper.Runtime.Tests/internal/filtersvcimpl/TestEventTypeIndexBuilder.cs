@@ -44,7 +44,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 container.RWLockManager());
 
             eventTypeIndex = new EventTypeIndex(lockFactory);
-            indexBuilder = new EventTypeIndexBuilder(eventTypeIndex, true);
+            indexBuilder = new EventTypeIndexBuilder(eventTypeIndex);
 
             typeOne = supportEventTypeFactory.CreateBeanType(typeof(SupportBean));
             typeTwo = supportEventTypeFactory.CreateBeanType(typeof(SupportBeanSimple));

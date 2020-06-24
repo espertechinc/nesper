@@ -13,6 +13,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.name;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.agg.core;
@@ -56,6 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         private readonly RowRecogNFAStateForge[] _startStates;
         private readonly bool _unbound;
         private readonly LinkedHashMap<string, Pair<int, bool>> _variableStreams;
+        private readonly MultiKeyClassRef _partitionByMultiKey;
 
         public RowRecogDescForge(
             EventType parentEventType,
@@ -65,7 +67,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             int[] multimatchStreamNumToVariable,
             int[] multimatchVariableToStreamNum,
             ExprNode[] partitionBy,
-            LinkedHashMap<string, Pair<int, bool>> variableStreams,
+            MultiKeyClassRef partitionByMultiKey,
+            LocalMap variableStreams,
             bool hasInterval,
             bool iterateOnly,
             bool unbound,
@@ -91,6 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             this._multimatchStreamNumToVariable = multimatchStreamNumToVariable;
             this._multimatchVariableToStreamNum = multimatchVariableToStreamNum;
             this._partitionBy = partitionBy;
+            this._partitionByMultiKey = partitionByMultiKey;
             this._variableStreams = variableStreams;
             this._hasInterval = hasInterval;
             this._iterateOnly = iterateOnly;
@@ -166,20 +170,14 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 .SetProperty(
                     desc,
                     "PartitionEvalMayNull",
-                    _partitionBy == null
-                        ? ConstantNull()
-                        : ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
-                            ExprNodeUtilityQuery.GetForges(_partitionBy),
-                            null,
-                            method,
-                            GetType(),
-                            classScope))
+                    MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(_partitionBy, null, _partitionByMultiKey, method, classScope))
                 .SetProperty(
                     desc,
                     "PartitionEvalTypes",
                     _partitionBy == null
                         ? ConstantNull()
                         : Constant(ExprNodeUtilityQuery.GetExprResultTypes(_partitionBy)))
+                .SetProperty(desc, "PartitionEvalSerde", _partitionBy == null ? ConstantNull() : _partitionByMultiKey.GetExprMKSerde(method, classScope))
                 .SetProperty(desc, "VariableStreams", MakeVariableStreams(method, symbols, classScope))
                 .SetProperty(desc, "HasInterval", Constant(_hasInterval))
                 .SetProperty(desc, "IsIterateOnly", Constant(_iterateOnly))

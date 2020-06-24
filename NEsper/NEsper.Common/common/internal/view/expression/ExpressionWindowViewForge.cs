@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.view.expression
                 throw new ViewParameterException(errorMessage);
             }
 
-            expiryExpression = parameters[0];
+            ExpiryExpression = parameters[0];
         }
 
         internal override Type TypeOfFactory()

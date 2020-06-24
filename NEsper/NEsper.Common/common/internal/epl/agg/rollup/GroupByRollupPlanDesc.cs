@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
     {
         public GroupByRollupPlanDesc(
             ExprNode[] expressions,
-            AggregationGroupByRollupDesc rollupDesc)
+            AggregationGroupByRollupDescForge rollupDesc)
         {
             Expressions = expressions;
             RollupDesc = rollupDesc;
@@ -23,6 +23,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
 
         public ExprNode[] Expressions { get; }
 
-        public AggregationGroupByRollupDesc RollupDesc { get; }
+        public AggregationGroupByRollupDescForge RollupDesc { get; }
     }
 } // end of namespace

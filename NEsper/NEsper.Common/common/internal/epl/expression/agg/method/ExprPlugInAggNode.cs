@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                     hasDataWindows = false;
                 }
 
-                if (child is ExprWildcard) {
+                if (child is ExprWildcard && validationContext.StreamTypeService.EventTypes.Length > 0) {
                     ExprAggMultiFunctionUtil.CheckWildcardNotJoinOrSubquery(
                         validationContext.StreamTypeService,
                         functionName);
@@ -100,8 +100,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             try {
                 // the aggregation function factory is transient, obtain if not provided
                 if (aggregationFunctionForge == null) {
-                    aggregationFunctionForge =
-                        validationContext.ImportService.ResolveAggregationFunction(functionName);
+                    aggregationFunctionForge = validationContext.ImportService.ResolveAggregationFunction(
+                        functionName, validationContext.ClassProvidedExtension);
                 }
 
                 aggregationFunctionForge.Validate(context);
@@ -129,7 +129,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                 throw new ExprValidationException("Aggregation function forge returned an unrecognized mode " + mode);
             }
 
-            return new AggregationMethodFactoryPluginMethod(this, aggregationFunctionForge, mode);
+            var aggregatedValueType = PositionalParams.Length == 0 ? null : PositionalParams[0].Forge.EvaluationType;
+            var distinctForge = isDistinct ? validationContext.SerdeResolver.SerdeForAggregationDistinct(aggregatedValueType, validationContext.StatementRawInfo) : null;
+            return new AggregationForgeFactoryPlugin(this, aggregationFunctionForge, mode, aggregatedValueType, distinctForge);
         }
 
         public override string AggregationFunctionName {

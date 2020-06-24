@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             var common = configuration.Common;
             common.AddVariable("myvariableOCC", typeof(int), 10);
-            common.AddVariable("myvariableIPC", typeof(object), "x10");
+            common.AddVariable("myvariableIPC", typeof(string), "x10");
             common.AddVariable("myvariableORC", typeof(int), 10);
 
             var configDBWithRetain = new ConfigurationCommonDBRef();

@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.regressionlib.support.bean
 {
@@ -24,6 +25,11 @@ namespace com.espertech.esper.regressionlib.support.bean
         public void SetBeans(IList<SupportBean> beans)
         {
             Beans = beans;
+        }
+
+        public override string ToString()
+        {
+            return nameof(Beans) + " : " + Beans.RenderAny();
         }
     }
 } // end of namespace

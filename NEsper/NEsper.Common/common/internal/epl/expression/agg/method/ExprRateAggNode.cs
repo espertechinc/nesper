@@ -69,11 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                     this.positionalParams = new ExprNode[] {optionalFilter};
                 }
 
-                return new AggregationFactoryMethodRate(
-                    this,
-                    true,
-                    intervalTime,
-                    validationContext.ImportService.TimeAbacus);
+                return new AggregationForgeFactoryRate(this, true, intervalTime, validationContext.ImportService.TimeAbacus);
             }
 
             string message =
@@ -112,11 +108,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                 positionalParams = ExprNodeUtilityMake.AddExpression(positionalParams, optionalFilter);
             }
 
-            return new AggregationFactoryMethodRate(
-                this,
-                false,
-                -1,
-                validationContext.ImportService.TimeAbacus);
+            return new AggregationForgeFactoryRate(this, false, -1, validationContext.ImportService.TimeAbacus);
         }
 
         public override string AggregationFunctionName {

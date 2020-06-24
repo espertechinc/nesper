@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.@event.map
         public override bool IsExistsProperty(EventBean eventBean)
         {
             var map = BaseNestableEventUtil.CheckedCastUnderlyingMap(eventBean);
-            object array = map.Get(_propertyMap);
+            var array = (Array) map.Get(_propertyMap);
             return CollectionUtil.ArrayExistsAtIndex(array, _index);
         }
 

@@ -224,10 +224,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             string[] propertyNamesOffered,
             EventType outputEventType)
         {
-            var writeables =
-                EventTypeUtility.GetWriteableProperties(outputEventType, false);
-
-            IList<WriteablePropertyDescriptor> writablesList = new List<WriteablePropertyDescriptor>();
+            var writeables = EventTypeUtility.GetWriteableProperties(outputEventType, false, false);
+            var writablesList = new List<WriteablePropertyDescriptor>();
 
             for (var i = 0; i < propertyNamesOffered.Length; i++) {
                 var propertyName = propertyNamesOffered[i];

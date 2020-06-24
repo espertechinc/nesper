@@ -35,7 +35,9 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
             new AggregationMultiFunctionAgentModeManaged().SetInjectionStrategyAggregationAgentFactory(
                 new InjectionStrategyClassNewInstance(typeof(SupportAggMFEventsAsListAggregationAgentFactory)));
 
-        public AggregationMultiFunctionTableReaderMode TableReaderMode =>
+        public AggregationMultiFunctionAggregationMethodMode GetAggregationMethodMode(AggregationMultiFunctionAggregationMethodContext ctx)
+        {
             throw new UnsupportedOperationException("Table-column-read not implemented");
+        }
     }
 } // end of namespace

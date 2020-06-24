@@ -124,7 +124,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     new[] {true},
                     false,
                     false);
-                FilterSpecValidatedDesc desc = FilterSpecCompiler.ValidateAllowSubquery(
+                FilterSpecValidatedDesc descX = FilterSpecCompiler.ValidateAllowSubquery(
                     ExprNodeOrigin.FILTER,
                     rawFilterSpec.FilterExpressions,
                     streamTypeService,
@@ -137,10 +137,10 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     streamSpec.ViewSpecs,
                     streamSpec.Options,
                     table,
-                    desc.Expressions);
+                    descX.Expressions);
                 return new StreamSpecCompiledDesc(
                     tableStreamSpec,
-                    desc.AdditionalForgeables);
+                    descX.AdditionalForgeables);
             }
 
             // Could be a named window

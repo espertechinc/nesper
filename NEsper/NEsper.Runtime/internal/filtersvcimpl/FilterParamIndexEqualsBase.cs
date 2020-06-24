@@ -59,10 +59,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         {
             foreach (var entry in ConstantsMap)
             {
-                evaluatorStack.Add(new FilterItem(
-                    Lookupable.Expression, 
-                    FilterOperator,
-                    entry.Key));
+                evaluatorStack.Add(new FilterItem(Lookupable.Expression, FilterOperator, entry.Key, this));
                 entry.Value.GetTraverseStatement(traverse, statementIds, evaluatorStack);
                 evaluatorStack.RemoveLast();
             }

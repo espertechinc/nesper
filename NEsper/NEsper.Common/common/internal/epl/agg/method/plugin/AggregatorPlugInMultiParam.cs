@@ -26,10 +26,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
     {
         private readonly AggregationFunctionModeMultiParam mode;
 
-        internal CodegenExpressionRef plugin;
+        internal CodegenExpressionMember plugin;
 
         public AggregatorPlugInMultiParam(
-            AggregationMethodFactoryPluginMethod factory,
+            AggregationForgeFactoryPlugin factory,
             int col,
             CodegenCtor rowCtor,
             CodegenMemberCol membersColumnized,
@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             CodegenClassScope classScope)
         {
             if (mode.HasHA) {
-                method.Block.StaticMethod(mode.Serde, "Write", output, RowDotRef(row, plugin));
+                method.Block.StaticMethod(mode.Serde, "Write", output, RowDotMember(row, plugin));
             }
         }
 
@@ -120,7 +120,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             CodegenClassScope classScope)
         {
             if (mode.HasHA) {
-                method.Block.AssignRef(RowDotRef(row, plugin), StaticMethod(mode.Serde, "Read", input));
+                method.Block.AssignRef(RowDotMember(row, plugin), StaticMethod(mode.Serde, "Read", input));
             }
         }
 

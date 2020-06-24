@@ -29,19 +29,18 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         private readonly Dictionary<GroupByViewAgedEntry, Pair<object, object>> groupedEvents =
             new Dictionary<GroupByViewAgedEntry, Pair<object, object>>();
-
-        internal readonly IDictionary<object, GroupByViewAgedEntry> subViewPerKey =
+        private readonly IDictionary<object, GroupByViewAgedEntry> subViewPerKey =
             new Dictionary<object, GroupByViewAgedEntry>();
-
+        private readonly GroupByViewFactory _groupByViewFactory;
         private long? nextSweepTime;
 
         public GroupByViewReclaimAged(
-            GroupByViewFactory groupByViewFactory,
+            GroupByViewFactory groupByGroupByViewFactory,
             AgentInstanceViewFactoryChainContext agentInstanceContext)
         {
-            ViewFactory = groupByViewFactory;
+            _groupByViewFactory = groupByGroupByViewFactory;
             AgentInstanceContext = agentInstanceContext;
-            MergeView = new MergeView(this, groupByViewFactory.eventType);
+            MergeView = new MergeView(this, groupByGroupByViewFactory.EventType);
         }
 
         public void Stop(AgentInstanceStopServices services)
@@ -51,7 +50,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             }
         }
 
-        public GroupByViewFactory ViewFactory { get; }
+        public GroupByViewFactory ViewFactory => _groupByViewFactory;
 
         public override void Update(
             EventBean[] newData,
@@ -208,17 +207,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
         private object GetGroupKey(EventBean theEvent)
         {
             eventsPerStream[0] = theEvent;
-            var criteriaEvaluators = ViewFactory.CriteriaEvals;
-            if (criteriaEvaluators.Length == 1) {
-                return criteriaEvaluators[0].Evaluate(eventsPerStream, true, AgentInstanceContext);
-            }
-
-            var values = new object[criteriaEvaluators.Length];
-            for (var i = 0; i < criteriaEvaluators.Length; i++) {
-                values[i] = criteriaEvaluators[i].Evaluate(eventsPerStream, true, AgentInstanceContext);
-            }
-
-            return new HashableMultiKey(values);
+            return _groupByViewFactory.CriteriaEval.Evaluate(eventsPerStream, true, AgentInstanceContext);
         }
     }
 } // end of namespace

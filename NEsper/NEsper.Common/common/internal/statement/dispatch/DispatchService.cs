@@ -54,5 +54,12 @@ namespace com.espertech.esper.common.@internal.statement.dispatch
                 }
             }
         }
+        
+        public void RemoveAll(UpdateDispatchView updateDispatchView) {
+            var dispatchables = dispatchStateThreadLocal.GetOrCreate();
+            dispatchables.RemoveWhere(
+                dispatchable => dispatchable.View == updateDispatchView,
+                dispatchable => dispatchable.Cancelled());
+        }
     }
 } // end of namespace

@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 {
     public class FilterSpecCompilerIndexPlannerPlugInSingleRow
     {
-        protected static FilterSpecParamForge HandlePlugInSingleRow(ExprPlugInSingleRowNode constituent)
+        internal static FilterSpecParamForge HandlePlugInSingleRow(ExprPlugInSingleRowNode constituent)
         {
             if (!constituent.Forge.EvaluationType.IsBoolean()) {
                 return null;

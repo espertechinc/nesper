@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.avedev;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 
 namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 {
@@ -41,7 +42,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             }
 
             var childType = ValidateNumericChildAllowFilter(HasFilter);
-            return new AggregationFactoryMethodAvedev(this, childType, positionalParams);
+            var distinctSerde = isDistinct
+                ? validationContext.SerdeResolver.SerdeForAggregationDistinct(childType, validationContext.StatementRawInfo)
+                : null;
+            return new AggregationForgeFactoryAvedev(this, childType, distinctSerde, positionalParams);
         }
 
         public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)

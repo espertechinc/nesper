@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 "SelectExprProcessor",
                 typeof(ResultSetProcessorRowPerEvent),
                 classScope,
-                propertyNode => propertyNode.GetterBlock.BlockReturn(REF_SELECTEXPRPROCESSOR));
+                propertyNode => propertyNode.GetterBlock.BlockReturn(MEMBER_SELECTEXPRPROCESSOR));
             instance.Properties.AddProperty(
                 typeof(bool),
                 "HasHavingClause",

@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 {
     public class FilterSpecCompilerIndexPlannerHelper
     {
-        protected static ExprNode DecomposePopulateConsolidate(
+        internal static ExprNode DecomposePopulateConsolidate(
             FilterSpecParaForgeMap filterParamExprMap,
             bool performConditionPlanning,
             IList<ExprNode> validatedNodes,
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     node.Accept(visitor);
                     if (visitor.IsLimited) {
                         if (valueOnlyConstituents == null) {
-                            valueOnlyConstituents = new List<>();
+                            valueOnlyConstituents = new List<ExprNode>();
                         }
 
                         valueOnlyConstituents.Add(node);
@@ -84,12 +84,12 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return topLevelControl;
         }
 
-        protected static Coercer GetNumberCoercer(
+        internal static Coercer GetNumberCoercer(
             Type leftType,
             Type rightType,
             string expression)
         {
-            Type numericCoercionType = Boxing.GetBoxedType(leftType);
+            var numericCoercionType = leftType.GetBoxedType();
             if (rightType != leftType) {
                 if (rightType.IsNumeric()) {
                     if (!rightType.CanCoerce(leftType)) {
@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return null;
         }
 
-        protected static void ThrowConversionError(
+        internal static void ThrowConversionError(
             Type fromType,
             Type toType,
             string propertyName)
@@ -118,16 +118,16 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             throw new ExprValidationException(text);
         }
 
-        protected static MatchedEventConvertorForge GetMatchEventConvertor(
+        internal static MatchedEventConvertorForge GetMatchEventConvertor(
             ExprNode value,
-            LinkedHashMap<string, Pair<EventType, string>> taggedEventTypes,
-            LinkedHashMap<string, Pair<EventType, string>> arrayEventTypes,
-            LinkedHashSet<string> allTagNamesOrdered)
+            IDictionary<string, Pair<EventType, string>> taggedEventTypes,
+            IDictionary<string, Pair<EventType, string>> arrayEventTypes,
+            ISet<string> allTagNamesOrdered)
         {
             var streamUseCollectVisitor = new ExprNodeStreamUseCollectVisitor();
             value.Accept(streamUseCollectVisitor);
 
-            ISet<int?> streams = new HashSet<int?>(streamUseCollectVisitor.Referenced.Count);
+            ISet<int> streams = new HashSet<int>(streamUseCollectVisitor.Referenced.Count);
             foreach (var streamRefNode in streamUseCollectVisitor.Referenced) {
                 if (streamRefNode.StreamReferencedIfAny == null) {
                     continue;
@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return new MatchedEventConvertorForge(taggedEventTypes, arrayEventTypes, allTagNamesOrdered, streams, true);
         }
 
-        protected static Pair<int?, string> GetStreamIndex(string resolvedPropertyName)
+        internal static Pair<int, string> GetStreamIndex(string resolvedPropertyName)
         {
             var property = PropertyParser.ParseAndWalkLaxToSimple(resolvedPropertyName);
             if (!(property is NestedProperty)) {
@@ -151,18 +151,18 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 throw new IllegalStateException("Expected a nested property name for array match '" + resolvedPropertyName + "', none found");
             }
 
-            if (!(nested.Properties.Get(0) is IndexedProperty)) {
+            if (!(nested.Properties[0] is IndexedProperty)) {
                 throw new IllegalStateException("Expected an indexed property for array match '" + resolvedPropertyName + "', please provide an index");
             }
 
-            var index = ((IndexedProperty) nested.Properties.Get(0)).Index;
-            nested.Properties.Remove(0);
+            var index = ((IndexedProperty) nested.Properties[0]).Index;
+            nested.Properties.RemoveAt(0);
             var writer = new StringWriter();
             nested.ToPropertyEPL(writer);
-            return new Pair<int?, string>(index, writer.ToString());
+            return new Pair<int, string>(index, writer.ToString());
         }
 
-        protected static IList<ExprNode> DecomposeCheckAggregation(IList<ExprNode> validatedNodes)
+        internal static IList<ExprNode> DecomposeCheckAggregation(IList<ExprNode> validatedNodes)
         {
             // Break a top-level AND into constituent expression nodes
             IList<ExprNode> constituents = new List<ExprNode>();
@@ -199,15 +199,15 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
         }
 
-        protected static bool IsLimitedValueExpression(ExprNode node)
+        internal static bool IsLimitedValueExpression(ExprNode node)
         {
             var visitor = new FilterSpecExprNodeVisitorValueLimitedExpr();
             node.Accept(visitor);
             return visitor.IsLimited;
         }
 
-        protected static EventType GetArrayInnerEventType(
-            LinkedHashMap<string, Pair<EventType, string>> arrayEventTypes,
+        internal static EventType GetArrayInnerEventType(
+            IDictionary<string, Pair<EventType, string>> arrayEventTypes,
             string streamName)
         {
             var arrayEventType = arrayEventTypes.Get(streamName);
@@ -217,7 +217,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         // expressions automatically coerce to the most upwards type
         // filters require the same type
-        protected static object HandleConstantsCoercion(
+        internal static object HandleConstantsCoercion(
             ExprFilterSpecLookupableForge lookupable,
             object constant)
         {
@@ -235,13 +235,13 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 ThrowConversionError(constant.GetType(), identNodeType, lookupable.Expression);
             }
 
-            Type identNodeTypeBoxed = Boxing.GetBoxedType(identNodeType);
-            return TypeHelper.CoerceBoxed((Number) constant, identNodeTypeBoxed);
+            var identNodeTypeBoxed = identNodeType.GetBoxedType();
+            return TypeHelper.CoerceBoxed(constant, identNodeTypeBoxed);
         }
 
-        protected static FilterSpecParamFilterForEvalDoubleForge GetIdentNodeDoubleEval(
+        internal static FilterSpecParamFilterForEvalDoubleForge GetIdentNodeDoubleEval(
             ExprIdentNode node,
-            LinkedHashMap<string, Pair<EventType, string>> arrayEventTypes,
+            IDictionary<string, Pair<EventType, string>> arrayEventTypes,
             string statementName)
         {
             if (node.StreamId == 0) {
@@ -257,14 +257,14 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return new FilterForEvalEventPropDoubleForge(node.ResolvedStreamName, node.ResolvedPropertyName, node.ExprEvaluatorIdent);
         }
 
-        protected static bool IsLimitedLookupableExpression(ExprNode node)
+        internal static bool IsLimitedLookupableExpression(ExprNode node)
         {
             var visitor = new FilterSpecExprNodeVisitorLookupableLimitedExpr();
             node.Accept(visitor);
-            return visitor.IsLimited && visitor.IsHasStreamZeroReference;
+            return visitor.IsLimited && visitor.HasStreamZeroReference;
         }
 
-        protected static ExprFilterSpecLookupableForge MakeLimitedLookupableForgeMayNull(
+        internal static ExprFilterSpecLookupableForge MakeLimitedLookupableForgeMayNull(
             ExprNode lookupable,
             StatementRawInfo raw,
             StatementCompileTimeServices services)
@@ -276,11 +276,11 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             var lookupableType = lookupable.Forge.EvaluationType;
             var expression = ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(lookupable);
             var getterForge = new FilterSpecCompilerIndexLimitedLookupableGetterForge(lookupable);
-            DataInputOutputSerdeForge serde = services.SerdeResolver.SerdeForFilter(lookupableType, raw);
+            var serde = services.SerdeResolver.SerdeForFilter(lookupableType, raw);
             return new ExprFilterSpecLookupableForge(expression, getterForge, null, lookupableType, true, serde);
         }
 
-        protected static FilterSpecPlanPathTripletForge MakeRemainingNode(
+        internal static FilterSpecPlanPathTripletForge MakeRemainingNode(
             IList<ExprNode> unassignedExpressions,
             FilterSpecCompilerArgs args)
         {
@@ -314,13 +314,13 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return andNode;
         }
 
-        protected static bool HasLevelOrHint(
+        internal static bool HasLevelOrHint(
             FilterSpecCompilerIndexPlannerHint requiredHint,
             StatementRawInfo raw,
             StatementCompileTimeServices services)
         {
-            ConfigurationCompilerExecution.FilterIndexPlanning config = services.Configuration.Compiler.Execution.FilterIndexPlanning;
-            if (config == ConfigurationCompilerExecution.FilterIndexPlanning.ADVANCED) {
+            var config = services.Configuration.Compiler.Execution.FilterIndexPlanning;
+            if (config == ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED) {
                 return true;
             }
 
@@ -330,13 +330,13 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
 
             foreach (var hint in hints) {
-                string[] hintAtoms = HintEnum.SplitCommaUnlessInParen(hint);
+                var hintAtoms = HintEnumExtensions.SplitCommaUnlessInParen(hint);
                 for (var i = 0; i < hintAtoms.Length; i++) {
                     var hintAtom = hintAtoms[i];
                     var hintLowercase = hintAtom.ToLowerInvariant().Trim();
                     FilterSpecCompilerIndexPlannerHint? found = null;
-                    foreach (FilterSpecCompilerIndexPlannerHint available in FilterSpecCompilerIndexPlannerHint.Values()) {
-                        if (hintLowercase.Equals(available.NameLowercase)) {
+                    foreach (var available in EnumHelper.GetValues<FilterSpecCompilerIndexPlannerHint>()) {
+                        if (hintLowercase.Equals(available.GetNameInvariant())) {
                             found = available;
                             if (requiredHint == available) {
                                 return true;
@@ -362,10 +362,10 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             var visitor = new ExprNodeVariableVisitor(args.compileTimeServices.VariableCompileTimeResolver);
             exprNode.Accept(visitor);
-            bool hasVariable = visitor.HasVariables;
+            var hasVariable = visitor.IsVariables;
 
             var evalType = exprNode.Forge.EvaluationType;
-            DataInputOutputSerdeForge serdeForge = args.compileTimeServices.SerdeResolver.SerdeForFilter(evalType, args.statementRawInfo);
+            var serdeForge = args.compileTimeServices.SerdeResolver.SerdeForFilter(evalType, args.statementRawInfo);
             var lookupable = new ExprFilterSpecLookupableForge(PROPERTY_NAME_BOOLEAN_EXPRESSION, null, null, evalType, false, serdeForge);
 
             return new FilterSpecParamExprNodeForge(

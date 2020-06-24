@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 	public class FilterSpecCompilerIndexPlannerInSetOfValues
 	{
 
-		protected static FilterSpecParamForge HandleInSetNode(
+		internal static FilterSpecParamForge HandleInSetNode(
 			ExprInNode constituent,
 			IDictionary<string, Pair<EventType, string>> taggedEventTypes,
 			IDictionary<string, Pair<EventType, string>> arrayEventTypes,

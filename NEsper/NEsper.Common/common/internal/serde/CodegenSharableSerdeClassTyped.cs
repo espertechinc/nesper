@@ -11,6 +11,8 @@ using System;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
+using com.espertech.esper.common.@internal.serde.serdeset.additional;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -20,13 +22,19 @@ namespace com.espertech.esper.common.@internal.serde
     {
         private readonly CodegenSharableSerdeName name;
         private readonly Type valueType;
+        private readonly DataInputOutputSerdeForge forge;
+        private readonly CodegenClassScope classScope;
 
         public CodegenSharableSerdeClassTyped(
             CodegenSharableSerdeName name,
-            Type valueType)
+            Type valueType,
+            DataInputOutputSerdeForge forge,
+            CodegenClassScope classScope)
         {
             this.name = name;
             this.valueType = valueType;
+            this.forge = forge;
+            this.classScope = classScope;
         }
 
         public Type Type()
@@ -36,35 +44,45 @@ namespace com.espertech.esper.common.@internal.serde
 
         public CodegenExpression InitCtorScoped()
         {
-            return ExprDotMethodChain(EPStatementInitServicesConstants.REF)
-                .Get(EPStatementInitServicesConstants.DATAINPUTOUTPUTSERDEPROVIDER)
-                .Add(name.MethodName, name.MethodTypeArgs, Constant(valueType));
+            var serde = forge.Codegen(classScope.NamespaceScope.InitMethod, classScope, null);
+            if (name == CodegenSharableSerdeName.VALUE_NULLABLE) {
+                return serde;
+            } else if (name == CodegenSharableSerdeName.REFCOUNTEDSET) {
+                return NewInstance<DIORefCountedSet>(serde);
+            } else if (name == CodegenSharableSerdeName.SORTEDREFCOUNTEDSET) {
+                return NewInstance<DIOSortedRefCountedSet>(serde);
+            } else {
+                throw new ArgumentException("Unrecognized name " + name);
+            }
         }
 
-        public override bool Equals(object o)
+        protected bool Equals(CodegenSharableSerdeClassTyped other)
         {
-            if (this == o) {
+            return Equals(name, other.name) && Equals(valueType, other.valueType);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj)) {
                 return true;
             }
 
-            if (o == null || GetType() != o.GetType()) {
+            if (obj.GetType() != this.GetType()) {
                 return false;
             }
 
-            var that = (CodegenSharableSerdeClassTyped) o;
-
-            if (name != that.name) {
-                return false;
-            }
-
-            return valueType == that.valueType;
+            return Equals((CodegenSharableSerdeClassTyped) obj);
         }
 
         public override int GetHashCode()
         {
-            var result = name.GetHashCode();
-            result = 31 * result + valueType.GetHashCode();
-            return result;
+            unchecked {
+                return ((name != null ? name.GetHashCode() : 0) * 397) ^ (valueType != null ? valueType.GetHashCode() : 0);
+            }
         }
 
         public class CodegenSharableSerdeName

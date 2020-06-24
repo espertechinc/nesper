@@ -198,10 +198,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 				}
 
 				// if not a property then try built-in single-row non-grammar functions
-				if (propertyInfoPairX == null && call.Name.ToLowerInvariant().Equals(ImportServiceCompileTime.EXT_SINGLEROW_FUNCTION_TRANSPOSE)) {
+				if (propertyInfoPairX == null && 
+				    call.Name.Equals(ImportServiceCompileTimeConstants.EXT_SINGLEROW_FUNCTION_TRANSPOSE, StringComparison.InvariantCultureIgnoreCase)) {
 					if (call.Parameters.Count != 1) {
 						throw new ExprValidationException(
-							"The " + ImportServiceCompileTime.EXT_SINGLEROW_FUNCTION_TRANSPOSE + " function requires a single parameter expression");
+							"The " + ImportServiceCompileTimeConstants.EXT_SINGLEROW_FUNCTION_TRANSPOSE + " function requires a single parameter expression");
 					}
 
 					_forge = new ExprDotNodeForgeTransposeAsStream(this, call.Parameters[0].Forge);
@@ -487,9 +488,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 				streamZeroType = validationContext.StreamTypeService.EventTypes[0];
 			}
 
-			var msgHandler = new ExprNodeUtilResolveExceptionHandlerDefault(
-				firstItemName + (secondItem.GetRootNameOrEmptyString().IsEmpty() ? "" : "." + secondItem.GetRootNameOrEmptyString()),
-				false);
+			var secondItemName = secondItem.GetRootNameOrEmptyString();
+			var separator = string.IsNullOrWhiteSpace(secondItemName) ? "" : ".";
+			var msgHandler = new ExprNodeUtilResolveExceptionHandlerDefault(firstItemName + separator + secondItemName, false);
 			var method = ExprNodeUtilityResolve.ResolveMethodAllowWildcardAndStream(
 				firstItemName,
 				null,

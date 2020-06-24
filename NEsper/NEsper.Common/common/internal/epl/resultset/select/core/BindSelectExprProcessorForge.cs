@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
             processMethod.Block
                 .DeclareVar<bool>("makeNatural", ExprDotName(stmtResultSvc, "IsMakeNatural"))
-                .DeclareVar<bool>("synthesize", Or(ExprDotName(stmtResultSvc, "IsMakeSynthetic"), isSynthesize))
+                .DeclareVar<bool>("synthesize", Or(isSynthesize, ExprDotName(stmtResultSvc, "IsMakeSynthetic")))
                 .IfCondition(Not(Ref("makeNatural")))
                 .IfCondition(Ref("synthesize"))
                 .DeclareVar<EventBean>("synthetic", LocalMethod(syntheticMethod))

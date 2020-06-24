@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.expression.ops;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.compile.stage2.FilterSpecCompilerIndexPlannerHelper;
@@ -48,7 +49,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 return null;
             }
 
-            FilterOperator op = FilterOperator.ParseRangeOperator(
+            FilterOperator op = FilterOperatorExtensions.ParseRangeOperator(
                 betweenNode.IsLowEndpointIncluded,
                 betweenNode.IsHighEndpointIncluded,
                 betweenNode.IsNotBetween);
@@ -78,12 +79,12 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     return new FilterForEvalConstantStringForge((string) value);
                 }
 
-                return new FilterForEvalConstantDoubleForge(((Number) value).DoubleValue());
+                return new FilterForEvalConstantDoubleForge(value.AsDouble());
             }
 
             if (endpoint is ExprContextPropertyNode) {
                 var node = (ExprContextPropertyNode) endpoint;
-                if (TypeHelper.IsImplementsCharSequence(node.Type)) {
+                if (node.Type == typeof(string)) {
                     return new FilterForEvalContextPropStringForge(node.Getter, node.PropertyName);
                 }
 
@@ -92,7 +93,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             if (endpoint.Forge.ForgeConstantType.IsDeployTimeTimeConstant && endpoint is ExprNodeDeployTimeConst) {
                 var node = (ExprNodeDeployTimeConst) endpoint;
-                if (TypeHelper.IsImplementsCharSequence(endpoint.Forge.EvaluationType)) {
+                if (endpoint.Forge.EvaluationType == typeof(string)) {
                     return new FilterForEvalDeployTimeConstStringForge(node);
                 }
 
@@ -109,11 +110,11 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 IsLimitedValueExpression(endpoint)) {
                 var returnType = endpoint.Forge.EvaluationType;
                 MatchedEventConvertorForge convertor = GetMatchEventConvertor(endpoint, taggedEventTypes, arrayEventTypes, allTagNamesOrdered);
-                if (TypeHelper.IsImplementsCharSequence(returnType)) {
+                if (returnType == typeof(string)) {
                     return new FilterForEvalLimitedExprForge(endpoint, convertor, null);
                 }
 
-                Coercer coercer = CoercerFactory.GetCoercer(returnType, typeof(double?));
+                var coercer = SimpleNumberCoercerFactory.GetCoercer(returnType, typeof(double?));
                 return new FilterForEvalLimitedExprForge(endpoint, convertor, coercer);
             }
 

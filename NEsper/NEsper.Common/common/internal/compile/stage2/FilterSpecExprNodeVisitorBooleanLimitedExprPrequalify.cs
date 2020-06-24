@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.table;
 using com.espertech.esper.common.@internal.epl.expression.variable;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
 using com.espertech.esper.common.@internal.epl.script.core;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.compile.stage2
 {
@@ -46,7 +47,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
             else if (exprNode is ExprPlugInSingleRowNode) {
                 var plugIn = (ExprPlugInSingleRowNode) exprNode;
-                if (plugIn.Config != null && plugIn.Config.FilterOptimizable == ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizable.DISABLED) {
+                if (plugIn.Config != null && plugIn.Config.FilterOptimizable == ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.DISABLED) {
                     IsLimited = false;
                 }
 

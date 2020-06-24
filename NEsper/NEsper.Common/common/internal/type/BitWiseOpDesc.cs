@@ -8,6 +8,8 @@
 
 using System;
 
+using com.espertech.esper.compat.collections;
+
 namespace com.espertech.esper.common.@internal.type
 {
     public class BitWiseOpDesc
@@ -48,7 +50,9 @@ namespace com.espertech.esper.common.@internal.type
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(_type, (int) _bitwise);
+            unchecked {
+                return ((_type != null ? _type.GetHashCode() : 0) * 397) ^ (_bitwise != null ? _bitwise.GetHashCode() : 0);
+            }
         }
 
         public override string ToString()

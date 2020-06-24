@@ -420,7 +420,7 @@ namespace com.espertech.esper.common.@internal.settings
                 message += "static method ";
             }
             else {
-                message += "enumeration method, date-time method or instance method or property ";
+                message += "enumeration method, date-time method, instance method or property ";
             }
 
             if (paramTypes.Length > 0) {

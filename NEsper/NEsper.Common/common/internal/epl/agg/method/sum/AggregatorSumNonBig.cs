@@ -7,21 +7,18 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
-using static com.espertech.esper.common.@internal.epl.agg.method.sum.AggregationFactoryMethodSum;
 
 namespace com.espertech.esper.common.@internal.epl.agg.method.sum
 {
@@ -34,29 +31,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             CodegenMemberCol membersColumnized,
             CodegenClassScope classScope,
             Type optionalDistinctValueType,
+            DataInputOutputSerdeForge optionalDistinctSerde,
             bool hasFilter,
             ExprNode optionalFilter,
             Type sumType)
-            : base(
-                factory,
-                col,
-                rowCtor,
-                membersColumnized,
-                classScope,
-                optionalDistinctValueType,
-                hasFilter,
-                optionalFilter,
-                sumType)
-
+            : base(factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter, sumType)
         {
-            var typeSet = Collections.Set(
-                typeof(decimal?),
-                typeof(double?),
-                typeof(long?),
-                typeof(int?),
-                typeof(float?));
-
-            if (!typeSet.Contains(sumType)) {
+            if (!sumType.IsInt32() && 
+                !sumType.IsInt64() &&
+                !sumType.IsDecimal() &&
+                !sumType.IsDouble() &&
+                !sumType.IsSingle()) {
                 throw new ArgumentException("Invalid sum type " + sumType);
             }
         }
@@ -168,7 +153,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             Type valueType,
             CodegenMethod method)
         {
-            var coercer = GetCoercerNonBigInt(valueType);
+            var coercer = AggregationForgeFactorySum.GetCoercerNonBigInt(valueType);
             var opcode = enter ? "+" : "-";
             method.Block.AssignRef(sum, Op(sum, opcode, coercer.CoerceCodegen(value, valueType)));
         }
@@ -179,7 +164,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            var coercer = GetCoercerNonBigInt(sumType);
+            var coercer = AggregationForgeFactorySum.GetCoercerNonBigInt(sumType);
             var opcode = enter ? "+" : "-";
             method.Block.AssignRef(sum, Op(sum, opcode, coercer.CoerceCodegen(value, typeof(object))));
         }

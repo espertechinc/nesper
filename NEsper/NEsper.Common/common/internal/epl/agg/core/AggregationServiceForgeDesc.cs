@@ -8,7 +8,10 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
+
+using XLR8.CGLib;
 
 namespace com.espertech.esper.common.@internal.epl.agg.core
 {
@@ -17,11 +20,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         public AggregationServiceForgeDesc(
             AggregationServiceFactoryForge aggregationServiceFactoryForge,
             IList<AggregationServiceAggExpressionDesc> expressions,
-            IList<ExprAggregateNodeGroupKey> groupKeyExpressions)
+            IList<ExprAggregateNodeGroupKey> groupKeyExpressions,
+            IList<StmtClassForgeableFactory> additionalForgeables)
         {
             AggregationServiceFactoryForge = aggregationServiceFactoryForge;
             Expressions = expressions;
             GroupKeyExpressions = groupKeyExpressions;
+            AdditionalForgeables = additionalForgeables;
         }
 
         public AggregationServiceFactoryForge AggregationServiceFactoryForge { get; }
@@ -29,5 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         public IList<AggregationServiceAggExpressionDesc> Expressions { get; }
 
         public IList<ExprAggregateNodeGroupKey> GroupKeyExpressions { get; }
+        
+        public IList<StmtClassForgeableFactory> AdditionalForgeables { get; }
     }
 } // end of namespace

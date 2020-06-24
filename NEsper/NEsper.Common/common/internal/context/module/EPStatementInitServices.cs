@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -60,8 +61,6 @@ namespace com.espertech.esper.common.@internal.context.module
         ContextManagementService ContextManagementService { get; }
 
         ContextServiceFactory ContextServiceFactory { get; }
-
-        DataInputOutputSerdeProvider DataInputOutputSerdeProvider { get; }
 
         ImportServiceRuntime ImportServiceRuntime { get; }
 
@@ -127,7 +126,9 @@ namespace com.espertech.esper.common.@internal.context.module
 
         void ActivateNamedWindow(string name);
 
-        void ActivateVariable(string name);
+        void ActivateVariable(
+            string name,
+            DataInputOutputSerde<object> serde);
 
         void ActivateContext(
             string name,
@@ -144,7 +145,7 @@ namespace com.espertech.esper.common.@internal.context.module
     {
         public const string AGGREGATIONSERVICEFACTORYSERVICE = "AggregationServiceFactoryService";
         public const string CONTEXTSERVICEFACTORY = "ContextServiceFactory";
-        public const string DATAINPUTOUTPUTSERDEPROVIDER = "DataInputOutputSerdeProvider";
+        //public const string DATAINPUTOUTPUTSERDEPROVIDER = "DataInputOutputSerdeProvider";
         public const string IMPORTSERVICERUNTIME = "ImportServiceRuntime";
         public const string RUNTIMESETTINGSSERVICE = "RuntimeSettingsService";
         public const string EVENTBEANTYPEDEVENTFACTORY = "EventBeanTypedEventFactory";

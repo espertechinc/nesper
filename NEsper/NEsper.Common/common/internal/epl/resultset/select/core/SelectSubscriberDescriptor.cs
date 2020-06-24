@@ -8,30 +8,35 @@
 
 using System;
 
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 {
     public class SelectSubscriberDescriptor
     {
-        public SelectSubscriberDescriptor()
+        public SelectSubscriberDescriptor(MultiKeyClassRef groupDeliveryMultiKey)
         {
+            GroupDeliveryMultiKey = groupDeliveryMultiKey;
             SelectClauseTypes = null;
             SelectClauseColumnNames = null;
             IsForClauseDelivery = false;
             GroupDelivery = null;
+            GroupDeliveryMultiKey = null;
         }
 
         public SelectSubscriberDescriptor(
             Type[] selectClauseTypes,
             string[] selectClauseColumnNames,
             bool forClauseDelivery,
-            ExprNode[] groupDelivery)
+            ExprNode[] groupDelivery,
+            MultiKeyClassRef groupDeliveryMultiKey)
         {
             SelectClauseTypes = selectClauseTypes;
             SelectClauseColumnNames = selectClauseColumnNames;
             IsForClauseDelivery = forClauseDelivery;
             GroupDelivery = groupDelivery;
+            GroupDeliveryMultiKey = groupDeliveryMultiKey;
         }
 
         public Type[] SelectClauseTypes { get; }
@@ -41,5 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         public bool IsForClauseDelivery { get; }
 
         public ExprNode[] GroupDelivery { get; }
+        
+        public MultiKeyClassRef GroupDeliveryMultiKey { get; }
     }
 } // end of namespace

@@ -27,8 +27,8 @@ namespace com.espertech.esper.common.@internal.view.firstunique
     public class FirstUniqueByPropertyView : ViewSupport,
         DataWindowView
     {
-        internal readonly AgentInstanceContext agentInstanceContext;
-        internal readonly IDictionary<object, EventBean> firstEvents = new Dictionary<object, EventBean>();
+        private readonly AgentInstanceContext agentInstanceContext;
+        private readonly IDictionary<object, EventBean> firstEvents = new Dictionary<object, EventBean>();
         private readonly FirstUniqueByPropertyViewFactory viewFactory;
         private readonly EventBean[] eventsPerStream = new EventBean[1];
 
@@ -133,17 +133,7 @@ namespace com.espertech.esper.common.@internal.view.firstunique
         protected object GetUniqueKey(EventBean theEvent)
         {
             eventsPerStream[0] = theEvent;
-            var uniqueCriteriaEval = viewFactory.criteriaEvals;
-            if (uniqueCriteriaEval.Length == 1) {
-                return uniqueCriteriaEval[0].Evaluate(eventsPerStream, true, agentInstanceContext);
-            }
-
-            var values = new object[uniqueCriteriaEval.Length];
-            for (var i = 0; i < uniqueCriteriaEval.Length; i++) {
-                values[i] = uniqueCriteriaEval[i].Evaluate(eventsPerStream, true, agentInstanceContext);
-            }
-
-            return new HashableMultiKey(values);
+            return viewFactory.CriteriaEval.Evaluate(eventsPerStream, true, agentInstanceContext);
         }
     }
 } // end of namespace

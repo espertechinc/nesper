@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
@@ -36,21 +37,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             CodegenMemberCol membersColumnized,
             CodegenClassScope classScope,
             Type optionalDistinctValueType,
+            DataInputOutputSerdeForge optionalDistinctSerde,
             bool hasFilter,
             ExprNode optionalFilter,
             Type sumType)
-            : base(
-                factory,
-                col,
-                rowCtor,
-                membersColumnized,
-                classScope,
-                optionalDistinctValueType,
-                hasFilter,
-                optionalFilter,
-                sumType)
+            : base(factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter, sumType)
         {
-            if (sumType != typeof(BigInteger)) {
+            if (sumType.IsBigInteger()) {
                 throw new ArgumentException("Invalid type " + sumType);
             }
         }
@@ -115,7 +108,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
                 method.Block.StaticMethod(
                     typeof(DIOSerdeBigInteger),
                     "WriteBigInt",
-                    RowDotRef(row, sum),
+                    RowDotMember(row, sum),
                     output);
             }
             else {
@@ -137,7 +130,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
         {
             if (sumType.IsBigInteger()) {
                 method.Block.AssignRef(
-                    RowDotRef(row, sum),
+                    RowDotMember(row, sum),
                     StaticMethod(typeof(DIOSerdeBigInteger), "ReadBigInt", input));
             }
             else {

@@ -81,5 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         long GetLastUpdateTime();
 
         void SetLastUpdateTime(long currentTime);
+        
+        void Reset(int column);
     }
 } // end of namespace

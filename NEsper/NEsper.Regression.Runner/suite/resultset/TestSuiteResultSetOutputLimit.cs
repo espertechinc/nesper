@@ -137,7 +137,9 @@ namespace com.espertech.esper.regressionrun.suite.resultset
                 typeof(SupportBean_ST0),
                 typeof(SupportBean_A),
                 typeof(SupportScheduleSimpleEvent),
-                typeof(SupportBeanString)})
+                typeof(SupportBeanString),
+                typeof(SupportEventWithIntArray)
+            })
             {
                 configuration.Common.AddEventType(clazz);
             }

@@ -184,8 +184,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             var containerStatement = context.Base.StatementSpec;
             context.Base.StatementSpec = compiled;
 
-            // make forgable
-            var forablesResult = StmtForgeMethodSelectUtil.Make(
+            // make forgeable
+            var forgeablesResult = StmtForgeMethodSelectUtil.Make(
                 context.Container,
                 true,
                 context.CodegenEnv.Namespace,
@@ -196,16 +196,16 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             // return the statement spec
             context.Base.StatementSpec = containerStatement;
 
-            EventType outputEventType = forablesResult.EventType;
+            EventType outputEventType = forgeablesResult.EventType;
 
             var initializeResult = new DataFlowOpForgeInitializeResult();
             initializeResult.TypeDescriptors = new[] {new GraphTypeDesc(false, true, outputEventType)};
-            initializeResult.AdditionalForgeables = forablesResult.ForgeResult;
+            initializeResult.AdditionalForgeables = forgeablesResult.ForgeResult;
 
-            foreach (StmtClassForgable forgable in forablesResult.ForgeResult.Forgables) {
-                if (forgable.ForgableType == StmtClassForgableType.AIFACTORYPROVIDER) {
+            foreach (var forgable in forgeablesResult.ForgeResult.Forgables) {
+                if (forgable.ForgeableType == StmtClassForgeableType.AIFACTORYPROVIDER) {
                     classNameAIFactoryProvider = forgable.ClassName;
-                } else if (forgable.ForgableType == StmtClassForgableType.FIELDS) {
+                } else if (forgable.ForgeableType == StmtClassForgeableType.FIELDS) {
                     classNameFieldsFactoryProvider = forgable.ClassName;
                 }
             }

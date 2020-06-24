@@ -151,13 +151,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 					validationContext.ImportService,
 					criteriaExpressions.First,
 					criteriaTypes,
+					streamEventType,
 					criteriaSerdes,
 					criteriaExpressions.Second,
 					_ever,
 					streamNum,
 					this,
-					optionalFilterForge,
-					streamEventType);
+					optionalFilterForge);
 
 			IList<StmtClassForgeableFactory> serdeForgables = SerdeEventTypeUtility.Plan(
 				_containedType,
@@ -269,13 +269,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 				validationContext.ImportService,
 				criteriaExpressions.First,
 				criteriaTypes,
+				containedType,
 				criteriaSerdes,
 				criteriaExpressions.Second,
 				_ever,
 				0,
 				this,
-				null,
-				containedType);
+				null);
 
 			IList<StmtClassForgeableFactory> serdeForgables = SerdeEventTypeUtility.Plan(
 				containedType,

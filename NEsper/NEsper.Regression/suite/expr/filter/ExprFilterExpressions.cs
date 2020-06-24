@@ -1205,7 +1205,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
                     new int?[] {2, 1, 3, null, 1, null, null},
                     new double?[] {0d, 0d, 0d, 0d, 0d, 0d, 0d},
-                    new[] {false, false, true, false, false, false, false});
+                    new[] {false, false, true, false, true, false, false});
             }
         }
 

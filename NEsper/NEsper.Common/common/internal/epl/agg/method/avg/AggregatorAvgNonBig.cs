@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.sum;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat;
 
@@ -28,28 +29,20 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
     /// </summary>
     public class AggregatorAvgNonBig : AggregatorSumNonBig
     {
-        private readonly AggregationFactoryMethodAvg _factoryMethodAvg;
-        
+        private readonly AggregationForgeFactory _factoryMethodAvg;
+
         public AggregatorAvgNonBig(
-            AggregationFactoryMethodAvg factory,
+            AggregationForgeFactory factory,
             int col,
             CodegenCtor rowCtor,
             CodegenMemberCol membersColumnized,
             CodegenClassScope classScope,
             Type optionalDistinctValueType,
+            DataInputOutputSerdeForge optionalDistinctSerde,
             bool hasFilter,
             ExprNode optionalFilter,
             Type sumType)
-            : base(
-                factory,
-                col,
-                rowCtor,
-                membersColumnized,
-                classScope,
-                optionalDistinctValueType,
-                hasFilter,
-                optionalFilter,
-                sumType)
+            : base(factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter, sumType)
         {
             _factoryMethodAvg = factory;
         }
@@ -64,13 +57,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
 
             var sumTypeBoxed = sumType.GetBoxedType();
             if (sumTypeBoxed == typeof(decimal?)) {
-                var mathContext = _factoryMethodAvg.optionalMathContext;
+                var mathContext = _factoryMethodAvg.OptionalMathContext;
                 if (mathContext == null) {
                     method.Block.MethodReturn(Op(sum, "/", Cast<decimal>(cnt)));
                 }
                 else {
                     var mathContextField = classScope.AddOrGetDefaultFieldSharable(
-                        new MathContextCodegenField(_factoryMethodAvg.optionalMathContext));
+                        new MathContextCodegenField(_factoryMethodAvg.OptionalMathContext));
                     method.Block.MethodReturn(
                         StaticMethod(
                             typeof(MathContextExtensions),

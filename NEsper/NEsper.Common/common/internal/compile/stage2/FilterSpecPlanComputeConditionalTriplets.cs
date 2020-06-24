@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
     {
         public static readonly FilterSpecPlanComputeConditionalTriplets INSTANCE = new FilterSpecPlanComputeConditionalTriplets();
 
-        protected FilterValueSetParam[][] Compute(
+        protected override FilterValueSetParam[][] Compute(
             EventBean[] eventsPerStream,
             FilterSpecPlan plan,
             MatchedEventMap matchedEvents,
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             if (plan.FilterConfirm != null) {
                 var controlResult = (bool) plan.FilterConfirm.Evaluate(eventsPerStream, true, exprEvaluatorContext);
                 if (controlResult != null && controlResult) {
-                    return FilterValueSetParam.EMPTY;
+                    return FilterValueSetParamConstants.EMPTY;
                 }
             }
 

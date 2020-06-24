@@ -320,6 +320,11 @@ namespace com.espertech.esper.regressionrun.suite.@event
         {
             RegressionRunner.Run(session, EventBeanPropertyResolutionFragment.Executions());
         }
+        
+        [Test, RunInApplicationDomain]
+        public void TestEventBeanPropertyAccessPerformance() {
+            RegressionRunner.Run(session, new EventBeanPropertyAccessPerformance());
+        }
 
         [Test, RunInApplicationDomain]
         public void TestEventBeanPropertyResolutionWDefaults()

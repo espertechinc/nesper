@@ -12,6 +12,7 @@ using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.@event;
@@ -177,22 +178,6 @@ namespace com.espertech.esper.common.@internal.@event.core
             // try no properties
             properties = EventBeanUtility.GetPropertyArray(theEvent, new EventPropertyGetter[0]);
             Assert.AreEqual(0, properties.Length);
-        }
-
-        [Test]
-        public void TestMultiKey()
-        {
-            // try 2 properties
-            var getters = MakeGetters();
-            var theEvent = SupportEventBeanFactory.CreateObject(supportEventTypeFactory, new SupportBean("a", 10));
-            var multikey = EventBeanUtility.GetMultiKey(theEvent, getters);
-            Assert.AreEqual(2, multikey.Keys.Length);
-            Assert.AreEqual("a", multikey.Keys[0]);
-            Assert.AreEqual(10, multikey.Keys[1]);
-
-            // try no properties
-            multikey = EventBeanUtility.GetMultiKey(theEvent, new EventPropertyGetter[0]);
-            Assert.AreEqual(0, multikey.Keys.Length);
         }
 
         private EventPropertyGetter[] MakeGetters()

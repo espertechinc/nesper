@@ -69,13 +69,13 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             method.Block
                 .DeclareVar(typeof(FilterSpecPlanPath), "path", NewInstance(typeof(FilterSpecPlanPath)))
-                .ExprDotMethod(Ref("path"), "setTriplets", Ref("triplets"))
-                .ExprDotMethod(Ref("path"), "setPathNegate", OptionalEvaluator(PathNegate, method, classScope))
+                .SetProperty(Ref("path"), "Triplets", Ref("triplets"))
+                .SetProperty(Ref("path"), "PathNegate", OptionalEvaluator(PathNegate, method, classScope))
                 .MethodReturn(Ref("path"));
             return method;
         }
 
-        protected void AppendFilterPlanPath(
+        public void AppendFilterPlanPath(
             int indexPath,
             StringBuilder stringBuilder)
         {

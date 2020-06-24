@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.view.derived
                 size += newData.Length;
 
                 if (additionalProps != null && newData.Length != 0) {
-                    var additionalEvals = additionalProps.GetAdditionalEvals();
+                    var additionalEvals = additionalProps.AdditionalEvals;
                     if (lastValuesEventNew == null) {
                         lastValuesEventNew = new object[additionalEvals.Length];
                     }

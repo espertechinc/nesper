@@ -8,6 +8,8 @@
 
 using System;
 using System.Collections.Generic;
+
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.activator;
@@ -193,7 +195,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
             ServicesContext.ContextManagementService.AddContext(definition, this);
         }
 
-        public void ActivateVariable(string name)
+        public void ActivateVariable(
+            string name,
+            DataInputOutputSerde<object> serde)
         {
             var variable = ModuleIncidentals.Variables.Get(name);
             if (variable == null) {
@@ -209,7 +213,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
                     DeploymentId, ServicesContext.ContextPathRegistry);
             }
 
-            ServicesContext.VariableManagementService.AddVariable(DeploymentId, variable, contextDeploymentId);
+            ServicesContext.VariableManagementService.AddVariable(DeploymentId, variable, contextDeploymentId, TODO);
 
             // for non-context variables we allocate the state
             if (contextDeploymentId == null) {

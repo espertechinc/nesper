@@ -33,8 +33,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         public void TestFilterService()
         {
             var rwLockManager = container.RWLockManager();
-            RunAssertionAddRemoveFilter(new FilterServiceLockCoarse(rwLockManager, false));
-            RunAssertionAddRemoveFilter(new FilterServiceLockFine(rwLockManager, false));
+            RunAssertionAddRemoveFilter(new FilterServiceLockCoarse(rwLockManager, -1));
+            RunAssertionAddRemoveFilter(new FilterServiceLockFine(rwLockManager, -1));
         }
 
         private void RunAssertionAddRemoveFilter(FilterService service)

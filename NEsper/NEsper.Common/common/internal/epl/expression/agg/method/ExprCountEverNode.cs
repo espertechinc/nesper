@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.count;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 
 namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 {
@@ -52,7 +53,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                 }
             }
 
-            return new AggregationFactoryMethodCountEver(this, ignoreNulls);
+            var childType = ChildNodes[0].Forge.EvaluationType;
+            var distinctSerde = isDistinct ? validationContext.SerdeResolver.SerdeForAggregationDistinct(childType, validationContext.StatementRawInfo) : null;
+            return new AggregationForgeFactoryCountEver(this, ignoreNulls, childType, distinctSerde);
         }
 
         public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)

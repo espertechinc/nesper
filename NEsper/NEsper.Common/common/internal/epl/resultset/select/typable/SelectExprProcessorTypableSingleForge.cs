@@ -139,7 +139,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
             }
         }
 
-        public void ToEPL(TextWriter writer,
+        public void ToEPL(
+            TextWriter writer,
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {

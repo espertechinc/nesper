@@ -420,7 +420,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env,
                     path,
                     "select * from SupportBean_S0#keepall output every myctxone_int events",
-                    "Error in the output rate limiting clause: Variable 'myctxone_int' defined for use with context 'MyCtxOne' can only be accessed within that context");
+                    "Failed to validate output rate limiting clause: Variable 'myctxone_int' defined for use with context 'MyCtxOne' can only be accessed within that context");
                 TryInvalidCompile(
                     env,
                     path,

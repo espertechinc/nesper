@@ -56,8 +56,8 @@ namespace NEsper.Avro.SelectExprRep
                 if (forge is ExprEvalByGetterFragment) {
                     _forges[i] = HandleFragment((ExprEvalByGetterFragment) forge);
                 }
-                else if (forge is ExprEvalStreamInsertUnd) {
-                    var und = (ExprEvalStreamInsertUnd) forge;
+                else if (forge is ExprEvalStreamInsertBean) {
+                    var und = (ExprEvalStreamInsertBean) forge;
                     _forges[i] =
                         new SelectExprInsertEventBeanFactory.ExprForgeStreamUnderlying(und.StreamNum, typeof(object));
                 }

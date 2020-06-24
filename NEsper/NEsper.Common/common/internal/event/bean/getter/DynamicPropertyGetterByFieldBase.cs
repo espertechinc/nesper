@@ -230,7 +230,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			return BaseNativePropertyGetter.GetFragmentDynamic(result, _eventBeanTypedEventFactory, _beanEventTypeFactory);
 		}
 
-		protected static DynamicPropertyDescriptorByField GetPopulateCache(
+		internal static DynamicPropertyDescriptorByField GetPopulateCache(
 			CopyOnWriteList<DynamicPropertyDescriptorByField> cache,
 			DynamicPropertyGetterByFieldBase dynamicPropertyGetterBase,
 			object obj,

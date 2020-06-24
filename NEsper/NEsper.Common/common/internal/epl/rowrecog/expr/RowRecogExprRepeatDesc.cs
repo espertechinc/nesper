@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 
+using com.espertech.esper.common.@internal.compile.stage1.specmapper;
 using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
@@ -50,6 +51,13 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
             }
 
             writer.Write("}");
+        }
+        
+        public RowRecogExprRepeatDesc CheckedCopy(ExpressionCopier expressionCopier) {
+            ExprNode lowerCopy = Lower == null ? null : expressionCopier.Copy(Lower);
+            ExprNode upperCopy = Upper == null ? null : expressionCopier.Copy(Upper);
+            ExprNode singleCopy = Single == null ? null : expressionCopier.Copy(Single);
+            return new RowRecogExprRepeatDesc(lowerCopy, upperCopy, singleCopy);
         }
     }
 } // end of namespace

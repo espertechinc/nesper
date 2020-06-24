@@ -393,7 +393,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         /// <param name="startTime">optional start time</param>
         protected void DoInitialize(long? startTime)
         {
-            Log.Info("Initializing runtime URI '" + URI + "' version " + RuntimeVersion.VERSION);
+            Log.Info("Initializing runtime URI '" + URI + "' version " + RuntimeVersion.RUNTIME_VERSION);
 
             // Retain config-at-initialization since config-last-provided can be set to new values and "initialize" can be called
             configAtInitialization = configLastProvided;

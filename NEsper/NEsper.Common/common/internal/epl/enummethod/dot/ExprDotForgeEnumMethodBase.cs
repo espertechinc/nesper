@@ -208,7 +208,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             }
         }
 
-        public void Initialize(
+        public virtual void Initialize(
             DotMethodFP footprint,
             EnumMethodEnum enumMethod,
             string enumMethodUsedName,

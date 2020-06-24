@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
@@ -26,28 +27,20 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
     {
         private readonly AggregationFunctionModeManaged mode;
 
-        internal CodegenExpressionRef plugin;
+        internal CodegenExpressionMember plugin;
 
         public AggregatorPlugInManaged(
-            AggregationMethodFactoryPluginMethod factory,
+            AggregationForgeFactoryPlugin factory,
             int col,
             CodegenCtor rowCtor,
             CodegenMemberCol membersColumnized,
             CodegenClassScope classScope,
             Type optionalDistinctValueType,
+            DataInputOutputSerdeForge optionalDistinctSerde,
             bool hasFilter,
             ExprNode optionalFilter,
             AggregationFunctionModeManaged mode)
-            : base(
-                factory,
-                col,
-                rowCtor,
-                membersColumnized,
-                classScope,
-                optionalDistinctValueType,
-                hasFilter,
-                optionalFilter)
-
+            : base(factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter)
         {
             this.mode = mode;
 
@@ -118,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             CodegenClassScope classScope)
         {
             if (mode.HasHA) {
-                method.Block.StaticMethod(mode.Serde, "Write", output, RowDotRef(row, plugin));
+                method.Block.StaticMethod(mode.Serde, "Write", output, RowDotMember(row, plugin));
             }
         }
 
@@ -131,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             CodegenClassScope classScope)
         {
             if (mode.HasHA) {
-                method.Block.AssignRef(RowDotRef(row, plugin), StaticMethod(mode.Serde, "Read", input));
+                method.Block.AssignRef(RowDotMember(row, plugin), StaticMethod(mode.Serde, "Read", input));
             }
         }
 

@@ -70,13 +70,11 @@ namespace com.espertech.esper.common.@internal.context.util
             EventTypeResolvingBeanFactory eventTypeResolvingBeanFactory,
             ExceptionHandlingService exceptionHandlingService,
             ExpressionResultCacheService expressionResultCacheService,
-            FilterService filterService,
             FilterBooleanExpressionFactory filterBooleanExpressionFactory,
             FilterSharedBoolExprRepository filterSharedBoolExprRepository,
             FilterSharedLookupableRepository filterSharedLookupableRepository,
             HistoricalDataCacheFactory historicalDataCacheFactory,
             InternalEventRouter internalEventRouter,
-            InternalEventRouteDest internalEventRouteDest,
             MetricReportingService metricReportingService,
             NamedWindowConsumerManagementService namedWindowConsumerManagementService,
             NamedWindowManagementService namedWindowManagementService,
@@ -84,7 +82,6 @@ namespace com.espertech.esper.common.@internal.context.util
             PathRegistry<string, NamedWindowMetaData> pathNamedWindowRegistry,
             RowRecogStateRepoFactory rowRecogStateRepoFactory,
             ResultSetProcessorHelperFactory resultSetProcessorHelperFactory,
-            SchedulingService schedulingService,
             StatementAgentInstanceLockFactory statementAgentInstanceLockFactory,
             StatementResourceHolderBuilder statementResourceHolderBuilder,
             TableExprEvaluatorContext tableExprEvaluatorContext,
@@ -116,13 +113,11 @@ namespace com.espertech.esper.common.@internal.context.util
             EventTypeResolvingBeanFactory = eventTypeResolvingBeanFactory;
             ExceptionHandlingService = exceptionHandlingService;
             ExpressionResultCacheService = expressionResultCacheService;
-            FilterService = filterService;
             FilterBooleanExpressionFactory = filterBooleanExpressionFactory;
             FilterSharedBoolExprRepository = filterSharedBoolExprRepository;
             FilterSharedLookupableRepository = filterSharedLookupableRepository;
             HistoricalDataCacheFactory = historicalDataCacheFactory;
             InternalEventRouter = internalEventRouter;
-            InternalEventRouteDest = internalEventRouteDest;
             MetricReportingService = metricReportingService;
             NamedWindowConsumerManagementService = namedWindowConsumerManagementService;
             NamedWindowManagementService = namedWindowManagementService;
@@ -130,7 +125,6 @@ namespace com.espertech.esper.common.@internal.context.util
             PathNamedWindowRegistry = pathNamedWindowRegistry;
             RowRecogStateRepoFactory = rowRecogStateRepoFactory;
             ResultSetProcessorHelperFactory = resultSetProcessorHelperFactory;
-            SchedulingService = schedulingService;
             StatementAgentInstanceLockFactory = statementAgentInstanceLockFactory;
             StatementResourceHolderBuilder = statementResourceHolderBuilder;
             TableExprEvaluatorContext = tableExprEvaluatorContext;
@@ -174,8 +168,6 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public ExpressionResultCacheService ExpressionResultCacheService { get; }
 
-        public FilterService FilterService { get; }
-
         public FilterBooleanExpressionFactory FilterBooleanExpressionFactory { get; }
 
         public FilterSharedBoolExprRepository FilterSharedBoolExprRepository { get; }
@@ -186,8 +178,6 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public InternalEventRouter InternalEventRouter { get; }
 
-        public InternalEventRouteDest InternalEventRouteDest { get; }
-
         public NamedWindowConsumerManagementService NamedWindowConsumerManagementService { get; }
 
         public NamedWindowManagementService NamedWindowManagementService { get; }
@@ -196,13 +186,9 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public ResultSetProcessorHelperFactory ResultSetProcessorHelperFactory { get; }
 
-        public SchedulingService SchedulingService { get; }
-
         public StatementAgentInstanceLockFactory StatementAgentInstanceLockFactory { get; }
 
         public StatementResourceHolderBuilder StatementResourceHolderBuilder { get; }
-
-        public TimeProvider TimeProvider => SchedulingService;
 
         public ViewServicePreviousFactory ViewServicePreviousFactory { get; }
 

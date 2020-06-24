@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
 
         public DatetimeMethodProviderForgeFactory ForgeFactory => _forgeFactory;
 
-        public DotMethodFP[] Parameters => _parameters;
+        public DotMethodFP[] Footprints => _parameters;
 
         public DatetimeMethodDesc(
             DateTimeMethodEnum datetimeMethod,

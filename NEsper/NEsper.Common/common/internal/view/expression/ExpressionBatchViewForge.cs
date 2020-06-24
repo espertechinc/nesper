@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.view.expression
                 throw new ViewParameterException(errorMessage);
             }
 
-            expiryExpression = parameters[0];
+            ExpiryExpression = parameters[0];
 
             if (parameters.Count > 1) {
                 var result = ViewForgeSupport.EvaluateAssertNoProperties(ViewName, parameters[1], 1);

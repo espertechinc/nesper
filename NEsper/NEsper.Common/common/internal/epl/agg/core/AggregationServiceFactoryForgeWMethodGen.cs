@@ -63,6 +63,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods);
 
+        void GetRowCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods);
+
         void ApplyEnterCodegen(
             CodegenMethod method,
             CodegenClassScope classScope,

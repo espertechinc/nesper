@@ -246,6 +246,8 @@ namespace com.espertech.esper.runtime.@internal.subscriber
                         throw new ResultDeliveryStrategyInvalidException(message);
                     }
                 }
+
+                throw new ResultDeliveryStrategyInvalidException("No suitable subscriber method named 'Update' found");
             }
 
             var parameterTypes = subscriptionMethod.GetParameterTypes();

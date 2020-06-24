@@ -6,12 +6,15 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.collection;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -20,6 +23,7 @@ using com.espertech.esper.common.@internal.epl.resultset.codegen;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.resultset.rowperevent;
 using com.espertech.esper.common.@internal.epl.resultset.rowpergroup;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 
@@ -111,6 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
 
         public static CodegenMethod GenerateGroupKeySingleCodegen(
             ExprNode[] groupKeyExpressions,
+            MultiKeyClassRef optionalMultiKeyClasses,
             CodegenClassScope classScope,
             CodegenInstanceAux instance)
         {
@@ -128,49 +133,26 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
                         Constant(expressions),
                         REF_EPS));
 
-                if (groupKeyExpressions.Length == 1) {
-                    var expression = CodegenLegoMethodExpression.CodegenExpression(groupKeyExpressions[0].Forge, methodNode, classScope, true);
-                    methodNode.Block
-                        .DeclareVar<object>(
-                            "key",
-                            LocalMethod(
-                                expression,
-                                REF_EPS,
-                                ExprForgeCodegenNames.REF_ISNEWDATA,
-                                REF_AGENTINSTANCECONTEXT))
-                        .Apply(
-                            Instblock(
-                                classScope,
-                                "aResultSetProcessComputeGroupKeys",
-                                ExprForgeCodegenNames.REF_ISNEWDATA,
-                                Ref("key")))
+
+                if (optionalMultiKeyClasses != null && optionalMultiKeyClasses.ClassNameMK != null) {
+                    var method = MultiKeyCodegen.CodegenMethod(groupKeyExpressions, optionalMultiKeyClasses, methodNode, classScope);
+                    methodNode
+                        .Block
+                        .DeclareVar(typeof(object), "key", LocalMethod(method, REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA, MEMBER_AGENTINSTANCECONTEXT))
+                        .Apply(Instblock(classScope, "aResultSetProcessComputeGroupKeys", ExprForgeCodegenNames.REF_ISNEWDATA, Ref("key")))
                         .MethodReturn(Ref("key"));
                     return;
                 }
 
-                methodNode.Block.DeclareVar<object[]>(
-                    "keys",
-                    NewArrayByLength(typeof(object), Constant(groupKeyExpressions.Length)));
-                for (var i = 0; i < groupKeyExpressions.Length; i++) {
-                    var expression = CodegenLegoMethodExpression.CodegenExpression(groupKeyExpressions[i].Forge, methodNode, classScope, true);
-                    methodNode.Block.AssignArrayElement(
-                        "keys",
-                        Constant(i),
-                        LocalMethod(
-                            expression,
-                            REF_EPS,
-                            ExprForgeCodegenNames.REF_ISNEWDATA,
-                            REF_AGENTINSTANCECONTEXT));
+                if (groupKeyExpressions.Length > 1) {
+                    throw new IllegalStateException("Multiple group-by expression and no multikey");
                 }
 
-                methodNode.Block
-                    .DeclareVar<HashableMultiKey>("key", NewInstance<HashableMultiKey>(Ref("keys")))
-                    .Apply(
-                        Instblock(
-                            classScope,
-                            "aResultSetProcessComputeGroupKeys",
-                            ExprForgeCodegenNames.REF_ISNEWDATA,
-                            Ref("key")))
+                var expression = CodegenLegoMethodExpression.CodegenExpression(groupKeyExpressions[0].Forge, methodNode, classScope);
+                methodNode
+                    .Block
+                    .DeclareVar(typeof(object), "key", LocalMethod(expression, REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA, MEMBER_AGENTINSTANCECONTEXT))
+                    .Apply(Instblock(classScope, "aResultSetProcessComputeGroupKeys", ExprForgeCodegenNames.REF_ISNEWDATA, Ref("key")))
                     .MethodReturn(Ref("key"));
             };
 
@@ -188,12 +170,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
         }
 
         public static CodegenMethod GenerateGroupKeyArrayViewCodegen(
-            ExprNode[] groupKeyExpressions,
+            CodegenMethod generateGroupKeySingle,
             CodegenClassScope classScope,
             CodegenInstanceAux instance)
         {
-            var generateGroupKeySingle = GenerateGroupKeySingleCodegen(groupKeyExpressions, classScope, instance);
-
             Consumer<CodegenMethod> code = method => {
                 method.Block.IfRefNullReturnNull("events")
                     .DeclareVar<EventBean[]>(
@@ -227,11 +207,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
         }
 
         public static CodegenMethod GenerateGroupKeyArrayJoinCodegen(
-            ExprNode[] groupKeyExpressions,
+            CodegenMethod generateGroupKeySingle,
             CodegenClassScope classScope,
             CodegenInstanceAux instance)
         {
-            var generateGroupKeySingle = GenerateGroupKeySingleCodegen(groupKeyExpressions, classScope, instance);
             Consumer<CodegenMethod> code = method => {
                 method.Block.IfCondition(ExprDotMethod(Ref("resultSet"), "IsEmpty"))
                     .BlockReturn(ConstantNull())

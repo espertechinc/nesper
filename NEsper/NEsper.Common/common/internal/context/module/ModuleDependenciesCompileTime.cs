@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -29,6 +30,7 @@ namespace com.espertech.esper.common.@internal.context.module
         private readonly ICollection<ModuleIndexMeta> pathIndexes = new HashSet<ModuleIndexMeta>();
         private readonly ICollection<NameAndModule> pathNamedWindows = new HashSet<NameAndModule>();
         private readonly ICollection<NameParamNumAndModule> pathScripts = new HashSet<NameParamNumAndModule>();
+        private readonly ICollection<NameAndModule> pathClasses = new HashSet<NameAndModule>();
         private readonly ICollection<NameAndModule> pathTables = new HashSet<NameAndModule>();
         private readonly ICollection<NameAndModule> pathVariables = new HashSet<NameAndModule>();
         private readonly ICollection<string> publicEventTypes = new HashSet<string>();
@@ -93,6 +95,13 @@ namespace com.espertech.esper.common.@internal.context.module
             publicVariables.Add(variableName);
         }
 
+        public void AddPathClass(
+            string className,
+            string moduleName)
+        {
+            pathClasses.Add(new NameAndModule(className, moduleName));
+        }
+
         public void AddPathIndex(
             bool namedWindow,
             string infraName,
@@ -136,12 +145,14 @@ namespace com.espertech.esper.common.@internal.context.module
                 .SetProperty(Ref("md"), "PathExpressions", NameAndModule.MakeArray(pathExpressions))
                 .SetProperty(Ref("md"), "PathIndexes", ModuleIndexMeta.MakeArray(pathIndexes))
                 .SetProperty(Ref("md"), "PathScripts", NameParamNumAndModule.MakeArray(pathScripts))
+                .SetProperty(Ref("md"), "PathClasses", NameAndModule.MakeArray(pathClasses))
                 .SetProperty(Ref("md"), "PublicEventTypes", Constant(publicEventTypes.ToArray()))
                 .SetProperty(Ref("md"), "PublicVariables", Constant(publicVariables.ToArray()))
                 .MethodReturn(Ref("md"));
             return LocalMethod(method);
         }
 
+        [Obsolete]
         public CodegenBlock Inject(CodegenBlock block)
         {
             return block
@@ -154,6 +165,7 @@ namespace com.espertech.esper.common.@internal.context.module
                 .SetProperty(Ref("md"), "PathExpressions", NameAndModule.MakeArray(pathExpressions))
                 .SetProperty(Ref("md"), "PathIndexes", ModuleIndexMeta.MakeArray(pathIndexes))
                 .SetProperty(Ref("md"), "PathScripts", NameParamNumAndModule.MakeArray(pathScripts))
+                .SetProperty(Ref("md"), "PathClasses", NameAndModule.MakeArray(pathClasses))
                 .SetProperty(Ref("md"), "PublicEventTypes", Constant(publicEventTypes.ToArray()))
                 .SetProperty(Ref("md"), "PublicVariables", Constant(publicVariables.ToArray()))
                 .BlockReturn(Ref("md"));

@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -20,5 +21,28 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             ICollection<object> enumcoll,
             bool isNewData,
             ExprEvaluatorContext context);
+    }
+
+    public class ProxyEnumEval : EnumEval
+    {
+        public Func<EventBean[], ICollection<object>, bool, ExprEvaluatorContext, object> ProcEvaluateEnumMethod { get; set; }
+
+        public ProxyEnumEval(Func<EventBean[], ICollection<object>, bool, ExprEvaluatorContext, object> procEvaluateEnumMethod)
+        {
+            ProcEvaluateEnumMethod = procEvaluateEnumMethod;
+        }
+
+        public ProxyEnumEval()
+        {
+        }
+
+        public object EvaluateEnumMethod(
+            EventBean[] eventsLambda,
+            ICollection<object> enumcoll,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return ProcEvaluateEnumMethod.Invoke(eventsLambda, enumcoll, isNewData, context);
+        }
     }
 } // end of namespace

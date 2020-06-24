@@ -1249,13 +1249,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'abc(str)': Error validating expression declaration 'abc': Failed to validate declared expression body expression 'Strvals.where()': Error validating enumeration method 'where', the lambda-parameter name 'x' has already been declared in this context [expression abc {x=>Strvals.where(x-> x != 'E1')} select abc(str) from SupportCollection str]");
+                    "Failed to validate select-clause expression 'abc(str)': Failed to validate expression declaration 'abc': Failed to validate declared expression body expression 'Strvals.where()': Failed to validate enumeration method 'where', the lambda-parameter name 'x' has already been declared in this context [expression abc {x=>Strvals.where(x-> x != 'E1')} select abc(str) from SupportCollection str]");
 
                 epl = "expression abc {avg(IntPrimitive)} select abc() from SupportBean";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'abc()': Error validating expression declaration 'abc': Failed to validate declared expression body expression 'avg(IntPrimitive)': Property named 'IntPrimitive' is not valid in any stream [expression abc {avg(IntPrimitive)} select abc() from SupportBean]");
+                    "Failed to validate select-clause expression 'abc()': Failed to validate expression declaration 'abc': Failed to validate declared expression body expression 'avg(IntPrimitive)': Property named 'IntPrimitive' is not valid in any stream [expression abc {avg(IntPrimitive)} select abc() from SupportBean]");
 
                 epl =
                     "expression abc {(select * from SupportBean_ST0#lastevent as st0 where P00=sb.IntPrimitive)} select abc() from SupportBean sb";
@@ -1268,7 +1268,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'abc()': Error validating expression declaration 'abc': Failed to validate declared expression body expression 'window(*)': The 'window' aggregation function requires that at least one stream is provided [expression abc {window(*)} select abc() from SupportBean]");
+                    "Failed to validate select-clause expression 'abc()': Failed to validate expression declaration 'abc': Failed to validate declared expression body expression 'window(*)': The 'window' aggregation function requires that at least one stream is provided [expression abc {window(*)} select abc() from SupportBean]");
 
                 epl = "expression abc {x -> IntPrimitive} select abc() from SupportBean";
                 TryInvalidCompile(
@@ -1292,7 +1292,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'abc()': Error validating expression declaration 'abc': Failed to validate declared expression body expression 'IntPrimitive': Property named 'IntPrimitive' is not valid in any stream [expression abc {IntPrimitive} select abc() from SupportBean sb]");
+                    "Failed to validate select-clause expression 'abc()': Failed to validate expression declaration 'abc': Failed to validate declared expression body expression 'IntPrimitive': Property named 'IntPrimitive' is not valid in any stream [expression abc {IntPrimitive} select abc() from SupportBean sb]");
 
                 epl = "expression abc {x->x} select abc(1) from SupportBean sb";
                 TryInvalidCompile(
@@ -1311,7 +1311,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Error validating expression: Failed to validate filter expression 'abc(*)': Expression 'abc' only allows a wildcard parameter if there is a single stream available, please use a stream or tag name instead [expression abc {x->x.IntPrimitive = 0} select * from SupportBean#lastevent sb1, SupportBean#lastevent sb2 where abc(*)]");
+                    "Failed to validate expression: Failed to validate filter expression 'abc(*)': Expression 'abc' only allows a wildcard parameter if there is a single stream available, please use a stream or tag name instead [expression abc {x->x.IntPrimitive = 0} select * from SupportBean#lastevent sb1, SupportBean#lastevent sb2 where abc(*)]");
             }
         }
     }

@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        return ReadInternal(input);
 	    }
 
-	    protected static void WriteInternal(DateTime? @object, DataOutput output) {
+	    internal static void WriteInternal(DateTime? @object, DataOutput output) {
 	        if (@object == null) {
 	            output.WriteLong(-1);
 	            return;
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        output.WriteLong(DateTimeHelper.UtcNanos(@object.Value));
 	    }
 
-	    protected static DateTime? ReadInternal(DataInput input) {
+	    internal static DateTime? ReadInternal(DataInput input) {
 	        long value = input.ReadLong();
 	        if (value == -1) {
 	            return null;

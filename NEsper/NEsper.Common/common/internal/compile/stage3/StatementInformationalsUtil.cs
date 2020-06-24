@@ -131,13 +131,13 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 selectSubscriberDescriptor.SelectClauseColumnNames,
                 selectSubscriberDescriptor.IsForClauseDelivery,
                 selectSubscriberDescriptor.GroupDelivery,
+                allowSubscriber,
                 selectSubscriberDescriptor.GroupDeliveryMultiKey,
                 properties,
                 @base.StatementSpec.Raw.MatchRecognizeSpec != null,
                 services.IsInstrumented,
                 namespaceScope,
-                insertIntoLatchName,
-                allowSubscriber);
+                insertIntoLatchName);
         }
 
         private static bool IsNeedDedup(IList<FilterSpecCompiled> filterSpecCompileds)

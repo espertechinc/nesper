@@ -185,5 +185,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             int level)
         {
         }
+
+        public void GetRowCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
+        {
+            method.Block.MethodThrowUnsupported();
+        }
     }
 } // end of namespace

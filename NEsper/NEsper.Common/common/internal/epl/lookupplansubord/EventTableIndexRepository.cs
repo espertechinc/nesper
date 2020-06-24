@@ -12,6 +12,7 @@ using System.Linq;
 
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -60,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             string indexName,
             string indexModuleName,
             AgentInstanceContext agentInstanceContext,
-            object optionalSerde)
+            DataInputOutputSerde<object> optionalValueSerde)
         {
             IndexMultiKey indexMultiKey = desc.ToIndexMultiKey();
             if (desc.HashPropsAsList.IsEmpty() &&
@@ -87,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                 indexModuleName,
                 false,
                 agentInstanceContext,
-                optionalSerde);
+                optionalValueSerde);
         }
 
         public void AddIndex(
@@ -158,7 +159,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             IEnumerable<EventBean> dataWindowContents,
             AgentInstanceContext agentInstanceContext,
             bool allowIndexExists,
-            object optionalSerde)
+            DataInputOutputSerde<object> optionalValueSerde)
         {
             if (explicitIndexes.ContainsKey(explicitIndexName)) {
                 if (allowIndexExists) {
@@ -175,7 +176,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                 eventType,
                 dataWindowContents,
                 agentInstanceContext,
-                optionalSerde);
+                optionalValueSerde);
         }
 
         public void AddExplicitIndex(
@@ -185,7 +186,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             EventType eventType,
             IEnumerable<EventBean> dataWindowContents,
             AgentInstanceContext agentInstanceContext,
-            object optionalSerde)
+            DataInputOutputSerde<object> optionalValueSerde)
         {
             Pair<IndexMultiKey, EventTableAndNamePair> pair = AddExplicitIndexOrReuse(
                 desc,
@@ -194,7 +195,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                 explicitIndexName,
                 explicitIndexModuleName,
                 agentInstanceContext,
-                optionalSerde);
+                optionalValueSerde);
             explicitIndexes.Put(explicitIndexName, pair.Second.EventTable);
         }
 
@@ -221,7 +222,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             string indexModuleName,
             bool mustCoerce,
             AgentInstanceContext agentInstanceContext,
-            object optionalSerde)
+            DataInputOutputSerde<object> optionalValueSerde)
         {
             // not resolved as full match and not resolved as unique index match, allocate
             IndexMultiKey indexPropKey = indexItem.ToIndexMultiKey();
@@ -234,7 +235,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                 true,
                 indexItem.IsUnique,
                 indexName,
-                optionalSerde,
+                optionalValueSerde,
                 false);
 
             try {

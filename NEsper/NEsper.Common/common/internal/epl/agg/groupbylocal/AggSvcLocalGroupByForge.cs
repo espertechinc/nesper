@@ -12,6 +12,7 @@ using System.Linq;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -29,16 +30,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
 {
     public class AggSvcLocalGroupByForge : AggregationServiceFactoryForgeWMethodGen
     {
-        private static readonly CodegenExpressionRef REF_CURRENTROW =
-            new CodegenExpressionRef("currentRow");
-
-        private static readonly CodegenExpressionRef REF_AGGREGATORSTOPLEVEL =
-            new CodegenExpressionRef("aggregatorsTopLevel");
-
-        private static readonly CodegenExpressionRef REF_AGGREGATORSPERLEVELANDGROUP =
-            new CodegenExpressionRef("aggregatorsPerLevelAndGroup");
-
-        private static readonly CodegenExpressionRef REF_REMOVEDKEYS = Ref("removedKeys");
+        private static readonly CodegenExpressionMember MEMBER_CURRENTROW = Member("currentRow");
+        private static readonly CodegenExpressionMember MEMBER_AGGREGATORSTOPLEVEL = Member("aggregatorsTopLevel");
+        private static readonly CodegenExpressionMember MEMBER_AGGREGATORSPERLEVELANDGROUP = Member("aggregatorsPerLevelAndGroup");
+        private static readonly CodegenExpressionMember MEMBER_REMOVEDKEYS = Member("removedKeys");
 
         internal readonly bool hasGroupBy;
         internal readonly AggregationLocalGroupByPlanForge localGroupByPlan;
@@ -94,7 +89,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                     localGroupByPlan.OptionalLevelTopForge.ToExpression(
                         classNames.RowFactoryTop,
                         classNames.RowSerdeTop,
-                        ConstantNull()));
+                        ConstantNull(),
+                        method,
+                        classScope));
             }
 
             int numLevels = localGroupByPlan.AllLevelsForges.Length;
@@ -102,12 +99,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                 "levels",
                 NewArrayByLength(typeof(AggregationLocalGroupByLevel), Constant(numLevels)));
             for (var i = 0; i < numLevels; i++) {
-                ExprForge[] forges = localGroupByPlan.AllLevelsForges[i].PartitionForges;
-                CodegenExpression eval = ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
-                    forges,
+                AggregationLocalGroupByLevelForge forge = localGroupByPlan.AllLevelsForges[i];
+                CodegenExpression eval = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(
+                    forge.PartitionForges,
                     null,
+                    forge.PartitionMKClasses,
                     method,
-                    GetType(),
                     classScope);
                 method.Block.AssignArrayElement(
                     "levels",
@@ -116,7 +113,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                         .ToExpression(
                             classNames.GetRowFactoryPerLevel(i),
                             classNames.GetRowSerdePerLevel(i),
-                            eval));
+                            eval,
+                            method,
+                            classScope));
             }
 
             method.Block.DeclareVar<AggregationLocalGroupByColumn[]>(
@@ -179,26 +178,26 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             AggregationClassNames classNames)
         {
             explicitMembers.Add(
-                new CodegenTypedParam(typeof(IDictionary<object, object>[]), REF_AGGREGATORSPERLEVELANDGROUP.Ref));
+                new CodegenTypedParam(typeof(IDictionary<object, object>[]), MEMBER_AGGREGATORSPERLEVELANDGROUP.Ref));
             ctor.Block.AssignRef(
-                REF_AGGREGATORSPERLEVELANDGROUP,
+                MEMBER_AGGREGATORSPERLEVELANDGROUP,
                 NewArrayByLength(
                     typeof(IDictionary<object, object>),
                     Constant(localGroupByPlan.AllLevelsForges.Length)));
             for (var i = 0; i < localGroupByPlan.AllLevelsForges.Length; i++) {
                 ctor.Block.AssignArrayElement(
-                    REF_AGGREGATORSPERLEVELANDGROUP,
+                    MEMBER_AGGREGATORSPERLEVELANDGROUP,
                     Constant(i),
                     NewInstance(typeof(Dictionary<object, object>)));
             }
 
-            explicitMembers.Add(new CodegenTypedParam(typeof(AggregationRow), REF_AGGREGATORSTOPLEVEL.Ref));
+            explicitMembers.Add(new CodegenTypedParam(typeof(AggregationRow), MEMBER_AGGREGATORSTOPLEVEL.Ref));
             if (hasGroupBy) {
-                explicitMembers.Add(new CodegenTypedParam(typeof(AggregationRow), REF_CURRENTROW.Ref));
+                explicitMembers.Add(new CodegenTypedParam(typeof(AggregationRow), MEMBER_CURRENTROW.Ref));
             }
 
-            explicitMembers.Add(new CodegenTypedParam(typeof(IList<object>), REF_REMOVEDKEYS.Ref));
-            ctor.Block.AssignRef(REF_REMOVEDKEYS, NewInstance(typeof(List<object>)));
+            explicitMembers.Add(new CodegenTypedParam(typeof(IList<object>), MEMBER_REMOVEDKEYS.Ref));
+            ctor.Block.AssignRef(MEMBER_REMOVEDKEYS, NewInstance(typeof(List<object>)));
         }
 
         public void GetValueCodegen(
@@ -320,15 +319,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                 }
 
                 method.Block.AssignRef(
-                        REF_CURRENTROW,
+                        MEMBER_CURRENTROW,
                         Cast(
                             typeof(AggregationRow),
                             ExprDotMethod(
-                                ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, Constant(0)),
+                                ArrayAtIndex(MEMBER_AGGREGATORSPERLEVELANDGROUP, Constant(0)),
                                 "Get",
                                 AggregationServiceCodegenNames.REF_GROUPKEY)))
-                    .IfCondition(EqualsNull(REF_CURRENTROW))
-                    .AssignRef(REF_CURRENTROW, NewInstance(classNames.GetRowPerLevel(indexDefault), Ref("o")));
+                    .IfCondition(EqualsNull(MEMBER_CURRENTROW))
+                    .AssignRef(MEMBER_CURRENTROW, NewInstance(classNames.GetRowPerLevel(indexDefault), Ref("o")));
             }
         }
 
@@ -336,10 +335,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.IfCondition(NotEqualsNull(REF_AGGREGATORSTOPLEVEL))
-                .ExprDotMethod(REF_AGGREGATORSTOPLEVEL, "Clear");
+            method.Block.IfCondition(NotEqualsNull(MEMBER_AGGREGATORSTOPLEVEL))
+                .ExprDotMethod(MEMBER_AGGREGATORSTOPLEVEL, "Clear");
             for (var i = 0; i < localGroupByPlan.AllLevelsForges.Length; i++) {
-                method.Block.ExprDotMethod(ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, Constant(i)), "Clear");
+                method.Block.ExprDotMethod(ArrayAtIndex(MEMBER_AGGREGATORSPERLEVELANDGROUP, Constant(i)), "Clear");
             }
         }
 
@@ -351,8 +350,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                 REF_AGGVISITOR,
                 "VisitAggregations",
                 GetNumGroupsCodegen(method, classScope),
-                REF_AGGREGATORSTOPLEVEL,
-                REF_AGGREGATORSPERLEVELANDGROUP);
+                MEMBER_AGGREGATORSTOPLEVEL,
+                MEMBER_AGGREGATORSPERLEVELANDGROUP);
         }
 
         public void GetGroupKeysCodegen(
@@ -374,14 +373,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             CodegenClassScope classScope)
         {
             method.Block.ExprDotMethod(REF_AGGVISITOR, "VisitGrouped", GetNumGroupsCodegen(method, classScope))
-                .IfCondition(NotEqualsNull(REF_AGGREGATORSTOPLEVEL))
-                .ExprDotMethod(REF_AGGVISITOR, "VisitGroup", ConstantNull(), REF_AGGREGATORSTOPLEVEL);
+                .IfCondition(NotEqualsNull(MEMBER_AGGREGATORSTOPLEVEL))
+                .ExprDotMethod(REF_AGGVISITOR, "VisitGroup", ConstantNull(), MEMBER_AGGREGATORSTOPLEVEL);
 
             for (var i = 0; i < localGroupByPlan.AllLevelsForges.Length; i++) {
                 method.Block.ForEach(
                         typeof(KeyValuePair<object, object>),
                         "entry",
-                        ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, Constant(i)))
+                        ArrayAtIndex(MEMBER_AGGREGATORSPERLEVELANDGROUP, Constant(i)))
                     .ExprDotMethod(
                         REF_AGGVISITOR,
                         "VisitGroup",
@@ -397,20 +396,28 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             property.GetterBlock.BlockReturn(ConstantTrue());
         }
 
+        public void GetRowCodegen(
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods)
+        {
+            method.Block.MethodThrowUnsupported();
+        }
+
         private CodegenExpression GetNumGroupsCodegen(
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(int), GetType(), classScope);
             method.Block.DeclareVar<int>("size", Constant(0))
-                .IfCondition(NotEqualsNull(REF_AGGREGATORSTOPLEVEL))
+                .IfCondition(NotEqualsNull(MEMBER_AGGREGATORSTOPLEVEL))
                 .IncrementRef("size")
                 .BlockEnd();
             for (var i = 0; i < localGroupByPlan.AllLevelsForges.Length; i++) {
                 method.Block.AssignCompound(
                     "size",
                     "+",
-                    ExprDotMethod(ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, Constant(i)), "Count"));
+                    ExprDotMethod(ArrayAtIndex(MEMBER_AGGREGATORSPERLEVELANDGROUP, Constant(i)), "Count"));
             }
 
             method.Block.MethodReturn(Ref("size"));
@@ -429,11 +436,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             }
 
             if (localGroupByPlan.OptionalLevelTopForge != null) {
-                method.Block.IfCondition(EqualsNull(REF_AGGREGATORSTOPLEVEL))
-                    .AssignRef(REF_AGGREGATORSTOPLEVEL, NewInstance(classNames.RowTop, Ref("o")))
+                method.Block.IfCondition(EqualsNull(MEMBER_AGGREGATORSTOPLEVEL))
+                    .AssignRef(MEMBER_AGGREGATORSTOPLEVEL, NewInstance(classNames.RowTop, Ref("o")))
                     .BlockEnd()
                     .ExprDotMethod(
-                        REF_AGGREGATORSTOPLEVEL,
+                        MEMBER_AGGREGATORSTOPLEVEL,
                         enter ? "ApplyEnter" : "ApplyLeave",
                         REF_EPS,
                         REF_EXPREVALCONTEXT);
@@ -441,7 +448,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
 
             for (var levelNum = 0; levelNum < localGroupByPlan.AllLevelsForges.Length; levelNum++) {
                 AggregationLocalGroupByLevelForge level = localGroupByPlan.AllLevelsForges[levelNum];
-                ExprForge[] partitionForges = level.PartitionForges;
+                ExprNode[] partitionForges = level.PartitionForges;
 
                 var groupKeyName = "groupKeyLvl_" + levelNum;
                 var rowName = "row_" + levelNum;
@@ -454,6 +461,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                         AggregationServiceCodegenUtil.ComputeMultiKeyCodegen(
                             levelNum,
                             partitionForges,
+                            level.PartitionMKClasses,
                             classScope,
                             namedMethods),
                         REF_EPS,
@@ -470,13 +478,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                         Cast(
                             typeof(AggregationRow),
                             ExprDotMethod(
-                                ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, Constant(levelNum)),
+                                ArrayAtIndex(MEMBER_AGGREGATORSPERLEVELANDGROUP, Constant(levelNum)),
                                 "Get",
                                 Ref(groupKeyName))))
                     .IfCondition(EqualsNull(Ref(rowName)))
                     .AssignRef(rowName, NewInstance(classNames.GetRowPerLevel(levelNum), Ref("o")))
                     .ExprDotMethod(
-                        ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, Constant(levelNum)),
+                        ArrayAtIndex(MEMBER_AGGREGATORSPERLEVELANDGROUP, Constant(levelNum)),
                         "Put",
                         Ref(groupKeyName),
                         Ref(rowName))
@@ -487,7 +495,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                 if (!enter) {
                     method.Block.IfCondition(Relational(ExprDotMethod(Ref(rowName), "GetRefcount"), LE, Constant(0)))
                         .ExprDotMethod(
-                            REF_REMOVEDKEYS,
+                            MEMBER_REMOVEDKEYS,
                             "Add",
                             NewInstance<AggSvcLocalGroupLevelKeyPair>(Constant(levelNum), Ref(groupKeyName)));
                 }
@@ -519,7 +527,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                     level.MethodForges,
                     level.MethodFactories,
                     level.AccessStateForges),
-                pairs);
+                pairs,
+                level.PartitionMKClasses);
         }
 
         private int AccessorIndex(
@@ -544,7 +553,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             var rowLevelDesc = RowLevelDesc;
 
             var blocks = method.Block.SwitchBlockOfLength(
-                AggregationServiceCodegenNames.NAME_COLUMN,
+                AggregationServiceCodegenNames.REF_COLUMN,
                 localGroupByPlan.ColumnsForges.Length,
                 true);
             for (var i = 0; i < blocks.Length; i++) {
@@ -556,7 +565,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                     blocks[i]
                         .BlockReturn(
                             ExprDotMethod(
-                                REF_CURRENTROW,
+                                MEMBER_CURRENTROW,
                                 methodName,
                                 Constant(num),
                                 REF_EPS,
@@ -569,7 +578,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                     blocks[i]
                         .BlockReturn(
                             ExprDotMethod(
-                                REF_AGGREGATORSTOPLEVEL,
+                                MEMBER_AGGREGATORSTOPLEVEL,
                                 methodName,
                                 Constant(num),
                                 REF_EPS,
@@ -586,6 +595,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                                 AggregationServiceCodegenUtil.ComputeMultiKeyCodegen(
                                     col.LevelNum,
                                     col.PartitionForges,
+                                    levelDesc.MultiKeyClassRef,
                                     classScope,
                                     namedMethods),
                                 REF_EPS,
@@ -596,7 +606,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                             Cast(
                                 typeof(AggregationRow),
                                 ExprDotMethod(
-                                    ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, Constant(col.LevelNum)),
+                                    ArrayAtIndex(MEMBER_AGGREGATORSPERLEVELANDGROUP, Constant(col.LevelNum)),
                                     "Get",
                                     Ref("groupByKey"))))
                         .BlockReturn(
@@ -625,14 +635,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             CodegenClassScope classScope)
         {
             var method = scope.MakeChild(typeof(void), GetType(), classScope);
-            method.Block.IfCondition(Not(ExprDotMethod(REF_REMOVEDKEYS, "IsEmpty")))
-                .ForEach(typeof(AggSvcLocalGroupLevelKeyPair), "removedKey", REF_REMOVEDKEYS)
+            method.Block.IfCondition(Not(ExprDotMethod(MEMBER_REMOVEDKEYS, "IsEmpty")))
+                .ForEach(typeof(AggSvcLocalGroupLevelKeyPair), "removedKey", MEMBER_REMOVEDKEYS)
                 .ExprDotMethod(
-                    ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, ExprDotName(Ref("removedKey"), "Level")),
+                    ArrayAtIndex(MEMBER_AGGREGATORSPERLEVELANDGROUP, ExprDotName(Ref("removedKey"), "Level")),
                     "Remove",
                     ExprDotName(Ref("removedKey"), "Key"))
                 .BlockEnd()
-                .ExprDotMethod(REF_REMOVEDKEYS, "Clear");
+                .ExprDotMethod(MEMBER_REMOVEDKEYS, "Clear");
             return method;
         }
     }

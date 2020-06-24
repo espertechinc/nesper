@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 {
     public class FilterSpecCompilerIndexPlannerBooleanLimited
     {
-        protected static FilterSpecParamForge HandleBooleanLimited(
+        internal static FilterSpecParamForge HandleBooleanLimited(
             ExprNode constituent,
             IDictionary<string, Pair<EventType, string>> taggedEventTypes,
             IDictionary<string, Pair<EventType, string>> arrayEventTypes,
@@ -72,9 +72,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             DataInputOutputSerdeForge serde = services.SerdeResolver.SerdeForFilter(valueExpressionType, raw);
             var convertor = GetMatchEventConvertor(valueExpression, taggedEventTypes, arrayEventTypes, allTagNamesOrdered);
 
-            var reboolExpression = ExprNodeUtilityPrint.ToExpressionStringMinPrecedence(constituent, new ExprNodeRenderableFlags(false));
-            var lookupable = new ExprFilterSpecLookupableForge(reboolExpression, null, rebool.Forge, valueExpressionType, true, serde);
-            return new FilterSpecParamValueLimitedExprForge(lookupable, FilterOperator.REBOOL, valueExpression, convertor, null);
+            var reboolExpressionX = ExprNodeUtilityPrint.ToExpressionStringMinPrecedence(constituent, new ExprNodeRenderableFlags(false));
+            var lookupableX = new ExprFilterSpecLookupableForge(reboolExpressionX, null, rebool.Forge, valueExpressionType, true, serde);
+            return new FilterSpecParamValueLimitedExprForge(lookupableX, FilterOperator.REBOOL, valueExpression, convertor, null);
         }
 
         private static bool Prequalify(ExprNode constituent)
@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 }
             }
 
-            return hasStreamRefZero && !streamRefVisitor.IsHasWildcardOrStreamAlias;
+            return hasStreamRefZero && !streamRefVisitor.HasWildcardOrStreamAlias;
         }
 
         private static RewriteDescriptor FindRewrite(ExprNode parent)
@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
 
             if (valueExpressions.Count == 1) {
-                ExprNodeWithParentPair pair = valueExpressions.Get(0);
+                ExprNodeWithParentPair pair = valueExpressions[0];
                 return new RewriteDescriptorWithValueExpr(pair.Node, pair.Parent);
             }
 
@@ -119,7 +119,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
 
             if (nonConstants.Count == 1) {
-                ExprNodeWithParentPair pair = nonConstants.Get(0);
+                ExprNodeWithParentPair pair = nonConstants[0];
                 return new RewriteDescriptorWithValueExpr(pair.Node, pair.Parent);
             }
 
@@ -145,7 +145,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             if (parent is ExprNodeWithChainSpec) {
                 ExprNodeWithChainSpec chainableNode = (ExprNodeWithChainSpec) parent;
                 foreach (Chainable chainable in chainableNode.ChainSpec) {
-                    foreach (ExprNode param in chainable.ParametersOrEmpty) {
+                    foreach (ExprNode param in chainable.GetParametersOrEmpty()) {
                         FindValueExpr(param, parent, pairsRef);
                     }
                 }

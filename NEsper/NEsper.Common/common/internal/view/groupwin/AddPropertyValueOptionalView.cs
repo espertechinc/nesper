@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             newToOldEventMap = new Dictionary<EventBean, EventBean>();
         }
 
-        public override EventType EventType => groupByViewFactory.eventType;
+        public override EventType EventType => groupByViewFactory.EventType;
 
         public void Stop(AgentInstanceStopServices services)
         {
@@ -79,9 +79,9 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                 foreach (var newEvent in newData) {
                     var theEvent = AddProperty(
                         newEvent,
-                        groupByViewFactory.propertyNames,
+                        groupByViewFactory.PropertyNames,
                         propertyValues,
-                        groupByViewFactory.eventType,
+                        groupByViewFactory.EventType,
                         agentInstanceContext.EventBeanTypedEventFactory);
                     newEvents[index++] = theEvent;
 
@@ -101,9 +101,9 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                     else {
                         var theEvent = AddProperty(
                             oldEvent,
-                            groupByViewFactory.propertyNames,
+                            groupByViewFactory.PropertyNames,
                             propertyValues,
-                            groupByViewFactory.eventType,
+                            groupByViewFactory.EventType,
                             agentInstanceContext.EventBeanTypedEventFactory);
                         oldEvents[index++] = theEvent;
                     }
@@ -120,9 +120,9 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             foreach (var nextEvent in Parent) {
                 yield return AddProperty(
                     nextEvent,
-                    groupByViewFactory.propertyNames,
+                    groupByViewFactory.PropertyNames,
                     propertyValues,
-                    groupByViewFactory.eventType,
+                    groupByViewFactory.EventType,
                     agentInstanceContext.EventBeanTypedEventFactory);
             }
         }

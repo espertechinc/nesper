@@ -6,12 +6,17 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.hook.datetimemethod;
 using com.espertech.esper.common.client.util;
+using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.epl.datetime.calop;
 using com.espertech.esper.common.@internal.epl.datetime.interval;
+using com.espertech.esper.common.@internal.epl.datetime.plugin;
 using com.espertech.esper.common.@internal.epl.datetime.reformatop;
+using com.espertech.esper.common.@internal.epl.expression.chain;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
@@ -21,6 +26,7 @@ using com.espertech.esper.common.@internal.epl.methodbase;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.rettype;
+using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -31,15 +37,16 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
     {
         public static ExprDotDTMethodDesc ValidateMake(
             StreamTypeService streamTypeService,
-            Deque<ExprChainedSpec> chainSpecStack,
-            DateTimeMethodEnum dtMethod,
+            Deque<Chainable> chainSpecStack,
+            DatetimeMethodDesc dtMethod,
             string dtMethodName,
             EPType inputType,
             IList<ExprNode> parameters,
             ExprDotNodeFilterAnalyzerInput inputDesc,
             TimeAbacus timeAbacus,
-            ExprEvaluatorContext exprEvaluatorContext,
-            TableCompileTimeResolver tableCompileTimeResolver)
+            TableCompileTimeResolver tableCompileTimeResolver,
+            ImportServiceCompileTime importService,
+            StatementRawInfo statementRawInfo)
         {
             // verify input
             var message = "Date-time enumeration method '" +
@@ -68,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             IList<CalendarForge> calendarForges = new List<CalendarForge>();
             ReformatForge reformatForge = null;
             IntervalForge intervalForge = null;
-            var currentMethod = dtMethod;
+            DatetimeMethodDesc currentMethod = dtMethod;
             var currentParameters = parameters;
             var currentMethodName = dtMethodName;
 
@@ -77,21 +84,21 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             while (true) {
                 // handle the first one only if its a calendar op
                 var forges = GetForges(currentParameters);
-                var opFactory = currentMethod.GetForgeFactory();
+                var opFactory = currentMethod.ForgeFactory;
 
                 // compile parameter abstract for validation against available footprints
                 DotMethodFPProvided footprintProvided = DotMethodUtil.GetProvidedFootprint(currentParameters);
 
                 // validate parameters
-                DotMethodUtil.ValidateParametersDetermineFootprint(
-                    currentMethod.GetFootprints(),
+                DotMethodFP footprintFound = DotMethodUtil.ValidateParametersDetermineFootprint(
+                    currentMethod.Footprints,
                     DotMethodTypeEnum.DATETIME,
                     currentMethodName,
                     footprintProvided,
-                    DotMethodInputTypeMatcherImpl.DEFAULT_ALL);
+                    DotMethodInputTypeMatcherConstants.DEFAULT_ALL);
 
                 if (opFactory is CalendarForgeFactory) {
-                    var calendarForge = ((CalendarForgeFactory) currentMethod.GetForgeFactory()).GetOp(
+                    var calendarForge = ((CalendarForgeFactory) currentMethod.ForgeFactory).GetOp(
                         currentMethod,
                         currentMethodName,
                         currentParameters,
@@ -104,8 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                         timeAbacus,
                         currentMethod,
                         currentMethodName,
-                        currentParameters,
-                        exprEvaluatorContext);
+                        currentParameters);
 
                     // compile filter analyzer information if there are no calendar op in the chain
                     if (calendarForges.IsEmpty()) {
@@ -136,6 +142,33 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                             currentParameters,
                             inputDesc);
                     }
+                    else if (opFactory is DTMPluginForgeFactory) {
+                        DTMPluginForgeFactory plugIn = (DTMPluginForgeFactory) opFactory;
+                        DateTimeMethodValidateContext usageDesc = new DateTimeMethodValidateContext(
+                            footprintFound,
+                            streamTypeService,
+                            currentMethod,
+                            currentParameters,
+                            statementRawInfo);
+                        DateTimeMethodOps ops = plugIn.Validate(usageDesc);
+                        if (ops == null) {
+                            throw new ExprValidationException(
+                                "Plug-in datetime method provider " + plugIn.GetType() + " returned a null-value for the operations");
+                        }
+
+                        var input = EPTypeHelper.GetClassSingleValued(inputType);
+                        if (ops is DateTimeMethodOpsModify) {
+                            calendarForges.Add(new DTMPluginValueChangeForge(input, (DateTimeMethodOpsModify) ops, usageDesc.CurrentParameters));
+                        }
+                        else if (ops is DateTimeMethodOpsReformat) {
+                            reformatForge = new DTMPluginReformatForge(input, (DateTimeMethodOpsReformat) ops, usageDesc.CurrentParameters);
+                        }
+                        else {
+                            throw new ExprValidationException("Plug-in datetime method ops " + ops.GetType() + " is not recognized");
+                        }
+
+                        // no action
+                    }
                     else {
                         filterAnalyzerDesc = null;
                     }
@@ -145,18 +178,18 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 }
 
                 // see if there is more
-                if (chainSpecStack.IsEmpty() || !DatetimeMethodEnumHelper.IsDateTimeMethod(chainSpecStack.First.Name)) {
+                if (chainSpecStack.IsEmpty() || !DatetimeMethodResolver.IsDateTimeMethod(chainSpecStack.First.GetRootNameOrEmptyString(), importService)) {
                     break;
                 }
 
                 // pull next
                 var next = chainSpecStack.RemoveFirst();
-                currentMethod = DatetimeMethodEnumHelper.FromName(next.Name);
-                currentParameters = next.Parameters;
-                currentMethodName = next.Name;
+                currentMethodName = next.GetRootNameOrEmptyString();
+                currentMethod = DatetimeMethodResolver.FromName(currentMethodName, importService);
+                currentParameters = next.GetParametersOrEmpty();
 
                 if (reformatForge != null || intervalForge != null) {
-                    throw new ExprValidationException("Invalid input for date-time method '" + next.Name + "'");
+                    throw new ExprValidationException("Invalid input for date-time method '" + currentMethodName + "'");
                 }
             }
 

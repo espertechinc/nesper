@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.common.@internal.epl.lookup;
@@ -22,6 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplan
             IList<EventType> outerStreamTypesZeroIndexed,
             IList<SubordPropHashKeyForge> hashKeys,
             CoercionDesc hashKeyCoercionTypes,
+            MultiKeyClassRef hashMultikeyClasses,
             IList<SubordPropRangeKeyForge> rangeKeys,
             CoercionDesc rangeKeyCoercionTypes,
             IList<ExprNode> inKeywordSingleIdxKeys,
@@ -62,7 +64,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplan
                     isStrictKeys,
                     hashStrictKeys,
                     hashStrictKeyStreams,
-                    outerStreamTypesZeroIndexed);
+                    outerStreamTypesZeroIndexed,
+                    hashMultikeyClasses);
             }
             else if (hashKeys.Count == 0 && rangeKeys.Count == 1) {
                 lookupStrategy = new SubordSortedTableLookupStrategyFactoryForge(
@@ -77,6 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplan
                     numStreamsTotal,
                     hashKeys,
                     hashKeyCoercionTypes.CoercionTypes,
+                    hashMultikeyClasses,
                     rangeKeys,
                     rangeKeyCoercionTypes.CoercionTypes);
             }

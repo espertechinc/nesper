@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -65,7 +66,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             EventType resultEventType)
         {
-            EventBean theEvent = eventsPerStream[0];
+            var theEvent = eventsPerStream[0];
+            var wrapper = (DecoratingEventBean) theEvent;
+            if (wrapper != null) {
+                var map = wrapper.DecoratingProperties;
+                if (emptyExpressions && !map.IsEmpty()) {
+                    props = new Dictionary<string, object>(map); 
+                } else {
+                    props.PutAll(map);
+                }
+            }
             return eventBeanTypedEventFactory.AdapterForTypedWrapper(theEvent, props, resultEventType);
         }
     }

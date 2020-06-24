@@ -11,6 +11,7 @@ using System;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.agg.accessagg;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.settings;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
@@ -22,6 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             ImportServiceCompileTime importService,
             ExprNode[] criteria,
             Type[] criteriaTypes,
+            DataInputOutputSerdeForge[] criteriaSerdes,
             bool[] sortDescending,
             bool ever,
             int streamNum,
@@ -39,6 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             Parent = parent;
             OptionalFilter = optionalFilter;
             StreamEventType = streamEventType;
+            CriteriaSerdes = criteriaSerdes;
         }
 
         public ImportServiceCompileTime ImportService { get; }
@@ -56,10 +59,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         public EventType StreamEventType { get; }
 
         public Type[] CriteriaTypes { get; }
+        
+        public DataInputOutputSerdeForge[] CriteriaSerdes { get; }
 
         public bool IsEver { get; }
 
-        public bool IsSortUsingCollator => ImportService.IsSortUsingCollator();
+        public bool IsSortUsingCollator => ImportService.IsSortUsingCollator;
 
         public bool IsMax { get; }
     }

@@ -35,6 +35,8 @@ namespace com.espertech.esper.common.@internal.context.module
         void InitializeTables(EPModuleTableInitServices svc);
 
         void InitializeScripts(EPModuleScriptInitServices svc);
+        
+        void InitializeClassProvided(EPModuleClassProvidedInitServices svc);
 
         IList<StatementProvider> Statements { get; }
     }

@@ -68,7 +68,9 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 typeof(SupportBean_A),
                 typeof(SupportBean_S0),
                 typeof(SupportBeanInt),
-                typeof(SupportTradeEventWithSide)})
+                typeof(SupportTradeEventWithSide),
+                typeof(SupportEventWithManyArray)
+            })
             {
                 configuration.Common.AddEventType(clazz);
             }

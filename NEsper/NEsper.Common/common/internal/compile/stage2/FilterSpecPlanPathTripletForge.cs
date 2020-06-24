@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return method;
         }
 
-        protected void AppendFilterPlanTriplet(
+        public void AppendFilterPlanTriplet(
             int indexForge,
             StringBuilder stringBuilder)
         {

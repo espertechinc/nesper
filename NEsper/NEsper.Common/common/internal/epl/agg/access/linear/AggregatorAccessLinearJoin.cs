@@ -36,10 +36,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
     public class AggregatorAccessLinearJoin : AggregatorAccessWFilterBase,
         AggregatorAccessLinear
     {
-        private readonly CodegenExpressionRef array;
-
         private readonly AggregationStateLinearForge forge;
-        private readonly CodegenExpressionRef refSet;
+        private readonly CodegenExpressionMember refSet;
+        private readonly CodegenExpressionMember array;
 
         public AggregatorAccessLinearJoin(
             AggregationStateLinearForge forge,
@@ -74,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(GetSerde(classScope), "Write", RowDotRef(row, refSet), output, unitKey, writer);
+            method.Block.ExprDotMethod(GetSerde(classScope), "Write", RowDotMember(row, refSet), output, unitKey, writer);
         }
 
         public override void ReadCodegen(
@@ -86,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenClassScope classScope)
         {
             method.Block.AssignRef(
-                RowDotRef(row, refSet),
+                RowDotMember(row, refSet),
                 Cast(
                     typeof(LinkedHashMap<EventBean, object>),
                     ExprDotMethod(GetSerde(classScope), "Read", input, unitKey)));

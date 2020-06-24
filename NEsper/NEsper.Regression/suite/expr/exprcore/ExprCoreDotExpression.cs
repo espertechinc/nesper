@@ -178,13 +178,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select abc.noSuchMethod() from SupportBean abc",
-                    "Failed to validate select-clause expression 'abc.noSuchMethod()': Failed to solve 'noSuchMethod' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'noSuchMethod': Could not find enumeration method, date-time method or instance method named 'noSuchMethod' in class '" +
+                    "Failed to validate select-clause expression 'abc.noSuchMethod()': Failed to solve 'noSuchMethod' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'noSuchMethod': Could not find enumeration method, date-time method, instance method or property named 'noSuchMethod' in class '" +
                     typeof(SupportBean).CleanName() +
                     "' taking no parameters [select abc.noSuchMethod() from SupportBean abc]");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select abc.GetChildOne(\"abc\", 10).noSuchMethod() from SupportChainTop abc",
-                    "Failed to validate select-clause expression 'abc.GetChildOne(\"abc\",10).noSuchMethod()': Failed to solve 'GetChildOne' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'noSuchMethod': Could not find enumeration method, date-time method or instance method named 'noSuchMethod' in class '" +
+                    "Failed to validate select-clause expression 'abc.GetChildOne(\"abc\",10).noSuchMethod()': Failed to solve 'GetChildOne' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'noSuchMethod': Could not find enumeration method, date-time method, instance method or property named 'noSuchMethod' in class '" +
                     typeof(SupportChainChildOne).CleanName() +
                     "' taking no parameters [select abc.GetChildOne(\"abc\", 10).noSuchMethod() from SupportChainTop abc]");
             }

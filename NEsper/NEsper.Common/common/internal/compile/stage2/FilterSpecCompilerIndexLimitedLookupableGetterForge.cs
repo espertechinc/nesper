@@ -18,11 +18,11 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 {
     public class FilterSpecCompilerIndexLimitedLookupableGetterForge : ExprEventEvaluatorForge
     {
-        private readonly ExprNode lookupable;
+        private readonly ExprNode _lookupable;
 
         public FilterSpecCompilerIndexLimitedLookupableGetterForge(ExprNode lookupable)
         {
-            this.lookupable = lookupable;
+            this._lookupable = lookupable;
         }
 
         public CodegenExpression EventBeanWithCtxGet(
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 .MakeChild(typeof(object), GetType(), classScope)
                 .AddParam(typeof(EventBean), "eventBean")
                 .AddParam(typeof(ExprEvaluatorContext), "ctx");
-            var getImpl = CodegenLegoMethodExpression.CodegenExpression(lookupable.Forge, method, classScope);
+            var getImpl = CodegenLegoMethodExpression.CodegenExpression(_lookupable.Forge, method, classScope);
             method.Block
                 .DeclareVar(typeof(EventBean[]), "events", NewArrayWithInit(typeof(EventBean), Ref("eventBean")))
                 .MethodReturn(LocalMethod(getImpl, NewArrayWithInit(typeof(EventBean), Ref("eventBean")), ConstantTrue(), Ref("ctx")));

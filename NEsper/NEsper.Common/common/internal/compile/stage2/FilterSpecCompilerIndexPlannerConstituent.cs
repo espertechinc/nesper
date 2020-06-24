@@ -35,106 +35,162 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 	/// </summary>
 	public class FilterSpecCompilerIndexPlannerConstituent
 	{
-	    /// <summary>
-	    /// For a given expression determine if this is optimizable and create the filter parameter
-	    /// representing the expression, or null if not optimizable.
-	    /// </summary>
-	    /// <param name="constituent">is the expression to look at</param>
-	    /// <param name="performConditionPlanning"></param>
-	    /// <param name="taggedEventTypes">event types that provide non-array values</param>
-	    /// <param name="arrayEventTypes">event types that provide array values</param>
-	    /// <param name="statementName">statement name</param>
-	    /// <param name="streamTypeService">stream type service</param>
-	    /// <returns>filter parameter representing the expression, or null</returns>
-	    /// <throws>ExprValidationException if the expression is invalid</throws>
-	    protected static FilterSpecPlanPathTripletForge MakeFilterParam(
-		    ExprNode constituent,
-	        bool performConditionPlanning, IDictionary<string, Pair<EventType, string>> taggedEventTypes,
-	        IDictionary<string, Pair<EventType, string>> arrayEventTypes,
-	        ISet<string> allTagNamesOrdered,
-	        string statementName,
-	        StreamTypeService streamTypeService,
-	        StatementRawInfo raw,
-	        StatementCompileTimeServices services)
-	    {
-	        // Is this expression node a simple compare, i.e. a=5 or b<4; these can be indexed
-	        if ((constituent is ExprEqualsNode) || (constituent is ExprRelationalOpNode)) {
-	            FilterSpecParamForge param = HandleEqualsAndRelOp(constituent, taggedEventTypes, arrayEventTypes, allTagNamesOrdered, statementName, raw, services);
-	            if (param != null) {
-	                return new FilterSpecPlanPathTripletForge(param, null);
-	            }
-	        }
+		/// <summary>
+		/// For a given expression determine if this is optimizable and create the filter parameter
+		/// representing the expression, or null if not optimizable.
+		/// </summary>
+		/// <param name="constituent">is the expression to look at</param>
+		/// <param name="performConditionPlanning"></param>
+		/// <param name="taggedEventTypes">event types that provide non-array values</param>
+		/// <param name="arrayEventTypes">event types that provide array values</param>
+		/// <param name="statementName">statement name</param>
+		/// <param name="streamTypeService">stream type service</param>
+		/// <returns>filter parameter representing the expression, or null</returns>
+		/// <throws>ExprValidationException if the expression is invalid</throws>
+		internal static FilterSpecPlanPathTripletForge MakeFilterParam(
+			ExprNode constituent,
+			bool performConditionPlanning,
+			IDictionary<string, Pair<EventType, string>> taggedEventTypes,
+			IDictionary<string, Pair<EventType, string>> arrayEventTypes,
+			ISet<string> allTagNamesOrdered,
+			string statementName,
+			StreamTypeService streamTypeService,
+			StatementRawInfo raw,
+			StatementCompileTimeServices services)
+		{
+			// Is this expression node a simple compare, i.e. a=5 or b<4; these can be indexed
+			if ((constituent is ExprEqualsNode) || (constituent is ExprRelationalOpNode)) {
+				FilterSpecParamForge param = HandleEqualsAndRelOp(
+					constituent,
+					taggedEventTypes,
+					arrayEventTypes,
+					allTagNamesOrdered,
+					statementName,
+					raw,
+					services);
+				if (param != null) {
+					return new FilterSpecPlanPathTripletForge(param, null);
+				}
+			}
 
-	        constituent = RewriteOrToInIfApplicable(constituent, false);
+			constituent = RewriteOrToInIfApplicable(constituent, false);
 
-	        // Is this expression node a simple compare, i.e. a=5 or b<4; these can be indexed
-	        if (constituent is ExprInNode) {
-	            FilterSpecParamForge param = HandleInSetNode((ExprInNode) constituent, taggedEventTypes, arrayEventTypes, allTagNamesOrdered, raw, services);
-	            if (param != null) {
-	                return new FilterSpecPlanPathTripletForge(param, null);
-	            }
-	        }
+			// Is this expression node a simple compare, i.e. a=5 or b<4; these can be indexed
+			if (constituent is ExprInNode) {
+				FilterSpecParamForge param = HandleInSetNode((ExprInNode) constituent, taggedEventTypes, arrayEventTypes, allTagNamesOrdered, raw, services);
+				if (param != null) {
+					return new FilterSpecPlanPathTripletForge(param, null);
+				}
+			}
 
-	        if (constituent is ExprBetweenNode) {
-	            FilterSpecParamForge param = HandleRangeNode((ExprBetweenNode) constituent, taggedEventTypes, arrayEventTypes, allTagNamesOrdered, statementName, raw, services);
-	            if (param != null) {
-	                return new FilterSpecPlanPathTripletForge(param, null);
-	            }
-	        }
+			if (constituent is ExprBetweenNode) {
+				FilterSpecParamForge param = HandleRangeNode(
+					(ExprBetweenNode) constituent,
+					taggedEventTypes,
+					arrayEventTypes,
+					allTagNamesOrdered,
+					statementName,
+					raw,
+					services);
+				if (param != null) {
+					return new FilterSpecPlanPathTripletForge(param, null);
+				}
+			}
 
-	        if (constituent is ExprPlugInSingleRowNode) {
-	            FilterSpecParamForge param = HandlePlugInSingleRow((ExprPlugInSingleRowNode) constituent);
-	            if (param != null) {
-	                return new FilterSpecPlanPathTripletForge(param, null);
-	            }
-	        }
+			if (constituent is ExprPlugInSingleRowNode) {
+				FilterSpecParamForge param = HandlePlugInSingleRow((ExprPlugInSingleRowNode) constituent);
+				if (param != null) {
+					return new FilterSpecPlanPathTripletForge(param, null);
+				}
+			}
 
-	        if (constituent is FilterSpecCompilerAdvIndexDescProvider) {
-	            FilterSpecParamForge param = HandleAdvancedIndexDescProvider((FilterSpecCompilerAdvIndexDescProvider) constituent, arrayEventTypes, statementName);
-	            if (param != null) {
-	                return new FilterSpecPlanPathTripletForge(param, null);
-	            }
-	        }
+			if (constituent is FilterSpecCompilerAdvIndexDescProvider) {
+				FilterSpecParamForge param = HandleAdvancedIndexDescProvider(
+					(FilterSpecCompilerAdvIndexDescProvider) constituent,
+					arrayEventTypes,
+					statementName);
+				if (param != null) {
+					return new FilterSpecPlanPathTripletForge(param, null);
+				}
+			}
 
-	        if (constituent is ExprOrNode && performConditionPlanning) {
-	            return HandleOrAlternateExpression((ExprOrNode) constituent, performConditionPlanning, taggedEventTypes, arrayEventTypes, allTagNamesOrdered, statementName, streamTypeService, raw, services);
-	        }
+			if (constituent is ExprOrNode && performConditionPlanning) {
+				return HandleOrAlternateExpression(
+					(ExprOrNode) constituent,
+					performConditionPlanning,
+					taggedEventTypes,
+					arrayEventTypes,
+					allTagNamesOrdered,
+					statementName,
+					streamTypeService,
+					raw,
+					services);
+			}
 
-	        FilterSpecParamForge param = HandleBooleanLimited(constituent, taggedEventTypes, arrayEventTypes, allTagNamesOrdered, streamTypeService, raw, services);
-	        if (param != null) {
-	            return new FilterSpecPlanPathTripletForge(param, null);
-	        }
-	        return null;
-	    }
+			FilterSpecParamForge paramX = HandleBooleanLimited(
+				constituent,
+				taggedEventTypes,
+				arrayEventTypes,
+				allTagNamesOrdered,
+				streamTypeService,
+				raw,
+				services);
+			if (paramX != null) {
+				return new FilterSpecPlanPathTripletForge(paramX, null);
+			}
 
-	    private static FilterSpecPlanPathTripletForge HandleOrAlternateExpression(ExprOrNode orNode, bool performConditionPlanning, LinkedHashMap<string, Pair<EventType, string>> taggedEventTypes, LinkedHashMap<string, Pair<EventType, string>> arrayEventTypes, LinkedHashSet<string> allTagNamesOrdered, string statementName, StreamTypeService streamTypeService, StatementRawInfo raw, StatementCompileTimeServices services) {
-	        IList<ExprNode> valueExpressions = new List<ExprNode>(orNode.ChildNodes.Length);
-	        foreach (ExprNode child in orNode.ChildNodes) {
-	            FilterSpecExprNodeVisitorValueLimitedExpr visitor = new FilterSpecExprNodeVisitorValueLimitedExpr();
-	            child.Accept(visitor);
-	            if (visitor.IsLimited) {
-	                valueExpressions.Add(child);
-	            }
-	        }
+			return null;
+		}
 
-	        // The or-node must have a single constituent and one or more value expressions
-	        if (orNode.ChildNodes.Length != valueExpressions.Count + 1) {
-	            return null;
-	        }
-	        IList<ExprNode> constituents = new List<ExprNode>(orNode.ChildNodes);
-	        constituents.RemoveAll(valueExpressions);
-	        if (constituents.Count != 1) {
-	            throw new IllegalStateException("Found multiple constituents");
-	        }
-	        ExprNode constituent = constituents[0];
+		private static FilterSpecPlanPathTripletForge HandleOrAlternateExpression(
+			ExprOrNode orNode,
+			bool performConditionPlanning,
+			IDictionary<string, Pair<EventType, string>> taggedEventTypes,
+			IDictionary<string, Pair<EventType, string>> arrayEventTypes,
+			ISet<string> allTagNamesOrdered,
+			string statementName,
+			StreamTypeService streamTypeService,
+			StatementRawInfo raw,
+			StatementCompileTimeServices services)
+		{
+			IList<ExprNode> valueExpressions = new List<ExprNode>(orNode.ChildNodes.Length);
+			foreach (ExprNode child in orNode.ChildNodes) {
+				FilterSpecExprNodeVisitorValueLimitedExpr visitor = new FilterSpecExprNodeVisitorValueLimitedExpr();
+				child.Accept(visitor);
+				if (visitor.IsLimited) {
+					valueExpressions.Add(child);
+				}
+			}
 
-	        FilterSpecPlanPathTripletForge triplet = MakeFilterParam(constituent, performConditionPlanning, taggedEventTypes, arrayEventTypes, allTagNamesOrdered, statementName, streamTypeService, raw, services);
-	        if (triplet == null) {
-	            return null;
-	        }
+			// The or-node must have a single constituent and one or more value expressions
+			if (orNode.ChildNodes.Length != valueExpressions.Count + 1) {
+				return null;
+			}
 
-	        ExprNode controlConfirm = ExprNodeUtilityMake.ConnectExpressionsByLogicalOrWhenNeeded(valueExpressions);
-	        return new FilterSpecPlanPathTripletForge(triplet.Param, controlConfirm);
-	    }
+			IList<ExprNode> constituents = new List<ExprNode>(orNode.ChildNodes);
+			constituents.RemoveAll(valueExpressions);
+			if (constituents.Count != 1) {
+				throw new IllegalStateException("Found multiple constituents");
+			}
+
+			ExprNode constituent = constituents[0];
+
+			FilterSpecPlanPathTripletForge triplet = MakeFilterParam(
+				constituent,
+				performConditionPlanning,
+				taggedEventTypes,
+				arrayEventTypes,
+				allTagNamesOrdered,
+				statementName,
+				streamTypeService,
+				raw,
+				services);
+			if (triplet == null) {
+				return null;
+			}
+
+			ExprNode controlConfirm = ExprNodeUtilityMake.ConnectExpressionsByLogicalOrWhenNeeded(valueExpressions);
+			return new FilterSpecPlanPathTripletForge(triplet.Param, controlConfirm);
+		}
 	}
 } // end of namespace

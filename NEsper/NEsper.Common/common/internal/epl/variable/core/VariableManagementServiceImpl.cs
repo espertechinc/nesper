@@ -13,6 +13,7 @@ using System.Linq;
 
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.client.variable;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.@event.core;
@@ -565,24 +566,10 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         public void AddVariable(
             string deploymentId,
             VariableMetaData metaData,
-            string optionalDeploymentIdContext)
+            string optionalDeploymentIdContext,
+            DataInputOutputSerde<object> optionalSerde1)
         {
             lock (this) {
-                DataInputOutputSerdeWCollation<object> optionalSerde = null;
-                if (OptionalStateHandler != null && !metaData.IsConstant) {
-                    try {
-                        optionalSerde = OptionalStateHandler.GetVariableSerde(deploymentId, metaData);
-                    }
-                    catch (EPException) {
-                        throw;
-                    }
-                    catch (Exception t) {
-                        throw new EPException(
-                            "Failed to determine serde for variable '" + metaData.VariableName + "': " + t.Message,
-                            t);
-                    }
-                }
-
                 // check if already exists
                 var deploymentEntry = DeploymentsWithVariables.Get(deploymentId);
                 if (deploymentEntry != null) {

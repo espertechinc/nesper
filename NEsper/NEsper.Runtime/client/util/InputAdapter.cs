@@ -21,5 +21,11 @@ namespace com.espertech.esper.runtime.client.util
         /// Use for MapMessage events to indicate the event type name.
         /// </summary>
         public static readonly string ESPERIO_MAP_EVENT_TYPE = typeof(InputAdapter).FullName + "_maptype";
+        
+        /// <summary>
+        /// Use for TextMessage events to indicate the event type name.
+        /// </summary>
+        public static readonly string ESPERIO_JSON_EVENT_TYPE = typeof(InputAdapter).FullName + "_jsontype";
+
     }
 }

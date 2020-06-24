@@ -93,8 +93,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 .StaticMethod(
                     typeof(ResultSetProcessorGroupedUtil),
                     METHOD_APPLYAGGJOINRESULTKEYEDJOIN,
-                    REF_AGGREGATIONSVC,
-                    REF_AGENTINSTANCECONTEXT,
+                    MEMBER_AGGREGATIONSVC,
+                    MEMBER_AGENTINSTANCECONTEXT,
                     REF_NEWDATA,
                     Ref("newDataMultiKey"),
                     REF_OLDDATA,
@@ -154,8 +154,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 .StaticMethod(
                     typeof(ResultSetProcessorGroupedUtil),
                     METHOD_APPLYAGGVIEWRESULTKEYEDVIEW,
-                    REF_AGGREGATIONSVC,
-                    REF_AGENTINSTANCECONTEXT,
+                    MEMBER_AGGREGATIONSVC,
+                    MEMBER_AGENTINSTANCECONTEXT,
                     REF_NEWDATA,
                     Ref("newDataMultiKey"),
                     REF_OLDDATA,
@@ -191,7 +191,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     typeof(ResultSetProcessorRowPerGroupRollupImpl),
                     classScope);
                 instance.AddMember(memberName, eventPerGroupBufType);
-                instance.ServiceCtor.Block.AssignRef(memberName, LocalMethod(init));
+                instance.ServiceCtor.Block.AssignMember(memberName, LocalMethod(init));
                 var levelCount = forge.GroupByRollupDesc.Levels.Length;
                 init.Block
                     .DebugStack()
@@ -235,10 +235,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                              ArrayAtIndex(Ref("keysAndEvents"), ExprDotName(Ref("level"), "LevelNumber")));
                         forEvents.DeclareVar<object>("groupKey", ExprDotName(Ref("entry"), "Key"))
                             .ExprDotMethod(
-                                REF_AGGREGATIONSVC,
+                                MEMBER_AGGREGATIONSVC,
                                 "SetCurrentAccess",
                                 Ref("groupKey"),
-                                ExprDotName(REF_AGENTINSTANCECONTEXT, "AgentInstanceId"),
+                                ExprDotName(MEMBER_AGENTINSTANCECONTEXT, "AgentInstanceId"),
                                 Ref("level"))
                             .AssignArrayElement(
                                 Ref("eventsPerStream"),
@@ -247,7 +247,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
 
                         if (forge.PerLevelForges.OptionalHavingForges != null) {
                             var having = ArrayAtIndex(
-                                REF_HAVINGEVALUATOR_ARRAY,
+                                MEMBER_HAVINGEVALUATOR_ARRAY,
                                 ExprDotName(Ref("level"), "LevelNumber"));
                             forEvents.IfCondition(
                                     Not(
@@ -256,7 +256,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                             "EvaluateHaving",
                                             REF_EPS,
                                             ResultSetProcessorCodegenNames.REF_ISNEWDATA,
-                                            REF_AGENTINSTANCECONTEXT)))
+                                            MEMBER_AGENTINSTANCECONTEXT)))
                                 .BlockContinue();
                         }
 
@@ -265,13 +265,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             "Add",
                             ExprDotMethod(
                                 ArrayAtIndex(
-                                    REF_SELECTEXPRPROCESSOR_ARRAY,
+                                    MEMBER_SELECTEXPRPROCESSOR_ARRAY,
                                     ExprDotName(Ref("level"), "LevelNumber")),
                                 "Process",
                                 Ref("eventsPerStream"),
                                 ResultSetProcessorCodegenNames.REF_ISNEWDATA,
                                 REF_ISSYNTHESIZE,
-                                REF_AGENTINSTANCECONTEXT));
+                                MEMBER_AGENTINSTANCECONTEXT));
 
                         if (forge.IsSorting) {
                             forEvents.DeclareVar<EventBean[]>(
@@ -304,8 +304,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 Ref("outgoing"),
                                 Ref("currentGenerators"),
                                 ResultSetProcessorCodegenNames.REF_ISNEWDATA,
-                                REF_AGENTINSTANCECONTEXT,
-                                REF_AGGREGATIONSVC));
+                                MEMBER_AGENTINSTANCECONTEXT,
+                                MEMBER_AGGREGATIONSVC));
                 }
 
                 methodNode.Block.MethodReturn(Ref("outgoing"));
@@ -351,17 +351,17 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             ArrayAtIndex(Ref("eventPairs"), ExprDotName(Ref("level"), "LevelNumber")));
                         forEvents.DeclareVar<object>("groupKey", ExprDotName(Ref("entry"), "Key"))
                             .ExprDotMethod(
-                                REF_AGGREGATIONSVC,
+                                MEMBER_AGGREGATIONSVC,
                                 "SetCurrentAccess",
                                 Ref("groupKey"),
-                                ExprDotName(REF_AGENTINSTANCECONTEXT, "AgentInstanceId"),
+                                ExprDotName(MEMBER_AGENTINSTANCECONTEXT, "AgentInstanceId"),
                                 Ref("level"))
                             .DeclareVar<EventBean[]>(
                                 "eventsPerStream", ExprDotName(Ref("entry"), "Value"));
 
                         if (forge.PerLevelForges.OptionalHavingForges != null) {
                             var having = ArrayAtIndex(
-                                REF_HAVINGEVALUATOR_ARRAY,
+                                MEMBER_HAVINGEVALUATOR_ARRAY,
                                 ExprDotName(Ref("level"), "LevelNumber"));
                             forEvents.IfCondition(
                                     Not(
@@ -370,7 +370,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                             "EvaluateHaving",
                                             REF_EPS,
                                             ResultSetProcessorCodegenNames.REF_ISNEWDATA,
-                                            REF_AGENTINSTANCECONTEXT)))
+                                            MEMBER_AGENTINSTANCECONTEXT)))
                                 .BlockContinue();
                         }
 
@@ -379,13 +379,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             "Add",
                             ExprDotMethod(
                                 ArrayAtIndex(
-                                    REF_SELECTEXPRPROCESSOR_ARRAY,
+                                    MEMBER_SELECTEXPRPROCESSOR_ARRAY,
                                     ExprDotName(Ref("level"), "LevelNumber")),
                                 "Process",
                                 Ref("eventsPerStream"),
                                 ResultSetProcessorCodegenNames.REF_ISNEWDATA,
                                 REF_ISSYNTHESIZE,
-                                REF_AGENTINSTANCECONTEXT));
+                                MEMBER_AGENTINSTANCECONTEXT));
 
                         if (forge.IsSorting) {
                             forEvents.ExprDotMethod(
@@ -414,8 +414,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 Ref("outgoing"),
                                 Ref("currentGenerators"),
                                 ResultSetProcessorCodegenNames.REF_ISNEWDATA,
-                                REF_AGENTINSTANCECONTEXT,
-                                REF_AGGREGATIONSVC));
+                                MEMBER_AGENTINSTANCECONTEXT,
+                                MEMBER_AGGREGATIONSVC));
                 }
 
                 methodNode.Block.MethodReturn(Ref("outgoing"));
@@ -445,12 +445,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 return;
             }
 
-            var generateGroupKeySingle = GenerateGroupKeySingleCodegen(
-                forge.GroupKeyNodeExpressions,
-                classScope,
-                instance);
-
-            method.Block.ExprDotMethod(REF_AGGREGATIONSVC, "ClearResults", REF_AGENTINSTANCECONTEXT)
+            method.Block.ExprDotMethod(MEMBER_AGGREGATIONSVC, "ClearResults", MEMBER_AGENTINSTANCECONTEXT)
                 .DeclareVar<IEnumerator<EventBean>>("it", ExprDotMethod(REF_VIEWABLE, "GetEnumerator"))
                 .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)))
                 .DeclareVar<object[]>(
@@ -467,7 +462,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         Cast(typeof(EventBean), ExprDotName(Ref("it"), "Current")))
                     .DeclareVar<object>(
                         "groupKeyComplete",
-                        LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()))
+                        LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()))
                     .ForLoopIntSimple("j", ArrayLength(Ref("levels")))
                     .DeclareVar<object>(
                         "subkey",
@@ -475,11 +470,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     .AssignArrayElement("groupKeys", Ref("j"), Ref("subkey"))
                     .BlockEnd()
                     .ExprDotMethod(
-                        REF_AGGREGATIONSVC,
+                        MEMBER_AGGREGATIONSVC,
                         "ApplyEnter",
                         Ref("eventsPerStream"),
                         Ref("groupKeys"),
-                        REF_AGENTINSTANCECONTEXT)
+                        MEMBER_AGENTINSTANCECONTEXT)
                     .BlockEnd();
             }
 
@@ -489,7 +484,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         typeof(ResultSetProcessorUtil),
                         METHOD_ITERATORTODEQUE,
                         LocalMethod(ObtainEnumeratorCodegen(forge, classScope, method, instance), REF_VIEWABLE)))
-                .ExprDotMethod(REF_AGGREGATIONSVC, "ClearResults", REF_AGENTINSTANCECONTEXT)
+                .ExprDotMethod(MEMBER_AGGREGATIONSVC, "ClearResults", MEMBER_AGENTINSTANCECONTEXT)
                 .MethodReturn(ExprDotMethod(Ref("deque"), "GetEnumerator"));
         }
 
@@ -565,7 +560,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
 
         internal static void ClearMethodCodegen(CodegenMethod method)
         {
-            method.Block.ExprDotMethod(REF_AGGREGATIONSVC, "ClearResults", REF_AGENTINSTANCECONTEXT);
+            method.Block.ExprDotMethod(MEMBER_AGGREGATIONSVC, "ClearResults", MEMBER_AGENTINSTANCECONTEXT);
         }
 
         public static void ProcessOutputLimitedJoinCodegen(
@@ -623,18 +618,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             CodegenInstanceAux instance)
         {
             if (instance.HasMember(NAME_OUTPUTLASTHELPER)) {
-                method.Block.ExprDotMethod(REF_RESULTSETVISITOR, "Visit", Ref(NAME_OUTPUTLASTHELPER));
+                method.Block.ExprDotMethod(REF_RESULTSETVISITOR, "Visit", Member(NAME_OUTPUTLASTHELPER));
             }
 
             if (instance.HasMember(NAME_OUTPUTALLHELPER)) {
-                method.Block.ExprDotMethod(REF_RESULTSETVISITOR, "Visit", Ref(NAME_OUTPUTALLHELPER));
+                method.Block.ExprDotMethod(REF_RESULTSETVISITOR, "Visit", Member(NAME_OUTPUTALLHELPER));
             }
 
             if (instance.HasMember(NAME_OUTPUTFIRSTHELPERS)) {
                 method.Block.ForEach(
                         typeof(ResultSetProcessorGroupedOutputFirstHelper),
                         "helper",
-                        Ref(NAME_OUTPUTFIRSTHELPERS))
+                        Member(NAME_OUTPUTFIRSTHELPERS))
                     .ExprDotMethod(REF_RESULTSETVISITOR, "Visit", Ref("helper"));
             }
         }
@@ -732,10 +727,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             CodegenClassScope classScope,
             CodegenInstanceAux instance)
         {
-            var generateGroupKeySingle = GenerateGroupKeySingleCodegen(
-                forge.GroupKeyNodeExpressions,
-                classScope,
-                instance);
             var levelNumber = ExprDotName(Ref("level"), "LevelNumber");
             var generateOutputBatchedGivenArray = GenerateOutputBatchedGivenArrayCodegen(forge, classScope, instance);
             InitGroupRepsPerLevelBufCodegen(instance, forge);
@@ -771,7 +762,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 .AssignRef("eventsPerStream", NewArrayWithInit(typeof(EventBean), Ref("aNewData")))
                                 .DeclareVar<object>(
                                     "groupKeyComplete",
-                                    LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
+                                    LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
                             {
                                 forNew.ForEach(
                                         typeof(AggregationGroupByRollupLevel),
@@ -783,11 +774,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                     .AssignArrayElement(Ref("groupKeysPerLevel"), levelNumber, Ref("groupKey"));
                             }
                             forNew.ExprDotMethod(
-                                REF_AGGREGATIONSVC,
+                                MEMBER_AGGREGATIONSVC,
                                 "ApplyEnter",
                                 Ref("eventsPerStream"),
                                 Ref("groupKeysPerLevel"),
-                                REF_AGENTINSTANCECONTEXT);
+                                MEMBER_AGENTINSTANCECONTEXT);
                         }
 
                         var ifOldApplyAgg = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
@@ -796,7 +787,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 .AssignRef("eventsPerStream", NewArrayWithInit(typeof(EventBean), Ref("anOldData")))
                                 .DeclareVar<object>(
                                     "groupKeyComplete",
-                                    LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()));
+                                    LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()));
                             {
                                 forOld.ForEach(
                                         typeof(AggregationGroupByRollupLevel),
@@ -808,11 +799,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                     .AssignArrayElement(Ref("groupKeysPerLevel"), levelNumber, Ref("groupKey"));
                             }
                             forOld.ExprDotMethod(
-                                REF_AGGREGATIONSVC,
+                                MEMBER_AGGREGATIONSVC,
                                 "ApplyLeave",
                                 Ref("eventsPerStream"),
                                 Ref("groupKeysPerLevel"),
-                                REF_AGENTINSTANCECONTEXT);
+                                MEMBER_AGENTINSTANCECONTEXT);
                         }
 
                         var ifNewFirst = forEach.IfCondition(NotEqualsNull(Ref("newData")));
@@ -821,7 +812,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 .AssignRef("eventsPerStream", NewArrayWithInit(typeof(EventBean), Ref("aNewData")))
                                 .DeclareVar<object>(
                                     "groupKeyComplete",
-                                    LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
+                                    LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
                             {
                                 var eachlvl = forNewFirst.ForEach(
                                         typeof(AggregationGroupByRollupLevel),
@@ -831,29 +822,29 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                         "groupKey",
                                         ExprDotMethod(Ref("level"), "ComputeSubkey", Ref("groupKeyComplete")))
                                     .ExprDotMethod(
-                                        REF_AGGREGATIONSVC,
+                                        MEMBER_AGGREGATIONSVC,
                                         "SetCurrentAccess",
                                         Ref("groupKey"),
-                                        ExprDotName(REF_AGENTINSTANCECONTEXT, "AgentInstanceId"),
+                                        ExprDotName(MEMBER_AGENTINSTANCECONTEXT, "AgentInstanceId"),
                                         Ref("level"))
                                     .IfCondition(
                                         Not(
                                             ExprDotMethod(
                                                 ArrayAtIndex(
-                                                    REF_HAVINGEVALUATOR_ARRAY,
+                                                    MEMBER_HAVINGEVALUATOR_ARRAY,
                                                     ExprDotName(Ref("level"), "LevelNumber")),
                                                 "EvaluateHaving",
                                                 Ref("eventsPerStream"),
                                                 ConstantTrue(),
-                                                REF_AGENTINSTANCECONTEXT)))
+                                                MEMBER_AGENTINSTANCECONTEXT)))
                                     .BlockContinue()
                                     .DeclareVar<OutputConditionPolled>(
                                         "outputStateGroup",
                                         ExprDotMethod(
-                                            ArrayAtIndex(Ref(NAME_OUTPUTFIRSTHELPERS), levelNumber),
+                                            ArrayAtIndex(Member(NAME_OUTPUTFIRSTHELPERS), levelNumber),
                                             "GetOrAllocate",
                                             Ref("groupKey"),
-                                            REF_AGENTINSTANCECONTEXT,
+                                            MEMBER_AGENTINSTANCECONTEXT,
                                             outputFactory))
                                     .DeclareVar<bool>(
                                         "pass",
@@ -892,7 +883,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 .AssignRef("eventsPerStream", NewArrayWithInit(typeof(EventBean), Ref("anOldData")))
                                 .DeclareVar<object>(
                                     "groupKeyComplete",
-                                    LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
+                                    LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
                             {
                                 var eachlvl = forOldFirst.ForEach(
                                         typeof(AggregationGroupByRollupLevel),
@@ -902,29 +893,29 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                         "groupKey",
                                         ExprDotMethod(Ref("level"), "ComputeSubkey", Ref("groupKeyComplete")))
                                     .ExprDotMethod(
-                                        REF_AGGREGATIONSVC,
+                                        MEMBER_AGGREGATIONSVC,
                                         "SetCurrentAccess",
                                         Ref("groupKey"),
-                                        ExprDotName(REF_AGENTINSTANCECONTEXT, "AgentInstanceId"),
+                                        ExprDotName(MEMBER_AGENTINSTANCECONTEXT, "AgentInstanceId"),
                                         Ref("level"))
                                     .IfCondition(
                                         Not(
                                             ExprDotMethod(
                                                 ArrayAtIndex(
-                                                    REF_HAVINGEVALUATOR_ARRAY,
+                                                    MEMBER_HAVINGEVALUATOR_ARRAY,
                                                     ExprDotName(Ref("level"), "LevelNumber")),
                                                 "EvaluateHaving",
                                                 Ref("eventsPerStream"),
                                                 ConstantFalse(),
-                                                REF_AGENTINSTANCECONTEXT)))
+                                                MEMBER_AGENTINSTANCECONTEXT)))
                                     .BlockContinue()
                                     .DeclareVar<OutputConditionPolled>(
                                         "outputStateGroup",
                                         ExprDotMethod(
-                                            ArrayAtIndex(Ref(NAME_OUTPUTFIRSTHELPERS), levelNumber),
+                                            ArrayAtIndex(Member(NAME_OUTPUTFIRSTHELPERS), levelNumber),
                                             "GetOrAllocate",
                                             Ref("groupKey"),
-                                            REF_AGENTINSTANCECONTEXT,
+                                            MEMBER_AGENTINSTANCECONTEXT,
                                             outputFactory))
                                     .DeclareVar<bool>(
                                         "pass",
@@ -980,10 +971,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             CodegenClassScope classScope,
             CodegenInstanceAux instance)
         {
-            var generateGroupKeySingle = GenerateGroupKeySingleCodegen(
-                forge.GroupKeyNodeExpressions,
-                classScope,
-                instance);
             var levelNumber = ExprDotName(Ref("level"), "LevelNumber");
             var generateOutputBatchedGivenArray = GenerateOutputBatchedGivenArrayCodegen(forge, classScope, instance);
             InitGroupRepsPerLevelBufCodegen(instance, forge);
@@ -1022,7 +1009,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                     ExprDotName(Ref("aNewData"), "Array"))
                                 .DeclareVar<object>(
                                     "groupKeyComplete",
-                                    LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
+                                    LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
                             {
                                 var forLvl = forNew.ForEach(
                                         typeof(AggregationGroupByRollupLevel),
@@ -1035,10 +1022,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                     .DeclareVar<OutputConditionPolled>(
                                         "outputStateGroup",
                                         ExprDotMethod(
-                                            ArrayAtIndex(Ref(NAME_OUTPUTFIRSTHELPERS), levelNumber),
+                                            ArrayAtIndex(Member(NAME_OUTPUTFIRSTHELPERS), levelNumber),
                                             "GetOrAllocate",
                                             Ref("groupKey"),
-                                            REF_AGENTINSTANCECONTEXT,
+                                            MEMBER_AGENTINSTANCECONTEXT,
                                             outputFactory))
                                     .DeclareVar<bool>(
                                         "pass",
@@ -1070,11 +1057,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 }
                             }
                             forNew.ExprDotMethod(
-                                REF_AGGREGATIONSVC,
+                                MEMBER_AGGREGATIONSVC,
                                 "ApplyEnter",
                                 Ref("eventsPerStream"),
                                 Ref("groupKeysPerLevel"),
-                                REF_AGENTINSTANCECONTEXT);
+                                MEMBER_AGENTINSTANCECONTEXT);
                         }
 
                         var ifOldApplyAgg = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
@@ -1085,7 +1072,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                     ExprDotName(Ref("anOldData"), "Array"))
                                 .DeclareVar<object>(
                                     "groupKeyComplete",
-                                    LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()));
+                                    LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()));
                             {
                                 var forLvl = forOld.ForEach(
                                         typeof(AggregationGroupByRollupLevel),
@@ -1098,10 +1085,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                     .DeclareVar<OutputConditionPolled>(
                                         "outputStateGroup",
                                         ExprDotMethod(
-                                            ArrayAtIndex(Ref(NAME_OUTPUTFIRSTHELPERS), levelNumber),
+                                            ArrayAtIndex(Member(NAME_OUTPUTFIRSTHELPERS), levelNumber),
                                             "GetOrAllocate",
                                             Ref("groupKey"),
-                                            REF_AGENTINSTANCECONTEXT,
+                                            MEMBER_AGENTINSTANCECONTEXT,
                                             outputFactory))
                                     .DeclareVar<bool>(
                                         "pass",
@@ -1133,11 +1120,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 }
                             }
                             forOld.ExprDotMethod(
-                                REF_AGGREGATIONSVC,
+                                MEMBER_AGGREGATIONSVC,
                                 "ApplyLeave",
                                 Ref("eventsPerStream"),
                                 Ref("groupKeysPerLevel"),
-                                REF_AGENTINSTANCECONTEXT);
+                                MEMBER_AGENTINSTANCECONTEXT);
                         }
                     }
                 }
@@ -1163,10 +1150,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             CodegenClassScope classScope,
             CodegenInstanceAux instance)
         {
-            var generateGroupKeySingle = GenerateGroupKeySingleCodegen(
-                forge.GroupKeyNodeExpressions,
-                classScope,
-                instance);
             var levelNumber = ExprDotName(Ref("level"), "LevelNumber");
             var generateOutputBatchedGivenArray = GenerateOutputBatchedGivenArrayCodegen(forge, classScope, instance);
             InitGroupRepsPerLevelBufCodegen(instance, forge);
@@ -1203,7 +1186,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                     ExprDotName(Ref("aNewData"), "Array"))
                                 .DeclareVar<object>(
                                     "groupKeyComplete",
-                                    LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
+                                    LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
                             {
                                 forNew.ForEach(
                                         typeof(AggregationGroupByRollupLevel),
@@ -1215,11 +1198,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                     .AssignArrayElement(Ref("groupKeysPerLevel"), levelNumber, Ref("groupKey"));
                             }
                             forNew.ExprDotMethod(
-                                REF_AGGREGATIONSVC,
+                                MEMBER_AGGREGATIONSVC,
                                 "ApplyEnter",
                                 Ref("eventsPerStream"),
                                 Ref("groupKeysPerLevel"),
-                                REF_AGENTINSTANCECONTEXT);
+                                MEMBER_AGENTINSTANCECONTEXT);
                         }
 
                         var ifOldApplyAgg = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
@@ -1230,7 +1213,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                     ExprDotName(Ref("anOldData"), "Array"))
                                 .DeclareVar<object>(
                                     "groupKeyComplete",
-                                    LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()));
+                                    LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()));
                             {
                                 forOld.ForEach(
                                         typeof(AggregationGroupByRollupLevel),
@@ -1242,11 +1225,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                     .AssignArrayElement(Ref("groupKeysPerLevel"), levelNumber, Ref("groupKey"));
                             }
                             forOld.ExprDotMethod(
-                                REF_AGGREGATIONSVC,
+                                MEMBER_AGGREGATIONSVC,
                                 "ApplyLeave",
                                 Ref("eventsPerStream"),
                                 Ref("groupKeysPerLevel"),
-                                REF_AGENTINSTANCECONTEXT);
+                                MEMBER_AGENTINSTANCECONTEXT);
                         }
 
                         var ifNewFirst = forEach.IfCondition(NotEqualsNull(Ref("newData")));
@@ -1260,7 +1243,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                     ExprDotName(Ref("aNewData"), "Array"))
                                 .DeclareVar<object>(
                                     "groupKeyComplete",
-                                    LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
+                                    LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
                             {
                                 var eachlvl = forNewFirst.ForEach(
                                         typeof(AggregationGroupByRollupLevel),
@@ -1270,29 +1253,29 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                         "groupKey",
                                         ExprDotMethod(Ref("level"), "ComputeSubkey", Ref("groupKeyComplete")))
                                     .ExprDotMethod(
-                                        REF_AGGREGATIONSVC,
+                                        MEMBER_AGGREGATIONSVC,
                                         "SetCurrentAccess",
                                         Ref("groupKey"),
-                                        ExprDotName(REF_AGENTINSTANCECONTEXT, "AgentInstanceId"),
+                                        ExprDotName(MEMBER_AGENTINSTANCECONTEXT, "AgentInstanceId"),
                                         Ref("level"))
                                     .IfCondition(
                                         Not(
                                             ExprDotMethod(
                                                 ArrayAtIndex(
-                                                    REF_HAVINGEVALUATOR_ARRAY,
+                                                    MEMBER_HAVINGEVALUATOR_ARRAY,
                                                     ExprDotName(Ref("level"), "LevelNumber")),
                                                 "EvaluateHaving",
                                                 Ref("eventsPerStream"),
                                                 ConstantTrue(),
-                                                REF_AGENTINSTANCECONTEXT)))
+                                                MEMBER_AGENTINSTANCECONTEXT)))
                                     .BlockContinue()
                                     .DeclareVar<OutputConditionPolled>(
                                         "outputStateGroup",
                                         ExprDotMethod(
-                                            ArrayAtIndex(Ref(NAME_OUTPUTFIRSTHELPERS), levelNumber),
+                                            ArrayAtIndex(Member(NAME_OUTPUTFIRSTHELPERS), levelNumber),
                                             "GetOrAllocate",
                                             Ref("groupKey"),
-                                            REF_AGENTINSTANCECONTEXT,
+                                            MEMBER_AGENTINSTANCECONTEXT,
                                             outputFactory))
                                     .DeclareVar<bool>(
                                         "pass",
@@ -1336,7 +1319,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                     Cast(typeof(EventBean[]), ExprDotName(Ref("anOldData"), "Array")))
                                 .DeclareVar<object>(
                                     "groupKeyComplete",
-                                    LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
+                                    LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
                             {
                                 var eachlvl = forOldFirst.ForEach(
                                         typeof(AggregationGroupByRollupLevel),
@@ -1346,29 +1329,29 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                         "groupKey",
                                         ExprDotMethod(Ref("level"), "ComputeSubkey", Ref("groupKeyComplete")))
                                     .ExprDotMethod(
-                                        REF_AGGREGATIONSVC,
+                                        MEMBER_AGGREGATIONSVC,
                                         "SetCurrentAccess",
                                         Ref("groupKey"),
-                                        ExprDotName(REF_AGENTINSTANCECONTEXT, "AgentInstanceId"),
+                                        ExprDotName(MEMBER_AGENTINSTANCECONTEXT, "AgentInstanceId"),
                                         Ref("level"))
                                     .IfCondition(
                                         Not(
                                             ExprDotMethod(
                                                 ArrayAtIndex(
-                                                    REF_HAVINGEVALUATOR_ARRAY,
+                                                    MEMBER_HAVINGEVALUATOR_ARRAY,
                                                     ExprDotName(Ref("level"), "LevelNumber")),
                                                 "EvaluateHaving",
                                                 Ref("eventsPerStream"),
                                                 ConstantFalse(),
-                                                REF_AGENTINSTANCECONTEXT)))
+                                                MEMBER_AGENTINSTANCECONTEXT)))
                                     .BlockContinue()
                                     .DeclareVar<OutputConditionPolled>(
                                         "outputStateGroup",
                                         ExprDotMethod(
-                                            ArrayAtIndex(Ref(NAME_OUTPUTFIRSTHELPERS), levelNumber),
+                                            ArrayAtIndex(Member(NAME_OUTPUTFIRSTHELPERS), levelNumber),
                                             "GetOrAllocate",
                                             Ref("groupKey"),
-                                            REF_AGENTINSTANCECONTEXT,
+                                            MEMBER_AGENTINSTANCECONTEXT,
                                             outputFactory))
                                     .DeclareVar<bool>(
                                         "pass",
@@ -1424,10 +1407,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             CodegenClassScope classScope,
             CodegenInstanceAux instance)
         {
-            var generateGroupKeySingle = GenerateGroupKeySingleCodegen(
-                forge.GroupKeyNodeExpressions,
-                classScope,
-                instance);
             var levelNumber = ExprDotName(Ref("level"), "LevelNumber");
             var generateOutputBatchedGivenArray = GenerateOutputBatchedGivenArrayCodegen(forge, classScope, instance);
             InitGroupRepsPerLevelBufCodegen(instance, forge);
@@ -1465,7 +1444,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 .AssignRef("eventsPerStream", NewArrayWithInit(typeof(EventBean), Ref("aNewData")))
                                 .DeclareVar<object>(
                                     "groupKeyComplete",
-                                    LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
+                                    LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
                             {
                                 var forLvl = forNew.ForEach(
                                         typeof(AggregationGroupByRollupLevel),
@@ -1478,10 +1457,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                     .DeclareVar<OutputConditionPolled>(
                                         "outputStateGroup",
                                         ExprDotMethod(
-                                            ArrayAtIndex(Ref(NAME_OUTPUTFIRSTHELPERS), levelNumber),
+                                            ArrayAtIndex(Member(NAME_OUTPUTFIRSTHELPERS), levelNumber),
                                             "GetOrAllocate",
                                             Ref("groupKey"),
-                                            REF_AGENTINSTANCECONTEXT,
+                                            MEMBER_AGENTINSTANCECONTEXT,
                                             outputFactory))
                                     .DeclareVar<bool>(
                                         "pass",
@@ -1513,11 +1492,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 }
                             }
                             forNew.ExprDotMethod(
-                                REF_AGGREGATIONSVC,
+                                MEMBER_AGGREGATIONSVC,
                                 "ApplyEnter",
                                 Ref("eventsPerStream"),
                                 Ref("groupKeysPerLevel"),
-                                REF_AGENTINSTANCECONTEXT);
+                                MEMBER_AGENTINSTANCECONTEXT);
                         }
 
                         var ifOldApplyAgg = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
@@ -1526,7 +1505,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 .AssignRef("eventsPerStream", NewArrayWithInit(typeof(EventBean), Ref("anOldData")))
                                 .DeclareVar<object>(
                                     "groupKeyComplete",
-                                    LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()));
+                                    LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()));
                             {
                                 var forLvl = forOld.ForEach(
                                         typeof(AggregationGroupByRollupLevel),
@@ -1539,10 +1518,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                     .DeclareVar<OutputConditionPolled>(
                                         "outputStateGroup",
                                         ExprDotMethod(
-                                            ArrayAtIndex(Ref(NAME_OUTPUTFIRSTHELPERS), levelNumber),
+                                            ArrayAtIndex(Member(NAME_OUTPUTFIRSTHELPERS), levelNumber),
                                             "GetOrAllocate",
                                             Ref("groupKey"),
-                                            REF_AGENTINSTANCECONTEXT,
+                                            MEMBER_AGENTINSTANCECONTEXT,
                                             outputFactory))
                                     .DeclareVar<bool>(
                                         "pass",
@@ -1574,11 +1553,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 }
                             }
                             forOld.ExprDotMethod(
-                                REF_AGGREGATIONSVC,
+                                MEMBER_AGGREGATIONSVC,
                                 "ApplyLeave",
                                 Ref("eventsPerStream"),
                                 Ref("groupKeysPerLevel"),
-                                REF_AGENTINSTANCECONTEXT);
+                                MEMBER_AGENTINSTANCECONTEXT);
                         }
                     }
                 }
@@ -1653,8 +1632,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 forEach.StaticMethod(
                         typeof(ResultSetProcessorGroupedUtil),
                         METHOD_APPLYAGGVIEWRESULTKEYEDVIEW,
-                        REF_AGGREGATIONSVC,
-                        REF_AGENTINSTANCECONTEXT,
+                        MEMBER_AGGREGATIONSVC,
+                        MEMBER_AGENTINSTANCECONTEXT,
                         Ref("newData"),
                         Ref("newDataMultiKey"),
                         Ref("oldData"),
@@ -1732,8 +1711,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 forEach.StaticMethod(
                         typeof(ResultSetProcessorGroupedUtil),
                         METHOD_APPLYAGGJOINRESULTKEYEDJOIN,
-                        REF_AGGREGATIONSVC,
-                        REF_AGENTINSTANCECONTEXT,
+                        MEMBER_AGGREGATIONSVC,
+                        MEMBER_AGENTINSTANCECONTEXT,
                         Ref("newData"),
                         Ref("newDataMultiKey"),
                         Ref("oldData"),
@@ -1818,10 +1797,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
         {
             Consumer<CodegenMethod> code = methodNode => {
                 methodNode.Block.ExprDotMethod(
-                    REF_AGGREGATIONSVC,
+                    MEMBER_AGGREGATIONSVC,
                     "SetCurrentAccess",
                     Ref("mk"),
-                    ExprDotName(REF_AGENTINSTANCECONTEXT, "AgentInstanceId"),
+                    ExprDotName(MEMBER_AGENTINSTANCECONTEXT, "AgentInstanceId"),
                     Ref("level"));
 
                 if (forge.PerLevelForges.OptionalHavingForges != null) {
@@ -1829,17 +1808,17 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             Not(
                                 ExprDotMethod(
                                     ArrayAtIndex(
-                                        REF_HAVINGEVALUATOR_ARRAY,
+                                        MEMBER_HAVINGEVALUATOR_ARRAY,
                                         ExprDotName(Ref("level"), "LevelNumber")),
                                     "EvaluateHaving",
                                     Ref("eventsPerStream"),
                                     ResultSetProcessorCodegenNames.REF_ISNEWDATA,
-                                    REF_AGENTINSTANCECONTEXT)))
+                                    MEMBER_AGENTINSTANCECONTEXT)))
                         .BlockReturnNoValue();
                 }
 
                 var selectExprProcessor = ArrayAtIndex(
-                    REF_SELECTEXPRPROCESSOR_ARRAY,
+                    MEMBER_SELECTEXPRPROCESSOR_ARRAY,
                     ExprDotName(Ref("level"), "LevelNumber"));
                 methodNode.Block.ExprDotMethod(
                     Ref("resultEvents"),
@@ -1850,7 +1829,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         Ref("eventsPerStream"),
                         ResultSetProcessorCodegenNames.REF_ISNEWDATA,
                         REF_ISSYNTHESIZE,
-                        REF_AGENTINSTANCECONTEXT));
+                        MEMBER_AGENTINSTANCECONTEXT));
 
                 if (forge.IsSorting) {
                     methodNode.Block.ExprDotMethod(
@@ -1861,7 +1840,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             "GetSortKeyRollup",
                             Ref("eventsPerStream"),
                             ResultSetProcessorCodegenNames.REF_ISNEWDATA,
-                            REF_AGENTINSTANCECONTEXT,
+                            MEMBER_AGENTINSTANCECONTEXT,
                             Ref("level")));
                 }
             };
@@ -1888,14 +1867,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
         {
             Consumer<CodegenMethod> code = methodNode => {
                 methodNode.Block.ExprDotMethod(
-                    REF_AGGREGATIONSVC,
+                    MEMBER_AGGREGATIONSVC,
                     "SetCurrentAccess",
                     Ref("mk"),
-                    ExprDotName(REF_AGENTINSTANCECONTEXT, "AgentInstanceId"),
+                    ExprDotName(MEMBER_AGENTINSTANCECONTEXT, "AgentInstanceId"),
                     Ref("level"));
 
                 if (forge.PerLevelForges.OptionalHavingForges != null) {
-                    var having = ArrayAtIndex(REF_HAVINGEVALUATOR_ARRAY, ExprDotName(Ref("level"), "LevelNumber"));
+                    var having = ArrayAtIndex(MEMBER_HAVINGEVALUATOR_ARRAY, ExprDotName(Ref("level"), "LevelNumber"));
                     methodNode.Block.IfCondition(
                             Not(
                                 ExprDotMethod(
@@ -1903,12 +1882,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                     "EvaluateHaving",
                                     REF_EPS,
                                     ResultSetProcessorCodegenNames.REF_ISNEWDATA,
-                                    REF_AGENTINSTANCECONTEXT)))
+                                    MEMBER_AGENTINSTANCECONTEXT)))
                         .BlockReturnNoValue();
                 }
 
                 var selectExprProcessor = ArrayAtIndex(
-                    REF_SELECTEXPRPROCESSOR_ARRAY,
+                    MEMBER_SELECTEXPRPROCESSOR_ARRAY,
                     ExprDotName(Ref("level"), "LevelNumber"));
                 methodNode.Block.ExprDotMethod(
                     Ref("resultEvents"),
@@ -1920,7 +1899,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         Ref("eventsPerStream"),
                         ResultSetProcessorCodegenNames.REF_ISNEWDATA,
                         REF_ISSYNTHESIZE,
-                        REF_AGENTINSTANCECONTEXT));
+                        MEMBER_AGENTINSTANCECONTEXT));
             };
 
             instance.Methods.AddMethod(
@@ -1951,10 +1930,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
 
             InitGroupRepsPerLevelBufCodegen(instance, forge);
 
-            var generateGroupKeySingle = GenerateGroupKeySingleCodegen(
-                forge.GroupKeyNodeExpressions,
-                classScope,
-                instance);
             var generateOutputBatchedGivenArray = GenerateOutputBatchedGivenArrayCodegen(forge, classScope, instance);
             var generateAndSort = GenerateAndSortCodegen(forge, classScope, instance);
             var levelNumber = ExprDotName(Ref("level"), "LevelNumber");
@@ -1987,7 +1962,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             .AssignRef("eventsPerStream", NewArrayWithInit(typeof(EventBean), Ref("aNewData")))
                             .DeclareVar<object>(
                                 "groupKeyComplete",
-                                LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
+                                LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
                         {
                             var forLevel = forNew.ForEach(
                                     typeof(AggregationGroupByRollupLevel),
@@ -2019,11 +1994,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             }
                         }
                         forNew.ExprDotMethod(
-                            REF_AGGREGATIONSVC,
+                            MEMBER_AGGREGATIONSVC,
                             "ApplyEnter",
                             Ref("eventsPerStream"),
                             Ref("groupKeysPerLevel"),
-                            REF_AGENTINSTANCECONTEXT);
+                            MEMBER_AGENTINSTANCECONTEXT);
                     }
 
                     var ifOld = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
@@ -2032,7 +2007,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             .AssignRef("eventsPerStream", NewArrayWithInit(typeof(EventBean), Ref("anOldData")))
                             .DeclareVar<object>(
                                 "groupKeyComplete",
-                                LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()));
+                                LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()));
                         {
                             var forLevel = forOld.ForEach(
                                     typeof(AggregationGroupByRollupLevel),
@@ -2064,11 +2039,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             }
                         }
                         forOld.ExprDotMethod(
-                            REF_AGGREGATIONSVC,
+                            MEMBER_AGGREGATIONSVC,
                             "ApplyLeave",
                             Ref("eventsPerStream"),
                             Ref("groupKeysPerLevel"),
-                            REF_AGENTINSTANCECONTEXT);
+                            MEMBER_AGENTINSTANCECONTEXT);
                     }
                 }
             }
@@ -2088,10 +2063,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             }
 
             InitGroupRepsPerLevelBufCodegen(instance, forge);
-            var generateGroupKeySingle = GenerateGroupKeySingleCodegen(
-                forge.GroupKeyNodeExpressions,
-                classScope,
-                instance);
             var levelNumber = ExprDotName(Ref("level"), "LevelNumber");
             var generateOutputBatchedGivenArray = GenerateOutputBatchedGivenArrayCodegen(forge, classScope, instance);
             var generateAndSort = GenerateAndSortCodegen(forge, classScope, instance);
@@ -2129,7 +2100,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 Cast(typeof(EventBean[]), ExprDotName(Ref("aNewData"), "Array")))
                             .DeclareVar<object>(
                                 "groupKeyComplete",
-                                LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
+                                LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
                         {
                             var forLevel = forNew.ForEach(
                                     typeof(AggregationGroupByRollupLevel),
@@ -2161,11 +2132,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             }
                         }
                         forNew.ExprDotMethod(
-                            REF_AGGREGATIONSVC,
+                            MEMBER_AGGREGATIONSVC,
                             "ApplyEnter",
                             Ref("eventsPerStream"),
                             Ref("groupKeysPerLevel"),
-                            REF_AGENTINSTANCECONTEXT);
+                            MEMBER_AGENTINSTANCECONTEXT);
                     }
 
                     var ifOld = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
@@ -2176,7 +2147,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 Cast(typeof(EventBean[]), ExprDotName(Ref("anOldData"), "Array")))
                             .DeclareVar<object>(
                                 "groupKeyComplete",
-                                LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()));
+                                LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()));
                         {
                             var forLevel = forOld.ForEach(
                                     typeof(AggregationGroupByRollupLevel),
@@ -2208,11 +2179,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             }
                         }
                         forOld.ExprDotMethod(
-                            REF_AGGREGATIONSVC,
+                            MEMBER_AGGREGATIONSVC,
                             "ApplyLeave",
                             Ref("eventsPerStream"),
                             Ref("groupKeysPerLevel"),
-                            REF_AGENTINSTANCECONTEXT);
+                            MEMBER_AGENTINSTANCECONTEXT);
                     }
                 }
             }
@@ -2229,10 +2200,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
         {
             InitGroupRepsPerLevelBufCodegen(instance, forge);
             var generateOutputBatchedGivenArray = GenerateOutputBatchedGivenArrayCodegen(forge, classScope, instance);
-            var generateGroupKeySingle = GenerateGroupKeySingleCodegen(
-                forge.GroupKeyNodeExpressions,
-                classScope,
-                instance);
             var levelNumber = ExprDotName(Ref("level"), "LevelNumber");
             if (forge.IsSelectRStream) {
                 InitRStreamEventsSortArrayBufCodegen(instance, forge);
@@ -2287,7 +2254,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             .AssignRef("eventsPerStream", NewArrayWithInit(typeof(EventBean), Ref("aNewData")))
                             .DeclareVar<object>(
                                 "groupKeyComplete",
-                                LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
+                                LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
                         {
                             var forLevel = forNew.ForEach(
                                     typeof(AggregationGroupByRollupLevel),
@@ -2319,11 +2286,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             }
                         }
                         forNew.ExprDotMethod(
-                            REF_AGGREGATIONSVC,
+                            MEMBER_AGGREGATIONSVC,
                             "ApplyEnter",
                             Ref("eventsPerStream"),
                             Ref("groupKeysPerLevel"),
-                            REF_AGENTINSTANCECONTEXT);
+                            MEMBER_AGENTINSTANCECONTEXT);
                     }
 
                     var ifOld = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
@@ -2332,7 +2299,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             .AssignRef("eventsPerStream", NewArrayWithInit(typeof(EventBean), Ref("anOldData")))
                             .DeclareVar<object>(
                                 "groupKeyComplete",
-                                LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()));
+                                LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()));
                         {
                             var forLevel = forOld.ForEach(
                                     typeof(AggregationGroupByRollupLevel),
@@ -2364,11 +2331,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             }
                         }
                         forOld.ExprDotMethod(
-                            REF_AGGREGATIONSVC,
+                            MEMBER_AGGREGATIONSVC,
                             "ApplyLeave",
                             Ref("eventsPerStream"),
                             Ref("groupKeysPerLevel"),
-                            REF_AGENTINSTANCECONTEXT);
+                            MEMBER_AGENTINSTANCECONTEXT);
                     }
                 }
             }
@@ -2384,10 +2351,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             CodegenInstanceAux instance)
         {
             var generateOutputBatchedGivenArray = GenerateOutputBatchedGivenArrayCodegen(forge, classScope, instance);
-            var generateGroupKeySingle = GenerateGroupKeySingleCodegen(
-                forge.GroupKeyNodeExpressions,
-                classScope,
-                instance);
             var levelNumber = ExprDotName(Ref("level"), "LevelNumber");
             InitGroupRepsPerLevelBufCodegen(instance, forge);
             if (forge.IsSelectRStream) {
@@ -2447,7 +2410,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 Cast(typeof(EventBean[]), ExprDotName(Ref("aNewData"), "Array")))
                             .DeclareVar<object>(
                                 "groupKeyComplete",
-                                LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
+                                LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
                         {
                             var forLevel = forNew.ForEach(
                                     typeof(AggregationGroupByRollupLevel),
@@ -2479,11 +2442,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             }
                         }
                         forNew.ExprDotMethod(
-                            REF_AGGREGATIONSVC,
+                            MEMBER_AGGREGATIONSVC,
                             "ApplyEnter",
                             Ref("eventsPerStream"),
                             Ref("groupKeysPerLevel"),
-                            REF_AGENTINSTANCECONTEXT);
+                            MEMBER_AGENTINSTANCECONTEXT);
                     }
 
                     var ifOld = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
@@ -2494,7 +2457,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 Cast(typeof(EventBean[]), ExprDotName(Ref("anOldData"), "Array")))
                             .DeclareVar<object>(
                                 "groupKeyComplete",
-                                LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()));
+                                LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()));
                         {
                             var forLevel = forOld.ForEach(
                                     typeof(AggregationGroupByRollupLevel),
@@ -2526,11 +2489,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             }
                         }
                         forOld.ExprDotMethod(
-                            REF_AGGREGATIONSVC,
+                            MEMBER_AGGREGATIONSVC,
                             "ApplyLeave",
                             Ref("eventsPerStream"),
                             Ref("groupKeysPerLevel"),
-                            REF_AGENTINSTANCECONTEXT);
+                            MEMBER_AGENTINSTANCECONTEXT);
                     }
                 }
             }
@@ -2659,10 +2622,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             CodegenClassScope classScope,
             CodegenInstanceAux instance)
         {
-            var generateGroupKeySingle = GenerateGroupKeySingleCodegen(
-                forge.GroupKeyNodeExpressions,
-                classScope,
-                instance);
             Consumer<CodegenMethod> code = methodNode => {
                 methodNode.Block
                     .IfRefNullReturnNull("events")
@@ -2681,7 +2640,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         .DeclareVar<object>(
                             "groupKeyComplete",
                             LocalMethod(
-                                generateGroupKeySingle,
+                                forge.GenerateGroupKeySingle,
                                 Ref("eventsPerStream"),
                                 ResultSetProcessorCodegenNames.REF_ISNEWDATA))
                         .AssignArrayElement(
@@ -2727,10 +2686,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             CodegenClassScope classScope,
             CodegenInstanceAux instance)
         {
-            var generateGroupKeySingle = GenerateGroupKeySingleCodegen(
-                forge.GroupKeyNodeExpressions,
-                classScope,
-                instance);
             Consumer<CodegenMethod> code = methodNode => {
                 methodNode.Block.IfCondition(Or(EqualsNull(Ref("events")), ExprDotMethod(Ref("events"), "IsEmpty")))
                     .BlockReturn(ConstantNull())
@@ -2750,7 +2705,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         .DeclareVar<object>(
                             "groupKeyComplete",
                             LocalMethod(
-                                generateGroupKeySingle,
+                                forge.GenerateGroupKeySingle,
                                 Ref("eventsPerStream"),
                                 ResultSetProcessorCodegenNames.REF_ISNEWDATA))
                         .AssignArrayElement(
@@ -2863,7 +2818,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 "SortWOrderKeys",
                                 Ref("newEventsArr"),
                                 Ref("sortKeysNew"),
-                                REF_AGENTINSTANCECONTEXT));
+                                MEMBER_AGENTINSTANCECONTEXT));
                     if (forge.IsSelectRStream) {
                         methodNode.Block.AssignRef(
                             "oldEventsArr",
@@ -2872,7 +2827,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 "SortWOrderKeys",
                                 Ref("oldEventsArr"),
                                 Ref("oldEventSortKeys"),
-                                REF_AGENTINSTANCECONTEXT));
+                                MEMBER_AGENTINSTANCECONTEXT));
                     }
                 }
 
@@ -2916,11 +2871,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             "keys",
                             LocalMethod(generateGroupKeysRow, Ref("eventsPerStream"), ConstantTrue()))
                         .ExprDotMethod(
-                            REF_AGGREGATIONSVC,
+                            MEMBER_AGGREGATIONSVC,
                             "ApplyEnter",
                             Ref("eventsPerStream"),
                             Ref("keys"),
-                            REF_AGENTINSTANCECONTEXT);
+                            MEMBER_AGENTINSTANCECONTEXT);
                 }
             }
             {
@@ -2932,11 +2887,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             "keys",
                             LocalMethod(generateGroupKeysRow, Ref("eventsPerStream"), ConstantFalse()))
                         .ExprDotMethod(
-                            REF_AGGREGATIONSVC,
+                            MEMBER_AGGREGATIONSVC,
                             "ApplyLeave",
                             Ref("eventsPerStream"),
                             Ref("keys"),
-                            REF_AGENTINSTANCECONTEXT);
+                            MEMBER_AGENTINSTANCECONTEXT);
                 }
             }
         }
@@ -2959,11 +2914,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             "keys",
                             LocalMethod(generateGroupKeysRow, Ref("eventsPerStream"), ConstantTrue()))
                         .ExprDotMethod(
-                            REF_AGGREGATIONSVC,
+                            MEMBER_AGGREGATIONSVC,
                             "ApplyEnter",
                             Ref("eventsPerStream"),
                             Ref("keys"),
-                            REF_AGENTINSTANCECONTEXT);
+                            MEMBER_AGENTINSTANCECONTEXT);
                 }
             }
             {
@@ -2975,11 +2930,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             "keys",
                             LocalMethod(generateGroupKeysRow, Ref("eventsPerStream"), ConstantFalse()))
                         .ExprDotMethod(
-                            REF_AGGREGATIONSVC,
+                            MEMBER_AGGREGATIONSVC,
                             "ApplyLeave",
                             Ref("eventsPerStream"),
                             Ref("keys"),
-                            REF_AGENTINSTANCECONTEXT);
+                            MEMBER_AGENTINSTANCECONTEXT);
                 }
             }
         }
@@ -3004,12 +2959,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     ExprDotMethod(
                         factory,
                         "MakeRSRowPerGroupRollupAll",
-                        REF_AGENTINSTANCECONTEXT,
+                        MEMBER_AGENTINSTANCECONTEXT,
                         Ref("this"),
                         Constant(forge.GroupKeyTypes),
                         eventTypes));
                 method.Block.ExprDotMethod(
-                    Ref(NAME_OUTPUTALLHELPER),
+                    Member(NAME_OUTPUTALLHELPER),
                     methodName,
                     REF_NEWDATA,
                     REF_OLDDATA,
@@ -3022,12 +2977,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     ExprDotMethod(
                         factory,
                         "MakeRSRowPerGroupRollupLast",
-                        REF_AGENTINSTANCECONTEXT,
+                        MEMBER_AGENTINSTANCECONTEXT,
                         Ref("this"),
                         Constant(forge.GroupKeyTypes),
                         eventTypes));
                 method.Block.ExprDotMethod(
-                    Ref(NAME_OUTPUTLASTHELPER),
+                    Member(NAME_OUTPUTLASTHELPER),
                     methodName,
                     REF_NEWDATA,
                     REF_OLDDATA,
@@ -3049,10 +3004,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             CodegenMethod method)
         {
             if (forge.OutputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "OutputView", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Member(NAME_OUTPUTALLHELPER), "OutputView", REF_ISSYNTHESIZE));
             }
             else if (forge.OutputLimitSpec.DisplayLimit == OutputLimitLimitType.LAST) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "OutputView", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Member(NAME_OUTPUTLASTHELPER), "OutputView", REF_ISSYNTHESIZE));
             }
             else {
                 method.Block.MethodReturn(ConstantNull());
@@ -3064,10 +3019,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             CodegenMethod method)
         {
             if (forge.OutputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "OutputJoin", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Member(NAME_OUTPUTALLHELPER), "OutputJoin", REF_ISSYNTHESIZE));
             }
             else if (forge.OutputLimitSpec.DisplayLimit == OutputLimitLimitType.LAST) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "OutputJoin", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Member(NAME_OUTPUTLASTHELPER), "OutputJoin", REF_ISSYNTHESIZE));
             }
             else {
                 method.Block.MethodReturn(ConstantNull());
@@ -3079,19 +3034,19 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             CodegenInstanceAux instance)
         {
             if (instance.HasMember(NAME_OUTPUTLASTHELPER)) {
-                method.Block.ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "Destroy");
+                method.Block.ExprDotMethod(Member(NAME_OUTPUTLASTHELPER), "Destroy");
             }
 
             if (instance.HasMember(NAME_OUTPUTFIRSTHELPERS)) {
                 method.Block.ForEach(
                         typeof(ResultSetProcessorGroupedOutputFirstHelper),
                         "helper",
-                        Ref(NAME_OUTPUTFIRSTHELPERS))
+                        Member(NAME_OUTPUTFIRSTHELPERS))
                     .ExprDotMethod(Ref("helper"), "Destroy");
             }
 
             if (instance.HasMember(NAME_OUTPUTALLHELPER)) {
-                method.Block.ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "Destroy");
+                method.Block.ExprDotMethod(Member(NAME_OUTPUTALLHELPER), "Destroy");
             }
         }
 
@@ -3100,15 +3055,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             CodegenClassScope classScope,
             CodegenInstanceAux instance)
         {
-            var generateGroupKeySingle = GenerateGroupKeySingleCodegen(
-                forge.GroupKeyNodeExpressions,
-                classScope,
-                instance);
-
             Consumer<CodegenMethod> code = methodNode => methodNode.Block.DeclareVar<object>(
                     "groupKeyComplete",
                     LocalMethod(
-                        generateGroupKeySingle,
+                        forge.GenerateGroupKeySingle,
                         Ref("eventsPerStream"),
                         ResultSetProcessorCodegenNames.REF_ISNEWDATA))
                 .DeclareVar<AggregationGroupByRollupLevel[]>(
@@ -3182,7 +3132,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         typeof(ResultSetProcessorRowPerGroupRollupUtil),
                         "InitializeOutputFirstHelpers",
                         factory,
-                        REF_AGENTINSTANCECONTEXT,
+                        MEMBER_AGENTINSTANCECONTEXT,
                         Constant(forge.GroupKeyTypes),
                         ExprDotName(Ref("this"), "GroupByRollupDesc"),
                         outputConditionFactory));

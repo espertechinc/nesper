@@ -67,8 +67,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 .StaticMethod(
                     typeof(ResultSetProcessorGroupedUtil),
                     METHOD_APPLYAGGVIEWRESULTKEYEDVIEW,
-                    REF_AGGREGATIONSVC,
-                    REF_AGENTINSTANCECONTEXT,
+                    MEMBER_AGGREGATIONSVC,
+                    MEMBER_AGENTINSTANCECONTEXT,
                     REF_NEWDATA,
                     Ref("newDataMultiKey"),
                     REF_OLDDATA,
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 ExprDotMethod(
                     factory,
                     "MakeRSRowPerGroupRollupSnapshotUnbound",
-                    REF_AGENTINSTANCECONTEXT,
+                    MEMBER_AGENTINSTANCECONTEXT,
                     Ref("this"),
                     Constant(forge.GroupKeyTypes),
                     Constant(forge.NumStreams),
@@ -130,8 +130,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 .StaticMethod(
                     typeof(ResultSetProcessorGroupedUtil),
                     METHOD_APPLYAGGVIEWRESULTKEYEDVIEW,
-                    REF_AGGREGATIONSVC,
-                    REF_AGENTINSTANCECONTEXT,
+                    MEMBER_AGGREGATIONSVC,
+                    MEMBER_AGENTINSTANCECONTEXT,
                     REF_NEWDATA,
                     Ref("newDataMultiKey"),
                     REF_OLDDATA,

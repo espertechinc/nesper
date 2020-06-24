@@ -52,19 +52,20 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             .WithNullKeySupport();
 
         private readonly EventBean[] eventsPerStream = new EventBean[1];
+        private readonly GroupByViewFactory _groupByViewFactory;
 
         /// <summary>
         ///     Constructor.
         /// </summary>
-        /// <param name="groupByViewFactory">view factory</param>
+        /// <param name="groupByGroupByViewFactory">view factory</param>
         /// <param name="agentInstanceContext">contains required view services</param>
         public GroupByViewImpl(
-            GroupByViewFactory groupByViewFactory,
+            GroupByViewFactory groupByGroupByViewFactory,
             AgentInstanceViewFactoryChainContext agentInstanceContext)
         {
-            ViewFactory = groupByViewFactory;
+            _groupByViewFactory = groupByGroupByViewFactory;
             this.agentInstanceContext = agentInstanceContext;
-            MergeView = new MergeView(this, groupByViewFactory.eventType);
+            MergeView = new MergeView(this, groupByGroupByViewFactory.EventType);
         }
 
         public void Stop(AgentInstanceStopServices services)
@@ -74,7 +75,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             }
         }
 
-        public GroupByViewFactory ViewFactory { get; }
+        public GroupByViewFactory ViewFactory => _groupByViewFactory;
 
         public override void Update(
             EventBean[] newData,
@@ -208,17 +209,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
         private object GetGroupKey(EventBean theEvent)
         {
             eventsPerStream[0] = theEvent;
-            var criteriaEvaluators = ViewFactory.CriteriaEvals;
-            if (criteriaEvaluators.Length == 1) {
-                return criteriaEvaluators[0].Evaluate(eventsPerStream, true, agentInstanceContext);
-            }
-
-            var values = new object[criteriaEvaluators.Length];
-            for (var i = 0; i < criteriaEvaluators.Length; i++) {
-                values[i] = criteriaEvaluators[i].Evaluate(eventsPerStream, true, agentInstanceContext);
-            }
-
-            return new HashableMultiKey(values);
+            return _groupByViewFactory.CriteriaEval.Evaluate(eventsPerStream, true, agentInstanceContext);
         }
 
         protected internal static object AddUpgradeToDequeIfPopulated(

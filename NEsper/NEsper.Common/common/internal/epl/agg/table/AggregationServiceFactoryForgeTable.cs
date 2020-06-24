@@ -28,14 +28,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
         private readonly TableColumnMethodPairForge[] methodPairs;
         private readonly int[] accessColumnsZeroOffset;
         private readonly AggregationAgentForge[] accessAgents;
-        private readonly AggregationGroupByRollupDesc groupByRollupDesc;
+        private readonly AggregationGroupByRollupDescForge groupByRollupDesc;
 
         public AggregationServiceFactoryForgeTable(
             TableMetaData metadata,
             TableColumnMethodPairForge[] methodPairs,
             int[] accessColumnsZeroOffset,
             AggregationAgentForge[] accessAgents,
-            AggregationGroupByRollupDesc groupByRollupDesc)
+            AggregationGroupByRollupDescForge groupByRollupDesc)
         {
             this.metadata = metadata;
             this.methodPairs = methodPairs;
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
                 .SetProperty(
                     Ref("factory"),
                     "GroupByRollupDesc",
-                    groupByRollupDesc == null ? ConstantNull() : groupByRollupDesc.Codegen())
+                    groupByRollupDesc == null ? ConstantNull() : groupByRollupDesc.Codegen(method, classScope))
                 .MethodReturn(Ref("factory"));
             return LocalMethod(method);
         }

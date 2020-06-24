@@ -119,7 +119,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 var parameterPickedForIndex = remainingParameters.RemoveFirst();
                 var index = IndexFactory.CreateIndex(parameterPickedForIndex.Lookupable, lockFactory, parameterPickedForIndex.FilterOperator);
 
-                currentNode.Indizes.Add(index);
+                currentNode.Add(index);
                 AddToIndex(remainingParameters, filterCallback, index, parameterPickedForIndex.FilterForValue, lockFactory);
             }
         }

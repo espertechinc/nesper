@@ -6,7 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.resultset.order;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
@@ -27,7 +30,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             bool rollup,
             AggregationServiceForgeDesc aggregationServiceForgeDesc,
             OrderByProcessorFactoryForge orderByProcessorFactoryForge,
-            SelectSubscriberDescriptor selectSubscriberDescriptor)
+            SelectSubscriberDescriptor selectSubscriberDescriptor,
+            IList<StmtClassForgeableFactory> additionalForgeables)
         {
             ResultSetProcessorFactoryForge = resultSetProcessorFactoryForge;
             ResultSetProcessorType = resultSetProcessorType;
@@ -41,6 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             AggregationServiceForgeDesc = aggregationServiceForgeDesc;
             OrderByProcessorFactoryForge = orderByProcessorFactoryForge;
             SelectSubscriberDescriptor = selectSubscriberDescriptor;
+            AdditionalForgeables = additionalForgeables;
         }
 
         public ResultSetProcessorFactoryForge ResultSetProcessorFactoryForge { get; }
@@ -66,5 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         public OrderByProcessorFactoryForge OrderByProcessorFactoryForge { get; }
 
         public SelectSubscriberDescriptor SelectSubscriberDescriptor { get; }
+        
+        public IList<StmtClassForgeableFactory> AdditionalForgeables { get; }
     }
 } // end of namespace

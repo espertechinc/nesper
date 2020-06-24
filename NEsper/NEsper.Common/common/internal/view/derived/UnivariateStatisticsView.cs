@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.view.derived
                 }
 
                 if ((viewFactory.additionalProps != null) && (newData.Length != 0)) {
-                    var additionalEvals = viewFactory.additionalProps.GetAdditionalEvals();
+                    var additionalEvals = viewFactory.additionalProps.AdditionalEvals;
                     if (lastValuesEventNew == null) {
                         lastValuesEventNew = new object[additionalEvals.Length];
                     }

@@ -379,7 +379,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 		{
 			if (!forge.IsHistoricalOnly) {
 				method.Block.MethodReturn(
-					LocalMethod(ObtainIteratorCodegen(forge, method, classScope, instance), REF_VIEWABLE));
+					LocalMethod(ObtainEnumeratorCodegen(forge, method, classScope, instance), REF_VIEWABLE));
 				return;
 			}
 
@@ -402,12 +402,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 					StaticMethod(
 						typeof(ResultSetProcessorUtil),
 						METHOD_ITERATORTODEQUE,
-						LocalMethod(ObtainIteratorCodegen(forge, method, classScope, instance), REF_VIEWABLE)))
+						LocalMethod(ObtainEnumeratorCodegen(forge, method, classScope, instance), REF_VIEWABLE)))
 				.ExprDotMethod(MEMBER_AGGREGATIONSVC, "ClearResults", MEMBER_AGENTINSTANCECONTEXT)
 				.MethodReturn(ExprDotMethod(Ref("deque"), "iterator"));
 		}
 
-		private static CodegenMethod ObtainIteratorCodegen(
+		private static CodegenMethod ObtainEnumeratorCodegen(
 			ResultSetProcessorAggregateGroupedForge forge,
 			CodegenMethod parent,
 			CodegenClassScope classScope,

@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -20,6 +21,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+using static com.espertech.esper.common.@internal.epl.expression.agg.accessagg.ExprAggMultiFunctionCountMinSketchNode; //MSG_NAME
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
 {
@@ -53,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
                 var add =
                     (AggregationForgeFactoryAccessCountMinSketchAdd) factory;
                 var aggType = add.Parent.AggType;
-                if (aggType == CountMinSketchAggType.FREQ || aggType == CountMinSketchAggType.ADD) {
+                if (aggType == CountMinSketchAggType.ADD) {
                     var clazz = add.AddOrFrequencyEvaluatorReturnType;
                     var foundMatch = false;
                     foreach (var allowed in acceptableValueTypes) {
@@ -89,6 +91,46 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
                 .SetProperty(Ref("v"), "AcceptableValueTypes", Constant(acceptableValueTypes))
                 .MethodReturn(Ref("v"));
             return LocalMethod(method);
+        }
+
+
+        public bool IsAggregationMethod(
+            string name,
+            ExprNode[] parameters,
+            ExprValidationContext validationContext)
+        {
+            return CountMinSketchAggMethodExtensions.FromNameMayMatch(name) != null;
+        }
+
+        public AggregationMultiFunctionMethodDesc ValidateAggregationMethod(
+            ExprValidationContext validationContext,
+            string aggMethodName,
+            ExprNode[] @params)
+        {
+            var aggMethod = CountMinSketchAggMethodExtensions.FromNameMayMatch(aggMethodName);
+            AggregationMethodForge forge;
+            if (aggMethod == CountMinSketchAggMethod.FREQ) {
+                if (@params.Length == 0 || @params.Length > 1) {
+                    throw new ExprValidationException(GetMessagePrefix(aggMethod.Value) + "requires a single parameter expression");
+                }
+
+                ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.AGGPARAM, @params, validationContext);
+                var frequencyEval = @params[0];
+                forge = new AgregationMethodCountMinSketchFreqForge(frequencyEval);
+            }
+            else {
+                if (@params.Length != 0) {
+                    throw new ExprValidationException(GetMessagePrefix(aggMethod.Value) + "requires a no parameter expressions");
+                }
+
+                forge = new AgregationMethodCountMinSketchTopKForge();
+            }
+
+            return new AggregationMultiFunctionMethodDesc(forge, null, null, null);
+        }
+
+        private string GetMessagePrefix(CountMinSketchAggMethod aggType) {
+            return MSG_NAME + " aggregation function '" + aggType.GetMethodName() + "' ";
         }
     }
 } // end of namespace

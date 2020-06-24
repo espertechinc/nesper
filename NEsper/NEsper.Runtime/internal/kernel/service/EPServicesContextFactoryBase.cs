@@ -221,7 +221,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             var variableManagementService = MakeVariableManagementService(
                 configs, schedulingService, eventBeanTypedEventFactory, runtimeSettingsService, epServicesHA);
             foreach (var publicVariable in variableRepositoryPreconfigured.Metadata) {
-                variableManagementService.AddVariable(null, publicVariable.Value, null);
+                variableManagementService.AddVariable(null, publicVariable.Value, null, TODO);
                 variableManagementService.AllocateVariableState(
                     null, publicVariable.Key, DEFAULT_AGENT_INSTANCE_ID, false, null, eventBeanTypedEventFactory);
             }

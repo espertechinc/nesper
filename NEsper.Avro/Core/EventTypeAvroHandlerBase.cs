@@ -139,7 +139,7 @@ namespace NEsper.Avro.Core
         {
             Console.WriteLine("Schema: {0}", schemaJson);
             var schema = Schema.Parse(schemaJson);
-            return MakeType(metadata, eventBeanTypedEventFactory, schema, null, null, null);
+            return MakeType(metadata, eventBeanTypedEventFactory, schema, null, superTypes, deepSuperTypes);
         }
 
         public SelectExprProcessorRepresentationFactory OutputFactory => FACTORY_SELECT;

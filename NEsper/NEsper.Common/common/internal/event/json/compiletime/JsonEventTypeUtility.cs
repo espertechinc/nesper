@@ -185,9 +185,9 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 	                throw new ExprValidationException("Failed to find public field '" + insertedName + "' on class '" + declaredClass.Name + "'");
 	            }
 
-	            Type fieldClass = TypeHelper.GetBoxedType(field.Type);
+	            Type fieldClass = Boxing.GetBoxedType(field.Type);
 	            if (insertedType is Type) {
-	                Type insertedClass = TypeHelper.GetBoxedType((Type) insertedType);
+	                Type insertedClass = Boxing.GetBoxedType((Type) insertedType);
 	                if (!TypeHelper.IsSubclassOrImplementsInterface(insertedClass, fieldClass)) {
 	                    throw MakeInvalidField(insertedName, insertedClass, declaredClass, field);
 	                }
@@ -208,8 +208,8 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 	    }
 
 	    private static ExprValidationException MakeInvalidField(string insertedName, Type insertedClass, Type declaredClass, FieldInfo field) {
-	        return new ExprValidationException("Public field '" + insertedName + "' of class '" + TypeHelper.GetClassNameFullyQualPretty(declaredClass) + "' declared as type " +
-	            "'" + TypeHelper.GetClassNameFullyQualPretty(field.Type) + "' cannot receive a value of type '" + TypeHelper.GetClassNameFullyQualPretty(insertedClass) + "'");
+	        return new ExprValidationException("Public field '" + insertedName + "' of class '" + TypeExtensions.CleanName(declaredClass) + "' declared as type " +
+	            "'" + TypeExtensions.CleanName(field.Type) + "' cannot receive a value of type '" + TypeExtensions.CleanName(insertedClass) + "'");
 	    }
 
 	    private static void GenerateApplicationClassForgables(Type optionalUnderlyingProvided, IDictionary<Type, JsonApplicationClassDelegateDesc> deepClasses, IList<StmtClassForgeableFactory> additionalForgeables, Attribute[] annotations, StatementCompileTimeServices services)

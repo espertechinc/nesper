@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 {
 	public class FilterSpecCompilerIndexPlannerWidthWithConditions
 	{
-		protected static FilterSpecPlanForge PlanRemainingNodesWithConditions(
+		internal static FilterSpecPlanForge PlanRemainingNodesWithConditions(
 			FilterSpecParaForgeMap overallExpressions,
 			FilterSpecCompilerArgs args,
 			int filterServiceMaxFilterWidth,
@@ -168,7 +168,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 			IList<ExprNode> nvPerOr = new List<ExprNode>(permutation.Length);
 			IList<ExprNode> negatingPath = new List<ExprNode>(permutation.Length);
 			for (var orNodeNum = 0; orNodeNum < permutation.Length; orNodeNum++) {
-				int orChildNodeNum = (int?) permutation[orNodeNum];
+				int orChildNodeNum = permutation[orNodeNum].AsInt32();
 				var current = orChildNodes[orNodeNum][orChildNodeNum];
 				if (current is OrChildNodeNV) {
 					var nv = (OrChildNodeNV) current;

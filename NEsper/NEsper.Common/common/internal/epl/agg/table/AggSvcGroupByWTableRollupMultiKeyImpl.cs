@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.epl.agg.core;
@@ -46,8 +48,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
             var groupKeyPerLevel = (object[]) compositeGroupByKey;
             for (var i = 0; i < groupKeyPerLevel.Length; i++) {
                 var level = groupByRollupDesc.Levels[i];
-                object groupByKey = level.ComputeMultiKey(groupKeyPerLevel[i], numKeys);
-                ApplyEnterGroupKey(eventsPerStream, groupByKey, exprEvaluatorContext);
+                var groupByKey = level.ComputeMultiKey(groupKeyPerLevel[i], numKeys);
+                var tableKey = tableInstance.Table.PrimaryKeyObjectArrayTransform.From(groupByKey);
+                ApplyEnterTableKey(eventsPerStream, tableKey, exprEvaluatorContext);
             }
         }
 
@@ -59,8 +62,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
             var groupKeyPerLevel = (object[]) compositeGroupByKey;
             for (var i = 0; i < groupKeyPerLevel.Length; i++) {
                 var level = groupByRollupDesc.Levels[i];
-                object groupByKey = level.ComputeMultiKey(groupKeyPerLevel[i], numKeys);
-                ApplyLeaveGroupKey(eventsPerStream, groupByKey, exprEvaluatorContext);
+                var groupByKey = level.ComputeMultiKey(groupKeyPerLevel[i], numKeys);
+                var tableKey = tableInstance.Table.PrimaryKeyObjectArrayTransform.From(groupByKey);
+                ApplyLeaveTableKey(eventsPerStream, tableKey, exprEvaluatorContext);
             }
         }
 
@@ -70,7 +74,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
             AggregationGroupByRollupLevel rollupLevel)
         {
             var key = rollupLevel.ComputeMultiKey(groupByKey, numKeys);
-            var bean = tableInstance.GetRowForGroupKey(key);
+            var tableKey = tableInstance.Table.PrimaryKeyObjectArrayTransform.From(key);
+            var bean = tableInstance.GetRowForGroupKey(tableKey);
 
             if (bean != null) {
                 currentAggregationRow = (AggregationRow) bean.Properties[0];

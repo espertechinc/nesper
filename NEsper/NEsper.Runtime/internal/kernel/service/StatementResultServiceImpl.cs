@@ -250,6 +250,46 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             }
         }
 
+        public void ClearDeliveriesRemoveStream(EventBean[] removedEvents)
+        {
+            StatementDispatchTLEntry entry = DispatchTL.GetOrCreate();
+
+            ArrayDeque<UniformPair<EventBean[]>> results = entry.Results;
+            
+            IEnumerator<UniformPair<EventBean[]>> enumerator = entry.Results.iterator();
+            while (enumerator.MoveNext()) {
+                var pair = enumerator.Current;
+                if (pair.Second == null) {
+                    continue;
+                }
+
+                bool containsDeleted = false;
+                foreach (EventBean removedEvent in removedEvents) {
+                    foreach (EventBean dispatchEvent in pair.Second) {
+                        if (removedEvent == dispatchEvent) {
+                            containsDeleted = true;
+                            break;
+                        }
+                    }
+
+                    if (containsDeleted) {
+                        break;
+                    }
+                }
+
+                if (containsDeleted) {
+                    enumerator.remove();
+                }
+            }
+
+            if (!entry.Results.IsEmpty()) {
+                return;
+            }
+
+            entry.IsDispatchWaiting = false;
+            epServicesContext.DispatchService.RemoveAll(epStatement.DispatchChildView);
+        }
+
         private IDictionary<object, UniformPair<EventBean[]>> GetGroupedResults(UniformPair<EventBean[]> events)
         {
             if (events == null) {

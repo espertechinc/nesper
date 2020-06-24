@@ -333,8 +333,6 @@ namespace NEsper.Avro.Core
             return new AvroEventBeanWriterPerProp(writers);
         }
 
-        public EventBeanReader Reader => null; // use the default reader
-
         public ExprValidationException EqualsCompareType(EventType other)
         {
             if (!other.Name.Equals(Name)) {

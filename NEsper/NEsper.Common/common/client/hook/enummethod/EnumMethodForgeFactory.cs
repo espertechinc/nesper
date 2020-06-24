@@ -11,7 +11,7 @@ namespace com.espertech.esper.common.client.hook.enummethod
 	/// <summary>
 	///     Enumeration method extension API for adding enum-methods.
 	/// </summary>
-	internal interface EnumMethodForgeFactory
+	public interface EnumMethodForgeFactory
     {
 	    /// <summary>
 	    ///     Called by the compiler to receive the list of footprints.
