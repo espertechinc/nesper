@@ -85,14 +85,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 			CodegenInstanceAux instance)
 		{
 			method.Block
-				.IfCondition(Not(ExprDotMethod(REF_NEWDATA, "isEmpty")))
+				.IfCondition(Not(ExprDotMethod(REF_NEWDATA, "IsEmpty")))
 				.ForEach(typeof(MultiKeyArrayOfKeys<EventBean>), "aNewEvent", REF_NEWDATA)
 				.DeclareVar<EventBean[]>("eventsPerStream", ExprDotName(Ref("aNewEvent"), "Array"))
 				.DeclareVar<object>("mk", LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()))
 				.ExprDotMethod(MEMBER_AGGREGATIONSVC, "ApplyEnter", Ref("eventsPerStream"), Ref("mk"), MEMBER_AGENTINSTANCECONTEXT)
 				.BlockEnd()
 				.BlockEnd()
-				.IfCondition(And(NotEqualsNull(REF_OLDDATA), Not(ExprDotMethod(REF_OLDDATA, "isEmpty"))))
+				.IfCondition(And(NotEqualsNull(REF_OLDDATA), Not(ExprDotMethod(REF_OLDDATA, "IsEmpty"))))
 				.ForEach(typeof(MultiKeyArrayOfKeys<EventBean>), "anOldEvent", REF_OLDDATA)
 				.DeclareVar<EventBean[]>("eventsPerStream", ExprDotName(Ref("anOldEvent"), "Array"))
 				.DeclareVar<object>("mk", LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()))
@@ -297,7 +297,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 			CodegenInstanceAux instance)
 		{
 			Consumer<CodegenMethod> code = methodNode => {
-				methodNode.Block.IfCondition(ExprDotMethod(Ref("resultSet"), "isEmpty"))
+				methodNode.Block.IfCondition(ExprDotMethod(Ref("resultSet"), "IsEmpty"))
 					.BlockReturn(ConstantNull())
 					.DeclareVar<EventBean[]>("events", NewArrayByLength(typeof(EventBean), ExprDotMethod(Ref("resultSet"), "size")))
 					.DeclareVar<object[]>("keys", NewArrayByLength(typeof(object), ExprDotMethod(Ref("resultSet"), "size")));

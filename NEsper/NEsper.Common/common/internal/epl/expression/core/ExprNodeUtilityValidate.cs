@@ -382,7 +382,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public static void Validate(
             ExprNodeOrigin origin,
-            List<Chainable> chainSpec,
+            IList<Chainable> chainSpec,
             ExprValidationContext validationContext)
         {
             // validate all parameters

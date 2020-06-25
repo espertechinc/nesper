@@ -29,11 +29,11 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        Write(@object, output);
 	    }
 
-	    public void Write(bool? b, DataOutput stream) {
-	        bool isNull = b == null;
+	    public void Write(bool? value, DataOutput stream) {
+	        bool isNull = value == null;
 	        stream.WriteBoolean(isNull);
 	        if (!isNull) {
-	            stream.WriteBoolean(b);
+	            stream.WriteBoolean(value.Value);
 	        }
 	    }
 

@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			bool isNull = @object == null;
 			stream.WriteBoolean(isNull);
 			if (!isNull) {
-				stream.WriteDecimal((decimal) @object);
+				stream.WriteDecimal(@object.Value);
 			}
 		}
 

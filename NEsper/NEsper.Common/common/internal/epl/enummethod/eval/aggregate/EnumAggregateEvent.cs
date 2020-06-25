@@ -99,20 +99,20 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate
 
 			var block = methodNode.Block;
 			block.DeclareVar(initType, "value", _initialization.EvaluateCodegen(initType, methodNode, scope, codegenClassScope))
-				.IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
+				.IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
 				.BlockReturn(Ref("value"));
 			block.DeclareVar(
 					typeof(ObjectArrayEventBean),
 					"resultEvent",
 					NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(_numParameters - 1)), typeMember))
 				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("resultEvent"))
-				.DeclareVar(typeof(object[]), "props", ExprDotMethod(Ref("resultEvent"), "getProperties"));
+				.DeclareVar<object[]>("props", ExprDotMethod(Ref("resultEvent"), "getProperties"));
 			if (_numParameters > 3) {
-				block.AssignArrayElement("props", Constant(2), ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "size"));
+				block.AssignArrayElement("props", Constant(2), ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"));
 			}
 
 			if (_numParameters > 2) {
-				block.DeclareVar(typeof(int), "count", Constant(-1));
+				block.DeclareVar<int>("count", Constant(-1));
 			}
 
 			var forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)

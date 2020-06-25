@@ -19,38 +19,54 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	/// <summary>
 	/// Binding for nullable short-typed values.
 	/// </summary>
-	public class DIONullableShortSerde : DataInputOutputSerde<short?> {
-	    public readonly static DIONullableShortSerde INSTANCE = new DIONullableShortSerde();
+	public class DIONullableShortSerde : DataInputOutputSerde<short?>
+	{
+		public readonly static DIONullableShortSerde INSTANCE = new DIONullableShortSerde();
 
-	    private DIONullableShortSerde() {
-	    }
+		private DIONullableShortSerde()
+		{
+		}
 
-	    public void Write(short? @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
-	        Write(@object, output);
-	    }
+		public void Write(
+			short? @object,
+			DataOutput output,
+			byte[] pageFullKey,
+			EventBeanCollatedWriter writer)
+		{
+			Write(@object, output);
+		}
 
-	    public void Write(short? @object, DataOutput stream) {
-	        bool isNull = @object == null;
-	        stream.WriteBoolean(isNull);
-	        if (!isNull) {
-	            stream.WriteShort(@object);
-	        }
-	    }
+		public void Write(
+			short? @object,
+			DataOutput stream)
+		{
+			bool isNull = @object == null;
+			stream.WriteBoolean(isNull);
+			if (!isNull) {
+				stream.WriteShort(@object.Value);
+			}
+		}
 
-	    public short? Read(DataInput input) {
-	        return ReadInternal(input);
-	    }
+		public short? Read(DataInput input)
+		{
+			return ReadInternal(input);
+		}
 
-	    public short? Read(DataInput input, byte[] resourceKey) {
-	        return ReadInternal(input);
-	    }
+		public short? Read(
+			DataInput input,
+			byte[] resourceKey)
+		{
+			return ReadInternal(input);
+		}
 
-	    private short? ReadInternal(DataInput input) {
-	        bool isNull = input.ReadBoolean();
-	        if (isNull) {
-	            return null;
-	        }
-	        return input.ReadShort();
-	    }
+		private short? ReadInternal(DataInput input)
+		{
+			bool isNull = input.ReadBoolean();
+			if (isNull) {
+				return null;
+			}
+
+			return input.ReadShort();
+		}
 	}
 } // end of namespace

@@ -473,7 +473,7 @@ namespace com.espertech.esper.compat
         /// <returns>
         /// 	<c>true</c> if the specified value is long; otherwise, <c>false</c>.
         /// </returns>
-        public static bool IsLong(this object value)
+        public static bool IsInt64(this object value)
         {
             return (value is short) ||
                    (value is int) ||

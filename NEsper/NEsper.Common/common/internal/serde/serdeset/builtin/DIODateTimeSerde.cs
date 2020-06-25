@@ -12,49 +12,66 @@ using System.IO;
 
 using com.espertech.esper.common.client.serde;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIODateTimeSerde : DataInputOutputSerde<DateTime?> {
-	    public readonly static DIODateTimeSerde INSTANCE = new DIODateTimeSerde();
+	public class DIODateTimeSerde : DataInputOutputSerde<DateTime?>
+	{
+		public readonly static DIODateTimeSerde INSTANCE = new DIODateTimeSerde();
 
-	    private DIODateTimeSerde() {
-	    }
+		private DIODateTimeSerde()
+		{
+		}
 
-	    public void Write(DateTime? @object, DataOutput output) {
-	        WriteInternal(@object, output);
-	    }
+		public void Write(
+			DateTime? @object,
+			DataOutput output)
+		{
+			WriteInternal(@object, output);
+		}
 
-	    public DateTime? Read(DataInput input) {
-	        return ReadInternal(input);
-	    }
+		public DateTime? Read(DataInput input)
+		{
+			return ReadInternal(input);
+		}
 
-	    public void Write(DateTime? @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
-	        WriteInternal(@object, output);
-	    }
+		public void Write(
+			DateTime? @object,
+			DataOutput output,
+			byte[] unitKey,
+			EventBeanCollatedWriter writer)
+		{
+			WriteInternal(@object, output);
+		}
 
-	    public DateTime? Read(DataInput input, byte[] unitKey) {
-	        return ReadInternal(input);
-	    }
+		public DateTime? Read(
+			DataInput input,
+			byte[] unitKey)
+		{
+			return ReadInternal(input);
+		}
 
-	    internal static void WriteInternal(DateTime? @object, DataOutput output) {
-	        if (@object == null) {
-	            output.WriteLong(-1);
-	            return;
-	        }
+		internal static void WriteInternal(
+			DateTime? @object,
+			DataOutput output)
+		{
+			if (@object == null) {
+				output.WriteLong(-1);
+				return;
+			}
 
-	        output.WriteLong(DateTimeHelper.UtcNanos(@object.Value));
-	    }
+			output.WriteLong(DateTimeHelper.UtcNanos(@object.Value));
+		}
 
-	    internal static DateTime? ReadInternal(DataInput input) {
-	        long value = input.ReadLong();
-	        if (value == -1) {
-	            return null;
-	        }
+		internal static DateTime? ReadInternal(DataInput input)
+		{
+			long value = input.ReadLong();
+			if (value == -1) {
+				return null;
+			}
 
-	        return DateTimeHelper.TimeFromNanos(value);
-	    }
+			return DateTimeHelper.TimeFromNanos(value);
+		}
 	}
 } // end of namespace

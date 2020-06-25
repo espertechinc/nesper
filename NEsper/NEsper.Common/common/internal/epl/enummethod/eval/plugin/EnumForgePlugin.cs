@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
 							methodNode.Block
 								.DeclareVar<ObjectArrayEventBean>(eventName, NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(1)), type))
 								.AssignArrayElement(REF_EPS, Constant(lambda.StreamCountIncoming + i), Ref(eventName))
-								.DeclareVar(typeof(object[]), propName, ExprDotName(Ref(eventName), "Properties"));
+								.DeclareVar<object[]>(propName, ExprDotName(Ref(eventName), "Properties"));
 
 							// initialize index-type lambda-parameters to zer0
 							if (lambdaParameterType is EnumMethodLambdaParameterTypeIndex) {
@@ -119,7 +119,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
 
 							if (lambdaParameterType is EnumMethodLambdaParameterTypeSize) {
 								methodNode.Block
-									.AssignArrayElement(propName, Constant(0), ExprDotMethod(REF_ENUMCOLL, "size"));
+									.AssignArrayElement(propName, Constant(0), ExprDotName(REF_ENUMCOLL, "Count"));
 							}
 
 							if (lambdaParameterType is EnumMethodLambdaParameterTypeStateGetter) {
@@ -135,7 +135,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
 			}
 
 			var elementType = _inputEventType == null ? typeof(object) : typeof(EventBean);
-			methodNode.Block.DeclareVar(typeof(int), "count", Constant(-1));
+			methodNode.Block.DeclareVar<int>("count", Constant(-1));
 			var forEach = methodNode.Block.ForEach(elementType, "next", REF_ENUMCOLL);
 			{
 				forEach.IncrementRef("count");

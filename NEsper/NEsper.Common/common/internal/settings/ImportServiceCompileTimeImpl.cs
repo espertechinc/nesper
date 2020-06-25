@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.approx.countminsketch;
 using com.espertech.esper.common.@internal.epl.expression.agg.accessagg;
 using com.espertech.esper.common.@internal.epl.expression.agg.method;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.expression.funcs;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.service;

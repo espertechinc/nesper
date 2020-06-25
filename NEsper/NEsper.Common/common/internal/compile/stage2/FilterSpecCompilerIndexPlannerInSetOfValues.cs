@@ -21,7 +21,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
-using static com.espertech.esper.common.@internal.compile.stage2.FilterSpecCompilerIndexPlannerHelper.*;
+using static com.espertech.esper.common.@internal.compile.stage2.FilterSpecCompilerIndexPlannerHelper;
 
 namespace com.espertech.esper.common.@internal.compile.stage2
 {
@@ -39,11 +39,11 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 			StatementRawInfo raw,
 			StatementCompileTimeServices services)
 		{
-			ExprNode left = constituent.ChildNodes[0];
+			var left = constituent.ChildNodes[0];
 			ExprFilterSpecLookupableForge lookupable = null;
 
 			if (left is ExprFilterOptimizableNode) {
-				ExprFilterOptimizableNode filterOptimizableNode = (ExprFilterOptimizableNode) left;
+				var filterOptimizableNode = (ExprFilterOptimizableNode) left;
 				lookupable = filterOptimizableNode.FilterLookupable;
 			}
 			else if (FilterSpecCompilerIndexPlannerHelper.HasLevelOrHint(FilterSpecCompilerIndexPlannerHint.LKUPCOMPOSITE, raw, services) &&
@@ -55,19 +55,19 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 				return null;
 			}
 
-			FilterOperator op = FilterOperator.IN_LIST_OF_VALUES;
+			var op = FilterOperator.IN_LIST_OF_VALUES;
 			if (constituent.IsNotIn) {
 				op = FilterOperator.NOT_IN_LIST_OF_VALUES;
 			}
 
-			int expectedNumberOfConstants = constituent.ChildNodes.Length - 1;
+			var expectedNumberOfConstants = constituent.ChildNodes.Length - 1;
 			IList<FilterSpecParamInValueForge> listofValues = new List<FilterSpecParamInValueForge>();
-			IEnumerator<ExprNode> it = Arrays.AsList(constituent.ChildNodes).Iterator();
-			it.Next(); // ignore the first node as it's the identifier
-			while (it.HasNext) {
-				ExprNode subNode = it.Next();
+			var it = Arrays.AsList(constituent.ChildNodes).GetEnumerator();
+			it.MoveNext(); // ignore the first node as it's the identifier
+			while (it.MoveNext()) {
+				var subNode = it.Current;
 				if (subNode.Forge.ForgeConstantType.IsCompileTimeConstant) {
-					object constant = subNode.Forge.ExprEvaluator.Evaluate(null, true, null);
+					var constant = subNode.Forge.ExprEvaluator.Evaluate(null, true, null);
 					if (constant is ICollection) {
 						return null;
 					}
@@ -76,10 +76,10 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 						return null;
 					}
 
-					if ((constant != null) && (constant.GetType().IsArray)) {
-						for (int i = 0; i < Array.GetLength(constant); i++) {
-							object arrayElement = Array.Get(constant, i);
-							object arrayElementCoerced = HandleConstantsCoercion(lookupable, arrayElement);
+					if ((constant != null) && (constant is Array arrayConstant)) {
+						for (var i = 0; i < arrayConstant.Length; i++) {
+							var arrayElement = arrayConstant.GetValue(i);
+							var arrayElementCoerced = HandleConstantsCoercion(lookupable, arrayElement);
 							listofValues.Add(new FilterForEvalConstantAnyTypeForge(arrayElementCoerced));
 							if (i > 0) {
 								expectedNumberOfConstants++;
@@ -92,8 +92,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 					}
 				}
 				else if (subNode is ExprContextPropertyNode) {
-					ExprContextPropertyNode contextPropertyNode = (ExprContextPropertyNode) subNode;
-					Type returnType = contextPropertyNode.Type;
+					var contextPropertyNode = (ExprContextPropertyNode) subNode;
+					var returnType = contextPropertyNode.Type;
 					Coercer coercer;
 					if (TypeHelper.IsCollectionMapOrArray(returnType)) {
 						CheckArrayCoercion(returnType, lookupable.ReturnType, lookupable.Expression);
@@ -103,12 +103,12 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 						coercer = GetNumberCoercer(left.Forge.EvaluationType, contextPropertyNode.Type, lookupable.Expression);
 					}
 
-					Type finalReturnType = coercer != null ? coercer.ReturnType : returnType;
+					var finalReturnType = coercer != null ? coercer.ReturnType : returnType;
 					listofValues.Add(new FilterForEvalContextPropForge(contextPropertyNode.PropertyName, contextPropertyNode.Getter, coercer, finalReturnType));
 				}
 				else if (subNode.Forge.ForgeConstantType.IsDeployTimeTimeConstant && subNode is ExprNodeDeployTimeConst) {
-					ExprNodeDeployTimeConst deployTimeConst = (ExprNodeDeployTimeConst) subNode;
-					Type returnType = subNode.Forge.EvaluationType;
+					var deployTimeConst = (ExprNodeDeployTimeConst) subNode;
+					var returnType = subNode.Forge.EvaluationType;
 					Coercer coercer;
 					if (TypeHelper.IsCollectionMapOrArray(returnType)) {
 						CheckArrayCoercion(returnType, lookupable.ReturnType, lookupable.Expression);
@@ -121,14 +121,14 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 					listofValues.Add(new FilterForEvalDeployTimeConstForge(deployTimeConst, coercer, returnType));
 				}
 				else if (subNode is ExprIdentNode) {
-					ExprIdentNode identNodeInner = (ExprIdentNode) subNode;
+					var identNodeInner = (ExprIdentNode) subNode;
 					if (identNodeInner.StreamId == 0) {
 						break; // for same event evals use the boolean expression, via count compare failing below
 					}
 
-					bool isMustCoerce = false;
-					Type coerceToType = Boxing.GetBoxedType(lookupable.ReturnType);
-					Type identReturnType = identNodeInner.Forge.EvaluationType;
+					var isMustCoerce = false;
+					var coerceToType = Boxing.GetBoxedType(lookupable.ReturnType);
+					var identReturnType = identNodeInner.Forge.EvaluationType;
 
 					if (TypeHelper.IsCollectionMapOrArray(identReturnType)) {
 						CheckArrayCoercion(identReturnType, lookupable.ReturnType, lookupable.Expression);
@@ -149,10 +149,10 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 					}
 
 					FilterSpecParamInValueForge inValue;
-					string streamName = identNodeInner.ResolvedStreamName;
+					var streamName = identNodeInner.ResolvedStreamName;
 					if (arrayEventTypes != null && !arrayEventTypes.IsEmpty() && arrayEventTypes.ContainsKey(streamName)) {
-						Pair<int?, string> indexAndProp = GetStreamIndex(identNodeInner.ResolvedPropertyName);
-						EventType innerEventType = GetArrayInnerEventType(arrayEventTypes, streamName);
+						var indexAndProp = GetStreamIndex(identNodeInner.ResolvedPropertyName);
+						var innerEventType = GetArrayInnerEventType(arrayEventTypes, streamName);
 						inValue = new FilterForEvalEventPropIndexedForge(
 							identNodeInner.ResolvedStreamName,
 							indexAndProp.First,
@@ -174,11 +174,11 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 				}
 				else if (FilterSpecCompilerIndexPlannerHelper.HasLevelOrHint(FilterSpecCompilerIndexPlannerHint.VALUECOMPOSITE, raw, services) &&
 				         IsLimitedValueExpression(subNode)) {
-					MatchedEventConvertorForge convertor = GetMatchEventConvertor(subNode, taggedEventTypes, arrayEventTypes, allTagNamesOrdered);
-					Type valueType = subNode.Forge.EvaluationType;
-					Type lookupableType = lookupable.ReturnType;
-					Coercer numberCoercer = GetNumberCoercer(lookupableType, valueType, lookupable.Expression);
-					FilterForEvalLimitedExprForge forge = new FilterForEvalLimitedExprForge(subNode, convertor, numberCoercer);
+					var convertor = GetMatchEventConvertor(subNode, taggedEventTypes, arrayEventTypes, allTagNamesOrdered);
+					var valueType = subNode.Forge.EvaluationType;
+					var lookupableType = lookupable.ReturnType;
+					var numberCoercer = GetNumberCoercer(lookupableType, valueType, lookupable.Expression);
+					var forge = new FilterForEvalLimitedExprForge(subNode, convertor, numberCoercer);
 					listofValues.Add(forge);
 				}
 			}

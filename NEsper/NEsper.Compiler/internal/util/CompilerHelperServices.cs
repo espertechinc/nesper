@@ -487,7 +487,7 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             var timeAbacus = TimeAbacusFactory.Make(configuration.Common.TimeSource.TimeUnit);
             var expression = configuration.Compiler.Expression;
-            var importService = new ImportServiceCompileTime(
+            var importService = new ImportServiceCompileTimeImpl(
                 configuration.Container,
                 configuration.Common.TransientConfiguration,
                 timeAbacus,

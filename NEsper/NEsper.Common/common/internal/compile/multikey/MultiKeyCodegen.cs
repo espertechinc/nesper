@@ -214,7 +214,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 					from.Block.MethodReturn(ArrayAtIndex(Ref("keys"), Constant(0)));
 				}
 				else {
-					Type mktype = MultiKeyPlanner.GetMKClassForComponentType(paramType.ComponentType);
+					Type mktype = MultiKeyPlanner.GetMKClassForComponentType(paramType.GetElementType());
 					from.Block.MethodReturn(NewInstance(mktype, Cast(paramType, ArrayAtIndex(Ref("keys"), Constant(0)))));
 				}
 			}

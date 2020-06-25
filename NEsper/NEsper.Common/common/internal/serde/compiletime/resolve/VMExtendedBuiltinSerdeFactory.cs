@@ -16,7 +16,6 @@ using com.espertech.esper.common.@internal.serde.serdeset.builtin;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
-using java.math;
 namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 {
 	public class VMExtendedBuiltinSerdeFactory {

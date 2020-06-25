@@ -1,24 +1,15 @@
-///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
-// http://esper.codehaus.org                                                          /
-// ---------------------------------------------------------------------------------- /
-// The software in this package is published under the terms of the GPL license       /
-// a copy of which has been included with this distribution in the license.txt file.  /
-///////////////////////////////////////////////////////////////////////////////////////
-
-using System;
+﻿using System;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.sumof
 {
     public partial class ExprDotForgeSumOf
     {
-        internal class ExprDotEvalSumMethodFactoryLong : ExprDotEvalSumMethodFactory
+        private class ExprDotEvalSumMethodFactoryLong : ExprDotEvalSumMethodFactory
         {
             internal static readonly ExprDotEvalSumMethodFactoryLong INSTANCE = new ExprDotEvalSumMethodFactoryLong();
 
@@ -26,13 +17,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             {
             }
 
-            public ExprDotEvalSumMethod SumAggregator => new ExprDotEvalSumMethodLong();
+            public ExprDotEvalSumMethod SumAggregator {
+                get { return new ExprDotEvalSumMethodLong(); }
+            }
 
-            public Type ValueType => typeof(long);
+            public Type ValueType {
+                get { return typeof(long?); }
+            }
 
             public void CodegenDeclare(CodegenBlock block)
             {
-                block.DeclareVar<long>("sum", Constant(0));
+                block.DeclareVar<long>("sum", Constant(0L));
                 block.DeclareVar<long>("cnt", Constant(0));
             }
 
@@ -41,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 CodegenExpressionRef value)
             {
                 block.IncrementRef("cnt");
-                block.AssignCompound("sum", "+", Unbox(value));
+                block.AssignCompound("sum", "+", value);
             }
 
             public void CodegenEnterObjectTypedNonNull(
@@ -49,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 CodegenExpressionRef value)
             {
                 block.IncrementRef("cnt");
-                block.AssignCompound("sum", "+", StaticMethod(typeof(TypeExtensions), "AsInt64", value));
+                block.AssignCompound("sum", "+", ExprDotMethod(value, "AsInt64"));
             }
 
             public void CodegenReturn(CodegenBlock block)

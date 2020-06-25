@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.view.sort
     ///     the second parameter defines whether to sort ascending or descending, the third parameter
     ///     is the number of elements to keep in the sorted list.
     ///     <para />
-    ///     The type of the field to be sorted in the event must implement the Comparable interface.
+    ///     The type of the field to be sorted in the event must implement the IComparable interface.
     ///     <para />
     ///     The natural order in which events arrived is used as the second sorting criteria. Thus should events arrive
     ///     with equal sort values the oldest event leaves the sort window first.

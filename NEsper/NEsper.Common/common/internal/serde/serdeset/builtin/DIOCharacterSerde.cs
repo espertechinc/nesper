@@ -12,31 +12,47 @@ using System.IO;
 using com.espertech.esper.common.client.serde;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.io;
+
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
 	/// <summary>
 	/// Binding for non-null character values.
 	/// </summary>
-	public class DIOCharacterSerde : DataInputOutputSerde<Character> {
-	    public readonly static DIOCharacterSerde INSTANCE = new DIOCharacterSerde();
+	public class DIOCharacterSerde : DataInputOutputSerde<char>
+	{
+		public readonly static DIOCharacterSerde INSTANCE = new DIOCharacterSerde();
 
-	    private DIOCharacterSerde() {
-	    }
+		private DIOCharacterSerde()
+		{
+		}
 
-	    public void Write(Character object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
-	        Write(object, output);
-	    }
+		public void Write(
+			char @object,
+			DataOutput output,
+			byte[] pageFullKey,
+			EventBeanCollatedWriter writer)
+		{
+			Write(@object, output);
+		}
 
-	    public void Write(Character object, DataOutput stream) {
-	        stream.WriteChar(object);
-	    }
+		public void Write(
+			char @object,
+			DataOutput stream)
+		{
+			stream.WriteChar(@object);
+		}
 
-	    public Character Read(DataInput s, byte[] resourceKey) {
-	        return s.ReadChar();
-	    }
+		public char Read(
+			DataInput s,
+			byte[] resourceKey)
+		{
+			return s.ReadChar();
+		}
 
-	    public Character Read(DataInput input) {
-	        return input.ReadChar();
-	    }
+		public char Read(DataInput input)
+		{
+			return input.ReadChar();
+		}
 	}
 } // end of namespace

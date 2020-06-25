@@ -26,6 +26,8 @@ namespace com.espertech.esper.compat.io
 
         decimal ReadDecimal();
 
+        char ReadChar();
+        
         string ReadUTF();
 
         void ReadFully(byte[] bytes);

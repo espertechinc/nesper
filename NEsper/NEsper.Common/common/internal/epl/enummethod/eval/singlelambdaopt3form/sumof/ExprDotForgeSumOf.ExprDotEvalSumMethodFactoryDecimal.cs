@@ -1,60 +1,45 @@
-///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
-// http://esper.codehaus.org                                                          /
-// ---------------------------------------------------------------------------------- /
-// The software in this package is published under the terms of the GPL license       /
-// a copy of which has been included with this distribution in the license.txt file.  /
-///////////////////////////////////////////////////////////////////////////////////////
-
-using System;
+﻿using System;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.sumof
 {
     public partial class ExprDotForgeSumOf
     {
-        internal class ExprDotEvalSumMethodFactoryDecimal : ExprDotEvalSumMethodFactory
+        private class ExprDotEvalSumMethodFactoryDecimal : ExprDotEvalSumMethodFactory
         {
-            internal static readonly ExprDotEvalSumMethodFactoryDecimal INSTANCE =
-                new ExprDotEvalSumMethodFactoryDecimal();
+            internal readonly static ExprDotEvalSumMethodFactoryDecimal INSTANCE = new ExprDotEvalSumMethodFactoryDecimal();
 
-            private ExprDotEvalSumMethodFactoryDecimal()
-            {
+            private ExprDotEvalSumMethodFactoryDecimal() {
             }
 
-            public ExprDotEvalSumMethod SumAggregator => new ExprDotEvalSumMethodDecimal();
+            public ExprDotEvalSumMethod SumAggregator {
+                get { return new ExprDotEvalSumMethodDecimal(); }
+            }
 
-            public Type ValueType => typeof(decimal);
+            public Type ValueType {
+                get { return typeof(decimal?); }
+            }
 
-            public void CodegenDeclare(CodegenBlock block)
-            {
+            public void CodegenDeclare(CodegenBlock block) {
                 block.DeclareVar<decimal>("sum", Constant(0.0m));
                 block.DeclareVar<long>("cnt", Constant(0));
             }
 
-            public void CodegenEnterNumberTypedNonNull(
-                CodegenBlock block,
-                CodegenExpressionRef value)
-            {
+            public void CodegenEnterNumberTypedNonNull(CodegenBlock block, CodegenExpressionRef value) {
                 block.IncrementRef("cnt");
-                block.AssignCompound("sum", "+", Unbox(value));
+                block.AssignCompound("sum", "+", value);
             }
 
-            public void CodegenEnterObjectTypedNonNull(
-                CodegenBlock block,
-                CodegenExpressionRef value)
-            {
+            public void CodegenEnterObjectTypedNonNull(CodegenBlock block, CodegenExpressionRef value) {
                 block.IncrementRef("cnt");
-                block.AssignCompound("sum", "+", StaticMethod(typeof(TypeExtensions), "AsDecimal", value));
+                block.AssignCompound("sum", "+", ExprDotMethod(value, "AsDecimal"));
             }
 
-            public void CodegenReturn(CodegenBlock block)
-            {
+            public void CodegenReturn(CodegenBlock block) {
                 CodegenReturnSumOrNull(block);
             }
         }

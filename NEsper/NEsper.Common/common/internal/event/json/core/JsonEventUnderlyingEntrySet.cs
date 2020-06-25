@@ -8,12 +8,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
-using java.util.function;
-
 
 namespace com.espertech.esper.common.@internal.@event.json.core
 {
@@ -23,14 +21,12 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 
 	    public JsonEventUnderlyingEntrySet(JsonEventObjectBase jeu) {
 	        this.jeu = jeu;
-	        this.entrySet = jeu.JsonValues.EntrySet();
+	        this.entrySet = jeu.JsonValues;
 	    }
 
-	    public int Size() {
-	        return jeu.Count;
-	    }
+	    public int Count => jeu.Count;
 
-	    public IEnumerator<KeyValuePair<string, object>> Iterator() {
+	    public IEnumerator<KeyValuePair<string, object>> GetEnumerator() {
 	        return new JsonEventUnderlyingEntrySetIterator(jeu, entrySet);
 	    }
 
@@ -90,33 +86,6 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 	        return true;
 	    }
 
-	    public bool Add(KeyValuePair<string, object> stringObjectEntry) {
-	        throw new UnsupportedOperationException();
-	    }
-
-	    public bool Remove(object o) {
-	        throw new UnsupportedOperationException();
-	    }
-
-	    public bool AddAll(ICollection<? extends KeyValuePair<string, object>> c) {
-	        throw new UnsupportedOperationException();
-	    }
-
-	    public bool RetainAll(ICollection<?> c) {
-	        throw new UnsupportedOperationException();
-	    }
-
-	    public bool RemoveAll(ICollection<?> c) {
-	        throw new UnsupportedOperationException();
-	    }
-
-	    public void Clear() {
-	        throw new UnsupportedOperationException();
-	    }
-
-	    public bool RemoveIf(Predicate<KeyValuePair<string, object>> filter) {
-	        throw new UnsupportedOperationException();
-	    }
 
 	    private void FillArray(KeyValuePair[] result) {
 	        int size = jeu.NativeSize;

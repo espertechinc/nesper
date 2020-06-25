@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,66 +7,72 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
-using com.espertech.esper.common.@internal.epl.expression.dot.core;
-using com.espertech.esper.common.@internal.epl.streamtype;
-using com.espertech.esper.common.@internal.@event.arr;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@base;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.minmaxby
 {
-    public class ExprDotForgeMinByMaxBy : ExprDotForgeEnumMethodBase
-    {
-        public override EventType[] GetAddStreamTypes(
-            string enumMethodUsedName,
-            IList<string> goesToNames,
-            EventType inputEventType,
-            Type collectionComponentType,
-            IList<ExprDotEvalParam> bodiesAndParameters,
-            StatementRawInfo statementRawInfo,
-            StatementCompileTimeServices services)
-        {
-            return ExprDotNodeUtility.GetSingleLambdaParamEventType(
-                enumMethodUsedName,
-                goesToNames,
-                inputEventType,
-                collectionComponentType,
-                statementRawInfo,
-                services);
-        }
+	public class ExprDotForgeMinByMaxBy : ExprDotForgeLambdaThreeForm
+	{
 
-        public override EnumForge GetEnumForge(StreamTypeService streamTypeService,
-            string enumMethodUsedName,
-            IList<ExprDotEvalParam> bodiesAndParameters,
-            EventType inputEventType,
-            Type collectionComponentType,
-            int numStreamsIncoming,
-            bool disablePropertyExpressionEventCollCache,
-            StatementRawInfo statementRawInfo,
-            StatementCompileTimeServices services)
-        {
-            var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
+		protected override EPType InitAndNoParamsReturnType(
+			EventType inputEventType,
+			Type collectionComponentType)
+		{
+			throw new IllegalStateException();
+		}
 
-            var max = EnumMethodEnum == EnumMethodEnum.MAXBY;
-            if (inputEventType == null) {
-                TypeInfo = EPTypeHelper.SingleValue(collectionComponentType);
-                return new EnumMinMaxByScalarLambdaForge(
-                    first.BodyForge,
-                    first.StreamCountIncoming,
-                    max,
-                    (ObjectArrayEventType) first.GoesToTypes[0],
-                    TypeInfo);
-            }
+		protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
+			EnumMethodEnum enumMethod,
+			EPType type,
+			StatementCompileTimeServices services)
+		{
+			throw new IllegalStateException();
+		}
 
-            TypeInfo = EPTypeHelper.SingleEvent(inputEventType);
-            return new EnumMinMaxByEventsForge(first.BodyForge, first.StreamCountIncoming, max);
-        }
-    }
+		protected override Func<ExprDotEvalParamLambda, EPType> InitAndSingleParamReturnType(
+			EventType inputEventType,
+			Type collectionComponentType)
+		{
+			if (inputEventType == null) {
+				return lambda => EPTypeHelper.SingleValue(collectionComponentType);
+			}
+
+			return lambda => EPTypeHelper.SingleEvent(inputEventType);
+		}
+
+		protected override ThreeFormEventPlainFactory.ForgeFunction SingleParamEventPlain(EnumMethodEnum enumMethod)
+		{
+			return (
+				lambda,
+				typeInfo,
+				services) => new EnumMinMaxByEvents(lambda, enumMethod == EnumMethodEnum.MAXBY);
+		}
+
+		protected override ThreeFormEventPlusFactory.ForgeFunction SingleParamEventPlus(EnumMethodEnum enumMethod)
+		{
+			return (
+				lambda,
+				fieldType,
+				numParameters,
+				typeInfo,
+				services) => new EnumMinMaxByEventsPlus(lambda, fieldType, numParameters, enumMethod == EnumMethodEnum.MAXBY);
+		}
+
+		protected override ThreeFormScalarFactory.ForgeFunction SingleParamScalar(EnumMethodEnum enumMethod)
+		{
+			return (
+				lambda,
+				eventType,
+				numParams,
+				typeInfo,
+				services) => new EnumMinMaxByScalar(lambda, eventType, numParams, enumMethod == EnumMethodEnum.MAXBY, typeInfo);
+		}
+	}
 } // end of namespace

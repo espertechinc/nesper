@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
                 var latch = (CountDownLatch) next;
                 latch.Await();
             }
-            else if (next.IsLong() || next.IsInt()) {
+            else if (next.IsInt64() || next.IsInt()) {
                 Thread.Sleep(next.AsInt32());
             }
             else if (next is EPRuntimeException) {

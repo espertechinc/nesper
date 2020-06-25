@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         public override bool IsExistsProperty(EventBean eventBean)
         {
             var array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
-            return CollectionUtil.ArrayExistsAtIndex(array[propertyIndex], index);
+            return CollectionUtil.ArrayExistsAtIndex((Array) array[propertyIndex], index);
         }
 
         public override CodegenExpression EventBeanGetCodegen(

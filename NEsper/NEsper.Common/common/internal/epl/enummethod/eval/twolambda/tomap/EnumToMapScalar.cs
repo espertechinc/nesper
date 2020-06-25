@@ -1,0 +1,131 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
+using System.Collections.Generic;
+
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.context.module;
+using com.espertech.esper.common.@internal.epl.enummethod.codegen;
+using com.espertech.esper.common.@internal.epl.expression.codegen;
+using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.@event.arr;
+using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.compat.collections;
+
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+using static com.espertech.esper.common.@internal.epl.enummethod.codegen.EnumForgeCodegenNames;
+
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tomap
+{
+	public class EnumToMapScalar : EnumForgeBasePlain
+	{
+		private readonly ExprForge _secondExpression;
+		private readonly ObjectArrayEventType _resultEventType;
+		private readonly int _numParameters;
+
+		public EnumToMapScalar(
+			ExprForge innerExpression,
+			int streamCountIncoming,
+			ExprForge secondExpression,
+			ObjectArrayEventType resultEventType,
+			int numParameters) : base(innerExpression, streamCountIncoming)
+		{
+			this._secondExpression = secondExpression;
+			this._resultEventType = resultEventType;
+			this._numParameters = numParameters;
+		}
+
+		public override EnumEval EnumEvaluator {
+			get {
+				var first = InnerExpression.ExprEvaluator;
+				var second = _secondExpression.ExprEvaluator;
+				return new ProxyEnumEval(
+					(
+						eventsLambda,
+						enumcoll,
+						isNewData,
+						context) => {
+						if (enumcoll.IsEmpty()) {
+							return EmptyDictionary<object, object>.Instance;
+						}
+
+						IDictionary<object, object> map = new Dictionary<object, object>();
+						var resultEvent = new ObjectArrayEventBean(new object[3], _resultEventType);
+						eventsLambda[StreamNumLambda] = resultEvent;
+						var props = resultEvent.Properties;
+						props[2] = enumcoll.Count;
+						var values = (ICollection<object>) enumcoll;
+
+						var count = -1;
+						foreach (var next in values) {
+							count++;
+							props[1] = count;
+							props[0] = next;
+
+							var key = first.Evaluate(eventsLambda, isNewData, context);
+							var value = second.Evaluate(eventsLambda, isNewData, context);
+							map.Put(key, value);
+						}
+
+						return map;
+					});
+			}
+		}
+
+		public override CodegenExpression Codegen(
+			EnumForgeCodegenParams premade,
+			CodegenMethodScope codegenMethodScope,
+			CodegenClassScope codegenClassScope)
+		{
+			var resultTypeMember = codegenClassScope.AddDefaultFieldUnshared(
+				true,
+				typeof(ObjectArrayEventType),
+				Cast(typeof(ObjectArrayEventType), EventTypeUtility.ResolveTypeCodegen(_resultEventType, EPStatementInitServicesConstants.REF)));
+
+			var scope = new ExprForgeCodegenSymbol(false, null);
+			var methodNode = codegenMethodScope
+				.MakeChildWithScope(typeof(IDictionary<object, object>), typeof(EnumToMapScalar), scope, codegenClassScope)
+				.AddParam(EnumForgeCodegenNames.PARAMS);
+			var hasIndex = _numParameters >= 2;
+			var hasSize = _numParameters >= 3;
+
+			var block = methodNode.Block
+				.IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
+				.BlockReturn(StaticMethod(typeof(Collections), "emptyMap"));
+
+			block.DeclareVar(typeof(IDictionary<object, object>), "map", NewInstance(typeof(Dictionary<object, object>)))
+				.DeclareVar(
+					typeof(ObjectArrayEventBean),
+					"resultEvent",
+					NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(_numParameters)), resultTypeMember))
+				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), @Ref("resultEvent"))
+				.DeclareVar(typeof(object[]), "props", ExprDotMethod(@Ref("resultEvent"), "getProperties"));
+			if (hasIndex) {
+				block.DeclareVar(typeof(int), "count", Constant(-1));
+			}
+
+			if (hasSize) {
+				block.AssignArrayElement(@Ref("props"), Constant(2), ExprDotMethod(REF_ENUMCOLL, "size"));
+			}
+
+			var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+				.AssignArrayElement("props", Constant(0), @Ref("next"));
+			if (hasIndex) {
+				forEach.IncrementRef("count").AssignArrayElement("props", Constant(1), @Ref("count"));
+			}
+
+			forEach.DeclareVar(typeof(object), "key", InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+				.DeclareVar(typeof(object), "value", _secondExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+				.Expression(ExprDotMethod(@Ref("map"), "put", @Ref("key"), @Ref("value")));
+
+			block.MethodReturn(@Ref("map"));
+			return LocalMethod(methodNode, premade.Eps, premade.Enumcoll, premade.IsNewData, premade.ExprCtx);
+		}
+	}
+} // end of namespace

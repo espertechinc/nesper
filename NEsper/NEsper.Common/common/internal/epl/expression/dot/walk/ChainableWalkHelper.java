@@ -1,13 +1,3 @@
-/*
- ***************************************************************************************
- *  Copyright (C) 2006 EsperTech, Inc. All rights reserved.                            *
- *  http://www.espertech.com/esper                                                     *
- *  http://www.espertech.com                                                           *
- *  ---------------------------------------------------------------------------------- *
- *  The software in this package is published under the terms of the GPL license       *
- *  a copy of which has been included with this distribution in the license.txt file.  *
- ***************************************************************************************
- */
 package com.espertech.esper.common.@internal.epl.expression.dot.walk;
 
 import com.espertech.esper.common.@internal.collection.Pair;
@@ -49,7 +39,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
 
-import static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityPrint.toExpressionStringMinPrecedenceSafe;
+using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityPrint.toExpressionStringMinPrecedenceSafe;
 
 public class ChainableWalkHelper {
     public static ExprNode processDot(boolean useChainAsIs, boolean resolveObjects, List<Chainable> chain, StatementSpecMapContext mapContext) {

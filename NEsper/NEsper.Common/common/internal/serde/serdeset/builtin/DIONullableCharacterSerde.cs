@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
             var isNull = @object == null;
             stream.WriteBoolean(isNull);
             if (!isNull) {
-                stream.WriteChar(@object);
+                stream.WriteChar(@object.Value);
             }
         }
 

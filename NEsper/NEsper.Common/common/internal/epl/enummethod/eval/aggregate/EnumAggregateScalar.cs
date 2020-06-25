@@ -104,14 +104,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate
 				.DeclareVar<ObjectArrayEventBean>("event", NewInstance<ObjectArrayEventBean>(
 					NewArrayByLength(typeof(object), Constant(_numParameters)), typeMember))
 				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("event"))
-				.DeclareVar(typeof(object[]), "props", ExprDotName(Ref("event"), "Properties"));
+				.DeclareVar<object[]>("props", ExprDotName(Ref("event"), "Properties"));
 			
 			if (_numParameters > 3) {
 				block.AssignArrayElement("props", Constant(3), ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"));
 			}
 
 			if (_numParameters > 2) {
-				block.DeclareVar(typeof(int), "count", Constant(-1));
+				block.DeclareVar<int>("count", Constant(-1));
 			}
 
 			var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)

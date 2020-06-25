@@ -153,14 +153,14 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             var @base = new StatementBaseInfo(compilable, statementSpec, null, statementRawInfo, null);
             var subqueryNamedWindowConsumers = new List<NamedWindowConsumerStreamSpec>();
             SubSelectActivationDesc subSelectActivationDesc = SubSelectHelperActivations.CreateSubSelectActivation(
-                Collections.emptyList(), subqueryNamedWindowConsumers, @base, services);
-            IDictionary<ExprSubselectNode, SubSelectActivationPlan> subselectActivation = subSelectActivationDesc.getSubselects();
-            AdditionalForgeables.AddAll(subSelectActivationDesc.getAdditionalForgeables());
+                EmptyList<FilterSpecCompiled>.Instance, subqueryNamedWindowConsumers, @base, services);
+            IDictionary<ExprSubselectNode, SubSelectActivationPlan> subselectActivation = subSelectActivationDesc.Subselects;
+            AdditionalForgeables.AddAll(subSelectActivationDesc.AdditionalForgeables);
 
             SubSelectHelperForgePlan subSelectForgePlan = SubSelectHelperForgePlanner.PlanSubSelect(
                 @base, subselectActivation, namesPerStream, typesPerStream, eventTypeNames, services);
             SubselectForges = subSelectForgePlan.Subselects;
-            AdditionalForgeables.AddAll(subSelectForgePlan.getAdditionalForgeables());
+            AdditionalForgeables.AddAll(subSelectForgePlan.AdditionalForgeables);
 
             // obtain result set processor
             var isIStreamOnly = new bool[namesPerStream.Length];

@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.view.rank
     ///     Window sorting by values in the specified field extending a specified number of elements
     ///     from the lowest value up or the highest value down and retaining only the last unique value per key.
     ///     <para>
-    ///         The type of the field to be sorted in the event must implement the Comparable interface.
+    ///         The type of the field to be sorted in the event must implement the IComparable interface.
     ///     </para>
     ///     <para>
     ///         The natural order in which events arrived is used as the second sorting criteria. Thus should events arrive

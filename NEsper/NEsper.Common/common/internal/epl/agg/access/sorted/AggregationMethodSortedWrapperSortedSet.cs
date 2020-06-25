@@ -17,7 +17,7 @@ using java.util.function;
 using java.util.stream;
 
 
-import static com.espertech.esper.common.@internal.epl.agg.access.sorted.AggregationMethodSortedWrapperNavigableMap.immutableException;
+using static com.espertech.esper.common.@internal.epl.agg.access.sorted.AggregationMethodSortedWrapperNavigableMap.immutableException;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 {

@@ -161,7 +161,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             
             //var evaluator = NewAnonymousClass(method.Block, typeof(ExprEvaluator));
             //var evaluate = CodegenMethod.MakeParentNode(typeof(object), generator, classScope)
-				.AddParam(PARAMS);
+			//	.AddParam(PARAMS);
             //evaluator.AddMethod("Evaluate", evaluate);
 
             var result = ConstantNull();
@@ -193,7 +193,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             //var evaluator = NewAnonymousClass(method.Block, typeof(ExprEvaluator));
             //var evaluate = CodegenMethod.MakeParentNode<object>(generator, classScope)
-				.AddParam(PARAMS);
+			//	.AddParam(PARAMS);
             //evaluator.AddMethod("Evaluate", evaluate);
 
             var exprMethod = method

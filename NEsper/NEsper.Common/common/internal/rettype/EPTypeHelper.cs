@@ -453,5 +453,10 @@ namespace com.espertech.esper.common.@internal.rettype
         }
 
         public delegate void AnnotationConsumer(Attribute annotation, Type type);
+
+        public static EPType CollectionOfSingleValue(Type collectionComponentType)
+        {
+            throw new NotImplementedException();
+        }
     }
 } // end of namespace

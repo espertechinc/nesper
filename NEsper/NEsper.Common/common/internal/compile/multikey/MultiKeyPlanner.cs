@@ -24,133 +24,202 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.compile.multikey
 {
-	public class MultiKeyPlanner {
-	    public static bool RequiresDeepEquals(Type arrayComponentType) {
-	        return arrayComponentType == typeof(object) || arrayComponentType.IsArray;
-	    }
+	public class MultiKeyPlanner
+	{
+		public static bool RequiresDeepEquals(Type arrayComponentType)
+		{
+			return arrayComponentType == typeof(object) || arrayComponentType.IsArray;
+		}
 
-	    public static MultiKeyPlan PlanMultiKeyDistinct(bool isDistinct, EventType eventType, StatementRawInfo raw, SerdeCompileTimeResolver serdeResolver) {
-	        if (!isDistinct) {
-	            return new MultiKeyPlan(Collections.EmptyList(), MultiKeyClassRefEmpty.INSTANCE);
-	        }
-	        string[] propertyNames = eventType.PropertyNames;
-	        Type[] props = new Type[propertyNames.Length];
-	        for (int i = 0; i < propertyNames.Length; i++) {
-	            props[i] = eventType.GetPropertyType(propertyNames[i]);
-	        }
-	        return PlanMultiKey(props, false, raw, serdeResolver);
-	    }
+		public static MultiKeyPlan PlanMultiKeyDistinct(
+			bool isDistinct,
+			EventType eventType,
+			StatementRawInfo raw,
+			SerdeCompileTimeResolver serdeResolver)
+		{
+			if (!isDistinct) {
+				return new MultiKeyPlan(
+					EmptyList<StmtClassForgeableFactory>.Instance,
+					MultiKeyClassRefEmpty.INSTANCE);
+			}
 
-	    public static MultiKeyPlan PlanMultiKey(ExprNode[] criteriaExpressions, bool lenientEquals, StatementRawInfo raw, SerdeCompileTimeResolver serdeResolver) {
-	        return PlanMultiKey(ExprNodeUtilityQuery.GetExprResultTypes(criteriaExpressions), lenientEquals, raw, serdeResolver);
-	    }
+			string[] propertyNames = eventType.PropertyNames;
+			Type[] props = new Type[propertyNames.Length];
+			for (int i = 0; i < propertyNames.Length; i++) {
+				props[i] = eventType.GetPropertyType(propertyNames[i]);
+			}
 
-	    public static MultiKeyPlan PlanMultiKey(ExprForge[] criteriaExpressions, bool lenientEquals, StatementRawInfo raw, SerdeCompileTimeResolver serdeResolver) {
-	        return PlanMultiKey(ExprNodeUtilityQuery.GetExprResultTypes(criteriaExpressions), lenientEquals, raw, serdeResolver);
-	    }
+			return PlanMultiKey(props, false, raw, serdeResolver);
+		}
 
-	    public static Type GetMKClassForComponentType(Type componentType) {
-	        if (componentType == typeof(bool)) {
-	            return typeof(MultiKeyArrayBoolean);
-	        } else if (componentType == typeof(byte)) {
-	            return typeof(MultiKeyArrayByte);
-	        } else if (componentType == typeof(char)) {
-	            return typeof(MultiKeyArrayChar);
-	        } else if (componentType == typeof(short)) {
-	            return typeof(MultiKeyArrayShort);
-	        } else if (componentType == typeof(int)) {
-	            return typeof(MultiKeyArrayInt);
-	        } else if (componentType == typeof(long)) {
-	            return typeof(MultiKeyArrayLong);
-	        } else if (componentType == typeof(float)) {
-	            return typeof(MultiKeyArrayFloat);
-	        } else if (componentType == typeof(double)) {
-	            return typeof(MultiKeyArrayDouble);
-	        }
-	        return typeof(MultiKeyArrayObject);
-	    }
+		public static MultiKeyPlan PlanMultiKey(
+			ExprNode[] criteriaExpressions,
+			bool lenientEquals,
+			StatementRawInfo raw,
+			SerdeCompileTimeResolver serdeResolver)
+		{
+			return PlanMultiKey(ExprNodeUtilityQuery.GetExprResultTypes(criteriaExpressions), lenientEquals, raw, serdeResolver);
+		}
 
-	    public static DataInputOutputSerde GetMKSerdeClassForComponentType(Type componentType) {
-	        if (componentType == typeof(bool)) {
-	            return DIOMultiKeyArrayBooleanSerde.INSTANCE;
-	        } else if (componentType == typeof(byte)) {
-	            return DIOMultiKeyArrayByteSerde.INSTANCE;
-	        } else if (componentType == typeof(char)) {
-	            return DIOMultiKeyArrayCharSerde.INSTANCE;
-	        } else if (componentType == typeof(short)) {
-	            return DIOMultiKeyArrayShortSerde.INSTANCE;
-	        } else if (componentType == typeof(int)) {
-	            return DIOMultiKeyArrayIntSerde.INSTANCE;
-	        } else if (componentType == typeof(long)) {
-	            return DIOMultiKeyArrayLongSerde.INSTANCE;
-	        } else if (componentType == typeof(float)) {
-	            return DIOMultiKeyArrayFloatSerde.INSTANCE;
-	        } else if (componentType == typeof(double)) {
-	            return DIOMultiKeyArrayDoubleSerde.INSTANCE;
-	        }
-	        return DIOMultiKeyArrayObjectSerde.INSTANCE;
-	    }
+		public static MultiKeyPlan PlanMultiKey(
+			ExprForge[] criteriaExpressions,
+			bool lenientEquals,
+			StatementRawInfo raw,
+			SerdeCompileTimeResolver serdeResolver)
+		{
+			return PlanMultiKey(ExprNodeUtilityQuery.GetExprResultTypes(criteriaExpressions), lenientEquals, raw, serdeResolver);
+		}
 
-	    public static MultiKeyPlan PlanMultiKey(Type[] types, bool lenientEquals, StatementRawInfo raw, SerdeCompileTimeResolver serdeResolver) {
-	        if (types == null || types.Length == 0) {
-	            return new MultiKeyPlan(Collections.EmptyList(), MultiKeyClassRefEmpty.INSTANCE);
-	        }
+		public static Type GetMKClassForComponentType(Type componentType)
+		{
+			if (componentType == typeof(bool)) {
+				return typeof(MultiKeyArrayBoolean);
+			}
+			else if (componentType == typeof(byte)) {
+				return typeof(MultiKeyArrayByte);
+			}
+			else if (componentType == typeof(char)) {
+				return typeof(MultiKeyArrayChar);
+			}
+			else if (componentType == typeof(short)) {
+				return typeof(MultiKeyArrayShort);
+			}
+			else if (componentType == typeof(int)) {
+				return typeof(MultiKeyArrayInt);
+			}
+			else if (componentType == typeof(long)) {
+				return typeof(MultiKeyArrayLong);
+			}
+			else if (componentType == typeof(float)) {
+				return typeof(MultiKeyArrayFloat);
+			}
+			else if (componentType == typeof(double)) {
+				return typeof(MultiKeyArrayDouble);
+			}
 
-	        if (types.Length == 1) {
-	            Type paramType = types[0];
-	            if (paramType == null || !paramType.IsArray) {
-	                DataInputOutputSerdeForge serdeForge = serdeResolver.SerdeForKeyNonArray(paramType, raw);
-	                return new MultiKeyPlan(Collections.EmptyList(), new MultiKeyClassRefWSerde(serdeForge, types));
-	            }
-	            Type mkClass = GetMKClassForComponentType(paramType.ComponentType);
-	            DataInputOutputSerde mkSerde = GetMKSerdeClassForComponentType(paramType.ComponentType);
-	            return new MultiKeyPlan(Collections.EmptyList(), new MultiKeyClassRefPredetermined(mkClass, types, new DataInputOutputSerdeForgeSingleton(mkSerde.GetType())));
-	        }
+			return typeof(MultiKeyArrayObject);
+		}
 
-	        Type[] boxed = new Type[types.Length];
-	        for (int i = 0; i < boxed.Length; i++) {
-	            boxed[i] = Boxing.GetBoxedType(types[i]);
-	        }
-	        MultiKeyClassRefUUIDBased classNames = new MultiKeyClassRefUUIDBased(boxed);
-	        StmtClassForgeableFactory factoryMK = new ProxyStmtClassForgeableFactory() {
+		public static DataInputOutputSerde<object> GetMKSerdeClassForComponentType(Type componentType)
+		{
+			if (componentType == typeof(bool)) {
+				return DIOMultiKeyArrayBooleanSerde.INSTANCE;
+			}
+			else if (componentType == typeof(byte)) {
+				return DIOMultiKeyArrayByteSerde.INSTANCE;
+			}
+			else if (componentType == typeof(char)) {
+				return DIOMultiKeyArrayCharSerde.INSTANCE;
+			}
+			else if (componentType == typeof(short)) {
+				return DIOMultiKeyArrayShortSerde.INSTANCE;
+			}
+			else if (componentType == typeof(int)) {
+				return DIOMultiKeyArrayIntSerde.INSTANCE;
+			}
+			else if (componentType == typeof(long)) {
+				return DIOMultiKeyArrayLongSerde.INSTANCE;
+			}
+			else if (componentType == typeof(float)) {
+				return DIOMultiKeyArrayFloatSerde.INSTANCE;
+			}
+			else if (componentType == typeof(double)) {
+				return DIOMultiKeyArrayDoubleSerde.INSTANCE;
+			}
 
-	            ProcMake = (namespaceScope, classPostfix) =>  {
-	                return new StmtClassForgeableMultiKey(classNames.GetClassNameMK(classPostfix), namespaceScope, types, lenientEquals);
-	            },
-	        };
+			return DIOMultiKeyArrayObjectSerde.INSTANCE;
+		}
 
-	        DataInputOutputSerdeForge[] forges = serdeResolver.SerdeForMultiKey(types, raw);
-	        StmtClassForgeableFactory factoryMKSerde = new ProxyStmtClassForgeableFactory() {
+		public static MultiKeyPlan PlanMultiKey(
+			Type[] types,
+			bool lenientEquals,
+			StatementRawInfo raw,
+			SerdeCompileTimeResolver serdeResolver)
+		{
+			if (types == null || types.Length == 0) {
+				return new MultiKeyPlan(
+					EmptyList<StmtClassForgeableFactory>.Instance,
+					MultiKeyClassRefEmpty.INSTANCE);
+			}
 
-	            ProcMake = (namespaceScope, classPostfix) =>  {
-	                return new StmtClassForgeableMultiKeySerde(classNames.GetClassNameMKSerde(classPostfix), namespaceScope, types, classNames.GetClassNameMK(classPostfix), forges);
-	            },
-	        };
+			if (types.Length == 1) {
+				Type paramType = types[0];
+				if (paramType == null || !paramType.IsArray) {
+					DataInputOutputSerdeForge serdeForge = serdeResolver.SerdeForKeyNonArray(paramType, raw);
+					return new MultiKeyPlan(
+						EmptyList<StmtClassForgeableFactory>.Instance, 
+						new MultiKeyClassRefWSerde(serdeForge, types));
+				}
 
-	        IList<StmtClassForgeableFactory> forgeables = Arrays.AsList(factoryMK, factoryMKSerde);
-	        return new MultiKeyPlan(forgeables, classNames);
-	    }
+				Type mkClass = GetMKClassForComponentType(paramType.GetElementType());
+				DataInputOutputSerde<> mkSerde = GetMKSerdeClassForComponentType(paramType.GetElementType());
+				return new MultiKeyPlan(
+					EmptyList<StmtClassForgeableFactory>.Instance,
+					new MultiKeyClassRefPredetermined(
+						mkClass,
+						types,
+						new DataInputOutputSerdeForgeSingleton(mkSerde.GetType())));
+			}
 
-	    public static object ToMultiKey(object keyValue) {
-	        Type componentType = keyValue.GetType().ComponentType;
-	        if (componentType == typeof(bool)) {
-	            return new MultiKeyArrayBoolean((bool[]) keyValue);
-	        } else if (componentType == typeof(byte)) {
-	            return new MultiKeyArrayByte((byte[]) keyValue);
-	        } else if (componentType == typeof(char)) {
-	            return new MultiKeyArrayChar((char[]) keyValue);
-	        } else if (componentType == typeof(short)) {
-	            return new MultiKeyArrayShort((short[]) keyValue);
-	        } else if (componentType == typeof(int)) {
-	            return new MultiKeyArrayInt((int[]) keyValue);
-	        } else if (componentType == typeof(long)) {
-	            return new MultiKeyArrayLong((long[]) keyValue);
-	        } else if (componentType == typeof(float)) {
-	            return new MultiKeyArrayFloat((float[]) keyValue);
-	        } else if (componentType == typeof(double)) {
-	            return new MultiKeyArrayDouble((double[]) keyValue);
-	        }
-	        return new MultiKeyArrayObject((object[]) keyValue);
-	    }
+			Type[] boxed = new Type[types.Length];
+			for (int i = 0; i < boxed.Length; i++) {
+				boxed[i] = Boxing.GetBoxedType(types[i]);
+			}
+
+			MultiKeyClassRefUUIDBased classNames = new MultiKeyClassRefUUIDBased(boxed);
+			StmtClassForgeableFactory factoryMK = new ProxyStmtClassForgeableFactory(
+				(
+					namespaceScope,
+					classPostfix) => {
+					return new StmtClassForgeableMultiKey(classNames.GetClassNameMK(classPostfix), namespaceScope, types, lenientEquals);
+				});
+
+			DataInputOutputSerdeForge[] forges = serdeResolver.SerdeForMultiKey(types, raw);
+			StmtClassForgeableFactory factoryMKSerde = new ProxyStmtClassForgeableFactory(
+				(
+					namespaceScope,
+					classPostfix) => {
+					return new StmtClassForgeableMultiKeySerde(
+						classNames.GetClassNameMKSerde(classPostfix),
+						namespaceScope,
+						types,
+						classNames.GetClassNameMK(classPostfix),
+						forges);
+				});
+
+			IList<StmtClassForgeableFactory> forgeables = Arrays.AsList(factoryMK, factoryMKSerde);
+			return new MultiKeyPlan(forgeables, classNames);
+		}
+
+		public static object ToMultiKey(object keyValue)
+		{
+			Type componentType = keyValue.GetType().GetElementType();
+			if (componentType == typeof(bool)) {
+				return new MultiKeyArrayBoolean((bool[]) keyValue);
+			}
+			else if (componentType == typeof(byte)) {
+				return new MultiKeyArrayByte((byte[]) keyValue);
+			}
+			else if (componentType == typeof(char)) {
+				return new MultiKeyArrayChar((char[]) keyValue);
+			}
+			else if (componentType == typeof(short)) {
+				return new MultiKeyArrayShort((short[]) keyValue);
+			}
+			else if (componentType == typeof(int)) {
+				return new MultiKeyArrayInt((int[]) keyValue);
+			}
+			else if (componentType == typeof(long)) {
+				return new MultiKeyArrayLong((long[]) keyValue);
+			}
+			else if (componentType == typeof(float)) {
+				return new MultiKeyArrayFloat((float[]) keyValue);
+			}
+			else if (componentType == typeof(double)) {
+				return new MultiKeyArrayDouble((double[]) keyValue);
+			}
+
+			return new MultiKeyArrayObject((object[]) keyValue);
+		}
 	}
 } // end of namespace

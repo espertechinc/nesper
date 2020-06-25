@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,92 +7,147 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 using System.Numerics;
+using System.Reflection;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
-using com.espertech.esper.common.@internal.epl.expression.dot.core;
-using com.espertech.esper.common.@internal.epl.streamtype;
-using com.espertech.esper.common.@internal.@event.arr;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@base;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval
+
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.average
 {
-    public class ExprDotForgeAverage : ExprDotForgeEnumMethodBase
-    {
-        public override EventType[] GetAddStreamTypes(
-            string enumMethodUsedName,
-            IList<string> goesToNames,
-            EventType inputEventType,
-            Type collectionComponentType,
-            IList<ExprDotEvalParam> bodiesAndParameters,
-            StatementRawInfo statementRawInfo,
-            StatementCompileTimeServices services)
-        {
-            return ExprDotNodeUtility.GetSingleLambdaParamEventType(
-                enumMethodUsedName,
-                goesToNames,
-                inputEventType,
-                collectionComponentType,
-                statementRawInfo,
-                services);
-        }
+	public class ExprDotForgeAverage : ExprDotForgeLambdaThreeForm
+	{
+		protected override EPType InitAndNoParamsReturnType(
+			EventType inputEventType,
+			Type collectionComponentType)
+		{
+			if (collectionComponentType.IsBigInteger()) {
+				return EPTypeHelper.SingleValue(typeof(BigInteger?));
+			}
+			else if (collectionComponentType.IsDecimal()) {
+				return EPTypeHelper.SingleValue(typeof(decimal?));
+			}
+			else {
+				return EPTypeHelper.SingleValue(typeof(double?));
+			}
+		}
 
-        public override EnumForge GetEnumForge(StreamTypeService streamTypeService,
-            string enumMethodUsedName,
-            IList<ExprDotEvalParam> bodiesAndParameters,
-            EventType inputEventType,
-            Type collectionComponentType,
-            int numStreamsIncoming,
-            bool disablePropertyExpressionEventCollCache,
-            StatementRawInfo statementRawInfo,
-            StatementCompileTimeServices services)
-        {
-            if (bodiesAndParameters.IsEmpty()) {
-                if (collectionComponentType.IsDecimal() || collectionComponentType.IsBigInteger()) {
-                    TypeInfo = EPTypeHelper.SingleValue(typeof(decimal?));
-                    return new EnumAverageDecimalScalarForge(
-                        numStreamsIncoming,
-                        services.ImportServiceCompileTime.DefaultMathContext);
-                }
+		protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
+			EnumMethodEnum enumMethod,
+			EPType type,
+			StatementCompileTimeServices services)
+		{
+			if (type.GetNormalizedClass().IsBigInteger()) {
+				return streamCountIncoming => new EnumAverageBigIntegerScalarNoParam(streamCountIncoming);
+				// services.ImportServiceCompileTime.DefaultMathContext
+			}
+			else if (type.GetNormalizedClass().IsDecimal()) {
+				return streamCountIncoming => new EnumAverageDecimalScalarNoParam(
+					streamCountIncoming);
+			}
+			else if (type.GetNormalizedClass().IsDouble()) {
+				return streamCountIncoming => new EnumAverageDoubleScalarNoParam(
+					streamCountIncoming);
+			}
+			else {
+				throw new ArgumentException("Failed to find a suitable scalar no-param");
+			}
+		}
 
-                TypeInfo = EPTypeHelper.SingleValue(typeof(double?));
-                return new EnumAverageScalarForge(numStreamsIncoming);
-            }
+		protected override Func<ExprDotEvalParamLambda, EPType> InitAndSingleParamReturnType(
+			EventType inputEventType,
+			Type collectionComponentType)
+		{
+			return lambda => {
+				var returnType = lambda.BodyForge.EvaluationType;
+				if (returnType.IsBigInteger()) {
+					return EPTypeHelper.SingleValue(typeof(BigInteger?));
+				}
+				else if (returnType.IsDecimal()) {
+					return EPTypeHelper.SingleValue(typeof(decimal?));
+				}
+				else {
+					return EPTypeHelper.SingleValue(typeof(double?));
+				}
+			};
+		}
 
-            var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
-            var returnType = first.BodyForge.EvaluationType;
+		protected override ThreeFormEventPlainFactory.ForgeFunction SingleParamEventPlain(EnumMethodEnum enumMethod)
+		{
+			return (
+				lambda,
+				typeInfo,
+				services) => {
 
-            if (returnType.IsDecimal() || returnType.IsBigInteger()) {
-                TypeInfo = EPTypeHelper.SingleValue(typeof(decimal?));
-                if (inputEventType == null) {
-                    return new EnumAverageDecimalScalarLambdaForge(
-                        first.BodyForge,
-                        first.StreamCountIncoming,
-                        (ObjectArrayEventType) first.GoesToTypes[0],
-                        services.ImportServiceCompileTime.DefaultMathContext);
-                }
+				if (typeInfo.GetNormalizedClass().IsBigInteger()) {
+					return new EnumAverageBigIntegerEvent(lambda);
+					// services.ImportServiceCompileTime.DefaultMathContext
+				}
+				else if (typeInfo.GetNormalizedClass().IsDecimal()) {
+					return new EnumAverageDecimalEvent(lambda);
+				}
+				else if (typeInfo.GetNormalizedClass().IsDouble()) {
+					return new EnumAverageDoubleEvent(lambda);
+				}
+				else {
+					throw new ArgumentException("Failed to find a suitable event");
+				}
+			};
+		}
 
-                return new EnumAverageDecimalEventsForge(
-                    first.BodyForge,
-                    first.StreamCountIncoming,
-                    services.ImportServiceCompileTime.DefaultMathContext);
-            }
+		protected override ThreeFormEventPlusFactory.ForgeFunction SingleParamEventPlus(EnumMethodEnum enumMethod)
+		{
+			return (
+				lambda,
+				fieldType,
+				numParameters,
+				typeInfo,
+				services) => {
 
-            TypeInfo = EPTypeHelper.SingleValue(typeof(double?));
-            if (inputEventType == null) {
-                return new EnumAverageScalarLambdaForge(
-                    first.BodyForge,
-                    first.StreamCountIncoming,
-                    (ObjectArrayEventType) first.GoesToTypes[0]);
-            }
+				if (typeInfo.GetNormalizedClass().IsBigInteger()) {
+					return new EnumAverageBigIntegerEventPlus(lambda, fieldType, numParameters);
+				}
+				else if (typeInfo.GetNormalizedClass().IsDecimal()) {
+					return new EnumAverageDecimalEventPlus(lambda, fieldType, numParameters);
+				}
+				else if (typeInfo.GetNormalizedClass().IsDouble()) {
+					return new EnumAverageDoubleEventPlus(lambda, fieldType, numParameters);
+				}
+				else {
+					throw new ArgumentException("Failed to find a suitable event");
+				}
+			};
+		}
 
-            return new EnumAverageEventsForge(first.BodyForge, first.StreamCountIncoming);
-        }
-    }
+		protected override ThreeFormScalarFactory.ForgeFunction SingleParamScalar(EnumMethodEnum enumMethod)
+		{
+			return (
+				lambda,
+				fieldType,
+				numParams,
+				typeInfo,
+				services) => {
+
+				if (typeInfo.GetNormalizedClass().IsBigInteger()) {
+					return new EnumAverageBigIntegerScalar(lambda, fieldType, numParams);
+				}
+				else if (typeInfo.GetNormalizedClass().IsDecimal()) {
+					return new EnumAverageDecimalScalar(lambda, fieldType, numParams);
+				}
+				else if (typeInfo.GetNormalizedClass().IsDouble()) {
+					return new EnumAverageDoubleScalar(lambda, fieldType, numParams);
+				}
+				else {
+					throw new ArgumentException("Failed to find a suitable scalar");
+				}
+			};
+		}
+	}
 } // end of namespace

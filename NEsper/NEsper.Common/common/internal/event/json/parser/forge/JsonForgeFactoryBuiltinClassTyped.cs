@@ -71,43 +71,41 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 			WRITE_FORGES.Put(typeof(decimal?), JsonWriteForgeNumberWithToString.INSTANCE);
 			WRITE_FORGES.Put(typeof(BigInteger?), JsonWriteForgeNumberWithToString.INSTANCE);
 
-			
-			
-			foreach (Type clazz in new Type[] {
-				typeof(UUID), typeof(OffsetDateTime), typeof(LocalDate), typeof(LocalDateTime), typeof(ZonedDateTime),
-				typeof(URL), typeof(URI)
-			}) {
-				WRITE_FORGES.Put(clazz, JsonWriteForgeStringWithToString.INSTANCE);
-			}
+			WRITE_FORGES.Put(typeof(Guid), JsonWriteForgeStringWithToString.INSTANCE);
+			WRITE_FORGES.Put(typeof(DateTimeEx), JsonWriteForgeStringWithToString.INSTANCE);
+			WRITE_FORGES.Put(typeof(DateTimeOffset), JsonWriteForgeStringWithToString.INSTANCE);
+			WRITE_FORGES.Put(typeof(DateTime), JsonWriteForgeStringWithToString.INSTANCE);
+			WRITE_FORGES.Put(typeof(Uri), JsonWriteForgeStringWithToString.INSTANCE);
 
 			START_ARRAY_FORGES.Put(typeof(string[]), typeof(JsonDelegateArrayString));
-			START_ARRAY_FORGES.Put(typeof(Character[]), typeof(JsonDelegateArrayCharacter));
-			START_ARRAY_FORGES.Put(typeof(Boolean[]), typeof(JsonDelegateArrayBoolean));
-			START_ARRAY_FORGES.Put(typeof(Byte[]), typeof(JsonDelegateArrayByte));
-			START_ARRAY_FORGES.Put(typeof(Short[]), typeof(JsonDelegateArrayShort));
+			START_ARRAY_FORGES.Put(typeof(char?[]), typeof(JsonDelegateArrayCharacter));
+			START_ARRAY_FORGES.Put(typeof(bool?[]), typeof(JsonDelegateArrayBoolean));
+			START_ARRAY_FORGES.Put(typeof(byte?[]), typeof(JsonDelegateArrayByte));
+			START_ARRAY_FORGES.Put(typeof(short?[]), typeof(JsonDelegateArrayShort));
 			START_ARRAY_FORGES.Put(typeof(int?[]), typeof(JsonDelegateArrayInteger));
 			START_ARRAY_FORGES.Put(typeof(long?[]), typeof(JsonDelegateArrayLong));
-			START_ARRAY_FORGES.Put(typeof(Double[]), typeof(JsonDelegateArrayDouble));
-			START_ARRAY_FORGES.Put(typeof(Float[]), typeof(JsonDelegateArrayFloat));
+			START_ARRAY_FORGES.Put(typeof(decimal?[]), typeof(JsonDelegateArrayDecimal));
+			START_ARRAY_FORGES.Put(typeof(double?[]), typeof(JsonDelegateArrayDouble));
+			START_ARRAY_FORGES.Put(typeof(float?[]), typeof(JsonDelegateArrayFloat));
 			START_ARRAY_FORGES.Put(typeof(char[]), typeof(JsonDelegateArrayCharacterPrimitive));
 			START_ARRAY_FORGES.Put(typeof(bool[]), typeof(JsonDelegateArrayBooleanPrimitive));
 			START_ARRAY_FORGES.Put(typeof(byte[]), typeof(JsonDelegateArrayBytePrimitive));
 			START_ARRAY_FORGES.Put(typeof(short[]), typeof(JsonDelegateArrayShortPrimitive));
 			START_ARRAY_FORGES.Put(typeof(int[]), typeof(JsonDelegateArrayIntegerPrimitive));
 			START_ARRAY_FORGES.Put(typeof(long[]), typeof(JsonDelegateArrayLongPrimitive));
+			START_ARRAY_FORGES.Put(typeof(decimal[]), typeof(JsonDelegateArrayDecimalPrimitive));
 			START_ARRAY_FORGES.Put(typeof(double[]), typeof(JsonDelegateArrayDoublePrimitive));
 			START_ARRAY_FORGES.Put(typeof(float[]), typeof(JsonDelegateArrayFloatPrimitive));
-			START_ARRAY_FORGES.Put(typeof(BigDecimal[]), typeof(JsonDelegateArrayBigDecimal));
 			START_ARRAY_FORGES.Put(typeof(BigInteger[]), typeof(JsonDelegateArrayBigInteger));
-			START_ARRAY_FORGES.Put(typeof(UUID[]), typeof(JsonDelegateArrayUUID));
-			START_ARRAY_FORGES.Put(typeof(OffsetDateTime[]), typeof(JsonDelegateArrayOffsetDateTime));
-			START_ARRAY_FORGES.Put(typeof(LocalDate[]), typeof(JsonDelegateArrayLocalDate));
-			START_ARRAY_FORGES.Put(typeof(LocalDateTime[]), typeof(JsonDelegateArrayLocalDateTime));
-			START_ARRAY_FORGES.Put(typeof(ZonedDateTime[]), typeof(JsonDelegateArrayDateTime));
-			START_ARRAY_FORGES.Put(typeof(URI[]), typeof(JsonDelegateArrayURI));
+
+			START_ARRAY_FORGES.Put(typeof(Guid[]), typeof(JsonDelegateArrayUUID));
+			START_ARRAY_FORGES.Put(typeof(DateTimeEx[]), typeof(JsonDelegateArrayDateTimeEx));
+			START_ARRAY_FORGES.Put(typeof(DateTimeOffset[]), typeof(JsonDelegateArrayDateTimeOffset));
+			START_ARRAY_FORGES.Put(typeof(DateTime[]), typeof(JsonDelegateArrayDateTime));
+			START_ARRAY_FORGES.Put(typeof(Uri[]), typeof(JsonDelegateArrayURI));
 
 			START_ARRAY_FORGES.Put(typeof(string[][]), typeof(JsonDelegateArray2DimString));
-			
+		
 			START_ARRAY_FORGES.Put(typeof(char?[][]), typeof(JsonDelegateArray2DimCharacter));
 			START_ARRAY_FORGES.Put(typeof(bool?[][]), typeof(JsonDelegateArray2DimBoolean));
 			START_ARRAY_FORGES.Put(typeof(byte?[][]), typeof(JsonDelegateArray2DimByte));
@@ -116,6 +114,7 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 			START_ARRAY_FORGES.Put(typeof(long?[][]), typeof(JsonDelegateArray2DimLong));
 			START_ARRAY_FORGES.Put(typeof(float?[][]), typeof(JsonDelegateArray2DimFloat));
 			START_ARRAY_FORGES.Put(typeof(double?[][]), typeof(JsonDelegateArray2DimDouble));
+			START_ARRAY_FORGES.Put(typeof(decimal?[][]), typeof(JsonDelegateArray2DimDecimal));
 			
 			START_ARRAY_FORGES.Put(typeof(char[][]), typeof(JsonDelegateArray2DimCharacterPrimitive));
 			START_ARRAY_FORGES.Put(typeof(bool[][]), typeof(JsonDelegateArray2DimBooleanPrimitive));
@@ -125,8 +124,8 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 			START_ARRAY_FORGES.Put(typeof(long[][]), typeof(JsonDelegateArray2DimLongPrimitive));
 			START_ARRAY_FORGES.Put(typeof(float[][]), typeof(JsonDelegateArray2DimFloatPrimitive));
 			START_ARRAY_FORGES.Put(typeof(double[][]), typeof(JsonDelegateArray2DimDoublePrimitive));
+			START_ARRAY_FORGES.Put(typeof(decimal[][]), typeof(JsonDelegateArray2DimDecimalPrimitive));
 			
-			START_ARRAY_FORGES.Put(typeof(BigDecimal[][]), typeof(JsonDelegateArray2DimBigDecimal));
 			START_ARRAY_FORGES.Put(typeof(BigInteger[][]), typeof(JsonDelegateArray2DimBigInteger));
 			START_ARRAY_FORGES.Put(typeof(UUID[][]), typeof(JsonDelegateArray2DimUUID));
 			START_ARRAY_FORGES.Put(typeof(OffsetDateTime[][]), typeof(JsonDelegateArray2DimOffsetDateTime));
@@ -136,56 +135,59 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 			START_ARRAY_FORGES.Put(typeof(URL[][]), typeof(JsonDelegateArray2DimURL));
 			START_ARRAY_FORGES.Put(typeof(URI[][]), typeof(JsonDelegateArray2DimURI));
 
-			WRITE_ARRAY_FORGES.Put(typeof(string[]), new JsonWriteForgeByMethod("writeArrayString"));
-			WRITE_ARRAY_FORGES.Put(typeof(Character[]), new JsonWriteForgeByMethod("writeArrayCharacter"));
-			WRITE_ARRAY_FORGES.Put(typeof(Boolean[]), new JsonWriteForgeByMethod("writeArrayBoolean"));
-			WRITE_ARRAY_FORGES.Put(typeof(Byte[]), new JsonWriteForgeByMethod("writeArrayByte"));
-			WRITE_ARRAY_FORGES.Put(typeof(Short[]), new JsonWriteForgeByMethod("writeArrayShort"));
-			WRITE_ARRAY_FORGES.Put(typeof(int?[]), new JsonWriteForgeByMethod("writeArrayInteger"));
-			WRITE_ARRAY_FORGES.Put(typeof(long?[]), new JsonWriteForgeByMethod("writeArrayLong"));
-			WRITE_ARRAY_FORGES.Put(typeof(Double[]), new JsonWriteForgeByMethod("writeArrayDouble"));
-			WRITE_ARRAY_FORGES.Put(typeof(Float[]), new JsonWriteForgeByMethod("writeArrayFloat"));
-			WRITE_ARRAY_FORGES.Put(typeof(char[]), new JsonWriteForgeByMethod("writeArrayCharPrimitive"));
-			WRITE_ARRAY_FORGES.Put(typeof(bool[]), new JsonWriteForgeByMethod("writeArrayBooleanPrimitive"));
-			WRITE_ARRAY_FORGES.Put(typeof(byte[]), new JsonWriteForgeByMethod("writeArrayBytePrimitive"));
-			WRITE_ARRAY_FORGES.Put(typeof(short[]), new JsonWriteForgeByMethod("writeArrayShortPrimitive"));
-			WRITE_ARRAY_FORGES.Put(typeof(int[]), new JsonWriteForgeByMethod("writeArrayIntPrimitive"));
-			WRITE_ARRAY_FORGES.Put(typeof(long[]), new JsonWriteForgeByMethod("writeArrayLongPrimitive"));
-			WRITE_ARRAY_FORGES.Put(typeof(double[]), new JsonWriteForgeByMethod("writeArrayDoublePrimitive"));
-			WRITE_ARRAY_FORGES.Put(typeof(float[]), new JsonWriteForgeByMethod("writeArrayFloatPrimitive"));
-			WRITE_ARRAY_FORGES.Put(typeof(BigDecimal[]), new JsonWriteForgeByMethod("writeArrayBigDecimal"));
-			WRITE_ARRAY_FORGES.Put(typeof(BigInteger[]), new JsonWriteForgeByMethod("writeArrayBigInteger"));
+			WRITE_ARRAY_FORGES.Put(typeof(string[]), new JsonWriteForgeByMethod("WriteArrayString"));
+			WRITE_ARRAY_FORGES.Put(typeof(char?[]), new JsonWriteForgeByMethod("WriteArrayCharacter"));
+			WRITE_ARRAY_FORGES.Put(typeof(bool?[]), new JsonWriteForgeByMethod("WriteArrayBoolean"));
+			WRITE_ARRAY_FORGES.Put(typeof(byte?[]), new JsonWriteForgeByMethod("WriteArrayByte"));
+			WRITE_ARRAY_FORGES.Put(typeof(short?[]), new JsonWriteForgeByMethod("WriteArrayShort"));
+			WRITE_ARRAY_FORGES.Put(typeof(int?[]), new JsonWriteForgeByMethod("WriteArrayInteger"));
+			WRITE_ARRAY_FORGES.Put(typeof(long?[]), new JsonWriteForgeByMethod("WriteArrayLong"));
+			WRITE_ARRAY_FORGES.Put(typeof(decimal?[]), new JsonWriteForgeByMethod("WriteArrayDecimal"));
+			WRITE_ARRAY_FORGES.Put(typeof(double?[]), new JsonWriteForgeByMethod("WriteArrayDouble"));
+			WRITE_ARRAY_FORGES.Put(typeof(float?[]), new JsonWriteForgeByMethod("WriteArrayFloat"));
+			WRITE_ARRAY_FORGES.Put(typeof(char[]), new JsonWriteForgeByMethod("WriteArrayCharPrimitive"));
+			WRITE_ARRAY_FORGES.Put(typeof(bool[]), new JsonWriteForgeByMethod("WriteArrayBooleanPrimitive"));
+			WRITE_ARRAY_FORGES.Put(typeof(byte[]), new JsonWriteForgeByMethod("WriteArrayBytePrimitive"));
+			WRITE_ARRAY_FORGES.Put(typeof(short[]), new JsonWriteForgeByMethod("WriteArrayShortPrimitive"));
+			WRITE_ARRAY_FORGES.Put(typeof(int[]), new JsonWriteForgeByMethod("WriteArrayIntPrimitive"));
+			WRITE_ARRAY_FORGES.Put(typeof(long[]), new JsonWriteForgeByMethod("WriteArrayLongPrimitive"));
+			WRITE_ARRAY_FORGES.Put(typeof(decimal[]), new JsonWriteForgeByMethod("WriteArrayDecimalPrimitive"));
+			WRITE_ARRAY_FORGES.Put(typeof(double[]), new JsonWriteForgeByMethod("WriteArrayDoublePrimitive"));
+			WRITE_ARRAY_FORGES.Put(typeof(float[]), new JsonWriteForgeByMethod("WriteArrayFloatPrimitive"));
+			WRITE_ARRAY_FORGES.Put(typeof(BigInteger[]), new JsonWriteForgeByMethod("WriteArrayBigInteger"));
+
 			foreach (Type clazz in new Type[] {
 				typeof(UUID[]), typeof(OffsetDateTime[]), typeof(LocalDate[]), typeof(LocalDateTime[]), typeof(ZonedDateTime[]),
 				typeof(URL[]), typeof(URI[])
 			}) {
-				WRITE_ARRAY_FORGES.Put(clazz, new JsonWriteForgeByMethod("writeArrayObjectToString"));
+				WRITE_ARRAY_FORGES.Put(clazz, new JsonWriteForgeByMethod("WriteArrayObjectToString"));
 			}
 
-			WRITE_ARRAY_FORGES.Put(typeof(string[][]), new JsonWriteForgeByMethod("writeArray2DimString"));
-			WRITE_ARRAY_FORGES.Put(typeof(Character[][]), new JsonWriteForgeByMethod("writeArray2DimCharacter"));
-			WRITE_ARRAY_FORGES.Put(typeof(Boolean[][]), new JsonWriteForgeByMethod("writeArray2DimBoolean"));
-			WRITE_ARRAY_FORGES.Put(typeof(Byte[][]), new JsonWriteForgeByMethod("writeArray2DimByte"));
-			WRITE_ARRAY_FORGES.Put(typeof(Short[][]), new JsonWriteForgeByMethod("writeArray2DimShort"));
-			WRITE_ARRAY_FORGES.Put(typeof(int?[][]), new JsonWriteForgeByMethod("writeArray2DimInteger"));
-			WRITE_ARRAY_FORGES.Put(typeof(long?[][]), new JsonWriteForgeByMethod("writeArray2DimLong"));
-			WRITE_ARRAY_FORGES.Put(typeof(Double[][]), new JsonWriteForgeByMethod("writeArray2DimDouble"));
-			WRITE_ARRAY_FORGES.Put(typeof(Float[][]), new JsonWriteForgeByMethod("writeArray2DimFloat"));
-			WRITE_ARRAY_FORGES.Put(typeof(char[][]), new JsonWriteForgeByMethod("writeArray2DimCharPrimitive"));
-			WRITE_ARRAY_FORGES.Put(typeof(bool[][]), new JsonWriteForgeByMethod("writeArray2DimBooleanPrimitive"));
-			WRITE_ARRAY_FORGES.Put(typeof(byte[][]), new JsonWriteForgeByMethod("writeArray2DimBytePrimitive"));
-			WRITE_ARRAY_FORGES.Put(typeof(short[][]), new JsonWriteForgeByMethod("writeArray2DimShortPrimitive"));
-			WRITE_ARRAY_FORGES.Put(typeof(int[][]), new JsonWriteForgeByMethod("writeArray2DimIntPrimitive"));
-			WRITE_ARRAY_FORGES.Put(typeof(long[][]), new JsonWriteForgeByMethod("writeArray2DimLongPrimitive"));
-			WRITE_ARRAY_FORGES.Put(typeof(double[][]), new JsonWriteForgeByMethod("writeArray2DimDoublePrimitive"));
-			WRITE_ARRAY_FORGES.Put(typeof(float[][]), new JsonWriteForgeByMethod("writeArray2DimFloatPrimitive"));
-			WRITE_ARRAY_FORGES.Put(typeof(BigDecimal[][]), new JsonWriteForgeByMethod("writeArray2DimBigDecimal"));
-			WRITE_ARRAY_FORGES.Put(typeof(BigInteger[][]), new JsonWriteForgeByMethod("writeArray2DimBigInteger"));
+			WRITE_ARRAY_FORGES.Put(typeof(string[][]), new JsonWriteForgeByMethod("WriteArray2DimString"));
+			WRITE_ARRAY_FORGES.Put(typeof(char?[][]), new JsonWriteForgeByMethod("WriteArray2DimCharacter"));
+			WRITE_ARRAY_FORGES.Put(typeof(bool?[][]), new JsonWriteForgeByMethod("WriteArray2DimBoolean"));
+			WRITE_ARRAY_FORGES.Put(typeof(byte?[][]), new JsonWriteForgeByMethod("WriteArray2DimByte"));
+			WRITE_ARRAY_FORGES.Put(typeof(short?[][]), new JsonWriteForgeByMethod("WriteArray2DimShort"));
+			WRITE_ARRAY_FORGES.Put(typeof(int?[][]), new JsonWriteForgeByMethod("WriteArray2DimInteger"));
+			WRITE_ARRAY_FORGES.Put(typeof(long?[][]), new JsonWriteForgeByMethod("WriteArray2DimLong"));
+			WRITE_ARRAY_FORGES.Put(typeof(decimal?[][]), new JsonWriteForgeByMethod("WriteArray2DimDecimal"));
+			WRITE_ARRAY_FORGES.Put(typeof(double?[][]), new JsonWriteForgeByMethod("WriteArray2DimDouble"));
+			WRITE_ARRAY_FORGES.Put(typeof(float?[][]), new JsonWriteForgeByMethod("WriteArray2DimFloat"));
+			WRITE_ARRAY_FORGES.Put(typeof(char[][]), new JsonWriteForgeByMethod("WriteArray2DimCharPrimitive"));
+			WRITE_ARRAY_FORGES.Put(typeof(bool[][]), new JsonWriteForgeByMethod("WriteArray2DimBooleanPrimitive"));
+			WRITE_ARRAY_FORGES.Put(typeof(byte[][]), new JsonWriteForgeByMethod("WriteArray2DimBytePrimitive"));
+			WRITE_ARRAY_FORGES.Put(typeof(short[][]), new JsonWriteForgeByMethod("WriteArray2DimShortPrimitive"));
+			WRITE_ARRAY_FORGES.Put(typeof(int[][]), new JsonWriteForgeByMethod("WriteArray2DimIntPrimitive"));
+			WRITE_ARRAY_FORGES.Put(typeof(long[][]), new JsonWriteForgeByMethod("WriteArray2DimLongPrimitive"));
+			WRITE_ARRAY_FORGES.Put(typeof(decimal[][]), new JsonWriteForgeByMethod("WriteArray2DimDecimalPrimitive"));
+			WRITE_ARRAY_FORGES.Put(typeof(double[][]), new JsonWriteForgeByMethod("WriteArray2DimDoublePrimitive"));
+			WRITE_ARRAY_FORGES.Put(typeof(float[][]), new JsonWriteForgeByMethod("WriteArray2DimFloatPrimitive"));
+			WRITE_ARRAY_FORGES.Put(typeof(BigInteger[][]), new JsonWriteForgeByMethod("WriteArray2DimBigInteger"));
 			foreach (Type clazz in new Type[] {
 				typeof(UUID[][]), typeof(OffsetDateTime[][]), typeof(LocalDate[][]), typeof(LocalDateTime[][]), typeof(ZonedDateTime[][]),
 				typeof(URL[][]), typeof(URI[][])
 			}) {
-				WRITE_ARRAY_FORGES.Put(clazz, new JsonWriteForgeByMethod("writeArray2DimObjectToString"));
+				WRITE_ARRAY_FORGES.Put(clazz, new JsonWriteForgeByMethod("WriteArray2DimObjectToString"));
 			}
 
 			START_COLLECTION_FORGES.Put(typeof(string), typeof(JsonDelegateCollectionString));
@@ -195,9 +197,9 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 			START_COLLECTION_FORGES.Put(typeof(short?), typeof(JsonDelegateCollectionShort));
 			START_COLLECTION_FORGES.Put(typeof(int?), typeof(JsonDelegateCollectionInteger));
 			START_COLLECTION_FORGES.Put(typeof(long?), typeof(JsonDelegateCollectionLong));
+			START_COLLECTION_FORGES.Put(typeof(decimal?), typeof(JsonDelegateCollectionDecimal));
 			START_COLLECTION_FORGES.Put(typeof(double?), typeof(JsonDelegateCollectionDouble));
 			START_COLLECTION_FORGES.Put(typeof(float?), typeof(JsonDelegateCollectionFloat));
-			START_COLLECTION_FORGES.Put(typeof(BigDecimal), typeof(JsonDelegateCollectionBigDecimal));
 			START_COLLECTION_FORGES.Put(typeof(BigInteger), typeof(JsonDelegateCollectionBigInteger));
 			START_COLLECTION_FORGES.Put(typeof(UUID), typeof(JsonDelegateCollectionUUID));
 			START_COLLECTION_FORGES.Put(typeof(OffsetDateTime), typeof(JsonDelegateCollectionOffsetDateTime));
@@ -207,22 +209,23 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 			START_COLLECTION_FORGES.Put(typeof(URL), typeof(JsonDelegateCollectionURL));
 			START_COLLECTION_FORGES.Put(typeof(URI), typeof(JsonDelegateCollectionURI));
 
-			WRITE_COLLECTION_FORGES.Put(typeof(string), new JsonWriteForgeByMethod("writeCollectionString"));
-			WRITE_COLLECTION_FORGES.Put(typeof(char?), new JsonWriteForgeByMethod("writeCollectionWToString"));
-			WRITE_COLLECTION_FORGES.Put(typeof(bool?), new JsonWriteForgeByMethod("writeCollectionBoolean"));
-			WRITE_COLLECTION_FORGES.Put(typeof(byte?), new JsonWriteForgeByMethod("writeCollectionNumber"));
-			WRITE_COLLECTION_FORGES.Put(typeof(short?), new JsonWriteForgeByMethod("writeCollectionNumber"));
-			WRITE_COLLECTION_FORGES.Put(typeof(int?), new JsonWriteForgeByMethod("writeCollectionNumber"));
-			WRITE_COLLECTION_FORGES.Put(typeof(long?), new JsonWriteForgeByMethod("writeCollectionNumber"));
-			WRITE_COLLECTION_FORGES.Put(typeof(double?), new JsonWriteForgeByMethod("writeCollectionNumber"));
-			WRITE_COLLECTION_FORGES.Put(typeof(float?), new JsonWriteForgeByMethod("writeCollectionNumber"));
-			WRITE_COLLECTION_FORGES.Put(typeof(BigDecimal), new JsonWriteForgeByMethod("writeCollectionNumber"));
-			WRITE_COLLECTION_FORGES.Put(typeof(BigInteger), new JsonWriteForgeByMethod("writeCollectionNumber"));
+			WRITE_COLLECTION_FORGES.Put(typeof(string), new JsonWriteForgeByMethod("WriteCollectionString"));
+			WRITE_COLLECTION_FORGES.Put(typeof(char?), new JsonWriteForgeByMethod("WriteCollectionWToString"));
+			WRITE_COLLECTION_FORGES.Put(typeof(bool?), new JsonWriteForgeByMethod("WriteCollectionBoolean"));
+			WRITE_COLLECTION_FORGES.Put(typeof(byte?), new JsonWriteForgeByMethod("WriteCollectionNumber"));
+			WRITE_COLLECTION_FORGES.Put(typeof(short?), new JsonWriteForgeByMethod("WriteCollectionNumber"));
+			WRITE_COLLECTION_FORGES.Put(typeof(int?), new JsonWriteForgeByMethod("WriteCollectionNumber"));
+			WRITE_COLLECTION_FORGES.Put(typeof(long?), new JsonWriteForgeByMethod("WriteCollectionNumber"));
+			WRITE_COLLECTION_FORGES.Put(typeof(decimal?), new JsonWriteForgeByMethod("WriteCollectionNumber"));
+			WRITE_COLLECTION_FORGES.Put(typeof(double?), new JsonWriteForgeByMethod("WriteCollectionNumber"));
+			WRITE_COLLECTION_FORGES.Put(typeof(float?), new JsonWriteForgeByMethod("WriteCollectionNumber"));
+			WRITE_COLLECTION_FORGES.Put(typeof(BigDecimal), new JsonWriteForgeByMethod("WriteCollectionNumber"));
+			WRITE_COLLECTION_FORGES.Put(typeof(BigInteger), new JsonWriteForgeByMethod("WriteCollectionNumber"));
 			foreach (Type clazz in new Type[] {
 				typeof(UUID), typeof(OffsetDateTime), typeof(LocalDate), typeof(LocalDateTime), typeof(ZonedDateTime),
 				typeof(URL), typeof(URI)
 			}) {
-				WRITE_COLLECTION_FORGES.Put(clazz, new JsonWriteForgeByMethod("writeCollectionWToString"));
+				WRITE_COLLECTION_FORGES.Put(clazz, new JsonWriteForgeByMethod("WriteCollectionWToString"));
 			}
 		}
 
@@ -391,7 +394,7 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 			return new JsonForgeDesc(fieldName, startObject, startArray, end, write);
 		}
 
-		private static JsonSchemaField FindFieldAnnotation(
+		private static JsonSchemaFieldAttribute FindFieldAnnotation(
 			string fieldName,
 			Attribute[] annotations)
 		{
@@ -400,12 +403,12 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 			}
 
 			foreach (Attribute annotation in annotations) {
-				if (!(annotation is JsonSchemaField)) {
+				if (!(annotation is JsonSchemaFieldAttribute)) {
 					continue;
 				}
 
-				JsonSchemaField field = (JsonSchemaField) annotation;
-				if (field.Name().Equals(fieldName)) {
+				var field = (JsonSchemaFieldAttribute) annotation;
+				if (field.Name.Equals(fieldName)) {
 					return field;
 				}
 			}

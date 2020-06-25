@@ -6,33 +6,25 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.subquery;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 
 namespace com.espertech.esper.common.@internal.epl.subselect
 {
-	public class SubSelectActivationDesc {
+    public class SubSelectActivationDesc
+    {
+        public SubSelectActivationDesc(
+            IDictionary<ExprSubselectNode, SubSelectActivationPlan> subselects,
+            IList<StmtClassForgeableFactory> additionalForgeables)
+        {
+            Subselects = subselects;
+            AdditionalForgeables = additionalForgeables;
+        }
 
-	    private readonly IDictionary<ExprSubselectNode, SubSelectActivationPlan> subselects;
-	    private readonly IList<StmtClassForgeableFactory> additionalForgeables;
+        public IDictionary<ExprSubselectNode, SubSelectActivationPlan> Subselects { get; }
 
-	    public SubSelectActivationDesc(IDictionary<ExprSubselectNode, SubSelectActivationPlan> subselects, IList<StmtClassForgeableFactory> additionalForgeables) {
-	        this.subselects = subselects;
-	        this.additionalForgeables = additionalForgeables;
-	    }
-
-	    public IDictionary<ExprSubselectNode, SubSelectActivationPlan> GetSubselects() {
-	        return subselects;
-	    }
-
-	    public IList<StmtClassForgeableFactory> GetAdditionalForgeables() {
-	        return additionalForgeables;
-	    }
-	}
+        public IList<StmtClassForgeableFactory> AdditionalForgeables { get; }
+    }
 } // end of namespace

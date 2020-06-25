@@ -252,7 +252,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
                 // Stage 3(b) - forge-factory-to-forge
                 var classPostfix = moduleIdentPostfix + "_" + statementIdentPostfix;
-                var forgables = new List<StmtClassForgable>();
+                var forgables = new List<StmtClassForgeable>();
                 var filterSpecCompileds = new List<FilterSpecCompiled>();
                 var scheduleHandleCallbackProviders =
                     new List<ScheduleHandleCallbackProvider>();
@@ -350,7 +350,7 @@ namespace com.espertech.esper.compiler.@internal.util
             return sorted;
         }
 
-        private static void VerifyForgables(IList<StmtClassForgable> forgables)
+        private static void VerifyForgables(IList<StmtClassForgeable> forgables)
         {
             // there can only be one class of the same name
             ISet<string> names = new HashSet<string>();
@@ -363,9 +363,9 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 
             // there can be only one fields and statement provider
-            StmtClassForgable stmtProvider = null;
+            StmtClassForgeable stmtProvider = null;
             foreach (var forgable in forgables) {
-                if (forgable.ForgableType == StmtClassForgableType.STMTPROVIDER) {
+                if (forgable.ForgeableType == StmtClassForgeableType.STMTPROVIDER) {
                     if (stmtProvider != null) {
                         throw new IllegalStateException("Multiple stmt-provider classes");
                     }

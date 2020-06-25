@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,75 +7,74 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
-using com.espertech.esper.common.@internal.epl.expression.dot.core;
-using com.espertech.esper.common.@internal.epl.streamtype;
-using com.espertech.esper.common.@internal.@event.arr;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@base;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.mostleastfreq
 {
-    public class ExprDotForgeMostLeastFrequent : ExprDotForgeEnumMethodBase
-    {
-        public override EventType[] GetAddStreamTypes(
-            string enumMethodUsedName,
-            IList<string> goesToNames,
-            EventType inputEventType,
-            Type collectionComponentType,
-            IList<ExprDotEvalParam> bodiesAndParameters,
-            StatementRawInfo statementRawInfo,
-            StatementCompileTimeServices services)
-        {
-            return ExprDotNodeUtility.GetSingleLambdaParamEventType(
-                enumMethodUsedName,
-                goesToNames,
-                inputEventType,
-                collectionComponentType,
-                statementRawInfo,
-                services);
-        }
+	public class ExprDotForgeMostLeastFrequent : ExprDotForgeLambdaThreeForm
+	{
+		protected override EPType InitAndNoParamsReturnType(
+			EventType inputEventType,
+			Type collectionComponentType)
+		{
+			var returnType = collectionComponentType.GetBoxedType();
+			return EPTypeHelper.SingleValue(returnType);
+		}
 
-        public override EnumForge GetEnumForge(
-            StreamTypeService streamTypeService,
-            string enumMethodUsedName,
-            IList<ExprDotEvalParam> bodiesAndParameters,
-            EventType inputEventType,
-            Type collectionComponentType,
-            int numStreamsIncoming,
-            bool disablePropertyExpressionEventCollCache,
-            StatementRawInfo statementRawInfo,
-            StatementCompileTimeServices services)
-        {
-            if (bodiesAndParameters.IsEmpty()) {
-                var returnTypeX = collectionComponentType.GetBoxedType();
-                TypeInfo = EPTypeHelper.SingleValue(returnTypeX);
-                return new EnumMostLeastFrequentScalarForge(
-                    numStreamsIncoming,
-                    EnumMethodEnum == EnumMethodEnum.MOSTFREQUENT,
-                    returnTypeX);
-            }
+		protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
+			EnumMethodEnum enumMethod,
+			EPType type,
+			StatementCompileTimeServices services)
+		{
+			return streamCountIncoming => new EnumMostLeastFrequentScalarNoParam(
+				streamCountIncoming,
+				enumMethod == EnumMethodEnum.MOSTFREQUENT,
+				type.GetNormalizedClass());
+		}
 
-            var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
-            var returnType = first.BodyForge.EvaluationType.GetBoxedType();
-            TypeInfo = EPTypeHelper.SingleValue(returnType);
+		protected override Func<ExprDotEvalParamLambda, EPType> InitAndSingleParamReturnType(
+			EventType inputEventType,
+			Type collectionComponentType)
+		{
+			return lambda => {
+				var returnType = lambda.BodyForge.EvaluationType.GetBoxedType();
+				return EPTypeHelper.SingleValue(returnType);
+			};
+		}
 
-            var mostFrequent = EnumMethodEnum == EnumMethodEnum.MOSTFREQUENT;
-            if (inputEventType == null) {
-                return new EnumMostLeastFrequentScalarLamdaForge(
-                    first.BodyForge,
-                    first.StreamCountIncoming,
-                    mostFrequent,
-                    (ObjectArrayEventType) first.GoesToTypes[0]);
-            }
+		protected override ThreeFormEventPlainFactory.ForgeFunction SingleParamEventPlain(EnumMethodEnum enumMethod)
+		{
+			return (
+				lambda,
+				typeInfo1,
+				services) => new EnumMostLeastFrequentEvent(lambda, enumMethod == EnumMethodEnum.MOSTFREQUENT);
+		}
 
-            return new EnumMostLeastFrequentEventForge(first.BodyForge, numStreamsIncoming, mostFrequent);
-        }
-    }
+		protected override ThreeFormEventPlusFactory.ForgeFunction SingleParamEventPlus(EnumMethodEnum enumMethod)
+		{
+			return (
+				lambda,
+				fieldType,
+				numParameters,
+				typeInfo1,
+				services) => new EnumMostLeastFrequentEventPlus(lambda, fieldType, numParameters, enumMethod == EnumMethodEnum.MOSTFREQUENT);
+		}
+
+		protected override ThreeFormScalarFactory.ForgeFunction SingleParamScalar(EnumMethodEnum enumMethod)
+		{
+			return (
+					lambda,
+					eventType,
+					numParams,
+					typeInfo,
+					services) =>
+				new EnumMostLeastFrequentScalar(lambda, eventType, numParams, enumMethod == EnumMethodEnum.MOSTFREQUENT);
+		}
+	}
 } // end of namespace

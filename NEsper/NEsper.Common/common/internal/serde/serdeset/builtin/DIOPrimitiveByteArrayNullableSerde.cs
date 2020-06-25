@@ -16,45 +16,65 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOPrimitiveByteArrayNullableSerde : DataInputOutputSerde<byte[]> {
-	    public readonly static DIOPrimitiveByteArrayNullableSerde INSTANCE = new DIOPrimitiveByteArrayNullableSerde();
+	public class DIOPrimitiveByteArrayNullableSerde : DataInputOutputSerde<byte[]>
+	{
+		public readonly static DIOPrimitiveByteArrayNullableSerde INSTANCE = new DIOPrimitiveByteArrayNullableSerde();
 
-	    private DIOPrimitiveByteArrayNullableSerde() {
-	    }
+		private DIOPrimitiveByteArrayNullableSerde()
+		{
+		}
 
-	    public void Write(byte[] @object, DataOutput output) {
-	        WriteInternal(@object, output);
-	    }
+		public void Write(
+			byte[] @object,
+			DataOutput output)
+		{
+			WriteInternal(@object, output);
+		}
 
-	    public byte[] Read(DataInput input) {
-	        return ReadInternal(input);
-	    }
+		public byte[] Read(DataInput input)
+		{
+			return ReadInternal(input);
+		}
 
-	    public void Write(byte[] @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
-	        WriteInternal(@object, output);
-	    }
+		public void Write(
+			byte[] @object,
+			DataOutput output,
+			byte[] unitKey,
+			EventBeanCollatedWriter writer)
+		{
+			WriteInternal(@object, output);
+		}
 
-	    public byte[] Read(DataInput input, byte[] unitKey) {
-	        return ReadInternal(input);
-	    }
+		public byte[] Read(
+			DataInput input,
+			byte[] unitKey)
+		{
+			return ReadInternal(input);
+		}
 
-	    private void WriteInternal(byte[] @object, DataOutput output) {
-	        if (@object == null) {
-	            output.WriteInt(-1);
-	            return;
-	        }
-	        output.WriteInt(@object.Length);
-	        output.Write(object);
-	    }
+		private void WriteInternal(
+			byte[] @object,
+			DataOutput output)
+		{
+			if (@object == null) {
+				output.WriteInt(-1);
+				return;
+			}
 
-	    private byte[] ReadInternal(DataInput input) {
-	        int len = input.ReadInt();
-	        if (len == -1) {
-	            return null;
-	        }
-	        byte[] array = new byte[len];
-	        input.ReadFully(array);
-	        return array;
-	    }
+			output.WriteInt(@object.Length);
+			output.Write(@object);
+		}
+
+		private byte[] ReadInternal(DataInput input)
+		{
+			int len = input.ReadInt();
+			if (len == -1) {
+				return null;
+			}
+
+			byte[] array = new byte[len];
+			input.ReadFully(array);
+			return array;
+		}
 	}
 } // end of namespace

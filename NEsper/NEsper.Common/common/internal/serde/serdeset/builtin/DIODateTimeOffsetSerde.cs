@@ -14,7 +14,6 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.io;
 
-using java.sql;
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
 	public class DIODateTimeOffsetSerde : DataInputOutputSerde<DateTimeOffset?> {
