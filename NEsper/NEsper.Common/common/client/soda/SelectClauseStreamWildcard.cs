@@ -38,8 +38,8 @@ namespace com.espertech.esper.common.client.soda
             string streamName,
             string optionalColumnName)
         {
-            this.StreamName = streamName;
-            this.OptionalColumnName = optionalColumnName;
+            StreamName = streamName;
+            OptionalColumnName = optionalColumnName;
         }
 
         /// <summary>

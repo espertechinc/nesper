@@ -41,8 +41,8 @@ namespace com.espertech.esper.common.client.soda
             string columnName,
             CreateIndexColumnType type)
         {
-            this.columns = Collections.SingletonList<Expression>(Expressions.Property(columnName));
-            this.indexType = type.GetName();
+            columns = Collections.SingletonList<Expression>(Expressions.Property(columnName));
+            indexType = type.GetName();
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.client.soda
             IList<Expression> parameters)
         {
             this.columns = columns;
-            this.indexType = type;
+            indexType = type;
             this.parameters = parameters;
         }
 

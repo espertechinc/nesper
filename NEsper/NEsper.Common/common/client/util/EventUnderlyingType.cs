@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.Remoting.Messaging;
 
 using com.espertech.esper.common.@internal.@event.avro;
 

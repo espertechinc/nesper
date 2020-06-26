@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="isDistinct">true if distinct</param>
         public AvedevProjectionExpression(bool isDistinct)
         {
-            this.distinct = isDistinct;
+            distinct = isDistinct;
         }
 
         /// <summary>
@@ -44,8 +44,8 @@ namespace com.espertech.esper.common.client.soda
             Expression expression,
             bool isDistinct)
         {
-            this.distinct = isDistinct;
-            this.Children.Add(expression);
+            distinct = isDistinct;
+            Children.Add(expression);
         }
 
         public override ExpressionPrecedenceEnum Precedence
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.client.soda
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            ExpressionBase.RenderAggregation(writer, "avedev", distinct, this.Children);
+            RenderAggregation(writer, "avedev", distinct, Children);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.client.soda
         public bool IsDistinct
         {
             get => distinct;
-            set => this.distinct = value;
+            set => distinct = value;
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.client.soda
         public bool Distinct
         {
             get => distinct;
-            set => this.distinct = value;
+            set => distinct = value;
         }
     }
 } // end of namespace

@@ -184,7 +184,6 @@ namespace com.espertech.esper.common.@internal.@event.core
         public abstract string StartTimestampPropertyName { get; }
         public abstract string EndTimestampPropertyName { get; }
         public abstract EventPropertyDescriptor[] WriteableProperties { get; }
-        public abstract EventBeanReader Reader { get; }
         public abstract EventPropertyWriterSPI GetWriter(string propertyName);
         public abstract EventPropertyDescriptor GetWritableProperty(string propertyName);
         public abstract EventBeanCopyMethodForge GetCopyMethodForge(string[] properties);

@@ -13,6 +13,8 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
+using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.methodbase;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
@@ -22,31 +24,25 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class ExprDotForgeNoOp : ExprDotForgeEnumMethodBase
     {
-        public override EventType[] GetAddStreamTypes(
+        public override EnumForgeDescFactory GetForgeFactory(
+            DotMethodFP footprint,
+            IList<ExprNode> parameters,
+            EnumMethodEnum enumMethod,
             string enumMethodUsedName,
-            IList<string> goesToNames,
             EventType inputEventType,
             Type collectionComponentType,
-            IList<ExprDotEvalParam> bodiesAndParameters,
-            StatementRawInfo statementRawInfo,
-            StatementCompileTimeServices services)
+            ExprValidationContext validationContext)
         {
-            return new EventType[] { };
-        }
-
-        public override EnumForge GetEnumForge(
-            StreamTypeService streamTypeService,
-            string enumMethodUsedName,
-            IList<ExprDotEvalParam> bodiesAndParameters,
-            EventType inputEventType,
-            Type collectionComponentType,
-            int numStreamsIncoming,
-            bool disablePropertyExpressionEventCollCache,
-            StatementRawInfo statementRawInfo,
-            StatementCompileTimeServices services)
-        {
-            TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);
-            return new EnumForgeNoOp(0);
+            return new ProxyEnumForgeDescFactory() {
+                ProcGetLambdaStreamTypesForParameter = parameterNum => new EnumForgeLambdaDesc(new EventType[0], new String[0]),
+                ProcMakeEnumForgeDesc = (
+                    bodiesAndParameters,
+                    streamCountIncoming,
+                    services) => {
+                    var type = EPTypeHelper.CollectionOfEvents(inputEventType);
+                    return new EnumForgeDesc(type, new EnumForgeNoOp(streamCountIncoming));
+                }
+            };
         }
     }
 } // end of namespace

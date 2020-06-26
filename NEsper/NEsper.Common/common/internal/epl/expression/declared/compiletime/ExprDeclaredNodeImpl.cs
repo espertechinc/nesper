@@ -80,6 +80,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             }
         }
 
+        public string StringConstantWhenProvided => null;
+        
         public bool IsConstantResult => false;
 
         public ExprNode ExpressionBodyCopy { get; private set; }
@@ -499,6 +501,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             // this is because parameters are streams and don't need to be collected by some visitors
             return visitor.IsWalkDeclExprParam || !allStreamIdsMatch;
         }
+
 
         private class DeclaredNodeEventPropertyGetterForge : ExprEventEvaluatorForge
         {

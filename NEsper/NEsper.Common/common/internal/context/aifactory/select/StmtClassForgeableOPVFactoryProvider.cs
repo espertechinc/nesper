@@ -60,7 +60,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             _raw = raw;
         }
 
-        public CodegenClass Forge(bool includeDebugSymbols)
+        public CodegenClass Forge(
+            bool includeDebugSymbols,
+            bool fireAndForget)
         {
             Supplier<string> debugInformationProvider = () => {
                 var writer = new StringWriter();
@@ -149,8 +151,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
                 // render and compile
                 return new CodegenClass(
+                    CodegenClassType.OUTPUTPROCESSVIEWFACTORYPROVIDER,
                     typeof(OutputProcessViewFactoryProvider),
-                    _namespaceScope.Namespace,
                     ClassName,
                     classScope,
                     providerExplicitMembers,
@@ -171,7 +173,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
         public string ClassName { get; }
 
-        public StmtClassForgableType ForgableType => StmtClassForgableType.OPVPROVIDER;
+        public StmtClassForgeableType ForgeableType => StmtClassForgeableType.OPVPROVIDER;
 
         private static void MakeOPVFactory(
             CodegenClassScope classScope,

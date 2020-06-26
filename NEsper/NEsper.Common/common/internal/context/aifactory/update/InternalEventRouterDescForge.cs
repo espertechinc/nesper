@@ -114,7 +114,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
                 }
             }
 
-            return NewArrayWithInit(InternalEventRouterWriter.class, init);
+            return NewArrayWithInit(typeof(InternalEventRouterWriter), init);
         }
     }
 } // end of namespace

@@ -40,12 +40,11 @@ namespace com.espertech.esper.common.client.soda
         public TableAccessExpression(
             string tableName,
             IList<Expression> keyExpressions,
-            string optionalColumn,
-            Expression optionalAggregate)
+            string optionalColumn)
         {
-            this._tableName = tableName;
-            this._keyExpressions = keyExpressions;
-            this._optionalColumn = optionalColumn;
+            _tableName = tableName;
+            _keyExpressions = keyExpressions;
+            _optionalColumn = optionalColumn;
         }
 
         public override ExpressionPrecedenceEnum Precedence
@@ -85,7 +84,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="tableName">table name</param>
         public TableAccessExpression SetTableName(string tableName)
         {
-            this._tableName = tableName;
+            _tableName = tableName;
             return this;
         }
 
@@ -104,7 +103,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="keyExpressions">primary key expressions</param>
         public TableAccessExpression SetKeyExpressions(IList<Expression> keyExpressions)
         {
-            this._keyExpressions = keyExpressions;
+            _keyExpressions = keyExpressions;
             return this;
         }
 
@@ -123,7 +122,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="optionalColumn">table column name or null if accessing row</param>
         public TableAccessExpression SetOptionalColumn(string optionalColumn)
         {
-            this._optionalColumn = optionalColumn;
+            _optionalColumn = optionalColumn;
             return this;
         }
     }

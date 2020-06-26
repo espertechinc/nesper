@@ -2283,7 +2283,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 				code);
 		}
 
-		static CodegenMethod GenerateOutputBatchedViewUnkeyedCodegen(
+		public static CodegenMethod GenerateOutputBatchedViewUnkeyedCodegen(
 			ResultSetProcessorAggregateGroupedForge forge,
 			CodegenClassScope classScope,
 			CodegenInstanceAux instance)

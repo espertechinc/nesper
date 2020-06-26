@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                     DotMethodTypeEnum.DATETIME,
                     currentMethodName,
                     footprintProvided,
-                    DotMethodInputTypeMatcherConstants.DEFAULT_ALL);
+                    DotMethodInputTypeMatcherImpl.DEFAULT_ALL);
 
                 if (opFactory is CalendarForgeFactory) {
                     var calendarForge = ((CalendarForgeFactory) currentMethod.ForgeFactory).GetOp(

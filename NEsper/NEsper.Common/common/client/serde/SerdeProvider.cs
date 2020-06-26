@@ -26,9 +26,6 @@ namespace com.espertech.esper.common.client.serde
         /// </summary>
         /// <param name="context">provides information about the event type</param>
         /// <returns>null to use the default runtime serde, or the serde provider descriptor for the compiler</returns>
-        SerdeProvision ResolveSerdeForEventType(SerdeProviderEventTypeContext context)
-        {
-            return null;
-        }
+        SerdeProvision ResolveSerdeForEventType(SerdeProviderEventTypeContext context);
     }
 }

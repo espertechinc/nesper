@@ -30,6 +30,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return IsLimited;
         }
 
+        public bool IsWalkDeclExprParam => true;
+
         public void Visit(ExprNode exprNode)
         {
             if (exprNode is ExprVariableNode) {

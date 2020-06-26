@@ -364,7 +364,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public CodegenBlock SuperCtor(params CodegenExpression[] parameters)
         {
             CheckClosed();
-            _statements.Add(new CodegenStatementSuperCtor(parameters));
+            _statements.Add(new CodegenStatementBaseCtor(parameters));
             return this;
         }
 

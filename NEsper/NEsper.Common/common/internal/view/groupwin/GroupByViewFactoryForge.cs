@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             set => eventType = value;
         }
 
-        public IList<ViewFactoryForge> InnerForges => groupeds;
+        public override IList<ViewFactoryForge> InnerForges => groupeds;
         
         public override void SetViewParameters(
             IList<ExprNode> parameters,
@@ -169,7 +169,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             }
         }
 
-        public IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
+        public override IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
         {
             MultiKeyPlan desc = MultiKeyPlanner.PlanMultiKey(criteriaExpressions, false, viewForgeEnv.StatementRawInfo, viewForgeEnv.SerdeResolver);
             multiKeyClassNames = desc.ClassRef;

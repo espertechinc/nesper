@@ -300,6 +300,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 joinExecutionStrategy,
                 _resultSetProcessor,
                 parentView,
+                _parent.IsDistinct,
                 _parent.DistinctKeyGetter);
         }
 

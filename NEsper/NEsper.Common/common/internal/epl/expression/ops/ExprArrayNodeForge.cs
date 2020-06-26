@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Type arrayReturnType,
             object constantResult)
         {
-            _constantResult = constantResult;
+            _constantResult = (Array) constantResult;
             Parent = parent;
             ArrayReturnType = arrayReturnType;
             IsMustCoerce = false;

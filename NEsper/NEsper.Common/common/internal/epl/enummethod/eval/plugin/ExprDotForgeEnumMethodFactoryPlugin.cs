@@ -11,7 +11,7 @@ using com.espertech.esper.common.@internal.epl.enummethod.dot;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
 {
-    public class ExprDotForgeEnumMethodFactoryPlugin : ExprDotForgeEnumMethodFactory
+    public class ExprDotForgeEnumMethodFactoryPlugin
     {
         private readonly EnumMethodForgeFactory _forgeFactory;
 
@@ -24,5 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
         {
             return new ExprDotForgeEnumMethodPlugin(_forgeFactory);
         }
+
+        public ExprDotForgeEnumMethodFactory EnumMethodFactory => this.Make;
     }
 } // end of namespace

@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>expression</returns>
         public MaxRowExpression Add(object @object)
         {
-            this.Children.Add(new ConstantExpression(@object));
+            Children.Add(new ConstantExpression(@object));
             return this;
         }
 
@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>expression</returns>
         public MaxRowExpression Add(Expression expression)
         {
-            this.Children.Add(expression);
+            Children.Add(expression);
             return this;
         }
 
@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>expression</returns>
         public MaxRowExpression Add(string propertyName)
         {
-            this.Children.Add(new PropertyValueExpression(propertyName));
+            Children.Add(new PropertyValueExpression(propertyName));
             return this;
         }
 
@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.client.soda
             writer.Write("max(");
 
             string delimiter = "";
-            foreach (Expression expr in this.Children)
+            foreach (Expression expr in Children)
             {
                 writer.Write(delimiter);
                 expr.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);

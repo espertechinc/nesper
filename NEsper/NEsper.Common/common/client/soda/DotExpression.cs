@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="innerExpression">the expression in parenthesis</param>
         public DotExpression(Expression innerExpression)
         {
-            this.Children.Add(innerExpression);
+            Children.Add(innerExpression);
         }
 
         /// <summary>
@@ -93,12 +93,12 @@ namespace com.espertech.esper.common.client.soda
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            if (!this.Children.IsEmpty())
+            if (!Children.IsEmpty())
             {
-                this.Children[0].ToEPL(writer, Precedence);
+                Children[0].ToEPL(writer, Precedence);
             }
 
-            DotExpressionItem.Render(chain, writer, !this.Children.IsEmpty());
+            DotExpressionItem.Render(chain, writer, !Children.IsEmpty());
         }
     }
 } // end of namespace

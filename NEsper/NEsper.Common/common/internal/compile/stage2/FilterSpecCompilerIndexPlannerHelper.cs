@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                         ThrowConversionError(rightType, leftType, expression);
                     }
 
-                    return CoercerFactory.GetCoercer(rightType, numericCoercionType);
+                    return SimpleNumberCoercerFactory.GetCoercer(rightType, numericCoercionType);
                 }
             }
 
@@ -127,13 +127,13 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             var streamUseCollectVisitor = new ExprNodeStreamUseCollectVisitor();
             value.Accept(streamUseCollectVisitor);
 
-            ISet<int> streams = new HashSet<int>(streamUseCollectVisitor.Referenced.Count);
+            ISet<int> streams = new HashSet<int>();
             foreach (var streamRefNode in streamUseCollectVisitor.Referenced) {
                 if (streamRefNode.StreamReferencedIfAny == null) {
                     continue;
                 }
 
-                streams.Add(streamRefNode.StreamReferencedIfAny);
+                streams.Add(streamRefNode.StreamReferencedIfAny.Value);
             }
 
             return new MatchedEventConvertorForge(taggedEventTypes, arrayEventTypes, allTagNamesOrdered, streams, true);

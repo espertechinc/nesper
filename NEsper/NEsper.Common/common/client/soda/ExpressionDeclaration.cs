@@ -40,10 +40,10 @@ namespace com.espertech.esper.common.client.soda
             Expression expression,
             bool alias)
         {
-            this.Name = name;
-            this.ParameterNames = parameterNames;
-            this.Expression = expression;
-            this.IsAlias = alias;
+            Name = name;
+            ParameterNames = parameterNames;
+            Expression = expression;
+            IsAlias = alias;
         }
 
         /// <summary>

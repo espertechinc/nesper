@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat.collections;
 
@@ -84,12 +85,6 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             return 0;
-        }
-        
-        public static bool HasDefaultConstructor(Type clazz)
-        {
-            var constructor = clazz.GetConstructor(new Type[0]);
-            return constructor != null && constructor.IsPublic;
         }
     }
 } // end of namespace

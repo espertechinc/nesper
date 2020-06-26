@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.methodbase;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
@@ -23,35 +24,41 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public class ExprDotForgeSequenceEqual : ExprDotForgeEnumMethodBase
     {
-        public override EventType[] GetAddStreamTypes(
-            string enumMethodUsedName,
-            IList<string> goesToNames,
+        public override EnumForgeDescFactory GetForgeFactory(
+            DotMethodFP footprint,
+            IList<ExprNode> parameters,
+            EnumMethodEnum enumMethod,
+            String enumMethodUsedName,
             EventType inputEventType,
             Type collectionComponentType,
-            IList<ExprDotEvalParam> bodiesAndParameters,
-            StatementRawInfo statementRawInfo,
-            StatementCompileTimeServices services)
+            ExprValidationContext validationContext)
         {
-            return new EventType[0];
+            return new EnumForgeDescFactorySeqEqual(inputEventType == null);
         }
 
-        public override EnumForge GetEnumForge(
-            StreamTypeService streamTypeService,
-            string enumMethodUsedName,
-            IList<ExprDotEvalParam> bodiesAndParameters,
-            EventType inputEventType,
-            Type collectionComponentType,
-            int numStreamsIncoming,
-            bool disablePropertyExpressionEventCollCache,
-            StatementRawInfo statementRawInfo,
-            StatementCompileTimeServices services)
+        private class EnumForgeDescFactorySeqEqual : EnumForgeDescFactory
         {
-            TypeInfo = EPTypeHelper.SingleValue(typeof(bool?));
-            var body = bodiesAndParameters[0].BodyForge;
-            return new EnumSequenceEqualForge(
-                body,
-                numStreamsIncoming,
-                inputEventType == null);
+            private readonly bool _isScalar;
+            public EnumForgeDescFactorySeqEqual(bool isScalar)
+            {
+                _isScalar = isScalar;
+            }
+
+            public EnumForgeLambdaDesc GetLambdaStreamTypesForParameter(int parameterNum)
+            {
+                throw new IllegalStateException("No lambda expected");
+            }
+
+            public EnumForgeDesc MakeEnumForgeDesc(
+                IList<ExprDotEvalParam> bodiesAndParameters,
+                int streamCountIncoming,
+                StatementCompileTimeServices services)
+            {
+                var body = bodiesAndParameters[0].BodyForge;
+                var type = EPTypeHelper.SingleValue(typeof(bool?));
+                EnumForge forge = new EnumSequenceEqualForge(body, streamCountIncoming, _isScalar);
+                return new EnumForgeDesc(type, forge);
+            }
         }
     }
 } // end of namespace

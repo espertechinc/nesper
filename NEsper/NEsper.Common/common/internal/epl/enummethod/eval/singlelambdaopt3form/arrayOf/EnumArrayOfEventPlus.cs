@@ -27,7 +27,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public class EnumArrayOfEventPlus : ThreeFormEventPlus
 	{
-
 		private readonly Type _arrayComponentType;
 
 		public EnumArrayOfEventPlus(
@@ -40,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			this._arrayComponentType = arrayComponentType;
 		}
 
-		public EnumEval EnumEvaluator {
+		public override EnumEval EnumEvaluator {
 			get {
 				var inner = InnerExpression.ExprEvaluator;
 

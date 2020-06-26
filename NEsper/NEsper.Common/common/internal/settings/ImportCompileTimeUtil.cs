@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.settings
         public static EnumValue ResolveIdentAsEnum(
             string constant,
             ImportServiceCompileTime importService,
-            ExtensionClass classpathExtension,
+            ExtensionClass extensionClass,
             bool isAnnotation)
         {
             var lastDotIndex = constant.LastIndexOf('.');
@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.settings
 
             Type clazz;
             try {
-                clazz = importService.ResolveClass(className, isAnnotation);
+                clazz = importService.ResolveClass(className, isAnnotation, extensionClass);
             }
             catch (ImportException) {
                 return null;

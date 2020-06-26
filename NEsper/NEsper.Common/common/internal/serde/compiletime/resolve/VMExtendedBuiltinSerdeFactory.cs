@@ -19,12 +19,12 @@ using com.espertech.esper.compat.collections;
 namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 {
 	public class VMExtendedBuiltinSerdeFactory {
-	    public static DataInputOutputSerde GetSerde(Type type) {
+	    public static DataInputOutputSerde<object> GetSerde(Type type) {
 	        if (type == typeof(BigInteger)) {
 	            return DIOBigIntegerSerde.INSTANCE;
 	        }
-	        if (type == typeof(BigDecimal)) {
-	            return DIOBigDecimalSerde.INSTANCE;
+	        if (type == typeof(decimal)) {
+	            return DIODecimalSerde.INSTANCE;
 	        }
 	        if (type == typeof(DateTime)) {
 	            return DIODateTimeSerde.INSTANCE;
@@ -33,10 +33,10 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 	            return DIODateTimeOffsetSerde.INSTANCE;
 	        }
 	        if (type == typeof(DateTimeEx)) {
-	            return DIOCalendarSerde.INSTANCE;
+	            return DIODateTimeExSerde.INSTANCE;
 	        }
 	        if (type.IsArray) {
-	            Type componentType = type.ComponentType;
+	            var componentType = type.GetElementType();
 	            if (componentType == typeof(int)) {
 	                return DIOPrimitiveIntArrayNullableSerde.INSTANCE;
 	            }
@@ -98,13 +98,13 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 	                return DIOBigIntegerArrayNullableSerde.INSTANCE;
 	            }
 	            if (componentType == typeof(DateTime)) {
-	                return DIODateArrayNullableSerde.INSTANCE;
+	                return DIODateTimeArrayNullableSerde.INSTANCE;
 	            }
 	            if (componentType == typeof(DateTimeOffset)) {
 	                return DIODateTimeOffsetArrayNullableSerde.INSTANCE;
 	            }
 	            if (componentType == typeof(DateTimeEx)) {
-	                return DIOCalendarArrayNullableSerde.INSTANCE;
+	                return DIODateTimeExArrayNullableSerde.INSTANCE;
 	            }
 	        }
 	        return null;

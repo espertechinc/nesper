@@ -81,7 +81,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(_forgeClassName, _name);
+            unchecked {
+                return ((_forgeClassName != null ? _forgeClassName.GetHashCode() : 0) * 397) ^ (_name != null ? _name.GetHashCode() : 0);
+            }
         }
     }
 } // end of namespace

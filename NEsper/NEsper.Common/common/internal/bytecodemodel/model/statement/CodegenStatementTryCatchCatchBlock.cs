@@ -39,8 +39,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             classes.AddToSet(Ex);
             Block.MergeClasses(classes);
         }
-        
-        public void TraverseExpressions(Consumer<CodegenExpression> consumer) {
+
+        public void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
             Block.TraverseExpressions(consumer);
         }
     }

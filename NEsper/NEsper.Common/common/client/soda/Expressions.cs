@@ -1906,7 +1906,7 @@ namespace com.espertech.esper.common.client.soda
             CrontabParameterExpression param = new CrontabParameterExpression(type);
             if (parameter != null)
             {
-                param.AddChild(Expressions.Constant(parameter));
+                param.AddChild(Constant(parameter));
             }
 
             return param;

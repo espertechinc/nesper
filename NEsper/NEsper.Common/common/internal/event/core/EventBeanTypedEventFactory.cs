@@ -53,5 +53,6 @@ namespace com.espertech.esper.common.@internal.@event.core
         public const string ADAPTERFORTYPEDDOM = "AdapterForTypedDOM";
         public const string ADAPTERFORTYPEDAVRO = "AdapterForTypedAvro";
         public const string ADAPTERFORTYPEDWRAPPER = "AdapterForTypedWrapper";
+        public const string ADAPTERFORTYPEDJSON = "AdapterForTypedJson";
     }
 } // end of namespace

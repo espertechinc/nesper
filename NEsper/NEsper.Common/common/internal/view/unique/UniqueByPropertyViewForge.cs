@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.view.unique
         }
 
 
-        public IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
+        public override IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
         {
             MultiKeyPlan desc = MultiKeyPlanner.PlanMultiKey(
                 _criteriaExpressions,

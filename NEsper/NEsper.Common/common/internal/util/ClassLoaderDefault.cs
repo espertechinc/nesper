@@ -27,9 +27,9 @@ namespace com.espertech.esper.common.@internal.util
             return _resourceManager.GetResourceAsStream(resourceName);
         }
 
-        public Type GetClass(string className)
+        public Type GetClass(string typeName)
         {
-            return TypeHelper.ResolveType(className, true);
+            return TypeHelper.ResolveType(typeName, true);
         }
     }
 }

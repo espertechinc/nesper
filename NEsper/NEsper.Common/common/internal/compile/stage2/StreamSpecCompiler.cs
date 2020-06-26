@@ -267,7 +267,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             var nodeStack = new Stack<EvalForgeNode>();
 
             // determine ordered tags
-            ISet<string> allTagNamesOrdered = FilterSpecCompilerTagUtil.GetAllTagNamesOrdered(priorAllTags, streamSpecRaw.EvalForgeNode);
+            ISet<string> allTagNamesOrdered = FilterSpecCompilerTagUtil.AssignEventAsTagNumber(priorAllTags, streamSpecRaw.EvalForgeNode);
 
             // construct root : assigns factory node ids
             var top = streamSpecRaw.EvalForgeNode;
@@ -289,9 +289,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 HookType.INTERNAL_PATTERNCOMPILE,
                 typeof(PatternCompileHook),
                 services.ImportServiceCompileTime);
-            if (hook != null) {
-                hook.Pattern(root);
-            }
+            hook?.Pattern(root);
 
             PatternStreamSpecCompiled compiled = new PatternStreamSpecCompiled(
                 root,

@@ -50,8 +50,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         
         public void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
-            // TODO
-            CodegenExpressionBuilder.TraverseMultiple(_parameters, consumer);
+            // No Parameters
         }
     }
 } // end of namespace

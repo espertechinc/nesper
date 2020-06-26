@@ -78,6 +78,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
 
         public ExprNodeRenderable ExprForgeRenderable => ForgeRenderableLocal;
 
+        public ExprNodeRenderable EnumForgeRenderable => ForgeRenderableLocal;
+
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
         public ExprNode[] PositionalParams => positionalParams;

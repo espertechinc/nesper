@@ -161,7 +161,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
             CategorySvc.Destroy();
         }
 
-        public void Transfer(
+        public override void Transfer(
             IntSeqKey path,
             bool transferChildContexts,
             AgentInstanceTransferServices xfer)

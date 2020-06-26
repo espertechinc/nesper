@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>expression</returns>
         public ArrayExpression Add(string property)
         {
-            this.Children.Add(new PropertyValueExpression(property));
+            Children.Add(new PropertyValueExpression(property));
             return this;
         }
 
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>expression</returns>
         public ArrayExpression Add(object @object)
         {
-            this.Children.Add(new ConstantExpression(@object));
+            Children.Add(new ConstantExpression(@object));
             return this;
         }
 
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>expression</returns>
         public ArrayExpression Add(Expression expression)
         {
-            this.Children.Add(expression);
+            Children.Add(expression);
             return this;
         }
 
@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write("{");
             bool isFirst = true;
-            foreach (Expression child in this.Children)
+            foreach (Expression child in Children)
             {
                 if (!isFirst)
                 {

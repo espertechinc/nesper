@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.client.soda
         public string EventTypeName
         {
             get => eventTypeName;
-            set { this.eventTypeName = value; }
+            set { eventTypeName = value; }
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.client.soda
         public Expression FilterExpression
         {
             get => filter;
-            set => this.filter = value;
+            set => filter = value;
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.client.soda
         public IList<ContainedEventSelect> OptionalPropertySelects
         {
             get => optionalPropertySelects;
-            set => this.optionalPropertySelects = value;
+            set => optionalPropertySelects = value;
         }
 
         /// <summary>

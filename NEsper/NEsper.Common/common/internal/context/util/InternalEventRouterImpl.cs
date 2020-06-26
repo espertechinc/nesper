@@ -297,7 +297,7 @@ namespace com.espertech.esper.common.@internal.context.util
                 bool hasSubselect,
                 ExprEvaluator optionalWhereClauseEvaluator)
             {
-                this.@internal.EventRouterDesc = internalEventRouterDesc;
+                this.internalEventRouterDesc = internalEventRouterDesc;
                 this.outputView = outputView;
                 this.statementContext = statementContext;
                 this.hasSubselect = hasSubselect;

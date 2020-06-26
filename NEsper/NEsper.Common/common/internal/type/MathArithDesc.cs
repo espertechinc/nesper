@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.type
                 return true;
             }
 
-            if (obj.GetType() != GetType()) {
+            if (obj.GetType() != this.GetType()) {
                 return false;
             }
 
@@ -48,7 +48,9 @@ namespace com.espertech.esper.common.@internal.type
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(_type, (int) _arith);
+            unchecked {
+                return ((_type != null ? _type.GetHashCode() : 0) * 397) ^ (int) _arith;
+            }
         }
 
         public override string ToString()

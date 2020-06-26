@@ -192,7 +192,7 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
             EventBeanUpdateItemForgeWExpressions[] forgeExpressions = new EventBeanUpdateItemForgeWExpressions[updateItems.Length];
             for (int i = 0; i < updateItems.Length; i++) {
                 var targetType = updateItems[i].IsUseUntypedAssignment ? typeof(object) : types[i];
-                forgeExpressions[i] = updateItems[i].toExpression(targetType, exprMethod, exprSymbol, classScope);
+                forgeExpressions[i] = updateItems[i].ToExpression(targetType, exprMethod, exprSymbol, classScope);
             }
 
             exprSymbol.DerivedSymbolsCodegen(method, method.Block, classScope);
@@ -205,7 +205,7 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
             for (var i = 0; i < updateItems.Length; i++) {
                 var targetType = updateItems[i].IsUseUntypedAssignment ? typeof(object) : types[i];
                 var updateItem = updateItems[i];
-                CodegenExpression rhs = forgeExpressions[i].getRhsExpression();
+                CodegenExpression rhs = forgeExpressions[i].RhsExpression;
                 if (updateItems[i].IsUseTriggeringEvent) {
                     rhs = ArrayAtIndex(Ref(NAME_EPS), Constant(1));
                 }

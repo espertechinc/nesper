@@ -18,4 +18,29 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
         RuntimeSettingsService RuntimeSettingsService { get; }
         Attribute[] Annotations { get; }
     }
+    
+    public class ProxyEventTableFactoryFactoryContext : EventTableFactoryFactoryContext
+    {
+        public Func<EventTableIndexService> ProcEventTableIndexService { get; }
+        public Func<RuntimeSettingsService> ProcRuntimeSettingsService { get; }
+        public Func<Attribute[]> ProcAnnotations { get; }
+
+        public EventTableIndexService EventTableIndexService => ProcEventTableIndexService.Invoke();
+        public RuntimeSettingsService RuntimeSettingsService => ProcRuntimeSettingsService.Invoke();
+        public Attribute[] Annotations => ProcAnnotations.Invoke();
+
+        public ProxyEventTableFactoryFactoryContext()
+        {
+        }
+
+        public ProxyEventTableFactoryFactoryContext(
+            Func<EventTableIndexService> procEventTableIndexService,
+            Func<RuntimeSettingsService> procRuntimeSettingsService,
+            Func<Attribute[]> procAnnotations)
+        {
+            ProcEventTableIndexService = procEventTableIndexService;
+            ProcRuntimeSettingsService = procRuntimeSettingsService;
+            ProcAnnotations = procAnnotations;
+        }
+    }
 } // end of namespace

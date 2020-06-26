@@ -46,13 +46,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 		public CodegenFieldSharable SharableCode => _sharableCode;
 
 		/// <summary>
-		/// To be implemented to return the field required, or null to indicate an appropriate field could not be found.
+		/// To be implemented to return the field or property required, or null to indicate an
+		/// appropriate field or property could not be found.
 		/// </summary>
 		/// <param name="clazz">to search for a matching field</param>
-		/// <returns>field if found, or null if no matching field exists</returns>
-		protected abstract FieldInfo DetermineField(Type clazz);
+		/// <returns>field or property if found, or null if no matching exists</returns>
+		protected abstract MemberInfo DetermineFieldOrProperty(Type clazz);
 
-		protected abstract CodegenExpression DetermineFieldCodegen(
+		protected abstract CodegenExpression DetermineFieldOrPropertyCodegen(
 			CodegenExpressionRef clazz,
 			CodegenMethodScope parent,
 			CodegenClassScope codegenClassScope);
@@ -164,10 +165,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			return CacheAndCall(_cache, this, @object, _eventBeanTypedEventFactory, _beanEventTypeFactory);
 		}
 
-		public Type GetTargetType()
-		{
-			return typeof(object);
-		}
+		public Type TargetType => typeof(object);
 
 		public bool IsBeanExistsProperty(object @object)
 		{
@@ -179,10 +177,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			return CacheAndCall(_cache, this, @event.Underlying, _eventBeanTypedEventFactory, _beanEventTypeFactory);
 		}
 
-		public Type GetBeanPropType()
-		{
-			return typeof(object);
-		}
+		public Type BeanPropType => typeof(object);
 
 		public CodegenExpression EventBeanGetCodegen(
 			CodegenExpression beanExpression,
@@ -249,7 +244,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 				}
 
 				// Lookup method to use
-				var field = dynamicPropertyGetterBase.DetermineField(obj.GetType());
+				var field = dynamicPropertyGetterBase.DetermineFieldOrProperty(obj.GetType());
 
 				// Cache descriptor and create field
 				desc = DynamicPropertyCacheAdd(obj.GetType(), field, cache);
@@ -275,7 +270,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 				.IfRefNotNull("desc")
 				.BlockReturn(Ref("desc"))
 				.DeclareVar(typeof(Type), "clazz", ExprDotMethod(Ref("obj"), "getClass"))
-				.DeclareVar(typeof(FieldInfo), "field", DetermineFieldCodegen(Ref("clazz"), method, codegenClassScope))
+				.DeclareVar(typeof(FieldInfo), "field", DetermineFieldOrPropertyCodegen(Ref("clazz"), method, codegenClassScope))
 				.AssignRef(
 					"desc",
 					StaticMethod(typeof(DynamicPropertyGetterByFieldBase), "DynamicPropertyCacheAdd", Ref("clazz"), Ref("field"), Ref("cache")))
@@ -313,9 +308,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 		/// <returns>descriptor</returns>
 		public static DynamicPropertyDescriptorByField DynamicPropertyCacheAdd(
 			Type clazz,
-			FieldInfo field,
+			MemberInfo field,
 			CopyOnWriteList<DynamicPropertyDescriptorByField> cache)
 		{
+			
 			var propertyDescriptor = new DynamicPropertyDescriptorByField(clazz, field);
 			cache.Add(propertyDescriptor);
 			return propertyDescriptor;

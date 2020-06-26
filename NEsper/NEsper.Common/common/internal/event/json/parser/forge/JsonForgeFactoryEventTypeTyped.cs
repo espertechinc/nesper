@@ -12,36 +12,66 @@ using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.json.parser.delegates.endvalue;
 using com.espertech.esper.common.@internal.@event.json.write;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
-package com.espertech.esper.common.@internal.@event.json.parser.forge;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; // newInstance
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; // staticMethod
+namespace com.espertech.esper.common.@internal.@event.json.parser.forge
+{
 
-public class JsonForgeFactoryEventTypeTyped {
-    public static JsonForgeDesc forgeNonArray(String fieldName, JsonEventType other) {
-        JsonDelegateForge startObject = new JsonDelegateForgeWithDelegateFactory(other.getDetail().getDelegateFactoryClassName());
-        JsonEndValueForge end = new JsonEndValueForgeCast(other.getDetail().getUnderlyingClassName());
-        JsonWriteForge writeForge;
-        if (other.getDetail().getOptionalUnderlyingProvided() == null) {
-            writeForge = new JsonWriteForgeByMethod("writeNested");
-        } else {
-            writeForge = (refs, method, classScope) -> staticMethod(JsonWriteUtil.class, "writeNested", refs.getWriter(), refs.getField(), newInstance(other.getDetail().getDelegateFactoryClassName()));
+    public class JsonForgeFactoryEventTypeTyped
+    {
+        public static JsonForgeDesc ForgeNonArray(
+            String fieldName,
+            JsonEventType other)
+        {
+            JsonDelegateForge startObject = new JsonDelegateForgeWithDelegateFactory(other.Detail.DelegateFactoryClassName);
+            JsonEndValueForge end = new JsonEndValueForgeCast(other.Detail.UnderlyingClassName);
+            JsonWriteForge writeForge;
+            if (other.Detail.OptionalUnderlyingProvided == null) {
+                writeForge = new JsonWriteForgeByMethod("WriteNested");
+            }
+            else {
+                writeForge = new ProxyJsonWriteForge((
+                        refs,
+                        method,
+                        classScope) =>
+                    StaticMethod(
+                        typeof(JsonWriteUtil),
+                        "WriteNested",
+                        refs.Writer,
+                        refs.Field,
+                        NewInstance(other.Detail.DelegateFactoryClassName)));
+            }
+
+            return new JsonForgeDesc(fieldName, startObject, null, end, writeForge);
         }
-        return new JsonForgeDesc(fieldName, startObject, null, end, writeForge);
-    }
 
-    public static JsonForgeDesc forgeArray(String fieldName, JsonEventType other) {
-        JsonDelegateForge startArray = new JsonDelegateForgeWithDelegateFactoryArray(other.getDetail().getDelegateFactoryClassName(), other.getUnderlyingType());
-        JsonEndValueForge end = new JsonEndValueForgeCast(JavaClassHelper.getArrayType(other.getUnderlyingType()));
-        JsonWriteForge writeForge;
-        if (other.getDetail().getOptionalUnderlyingProvided() == null) {
-            writeForge = new JsonWriteForgeByMethod("writeNestedArray");
-        } else {
-            writeForge = (refs, method, classScope) -> staticMethod(JsonWriteUtil.class, "writeNestedArray", refs.getWriter(), refs.getField(), newInstance(other.getDetail().getDelegateFactoryClassName()));
+        public static JsonForgeDesc ForgeArray(
+            String fieldName,
+            JsonEventType other)
+        {
+            JsonDelegateForge startArray = new JsonDelegateForgeWithDelegateFactoryArray(
+                other.Detail.DelegateFactoryClassName,
+                other.UnderlyingType);
+            JsonEndValueForge end = new JsonEndValueForgeCast(TypeHelper.GetArrayType(other.UnderlyingType));
+            JsonWriteForge writeForge;
+            if (other.Detail.OptionalUnderlyingProvided == null) {
+                writeForge = new JsonWriteForgeByMethod("WriteNestedArray");
+            }
+            else {
+                writeForge = new ProxyJsonWriteForge((
+                        refs,
+                        method,
+                        classScope) =>
+                    StaticMethod(
+                        typeof(JsonWriteUtil),
+                        "WriteNestedArray",
+                        refs.Writer,
+                        refs.Field,
+                        NewInstance(other.Detail.DelegateFactoryClassName)));
+            }
+
+            return new JsonForgeDesc(fieldName, null, startArray, end, writeForge);
         }
-        return new JsonForgeDesc(fieldName, null, startArray, end, writeForge);
     }
 }

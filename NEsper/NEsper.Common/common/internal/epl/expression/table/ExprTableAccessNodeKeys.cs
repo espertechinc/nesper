@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
         public override ExprTableEvalStrategyFactoryForge TableAccessFactoryForge {
             get {
-                var forge = new ExprTableEvalStrategyFactoryForge(tableMeta, null);
+                var forge = new ExprTableEvalStrategyFactoryForge(TableMeta, null);
                 forge.StrategyEnum = ExprTableEvalStrategyEnum.KEYS;
                 return forge;
             }

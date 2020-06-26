@@ -148,6 +148,6 @@ namespace com.espertech.esper.common.@internal.view.intersect
             }
         }
 
-        public IList<ViewFactoryForge> InnerForges => intersected;
+        public override IList<ViewFactoryForge> InnerForges => intersected;
     }
 } // end of namespace

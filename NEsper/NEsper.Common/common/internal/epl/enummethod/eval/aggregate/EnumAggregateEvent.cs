@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate
 			_numParameters = numParameters;
 		}
 
-		public EnumEval EnumEvaluator {
+		public override EnumEval EnumEvaluator {
 			get {
 				var init = _initialization.ExprEvaluator;
 				var inner = _innerExpression.ExprEvaluator;
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate
 			}
 		}
 
-		public CodegenExpression Codegen(
+		public override CodegenExpression Codegen(
 			EnumForgeCodegenParams premade,
 			CodegenMethodScope codegenMethodScope,
 			CodegenClassScope codegenClassScope)

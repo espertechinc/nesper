@@ -36,7 +36,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
         ExprVariableNode
     {
         private readonly string optSubPropName;
-
         private EventPropertyGetterSPI optSubPropGetter;
 
         public ExprVariableNodeImpl(
@@ -114,11 +113,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
             CodegenExpression readerExpression;
             if (variableMeta.OptionalContextName == null) {
                 readerExpression = classScope
-                    .AddOrGetDefaultFieldSharable(new VariableReaderCodegenFieldSharable(VariableMetadata));
+                    .AddOrGetDefaultFieldSharable(new VariableReaderCodegenFieldSharable(variableMeta));
             }
             else {
                 var field = classScope.AddOrGetDefaultFieldSharable(
-                    new VariableReaderPerCPCodegenFieldSharable(VariableMetadata));
+                    new VariableReaderPerCPCodegenFieldSharable(variableMeta));
                 var cpid = ExprDotName(symbols.GetAddExprEvalCtx(methodNode), "AgentInstanceId");
                 readerExpression = Cast(typeof(VariableReader), ExprDotMethod(field, "Get", cpid));
             }

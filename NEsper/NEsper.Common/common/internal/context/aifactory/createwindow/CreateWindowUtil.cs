@@ -22,6 +22,8 @@ using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.avro;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.@event.json.compiletime;
+using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.util;
@@ -175,8 +177,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                                 null,
                                 @base.StatementName);
                         } else if (representation == EventUnderlyingType.JSON) {
-                            EventTypeForgablesPair pair = JsonEventTypeUtility.MakeJsonTypeCompileTimeNewType(
-                                metadata.Apply(EventTypeApplicationType.JSON),
+                            EventTypeForgeablesPair pair = JsonEventTypeUtility.MakeJsonTypeCompileTimeNewType(
+                                metadata.Invoke(EventTypeApplicationType.JSON),
                                 compiledProperties,
                                 null,
                                 null,
@@ -222,7 +224,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                         } else if (selectFromType is JsonEventType) {
                             JsonEventType jsonType = (JsonEventType) selectFromType;
                             targetType = JsonEventTypeUtility.MakeJsonTypeCompileTimeExistingType(
-                                metadata.Apply(EventTypeApplicationType.JSON),
+                                metadata.Invoke(EventTypeApplicationType.JSON),
                                 jsonType,
                                 services);
                         }

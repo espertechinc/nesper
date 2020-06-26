@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             _optionalElse?.MergeClasses(classes);
         }
 
-        public void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
             foreach (CodegenStatementIfConditionBlock pair in _blocks) {
                 pair.TraverseExpressions(consumer);

@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			_innerType = InnerExpression.EvaluationType.GetBoxedType();
 		}
 
-		public EnumEval EnumEvaluator {
+		public override EnumEval EnumEvaluator {
 			get {
 				ExprEvaluator inner = InnerExpression.ExprEvaluator;
 				return new ProxyEnumEval() {

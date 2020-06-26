@@ -135,7 +135,7 @@ namespace com.espertech.esper.common.client.soda
         public string OptionalMetadataSQL
         {
             get => optionalMetadataSQL;
-            set { this.optionalMetadataSQL = value; }
+            set { optionalMetadataSQL = value; }
         }
 
         public override void ToEPLStream(

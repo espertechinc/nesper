@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.context.airegistry;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createclass
 {
@@ -30,6 +31,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createclass
 		public string ClassName {
 			set => _className = value;
 			get => _className;
+		}
+
+		public void StatementDestroyPreconditions(StatementContext statementContext)
+		{
 		}
 
 		public void StatementCreate(StatementContext statementContext)
@@ -49,7 +54,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createclass
 
 		public AIRegistryRequirements RegistryRequirements => AIRegistryRequirements.NoRequirements();
 
-		public StatementAgentInstanceLock ObtainAgentInstanceLock(
+		public IReaderWriterLock ObtainAgentInstanceLock(
 			StatementContext statementContext,
 			int agentInstanceId)
 		{

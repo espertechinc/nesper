@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Reflection;
 
@@ -32,12 +33,12 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 {
 	public class JsonForgeFactoryBuiltinClassTyped
 	{
-		private readonly static IDictionary<Type, JsonEndValueForge> END_VALUE_FORGES = new Dictionary<Type, JsonEndValueForge>();
-		private readonly static IDictionary<Type, Type> START_ARRAY_FORGES = new Dictionary<Type, Type>();
-		private readonly static IDictionary<Type, Type> START_COLLECTION_FORGES = new Dictionary<Type, Type>();
-		private readonly static IDictionary<Type, JsonWriteForge> WRITE_FORGES = new Dictionary<Type, JsonWriteForge>();
-		private readonly static IDictionary<Type, JsonWriteForge> WRITE_ARRAY_FORGES = new Dictionary<Type, JsonWriteForge>();
-		private readonly static IDictionary<Type, JsonWriteForge> WRITE_COLLECTION_FORGES = new Dictionary<Type, JsonWriteForge>();
+		private static readonly IDictionary<Type, JsonEndValueForge> END_VALUE_FORGES = new Dictionary<Type, JsonEndValueForge>();
+		private static readonly IDictionary<Type, Type> START_ARRAY_FORGES = new Dictionary<Type, Type>();
+		private static readonly IDictionary<Type, Type> START_COLLECTION_FORGES = new Dictionary<Type, Type>();
+		private static readonly IDictionary<Type, JsonWriteForge> WRITE_FORGES = new Dictionary<Type, JsonWriteForge>();
+		private static readonly IDictionary<Type, JsonWriteForge> WRITE_ARRAY_FORGES = new Dictionary<Type, JsonWriteForge>();
+		private static readonly IDictionary<Type, JsonWriteForge> WRITE_COLLECTION_FORGES = new Dictionary<Type, JsonWriteForge>();
 
 		static JsonForgeFactoryBuiltinClassTyped()
 		{
@@ -69,8 +70,9 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 			WRITE_FORGES.Put(typeof(float?), JsonWriteForgeNumberWithToString.INSTANCE);
 			WRITE_FORGES.Put(typeof(double?), JsonWriteForgeNumberWithToString.INSTANCE);
 			WRITE_FORGES.Put(typeof(decimal?), JsonWriteForgeNumberWithToString.INSTANCE);
-			WRITE_FORGES.Put(typeof(BigInteger?), JsonWriteForgeNumberWithToString.INSTANCE);
 
+			WRITE_FORGES.Put(typeof(BigInteger?), JsonWriteForgeNumberWithToString.INSTANCE);
+			WRITE_FORGES.Put(typeof(BigInteger), JsonWriteForgeNumberWithToString.INSTANCE);
 			WRITE_FORGES.Put(typeof(Guid), JsonWriteForgeStringWithToString.INSTANCE);
 			WRITE_FORGES.Put(typeof(DateTimeEx), JsonWriteForgeStringWithToString.INSTANCE);
 			WRITE_FORGES.Put(typeof(DateTimeOffset), JsonWriteForgeStringWithToString.INSTANCE);
@@ -96,8 +98,8 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 			START_ARRAY_FORGES.Put(typeof(decimal[]), typeof(JsonDelegateArrayDecimalPrimitive));
 			START_ARRAY_FORGES.Put(typeof(double[]), typeof(JsonDelegateArrayDoublePrimitive));
 			START_ARRAY_FORGES.Put(typeof(float[]), typeof(JsonDelegateArrayFloatPrimitive));
+			
 			START_ARRAY_FORGES.Put(typeof(BigInteger[]), typeof(JsonDelegateArrayBigInteger));
-
 			START_ARRAY_FORGES.Put(typeof(Guid[]), typeof(JsonDelegateArrayUUID));
 			START_ARRAY_FORGES.Put(typeof(DateTimeEx[]), typeof(JsonDelegateArrayDateTimeEx));
 			START_ARRAY_FORGES.Put(typeof(DateTimeOffset[]), typeof(JsonDelegateArrayDateTimeOffset));
@@ -105,7 +107,6 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 			START_ARRAY_FORGES.Put(typeof(Uri[]), typeof(JsonDelegateArrayURI));
 
 			START_ARRAY_FORGES.Put(typeof(string[][]), typeof(JsonDelegateArray2DimString));
-		
 			START_ARRAY_FORGES.Put(typeof(char?[][]), typeof(JsonDelegateArray2DimCharacter));
 			START_ARRAY_FORGES.Put(typeof(bool?[][]), typeof(JsonDelegateArray2DimBoolean));
 			START_ARRAY_FORGES.Put(typeof(byte?[][]), typeof(JsonDelegateArray2DimByte));
@@ -115,7 +116,6 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 			START_ARRAY_FORGES.Put(typeof(float?[][]), typeof(JsonDelegateArray2DimFloat));
 			START_ARRAY_FORGES.Put(typeof(double?[][]), typeof(JsonDelegateArray2DimDouble));
 			START_ARRAY_FORGES.Put(typeof(decimal?[][]), typeof(JsonDelegateArray2DimDecimal));
-			
 			START_ARRAY_FORGES.Put(typeof(char[][]), typeof(JsonDelegateArray2DimCharacterPrimitive));
 			START_ARRAY_FORGES.Put(typeof(bool[][]), typeof(JsonDelegateArray2DimBooleanPrimitive));
 			START_ARRAY_FORGES.Put(typeof(byte[][]), typeof(JsonDelegateArray2DimBytePrimitive));
@@ -127,13 +127,11 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 			START_ARRAY_FORGES.Put(typeof(decimal[][]), typeof(JsonDelegateArray2DimDecimalPrimitive));
 			
 			START_ARRAY_FORGES.Put(typeof(BigInteger[][]), typeof(JsonDelegateArray2DimBigInteger));
-			START_ARRAY_FORGES.Put(typeof(UUID[][]), typeof(JsonDelegateArray2DimUUID));
-			START_ARRAY_FORGES.Put(typeof(OffsetDateTime[][]), typeof(JsonDelegateArray2DimOffsetDateTime));
-			START_ARRAY_FORGES.Put(typeof(LocalDate[][]), typeof(JsonDelegateArray2DimLocalDate));
-			START_ARRAY_FORGES.Put(typeof(LocalDateTime[][]), typeof(JsonDelegateArray2DimDateTime));
-			START_ARRAY_FORGES.Put(typeof(ZonedDateTime[][]), typeof(JsonDelegateArray2DimZonedDateTime));
-			START_ARRAY_FORGES.Put(typeof(URL[][]), typeof(JsonDelegateArray2DimURL));
-			START_ARRAY_FORGES.Put(typeof(URI[][]), typeof(JsonDelegateArray2DimURI));
+			START_ARRAY_FORGES.Put(typeof(Guid[][]), typeof(JsonDelegateArray2DimUUID));
+			START_ARRAY_FORGES.Put(typeof(DateTimeEx[][]), typeof(JsonDelegateArray2DimDateTimeEx));
+			START_ARRAY_FORGES.Put(typeof(DateTimeOffset[][]), typeof(JsonDelegateArray2DimDateTimeOffset));
+			START_ARRAY_FORGES.Put(typeof(DateTime[][]), typeof(JsonDelegateArray2DimDateTime));
+			START_ARRAY_FORGES.Put(typeof(Uri[][]), typeof(JsonDelegateArray2DimURI));
 
 			WRITE_ARRAY_FORGES.Put(typeof(string[]), new JsonWriteForgeByMethod("WriteArrayString"));
 			WRITE_ARRAY_FORGES.Put(typeof(char?[]), new JsonWriteForgeByMethod("WriteArrayCharacter"));
@@ -156,12 +154,11 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 			WRITE_ARRAY_FORGES.Put(typeof(float[]), new JsonWriteForgeByMethod("WriteArrayFloatPrimitive"));
 			WRITE_ARRAY_FORGES.Put(typeof(BigInteger[]), new JsonWriteForgeByMethod("WriteArrayBigInteger"));
 
-			foreach (Type clazz in new Type[] {
-				typeof(UUID[]), typeof(OffsetDateTime[]), typeof(LocalDate[]), typeof(LocalDateTime[]), typeof(ZonedDateTime[]),
-				typeof(URL[]), typeof(URI[])
-			}) {
-				WRITE_ARRAY_FORGES.Put(clazz, new JsonWriteForgeByMethod("WriteArrayObjectToString"));
-			}
+			WRITE_ARRAY_FORGES.Put(typeof(Guid[]), new JsonWriteForgeByMethod("WriteArrayObjectToString"));
+			WRITE_ARRAY_FORGES.Put(typeof(DateTimeEx[]), new JsonWriteForgeByMethod("WriteArrayObjectToString"));
+			WRITE_ARRAY_FORGES.Put(typeof(DateTimeOffset[]), new JsonWriteForgeByMethod("WriteArrayObjectToString"));
+			WRITE_ARRAY_FORGES.Put(typeof(DateTime[]), new JsonWriteForgeByMethod("WriteArrayObjectToString"));
+			WRITE_ARRAY_FORGES.Put(typeof(Uri[]), new JsonWriteForgeByMethod("WriteArrayObjectToString"));
 
 			WRITE_ARRAY_FORGES.Put(typeof(string[][]), new JsonWriteForgeByMethod("WriteArray2DimString"));
 			WRITE_ARRAY_FORGES.Put(typeof(char?[][]), new JsonWriteForgeByMethod("WriteArray2DimCharacter"));
@@ -183,12 +180,12 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 			WRITE_ARRAY_FORGES.Put(typeof(double[][]), new JsonWriteForgeByMethod("WriteArray2DimDoublePrimitive"));
 			WRITE_ARRAY_FORGES.Put(typeof(float[][]), new JsonWriteForgeByMethod("WriteArray2DimFloatPrimitive"));
 			WRITE_ARRAY_FORGES.Put(typeof(BigInteger[][]), new JsonWriteForgeByMethod("WriteArray2DimBigInteger"));
-			foreach (Type clazz in new Type[] {
-				typeof(UUID[][]), typeof(OffsetDateTime[][]), typeof(LocalDate[][]), typeof(LocalDateTime[][]), typeof(ZonedDateTime[][]),
-				typeof(URL[][]), typeof(URI[][])
-			}) {
-				WRITE_ARRAY_FORGES.Put(clazz, new JsonWriteForgeByMethod("WriteArray2DimObjectToString"));
-			}
+
+			WRITE_ARRAY_FORGES.Put(typeof(Guid[][]), new JsonWriteForgeByMethod("WriteArray2DimObjectToString"));
+			WRITE_ARRAY_FORGES.Put(typeof(DateTimeEx[][]), new JsonWriteForgeByMethod("WriteArray2DimObjectToString"));
+			WRITE_ARRAY_FORGES.Put(typeof(DateTimeOffset[][]), new JsonWriteForgeByMethod("WriteArray2DimObjectToString"));
+			WRITE_ARRAY_FORGES.Put(typeof(DateTime[][]), new JsonWriteForgeByMethod("WriteArray2DimObjectToString"));
+			WRITE_ARRAY_FORGES.Put(typeof(Uri[][]), new JsonWriteForgeByMethod("WriteArray2DimObjectToString"));
 
 			START_COLLECTION_FORGES.Put(typeof(string), typeof(JsonDelegateCollectionString));
 			START_COLLECTION_FORGES.Put(typeof(char?), typeof(JsonDelegateCollectionCharacter));
@@ -201,13 +198,12 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 			START_COLLECTION_FORGES.Put(typeof(double?), typeof(JsonDelegateCollectionDouble));
 			START_COLLECTION_FORGES.Put(typeof(float?), typeof(JsonDelegateCollectionFloat));
 			START_COLLECTION_FORGES.Put(typeof(BigInteger), typeof(JsonDelegateCollectionBigInteger));
-			START_COLLECTION_FORGES.Put(typeof(UUID), typeof(JsonDelegateCollectionUUID));
-			START_COLLECTION_FORGES.Put(typeof(OffsetDateTime), typeof(JsonDelegateCollectionOffsetDateTime));
-			START_COLLECTION_FORGES.Put(typeof(LocalDate), typeof(JsonDelegateCollectionLocalDate));
-			START_COLLECTION_FORGES.Put(typeof(LocalDateTime), typeof(JsonDelegateCollectionLocalDateTime));
-			START_COLLECTION_FORGES.Put(typeof(ZonedDateTime), typeof(JsonDelegateCollectionDateTime));
-			START_COLLECTION_FORGES.Put(typeof(URL), typeof(JsonDelegateCollectionURL));
-			START_COLLECTION_FORGES.Put(typeof(URI), typeof(JsonDelegateCollectionURI));
+			
+			START_COLLECTION_FORGES.Put(typeof(Guid), typeof(JsonDelegateCollectionUUID));
+			START_COLLECTION_FORGES.Put(typeof(DateTimeEx), typeof(JsonDelegateCollectionDateTimeEx));
+			START_COLLECTION_FORGES.Put(typeof(DateTimeOffset), typeof(JsonDelegateCollectionDateTimeOffset));
+			START_COLLECTION_FORGES.Put(typeof(DateTime), typeof(JsonDelegateCollectionDateTime));
+			START_COLLECTION_FORGES.Put(typeof(Uri), typeof(JsonDelegateCollectionURI));
 
 			WRITE_COLLECTION_FORGES.Put(typeof(string), new JsonWriteForgeByMethod("WriteCollectionString"));
 			WRITE_COLLECTION_FORGES.Put(typeof(char?), new JsonWriteForgeByMethod("WriteCollectionWToString"));
@@ -219,14 +215,13 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 			WRITE_COLLECTION_FORGES.Put(typeof(decimal?), new JsonWriteForgeByMethod("WriteCollectionNumber"));
 			WRITE_COLLECTION_FORGES.Put(typeof(double?), new JsonWriteForgeByMethod("WriteCollectionNumber"));
 			WRITE_COLLECTION_FORGES.Put(typeof(float?), new JsonWriteForgeByMethod("WriteCollectionNumber"));
-			WRITE_COLLECTION_FORGES.Put(typeof(BigDecimal), new JsonWriteForgeByMethod("WriteCollectionNumber"));
 			WRITE_COLLECTION_FORGES.Put(typeof(BigInteger), new JsonWriteForgeByMethod("WriteCollectionNumber"));
-			foreach (Type clazz in new Type[] {
-				typeof(UUID), typeof(OffsetDateTime), typeof(LocalDate), typeof(LocalDateTime), typeof(ZonedDateTime),
-				typeof(URL), typeof(URI)
-			}) {
-				WRITE_COLLECTION_FORGES.Put(clazz, new JsonWriteForgeByMethod("WriteCollectionWToString"));
-			}
+			
+			WRITE_COLLECTION_FORGES.Put(typeof(Guid), new JsonWriteForgeByMethod("WriteCollectionWToString"));
+			WRITE_COLLECTION_FORGES.Put(typeof(DateTimeEx), new JsonWriteForgeByMethod("WriteCollectionWToString"));
+			WRITE_COLLECTION_FORGES.Put(typeof(DateTimeOffset), new JsonWriteForgeByMethod("WriteCollectionWToString"));
+			WRITE_COLLECTION_FORGES.Put(typeof(DateTime), new JsonWriteForgeByMethod("WriteCollectionWToString"));
+			WRITE_COLLECTION_FORGES.Put(typeof(Uri), new JsonWriteForgeByMethod("WriteCollectionWToString"));
 		}
 
 		public static JsonForgeDesc Forge(
@@ -237,13 +232,13 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 			Attribute[] annotations,
 			StatementCompileTimeServices services)
 		{
-			type = Boxing.GetBoxedType(type);
+			type = type.GetBoxedType();
 			JsonDelegateForge startObject = null;
 			JsonDelegateForge startArray = null;
 			JsonEndValueForge end = END_VALUE_FORGES.Get(type);
 			JsonWriteForge write = WRITE_FORGES.Get(type);
 
-			JsonSchemaField fieldAnnotation = FindFieldAnnotation(fieldName, annotations);
+			JsonSchemaFieldAttribute fieldAnnotation = FindFieldAnnotation(fieldName, annotations);
 
 			if (fieldAnnotation != null && type != null) {
 				Type clazz;
@@ -340,15 +335,16 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 
 				end = new JsonEndValueForgeCast(type);
 			}
-			else if (type == typeof(IList)) {
+			else if (type == typeof(IList<object>)) {
 				if (optionalField != null) {
-					Type genericType = TypeHelper.GetGenericFieldType(optionalField, true);
+					var genericType = TypeHelper.GetGenericFieldType(optionalField, true);
 					if (genericType == null) {
 						return null;
 					}
 
 					end = new JsonEndValueForgeCast(typeof(IList<object>)); // we are casting to list
-					JsonApplicationClassDelegateDesc classNames = deepClasses.Get(genericType);
+					
+					var classNames = deepClasses.Get(genericType);
 					if (classNames != null) {
 						startArray = new JsonDelegateForgeWithDelegateFactoryCollection(classNames.DelegateFactoryClassName);
 						write = new JsonWriteForgeAppClass(classNames.DelegateFactoryClassName, "WriteCollectionAppClass");
@@ -402,18 +398,9 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 				return null;
 			}
 
-			foreach (Attribute annotation in annotations) {
-				if (!(annotation is JsonSchemaFieldAttribute)) {
-					continue;
-				}
-
-				var field = (JsonSchemaFieldAttribute) annotation;
-				if (field.Name.Equals(fieldName)) {
-					return field;
-				}
-			}
-
-			return null;
+			return annotations
+				.OfType<JsonSchemaFieldAttribute>()
+				.FirstOrDefault(field => field.Name == fieldName);
 		}
 
 		private static UnsupportedOperationException GetUnsupported(
@@ -421,7 +408,7 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 			string fieldName)
 		{
 			return new UnsupportedOperationException(
-				"Unsupported type '" + type.Name + "' for property '" + fieldName + "' (use JsonSchemaField to declare additional information)");
+				$"Unsupported type '{type.Name}' for property '{fieldName}' (use JsonSchemaField to declare additional information)");
 		}
 	}
 } // end of namespace

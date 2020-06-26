@@ -15,9 +15,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 {
     public class SelectSubscriberDescriptor
     {
-        public SelectSubscriberDescriptor(MultiKeyClassRef groupDeliveryMultiKey)
+        public SelectSubscriberDescriptor()
         {
-            GroupDeliveryMultiKey = groupDeliveryMultiKey;
             SelectClauseTypes = null;
             SelectClauseColumnNames = null;
             IsForClauseDelivery = false;

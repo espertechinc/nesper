@@ -427,10 +427,10 @@ namespace com.espertech.esper.common.@internal.rettype
         
         public static void TraverseAnnotations<T>(
             IList<Type> classes, 
-            Type annotationClass,
             BiConsumer<Type, T> consumer)
             where T : Attribute
         {
+            var annotationClass = typeof(T);
             WalkAnnotations(classes, (annotation, clazz) => {
                 if (annotation.GetType() == annotationClass) {
                     consumer.Invoke(clazz, (T) annotation);
@@ -446,7 +446,7 @@ namespace com.espertech.esper.common.@internal.rettype
                 return;
             }
             foreach (var clazz in classes) {
-                foreach (var annotation in clazz.GetAttributes()) {
+                foreach (var annotation in clazz.UnwrapAttributes(true)) {
                     consumer.Invoke(annotation, clazz);
                 }
             }

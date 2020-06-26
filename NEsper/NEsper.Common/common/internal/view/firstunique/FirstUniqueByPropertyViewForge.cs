@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.view.firstunique
             eventType = parentEventType;
         }
 
-        public IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
+        public override IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
         {
             MultiKeyPlan desc = MultiKeyPlanner.PlanMultiKey(criteriaExpressions, false, viewForgeEnv.StatementRawInfo, viewForgeEnv.SerdeResolver);
             multiKeyClassNames = desc.ClassRef;

@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="indexes">array of index expressions.</param>
         public DotExpressionItemArray(IList<Expression> indexes)
         {
-            this._indexes = indexes;
+            _indexes = indexes;
         }
         
         public override void RenderItem(TextWriter writer) {

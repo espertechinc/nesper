@@ -740,7 +740,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                     crontab,
                     new MatchEventSpec(),
                     new LinkedHashSet<string>(),
-                    new EmptyList<>());
+                    EmptyList<StmtClassForgeableFactory>.Instance);
             }
 
             if (endpoint is ContextSpecConditionTimePeriod) {
@@ -763,7 +763,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                 }
 
                 validationEnv.ScheduleHandleCallbackProviders.Add(timePeriod);
-                return new ContextDetailMatchPair(timePeriod, new MatchEventSpec(), new LinkedHashSet<string>(), new EmptyList<>());
+                return new ContextDetailMatchPair(
+                    timePeriod,
+                    new MatchEventSpec(),
+                    new LinkedHashSet<string>(),
+                    EmptyList<StmtClassForgeableFactory>.Instance);
             }
 
             if (endpoint is ContextSpecConditionPattern) {
@@ -855,7 +859,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             }
 
             if (endpoint is ContextSpecConditionImmediate || endpoint is ContextSpecConditionNever) {
-                return new ContextDetailMatchPair(endpoint, new MatchEventSpec(), new LinkedHashSet<String>(), new EmptyList<>());
+                return new ContextDetailMatchPair(
+                    endpoint,
+                    new MatchEventSpec(),
+                    new LinkedHashSet<String>(),
+                    EmptyList<StmtClassForgeableFactory>.Instance);
             }
 
             throw new IllegalStateException("Unrecognized endpoint type " + endpoint);

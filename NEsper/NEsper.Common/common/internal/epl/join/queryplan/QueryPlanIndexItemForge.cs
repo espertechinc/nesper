@@ -219,7 +219,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                     Constant(RangeProps),
                     Constant(RangeTypes),
                     rangeGetters,
-                    DataInputOutputSerdeForge.CodegenArray(RangeSerdes, method, classScope, null),
+                    DataInputOutputSerdeForgeExtensions.CodegenArray(RangeSerdes, method, classScope, null),
                     Constant(IsUnique),
                     AdvancedIndexProvisionDesc == null
                         ? ConstantNull()

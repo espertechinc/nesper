@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 		{
 		}
 
-		public EnumEval EnumEvaluator {
+		public override EnumEval EnumEvaluator {
 			get {
 				var inner = InnerExpression.ExprEvaluator;
 				return new ProxyEnumEval() {
@@ -49,9 +49,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 							return enumcoll;
 						}
 
-						var beans = (ICollection<EventBean>) enumcoll;
+						var eventBeanCollection = enumcoll.Unwrap<EventBean>();
 						if (enumcoll.Count == 1) {
-							var item = beans.First();
+							var item = eventBeanCollection.First();
 							eventsLambda[StreamNumLambda] = item;
 
 							var pass = inner.Evaluate(eventsLambda, isNewData, context);
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 							return Collections.SingletonList(item);
 						}
 
-						var all = TakeWhileLastEventBeanToArray(enumcoll);
+						var all = TakeWhileLastEventBeanToArray(eventBeanCollection);
 						var result = new ArrayDeque<object>();
 
 						for (var i = all.Length - 1; i >= 0; i--) {

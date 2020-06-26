@@ -312,7 +312,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             }
 
             if (factory.KeyedSpec.OptionalTermination != null) {
-                keyedSvc.KeyVisitEntry(path, entry => entry.getTerminationCondition().transfer(xfer));
+                keyedSvc.KeyVisitEntry(path, entry => entry.TerminationCondition.Transfer(xfer));
             }
 
             if (!transferChildContexts) {

@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="useValuesKeyword">whether to use the "values" keyword or whether the syntax is based on select</param>
         public FireAndForgetInsert(bool useValuesKeyword)
         {
-            this._useValuesKeyword = useValuesKeyword;
+            _useValuesKeyword = useValuesKeyword;
         }
 
         /// <summary>Ctor. </summary>
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.client.soda
         public bool IsUseValuesKeyword
         {
             get { return _useValuesKeyword; }
-            set { this._useValuesKeyword = value; }
+            set { _useValuesKeyword = value; }
         }
     }
 }

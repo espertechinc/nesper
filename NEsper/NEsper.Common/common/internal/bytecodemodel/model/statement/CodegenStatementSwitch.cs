@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             _defaultBlock?.MergeClasses(classes);
         }
 
-        public void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
             consumer.Invoke(_switchExpression);
             _blocks.ForEach(b => b.TraverseExpressions(consumer));

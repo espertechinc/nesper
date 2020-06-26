@@ -8,6 +8,8 @@
 
 using System;
 
+using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.serde;
 
 namespace com.espertech.esper.common.@internal.epl.table.core
@@ -15,8 +17,8 @@ namespace com.espertech.esper.common.@internal.epl.table.core
     public class TableSerdes
     {
         public TableSerdes(
-            DataInputOutputSerdeWCollation<object>[] column,
-            DataInputOutputSerdeWCollation<object> aggregations)
+            DataInputOutputSerde<object>[] column,
+            DataInputOutputSerde<AggregationRow> aggregations)
         {
             if (column == null || aggregations == null) {
                 throw new ArgumentException("Expected serdes not received");
@@ -26,8 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             Aggregations = aggregations;
         }
 
-        public DataInputOutputSerdeWCollation<object>[] ColumnStartingZero { get; }
+        public DataInputOutputSerde<object>[] ColumnStartingZero { get; }
 
-        public DataInputOutputSerdeWCollation<object> Aggregations { get; }
+        public DataInputOutputSerde<AggregationRow> Aggregations { get; }
     }
 } // end of namespace

@@ -7,10 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
@@ -28,12 +25,10 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.@join.analyze;
 using com.espertech.esper.common.@internal.epl.streamtype;
-using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.common.@internal.settings;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -364,7 +359,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 						GetValidateMethodDescriptor(methodTarget, chainElementName, parameters, validationContext);
 						matchingMethod = true;
 					}
-					catch (ExprValidationException ex) {
+					catch (ExprValidationException) {
 						// expected
 					}
 				}
@@ -372,7 +367,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 				if (EnumMethodResolver.IsEnumerationMethod(chainElementName, validationContext.ImportService) &&
 				    (!matchingMethod || methodTarget.IsArray || methodTarget.IsGenericCollection())) {
 					var enumerationMethod = EnumMethodResolver.FromName(chainElementName, validationContext.ImportService);
-					ExprDotForgeEnumMethod eval = enumerationMethod.Factory.Make(chainElement.GetParametersOrEmpty().Count);
+					ExprDotForgeEnumMethod eval = enumerationMethod.Factory.Invoke(chainElement.GetParametersOrEmpty().Count);
 					if (currentInputType is ClassEPType classEpType && classEpType.Clazz.IsGenericCollection()) {
 						currentInputType = EPTypeHelper.CollectionOfSingleValue(typeof(object));
 					}
@@ -594,7 +589,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 			foreach (var aChainEval in chainEval) {
 				result = aChainEval.Evaluate(result, eventsPerStream, newData, exprEvaluatorContext);
 				if (result == null) {
-					return result;
+					return null;
 				}
 			}
 

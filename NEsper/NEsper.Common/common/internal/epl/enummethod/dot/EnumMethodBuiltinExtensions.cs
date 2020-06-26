@@ -1,6 +1,25 @@
 ﻿using System;
 
 using com.espertech.esper.common.@internal.epl.enummethod.eval;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.plain.exceptintersectunion;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.allofanyof;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.arrayOf;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.average;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.countof;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.distinctof;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.firstoflastof;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.groupby;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.minmax;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.minmaxby;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.mostleastfreq;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@orderby;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.selectfrom;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.sumof;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.takewhile;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@where;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.groupby;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tomap;
 using com.espertech.esper.common.@internal.epl.methodbase;
 using com.espertech.esper.compat;
 
@@ -93,9 +112,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 EnumMethodBuiltin.ALLOF => _ => new ExprDotForgeAllOfAnyOf(),
                 EnumMethodBuiltin.ANYOF => _ => new ExprDotForgeAllOfAnyOf(),
                 EnumMethodBuiltin.TOMAP => _ => new ExprDotForgeToMap(),
-                EnumMethodBuiltin.GROUPBY => numParameters => numParameters == 1
-                    ? new ExprDotForgeGroupByOneParam()
-                    : new ExprDotForgeGroupByTwoParam(),
+                EnumMethodBuiltin.GROUPBY => numParameters => {
+                    if (numParameters == 1) {
+                        return new ExprDotForgeGroupByOneParam();
+                    }
+                    else {
+                        return new ExprDotForgeGroupByTwoParam();
+                    }
+                },
                 EnumMethodBuiltin.COUNTOF => _ => new ExprDotForgeCountOf(),
                 EnumMethodBuiltin.MIN => _ => new ExprDotForgeMinMax(),
                 EnumMethodBuiltin.MAX => _ => new ExprDotForgeMinMax(),

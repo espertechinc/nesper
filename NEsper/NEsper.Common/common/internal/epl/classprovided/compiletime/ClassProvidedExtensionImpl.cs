@@ -11,8 +11,11 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.hook.aggfunc;
+using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.client.hook.singlerowfunc;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
@@ -25,8 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
         private readonly IList<Type> classes = new List<Type>();
         private readonly ClassProvidedCompileTimeResolver resolver;
 
-        private IDictionary<string, Pair<Type, ExtensionAggregationFunction>> aggregationFunctionExtensions =
-            new EmptyDictionary<string, Pair<Type, ExtensionAggregationFunction>>();
+        private IDictionary<string, Pair<Type, ExtensionAggregationFunctionAttribute>> aggregationFunctionExtensions =
+            new EmptyDictionary<string, Pair<Type, ExtensionAggregationFunctionAttribute>>();
 
         private IDictionary<string, Pair<Type, string[]>> aggregationMultiFunctionExtensions =
             new EmptyDictionary<string, Pair<Type, string[]>>();
@@ -47,9 +50,8 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             this.bytes.PutAll(bytes); // duplicate class names checked at compile-time
 
             try {
-                TypeHelper.TraverseAnnotations(
+                EPTypeHelper.TraverseAnnotations<ExtensionSingleRowFunctionAttribute>(
                     classes,
-                    typeof(ExtensionSingleRowFunctionAttribute),
                     (
                         clazz,
                         annotation) => {
@@ -57,33 +59,31 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
                             singleRowFunctionExtensions = new Dictionary<string, Pair<Type, ExtensionSingleRowFunctionAttribute>>();
                         }
 
-                        if (singleRowFunctionExtensions.ContainsKey(annotation.Name())) {
-                            throw new EPException("The plug-in single-row function '" + annotation.Name() + "' occurs multiple times");
+                        if (singleRowFunctionExtensions.ContainsKey(annotation.Name)) {
+                            throw new EPException("The plug-in single-row function '" + annotation.Name + "' occurs multiple times");
                         }
 
-                        singleRowFunctionExtensions.Put(annotation.Name(), new Pair<Type, ExtensionSingleRowFunctionAttribute>(clazz, annotation));
+                        singleRowFunctionExtensions.Put(annotation.Name, new Pair<Type, ExtensionSingleRowFunctionAttribute>(clazz, annotation));
                     });
 
-                TypeHelper.TraverseAnnotations(
+                EPTypeHelper.TraverseAnnotations<ExtensionAggregationFunctionAttribute>(
                     classes,
-                    typeof(ExtensionAggregationFunction),
                     (
                         clazz,
                         annotation) => {
                         if (aggregationFunctionExtensions.IsEmpty()) {
-                            aggregationFunctionExtensions = new Dictionary<string, Pair<Type, ExtensionAggregationFunction>>();
+                            aggregationFunctionExtensions = new Dictionary<string, Pair<Type, ExtensionAggregationFunctionAttribute>>();
                         }
 
-                        if (aggregationFunctionExtensions.ContainsKey(annotation.Name())) {
-                            throw new EPException("The plug-in aggregation function '" + annotation.Name() + "' occurs multiple times");
+                        if (aggregationFunctionExtensions.ContainsKey(annotation.Name)) {
+                            throw new EPException("The plug-in aggregation function '" + annotation.Name + "' occurs multiple times");
                         }
 
-                        aggregationFunctionExtensions.Put(annotation.Name(), new Pair<Type, string[]>(clazz, annotation));
+                        aggregationFunctionExtensions.Put(annotation.Name, new Pair<Type, ExtensionAggregationFunctionAttribute>(clazz, annotation));
                     });
 
-                TypeHelper.TraverseAnnotations(
+                EPTypeHelper.TraverseAnnotations<ExtensionAggregationMultiFunctionAttribute>(
                     classes,
-                    typeof(ExtensionAggregationMultiFunction),
                     (
                         clazz,
                         annotation) => {
@@ -91,8 +91,8 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
                             aggregationMultiFunctionExtensions = new Dictionary<string, Pair<Type, string[]>>();
                         }
 
-                        string[] names = annotation.Names().Split(",");
-                        ISet<string> namesDeduplicated = new HashSet<string>();
+                        var names = annotation.Names.Split(',');
+                        var namesDeduplicated = new HashSet<string>();
                         foreach (var nameWithSpaces in names) {
                             var name = nameWithSpaces.Trim();
                             namesDeduplicated.Add(name);
@@ -118,7 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
         {
             // check inlined classes
             foreach (var clazz in classes) {
-                if (clazz.Name.Equals(className)) {
+                if (clazz.Name == className) {
                     return clazz;
                 }
             }
@@ -127,7 +127,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             var provided = resolver.ResolveClass(className);
             if (provided != null) {
                 foreach (var clazz in provided.ClassesMayNull) {
-                    if (clazz.Name.Equals(className)) {
+                    if (clazz.Name == className) {
                         return clazz;
                     }
                 }

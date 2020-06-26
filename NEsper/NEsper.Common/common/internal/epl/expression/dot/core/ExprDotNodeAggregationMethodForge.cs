@@ -28,11 +28,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
 	public abstract class ExprDotNodeAggregationMethodForge : ExprDotNodeForge
 	{
-		protected readonly ExprDotNodeImpl parent;
-		protected readonly string aggregationMethodName;
-		protected readonly ExprNode[] parameters;
-		protected readonly AggregationPortableValidation validation;
-		protected AggregationMultiFunctionMethodDesc methodDesc;
+		private readonly ExprDotNodeImpl parent;
+		private readonly string aggregationMethodName;
+		private readonly ExprNode[] parameters;
+		private readonly AggregationPortableValidation validation;
+		private AggregationMultiFunctionMethodDesc methodDesc;
 
 		protected abstract CodegenExpression EvaluateCodegen(
 			string readerMethodName,
@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 			}
 		}
 
-		protected CodegenExpressionField GetReader(CodegenClassScope classScope)
+		protected CodegenExpressionInstanceField GetReader(CodegenClassScope classScope)
 		{
 			return classScope.AddOrGetDefaultFieldSharable(new AggregationMethodCodegenField(methodDesc.Reader, classScope, this.GetType()));
 		}

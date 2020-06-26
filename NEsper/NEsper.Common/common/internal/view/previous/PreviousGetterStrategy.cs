@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.view.previous
         PreviousGetterStrategy GetStrategy(ExprEvaluatorContext ctx);
     }
 
-    public class PreviousGetterStrategyConstants
+    public static class PreviousGetterStrategyConstants
     {
         public static readonly PreviousGetterStrategy[] EMPTY_ARRAY = new PreviousGetterStrategy[0];
     }

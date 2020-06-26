@@ -12,9 +12,6 @@ using System.Collections.Generic;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
-using java.util.function;
-
-
 namespace com.espertech.esper.common.@internal.@event.json.core
 {
 	public class JsonEventUnderlyingKeySet : ISet<string> {

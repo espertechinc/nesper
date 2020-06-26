@@ -85,13 +85,13 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 .Append(" there are ")
                 .Append(Triplets.Length)
                 .Append(" triplets")
-                .Append(NEWLINE);
+                .Append(FilterSpecCompiler.NEWLINE);
             
             if (PathNegate != null) {
                 stringBuilder
                     .Append("    -path-negate-expression: ")
                     .Append(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(PathNegate))
-                    .Append(NEWLINE);
+                    .Append(FilterSpecCompiler.NEWLINE);
             }
 
             var indextriplet = 0;

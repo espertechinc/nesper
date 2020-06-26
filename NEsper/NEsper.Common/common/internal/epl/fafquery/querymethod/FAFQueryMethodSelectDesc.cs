@@ -10,8 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-using Antlr4.Runtime.Misc;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1;
@@ -190,6 +188,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 false,
                 statementRawInfo,
                 services);
+            AdditionalForgeables.AddAll(ResultSetProcessor.AdditionalForgeables);
 
             // plan table access
             TableAccessForges = ExprTableEvalHelperPlan.PlanTableAccess(statementSpec.Raw.TableExpressions);
@@ -204,7 +203,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 }
 
                 var hasAggregations = ResultSetProcessor.ResultSetProcessorType.IsAggregated();
-                Joins = JoinSetComposerPrototypeForgeFactory.MakeComposerPrototype(
+                var desc = JoinSetComposerPrototypeForgeFactory.MakeComposerPrototype(
                     statementSpec,
                     streamJoinAnalysisResult,
                     types,
@@ -213,6 +212,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                     hasAggregations,
                     statementRawInfo,
                     services);
+                AdditionalForgeables.AddAll(desc.AdditionalForgeables);
+                Joins = desc.Forge;
             }
             else {
                 Joins = null;

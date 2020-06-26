@@ -42,12 +42,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			_key = key;
 		}
 
-		protected override FieldInfo DetermineField(Type clazz)
+		protected override MemberInfo DetermineFieldOrProperty(Type clazz)
 		{
 			return DynamicMapperPropertyDetermineField(clazz, _fieldName);
 		}
 
-		protected override CodegenExpression DetermineFieldCodegen(
+		protected override CodegenExpression DetermineFieldOrPropertyCodegen(
 			CodegenExpressionRef clazz,
 			CodegenMethodScope parent,
 			CodegenClassScope codegenClassScope)
@@ -110,17 +110,16 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			Type clazz,
 			string fieldName)
 		{
-			try {
-				var field = clazz.GetField(fieldName);
-				if (field.FieldType != typeof(IDictionary<string, object>)) {
-					return null;
-				}
-
-				return field;
-			}
-			catch (NoSuchFieldException ex1) {
+			var field = clazz.GetField(fieldName);
+			if (field == null) {
 				return null;
 			}
+
+			if (field.FieldType != typeof(IDictionary<string, object>)) {
+				return null;
+			}
+
+			return field;
 		}
 
 		/// <summary>

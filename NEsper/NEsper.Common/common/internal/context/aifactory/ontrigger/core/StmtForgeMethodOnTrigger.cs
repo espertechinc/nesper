@@ -178,7 +178,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
             // build forge list
             IList<StmtClassForgeable> forgeables = new List<StmtClassForgeable>();
             foreach (StmtClassForgeableFactory additional in additionalForgeables) {
-                additionalForgeables.Add(additional.Make(namespaceScope, classPostfix));
+                forgeables.Add(additional.Make(namespaceScope, classPostfix));
             }
             forgeables.AddAll(onTriggerPlan.Forgeables);
             forgeables.Add(onTriggerPlan.Factory);

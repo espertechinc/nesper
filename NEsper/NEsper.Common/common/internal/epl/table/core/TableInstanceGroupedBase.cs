@@ -22,9 +22,7 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.table.core
 {
-    public abstract class TableInstanceGroupedBase
-        : TableInstanceBase,
-            TableInstanceGrouped
+    public abstract class TableInstanceGroupedBase : TableInstanceBase, TableInstanceGrouped
     {
         protected TableInstanceGroupedBase(
             Table table,
@@ -88,6 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             object groupByKey,
             ExprEvaluatorContext exprEvaluatorContext);
 
+        public abstract ICollection<object> GroupKeysMayMultiKey { get; }
         public abstract ICollection<object> GroupKeys { get; }
     }
 } // end of namespace

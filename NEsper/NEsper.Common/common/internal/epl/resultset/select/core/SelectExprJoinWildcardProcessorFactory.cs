@@ -135,7 +135,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             null,
                             args.StatementName);
                     } else if (representation == EventUnderlyingType.JSON) {
-                        EventTypeForgablesPair pair = JsonEventTypeUtility.MakeJsonTypeCompileTimeNewType(
+                        EventTypeForgeablesPair pair = JsonEventTypeUtility.MakeJsonTypeCompileTimeNewType(
                             metadata.Invoke(EventTypeApplicationType.JSON),
                             selectProperties,
                             null,
@@ -200,7 +200,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             null,
                             args.StatementName);
                     } else if (representation == EventUnderlyingType.JSON) {
-                        EventTypeForgablesPair pair = JsonEventTypeUtility.MakeJsonTypeCompileTimeNewType(
+                        EventTypeForgeablesPair pair = JsonEventTypeUtility.MakeJsonTypeCompileTimeNewType(
                             metadata.Invoke(EventTypeApplicationType.JSON),
                             propertyTypes,
                             null,

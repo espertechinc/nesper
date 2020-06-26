@@ -16,8 +16,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-    public class EnumForgeNoOp : EnumForgeBase,
-        EnumEval
+    public class EnumForgeNoOp : EnumForgeBasePlain, EnumEval
     {
         public EnumForgeNoOp(int streamCountIncoming)
             : base(streamCountIncoming)

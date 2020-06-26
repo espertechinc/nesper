@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             EventType[] eventTypes,
             OutputConditionPolledFactoryForge optionalOutputFirstConditionFactory,
             MultiKeyClassRef multiKeyClassRef,
-            bool unboundProcessor)
+            bool unboundedProcessor)
         {
             ResultEventType = resultEventType;
             this.typesPerStream = typesPerStream;
@@ -150,8 +150,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 propertyNode => propertyNode.GetterBlock.BlockReturn(Constant(IsSelectRStream)));
             ResultSetProcessorUtil.EvaluateHavingClauseCodegen(OptionalHavingNode, classScope, instance);
             GenerateGroupKeySingle = ResultSetProcessorGroupedUtil.GenerateGroupKeySingleCodegen(GroupKeyNodeExpressions, multiKeyClassRef, classScope, instance);
-            GenerateGroupKeyArrayView = GenerateGroupKeyArrayViewCodegen(GenerateGroupKeySingle, classScope, instance);
-            GenerateGroupKeyArrayJoin = GenerateGroupKeyArrayJoinCodegen(GenerateGroupKeySingle, classScope, instance);
+            GenerateGroupKeyArrayView = ResultSetProcessorGroupedUtil.GenerateGroupKeyArrayViewCodegen(GenerateGroupKeySingle, classScope, instance);
+            GenerateGroupKeyArrayJoin = ResultSetProcessorGroupedUtil.GenerateGroupKeyArrayJoinCodegen(GenerateGroupKeySingle, classScope, instance);
 
             ResultSetProcessorRowPerGroupImpl.GenerateOutputBatchedNoSortWMapCodegen(this, classScope, instance);
             ResultSetProcessorRowPerGroupImpl.GenerateOutputBatchedArrFromEnumeratorCodegen(this, classScope, instance);

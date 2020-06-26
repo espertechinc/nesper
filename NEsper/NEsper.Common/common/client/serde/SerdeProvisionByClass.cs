@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Reflection;
 
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.util;
@@ -36,18 +37,16 @@ namespace com.espertech.esper.common.client.serde
 
         public override DataInputOutputSerdeForge ToForge()
         {
-            try {
-                SerdeClass.GetField("INSTANCE");
+            var field = SerdeClass.GetField("INSTANCE");
+            if (field != null) {
                 return new DataInputOutputSerdeForgeSingleton(SerdeClass);
-            }
-            catch (NoSuchFieldException e) {
             }
 
             try {
                 MethodResolver.ResolveCtor(SerdeClass, new Type[0]);
                 return new DataInputOutputSerdeForgeEmptyCtor(SerdeClass);
             }
-            catch (MethodResolverNoSuchCtorException ex) {
+            catch (MethodResolverNoSuchCtorException) {
             }
 
             throw new EPException("Serde class '" + SerdeClass.Name + "' does not have a singleton-style INSTANCE field or default constructor");

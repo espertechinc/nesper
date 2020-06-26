@@ -36,6 +36,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
             isVisitAggregateNodes = visitAggregateNodes;
             ExprProperties = new List<Pair<int, string>>();
         }
+        
+        public bool IsWalkDeclExprParam => true;
 
         /// <summary>
         ///     Returns list of event property stream numbers and names that uniquely identify which

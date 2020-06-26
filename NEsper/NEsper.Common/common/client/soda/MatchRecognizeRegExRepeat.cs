@@ -35,9 +35,9 @@ namespace com.espertech.esper.common.client.soda
             Expression high,
             Expression single)
         {
-            this.Low = low;
-            this.High = high;
-            this.Single = single;
+            Low = low;
+            High = high;
+            Single = single;
         }
 
         /// <summary>

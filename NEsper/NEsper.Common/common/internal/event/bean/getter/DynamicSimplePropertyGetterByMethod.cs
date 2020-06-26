@@ -110,17 +110,16 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			string isMethodName,
 			Type clazz)
 		{
-			try {
-				return clazz.GetMethod(getterMethodName);
+			var method = clazz.GetMethod(getterMethodName);
+			if (method != null) {
+				return method;
 			}
-			catch (NoSuchMethodException ex1) {
-				try {
-					return clazz.GetMethod(isMethodName);
-				}
-				catch (NoSuchMethodException ex2) {
-					return null;
-				}
+
+			if (isMethodName != null) {
+				method = clazz.GetMethod(isMethodName);
 			}
+
+			return method;
 		}
 	}
 } // end of namespace

@@ -128,7 +128,7 @@ namespace com.espertech.esper.common.@internal.view.derived
                 Constant(AdditionalProps),
                 CodegenEvaluators(AdditionalEvals, method, this.GetType(), classScope),
                 Constant(AdditionalTypes),
-                DataInputOutputSerdeForge.CodegenArray(AdditionalSerdes, method, classScope, null));
+                DataInputOutputSerdeForgeExtensions.CodegenArray(AdditionalSerdes, method, classScope, null));
         }
     }
 } // end of namespace

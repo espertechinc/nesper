@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.sharable
 				.Add(EventTypeResolver.GETEVENTSERDEFACTORY)
 				.Add(
 					_name.MethodName,
-					DataInputOutputSerdeForge.CodegenArray(
+					DataInputOutputSerdeForgeExtensions.CodegenArray(
 						_serdes,
 						_classScope.NamespaceScope.InitMethod,
 						_classScope,

@@ -26,7 +26,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public class EnumAllOfAnyOfScalar : ThreeFormScalar
 	{
-
 		private readonly bool all;
 
 		public EnumAllOfAnyOfScalar(
@@ -39,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			this.all = all;
 		}
 
-		public EnumEval EnumEvaluator {
+		public override EnumEval EnumEvaluator {
 			get {
 				var inner = InnerExpression.ExprEvaluator;
 

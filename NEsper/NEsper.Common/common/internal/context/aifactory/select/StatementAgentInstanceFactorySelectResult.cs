@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.prior;
 using com.espertech.esper.common.@internal.epl.join.@base;
 using com.espertech.esper.common.@internal.epl.pattern.core;
+using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.rowrecog.core;
 using com.espertech.esper.common.@internal.epl.subselect;
 using com.espertech.esper.common.@internal.epl.table.strategy;
@@ -42,7 +43,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             JoinSetComposer joinSetComposer,
             Viewable[] topViews,
             Viewable[] eventStreamViewables,
-            ViewableActivationResult[] viewableActivationResults)
+            ViewableActivationResult[] viewableActivationResults,
+            ResultSetProcessor resultSetProcessor)
             : base(
                 finalView,
                 stopCallback,
@@ -61,6 +63,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             JoinSetComposer = joinSetComposer;
             EventStreamViewables = eventStreamViewables;
             ViewableActivationResults = viewableActivationResults;
+            ResultSetProcessor = resultSetProcessor;
         }
 
         public Viewable[] TopViews { get; }
@@ -72,5 +75,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
         public ViewableActivationResult[] ViewableActivationResults { get; }
 
         public JoinSetComposer JoinSetComposer { get; }
+        
+        public ResultSetProcessor ResultSetProcessor { get; }
     }
 } // end of namespace

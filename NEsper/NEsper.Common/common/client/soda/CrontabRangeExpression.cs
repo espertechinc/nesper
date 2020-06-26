@@ -33,8 +33,8 @@ namespace com.espertech.esper.common.client.soda
             Expression lowerBounds,
             Expression upperBounds)
         {
-            this.Children.Add(lowerBounds);
-            this.Children.Add(upperBounds);
+            Children.Add(lowerBounds);
+            Children.Add(upperBounds);
         }
 
         public override ExpressionPrecedenceEnum Precedence
@@ -44,9 +44,9 @@ namespace com.espertech.esper.common.client.soda
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            this.Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+            Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             writer.Write(":");
-            this.Children[1].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+            Children[1].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
         }
     }
 } // end of namespace

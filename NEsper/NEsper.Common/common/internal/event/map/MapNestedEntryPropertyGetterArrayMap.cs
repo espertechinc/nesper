@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
 
-        public CodegenExpression HandleNestedValueExistsCodegen(
+        public override CodegenExpression HandleNestedValueExistsCodegen(
             CodegenExpression name,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)

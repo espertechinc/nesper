@@ -17,14 +17,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
     public class CodegenExpressionMember : CodegenExpression
     {
-        internal readonly string _ref;
+        internal readonly string _name;
 
-        public CodegenExpressionMember(string @ref)
+        public CodegenExpressionMember(string name)
         {
-            _ref = @ref;
+            _name = name;
         }
 
-        public virtual string Ref => _ref;
+        public virtual string Ref => _name;
 
         public virtual void Render(
             StringBuilder builder,
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             int level,
             CodegenIndent indent)
         {
-            builder.Append(_ref);
+            builder.Append(_name);
         }
 
         public virtual void MergeClasses(ISet<Type> classes)
@@ -53,14 +53,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 return false;
             }
 
-            var that = (CodegenExpressionRef) obj;
+            var that = (CodegenExpressionMember) obj;
 
-            return _ref.Equals(that._ref);
+            return _name.Equals(that._name);
         }
 
         public override int GetHashCode()
         {
-            return _ref.GetHashCode();
+            return _name.GetHashCode();
         }
     }
 } // end of namespace

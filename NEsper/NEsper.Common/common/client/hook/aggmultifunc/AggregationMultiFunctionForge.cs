@@ -60,9 +60,7 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         ///     and before any expression validation takes place.
         /// </summary>
         /// <param name="declarationContext">context</param>
-        void AddAggregationFunction(AggregationMultiFunctionDeclarationContext declarationContext)
-        {
-        }
+        void AddAggregationFunction(AggregationMultiFunctionDeclarationContext declarationContext);
 
         /// <summary>
         ///     Called for each instance of use of any of the aggregation functions at validation time

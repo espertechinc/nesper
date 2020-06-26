@@ -152,7 +152,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 .Append(name)
                 .Append(": ")
                 .Append(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(exprNode))
-                .Append(NEWLINE);
+                .Append(FilterSpecCompiler.NEWLINE);
         }
     }
 } // end of namespace

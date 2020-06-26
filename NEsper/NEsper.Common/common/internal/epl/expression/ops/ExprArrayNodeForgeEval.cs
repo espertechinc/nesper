@@ -24,9 +24,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     public class ExprArrayNodeForgeEval : ExprEvaluator,
         ExprEnumerationEval
     {
-        private readonly ExprEvaluator[] _evaluators;
-
+        private const String PRIMITIVE_ARRAY_NULL_MSG = "new-array received a null value as an array element of an array of primitives";
+        
         private readonly ExprArrayNodeForge _forge;
+        private readonly ExprEvaluator[] _evaluators;
 
         public ExprArrayNodeForgeEval(
             ExprArrayNodeForge forge,

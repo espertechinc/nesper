@@ -266,7 +266,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                     .Append(" entries")
                     .Append(NEWLINE);
                 for (int i = 0; i < _inListConstantsOnly.Length; i++) {
-                    @out.Append(Indent.Indent(indent))
+                    @out.Append(Indent.CreateIndent(indent))
                         .Append("value #")
                         .Append(i)
                         .Append(": ");
@@ -282,7 +282,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             
             int valueIndex = 0;
             foreach (FilterSpecParamInValueForge forge in _listOfValues) {
-                @out.Append(Indent.Indent(indent))
+                @out.Append(Indent.CreateIndent(indent))
                     .Append("value #")
                     .Append(valueIndex)
                     .Append(": ");

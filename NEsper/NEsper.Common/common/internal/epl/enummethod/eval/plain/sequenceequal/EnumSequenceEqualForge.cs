@@ -17,7 +17,7 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
-    public class EnumSequenceEqualForge : EnumForgeBase
+    public class EnumSequenceEqualForge : EnumForgeBasePlain
     {
         private readonly bool _scalar;
 
@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             bool scalar)
             : base(innerExpression, streamCountIncoming)
         {
-            this._scalar = scalar;
+            _scalar = scalar;
         }
 
         public bool Scalar => _scalar;

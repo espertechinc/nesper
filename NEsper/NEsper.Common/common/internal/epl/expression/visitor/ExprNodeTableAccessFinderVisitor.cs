@@ -22,6 +22,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
             return !HasTableAccess;
         }
 
+        public bool IsWalkDeclExprParam => true;
+
         public void Visit(ExprNode exprNode)
         {
             if (exprNode is ExprTableAccessNode) {

@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             return _inner.EvaluateCodegen(requiredType, codegenMethodScope, exprSymbol, codegenClassScope);
         }
         
-        public CodegenExpression EventBeanWithCtxGet(
+        public override CodegenExpression EventBeanWithCtxGet(
             CodegenExpression beanExpression,
             CodegenExpression ctxExpression,
             CodegenMethodScope codegenMethodScope,

@@ -16,8 +16,8 @@ namespace com.espertech.esper.compat
         Stream GetResourceAsStream(string resourceName);
 
         /// <summary>Gets the class.</summary>
-        /// <param name="className">Name of the class.</param>
+        /// <param name="typeName">Name of the class.</param>
         /// <returns></returns>
-        Type GetClass(string className);
+        Type GetClass(string typeName);
     }
 }

@@ -40,6 +40,8 @@ namespace com.espertech.esper.common.@internal.view.time_accum
         private long _callbackScheduledTime;
         private EPStatementHandleCallbackSchedule _handle;
 
+        public ViewFactory ViewFactory => _factory;
+
         public TimeAccumViewRStream(
             TimeAccumViewFactory timeBatchViewFactory,
             AgentInstanceViewFactoryChainContext agentInstanceContext,
@@ -256,6 +258,8 @@ namespace com.espertech.esper.common.@internal.view.time_accum
             }
         }
 
-        public ViewFactory ViewFactory => _factory;
+        public void Transfer(AgentInstanceTransferServices services)
+        {
+        }
     }
 } // end of namespace

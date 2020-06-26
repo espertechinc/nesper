@@ -68,6 +68,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			bool includeDebugSymbols,
 			bool fireAndForget)
 		{
+			CodegenClassProperties properties = new CodegenClassProperties();
 			CodegenClassMethods methods = new CodegenClassMethods();
 			CodegenClassScope classScope = new CodegenClassScope(includeDebugSymbols, namespaceScope, className);
 
@@ -79,7 +80,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				.AddParam(typeof(JsonHandlerDelegator), "delegator")
 				.AddParam(typeof(JsonDelegateBase), "parent");
 			makeMethod.Block.MethodReturn(NewInstance(delegateClassName, Ref("delegator"), Ref("parent"), NewInstance(underlyingClassName)));
-			CodegenStackGenerator.RecursiveBuildStack(makeMethod, "make", methods);
+			CodegenStackGenerator.RecursiveBuildStack(makeMethod, "Make", methods, properties);
 
 			// write-method (applicable for nested classes)
 			CodegenMethod writeMethod = CodegenMethod.MakeParentNode(typeof(void), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
@@ -87,7 +88,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				.AddParam(typeof(object), "underlying")
 				.AddThrown(typeof(IOException));
 			writeMethod.Block.StaticMethod(className, "WriteStatic", Ref("writer"), Ref("underlying"));
-			CodegenStackGenerator.RecursiveBuildStack(writeMethod, "write", methods);
+			CodegenStackGenerator.RecursiveBuildStack(writeMethod, "Write", methods, properties);
 
 			// write-static-method (applicable for nested classes)
 			CodegenMethod writeStaticMethod = CodegenMethod.MakeParentNode(typeof(void), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
@@ -102,20 +103,20 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				writeStaticMethod.Block.MethodThrowUnsupported(); // write method found on underlying class itself
 			}
 
-			CodegenStackGenerator.RecursiveBuildStack(writeStaticMethod, "writeStatic", methods);
+			CodegenStackGenerator.RecursiveBuildStack(writeStaticMethod, "WriteStatic", methods, properties);
 
 			// copy-method
 			CodegenMethod copyMethod = CodegenMethod.MakeParentNode(typeof(object), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(typeof(object), "und");
 			MakeCopy(copyMethod, classScope);
-			CodegenStackGenerator.RecursiveBuildStack(copyMethod, "copy", methods);
+			CodegenStackGenerator.RecursiveBuildStack(copyMethod, "Copy", methods, properties);
 
 			// get-value-method
 			CodegenMethod getValueMethod = CodegenMethod.MakeParentNode(typeof(object), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(typeof(int), "num")
 				.AddParam(typeof(object), "und");
 			MakeGetValue(getValueMethod, classScope);
-			CodegenStackGenerator.RecursiveBuildStack(getValueMethod, "getValue", methods);
+			CodegenStackGenerator.RecursiveBuildStack(getValueMethod, "GetValue", methods, properties);
 
 			// set-value-method
 			CodegenMethod setValueMethod = CodegenMethod.MakeParentNode(typeof(void), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
@@ -123,15 +124,24 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				.AddParam(typeof(object), "value")
 				.AddParam(typeof(object), "und");
 			MakeSetValue(setValueMethod, classScope);
-			CodegenStackGenerator.RecursiveBuildStack(setValueMethod, "setValue", methods);
+			CodegenStackGenerator.RecursiveBuildStack(setValueMethod, "SetValue", methods, properties);
 
 			// newUnderlying-method
 			CodegenMethod newUnderlyingMethod = CodegenMethod.MakeParentNode(typeof(object), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
 			MakeNewUnderlyingMethod(newUnderlyingMethod);
-			CodegenStackGenerator.RecursiveBuildStack(newUnderlyingMethod, "newUnderlying", methods);
+			CodegenStackGenerator.RecursiveBuildStack(newUnderlyingMethod, "NewUnderlying", methods, properties);
 
-			CodegenClass clazz = new CodegenClass(classType, className, classScope, Collections.EmptyList(), null, methods, Collections.EmptyList());
-			clazz.Supers.AddInterfaceImplemented(typeof(JsonDelegateFactory));
+			CodegenClass clazz = new CodegenClass(
+				classType,
+				className,
+				classScope,
+				EmptyList<CodegenTypedParam>.Instance,
+				null,
+				methods,
+				properties,
+				EmptyList<CodegenInnerClass>.Instance);
+
+			clazz.BaseList.AddInterfaceImplemented(typeof(JsonDelegateFactory));
 			return clazz;
 		}
 

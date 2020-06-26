@@ -122,10 +122,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             Block.MergeClasses(classes);
         }
 
-        public void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
             // TODO
-            Block.Statements.ForEach(b => consumer.Invoke(b));
+            Block.Statements.ForEach(statement => {
+                statement.TraverseExpressions(consumer);
+            });
         }
     }
 } // end of namespace

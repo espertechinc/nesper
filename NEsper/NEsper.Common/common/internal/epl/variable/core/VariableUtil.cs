@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             String variableModuleName,
             NameAccessModifier variableVisibility,
             String optionalContextName,
-            NameAccessModifier optionalContextVisibility,
+            NameAccessModifier? optionalContextVisibility,
             String optionalModuleName,
             ClassIdentifierWArray variableType,
             bool isConstant,

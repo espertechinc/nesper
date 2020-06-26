@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 // Build a subordinate wildcard processor for joins
                 SelectExprProcessorForge joinWildcardProcessor = null;
                 if (typeService.StreamNames.Length > 1 && isUsingWildcard) {
-                    SelectExprProcessorForgeWForgables pair = SelectExprJoinWildcardProcessorFactory.Create(
+                    var pair = SelectExprJoinWildcardProcessorFactory.Create(
                         _args, null, eventTypeName => eventTypeName + "_join");
                     joinWildcardProcessor = pair.Forge;
                     additionalForgeables.AddAll(pair.AdditionalForgeables);
@@ -172,9 +172,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 }
 
                 // Obtain insert-into per-column type information, when available
-                EPTypesAndPropertyDescPair insertInfo = DetermineInsertedEventTypeTargets(insertIntoTargetType, _selectionList, _insertIntoDesc);
-                EPType[] insertIntoTargetsPerCol = insertInfo.InsertIntoTargetsPerCol;
-                EventPropertyDescriptor[] insertIntoPropertyDescriptors = insertInfo.PropertyDescriptors;
+                var insertInfo = DetermineInsertedEventTypeTargets(insertIntoTargetType, _selectionList, _insertIntoDesc);
+                var insertIntoTargetsPerCol = insertInfo.InsertIntoTargetsPerCol;
+                var insertIntoPropertyDescriptors = insertInfo.PropertyDescriptors;
 
                 // Get expression nodes
                 var exprForges = new ExprForge[_selectionList.Count];
@@ -539,7 +539,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                 _args.EventTypeCompileTimeResolver);
                             _args.EventTypeCompileTimeRegistry.NewType(resultEventType);
 
-                            SelectEvalStreamWUnderlying forgeX = new SelectEvalStreamWUnderlying(
+                            var forgeX = new SelectEvalStreamWUnderlying(
                                 selectExprForgeContext,
                                 resultEventType,
                                 namedStreams,
@@ -574,7 +574,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                 beanEventTypeFactoryProtected,
                                 _args.EventTypeCompileTimeResolver);
                             _args.EventTypeCompileTimeRegistry.NewType(resultEventType);
-                            SelectEvalStreamNoUnderlyingMap forgeX = new SelectEvalStreamNoUnderlyingMap(
+                            var forgeX = new SelectEvalStreamNoUnderlyingMap(
                                 selectExprForgeContext,
                                 resultEventType,
                                 namedStreams,
@@ -663,7 +663,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             null,
                             _args.StatementName);
                     } else if (representation == EventUnderlyingType.JSON) {
-                        EventTypeMetadata metadata = new EventTypeMetadata(
+                        var metadata = new EventTypeMetadata(
                             eventTypeName,
                             moduleName,
                             EventTypeTypeClass.STATEMENTOUT,
@@ -672,7 +672,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             EventTypeBusModifier.NONBUS,
                             false,
                             EventTypeIdPair.Unassigned());
-                        EventTypeForgablesPair pair = JsonEventTypeUtility.MakeJsonTypeCompileTimeNewType(
+                        var pair = JsonEventTypeUtility.MakeJsonTypeCompileTimeNewType(
                             metadata,
                             selPropertyTypes,
                             null,
@@ -836,7 +836,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             // a single stream was selected via "stream.*" and there is no column name
                             // recast as a Map-type
                             if (underlyingEventType is MapEventType && insertIntoTargetType is MapEventType) {
-                                SelectExprProcessorForge forgeX = SelectEvalStreamWUndRecastMapFactory.Make(
+                                var forgeX = SelectEvalStreamWUndRecastMapFactory.Make(
                                     typeService.EventTypes,
                                     selectExprForgeContext,
                                     _selectedStreams[0].StreamSelected.StreamNumber,
@@ -850,7 +850,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             // recast as a Object-array-type
                             if (underlyingEventType is ObjectArrayEventType &&
                                 insertIntoTargetType is ObjectArrayEventType) {
-                                SelectExprProcessorForge forgeX = SelectEvalStreamWUndRecastObjectArrayFactory.Make(
+                                var forgeX = SelectEvalStreamWUndRecastObjectArrayFactory.Make(
                                     typeService.EventTypes,
                                     selectExprForgeContext,
                                     _selectedStreams[0].StreamSelected.StreamNumber,
@@ -864,7 +864,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             // recast as a Avro-type
                             if (underlyingEventType is AvroSchemaEventType &&
                                 insertIntoTargetType is AvroSchemaEventType) {
-                                SelectExprProcessorForge forgeX = _args.EventTypeAvroHandler
+                                var forgeX = _args.EventTypeAvroHandler
                                     .OutputFactory
                                     .MakeRecast(
                                         typeService.EventTypes,
@@ -886,7 +886,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             }
 
                             if (underlyingEventType is JsonEventType && insertIntoTargetType is JsonEventType) {
-                                SelectExprProcessorForge forgeX = SelectEvalStreamWUndRecastJsonFactory.Make(
+                                var forgeX = SelectEvalStreamWUndRecastJsonFactory.Make(
                                     typeService.EventTypes,
                                     selectExprForgeContext,
                                     _selectedStreams[0].StreamSelected.StreamNumber,
@@ -928,9 +928,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                 resultEventTypeX = insertIntoTargetType;
                             }
 
-                            SelectEvalStreamWUnderlying forgeBranch1 = new SelectEvalStreamWUnderlying(
+                            var forgeBranch1 = new SelectEvalStreamWUnderlying(
                                 selectExprForgeContext,
-                                resultEventType,
+                                resultEventTypeX,
                                 namedStreams,
                                 isUsingWildcard,
                                 unnamedStreams,
@@ -1090,9 +1090,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                     }
 
                                     if (insertIntoTargetType is JsonEventType && eventType is JsonEventType) {
-                                        JsonEventType source = (JsonEventType) eventType;
-                                        JsonEventType target = (JsonEventType) insertIntoTargetType;
-                                        ExprValidationException msg = BaseNestableEventType.IsDeepEqualsProperties(eventType.Name, source.Types, target.Types);
+                                        var source = (JsonEventType) eventType;
+                                        var target = (JsonEventType) insertIntoTargetType;
+                                        var msg = BaseNestableEventType.IsDeepEqualsProperties(eventType.Name, source.Types, target.Types);
                                         if (msg == null) {
                                             SelectExprProcessorForge forgeX = new SelectEvalInsertCoercionJson(source, target);
                                             return new SelectExprProcessorWInsertTarget(forgeX, insertIntoTargetType, additionalForgeables);
@@ -1514,14 +1514,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                     }
                                 }
                                 else if (@out == EventUnderlyingType.JSON) {
-                                    EventTypeForgablesPair pair = JsonEventTypeUtility.MakeJsonTypeCompileTimeNewType(
+                                    var pair = JsonEventTypeUtility.MakeJsonTypeCompileTimeNewType(
                                         metadata.Invoke(EventTypeApplicationType.JSON),
                                         propertyTypes,
                                         null,
                                         null,
                                         _args.StatementRawInfo,
                                         _args.CompileTimeServices);
-                                    EventType proposed = pair.EventType;
+                                    var proposed = pair.EventType;
                                     if (insertIntoTargetType != null) {
                                         EventTypeUtility.CompareExistingType(proposed, insertIntoTargetType);
                                         resultEventType = insertIntoTargetType;
@@ -1611,20 +1611,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         {
             // check if the module has already registered the same bean type.
             // since private bean-types are registered by fully-qualified class name this prevents name-duplicate.
-            foreach (EventType eventType in _args.EventTypeCompileTimeRegistry.NewTypesAdded) {
+            foreach (var eventType in _args.EventTypeCompileTimeRegistry.NewTypesAdded) {
                 if (!(eventType is BeanEventType)) {
                     continue;
                 }
-                BeanEventType beanEventType = (BeanEventType) eventType;
+                var beanEventType = (BeanEventType) eventType;
                 if (beanEventType.UnderlyingType == returnType) {
                     return beanEventType;
                 }
             }
 
             // the bean-type have not been allocated
-            BeanEventTypeStem stem = _args.CompileTimeServices.BeanEventTypeStemService.GetCreateStem(returnType, null);
-            NameAccessModifier visibility = GetVisibility(returnType.Name);
-            EventTypeMetadata metadata = new EventTypeMetadata(
+            var stem = _args.CompileTimeServices.BeanEventTypeStemService.GetCreateStem(returnType, null);
+            var visibility = GetVisibility(returnType.Name);
+            var metadata = new EventTypeMetadata(
                 returnType.Name,
                 moduleName,
                 EventTypeTypeClass.STREAM,
@@ -1633,7 +1633,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 EventTypeBusModifier.NONBUS,
                 false,
                 EventTypeIdPair.Unassigned());
-            BeanEventType type = new BeanEventType(stem, metadata, beanEventTypeFactoryProtected, null, null, null, null);
+            var type = new BeanEventType(_container, stem, metadata, beanEventTypeFactoryProtected, null, null, null, null);
             _args.EventTypeCompileTimeRegistry.NewType(type);
             return type;
         }
@@ -1838,7 +1838,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     continue;
                 }
 
-                FragmentEventType fragmentEventType = targetType.GetFragmentType(providedName);
+                var fragmentEventType = targetType.GetFragmentType(providedName);
                 if (fragmentEventType == null) {
                     continue;
                 }
@@ -1905,20 +1905,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 return null;
             }
 
-            EventType targetType = EPTypeHelper.GetEventType(insertIntoTarget);
+            var targetType = EPTypeHelper.GetEventType(insertIntoTarget);
             ExprEnumerationForge enumeration;
             if (forge is ExprEnumerationForge) {
                 enumeration = (ExprEnumerationForge) forge;
             } else if (expr is ExprEnumerationForgeProvider && !(expr is ExprStreamUnderlyingNode)) {
                 // ExprStreamUnderlyingNode specifically is handled elsewhere
-                ExprEnumerationForgeProvider provider = (ExprEnumerationForgeProvider) expr;
-                ExprEnumerationForgeDesc desc = provider.GetEnumerationForge(_args.TypeService, _args.ContextDescriptor);
+                var provider = (ExprEnumerationForgeProvider) expr;
+                var desc = provider.GetEnumerationForge(_args.TypeService, _args.ContextDescriptor);
                 if (desc == null || desc.Forge == null) {
                     return null;
                 }
 
                 enumeration = desc.Forge;
-                EventType sourceTypeX = enumeration.GetEventTypeSingle(_args.StatementRawInfo, _args.CompileTimeServices);
+                var sourceTypeX = enumeration.GetEventTypeSingle(_args.StatementRawInfo, _args.CompileTimeServices);
                 if (sourceTypeX == null || !EventTypeUtility.IsTypeOrSubTypeOf(sourceTypeX, targetType)) {
                     return null;
                 }
@@ -1926,11 +1926,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 return null;
             }
 
-            EventType eventTypeSingle = enumeration.GetEventTypeSingle(_args.StatementRawInfo, _args.CompileTimeServices);
-            EventType eventTypeColl = enumeration.GetEventTypeCollection(
+            var eventTypeSingle = enumeration.GetEventTypeSingle(_args.StatementRawInfo, _args.CompileTimeServices);
+            var eventTypeColl = enumeration.GetEventTypeCollection(
                 _args.StatementRawInfo,
                 _args.CompileTimeServices);
-            EventType sourceType = eventTypeSingle != null ? eventTypeSingle : eventTypeColl;
+            var sourceType = eventTypeSingle != null ? eventTypeSingle : eventTypeColl;
             if (eventTypeColl == null && eventTypeSingle == null) {
                 return null; // enumeration is untyped events (select-clause provided to subquery or 'new' operator)
             }
@@ -2199,11 +2199,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 return new TypeAndForgePair(new[] {tableMetadata.PublicEventType}, tableForge);
             }
             
-            EventType eventTypeSingle = enumEval.GetEventTypeSingle(_args.StatementRawInfo, _args.CompileTimeServices);
+            var eventTypeSingle = enumEval.GetEventTypeSingle(_args.StatementRawInfo, _args.CompileTimeServices);
             if (eventTypeSingle != null) {
-                TableMetaData tableMetadata = _args.TableCompileTimeResolver.ResolveTableFromEventType(eventTypeSingle);
+                var tableMetadata = _args.TableCompileTimeResolver.ResolveTableFromEventType(eventTypeSingle);
                 if (tableMetadata == null) {
-                    ExprEvalEnumerationAtBeanSingleForge beanForge = new ExprEvalEnumerationAtBeanSingleForge(enumEval, eventTypeSingle);
+                    var beanForge = new ExprEvalEnumerationAtBeanSingleForge(enumEval, eventTypeSingle);
                     return new TypeAndForgePair(eventTypeSingle, beanForge);
                 }
                 throw new IllegalStateException("Unrecognized enumeration source returning table row-typed values");

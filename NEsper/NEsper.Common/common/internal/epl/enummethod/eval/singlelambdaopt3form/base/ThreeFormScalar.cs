@@ -25,7 +25,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public abstract class ThreeFormScalar : EnumForgeBasePlain
 	{
-
 		protected readonly ObjectArrayEventType fieldEventType;
 		protected readonly int numParameters;
 
@@ -62,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			this.numParameters = numParameters;
 		}
 
-		public CodegenExpression Codegen(
+		public override CodegenExpression Codegen(
 			EnumForgeCodegenParams premade,
 			CodegenMethodScope codegenMethodScope,
 			CodegenClassScope codegenClassScope)

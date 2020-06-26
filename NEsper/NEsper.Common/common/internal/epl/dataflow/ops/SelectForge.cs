@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             }
 
             // compile offered streams
-            IList<StreamSpecCompiled> streamSpecCompileds = new List<StreamSpecCompiled>();
+            var streamSpecCompileds = new List<StreamSpecCompiled>();
             originatingStreamToViewableStream = new int[select.StreamSpecs.Count];
             for (var streamNum = 0; streamNum < select.StreamSpecs.Count; streamNum++) {
                 var filter = streams.Get(streamNum);
@@ -134,14 +134,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                 var eventType = inputPortValue.Value.TypeDesc.EventType;
                 originatingStreamToViewableStream[inputPortValue.Key] = streamNum;
                 var streamAlias = filter.OptionalStreamName;
-                var filterSpecCompiled = new FilterSpecCompiled(
-                    eventType,
-                    streamAlias,
-                    new IList<FilterSpecParamForge>[] {
-                        EmptyList<FilterSpecParamForge>.Instance
-                    },
-                    null);
-                ViewSpec[] viewSpecs = select.StreamSpecs[streamNum].ViewSpecs;
+                var filterSpecCompiled = new FilterSpecCompiled(eventType, streamAlias, FilterSpecPlanForge.EMPTY, null);
+                var viewSpecs = select.StreamSpecs[streamNum].ViewSpecs;
                 var filterStreamSpecCompiled = new FilterStreamSpecCompiled(
                     filterSpecCompiled,
                     viewSpecs,

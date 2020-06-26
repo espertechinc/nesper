@@ -317,5 +317,9 @@ namespace com.espertech.esper.common.@internal.view.union
         {
             IntersectDefaultView.VisitViewContained(viewDataVisitor, ViewFactory, views);
         }
+
+        public void Transfer(AgentInstanceTransferServices services)
+        {
+        }
     }
 } // end of namespace

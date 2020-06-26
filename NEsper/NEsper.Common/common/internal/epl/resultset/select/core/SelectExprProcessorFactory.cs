@@ -45,10 +45,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             InsertIntoDesc insertIntoDesc,
             bool withSubscriber)
         {
-            var additionalForgeables = new List<StmtClassForgeableFactory>();
+            IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>();
 
             SelectExprProcessorWInsertTarget synthetic = GetProcessorInternal(args, insertIntoDesc);
-            additionalForgeables.AddRange(synthetic.AdditionalForgeables);
+            additionalForgeables.AddAll(synthetic.AdditionalForgeables);
 
             // plan serdes for variant event types
             if (synthetic.InsertIntoTargetType is VariantEventType ||
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     args.StatementRawInfo,
                     args.CompileTimeServices.SerdeEventTypeRegistry,
                     args.CompileTimeServices.SerdeResolver);
-                additionalForgeables.AddRange(serdeForgeables);
+                additionalForgeables.AddAll(serdeForgeables);
                 foreach (EventType eventType in args.TypeService.EventTypes) {
                     serdeForgeables = SerdeEventTypeUtility.Plan(
                         eventType,

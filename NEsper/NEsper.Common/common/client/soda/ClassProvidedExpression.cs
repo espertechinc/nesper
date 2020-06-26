@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="classText">indicates the class text.</param>
         public ClassProvidedExpression(string classText)
         {
-            this._classText = classText;
+            _classText = classText;
         }
 
         /// <summary>

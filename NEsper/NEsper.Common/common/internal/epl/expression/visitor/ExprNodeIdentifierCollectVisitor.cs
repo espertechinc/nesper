@@ -24,6 +24,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
         {
             ExprProperties = new List<ExprIdentNode>();
         }
+                
+        public bool IsWalkDeclExprParam => true;
 
         /// <summary>
         ///     Returns list of event property stream numbers and names that uniquely identify which property is from whcih

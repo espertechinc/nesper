@@ -22,6 +22,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
     {
         private IList<Pair<ExprNode, ExprPreviousNode>> _previous;
 
+        public bool IsWalkDeclExprParam => true;
+
         public bool IsVisit(ExprNode exprNode)
         {
             return true;

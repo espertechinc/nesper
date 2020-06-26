@@ -19,14 +19,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         private readonly int _col;
 
         public CodegenExpressionMemberWCol(
-            string @ref,
+            string name,
             int col)
-            : base(@ref)
+            : base(name)
         {
             _col = col;
         }
 
-        public override string Ref => _ref + _col;
+        public override string Ref => _name + _col;
 
         public override void Render(
             StringBuilder builder,

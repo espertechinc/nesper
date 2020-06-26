@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 
 			// getNativeEntry
 			CodegenMethod getNativeEntryMethod = CodegenMethod
-				.MakeParentNode(typeof(KeyValuePair), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.MakeParentNode(typeof(KeyValuePair<object, object>), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(typeof(int), "num");
 			MakeGetNativeEntry(getNativeEntryMethod, classScope);
 			CodegenStackGenerator.RecursiveBuildStack(getNativeEntryMethod, "GetNativeEntry", methods, properties);
@@ -240,10 +240,10 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			CodegenMethod method,
 			CodegenClassScope classScope)
 		{
-			CodegenMethod toEntry = method.MakeChild(typeof(KeyValuePair), this.GetType(), classScope)
+			CodegenMethod toEntry = method.MakeChild(typeof(KeyValuePair<object, object>), this.GetType(), classScope)
 				.AddParam(typeof(string), "name")
 				.AddParam(typeof(object), "value");
-			toEntry.Block.MethodReturn(NewInstance(typeof(AbstractMap.SimpleEntry), Ref("name"), Ref("value")));
+			toEntry.Block.MethodReturn(NewInstance(typeof(KeyValuePair<object, object>), Ref("name"), Ref("value")));
 
 			if (desc.NumFieldsSupertype > 0) {
 				method.Block

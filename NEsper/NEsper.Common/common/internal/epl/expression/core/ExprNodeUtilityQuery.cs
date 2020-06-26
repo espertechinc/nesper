@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public static readonly ExprForge[] EMPTY_FORGE_ARRAY = new ExprForge[0];
 
         public static ExprForge[] ForgesForProperties(
-            EventType[] eventTypes,
+            IList<EventType> eventTypes,
             String[] propertyNames,
             int[] keyStreamNums)
         {

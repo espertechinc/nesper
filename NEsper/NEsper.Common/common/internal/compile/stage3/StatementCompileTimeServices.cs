@@ -139,6 +139,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
         public IContainer Container => _services.Container;
 
+        public ModuleCompileTimeServices Services => _services;
+
         public string Namespace => _services.Namespace;
 
         public SerdeEventTypeCompileTimeRegistry SerdeEventTypeRegistry => _services.SerdeEventTypeRegistry;

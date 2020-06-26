@@ -332,5 +332,9 @@ namespace com.espertech.esper.common.@internal.view.timetolive
             agentInstanceContext.StatementContext.SchedulingService.Add(callbackWait, handle, scheduleSlot);
             isCallbackScheduled = true;
         }
+        
+        public void Transfer(AgentInstanceTransferServices services)
+        {
+        }
     }
 } // end of namespace

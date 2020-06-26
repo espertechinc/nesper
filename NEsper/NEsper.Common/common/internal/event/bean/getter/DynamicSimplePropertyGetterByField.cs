@@ -36,12 +36,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			_fieldName = fieldName;
 		}
 
-		protected override FieldInfo DetermineField(Type clazz)
+		protected override MemberInfo DetermineFieldOrProperty(Type clazz)
 		{
 			return DynamicSimplePropertyDetermineField(_fieldName, clazz);
 		}
 
-		protected override CodegenExpression DetermineFieldCodegen(
+		protected override CodegenExpression DetermineFieldOrPropertyCodegen(
 			CodegenExpressionRef clazz,
 			CodegenMethodScope parent,
 			CodegenClassScope codegenClassScope)
@@ -88,12 +88,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			string fieldName,
 			Type clazz)
 		{
-			try {
-				return clazz.GetField(fieldName);
-			}
-			catch (NoSuchFieldException ex1) {
-				return null;
-			}
+			return clazz.GetField(fieldName);
 		}
 
 		/// <summary>

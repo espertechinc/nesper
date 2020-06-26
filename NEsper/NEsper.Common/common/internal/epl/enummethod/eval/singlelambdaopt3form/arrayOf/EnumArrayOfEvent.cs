@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 	        this._arrayComponentType = arrayComponentType;
 	    }
 
-	    public EnumEval EnumEvaluator {
+	    public override EnumEval EnumEvaluator {
 		    get {
 			    ExprEvaluator inner = InnerExpression.ExprEvaluator;
 

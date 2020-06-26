@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private AggregationRowFactory _aggregationRowFactory;
-        private DataInputOutputSerdeWCollation<AggregationRow> _aggregationSerde;
+        private DataInputOutputSerde<AggregationRow> _aggregationSerde;
         private TableMetadataInternalEventToPublic _eventToPublic;
         private EventPropertyValueGetter _primaryKeyGetter;
         private DataInputOutputSerde<object> _primaryKeySerde;
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             set => _aggregationRowFactory = value;
         }
 
-        public DataInputOutputSerdeWCollation<AggregationRow> AggregationSerde {
+        public DataInputOutputSerde<AggregationRow> AggregationSerde {
             get => _aggregationSerde;
             set => _aggregationSerde = value;
         }

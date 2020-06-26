@@ -54,10 +54,11 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 	    }
 
 	    public CodegenClass Forge(bool includeDebugSymbols, bool fireAndForget) {
-	        CodegenClassMethods methods = new CodegenClassMethods();
-	        CodegenClassScope classScope = new CodegenClassScope(includeDebugSymbols, namespaceScope, className);
+	        var properties = new CodegenClassProperties();
+	        var methods = new CodegenClassMethods();
+	        var classScope = new CodegenClassScope(includeDebugSymbols, namespaceScope, className);
 
-	        CodegenMethod writeMethod = CodegenMethod
+	        var writeMethod = CodegenMethod
 		        .MakeParentNode(typeof(void), typeof(StmtClassForgeableBaseNestableEventTypeSerde), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 	            .AddParam(typeof(object), OBJECT_NAME)
 	            .AddParam(typeof(DataOutput), OUTPUT_NAME)
@@ -65,28 +66,37 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 	            .AddParam(typeof(EventBeanCollatedWriter), WRITER_NAME)
 	            .AddThrown(typeof(IOException));
 	        MakeWriteMethod(writeMethod);
-	        CodegenStackGenerator.RecursiveBuildStack(writeMethod, "write", methods);
+	        CodegenStackGenerator.RecursiveBuildStack(writeMethod, "Write", methods, properties);
 
-	        CodegenMethod readMethod = CodegenMethod.MakeParentNode(typeof(object), typeof(StmtClassForgeableBaseNestableEventTypeSerde), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+	        var readMethod = CodegenMethod.MakeParentNode(typeof(object), typeof(StmtClassForgeableBaseNestableEventTypeSerde), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 	            .AddParam(typeof(DataInput), INPUT_NAME)
 	            .AddParam(typeof(byte[]), UNITKEY_NAME)
 	            .AddThrown(typeof(IOException));
 	        MakeReadMethod(readMethod);
-	        CodegenStackGenerator.RecursiveBuildStack(readMethod, "read", methods);
+	        CodegenStackGenerator.RecursiveBuildStack(readMethod, "Read", methods, properties);
 
 	        IList<CodegenTypedParam> members = new List<CodegenTypedParam>();
-	        for (int i = 0; i < forges.Length; i++) {
+	        for (var i = 0; i < forges.Length; i++) {
 	            members.Add(new CodegenTypedParam(forges[i].ForgeClassName(), "s" + i));
 	        }
 
-	        IList<CodegenTypedParam> ctorParams = Collections.SingletonList(
+	        var ctorParams = Collections.SingletonList(
 		        new CodegenTypedParam(typeof(EventTypeResolver), "resolver", false));
-	        CodegenCtor providerCtor = new CodegenCtor(this.GetType(), includeDebugSymbols, ctorParams);
-	        for (int i = 0; i < forges.Length; i++) {
+	        var providerCtor = new CodegenCtor(this.GetType(), ClassName, includeDebugSymbols, ctorParams);
+	        for (var i = 0; i < forges.Length; i++) {
 	            providerCtor.Block.AssignRef("s" + i, forges[i].Codegen(providerCtor, classScope, Ref("resolver")));
 	        }
 
-	        return new CodegenClass(CodegenClassType.EVENTSERDE, typeof(DataInputOutputSerde), className, classScope, members, providerCtor, methods, Collections.EmptyList());
+	        return new CodegenClass(
+		        CodegenClassType.EVENTSERDE,
+		        typeof(DataInputOutputSerde<object>),
+		        className,
+		        classScope,
+		        members,
+		        providerCtor,
+		        methods,
+		        properties,
+		        EmptyList<CodegenInnerClass>.Instance);
 	    }
 
 	    public string ClassName {
@@ -98,7 +108,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 	    }
 
 	    private void MakeWriteMethod(CodegenMethod writeMethod) {
-	        string[] propertyNames = eventType.PropertyNames;
+	        var propertyNames = eventType.PropertyNames;
 
 	        if (eventType is MapEventType) {
 	            writeMethod.Block
@@ -107,14 +117,14 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 	            writeMethod.Block
 		            .DeclareVar(typeof(object[]), "oa", Cast(typeof(object[]), Ref(OBJECT_NAME)));
 	        } else if (eventType is JsonEventType) {
-	            JsonEventType jsonEventType = (JsonEventType) eventType;
+	            var jsonEventType = (JsonEventType) eventType;
 	            writeMethod.Block
 		            .DeclareVar(jsonEventType.UnderlyingType, "json", Cast(jsonEventType.UnderlyingType, Ref(OBJECT_NAME)));
 	        } else {
 	            throw new IllegalStateException("Unrecognized event type " + eventType);
 	        }
 
-	        for (int i = 0; i < forges.Length; i++) {
+	        for (var i = 0; i < forges.Length; i++) {
 	            CodegenExpression serde = Ref("s" + i);
 	            CodegenExpression get;
 
@@ -123,9 +133,9 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 	            } else if (eventType is ObjectArrayEventType) {
 	                get = ArrayAtIndex(Ref("oa"), Constant(i));
 	            } else {
-	                JsonEventType jsonEventType = (JsonEventType) eventType;
-	                string property = eventType.PropertyNames[i];
-	                JsonUnderlyingField field = jsonEventType.Detail.FieldDescriptors.Get(property);
+	                var jsonEventType = (JsonEventType) eventType;
+	                var property = eventType.PropertyNames[i];
+	                var field = jsonEventType.Detail.FieldDescriptors.Get(property);
 	                if (field == null) {
 	                    throw new IllegalStateException("Unrecognized json event property " + property);
 	                }
@@ -136,7 +146,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 	        }
 
 	        if (eventType is JsonEventType) {
-	            JsonEventType jsonEventType = (JsonEventType) eventType;
+	            var jsonEventType = (JsonEventType) eventType;
 	            if (jsonEventType.Detail.IsDynamic) {
 	                CodegenExpression get = Ref("json." + StmtClassForgeableJsonUnderlying.DYNAMIC_PROP_FIELD);
 	                writeMethod.Block.ExprDotMethod(PublicConstValue(typeof(DIOJsonObjectSerde), "INSTANCE"), "write", get, Ref(OUTPUT_NAME), Ref(UNITKEY_NAME), Ref(WRITER_NAME));
@@ -144,55 +154,71 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 	        }
 	    }
 
-	    private void MakeReadMethod(CodegenMethod readMethod) {
-	        string[] propertyNames = eventType.PropertyNames;
-	        CodegenExpressionRef underlyingRef;
+	    private void MakeReadMethod(CodegenMethod readMethod)
+	    {
+		    var propertyNames = eventType.PropertyNames;
+		    CodegenExpressionRef underlyingRef;
 
-	        if (eventType is MapEventType) {
-	            readMethod.Block
-		            .DeclareVar(typeof(IDictionary<string, object>), "map", NewInstance(typeof(Dictionary<string, object>), Constant(CollectionUtil.CapacityHashMap(forges.Length))));
-	            underlyingRef = Ref("map");
-	        } else if (eventType is ObjectArrayEventType) {
-	            readMethod.Block
-		            .DeclareVar(typeof(object[]), "oa", NewArrayByLength(typeof(object), Constant(forges.Length)));
-	            underlyingRef = Ref("oa");
-	        } else if (eventType is JsonEventType) {
-	            JsonEventType jsonEventType = (JsonEventType) eventType;
-	            readMethod.Block
-		            .DeclareVar(jsonEventType.UnderlyingType, "json", NewInstance(jsonEventType.UnderlyingType));
-	            underlyingRef = Ref("json");
-	        } else {
-	            throw new IllegalStateException("Unrecognized event type " + eventType);
-	        }
+		    if (eventType is MapEventType) {
+			    readMethod.Block
+				    .DeclareVar(
+					    typeof(IDictionary<string, object>),
+					    "map",
+					    NewInstance(
+						    typeof(Dictionary<string, object>),
+						    Constant(CollectionUtil.CapacityHashMap(forges.Length))));
+			    underlyingRef = Ref("map");
+		    }
+		    else if (eventType is ObjectArrayEventType) {
+			    readMethod.Block
+				    .DeclareVar(typeof(object[]), "oa", NewArrayByLength(typeof(object), Constant(forges.Length)));
+			    underlyingRef = Ref("oa");
+		    }
+		    else if (eventType is JsonEventType) {
+			    var jsonEventType = (JsonEventType) eventType;
+			    readMethod.Block
+				    .DeclareVar(jsonEventType.UnderlyingType, "json", NewInstance(jsonEventType.UnderlyingType));
+			    underlyingRef = Ref("json");
+		    }
+		    else {
+			    throw new IllegalStateException("Unrecognized event type " + eventType);
+		    }
 
-	        for (int i = 0; i < forges.Length; i++) {
-	            CodegenExpression serde = Ref("s" + i);
-	            CodegenExpression read = ExprDotMethod(serde, "read", Ref(INPUT_NAME), Ref(UNITKEY_NAME));
+		    for (var i = 0; i < forges.Length; i++) {
+			    CodegenExpression serde = Ref("s" + i);
+			    var read = ExprDotMethod(serde, "read", Ref(INPUT_NAME), Ref(UNITKEY_NAME));
 
-	            if (eventType is MapEventType) {
-	                readMethod.Block.ExprDotMethod(Ref("map"), "put", Constant(propertyNames[i]), read);
-	            } else if (eventType is ObjectArrayEventType) {
-	                readMethod.Block.AssignArrayElement(Ref("oa"), Constant(i), read);
-	            } else {
-	                JsonEventType jsonEventType = (JsonEventType) eventType;
-	                string property = eventType.PropertyNames[i];
-	                JsonUnderlyingField field = jsonEventType.Detail.FieldDescriptors.Get(property);
-	                if (field == null) {
-	                    throw new IllegalStateException("Unrecognized json event property " + property);
-	                }
-	                readMethod.Block.AssignRef(Ref("json." + field.FieldName), Cast(field.PropertyType, read));
-	            }
-	        }
+			    if (eventType is MapEventType) {
+				    readMethod.Block.ExprDotMethod(Ref("map"), "put", Constant(propertyNames[i]), read);
+			    }
+			    else if (eventType is ObjectArrayEventType) {
+				    readMethod.Block.AssignArrayElement(Ref("oa"), Constant(i), read);
+			    }
+			    else {
+				    var jsonEventType = (JsonEventType) eventType;
+				    var property = eventType.PropertyNames[i];
+				    var field = jsonEventType.Detail.FieldDescriptors.Get(property);
+				    if (field == null) {
+					    throw new IllegalStateException("Unrecognized json event property " + property);
+				    }
 
-	        if (eventType is JsonEventType) {
-	            JsonEventType jsonEventType = (JsonEventType) eventType;
-	            if (jsonEventType.Detail.IsDynamic) {
-	                CodegenExpression read = ExprDotMethod(PublicConstValue(typeof(DIOJsonObjectSerde), "INSTANCE"), "read", Ref(INPUT_NAME), Ref(UNITKEY_NAME));
-	                readMethod.Block.AssignRef(Ref("json." + StmtClassForgeableJsonUnderlying.DYNAMIC_PROP_FIELD), read);
-	            }
-	        }
+				    readMethod.Block.AssignRef(Ref("json." + field.FieldName), Cast(field.PropertyType, read));
+			    }
+		    }
 
-	        readMethod.Block.MethodReturn(underlyingRef);
+		    if (eventType is JsonEventType) {
+			    var jsonEventType = (JsonEventType) eventType;
+			    if (jsonEventType.Detail.IsDynamic) {
+				    var read = ExprDotMethod(
+					    PublicConstValue(typeof(DIOJsonObjectSerde), "INSTANCE"),
+					    "read",
+					    Ref(INPUT_NAME),
+					    Ref(UNITKEY_NAME));
+				    readMethod.Block.AssignRef(Ref("json." + StmtClassForgeableJsonUnderlying.DYNAMIC_PROP_FIELD), read);
+			    }
+		    }
+
+		    readMethod.Block.MethodReturn(underlyingRef);
 	    }
 	}
 } // end of namespace

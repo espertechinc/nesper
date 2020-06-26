@@ -8,16 +8,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
-using java.util.function;
-using java.util.stream;
-
-
-using static com.espertech.esper.common.@internal.epl.agg.access.sorted.AggregationMethodSortedWrapperNavigableMap.immutableException;
+using static com.espertech.esper.common.@internal.epl.agg.access.sorted.AggregationMethodSortedWrapperNavigableMap;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 {
@@ -28,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 	        this.sorted = sorted;
 	    }
 
-	    public Comparator<? super object> Comparator() {
+	    public IComparer Comparator() {
 	        return sorted.Comparator();
 	    }
 
@@ -38,78 +35,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
 	    public object Last() {
 	        return sorted.Last();
-	    }
-
-	    public int Size() {
-	        return sorted.Count;
-	    }
-
-	    public bool IsEmpty() {
-	        return sorted.IsEmpty();
-	    }
-
-	    public bool Contains(object o) {
-	        return sorted.Contains(o);
-	    }
-
-	    public object[] ToArray() {
-	        return sorted.ToArray();
-	    }
-
-	    public <T> T[] ToArray(T[] a) {
-	        return sorted.ToArray();
-	    }
-
-	    public bool Add(object o) {
-	        throw ImmutableException();
-	    }
-
-	    public bool Remove(object o) {
-	        throw ImmutableException();
-	    }
-
-	    public bool ContainsAll(ICollection<?> c) {
-	        return sorted.ContainsAll(c);
-	    }
-
-	    public bool AddAll(ICollection<?> c) {
-	        throw ImmutableException();
-	    }
-
-	    public bool RetainAll(ICollection<?> c) {
-	        throw ImmutableException();
-	    }
-
-	    public bool RemoveAll(ICollection<?> c) {
-	        throw ImmutableException();
-	    }
-
-	    public void Clear() {
-	        throw ImmutableException();
-	    }
-
-	    public Spliterator<object> Spliterator() {
-	        return sorted.Spliterator();
-	    }
-
-	    public bool RemoveIf(Predicate<? super object> filter) {
-	        throw ImmutableException();
-	    }
-
-	    public Stream<object> Stream() {
-	        return sorted.Stream();
-	    }
-
-	    public Stream<object> ParallelStream() {
-	        return sorted.ParallelStream();
-	    }
-
-	    public void ForEach(Consumer<? super object> action) {
-	        sorted.ForEach(action);
-	    }
-
-	    public IEnumerator<object> Iterator() {
-	        return new UnmodifiableIterator(sorted.Iterator());
 	    }
 
 	    public SortedSet<object> SubSet(object fromElement, object toElement) {

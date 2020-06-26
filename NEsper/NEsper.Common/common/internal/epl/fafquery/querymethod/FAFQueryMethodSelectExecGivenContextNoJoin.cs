@@ -61,7 +61,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                     select.ResultSetProcessorFactoryProvider,
                     contextPartitionResult.Context,
                     assignerSetter,
-                    select.TableAccesses);
+                    select.TableAccesses,
+                    select.Subselects);
 
                 var snapshot = contextPartitionResult.Events;
                 if (select.WhereClause != null) {

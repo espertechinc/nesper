@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="expression">for which to return the result type or null if the result is null</param>
         public TypeOfExpression(Expression expression)
         {
-            this.Children.Add(expression);
+            Children.Add(expression);
         }
 
         public override ExpressionPrecedenceEnum Precedence
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.client.soda
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("typeof(");
-            this.Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+            Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             writer.Write(")");
         }
     }

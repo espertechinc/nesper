@@ -155,7 +155,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 	    }
 
 	    public ICollection<object> Values() {
-	        return new JsonEventUnderlyingValueCollection(this, JsonValues.Values());
+	        return new JsonEventUnderlyingValueCollection(this, JsonValues.Values);
 	    }
 
 	    public object Put(string key, object value) {
@@ -166,7 +166,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 	        throw new UnsupportedOperationException();
 	    }
 
-	    public void PutAll<T>(IDictionary<? extends string, ?> m) {
+	    public void PutAll<T>(IDictionary<string, T> m) {
 	        throw new UnsupportedOperationException();
 	    }
 

@@ -109,25 +109,17 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			Type clazz,
 			string getterMethodName)
 		{
-			MethodInfo method;
-
-			try {
-				return clazz.GetMethod(getterMethodName, typeof(int));
-			}
-			catch (NoSuchMethodException ex1) {
-				try {
-					method = clazz.GetMethod(getterMethodName);
-				}
-				catch (NoSuchMethodException e) {
-					return null;
-				}
-
-				if (!method.ReturnType.IsArray) {
-					return null;
-				}
-
+			var method = clazz.GetMethod(getterMethodName, new [] { typeof(int) });
+			if (method != null) {
 				return method;
 			}
+			
+			method = clazz.GetMethod(getterMethodName);
+			if ((method == null) || (!method.ReturnType.IsArray)) {
+				return null;
+			}
+
+			return method;
 		}
 
 		/// <summary>
@@ -164,8 +156,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			catch (InvalidCastException e) {
 				throw PropertyUtility.GetMismatchException(descriptor.Method, underlying, e);
 			}
-			catch (InvocationTargetException e) {
-				throw PropertyUtility.GetInvocationTargetException(descriptor.Method, e);
+			catch (TargetInvocationException e) {
+				throw PropertyUtility.GetTargetException(descriptor.Method, e);
+			}
+			catch (TargetException e) {
+				throw PropertyUtility.GetTargetException(descriptor.Method, e);
 			}
 			catch (ArgumentException e) {
 				throw PropertyUtility.GetArgumentException(descriptor.Method, e);
@@ -207,8 +202,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			catch (InvalidCastException e) {
 				throw PropertyUtility.GetMismatchException(descriptor.Method, underlying, e);
 			}
-			catch (InvocationTargetException e) {
-				throw PropertyUtility.GetInvocationTargetException(descriptor.Method, e);
+			catch (TargetInvocationException e) {
+				throw PropertyUtility.GetTargetException(descriptor.Method, e);
+			}
+			catch (TargetException e) {
+				throw PropertyUtility.GetTargetException(descriptor.Method, e);
 			}
 			catch (ArgumentException e) {
 				throw PropertyUtility.GetArgumentException(descriptor.Method, e);

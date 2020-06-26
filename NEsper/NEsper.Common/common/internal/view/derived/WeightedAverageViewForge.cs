@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.view.derived
             eventType = WeightedAverageView.CreateEventType(additionalProps, viewForgeEnv, streamNumber);
         }
 
-        public IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
+        public override IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
         {
             return SerdeEventTypeUtility.Plan(
                 eventType,

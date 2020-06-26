@@ -157,7 +157,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
         {
             //var timeClass = NewAnonymousClass(method.Block, typeof(TimePeriodEval));
             //var evalMethod = CodegenMethod.MakeMethod(typeof(TimePeriod), GetType(), classScope)
-				.AddParam(PARAMS);
+			//	.AddParam(PARAMS);
             //timeClass.AddMethod("timePeriodEval", evalMethod);
 
             var evalMethod = new CodegenExpressionLambda(method.Block).WithParams(PARAMS);

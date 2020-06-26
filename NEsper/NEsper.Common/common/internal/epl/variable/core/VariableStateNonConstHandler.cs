@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.util;
@@ -23,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             string deploymentId,
             string variableName,
             Variable variable,
-            DataInputOutputSerdeWCollation<object> serde);
+            DataInputOutputSerde<object> serde);
 
         /// <summary>
         ///     Returns the current variable state plus Boolean.TRUE if there is a current state since the variable

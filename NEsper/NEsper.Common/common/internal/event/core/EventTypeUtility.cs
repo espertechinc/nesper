@@ -14,6 +14,7 @@ using System.Xml;
 
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
@@ -235,11 +236,11 @@ namespace com.espertech.esper.common.@internal.@event.core
                     }
                     
                     if (allowFragmentType && types.Value is TypeBeanOrUnderlying) {
-                        TypeBeanOrUnderlying und = (TypeBeanOrUnderlying) types.Value;
+                        var und = (TypeBeanOrUnderlying) types.Value;
                         writables.Add(new WriteablePropertyDescriptor(types.Key, und.EventType.UnderlyingType, null, true));
                     }
                     if (allowFragmentType && types.Value is TypeBeanOrUnderlying[]) {
-                        TypeBeanOrUnderlying[] und = (TypeBeanOrUnderlying[]) types.Value;
+                        var und = (TypeBeanOrUnderlying[]) types.Value;
                         writables.Add(new WriteablePropertyDescriptor(types.Key, und[0].EventType.UnderlyingType, null, true));
                     }
                 }
@@ -282,8 +283,8 @@ namespace com.espertech.esper.common.@internal.@event.core
             }
 
             if (eventType is BeanEventType && eventType.Metadata.AccessModifier == NameAccessModifier.TRANSIENT) {
-                BeanEventType beanEventType = (BeanEventType) eventType;
-                bool publicFields = beanEventType.Stem.IsPublicFields;
+                var beanEventType = (BeanEventType) eventType;
+                var publicFields = beanEventType.Stem.IsPublicFields;
                 return ExprDotMethod(
                     typeResolver,
                     EventTypeResolverConstants.RESOLVE_PRIVATE_BEAN_METHOD,
@@ -373,21 +374,21 @@ namespace com.espertech.esper.common.@internal.@event.core
             } else {
                 throw new IllegalStateException("Unrecognized interface class " + interfaceClass.Name);
             }
-            CodegenMethod getOrEval = CodegenMethod
+            var getOrEval = CodegenMethod
                 .MakeParentNode(typeof(Object), generator, classScope)
                 .AddParam(parameters);
             anonymous.AddMethod(interfaceClass == typeof(EventPropertyValueGetter) ? "get" : "eval", getOrEval);
 
-            CodegenExpression result = getter.EventBeanGetCodegen(Ref("bean"), method, classScope);
+            var result = getter.EventBeanGetCodegen(Ref("bean"), method, classScope);
             if (optionalCoercionType != null && getterType != optionalCoercionType && TypeHelper.IsNumeric(getterType)) {
-                Coercer coercer = SimpleNumberCoercerFactory.GetCoercer(
+                var coercer = SimpleNumberCoercerFactory.GetCoercer(
                     getterType, Boxing.GetBoxedType(optionalCoercionType));
                 getOrEval.Block.DeclareVar(getterType, "prop", Cast(getterType, result));
                 result = coercer.CoerceCodegen(Ref("prop"), getterType);
             }
 
             if (getterType.IsArray) {
-                Type mkType = MultiKeyPlanner.GetMKClassForComponentType(getterType.GetElementType());
+                var mkType = MultiKeyPlanner.GetMKClassForComponentType(getterType.GetElementType());
                 result = NewInstance(mkType, Cast(getterType, result));
             }
 
@@ -757,7 +758,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
                     // for native-type fragments (classes) we use the original type as available from map or object-array
                     if (typeToMerge is BaseNestableEventType && fragment.IsNative) {
-                        BaseNestableEventType baseNestable = (BaseNestableEventType) typeToMerge;
+                        var baseNestable = (BaseNestableEventType) typeToMerge;
                         typing.Put(prop.PropertyName, baseNestable.Types.Get(prop.PropertyName));
                     } else {
                         if (fragment.IsIndexed) {
@@ -2193,7 +2194,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             return target;
         }
 
-        public static EventType CreateNonVariantType(
+        public static EventTypeForgeablesPair CreateNonVariantType(
             bool isAnonymous,
             CreateSchemaDesc spec,
             StatementBaseInfo @base,
@@ -2326,22 +2327,23 @@ namespace com.espertech.esper.common.@internal.@event.core
                         config.SuperTypes,
                         EventUnderlyingType.JSON,
                         services.EventTypeCompileTimeResolver);
-                    EventTypeMetadata metadata = metadataFunc.Invoke(EventTypeApplicationType.JSON);
-                    EventTypeForgablesPair desc = JsonEventTypeUtility.MakeJsonTypeCompileTimeNewType(
+                    var metadata = metadataFunc.Invoke(EventTypeApplicationType.JSON);
+                    var desc = JsonEventTypeUtility.MakeJsonTypeCompileTimeNewType(
                         metadata,
                         compiledTyping,
                         st,
                         config,
                         @base.StatementRawInfo,
                         services);
-                    eventType = desc.getEventType();
-                    additionalForgeables = desc.getAdditionalForgeables();                }
+                    eventType = desc.EventType;
+                    additionalForgeables = desc.AdditionalForgeables;
+                }
                 else {
                     throw new IllegalStateException("Unrecognized representation " + representation);
                 }
-            } else if (spec.AssignedType == CreateSchemaDesc.AssignedType.XML) {
+            } else if (spec.AssignedType == AssignedType.XML) {
                 if (!spec.Columns.IsEmpty()) {
-                    throw new ExprValidationException("Create-XML-Schema does not allow specifying columns, use @" + typeof(XMLSchemaField).Name + " instead");
+                    throw new ExprValidationException("Create-XML-Schema does not allow specifying columns, use @" + typeof(XMLSchemaFieldAttribute).Name + " instead");
                 }
                 if (!spec.CopyFrom.IsEmpty()) {
                     throw new ExprValidationException("Create-XML-Schema does not allow copy-from");
@@ -2361,8 +2363,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                         throw new ExprValidationException(ex.Message, ex);
                     }
                 }
-                bool propertyAgnostic = schemaModel == null;
-                EventTypeMetadata metadata = new EventTypeMetadata(
+                var propertyAgnostic = schemaModel == null;
+                var metadata = new EventTypeMetadata(
                     spec.SchemaName,
                     @base.ModuleName,
                     EventTypeTypeClass.STREAM,
@@ -2427,7 +2429,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             }
 
             services.EventTypeCompileTimeRegistry.NewType(eventType);
-            return new EventTypeForgablesPair(eventType, additionalForgeables);
+            return new EventTypeForgeablesPair(eventType, additionalForgeables);
         }
 
         private static bool AllowPopulate(EventTypeSPI typeSPI)

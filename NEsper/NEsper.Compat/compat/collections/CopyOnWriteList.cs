@@ -8,6 +8,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.locks;
 
@@ -26,6 +28,16 @@ namespace com.espertech.esper.compat.collections
             _arrayList = new T[0];
             _writerLock = new MonitorSlimLock(60000);
         }
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CopyOnWriteList&lt;T&gt;"/> class.
+        /// </summary>
+        public CopyOnWriteList(IEnumerable<T> initialList)
+        {
+            _arrayList = initialList.ToArray();
+            _writerLock = new MonitorSlimLock(60000);
+        }
+
 
         /// <summary>
         /// Gets the write lock.

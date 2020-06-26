@@ -25,7 +25,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public class EnumCountOfScalar : ThreeFormScalar
 	{
-
 		public EnumCountOfScalar(
 			ExprDotEvalParamLambda lambda,
 			ObjectArrayEventType resultEventType,
@@ -34,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 		{
 		}
 
-		public EnumEval EnumEvaluator {
+		public override EnumEval EnumEvaluator {
 			get {
 				ExprEvaluator inner = InnerExpression.ExprEvaluator;
 

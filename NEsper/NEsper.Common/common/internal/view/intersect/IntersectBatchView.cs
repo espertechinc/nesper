@@ -241,5 +241,9 @@ namespace com.espertech.esper.common.@internal.view.intersect
         {
             IntersectDefaultView.VisitViewContained(viewDataVisitor, factory, views);
         }
+        
+        public void Transfer(AgentInstanceTransferServices services)
+        {
+        }
     }
 } // end of namespace

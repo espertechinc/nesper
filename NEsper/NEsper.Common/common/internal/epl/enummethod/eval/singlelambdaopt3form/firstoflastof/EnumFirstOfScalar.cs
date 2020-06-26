@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			this._columnType = columnType;
 		}
 
-		public EnumEval EnumEvaluator {
+		public override EnumEval EnumEvaluator {
 			get {
 				var inner = InnerExpression.ExprEvaluator;
 				return new ProxyEnumEval() {

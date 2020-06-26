@@ -35,9 +35,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             string tableName,
             TableAccessAnalysisResult plan)
         {
-            this._className = className;
-            this._tableName = tableName;
-            this._plan = plan;
+            _className = className;
+            _tableName = tableName;
+            _plan = plan;
         }
 
         public CodegenMethod InitializeCodegen(
@@ -74,11 +74,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                 method,
                 classScope);
 
-            var propertyForgeEval = DataInputOutputSerdeForge.CodegenArray(
+            var propertyForgeEval = DataInputOutputSerdeForgeExtensions.CodegenArray(
                 _plan.InternalEventTypePropertySerdes,
                 method,
                 classScope,
-                ExprDotMethod(symbols.GetAddInitSvc(method), EPStatementInitServicesConstants.GETEVENTTYPERESOLVER));
+                ExprDotName(symbols.GetAddInitSvc(method), EPStatementInitServicesConstants.EVENTTYPERESOLVER));
             
             method.Block
                 .DeclareVar<StatementAgentInstanceFactoryCreateTable>("saiff", NewInstance(typeof(StatementAgentInstanceFactoryCreateTable)))

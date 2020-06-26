@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.client.soda
             this.isDistinct = isDistinct;
             for (int i = 0; i < moreExpressions.Length; i++)
             {
-                this.Children.Add(moreExpressions[i]);
+                Children.Add(moreExpressions[i]);
             }
         }
 
@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.client.soda
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            ExpressionBase.RenderAggregation(writer, functionName, isDistinct, this.Children);
+            RenderAggregation(writer, functionName, isDistinct, Children);
         }
 
         /// <summary>

@@ -40,19 +40,19 @@ namespace com.espertech.esper.common.client.hook.enummethod
             bool earlyExit)
         {
             if (stateClass == null) {
-                throw new InvalidParameterException("Required parameter state-class is not provided");
+                throw new ArgumentNullException(nameof(stateClass), "Required parameter state-class is not provided");
             }
 
             if (serviceClass == null) {
-                throw new InvalidParameterException("Required parameter service-class is not provided");
+                throw new ArgumentNullException(nameof(serviceClass), "Required parameter service-class is not provided");
             }
 
             if (methodName == null) {
-                throw new InvalidParameterException("Required parameter method-name is not provided");
+                throw new ArgumentNullException(nameof(methodName), "Required parameter method-name is not provided");
             }
 
             if (returnType == null) {
-                throw new InvalidParameterException("Required parameter return-type is not provided");
+                throw new ArgumentNullException(nameof(returnType), "Required parameter return-type is not provided");
             }
 
             StateClass = stateClass;
@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.client.hook.enummethod
 	    ///     </para>
 	    /// </summary>
 	    /// <value>function</value>
-	    public Func<EnumMethodLambdaParameterDescriptor, EnumMethodLambdaParameterType> LambdaParameters { get; set; } =
+	    public Func<EnumMethodLambdaParameterDescriptor, EnumMethodLambdaParameterType> LambdaParameters { get; } =
             enumMethodLambdaParameterDescriptor => EnumMethodLambdaParameterTypeValue.INSTANCE;
     }
 } // end of namespace

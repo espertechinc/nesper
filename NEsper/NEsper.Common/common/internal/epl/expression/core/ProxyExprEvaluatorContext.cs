@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.metrics.audit;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.schedule;
+using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -38,6 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public Func<string> ProcDeploymentId { get; set; }
         public Func<AuditProvider> ProcAuditProvider { get; set; }
         public Func<InstrumentationCommon> ProcInstrumentationProvider { get; set; }
+        public Func<ExceptionHandlingService> ProcExceptionHandlingService { get; set; }
 
         public string StatementName => ProcStatementName?.Invoke();
         public object UserObjectCompileTime => ProcUserObjectCompileTime?.Invoke();
@@ -57,5 +59,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public string DeploymentId => ProcDeploymentId?.Invoke();
         public AuditProvider AuditProvider => ProcAuditProvider?.Invoke();
         public InstrumentationCommon InstrumentationProvider => ProcInstrumentationProvider?.Invoke();
+
+        public ExceptionHandlingService ExceptionHandlingService => ProcExceptionHandlingService.Invoke();
+
+        public object FilterReboolConstant {
+            get;
+            set;
+        }
     }
 }

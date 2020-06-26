@@ -8,6 +8,8 @@
 
 using System;
 
+using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -55,7 +57,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
         public string GetClassNameMKSerde(string classPostfix)
         {
             return CodeGenerationIDGenerator.GenerateClassNameWithUUID(
-                typeof(DataInputOutputSerde), classPostfix, uuid);
+                typeof(DataInputOutputSerde<>), classPostfix, uuid);
         }
 
         public override string ToString()

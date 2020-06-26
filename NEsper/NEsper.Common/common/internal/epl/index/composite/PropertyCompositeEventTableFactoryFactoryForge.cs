@@ -118,7 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             @params.Add(Constant(_rangeProps));
             @params.Add(Constant(_rangeTypes));
             @params.Add(Ref("rangeGetters"));
-            @params.Add(DataInputOutputSerdeForge.CodegenArray(_rangeSerdes, method, classScope, null));
+            @params.Add(DataInputOutputSerdeForgeExtensions.CodegenArray(_rangeSerdes, method, classScope, null));
 
             method.Block.MethodReturn(
                 NewInstance<PropertyCompositeEventTableFactoryFactory>(@params.ToArray()));

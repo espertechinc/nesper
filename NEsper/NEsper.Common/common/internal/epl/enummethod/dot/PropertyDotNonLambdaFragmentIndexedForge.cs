@@ -26,7 +26,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 		ExprEvaluator,
 		ExprNodeRenderable
 	{
-
 		private readonly int _streamId;
 		private readonly EventPropertyGetterSPI _getter;
 		private readonly ExprNode _indexExpr;
@@ -104,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 			return LocalMethod(method);
 		}
 
-		public ExprNodeRenderable ForgeRenderable => this;
+		public ExprNodeRenderable ExprForgeRenderable => this;
 
 		public void ToEPL(
 			TextWriter writer,

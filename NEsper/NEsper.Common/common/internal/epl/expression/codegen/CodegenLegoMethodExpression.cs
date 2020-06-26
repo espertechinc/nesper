@@ -38,6 +38,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
         public static CodegenMethod CodegenExpression(
             ExprForge forge,
             CodegenMethod parent,
+            CodegenClassScope classScope)
+        {
+            return CodegenExpression(forge, parent, classScope, true);
+        }
+        
+        public static CodegenMethod CodegenExpression(
+            ExprForge forge,
+            CodegenMethod parent,
             CodegenClassScope classScope,
             bool returnMissingValueAsNull)
         {

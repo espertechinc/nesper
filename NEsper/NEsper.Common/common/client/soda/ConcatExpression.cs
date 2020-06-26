@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>expression</returns>
         public ConcatExpression Add(object @object)
         {
-            this.Children.Add(new ConstantExpression(@object));
+            Children.Add(new ConstantExpression(@object));
             return this;
         }
 
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>expression</returns>
         public ConcatExpression Add(Expression expression)
         {
-            this.Children.Add(expression);
+            Children.Add(expression);
             return this;
         }
 
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>expression</returns>
         public ConcatExpression Add(string propertyName)
         {
-            this.Children.Add(new PropertyValueExpression(propertyName));
+            Children.Add(new PropertyValueExpression(propertyName));
             return this;
         }
 
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.client.soda
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             string delimiter = "";
-            foreach (Expression child in this.Children)
+            foreach (Expression child in Children)
             {
                 writer.Write(delimiter);
                 child.ToEPL(writer, Precedence);

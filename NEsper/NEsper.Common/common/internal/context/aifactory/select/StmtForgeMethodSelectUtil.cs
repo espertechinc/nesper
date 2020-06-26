@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             additionalForgeables.AddAll(subSelectActivationDesc.AdditionalForgeables);
 
             // verify for joins that required views are present
-            StreamJoinAnalysisResultCompileTime joinAnalysisResult = VerifyJoinViews(statementSpec);
+            StreamJoinAnalysisResultCompileTime joinAnalysisResult = StatementForgeMethodSelectUtil.VerifyJoinViews(statementSpec);
 
             var streamEventTypes = new EventType[statementSpec.StreamSpecs.Length];
             var eventTypeNames = new string[numStreams];
@@ -277,7 +277,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 // plan serde for iterate-unbound
                 if (isCanIterateUnbound) {
                     var serdeForgeables = SerdeEventTypeUtility.Plan(
-                        streamEventTypes[stream], @base.StatementRawInfo, services.SerdeEventTypeRegistry, services.SerdeResolver));
+                        streamEventTypes[stream], @base.StatementRawInfo, services.SerdeEventTypeRegistry, services.SerdeResolver);
                     additionalForgeables.AddAll(serdeForgeables);
                 }
             }
@@ -298,9 +298,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     ? streamEventTypes[0]
                     : viewForges[0][(viewForges[0].Count - 1)].EventType;
                 
-                RowRecogPlan plan = RowRecogNFAViewPlanUtil.ValidateAndPlan(eventType, isUnbound, @base, services);
-                var forge = new RowRecogNFAViewFactoryForge(plan.getForge());
-                additionalForgeables.AddAll(plan.getAdditionalForgeables());
+                var plan = RowRecogNFAViewPlanUtil.ValidateAndPlan(services.Container, eventType, isUnbound, @base, services);
+                var forge = new RowRecogNFAViewFactoryForge(plan.Forge);
+                additionalForgeables.AddAll(plan.AdditionalForgeables);
                 scheduleHandleCallbackProviders.Add(forge);
                 viewForges[0].Add(forge);
                 var serdeForgeables = SerdeEventTypeUtility.Plan(

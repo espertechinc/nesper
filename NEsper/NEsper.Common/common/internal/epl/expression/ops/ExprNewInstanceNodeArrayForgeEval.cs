@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     throw new EPException(NULL_MSG);
                 }
 
-                dimensions[i] = size;
+                dimensions[i] = size.Value;
             }
 
             return Array.CreateInstance(_forge.TargetClass, dimensions);

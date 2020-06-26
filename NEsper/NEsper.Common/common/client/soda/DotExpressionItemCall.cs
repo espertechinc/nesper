@@ -38,8 +38,8 @@ namespace com.espertech.esper.common.client.soda
         public DotExpressionItemCall(string name,
             IList<Expression> parameters)
         {
-            this._name = name;
-            this._parameters = parameters;
+            _name = name;
+            _parameters = parameters;
         }
 
         public override void RenderItem(TextWriter writer)

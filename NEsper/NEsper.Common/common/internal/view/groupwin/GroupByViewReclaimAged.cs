@@ -209,5 +209,9 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             eventsPerStream[0] = theEvent;
             return _groupByViewFactory.CriteriaEval.Evaluate(eventsPerStream, true, AgentInstanceContext);
         }
+        
+        public void Transfer(AgentInstanceTransferServices services)
+        {
+        }
     }
 } // end of namespace

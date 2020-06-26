@@ -11,6 +11,7 @@ using System;
 using com.espertech.esper.common.client.configuration.compiler;
 using com.espertech.esper.common.client.hook.aggfunc;
 using com.espertech.esper.common.client.hook.aggmultifunc;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.classprovided.compiletime;
 using com.espertech.esper.common.@internal.epl.expression.agg.accessagg;

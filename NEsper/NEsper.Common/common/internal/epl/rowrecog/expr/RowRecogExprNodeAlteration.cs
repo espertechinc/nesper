@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
             }
         }
 
-        public RowRecogExprNode CheckedCopySelf(ExpressionCopier expressionCopier)
+        public override RowRecogExprNode CheckedCopySelf(ExpressionCopier expressionCopier)
         {
             return new RowRecogExprNodeAlteration();
         }

@@ -13,11 +13,10 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
-using com.espertech.esper.common.@internal.epl.enummethod.eval;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.mostleastfreq.EnumMostLeastFrequentHelper; // getEnumMostLeastFrequentResult
 
@@ -38,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			_returnType = returnType;
 		}
 
-		public EnumEval EnumEvaluator => this;
+		public override EnumEval EnumEvaluator => this;
 
 		public object EvaluateEnumMethod(
 			EventBean[] eventsLambda,
@@ -61,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			return GetEnumMostLeastFrequentResult(items, _isMostFrequent);
 		}
 
-		public CodegenExpression Codegen(
+		public override CodegenExpression Codegen(
 			EnumForgeCodegenParams args,
 			CodegenMethodScope codegenMethodScope,
 			CodegenClassScope codegenClassScope)

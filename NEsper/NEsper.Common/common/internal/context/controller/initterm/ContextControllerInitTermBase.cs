@@ -121,18 +121,14 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             AgentInstanceTransferServices xfer)
         {
             ContextControllerCondition start = initTermSvc.MgmtGetStartCondition(path);
-            if (start != null) {
-                start.Transfer(xfer);
-            }
+            start?.Transfer(xfer);
 
             initTermSvc.EndVisitConditions(
                 path,
                 (
                     condition,
                     subPathId) => {
-                    if (condition != null) {
-                        condition.transfer(xfer);
-                    }
+                    condition?.Transfer(xfer);
                 });
 
             if (transferChildContexts) {

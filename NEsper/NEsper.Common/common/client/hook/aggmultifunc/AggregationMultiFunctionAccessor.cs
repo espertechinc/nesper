@@ -6,13 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.hook.aggmultifunc
 {
@@ -50,10 +46,7 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
             AggregationMultiFunctionState state,
             EventBean[] eventsPerStream,
             bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext)
-        {
-            return null;
-        }
+            ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
         /// Return the aggregation state value consisting of a single event.
@@ -67,10 +60,7 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
             AggregationMultiFunctionState state,
             EventBean[] eventsPerStream,
             bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext)
-        {
-            return null;
-        }
+            ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
         /// Return the aggregation state value consisting of a collection of scalar values.
@@ -84,9 +74,6 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
             AggregationMultiFunctionState state,
             EventBean[] eventsPerStream,
             bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext)
-        {
-            return null;
-        }
+            ExprEvaluatorContext exprEvaluatorContext);
     }
 } // end of namespace

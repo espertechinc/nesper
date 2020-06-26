@@ -431,7 +431,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             if (parse == null) {
                 ExprConstantNode constNode = ResolveIdentAsEnumConst(
                     mappedProperty.ToString(),
-                    validationContext.ImportService);
+                    validationContext.ImportService,
+                    validationContext.ClassProvidedExtension);
                 if (constNode == null) {
                     throw propertyException;
                 }

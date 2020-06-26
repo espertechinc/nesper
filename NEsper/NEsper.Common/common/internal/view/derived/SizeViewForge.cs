@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.view.derived
             eventType = SizeView.CreateEventType(viewForgeEnv, additionalProps, streamNumber);
         }
 
-        public IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
+        public override IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
         {
             return SerdeEventTypeUtility.Plan(
                 eventType,

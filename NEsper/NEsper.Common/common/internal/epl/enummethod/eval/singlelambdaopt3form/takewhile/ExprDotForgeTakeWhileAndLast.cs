@@ -14,7 +14,6 @@ using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@base;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.takewhile
 {
@@ -53,8 +52,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 	    {
 		    return (lambda, typeInfo,services) => 
 			    enumMethod == EnumMethodEnum.TAKEWHILELAST 
-				    ? new EnumTakeWhileLastEvent(lambda)
-				    : new EnumTakeWhileEvent(lambda);
+				    ? (EnumForge) new EnumTakeWhileLastEvent(lambda)
+				    : (EnumForge) new EnumTakeWhileEvent(lambda);
 	    }
 
 	    protected override ThreeFormEventPlusFactory.ForgeFunction SingleParamEventPlus(
@@ -62,17 +61,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 	    {
 	        return (lambda, fieldType, numParameters, typeInfo, services) =>
 	            enumMethod == EnumMethodEnum.TAKEWHILELAST 
-		            ? new EnumTakeWhileLastEventPlus(lambda, fieldType, numParameters)
-		            : new EnumTakeWhileEventPlus(lambda, fieldType, numParameters);
+		            ? (EnumForge) new EnumTakeWhileLastEventPlus(lambda, fieldType, numParameters)
+		            : (EnumForge) new EnumTakeWhileEventPlus(lambda, fieldType, numParameters);
 	    }
 
-	    protected ThreeFormScalarFactory.ForgeFunction SingleParamScalar(
+	    protected override ThreeFormScalarFactory.ForgeFunction SingleParamScalar(
 		    EnumMethodEnum enumMethod)
 	    {
 	        return (lambda, eventType, numParams, typeInfo, services) =>
 	            enumMethod == EnumMethodEnum.TAKEWHILELAST 
-		            ? new EnumTakeWhileLastScalar(lambda, eventType, numParams)
-		            : new EnumTakeWhileScalar(lambda, eventType, numParams);
+		            ? (EnumForge) new EnumTakeWhileLastScalar(lambda, eventType, numParams)
+		            : (EnumForge) new EnumTakeWhileScalar(lambda, eventType, numParams);
 	    }
 	}
 } // end of namespace

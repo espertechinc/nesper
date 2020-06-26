@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.client.soda
         {
             string delimiter = "";
             writer.Write("[");
-            foreach (Expression expr in this.Children)
+            foreach (Expression expr in Children)
             {
                 writer.Write(delimiter);
                 expr.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);

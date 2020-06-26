@@ -18,6 +18,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.multikey;
+using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.pattern.core;
@@ -186,6 +187,8 @@ namespace com.espertech.esper.common.@internal.context.module
                 .MethodReturn(info);
             return LocalMethod(method);
         }
+
+        public IDictionary<StatementProperty, object> Properties => _properties;
 
         private CodegenExpression MakeSubstitutionParamTypes()
         {
@@ -719,6 +722,23 @@ namespace com.espertech.esper.common.@internal.context.module
             }
 
             return LocalMethod(method);
+        }
+
+        private CodegenExpression MakeOnScripts(
+            ExpressionScriptProvided[] onScripts,
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
+        {
+            if (onScripts == null || onScripts.Length == 0) {
+                return ConstantNull();
+            }
+
+            CodegenExpression[] init = new CodegenExpression[onScripts.Length];
+            for (int i = 0; i < onScripts.Length; i++) {
+                init[i] = onScripts[i].Make(parent, classScope);
+            }
+
+            return NewArrayWithInit(typeof(ExpressionScriptProvided), init);
         }
     }
 } // end of namespace

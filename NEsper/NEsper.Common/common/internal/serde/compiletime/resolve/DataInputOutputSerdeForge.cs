@@ -11,8 +11,6 @@ using System;
 using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; //.constantNull;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; //.newArrayWithInit;
@@ -25,7 +23,17 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
     /// </summary>
     public interface DataInputOutputSerdeForge
     {
-        static CodegenExpression CodegenArray(
+        String ForgeClassName();
+
+        CodegenExpression Codegen(
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenExpression optionalEventTypeResolver);
+    }
+
+    public static class DataInputOutputSerdeForgeExtensions
+    {
+        public static CodegenExpression CodegenArray(
             DataInputOutputSerdeForge[] serdes,
             CodegenMethod method,
             CodegenClassScope classScope,
@@ -35,19 +43,12 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
                 return ConstantNull();
             }
 
-            CodegenExpression[] expressions = new CodegenExpression[serdes.Length];
+            var expressions = new CodegenExpression[serdes.Length];
             for (int i = 0; i < serdes.Length; i++) {
                 expressions[i] = serdes[i].Codegen(method, classScope, optionalEventTypeResolver);
             }
 
-            return NewArrayWithInit(typeof(DataInputOutputSerde), expressions);
+            return NewArrayWithInit(typeof(DataInputOutputSerde<object>), expressions);
         }
-
-        String ForgeClassName();
-
-        CodegenExpression Codegen(
-            CodegenMethod method,
-            CodegenClassScope classScope,
-            CodegenExpression optionalEventTypeResolver);
     }
 }

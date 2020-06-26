@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 
 using static com.espertech.esper.common.@internal.util.CollectionUtil;

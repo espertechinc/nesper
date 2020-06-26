@@ -24,6 +24,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
             GroupingIdNodes = new List<Pair<ExprNode, ExprGroupingIdNode>>(2);
             GroupingNodes = new List<Pair<ExprNode, ExprGroupingNode>>(2);
         }
+        
+        public bool IsWalkDeclExprParam => true;
 
         public IList<Pair<ExprNode, ExprGroupingIdNode>> GroupingIdNodes { get; }
 

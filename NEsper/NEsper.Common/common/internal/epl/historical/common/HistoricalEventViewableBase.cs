@@ -75,6 +75,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
             DataCache.Destroy();
         }
 
+        public void Transfer(AgentInstanceTransferServices services)
+        {
+        }
+
         public EventTable[][] Poll(
             EventBean[][] lookupEventsPerStream,
             PollResultIndexingStrategy indexingStrategy,

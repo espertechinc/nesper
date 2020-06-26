@@ -253,5 +253,9 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
             agentInstanceContext.StatementContext.SchedulingService.Add(scheduled, handle, scheduleSlot);
             callbackScheduledTime = agentInstanceContext.StatementContext.SchedulingService.Time + scheduled;
         }
+        
+        public void Transfer(AgentInstanceTransferServices services)
+        {
+        }
     }
 } // end of namespace

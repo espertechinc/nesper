@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.client.soda
         public IList<string> Parameters
         {
             get => parameters;
-            set { this.parameters = value; }
+            set { parameters = value; }
         }
 
         public override ExpressionPrecedenceEnum Precedence
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.client.soda
             }
 
             writer.Write(" -> ");
-            this.Children[0].ToEPL(writer, Precedence);
+            Children[0].ToEPL(writer, Precedence);
         }
     }
 } // end of namespace

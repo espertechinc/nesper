@@ -138,7 +138,7 @@ namespace com.espertech.esper.common.@internal.view.rank
                 viewForgeEnv.StatementRawInfo);
         }
 
-        public IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
+        public override IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
         {
             MultiKeyPlan desc = MultiKeyPlanner.PlanMultiKey(
                 criteriaExpressions,
@@ -189,7 +189,7 @@ namespace com.espertech.esper.common.@internal.view.rank
                 .SetProperty(
                     factory,
                     "SortSerdes",
-                    DataInputOutputSerdeForge.CodegenArray(sortSerdes, method, classScope, null));
+                    DataInputOutputSerdeForgeExtensions.CodegenArray(sortSerdes, method, classScope, null));
             ViewMultiKeyHelper.Assign(criteriaExpressions, multiKeyClassNames, method, factory, symbols, classScope);
         }
     }

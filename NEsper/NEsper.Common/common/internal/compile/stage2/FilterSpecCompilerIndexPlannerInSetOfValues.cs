@@ -68,11 +68,11 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 				var subNode = it.Current;
 				if (subNode.Forge.ForgeConstantType.IsCompileTimeConstant) {
 					var constant = subNode.Forge.ExprEvaluator.Evaluate(null, true, null);
-					if (constant is ICollection) {
+					if (constant is ICollection<object>) {
 						return null;
 					}
 
-					if (constant is IDictionary) {
+					if (constant is IDictionary<object, object>) {
 						return null;
 					}
 

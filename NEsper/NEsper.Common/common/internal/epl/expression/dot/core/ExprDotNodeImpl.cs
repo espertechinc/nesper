@@ -43,7 +43,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 		ExprStreamRefNode,
 		ExprNodeInnerNodeProvider
 	{
-
 		private IList<Chainable> _chainSpec;
 		private readonly bool _isDuckTyping;
 		private readonly bool _isUdfCache;
@@ -1088,7 +1087,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 			foreach (var lhsExpression in lhsExpressions) {
 				if (lhsExpression is ExprNamedParameterNode) {
 					var named = (ExprNamedParameterNode) lhsExpression;
-					if (named.ParameterName.ToLowerInvariant().Equals(FILTERINDEX_NAMED_PARAMETER)) {
+					if (named.ParameterName.Equals(ExprDotNodeConstants.FILTERINDEX_NAMED_PARAMETER, StringComparison.InvariantCultureIgnoreCase)) {
 						if (!filterExpression) {
 							throw new ExprValidationException("The '" + named.ParameterName + "' named parameter can only be used in in filter expressions");
 						}

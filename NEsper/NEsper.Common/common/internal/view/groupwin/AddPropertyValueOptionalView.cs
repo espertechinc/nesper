@@ -162,5 +162,9 @@ namespace com.espertech.esper.common.@internal.view.groupwin
         {
             return GetType().Name + " propertyValue=" + propertyValues;
         }
+        
+        public void Transfer(AgentInstanceTransferServices services)
+        {
+        }
     }
 } // end of namespace

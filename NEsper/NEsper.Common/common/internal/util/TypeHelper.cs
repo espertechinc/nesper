@@ -3180,6 +3180,27 @@ namespace com.espertech.esper.common.@internal.util
             return value;
         }
 
+        public static bool IsObjectCollectionCompatible(this object value)
+        {
+            if (value == null) {
+                return false;
+            }
+
+            if (value is ICollection<object>) {
+                return true;
+            }
+
+            if (value.GetType().IsGenericCollection()) {
+                return true;
+            }
+
+            if (value is ICollection) {
+                return true;
+            }
+
+            return false;
+        }
+
         public static ICollection<object> AsObjectCollection(this object value)
         {
             if (value == null)

@@ -1220,6 +1220,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             return result;
         }
 
+        public void Transfer(AgentInstanceTransferServices services)
+        {
+        }
+
         public RowRecogPreviousStrategy PreviousEvaluationStrategy => _rowRecogPreviousStrategy;
 
         public RowRecogNFAViewFactory Factory => _factory;

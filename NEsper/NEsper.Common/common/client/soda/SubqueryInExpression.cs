@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.client.soda
             bool isNotIn)
         {
             this.model = model;
-            this.notIn = isNotIn;
+            notIn = isNotIn;
         }
 
         /// <summary>
@@ -51,9 +51,9 @@ namespace com.espertech.esper.common.client.soda
             EPStatementObjectModel model,
             bool isNotIn)
         {
-            this.Children.Add(expression);
+            Children.Add(expression);
             this.model = model;
-            this.notIn = isNotIn;
+            notIn = isNotIn;
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.client.soda
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            this.Children[0].ToEPL(writer, Precedence);
+            Children[0].ToEPL(writer, Precedence);
             if (notIn)
             {
                 writer.Write(" not in (");

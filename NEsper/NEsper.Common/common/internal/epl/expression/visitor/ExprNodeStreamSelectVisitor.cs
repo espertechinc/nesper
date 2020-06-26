@@ -32,6 +32,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
         {
             isVisitAggregateNodes = visitAggregateNodes;
         }
+        
+        public bool IsWalkDeclExprParam => true;
 
         public bool HasStreamSelect { get; private set; }
 

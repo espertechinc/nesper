@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			this._descending = descending;
 		}
 
-		public EnumEval EnumEvaluator {
+		public override EnumEval EnumEvaluator {
 			get { return this; }
 		}
 
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			return list;
 		}
 
-		public CodegenExpression Codegen(
+		public override CodegenExpression Codegen(
 			EnumForgeCodegenParams args,
 			CodegenMethodScope codegenMethodScope,
 			CodegenClassScope codegenClassScope)

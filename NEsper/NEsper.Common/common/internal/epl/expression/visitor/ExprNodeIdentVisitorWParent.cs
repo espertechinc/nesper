@@ -23,6 +23,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
     {
         private readonly IList<Pair<ExprNode, ExprIdentNode>> _identNodes = new List<Pair<ExprNode, ExprIdentNode>>();
 
+        public bool IsWalkDeclExprParam => true;
+
         public bool IsVisit(ExprNode exprNode)
         {
             return true;

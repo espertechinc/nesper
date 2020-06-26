@@ -20,11 +20,10 @@ namespace com.espertech.esper.common.@internal.view.expression
     /// <summary>
     ///     This view is a moving window extending the into the past until the expression passed to it returns false.
     /// </summary>
-    public abstract class ExpressionViewBase
-        : ViewSupport,
-            DataWindowView,
-            AgentInstanceMgmtCallback,
-            VariableChangeCallback
+    public abstract class ExpressionViewBase : ViewSupport,
+        DataWindowView,
+        AgentInstanceMgmtCallback,
+        VariableChangeCallback
     {
         internal readonly AgentInstanceContext agentInstanceContext;
         internal readonly AggregationService aggregationService;
@@ -161,6 +160,10 @@ namespace com.espertech.esper.common.@internal.view.expression
                     factory.ViewName);
                 agentInstanceContext.StatementContext.SchedulingService.Add(0, scheduleHandle, scheduleSlot);
             }
+        }
+
+        public virtual void Transfer(AgentInstanceTransferServices services)
+        {
         }
 
         public abstract void VisitView(ViewDataVisitor viewDataVisitor);

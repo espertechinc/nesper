@@ -8,6 +8,8 @@
 
 using System;
 
+using com.espertech.esper.compat.collections;
+
 namespace com.espertech.esper.common.client.configuration.compiler
 {
     /// <summary>
@@ -81,7 +83,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(_forgeClassName, _name);
+            return CompatExtensions.HashAll<object>(_forgeClassName, _name);
         }
     }
 } // end of namespace

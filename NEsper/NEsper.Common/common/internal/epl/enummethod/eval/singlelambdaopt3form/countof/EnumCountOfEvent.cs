@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 	    public EnumCountOfEvent(ExprDotEvalParamLambda lambda) : base(lambda) {
 	    }
 
-	    public EnumEval EnumEvaluator {
+	    public override EnumEval EnumEvaluator {
 		    get {
 			    ExprEvaluator inner = InnerExpression.ExprEvaluator;
 			    return new ProxyEnumEval(

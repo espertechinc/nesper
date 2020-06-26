@@ -136,7 +136,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 try {
                     var copier = new ExpressionCopier(
                         spec, statementRawInfo.OptionalContextDescriptor, compileTimeServices, visitor);
-                    expandedPatternNode = RowRecogPatternExpandUtil.Expand(copier);
+                    expandedPatternNode = RowRecogPatternExpandUtil.Expand(spec.MatchRecognizeSpec.Pattern, copier);
                 } catch (ExprValidationException ex) {
                     throw new StatementSpecCompileException(ex.Message, ex, compilable.ToEPL());
                 }

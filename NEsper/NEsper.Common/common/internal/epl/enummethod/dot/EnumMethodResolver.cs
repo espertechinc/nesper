@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 
 using com.espertech.esper.common.client.hook.enummethod;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.plugin;
@@ -15,7 +14,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 {
@@ -25,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 			string name,
 			ImportServiceCompileTime classpathImportService)
 		{
-			foreach (EnumMethodBuiltin e in EnumHelper.GetValues<EnumMethodBuiltin>()) {
+			foreach (var e in EnumHelper.GetValues<EnumMethodBuiltin>()) {
 				var eNameCamel = e.GetNameCamel();
 				if (string.Equals(eNameCamel, name, StringComparison.InvariantCultureIgnoreCase)) {
 					return true;
@@ -44,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 			string name,
 			ImportServiceCompileTime classpathImportService)
 		{
-			foreach (EnumMethodBuiltin e in EnumHelper.GetValues<EnumMethodBuiltin>()) {
+			foreach (var e in EnumHelper.GetValues<EnumMethodBuiltin>()) {
 				var eNameCamel = e.GetNameCamel();
 				if (string.Equals(eNameCamel, name, StringComparison.InvariantCultureIgnoreCase)) {
 					return e.GetDescriptor();
@@ -52,12 +50,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 			}
 
 			try {
-				Type factory = classpathImportService.ResolveEnumMethod(name);
+				var factory = classpathImportService.ResolveEnumMethod(name);
 				if (factory != null) {
-					EnumMethodForgeFactory forgeFactory = TypeHelper.Instantiate<EnumMethodForgeFactory>(factory);
-					EnumMethodDescriptor descriptor = forgeFactory.Initialize(new EnumMethodInitializeContext());
-					ExprDotForgeEnumMethodFactoryPlugin plugin = new ExprDotForgeEnumMethodFactoryPlugin(forgeFactory);
-					return new EnumMethodDesc(name, EnumMethodEnum.PLUGIN, plugin, descriptor.Footprints);
+					var forgeFactory = TypeHelper.Instantiate<EnumMethodForgeFactory>(factory);
+					var descriptor = forgeFactory.Initialize(new EnumMethodInitializeContext());
+					var plugin = new ExprDotForgeEnumMethodFactoryPlugin(forgeFactory);
+					return new EnumMethodDesc(name, EnumMethodEnum.PLUGIN, plugin.Make, descriptor.Footprints);
 				}
 			}
 			catch (Exception ex) {

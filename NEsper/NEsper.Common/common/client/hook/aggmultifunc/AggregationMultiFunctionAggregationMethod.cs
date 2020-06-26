@@ -51,10 +51,7 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
             AggregationRow row,
             EventBean[] eventsPerStream,
             bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext)
-        {
-            return null;
-        }
+            ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
         /// Return a collection of values or null when not available.
@@ -71,10 +68,7 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
             AggregationRow row,
             EventBean[] eventsPerStream,
             bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext)
-        {
-            return null;
-        }
+            ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
         /// Returns a single event or null when not available.
@@ -86,13 +80,11 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         /// <param name="isNewData">new-data flag</param>
         /// <param name="exprEvaluatorContext">evaluation context</param>
         /// <returns>event</returns>
-        EventBean GetValueEventBean(int aggColNum,
+        EventBean GetValueEventBean(
+            int aggColNum,
             AggregationRow row,
             EventBean[] eventsPerStream,
             bool isNewData,
-            ExprEvaluatorContext exprEvaluatorContext)
-        {
-            return null;
-        }
+            ExprEvaluatorContext exprEvaluatorContext);
     }
 }

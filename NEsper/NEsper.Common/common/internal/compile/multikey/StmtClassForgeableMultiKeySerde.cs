@@ -16,9 +16,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.compile.stage3;
-using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.io;
@@ -29,7 +27,6 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 {
 	public class StmtClassForgeableMultiKeySerde : StmtClassForgeable
 	{
-
 		private const string OBJECT_NAME = "obj";
 		private const string OUTPUT_NAME = "output";
 		private const string INPUT_NAME = "input";
@@ -92,22 +89,21 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 				readMethod.Block.MethodReturn(ConstantNull());
 			}
 
-			CodegenStackGenerator.RecursiveBuildStack(readMethod, "read", methods);
+			CodegenStackGenerator.RecursiveBuildStack(readMethod, "Read", methods, properties);
 
 			IList<CodegenTypedParam> members = new List<CodegenTypedParam>();
 			for (int i = 0; i < forges.Length; i++) {
 				members.Add(new CodegenTypedParam(forges[i].ForgeClassName(), "s" + i));
 			}
 
-			CodegenCtor providerCtor = new CodegenCtor(
-				this.GetType(), includeDebugSymbols, Collections.EmptyList());
+			CodegenCtor providerCtor = new CodegenCtor(GetType(), ClassName, includeDebugSymbols, EmptyList<CodegenTypedParam>.Instance);
 			for (int i = 0; i < forges.Length; i++) {
 				providerCtor.Block.AssignRef("s" + i, forges[i].Codegen(providerCtor, classScope, null));
 			}
 
 			return new CodegenClass(
 				CodegenClassType.KEYPROVISIONINGSERDE,
-				typeof(DataInputOutputSerde),
+				typeof(DataInputOutputSerde<object>),
 				className,
 				classScope,
 				members,

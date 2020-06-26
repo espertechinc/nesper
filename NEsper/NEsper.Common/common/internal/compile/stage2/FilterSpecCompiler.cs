@@ -35,6 +35,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public static readonly String NEWLINE = Environment.NewLine;
+
         public static FilterSpecCompiledDesc MakeFilterSpec(
             EventType eventType,
             string eventTypeName,
@@ -141,9 +143,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 HookType.INTERNAL_FILTERSPEC,
                 typeof(FilterSpecCompileHook),
                 compileTimeServices.ImportServiceCompileTime);
-            if (hook != null) {
-                hook.FilterIndexPlan(eventType, unwound, plan);
-            }
+            hook?.FilterIndexPlan(eventType, unwound, plan);
 
             if (compileTimeServices.Configuration.Compiler.Logging.IsEnableFilterPlan) {
                 LogFilterPlans(unwound, plan, eventType, optionalStreamName, statementRawInfo);

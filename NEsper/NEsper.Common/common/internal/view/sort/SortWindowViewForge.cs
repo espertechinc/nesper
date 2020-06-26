@@ -122,7 +122,7 @@ namespace com.espertech.esper.common.@internal.view.sort
                     Constant(ExprNodeUtilityQuery.GetExprResultTypes(sortCriteriaExpressions)))
                 .SetProperty(factory, "IsDescendingValues", Constant(isDescendingValues))
                 .SetProperty(factory, "IsUseCollatorSort", Constant(useCollatorSort))
-                .SetProperty(factory, "SortSerdes", DataInputOutputSerdeForge.CodegenArray(sortSerdes, method, classScope, null));
+                .SetProperty(factory, "SortSerdes", DataInputOutputSerdeForgeExtensions.CodegenArray(sortSerdes, method, classScope, null));
 
         }
     }

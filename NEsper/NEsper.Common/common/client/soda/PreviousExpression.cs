@@ -35,8 +35,8 @@ namespace com.espertech.esper.common.client.soda
             Expression expression,
             string propertyName)
         {
-            this.AddChild(expression);
-            this.AddChild(new PropertyValueExpression(propertyName));
+            AddChild(expression);
+            AddChild(new PropertyValueExpression(propertyName));
         }
 
         /// <summary>
@@ -48,8 +48,8 @@ namespace com.espertech.esper.common.client.soda
             int index,
             string propertyName)
         {
-            this.AddChild(new ConstantExpression(index));
-            this.AddChild(new PropertyValueExpression(propertyName));
+            AddChild(new ConstantExpression(index));
+            AddChild(new PropertyValueExpression(propertyName));
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.client.soda
             Expression expression)
         {
             this.type = type;
-            this.AddChild(expression);
+            AddChild(expression);
         }
 
         public override ExpressionPrecedenceEnum Precedence
@@ -84,11 +84,11 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write(type.ToString().ToLowerInvariant());
             writer.Write("(");
-            this.Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-            if (this.Children.Count > 1)
+            Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+            if (Children.Count > 1)
             {
                 writer.Write(",");
-                this.Children[1].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                Children[1].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
 
             writer.Write(')');

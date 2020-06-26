@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.client.soda
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            this.Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+            Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             if (descending)
             {
                 writer.Write(" desc");

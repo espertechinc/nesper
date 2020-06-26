@@ -132,7 +132,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             methods.Add(new Pair<string, CodegenMethod>(name, methodNode));
         }
 
-        public void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
         }
     }

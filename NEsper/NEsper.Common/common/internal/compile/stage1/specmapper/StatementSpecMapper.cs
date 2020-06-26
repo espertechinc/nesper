@@ -27,6 +27,7 @@ using com.espertech.esper.common.@internal.epl.expression.chain;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.declared.compiletime;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
+using com.espertech.esper.common.@internal.epl.expression.dot.walk;
 using com.espertech.esper.common.@internal.epl.expression.funcs;
 using com.espertech.esper.common.@internal.epl.expression.ops;
 using com.espertech.esper.common.@internal.epl.expression.prev;
@@ -618,12 +619,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             else if (contextDetail is ContextSpecHash initSpecHash) {
                 IList<ContextDescriptorHashSegmentedItem> hashes = new List<ContextDescriptorHashSegmentedItem>();
                 foreach (var item in initSpecHash.Items) {
-                    var dot = UnmapChains(
-                        Collections.SingletonList(item.Function),
-                        unmapContext,
-                        false)[0];
-                    var dotExpression =
-                        new SingleRowMethodExpression(Collections.SingletonList<DotExpressionItem>(dot));
+                    var dot = UnmapChains(Collections.SingletonList(item.Function), unmapContext)[0];
+                    var dotExpression = new SingleRowMethodExpression(Collections.SingletonList<DotExpressionItem>(dot));
                     var filter = UnmapFilter(item.FilterSpecRaw, unmapContext);
                     hashes.Add(new ContextDescriptorHashSegmentedItem(dotExpression, filter));
                 }
@@ -651,7 +648,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             if (endpoint is ContextSpecConditionCrontab crontab) {
                 var crontabExprList = crontab.Crontabs
                     .Select(crontabItem => UnmapExpressionDeep(crontabItem, unmapContext))
-                    .Cast<IList<Expression>>()
                     .ToList();
                 return new ContextDescriptorConditionCrontab(crontabExprList, crontab.IsImmediate);
             }
@@ -4063,8 +4059,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
 
         private static IList<DotExpressionItem> UnmapChains(
             IList<Chainable> pairs,
-            StatementSpecUnMapContext unmapContext,
-            bool isProperty)
+            StatementSpecUnMapContext unmapContext)
         {
             IList<DotExpressionItem> result = new List<DotExpressionItem>();
             foreach (var chain in pairs) {

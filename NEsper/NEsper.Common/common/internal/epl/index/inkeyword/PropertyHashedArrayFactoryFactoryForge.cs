@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
                     Constant(streamNum),
                     Constant(propertyNames),
                     Constant(propertyTypes),
-                    DataInputOutputSerdeForge.CodegenArray(serdes, method, classScope, null),
+                    DataInputOutputSerdeForgeExtensions.CodegenArray(serdes, method, classScope, null),
                     Constant(unique),
                     Ref("getters"),
                     Constant(isFireAndForget)));

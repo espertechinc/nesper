@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			this._fieldType = fieldType;
 		}
 
-		public EnumEval EnumEvaluator => this;
+		public override EnumEval EnumEvaluator => this;
 
 		public object EvaluateEnumMethod(
 			EventBean[] eventsLambda,
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			return new HashSet<object>(enumcoll);
 		}
 
-		public CodegenExpression Codegen(
+		public override CodegenExpression Codegen(
 			EnumForgeCodegenParams args,
 			CodegenMethodScope codegenMethodScope,
 			CodegenClassScope codegenClassScope)

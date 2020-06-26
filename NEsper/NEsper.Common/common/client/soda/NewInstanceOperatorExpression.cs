@@ -94,11 +94,11 @@ namespace com.espertech.esper.common.client.soda
             writer.Write(className);
             if (numArrayDimensions == 0) {
                 writer.Write("(");
-                ExpressionBase.ToPrecedenceFreeEPL(this.Children, writer);
+                ExpressionBase.ToPrecedenceFreeEPL(Children, writer);
                 writer.Write(")");
             }
             else {
-                if (this.Children.Count == 1 && this.Children[0] is ArrayExpression) {
+                if (Children.Count == 1 && Children[0] is ArrayExpression) {
                     for (int i = 0; i < numArrayDimensions; i++) {
                         writer.Write("[]");
                     }

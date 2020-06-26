@@ -20,10 +20,6 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.core
             ClassLoader parentClassLoader,
             PathRegistry<string, ClassProvided> classProvidedPathRegistry)
         {
-            if (classProvidedPathRegistry.IsEmpty()) {
-                return new ByteArrayProvidingClassLoader(classes, parentClassLoader);
-            }
-
             return new ClassProvidedImportClassLoader(classes, parentClassLoader, classProvidedPathRegistry);
         }
     }

@@ -209,5 +209,9 @@ namespace com.espertech.esper.common.@internal.view.time_accum
         {
             return GetType().Name;
         }
+        
+        public void Transfer(AgentInstanceTransferServices services)
+        {
+        }
     }
 } // end of namespace

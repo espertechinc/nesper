@@ -29,6 +29,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return IsLimited;
         }
 
+        public bool IsWalkDeclExprParam => true;
+
         public void Visit(ExprNode exprNode)
         {
             if (exprNode is ExprStreamRefNode) {
@@ -59,9 +61,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                      exprNode is ExprDeclaredNode) {
                 IsLimited = false;
             }
-            else if (exprNode is ExprPlugInSingleRowNode) {
-                var plugIn = (ExprPlugInSingleRowNode) exprNode;
-                if (plugIn.Config != null && plugIn.Config.FilterOptimizable == ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.DISABLED) {
+            else {
+                var plugIn = exprNode as ExprPlugInSingleRowNode;
+                if (plugIn?.Config != null && plugIn.Config.FilterOptimizable == ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.DISABLED) {
                     IsLimited = false;
                 }
             }

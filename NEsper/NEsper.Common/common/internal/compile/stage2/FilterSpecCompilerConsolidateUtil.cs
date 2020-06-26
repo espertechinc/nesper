@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
                     var existingParam = mapOfParams.Get(key);
                     if (existingParam == null) {
-                        existingParam = new List<FilterSpecParamForge>();
+                        existingParam = new List<FilterSpecPlanPathTripletForge>();
                         mapOfParams.Put(key, existingParam);
                     }
 

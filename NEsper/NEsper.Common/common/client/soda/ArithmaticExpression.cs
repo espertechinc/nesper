@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.client.soda
         public string Operator
         {
             get => @operator;
-            set => this.@operator = value;
+            set => @operator = value;
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>expression</returns>
         public ArithmaticExpression Add(object @object)
         {
-            this.Children.Add(new ConstantExpression(@object));
+            Children.Add(new ConstantExpression(@object));
             return this;
         }
 
@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>expression</returns>
         public ArithmaticExpression Add(Expression expression)
         {
-            this.Children.Add(expression);
+            Children.Add(expression);
             return this;
         }
 
@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>expression</returns>
         public ArithmaticExpression Add(string propertyName)
         {
-            this.Children.Add(new PropertyValueExpression(propertyName));
+            Children.Add(new PropertyValueExpression(propertyName));
             return this;
         }
 
@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.client.soda
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             string delimiter = "";
-            foreach (Expression child in this.Children)
+            foreach (Expression child in Children)
             {
                 writer.Write(delimiter);
                 child.ToEPL(writer, Precedence);

@@ -31,6 +31,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
             this.variableCompileTimeResolver = variableCompileTimeResolver;
         }
 
+        public bool IsWalkDeclExprParam => true;
+
         public bool IsVisit(ExprNode exprNode)
         {
             return true;

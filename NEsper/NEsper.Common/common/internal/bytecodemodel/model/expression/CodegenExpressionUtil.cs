@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
@@ -27,6 +28,27 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
     public class CodegenExpressionUtil
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public static bool CanRenderConstant(object constant) {
+            switch (constant) {
+                case string stringConstant:
+                case char _:
+                case null:
+                case long _:
+                case float _:
+                case double _:
+                case decimal _:
+                case short _:
+                case byte _:
+                case bool _:
+                case BigInteger _:
+                case Array _:
+                case Type _:
+                    return true;
+                default:
+                    return constant.GetType().IsEnum;
+            }
+        }
 
         public static void RenderConstant(
             StringBuilder builder,
@@ -81,22 +103,23 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             else if (constant is Array asArray) {
                 RenderArray(builder, asArray);
             }
-            else if (constant.GetType().IsEnum) {
-                AppendClassName(builder, constant.GetType());
-                builder.Append(".").Append(constant);
-            }
             else if (constant is Type) {
                 CodegenExpressionClass.RenderClass((Type) constant, builder);
             }
             else if (constant is BigInteger) {
                 RenderBigInteger((BigInteger) constant, builder);
             }
+            else if (constant.GetType().IsEnum) {
+                AppendClassName(builder, constant.GetType());
+                builder.Append(".").Append(constant);
+            }
             else {
                 builder.Append(constant);
             }
         }
 
-        private static void RenderArray(StringBuilder builder,
+        private static void RenderArray(
+            StringBuilder builder,
             Array asArray)
         {
             if (asArray.Length == 0) {

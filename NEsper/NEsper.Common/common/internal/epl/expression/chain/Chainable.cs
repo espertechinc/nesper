@@ -76,8 +76,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.chain
                 return new List<Chainable>(Collections.SingletonList(chainable));
             }
 
-            var values = chainable.GetRootNameOrEmptyString().Split("\\.");
-            IList<Chainable> chain = new List<Chainable>(values.Length + 1);
+            var values = chainable.GetRootNameOrEmptyString().Split('.');
+            var chain = new List<Chainable>(values.Length + 1);
             foreach (var value in values) {
                 chain.Add(new ChainableName(value));
             }

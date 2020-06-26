@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="propertyName">is the name of the property to check existence</param>
         public PropertyExistsExpression(string propertyName)
         {
-            this.Children.Add(Expressions.GetPropExpr(propertyName));
+            Children.Add(Expressions.GetPropExpr(propertyName));
         }
 
         public override ExpressionPrecedenceEnum Precedence
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.client.soda
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("exists(");
-            this.Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+            Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             writer.Write(")");
         }
     }

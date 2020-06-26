@@ -33,6 +33,9 @@ namespace com.espertech.esper.common.@internal.view.core
             return GetEnumerator();
         }
 
+
+
+
         public abstract IEnumerator<EventBean> GetEnumerator();
         public abstract EventType EventType { get; }
 

@@ -14,6 +14,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.collection;
@@ -61,7 +62,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				existingType.UnderlyingType);
 		}
 
-		public static EventTypeForgablesPair MakeJsonTypeCompileTimeNewType(
+		public static EventTypeForgeablesPair MakeJsonTypeCompileTimeNewType(
 			EventTypeMetadata metadata,
 			IDictionary<string, object> compiledTyping,
 			Pair<EventType[], ISet<EventType>> superTypes,
@@ -106,11 +107,11 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 					throw new ExprValidationException("Specifying a supertype is not supported with a provided JSON event class");
 				}
 
-				if (!Modifier.IsPublic(optionalUnderlyingProvided.Modifiers)) {
+				if (!optionalUnderlyingProvided.IsPublic) {
 					throw new ExprValidationException("Provided JSON event class is not public");
 				}
 
-				if (!ConstructorHelper.HasDefaultConstructor(optionalUnderlyingProvided)) {
+				if (!optionalUnderlyingProvided.HasDefaultConstructor()) {
 					throw new ExprValidationException("Provided JSON event class does not have a public default constructor or is a non-static inner class");
 				}
 
@@ -139,7 +140,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			}
 			else {
 				jsonClassNameSimple = metadata.Name;
-				if (metadata.AccessModifier.IsPrivateOrTransient) {
+				if (metadata.AccessModifier.IsPrivateOrTransient()) {
 					var uuid = CodeGenerationIDGenerator.GenerateClassNameUUID();
 					jsonClassNameSimple = jsonClassNameSimple + "__" + uuid;
 				}
@@ -242,7 +243,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			additionalForgeables.Add(@delegate);
 			additionalForgeables.Add(delegateFactory);
 
-			return new EventTypeForgablesPair(eventType, additionalForgeables);
+			return new EventTypeForgeablesPair(eventType, additionalForgeables);
 		}
 
 		private static void ValidateFieldTypes(
@@ -565,24 +566,24 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 
 		public static void AddJsonUnderlyingClass(
 			IDictionary<string, EventType> moduleTypes,
-			ParentClassLoader classLoaderParent,
+			ClassLoader classLoader,
 			string optionalDeploymentId)
 		{
 			foreach (var eventType in moduleTypes) {
-				AddJsonUnderlyingClassInternal(eventType.Value, classLoaderParent, optionalDeploymentId);
+				AddJsonUnderlyingClassInternal(eventType.Value, classLoader, optionalDeploymentId);
 			}
 		}
 
 		public static void AddJsonUnderlyingClass(
 			PathRegistry<string, EventType> pathEventTypes,
-			ParentClassLoader classLoaderParent)
+			ClassLoader classLoader)
 		{
-			pathEventTypes.Traverse(type => AddJsonUnderlyingClassInternal(type, classLoaderParent, null));
+			pathEventTypes.Traverse(type => AddJsonUnderlyingClassInternal(type, classLoader, null));
 		}
 
 		private static void AddJsonUnderlyingClassInternal(
 			EventType eventType,
-			ParentClassLoader classLoaderParent,
+			ClassLoader classLoader,
 			string optionalDeploymentId)
 		{
 			if (!(eventType is JsonEventType)) {
@@ -593,14 +594,14 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			// for named-window the same underlying is used and we ignore duplicate add
 			var allowDuplicate = eventType.Metadata.TypeClass == EventTypeTypeClass.NAMED_WINDOW;
 			if (jsonEventType.Detail.OptionalUnderlyingProvided == null) {
-				classLoaderParent.Add(jsonEventType.Detail.UnderlyingClassName, jsonEventType.UnderlyingType, optionalDeploymentId, allowDuplicate);
+				classLoader.Add(jsonEventType.Detail.UnderlyingClassName, jsonEventType.UnderlyingType, optionalDeploymentId, allowDuplicate);
 			}
 			else {
 				allowDuplicate = true;
 			}
 
-			classLoaderParent.Add(jsonEventType.Detail.DelegateClassName, jsonEventType.DelegateType, optionalDeploymentId, allowDuplicate);
-			classLoaderParent.Add(jsonEventType.Detail.DelegateFactoryClassName, jsonEventType.DelegateFactory.GetType(), optionalDeploymentId, allowDuplicate);
+			classLoader.Add(jsonEventType.Detail.DelegateClassName, jsonEventType.DelegateType, optionalDeploymentId, allowDuplicate);
+			classLoader.Add(jsonEventType.Detail.DelegateFactoryClassName, jsonEventType.DelegateFactory.GetType(), optionalDeploymentId, allowDuplicate);
 		}
 
 		private static IDictionary<string, object> ResolvePropertiesFromFields(IDictionary<string, FieldInfo> fields)

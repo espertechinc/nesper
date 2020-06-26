@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.compile.faf
 {
     public class StmtClassForgeableQueryMethodProvider : StmtClassForgeable
     {
-        private const string MEMBERNAME_QUERYMETHOD = "queryMethod";
+        private const string MEMBERNAME_QUERYMETHOD = "QueryMethod";
 
         private readonly FAFQueryMethodForge _forge;
         private readonly CodegenNamespaceScope _namespaceScope;
@@ -112,7 +112,7 @@ namespace com.espertech.esper.common.@internal.compile.faf
                     GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope);
-                StmtClassForgableStmtFields.MakeSubstitutionSetter(
+                StmtClassForgeableStmtFields.MakeSubstitutionSetter(
                     _namespaceScope,
                     propSubstitutionFieldSetter.GetterBlock,
                     classScope);
@@ -127,8 +127,8 @@ namespace com.espertech.esper.common.@internal.compile.faf
 
                 // render and compile
                 return new CodegenClass(
+                    CodegenClassType.FAFQUERYMETHODPROVIDER,
                     typeof(FAFQueryMethodProvider),
-                    _namespaceScope.Namespace,
                     ClassName,
                     classScope,
                     providerExplicitMembers,
@@ -152,6 +152,6 @@ namespace com.espertech.esper.common.@internal.compile.faf
 
         public string ClassName { get; }
 
-        public StmtClassForgableType ForgableType => StmtClassForgableType.FAF;
+        public StmtClassForgeableType ForgeableType => StmtClassForgeableType.FAF;
     }
 } // end of namespace

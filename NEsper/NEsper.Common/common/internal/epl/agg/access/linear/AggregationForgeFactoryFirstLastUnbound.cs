@@ -43,9 +43,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
 			this.serde = serde;
 		}
 
-		public Type ResultType => resultType;
+		public override Type ResultType => resultType;
 
-		public void InitMethodForge(
+		public override void InitMethodForge(
 			int col,
 			CodegenCtor rowCtor,
 			CodegenMemberCol membersColumnized,
@@ -84,16 +84,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
 			}
 		}
 
-		public AggregatorMethod Aggregator => aggregator;
+		public override AggregatorMethod Aggregator => aggregator;
 
-		public ExprAggregateNodeBase AggregationExpression => parent;
+		public override ExprAggregateNodeBase AggregationExpression => parent;
 
-		public AggregationPortableValidation GetAggregationPortableValidation()
-		{
-			throw new UnsupportedOperationException("Not available as linear-access first/last is not used with tables");
+		public override AggregationPortableValidation AggregationPortableValidation {
+			get { throw new UnsupportedOperationException("Not available as linear-access first/last is not used with tables"); }
 		}
 
-		public ExprForge[] GetMethodAggregationForge(
+		public override ExprForge[] GetMethodAggregationForge(
 			bool join,
 			EventType[] typesPerStream)
 		{

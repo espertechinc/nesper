@@ -39,7 +39,6 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 {
 	public partial class StatementAgentInstanceFactorySelect : StatementAgentInstanceFactory
 	{
-
 		private string[] _streamNames;
 		private ViewableActivator[] _viewableActivators;
 		private ResultSetProcessorFactoryProvider _resultSetProcessorFactoryProvider;
@@ -49,8 +48,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 		private OutputProcessViewFactoryProvider _outputProcessViewFactoryProvider;
 		private ViewResourceDelegateDesc[] _viewResourceDelegates;
 		private JoinSetComposerPrototype _joinSetComposerPrototype;
-		private IDictionary<int?, SubSelectFactory> _subselects;
-		private IDictionary<int?, ExprTableEvalStrategyFactory> _tableAccesses;
+		private IDictionary<int, SubSelectFactory> _subselects;
+		private IDictionary<int, ExprTableEvalStrategyFactory> _tableAccesses;
 		private bool _orderByWithoutOutputRateLimit;
 		private bool _unidirectionalJoin;
 
@@ -102,7 +101,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 			set => this._unidirectionalJoin = value;
 		}
 
-		public IDictionary<int?, ExprTableEvalStrategyFactory> TableAccesses {
+		public IDictionary<int, ExprTableEvalStrategyFactory> TableAccesses {
 			set => this._tableAccesses = value;
 		}
 
@@ -242,15 +241,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
 			// clean up empty holder
 			if (CollectionUtil.IsArrayAllNull(priorEvalStrategies)) {
-				priorEvalStrategies = PriorEvalStrategy.EMPTY_ARRAY;
+				priorEvalStrategies = PriorEvalStrategyConstants.EMPTY_ARRAY;
 			}
 
 			if (CollectionUtil.IsAllNullArray(previousGetterStrategies)) {
-				previousGetterStrategies = PreviousGetterStrategy.EMPTY_ARRAY;
+				previousGetterStrategies = PreviousGetterStrategyConstants.EMPTY_ARRAY;
 			}
 
 			if (CollectionUtil.IsAllNullArray(patternRoots)) {
-				patternRoots = EvalRootState.EMPTY_ARRAY;
+				patternRoots = EvalRootStateConstants.EMPTY_ARRAY;
 			}
 
 			if (CollectionUtil.IsArraySameReferences(topViews, eventStreamParentViewable)) {
@@ -288,9 +287,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 				processorPair.First);
 		}
 
-		public EventType StatementEventType {
-			get { return _resultSetProcessorFactoryProvider.ResultEventType; }
-		}
+		public EventType StatementEventType => _resultSetProcessorFactoryProvider.ResultEventType;
 
 		public AIRegistryRequirements RegistryRequirements {
 			get {

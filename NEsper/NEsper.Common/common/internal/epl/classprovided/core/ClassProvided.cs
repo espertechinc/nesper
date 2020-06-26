@@ -47,11 +47,11 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.core
 
         public void LoadClasses(ClassLoader parentClassLoader)
         {
-            ClassesMayNull = new List<Type>(2);
-            ByteArrayProvidingClassLoader cl = new ByteArrayProvidingClassLoader(Bytes, parentClassLoader);
-            foreach (KeyValuePair<string, byte[]> entry in Bytes.EntrySet()) {
+            ClassesMayNull = new List<Type>();
+
+            foreach (var entry in Bytes) {
                 try {
-                    Type clazz = Type.ForName(entry.Key, false, cl);
+                    Type clazz = Type.GetType(entry.Key, false);
                     ClassesMayNull.Add(clazz);
                 }
                 catch (TypeLoadException e) {
@@ -66,17 +66,17 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.core
         {
             var method = parent.MakeChild(typeof(ClassProvided), GetType(), classScope);
             if (Bytes.IsEmpty()) {
-                method.Block.DeclareVar(typeof(IDictionary<string, object>), "bytes", StaticMethod(typeof(Collections), "emptyMap"));
-            }
-            else {
                 method.Block.DeclareVar(
                     typeof(IDictionary<string, object>),
                     "bytes",
-                    NewInstance(typeof(Dictionary<string, object>), Constant(CollectionUtil.CapacityHashMap(Bytes.Count))));
+                    EnumValue(typeof(EmptyDictionary<string, object>), "Instance"));
+            }
+            else {
+                method.Block.DeclareVar<IDictionary<string, object>>("bytes", NewInstance(typeof(Dictionary<string, object>)));
                 foreach (var entry in Bytes) {
                     method.Block.ExprDotMethod(
                         Ref("bytes"),
-                        "put",
+                        "Put",
                         Constant(entry.Key),
                         Constant(entry.Value));
                 }

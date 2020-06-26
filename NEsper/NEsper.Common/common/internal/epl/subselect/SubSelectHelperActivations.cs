@@ -24,7 +24,8 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.subselect
 {
-	public class SubSelectHelperActivations {
+	public class SubSelectHelperActivations
+	{
 
 		public static SubSelectActivationDesc CreateSubSelectActivation(
 			IList<FilterSpecCompiled> filterSpecCompileds,
@@ -79,7 +80,9 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 					TableQueryStreamSpec table = (TableQueryStreamSpec) streamSpec;
 					ExprNode filter = ExprNodeUtilityMake.ConnectExpressionsByLogicalAndWhenNeeded(table.FilterExpressions);
 					ViewableActivatorForge viewableActivator = new ViewableActivatorTableForge(table.Table, filter);
-					result.Put(subselect, new SubSelectActivationPlan(table.Table.InternalEventType, Collections.EmptyList(), viewableActivator, streamSpec));
+					result.Put(
+						subselect,
+						new SubSelectActivationPlan(table.Table.InternalEventType, EmptyList<ViewFactoryForge>.Instance, viewableActivator, streamSpec));
 					subselect.RawEventType = table.Table.InternalEventType;
 				}
 				else {

@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 		{
 		}
 
-		public CodegenExpression Codegen(
+		public override CodegenExpression Codegen(
 			EnumForgeCodegenParams premade,
 			CodegenMethodScope codegenMethodScope,
 			CodegenClassScope codegenClassScope)

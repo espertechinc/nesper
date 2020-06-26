@@ -43,15 +43,21 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	            output.WriteLong(-1);
 	            return;
 	        }
-	        output.WriteLong(object.Time);
+
+	        var millis = DateTimeOffsetHelper.UtcMillis(@object.Value);
+	        var offset = @object.Value.Offset.Ticks;
+	        output.WriteLong(millis);
+	        output.WriteLong(offset);
 	    }
 
 	    internal static DateTimeOffset? ReadInternal(DataInput input) {
-	        long value = input.ReadLong();
-	        if (value == -1) {
+	        var millis = input.ReadLong();
+	        if (millis == -1) {
 	            return null;
 	        }
-	        return new DateTimeOffset(value);
+
+	        var offset = TimeSpan.FromTicks(input.ReadLong());
+	        return DateTimeOffsetHelper.TimeFromMillis(millis, offset);
 	    }
 	}
 } // end of namespace

@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.util
     /// <summary>
     /// Helper class to find and invoke a class constructors that matches the types of arguments supplied.
     /// </summary>
-    public class ConstructorHelper
+    public static class ConstructorHelper
     {
         private static Type[] EMPTY_OBJECT_ARRAY_TYPE = new[] {typeof(object[])};
 
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.util
         }
 
         private static ConstructorInfo FindMatchingConstructor(
-            Type type,
+            this Type type,
             Type[] parameterTypes)
         {
             ConstructorInfo[] ctors = type.GetConstructors();
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.util
         }
 
         private static ConstructorInfo GetRegularConstructor(
-            Type type,
+            this Type type,
             Type[] parameterTypes)
         {
             // Try to find the matching constructor
@@ -102,9 +102,25 @@ namespace com.espertech.esper.common.@internal.util
         }
 
         // Try to find an Object[] constructor
-        private static ConstructorInfo GetObjectArrayConstructor(Type clazz)
+        private static ConstructorInfo GetObjectArrayConstructor(this Type clazz)
         {
             return clazz.GetConstructor(EMPTY_OBJECT_ARRAY_TYPE);
+        }
+        
+        public static ConstructorInfo GetDefaultConstructor(this Type clazz)
+        {
+            var constructor = clazz.GetConstructor(new Type[0]);
+            if (constructor != null && constructor.IsPublic) {
+                return constructor;
+            }
+
+            return null;
+        }
+
+        public static bool HasDefaultConstructor(this Type clazz)
+        {
+            var constructor = GetDefaultConstructor(clazz);
+            return constructor != null;
         }
     }
 }

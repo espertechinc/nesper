@@ -425,7 +425,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 					groupByExpressions,
 					groupByMultikeyPlan == null ? null : groupByMultikeyPlan.ClassRef,
 					aggExpressionNodesHaving,
-					EmptyList<ExprAggregateNodeGroupKey>.Instance, 
+					EmptyList<ExprAggregateNode>.Instance,
 					groupKeyExpressions,
 					hasGroupBy,
 					annotations,
@@ -807,7 +807,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 			IList<SubordPropHashKeyForge> hashKeyList = new List<SubordPropHashKeyForge>(hashKeys.Values);
 			IList<SubordPropRangeKeyForge> rangeKeyList = new List<SubordPropRangeKeyForge>(rangeKeys.Values);
 			var unique = false;
-			ExprNode[] inKeywordSingleIdxKeys = null;
+			IList<ExprNode> inKeywordSingleIdxKeys = null;
 			ExprNode inKeywordMultiIdxKey = null;
 
 			// If this is a unique-view and there are unique criteria, use these

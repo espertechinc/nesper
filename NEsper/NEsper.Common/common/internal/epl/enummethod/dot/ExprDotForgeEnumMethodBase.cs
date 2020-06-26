@@ -36,9 +36,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         private int _streamCountIncoming;
         private EPType _typeInfo;
 
-        public EnumForge EnumForge { get; }
-        public int EnumEvalNumRequiredEvents { get; }
-        public bool IsCache { get; }
+        public EnumForge EnumForge { get; set; }
+        public int EnumEvalNumRequiredEvents { get; set; }
+        public bool IsCache { get; set; }
 
         public void Visit(ExprDotEvalVisitor visitor)
         {
@@ -252,14 +252,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
             // Get secondary
             var lambdaDesc = forgeDescFactory.GetLambdaStreamTypesForParameter(parameterNum);
-            var additionalStreamNames = lambdaDesc.StreamNames;
+            string[] additionalStreamNames = lambdaDesc.StreamNames;
             var additionalEventTypes = lambdaDesc.Types;
 
             ValidateDuplicateStreamNames(validationContext.StreamTypeService.StreamNames, goesNode.GoesToNames);
 
             // add name and type to list of known types
-            var addTypes = (EventType[]) CollectionUtil.ArrayExpandAddElements(validationContext.StreamTypeService.EventTypes, additionalEventTypes);
-            var addNames = (string[]) CollectionUtil.ArrayExpandAddElements(validationContext.StreamTypeService.StreamNames, additionalStreamNames);
+            var addTypes = CollectionUtil.ArrayExpandAddElements<EventType>(
+                validationContext.StreamTypeService.EventTypes, additionalEventTypes);
+            var addNames = CollectionUtil.ArrayExpandAddElements<string>(
+                validationContext.StreamTypeService.StreamNames, additionalStreamNames);
 
             var types = new StreamTypeServiceImpl(
                 addTypes,

@@ -613,7 +613,6 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             return new TableAccessAnalysisResult(
                 columnMetadata,
                 internalEventType,
-                primaryKeyColNumsArray,
                 propertyForges,
                 publicEventType,
                 assignPairsPlain,
@@ -623,6 +622,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                 primaryKeyColumnArray,
                 primaryKeyGetterArray,
                 primaryKeyTypeArray,
+                primaryKeyColNumsArray,
                 multiKeyPlan.ClassRef,
                 additionalForgeables);
         }

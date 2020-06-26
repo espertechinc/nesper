@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
             }
 
             EPLValidationUtil.ValidateTableExists(services.TableCompileTimeResolver, spec.SchemaName);
-            EventTypeForgeablesPair eventTypeForgeablesPair = HandleCreateSchema(spec, services);
+            var eventTypeForgeablesPair = HandleCreateSchema(spec, services);
 
             var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementFields), classPostfix);

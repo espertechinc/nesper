@@ -32,12 +32,11 @@ namespace com.espertech.esper.common.client.soda
         }
 
         /// <summary>
-        /// Constructor requiring the expression.
+        /// Constructor.
         /// </summary>
-        /// <param name="classProvidedExpression"></param>
-        public CreateClassClause(ClassProvidedExpression classProvidedExpression)
+        public CreateClassClause(string classText)
         {
-            _classProvidedExpression = classProvidedExpression ?? throw new ArgumentNullException(nameof(classProvidedExpression));
+            _classProvidedExpression = new ClassProvidedExpression(classText);
         }
         
         /// <summary>

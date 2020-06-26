@@ -61,13 +61,13 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             stringBuilder
                 .Append("    -triplet #")
                 .Append(indexForge)
-                .Append(NEWLINE);
+                .Append(FilterSpecCompiler.NEWLINE);
 
             if (TripletConfirm != null) {
                 stringBuilder
                     .Append("      -triplet-confirm-expression: ")
                     .Append(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(TripletConfirm))
-                    .Append(NEWLINE);
+                    .Append(FilterSpecCompiler.NEWLINE);
             }
 
             Param.AppendFilterPlanParam(stringBuilder);

@@ -29,7 +29,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
 	public class EnumArrayOfScalar : ThreeFormScalar
 	{
-
 		private readonly Type arrayComponentType;
 
 		public EnumArrayOfScalar(
@@ -43,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			this.arrayComponentType = arrayComponentType;
 		}
 
-		public EnumEval EnumEvaluator {
+		public override EnumEval EnumEvaluator {
 			get {
 				var inner = InnerExpression.ExprEvaluator;
 

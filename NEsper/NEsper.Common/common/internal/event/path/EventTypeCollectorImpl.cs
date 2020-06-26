@@ -12,14 +12,18 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
+using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.avro;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.eventtypefactory;
+using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.property;
 using com.espertech.esper.common.@internal.@event.variant;
 using com.espertech.esper.common.@internal.@event.xml;
+using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -27,33 +31,40 @@ namespace com.espertech.esper.common.@internal.@event.path
 {
     public class EventTypeCollectorImpl : EventTypeCollector
     {
-        private readonly BeanEventTypeFactory beanEventTypeFactory;
-        private readonly BeanEventTypeStemService beanEventTypeStemService;
-        private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
-        private readonly EventTypeAvroHandler eventTypeAvroHandler;
-        private readonly EventTypeFactory eventTypeFactory;
-        private readonly EventTypeNameResolver eventTypeNameResolver;
-        private readonly IDictionary<string, EventType> moduleEventTypes;
-        private readonly XMLFragmentEventTypeFactory xmlFragmentEventTypeFactory;
-
+        private readonly IDictionary<string, EventType> _moduleEventTypes;
+        private readonly BeanEventTypeFactory _beanEventTypeFactory;
+        private readonly ClassLoader _classLoader;
+        private readonly BeanEventTypeStemService _beanEventTypeStemService;
+        private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
+        private readonly EventTypeAvroHandler _eventTypeAvroHandler;
+        private readonly EventTypeFactory _eventTypeFactory;
+        private readonly EventTypeNameResolver _eventTypeNameResolver;
+        private readonly XMLFragmentEventTypeFactory _xmlFragmentEventTypeFactory;
+        private readonly ImportService _importService;
+        private readonly IList<EventTypeCollectedSerde> _serdes = new List<EventTypeCollectedSerde>();
+        
         public EventTypeCollectorImpl(
             IDictionary<string, EventType> moduleEventTypes,
             BeanEventTypeFactory beanEventTypeFactory,
+            ClassLoader classLoader,
             EventTypeFactory eventTypeFactory,
             BeanEventTypeStemService beanEventTypeStemService,
             EventTypeNameResolver eventTypeNameResolver,
             XMLFragmentEventTypeFactory xmlFragmentEventTypeFactory,
             EventTypeAvroHandler eventTypeAvroHandler,
-            EventBeanTypedEventFactory eventBeanTypedEventFactory)
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            ImportService importService)
         {
-            this.moduleEventTypes = moduleEventTypes;
-            this.beanEventTypeFactory = beanEventTypeFactory;
-            this.eventTypeFactory = eventTypeFactory;
-            this.beanEventTypeStemService = beanEventTypeStemService;
-            this.eventTypeNameResolver = eventTypeNameResolver;
-            this.xmlFragmentEventTypeFactory = xmlFragmentEventTypeFactory;
-            this.eventTypeAvroHandler = eventTypeAvroHandler;
-            this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            _moduleEventTypes = moduleEventTypes;
+            _beanEventTypeFactory = beanEventTypeFactory;
+            _classLoader = classLoader;
+            _eventTypeFactory = eventTypeFactory;
+            _beanEventTypeStemService = beanEventTypeStemService;
+            _eventTypeNameResolver = eventTypeNameResolver;
+            _xmlFragmentEventTypeFactory = xmlFragmentEventTypeFactory;
+            _eventTypeAvroHandler = eventTypeAvroHandler;
+            _eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            _importService = importService;
         }
 
         public void RegisterMap(
@@ -63,14 +74,14 @@ namespace com.espertech.esper.common.@internal.@event.path
             string startTimestampPropertyName,
             string endTimestampPropertyName)
         {
-            var eventType = eventTypeFactory.CreateMap(
+            var eventType = _eventTypeFactory.CreateMap(
                 metadata,
                 properties,
                 superTypes,
                 startTimestampPropertyName,
                 endTimestampPropertyName,
-                beanEventTypeFactory,
-                eventTypeNameResolver);
+                _beanEventTypeFactory,
+                _eventTypeNameResolver);
             HandleRegister(eventType);
         }
 
@@ -81,14 +92,14 @@ namespace com.espertech.esper.common.@internal.@event.path
             string startTimestampPropertyName,
             string endTimestampPropertyName)
         {
-            var eventType = eventTypeFactory.CreateObjectArray(
+            var eventType = _eventTypeFactory.CreateObjectArray(
                 metadata,
                 properties,
                 superTypes,
                 startTimestampPropertyName,
                 endTimestampPropertyName,
-                beanEventTypeFactory,
-                eventTypeNameResolver);
+                _beanEventTypeFactory,
+                _eventTypeNameResolver);
             HandleRegister(eventType);
         }
 
@@ -97,12 +108,12 @@ namespace com.espertech.esper.common.@internal.@event.path
             EventType underlying,
             IDictionary<string, object> properties)
         {
-            var eventType = eventTypeFactory.CreateWrapper(
+            var eventType = _eventTypeFactory.CreateWrapper(
                 metadata,
                 underlying,
                 properties,
-                beanEventTypeFactory,
-                eventTypeNameResolver);
+                _beanEventTypeFactory,
+                _eventTypeNameResolver);
             HandleRegister(eventType);
         }
 
@@ -114,15 +125,36 @@ namespace com.espertech.esper.common.@internal.@event.path
             EventType[] superTypes,
             ISet<EventType> deepSuperTypes)
         {
-            var stem = beanEventTypeStemService.GetCreateStem(clazz, null);
-            var eventType = eventTypeFactory.CreateBeanType(
+            var stem = _beanEventTypeStemService.GetCreateStem(clazz, null);
+            var eventType = _eventTypeFactory.CreateBeanType(
                 stem,
                 metadata,
-                beanEventTypeFactory,
+                _beanEventTypeFactory,
                 superTypes,
                 deepSuperTypes,
                 startTimestampName,
                 endTimestampName);
+            HandleRegister(eventType);
+        }
+
+        public void RegisterJson(
+            EventTypeMetadata metadata,
+            IDictionary<string, object> properties,
+            string[] superTypes,
+            string startTimestampPropertyName,
+            string endTimestampPropertyName,
+            JsonEventTypeDetail detail)
+        {
+            JsonEventType eventType = _eventTypeFactory.CreateJson(
+                metadata,
+                properties,
+                superTypes,
+                startTimestampPropertyName,
+                endTimestampPropertyName,
+                _beanEventTypeFactory,
+                _eventTypeNameResolver,
+                detail);
+            eventType.Initialize(_classLoader);
             HandleRegister(eventType);
         }
 
@@ -131,13 +163,13 @@ namespace com.espertech.esper.common.@internal.@event.path
             string representsFragmentOfProperty,
             string representsOriginalTypeName)
         {
-            var existing = xmlFragmentEventTypeFactory.GetTypeByName(metadata.Name);
+            var existing = _xmlFragmentEventTypeFactory.GetTypeByName(metadata.Name);
             if (existing != null) {
                 HandleRegister(existing);
                 return;
             }
 
-            var schemaType = xmlFragmentEventTypeFactory.GetRootTypeByName(representsOriginalTypeName);
+            var schemaType = _xmlFragmentEventTypeFactory.GetRootTypeByName(representsOriginalTypeName);
             if (schemaType == null) {
                 throw new EPException("Failed to find XML schema type '" + representsOriginalTypeName + "'");
             }
@@ -149,7 +181,7 @@ namespace com.espertech.esper.common.@internal.@event.path
                 schemaType.RootElementName);
             var item = prop.GetPropertyTypeSchema(schemaModelRoot);
             var complex = (SchemaElementComplex) item;
-            var eventType = xmlFragmentEventTypeFactory.GetCreateXMLDOMType(
+            var eventType = _xmlFragmentEventTypeFactory.GetCreateXMLDOMType(
                 representsOriginalTypeName,
                 metadata.Name,
                 metadata.ModuleName,
@@ -158,16 +190,54 @@ namespace com.espertech.esper.common.@internal.@event.path
             HandleRegister(eventType);
         }
 
+        public void RegisterXMLNewType(
+            EventTypeMetadata metadata,
+            ConfigurationCommonEventTypeXMLDOM config)
+        {
+            SchemaModel schemaModel = null;
+            if ((config.SchemaResource != null) || (config.SchemaText != null)) {
+                try {
+                    schemaModel = XSDSchemaMapper.LoadAndMap(
+                        config.SchemaResource,
+                        config.SchemaText,
+                        _importService);
+                }
+                catch (Exception ex) {
+                    throw new EPException(ex.Message, ex);
+                }
+            }
+
+            EventType eventType = _eventTypeFactory.CreateXMLType(
+                metadata,
+                config,
+                schemaModel,
+                null,
+                metadata.Name,
+                _beanEventTypeFactory,
+                _xmlFragmentEventTypeFactory,
+                _eventTypeNameResolver);
+            HandleRegister(eventType);
+
+            if (eventType is SchemaXMLEventType) {
+                _xmlFragmentEventTypeFactory.AddRootType((SchemaXMLEventType) eventType);
+            }
+        }
+
         public void RegisterAvro(
             EventTypeMetadata metadata,
-            string schemaJson)
+            string schemaJson,
+            string[] superTypes)
         {
-            EventType eventType = eventTypeAvroHandler.NewEventTypeFromJson(
+            var st = EventTypeUtility.GetSuperTypesDepthFirst(
+                superTypes, EventUnderlyingType.AVRO, _eventTypeNameResolver);
+
+            var eventType = _eventTypeAvroHandler.NewEventTypeFromJson(
                 metadata,
-                eventBeanTypedEventFactory,
+                _eventBeanTypedEventFactory,
                 schemaJson,
-                TODO,
-                TODO);
+                st.First,
+                st.Second);
+
             HandleRegister(eventType);
         }
 
@@ -179,18 +249,28 @@ namespace com.espertech.esper.common.@internal.@event.path
             var spec = new VariantSpec(
                 variants,
                 any ? TypeVariance.ANY : TypeVariance.PREDEFINED);
-            EventType eventType = eventTypeFactory.CreateVariant(metadata, spec);
+            EventType eventType = _eventTypeFactory.CreateVariant(metadata, spec);
             HandleRegister(eventType);
         }
 
         private void HandleRegister(EventType eventType)
         {
-            if (moduleEventTypes.ContainsKey(eventType.Name)) {
+            if (_moduleEventTypes.ContainsKey(eventType.Name)) {
                 throw new IllegalStateException(
                     "Event type '" + eventType.Name + "' attempting to register multiple times");
             }
 
-            moduleEventTypes.Put(eventType.Name, eventType);
+            _moduleEventTypes.Put(eventType.Name, eventType);
         }
+
+        public void RegisterSerde(
+            EventTypeMetadata metadata,
+            DataInputOutputSerde<object> underlyingSerde,
+            Type underlyingClass)
+        {
+            _serdes.Add(new EventTypeCollectedSerde(metadata, underlyingSerde, underlyingClass));
+        }
+
+        public IList<EventTypeCollectedSerde> Serdes => _serdes;
     }
 } // end of namespace

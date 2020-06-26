@@ -14,6 +14,7 @@ using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.context.mgr;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.fafquery.processor;
+using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.subselect;
 using com.espertech.esper.common.@internal.settings;
 

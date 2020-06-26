@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.view.union
         private readonly IList<ViewFactoryForge> unioned;
         private readonly bool hasAsymetric;
 
-        public IList<ViewFactoryForge> InnerForges => unioned;
+        public override IList<ViewFactoryForge> InnerForges => unioned;
 
         public UnionViewFactoryForge(IList<ViewFactoryForge> unioned)
         {

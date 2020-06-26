@@ -15,6 +15,6 @@ namespace com.espertech.esper.common.client.hook.aggfunc
 	/// </summary>
 	public class ExtensionAggregationFunctionAttribute : Attribute
     {
-        private string Name { get; set; }
+        public string Name { get; set; }
     }
 } // end of namespace

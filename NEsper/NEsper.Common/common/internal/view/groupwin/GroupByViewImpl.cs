@@ -245,5 +245,9 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
             return ((ArrayDeque<EventBean>) eventOrDeque).ToArray();
         }
+        
+        public void Transfer(AgentInstanceTransferServices services)
+        {
+        }
     }
 } // end of namespace

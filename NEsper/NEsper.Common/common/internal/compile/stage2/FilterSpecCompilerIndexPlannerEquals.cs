@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 var lookupableX = filterOptimizableNode.FilterLookupable;
                 if (filterOptimizableNode.FilterLookupEligible) {
                     var numberCoercer = GetNumberCoercer(lookupableX.ReturnType, ctxNode.Type, lookupableX.Expression);
-                    return new FilterSpecParamContextPropForge(lookupableX, op, numberCoercer, ctxNode.PropertyName, ctxNode.Getter);
+                    return new FilterSpecParamContextPropForge(lookupableX, op, ctxNode.PropertyName, ctxNode.Getter, numberCoercer);
                 }
             }
 
@@ -126,7 +126,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 if (filterOptimizableNode.FilterLookupEligible) {
                     op = GetReversedOperator(constituent, op); // reverse operators, as the expression is "stream1.prop xyz stream0.prop"
                     var numberCoercer = GetNumberCoercer(lookupableX.ReturnType, ctxNode.Type, lookupableX.Expression);
-                    return new FilterSpecParamContextPropForge(lookupableX, op, numberCoercer, ctxNode.PropertyName, ctxNode.Getter);
+                    return new FilterSpecParamContextPropForge(lookupableX, op, ctxNode.PropertyName, ctxNode.Getter, numberCoercer);
                 }
             }
 

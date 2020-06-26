@@ -161,8 +161,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			catch (InvalidCastException e) {
 				throw PropertyUtility.GetMismatchException(descriptor.Method, underlying, e);
 			}
-			catch (InvocationTargetException e) {
-				throw PropertyUtility.GetInvocationTargetException(descriptor.Method, e);
+			catch (TargetInvocationException e) {
+				throw PropertyUtility.GetTargetException(descriptor.Method, e);
+			}
+			catch (TargetException e) {
+				throw PropertyUtility.GetTargetException(descriptor.Method, e);
 			}
 			catch (ArgumentException e) {
 				throw PropertyUtility.GetArgumentException(descriptor.Method, e);
@@ -196,8 +199,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			catch (InvalidCastException e) {
 				throw PropertyUtility.GetMismatchException(descriptor.Method, underlying, e);
 			}
-			catch (InvocationTargetException e) {
-				throw PropertyUtility.GetInvocationTargetException(descriptor.Method, e);
+			catch (TargetInvocationException e) {
+				throw PropertyUtility.GetTargetException(descriptor.Method, e);
+			}
+			catch (TargetException e) {
+				throw PropertyUtility.GetTargetException(descriptor.Method, e);
 			}
 			catch (ArgumentException e) {
 				throw PropertyUtility.GetArgumentException(descriptor.Method, e);

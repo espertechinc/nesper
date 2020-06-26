@@ -133,7 +133,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return new ExprEvalUnderlyingEvaluator(streamNum, resultType);
         }
 
-        internal static ExprForge[] MakeVarargArrayEval(
+        internal static ExprForge[] MakeVarargArrayForges(
             MethodInfo method,
             ExprForge[] childForges)
         {

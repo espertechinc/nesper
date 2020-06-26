@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -44,10 +45,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 				return sorted.Values;
 			}
 
-			Deque<object> coll = new ArrayDeque<object>();
+			var coll = new ArrayDeque<object>();
 			foreach (var entry in sorted) {
-				if (entry.Value is ICollection<object>) {
-					coll.AddAll((ICollection<object>) entry.Value);
+				if (entry.Value.IsObjectCollectionCompatible()) {
+					coll.AddAll(entry.Value.AsObjectCollection());
 				}
 				else {
 					coll.Add(entry.Value);

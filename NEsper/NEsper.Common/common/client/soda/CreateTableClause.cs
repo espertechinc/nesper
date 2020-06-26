@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.client.soda
         public string TableName
         {
             get => tableName;
-            set { this.tableName = value; }
+            set { tableName = value; }
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.client.soda
         public IList<CreateTableColumn> Columns
         {
             get => columns;
-            set { this.columns = value; }
+            set { columns = value; }
         }
 
         /// <summary>

@@ -19,6 +19,7 @@ using com.espertech.esper.common.@internal.epl.subselect;
 using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.previous;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
 {
@@ -35,6 +36,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
             RowRecogPreviousStrategy regexExprPreviousEvalStrategy,
             IDictionary<int, ExprTableEvalStrategy> tableAccessStrategies,
             IList<StatementAgentInstancePreload> preloadList,
+            Runnable postContextMergeRunnable,
             EvalRootState optPatternRoot,
             ViewableActivationResult viewableActivationResult)
             : base(
@@ -48,7 +50,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
                 regexExprPreviousEvalStrategy,
                 tableAccessStrategies,
                 preloadList,
-                PostContextMergeRunnable)
+                postContextMergeRunnable)
         {
             OptPatternRoot = optPatternRoot;
             ViewableActivationResult = viewableActivationResult;

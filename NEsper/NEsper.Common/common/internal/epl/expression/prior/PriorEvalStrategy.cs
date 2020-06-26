@@ -28,4 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
             ExprEvaluatorContext exprEvaluatorContext,
             int streamNum);
     }
+
+    public static class PriorEvalStrategyConstants
+    {
+        public static readonly PriorEvalStrategy[] EMPTY_ARRAY = new PriorEvalStrategy[0];
+    }
 } // end of namespace

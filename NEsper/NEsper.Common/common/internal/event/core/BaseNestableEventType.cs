@@ -430,7 +430,6 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public abstract Type UnderlyingType { get; }
         public abstract EventPropertyDescriptor[] WriteableProperties { get; }
-        public abstract EventBeanReader Reader { get; }
         public abstract EventPropertyWriterSPI GetWriter(string propertyName);
         public abstract EventPropertyDescriptor GetWritableProperty(string propertyName);
         public abstract EventBeanCopyMethodForge GetCopyMethodForge(string[] properties);

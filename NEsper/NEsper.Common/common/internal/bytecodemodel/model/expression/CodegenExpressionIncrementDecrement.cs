@@ -19,13 +19,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
     {
         private readonly bool _increment;
 
-        private readonly CodegenExpressionRef _ref;
+        private readonly CodegenExpression _expr;
 
         public CodegenExpressionIncrementDecrement(
-            CodegenExpressionRef @ref,
+            CodegenExpression expr,
             bool increment)
         {
-            _ref = @ref;
+            _expr = expr;
             _increment = increment;
         }
 
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             int level,
             CodegenIndent indent)
         {
-            _ref.Render(builder, isInnerClass, level, indent);
+            _expr.Render(builder, isInnerClass, level, indent);
             builder.Append(_increment ? "++" : "--");
         }
 

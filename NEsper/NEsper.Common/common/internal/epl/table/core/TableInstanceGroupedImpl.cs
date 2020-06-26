@@ -120,7 +120,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             return CreateRowIntoTable(groupByKey);
         }
 
-        public ICollection<object> GroupKeysMayMultiKey => rows.Keys;
+        public override ICollection<object> GroupKeysMayMultiKey => rows.Keys;
 
         public override ICollection<object> GroupKeys {
             get {

@@ -33,8 +33,8 @@ namespace com.espertech.esper.common.client.soda
             int index,
             string propertyName)
         {
-            this.AddChild(new ConstantExpression(index));
-            this.AddChild(new PropertyValueExpression(propertyName));
+            AddChild(new ConstantExpression(index));
+            AddChild(new PropertyValueExpression(propertyName));
         }
 
         public override ExpressionPrecedenceEnum Precedence
@@ -45,9 +45,9 @@ namespace com.espertech.esper.common.client.soda
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("prior(");
-            this.Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+            Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             writer.Write(",");
-            this.Children[1].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+            Children[1].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             writer.Write(')');
         }
     }

@@ -200,7 +200,7 @@ namespace com.espertech.esper.common.@internal.view.timewin
                 return -1;
             }
 
-            var oldestTimestamp = timeWindow.OldestTimestamp;
+            var oldestTimestamp = timeWindow.OldestTimestamp.Value; // Null check?
             var currentTimestamp = agentInstanceContext.StatementContext.SchedulingService.Time;
             return timePeriodProvide.DeltaAdd(oldestTimestamp, null, true, agentInstanceContext) + oldestTimestamp - currentTimestamp;
         }

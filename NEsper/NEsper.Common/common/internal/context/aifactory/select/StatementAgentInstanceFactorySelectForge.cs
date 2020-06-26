@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     RSPFACTORYPROVIDER,
                     NewInstance(_resultSetProcessorProviderClassName, 
                         symbols.GetAddInitSvc(method), 
-                        Ref(StmtClassForgableAIFactoryProviderBase.MEMBERNAME_STATEMENT_FIELDS)))
+                        Ref(StmtClassForgeableAIFactoryProviderBase.MEMBERNAME_STATEMENT_FIELDS)))
                 .SetProperty(Ref("saiff"), "ResultSetProcessorFactoryProvider", Ref(RSPFACTORYPROVIDER));
 
             // where-clause evaluator

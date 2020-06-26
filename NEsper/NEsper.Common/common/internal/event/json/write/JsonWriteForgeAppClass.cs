@@ -17,15 +17,15 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 {
     public class JsonWriteForgeAppClass : JsonWriteForge
     {
-        private readonly string delegateFactoryClassName;
-        private readonly string writeMethodName;
+        private readonly string _delegateFactoryClassName;
+        private readonly string _writeMethodName;
 
         public JsonWriteForgeAppClass(
             string delegateFactoryClassName,
             string writeMethodName)
         {
-            this.delegateFactoryClassName = delegateFactoryClassName;
-            this.writeMethodName = writeMethodName;
+            _delegateFactoryClassName = delegateFactoryClassName;
+            _writeMethodName = writeMethodName;
         }
 
         public CodegenExpression CodegenWrite(
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.@event.json.write
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            return StaticMethod(typeof(JsonWriteUtil), writeMethodName, refs.Writer, refs.Field, NewInstance(delegateFactoryClassName));
+            return StaticMethod(typeof(JsonWriteUtil), _writeMethodName, refs.Writer, refs.Field, NewInstance(_delegateFactoryClassName));
         }
     }
 } // end of namespace

@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             return BaseNestableEventUtil.HandleNestedValueArrayWithObjectArray(value, index, getter);
         }
 
-        public bool HandleNestedValueExists(object value)
+        public override bool HandleNestedValueExists(object value)
         {
             return BaseNestableEventUtil.HandleNestedValueArrayWithObjectArrayExists(value, index, getter);
         }
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                 eventBeanTypedEventFactory);
         }
 
-        public CodegenExpression HandleNestedValueExistsCodegen(
+        public override CodegenExpression HandleNestedValueExistsCodegen(
             CodegenExpression name,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)

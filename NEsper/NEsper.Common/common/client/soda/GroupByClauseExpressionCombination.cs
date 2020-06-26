@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.client.soda
         public IList<Expression> Expressions
         {
             get { return _expressions; }
-            set { this._expressions = value; }
+            set { _expressions = value; }
         }
 
         public void ToEPL(TextWriter writer)
