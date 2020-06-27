@@ -567,7 +567,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             string deploymentId,
             VariableMetaData metaData,
             string optionalDeploymentIdContext,
-            DataInputOutputSerde<object> optionalSerde)
+            DataInputOutputSerde optionalSerde)
         {
             lock (this) {
                 // check if already exists

@@ -10,6 +10,8 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.container;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -20,11 +22,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 	/// </summary>
 	public class BeanEventBeanSerializableCopyMethodForge : EventBeanCopyMethodForge
     {
+        private readonly IContainer _container;
         private readonly BeanEventType _beanEventType;
 
-        public BeanEventBeanSerializableCopyMethodForge(BeanEventType beanEventType)
+        public BeanEventBeanSerializableCopyMethodForge(
+            IContainer container,
+            BeanEventType beanEventType)
         {
             _beanEventType = beanEventType;
+            _container = container;
         }
 
         public CodegenExpression MakeCopyMethodClassScoped(CodegenClassScope classScope)
@@ -38,7 +44,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public EventBeanCopyMethod GetCopyMethod(EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            return new BeanEventBeanSerializableCopyMethod(_beanEventType, eventBeanTypedEventFactory);
+            return new BeanEventBeanSerializableCopyMethod(
+                _container.Resolve<IObjectCopier>(),
+                _beanEventType,
+                eventBeanTypedEventFactory);
         }
     }
 } // end of namespace

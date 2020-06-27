@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.condition;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.mgr;
+using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -50,6 +51,13 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             bool terminateChildContexts);
 
         public abstract void Destroy();
+
+        public virtual void Transfer(
+            IntSeqKey path,
+            bool transferChildContexts,
+            AgentInstanceTransferServices xfer)
+        {
+        }
 
         public ContextControllerInitTermFactory InitTermFactory {
             get => factory;

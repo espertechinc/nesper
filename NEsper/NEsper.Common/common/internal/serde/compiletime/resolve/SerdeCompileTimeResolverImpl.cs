@@ -16,33 +16,28 @@ using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.serde.serdeset.builtin;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
-using static com.espertech.esper.common.@internal.compile.multikey.MultiKeyPlanner; // getMKSerdeClassForComponentType;
+using static com.espertech.esper.common.@internal.compile.multikey.MultiKeyPlanner;
 
 namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 {
 	public class SerdeCompileTimeResolverImpl : SerdeCompileTimeResolver
 	{
-
-		private readonly bool allowExtendedJVM;
+		private readonly bool _allowExtended;
 		private readonly bool allowSerializable;
-		private readonly bool allowExternalizable;
 		private readonly bool allowSerializationFallback;
 		private readonly ICollection<SerdeProvider> serdeProviders;
 
 		public SerdeCompileTimeResolverImpl(
 			IList<SerdeProvider> serdeProviders,
-			bool allowExtendedJVM,
+			bool allowExtended,
 			bool allowSerializable,
-			bool allowExternalizable,
 			bool allowSerializationFallback)
 		{
 			this.serdeProviders = new CopyOnWriteList<SerdeProvider>(serdeProviders);
-			this.allowExtendedJVM = allowExtendedJVM;
+			this._allowExtended = allowExtended;
 			this.allowSerializable = allowSerializable;
-			this.allowExternalizable = allowExternalizable;
 			this.allowSerializationFallback = allowSerializationFallback;
 		}
 
@@ -155,10 +150,13 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 						return serde.ToForge();
 					}
 				}
-				catch (DataInputOutputSerdeException ex) {
-					throw ex;
+				catch (DataInputOutputSerdeException) {
+					throw;
 				}
-				catch (RuntimeException ex) {
+				catch (EPException) {
+					throw;
+				}
+				catch (Exception ex) {
 					throw new DataInputOutputSerdeException(
 						"Unexpected exception invoking serde provider '" +
 						provider.GetType().Name +
@@ -178,7 +176,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 			SerdeProviderAdditionalInfo info)
 		{
 			if (type.IsArray) {
-				DataInputOutputSerde mkSerde = GetMKSerdeClassForComponentType(type.ComponentType);
+				DataInputOutputSerde mkSerde = GetMKSerdeClassForComponentType(type.GetElementType());
 				return new DataInputOutputSerdeForgeSingleton(mkSerde.GetType());
 			}
 
@@ -201,7 +199,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 			Type type,
 			SerdeProviderAdditionalInfo additionalInfo)
 		{
-			if (IsJVMBasicBuiltin(type)) {
+			if (IsBasicBuiltin(type)) {
 				DataInputOutputSerde serde = VMBasicBuiltinSerdeFactory.GetSerde(type);
 				if (serde == null) {
 					throw new DataInputOutputSerdeException("Failed to find built-in serde for class " + type.Name);
@@ -210,7 +208,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 				return new DataInputOutputSerdeForgeSingleton(serde.GetType());
 			}
 
-			if (allowExtendedJVM) {
+			if (_allowExtended) {
 				DataInputOutputSerde serde = VMExtendedBuiltinSerdeFactory.GetSerde(type);
 				if (serde != null) {
 					return new DataInputOutputSerdeForgeSingleton(serde.GetType());
@@ -225,15 +223,14 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 				type,
 				serdeProviders,
 				allowSerializable,
-				allowExternalizable,
 				allowSerializationFallback,
 				additionalInfo);
 			return provision.ToForge();
 		}
 
-		private bool IsJVMBasicBuiltin(Type type)
+		private bool IsBasicBuiltin(Type type)
 		{
-			return TypeHelper.IsJavaBuiltinDataType(type) && type != typeof(BigInteger) && type != typeof(BigDecimal);
+			return TypeHelper.IsBuiltinDataType(type) && type.IsBigInteger();
 		}
 	}
 } // end of namespace

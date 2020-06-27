@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.view.unique
 
         public Type[] CriteriaTypes { get; set; }
 
-        public DataInputOutputSerde<object> KeySerde { get; set; }
+        public DataInputOutputSerde KeySerde { get; set; }
 
         public string ViewName => ViewEnum.UNIQUE_BY_PROPERTY.GetViewName();
 

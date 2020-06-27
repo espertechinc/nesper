@@ -7,14 +7,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
+using System.Text.Json;
 
 using com.espertech.esper.common.client.json.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
-using static com.espertech.esper.common.@internal.@event.json.write.JsonWriteUtil; //writeJsonValue;
+using static com.espertech.esper.common.@internal.@event.json.write.JsonWriteUtil;
 
 namespace com.espertech.esper.common.@internal.@event.json.core
 {
@@ -33,182 +35,230 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 	    /// <value>map</value>
 	    public abstract IDictionary<string, object> JsonValues { get; }
 
+	    #region Native
+	    
 	    /// <summary>
 	    /// Returns the total number of pre-declared properties available including properties of the parent event type if any
 	    /// </summary>
 	    /// <value>size</value>
-	    public abstract int NativeSize { get; }
+	    public abstract int NativeCount { get; }
 
 	    /// <summary>
-	    /// Returns the name-value pre-declared property including properties of the parent event type if any
+	    /// Attempts to find the native value of the same name including property names of the parent event type if any.  If found,
+	    /// the method places the value into the out var and returns true.  Otherwise, false.
 	    /// </summary>
-	    /// <param name="num">index number of the property</param>
-	    /// <returns>entry</returns>
-	    /// <throws>java.util.NoSuchElementException for invalid index</throws>
-	    public abstract KeyValuePair<string, object> GetNativeEntry(int num);
+	    /// <param name="name"></param>
+	    /// <param name="value"></param>
+	    /// <returns></returns>
+	    public abstract bool TryGetNativeEntry(
+		    string name,
+		    out KeyValuePair<string, object> value);
 
 	    /// <summary>
-	    /// Returns the pre-declared property name including properties names of the parent event type if any
+	    /// Attempts to find the native value of the same name including property names of the parent event type if any.  If found,
+	    /// the method places the value into the out var and returns true.  Otherwise, false.
 	    /// </summary>
-	    /// <param name="num">index number of the property</param>
-	    /// <returns>name</returns>
-	    /// <throws>java.util.NoSuchElementException for invalid index</throws>
-	    public abstract string GetNativeKey(int num);
+	    /// <param name="name"></param>
+	    /// <param name="value"></param>
+	    /// <returns></returns>
+	    public abstract bool TryGetNativeValue(
+		    string name,
+		    out object value);
 
 	    /// <summary>
-	    /// Returns the value of a pre-declared property including property values of the parent event type if any
-	    /// </summary>
-	    /// <param name="num">index number of the property</param>
-	    /// <returns>value</returns>
-	    /// <throws>java.util.NoSuchElementException for invalid index</throws>
-	    public abstract object GetNativeValue(int num);
-
-	    /// <summary>
-	    /// Returns the index number of a a pre-declared property of the same name including property names of the parent event type if any
-	    /// </summary>
-	    /// <param name="name">property name</param>
-	    /// <returns>index starting at zero, ending at native-size minus 1; Returns -1 for non-existing property name</returns>
-	    public abstract int GetNativeNum(string name);
-
-	    /// <summary>
-	    /// Returns the flag whether the key exists as a pre-declared property of the same name including property names of the parent event type if any
+	    /// Returns the flag whether the key exists as a pre-declared property of the same name including
+	    /// property names of the parent event type if any
 	    /// </summary>
 	    /// <param name="key">property name</param>
 	    /// <returns>flag</returns>
-	    public abstract bool NativeContainsKey(object key);
+	    public abstract bool NativeContainsKey(string key);
 
+	    /// <summary>
+	    /// Returns the flag whether the value exists as the value element of a pre-declared property.  Not
+	    /// sure who would use this, but its there, with a default implementation.
+	    /// </summary>
+	    /// <param name="value">property value</param>
+	    /// <returns>flag</returns>
+	    public virtual bool NativeContainsValue(object value)
+	    {
+		    using var enumerator = NativeEnumerable().GetEnumerator();
+		    while (enumerator.MoveNext()) {
+			    if (Equals(value, enumerator.Current.Value)) {
+				    return true;
+			    }
+		    }
+
+		    return false;
+	    }
+
+	    /// <summary>
+	    /// Returns an enumerable for the native keys.
+	    /// </summary>
+	    /// <returns></returns>
+	    public abstract IEnumerable<KeyValuePair<string, object>> NativeEnumerable(); 
+	    
 	    /// <summary>
 	    /// Write the pre-declared properties to the writer
 	    /// </summary>
 	    /// <param name="writer">writer</param>
 	    /// <throws>IOException for IO exceptions</throws>
-	    public abstract void NativeWrite(JsonWriter writer) ;
+	    protected abstract void NativeWrite(Utf8JsonWriter writer);
+	    
+	    #endregion
+	    
+	    // ----------------------------------------------------------------------
+	    public int Count => JsonValues.Count + NativeCount;
 
-	    public void WriteTo(Writer writer, WriterConfig config) {
-	        WritingBuffer buffer = new WritingBuffer(writer, 128);
-	        Write(config.CreateWriter(buffer));
-	        buffer.Flush();
+	    public void Add(
+		    string key,
+		    object value)
+	    {
+		    throw new NotSupportedException();
 	    }
 
-	    public void Write(JsonWriter writer) {
-	        writer.WriteObjectOpen();
+	    public void Add(KeyValuePair<string, object> item)
+	    {
+		    throw new NotSupportedException();
+	    }
+
+	    public bool Remove(KeyValuePair<string, object> item)
+	    {
+		    throw new NotSupportedException();
+	    }
+
+	    public bool Remove(string key)
+	    {
+		    throw new NotSupportedException();
+	    }
+
+	    public bool ContainsKey(string key)
+	    {
+		    return NativeContainsKey(key) || JsonValues.ContainsKey(key);
+	    }
+	    
+	    public bool ContainsValue(object value)
+	    {
+		    return NativeContainsValue(value) || JsonValues.Values.Contains(value);
+	    }
+
+	    public bool Contains(KeyValuePair<string, object> item)
+	    {
+		    if (TryGetNativeEntry(item.Key, out var existingKeyValuePair)) {
+			    return Equals(item.Value, existingKeyValuePair.Value);
+		    }
+
+		    if (JsonValues.TryGetValue(item.Key, out var existingValue)) {
+			    return Equals(item.Value, existingValue);
+		    }
+
+		    return false;
+	    }
+
+	    public void Clear()
+	    {
+		    throw new UnsupportedOperationException();
+	    }
+
+	    public ICollection<string> Keys => new JsonEventUnderlyingKeyCollection(this);
+
+	    public ICollection<object> Values => new JsonEventUnderlyingValueCollection(this);
+
+	    public bool IsReadOnly => true;
+
+	    public bool TryGetValue(
+		    string key,
+		    out object value)
+	    {
+		    return TryGetNativeValue(key, out value) || JsonValues.TryGetValue(key, out value);
+	    }
+
+	    public void CopyTo(
+		    KeyValuePair<string, object>[] array,
+		    int arrayIndex)
+	    {
+		    var arrayLength = array.Length;
+
+		    using(var enumerator = NativeEnumerable().GetEnumerator()) {
+			    while ((arrayIndex < arrayLength) && enumerator.MoveNext()) {
+				    array[arrayIndex] = enumerator.Current;
+				    arrayIndex++;
+			    }
+		    }
+
+		    using (var enumerator = JsonValues.GetEnumerator()) {
+			    while ((arrayIndex < arrayLength) && enumerator.MoveNext()) {
+				    array[arrayIndex] = enumerator.Current;
+				    arrayIndex++;
+			    }
+		    }
+	    }
+
+	    IEnumerator IEnumerable.GetEnumerator()
+	    {
+		    return GetEnumerator();
+	    }
+
+	    public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+	    {
+		    using(var enumerator = NativeEnumerable().GetEnumerator()) {
+			    while (enumerator.MoveNext()) {
+				    yield return enumerator.Current;
+			    }
+		    }
+
+		    using (var enumerator = JsonValues.GetEnumerator()) {
+			    while (enumerator.MoveNext()) {
+				    yield return enumerator.Current;
+			    }
+		    }
+	    }
+
+	    public object this[string key] {
+		    get {
+			    if (TryGetNativeValue(key, out var value)) {
+				    return value;
+			    }
+
+			    return JsonValues[key];
+		    }
+		    set => throw new NotSupportedException();
+	    }
+
+	    // ----------------------------------------------------------------------
+
+	    public void WriteTo(Stream stream)
+	    {
+		    var writer = new Utf8JsonWriter(stream);
+		    WriteTo(writer);
+		    writer.Flush();
+	    }
+
+	    public void WriteTo(Utf8JsonWriter writer) {
+		    writer.WriteStartObject();
 	        NativeWrite(writer);
-	        bool first = NativeSize == 0;
 	        foreach (var entry in JsonValues) {
-	            if (!first) {
-	                writer.WriteObjectSeparator();
-	            }
-	            first = false;
-	            writer.WriteMemberName(entry.Key);
-	            writer.WriteMemberSeparator();
+		        writer.WritePropertyName(entry.Key);
 	            WriteJsonValue(writer, entry.Key, entry.Value);
 	        }
-	        writer.WriteObjectClose();
+	        writer.WriteEndObject();
 	    }
-
-	    public int Size() {
-	        return JsonValues.Count + NativeSize;
-	    }
-
-	    public ISet<Entry<string, object>> EntrySet() {
-	        return new JsonEventUnderlyingEntrySet(this);
-	    }
-
-	    public bool IsEmpty() {
-	        return NativeSize == 0 && JsonValues.IsEmpty();
-	    }
-
-	    public ISet<string> KeySet() {
-	        return new JsonEventUnderlyingKeySet(this);
-	    }
-
-	    public bool ContainsKey(object key) {
-	        return NativeContainsKey(key) || JsonValues.ContainsKey(key);
-	    }
-
-	    public object Get(object key) {
-	        if (key == null || !(key is string)) {
-	            return JsonValues.Get(key);
-	        }
-	        int num = GetNativeNum((string) key);
-	        if (num == -1) {
-	            return JsonValues.Get(key);
-	        }
-	        return GetNativeValue(num);
-	    }
-
-	    public bool ContainsValue(object value) {
-	        if (value == null) {
-	            for (int i = 0; i < NativeSize; i++) {
-	                if (GetNativeValue(i) == null) {
-	                    return true;
-	                }
-	            }
-	        } else {
-	            for (int i = 0; i < NativeSize; i++) {
-	                if (value.Equals(GetNativeValue(i))) {
-	                    return true;
-	                }
-	            }
-	        }
-	        return JsonValues.ContainsValue(value);
-	    }
-
-	    public ICollection<object> Values() {
-	        return new JsonEventUnderlyingValueCollection(this, JsonValues.Values);
-	    }
-
-	    public object Put(string key, object value) {
-	        throw new UnsupportedOperationException();
-	    }
-
-	    public object Remove(object key) {
-	        throw new UnsupportedOperationException();
-	    }
-
-	    public void PutAll<T>(IDictionary<string, T> m) {
-	        throw new UnsupportedOperationException();
-	    }
-
-	    public void Clear() {
-	        throw new UnsupportedOperationException();
-	    }
-
-	    public bool Remove(object key, object value) {
-	        throw new UnsupportedOperationException();
-	    }
-
-	    public void ReplaceAll(Action<string, object> function)
+	    
+	    public string ToString(JsonWriterOptions config)
 	    {
-	        throw new UnsupportedOperationException();
+		    var stream = new MemoryStream();
+		    var writer = new Utf8JsonWriter(stream, config);
+
+		    WriteTo(writer);
+		    
+		    writer.Flush();
+		    stream.Flush();
+
+		    return Encoding.UTF8.GetString(stream.ToArray());
 	    }
 
-	    public object PutIfAbsent(string key, object value) {
-	        throw new UnsupportedOperationException();
-	    }
-
-	    public bool Replace(string key, object oldValue, object newValue) {
-	        throw new UnsupportedOperationException();
-	    }
-
-	    public object Replace(string key, object value) {
-	        throw new UnsupportedOperationException();
-	    }
-
-	    public string ToString(WriterConfig config) {
-	        StringWriter writer = new StringWriter();
-	        try {
-	            WriteTo(writer, config);
-	        } catch (IOException exception) {
-	            // StringWriter does not throw IOExceptions
-	            throw new RuntimeException(exception);
-	        }
-	        return writer.ToString();
-	    }
-
-	    public override string ToString() {
-	        return ToString(WriterConfig.MINIMAL);
+	    public override string ToString()
+	    {
+		    return ToString(new JsonWriterOptions());
 	    }
 	}
-
 } // end of namespace

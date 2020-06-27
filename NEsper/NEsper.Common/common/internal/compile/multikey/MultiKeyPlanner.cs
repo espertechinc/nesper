@@ -11,14 +11,12 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.serde;
-using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.serde.serdeset.multikey;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -100,7 +98,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			return typeof(MultiKeyArrayObject);
 		}
 
-		public static DataInputOutputSerde<object> GetMKSerdeClassForComponentType(Type componentType)
+		public static DataInputOutputSerde GetMKSerdeClassForComponentType(Type componentType)
 		{
 			if (componentType == typeof(bool)) {
 				return DIOMultiKeyArrayBooleanSerde.INSTANCE;
@@ -152,7 +150,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 				}
 
 				Type mkClass = GetMKClassForComponentType(paramType.GetElementType());
-				DataInputOutputSerde<> mkSerde = GetMKSerdeClassForComponentType(paramType.GetElementType());
+				DataInputOutputSerde mkSerde = GetMKSerdeClassForComponentType(paramType.GetElementType());
 				return new MultiKeyPlan(
 					EmptyList<StmtClassForgeableFactory>.Instance,
 					new MultiKeyClassRefPredetermined(

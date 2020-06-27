@@ -197,7 +197,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.statement
 
         public void ActivateVariable(
             string name,
-            DataInputOutputSerde<object> serde)
+            DataInputOutputSerde serde)
         {
             var variable = ModuleIncidentals.Variables.Get(name);
             if (variable == null) {

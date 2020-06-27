@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         public Type[] CriteriaTypes { get; set; }
 
-        public DataInputOutputSerde<object> KeySerde { get; set; }
+        public DataInputOutputSerde KeySerde { get; set; }
 
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {

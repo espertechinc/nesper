@@ -19,15 +19,15 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	/// <summary>
 	/// Binding for nullable decimal values.
 	/// </summary>
-	public class DIONullableDecimalSerde : DataInputOutputSerde<decimal?>
+	public class DIONullableDecimalSerde : DataInputOutputSerdeBase<decimal?>
 	{
-		public readonly static DIONullableDecimalSerde INSTANCE = new DIONullableDecimalSerde();
+		public static readonly DIONullableDecimalSerde INSTANCE = new DIONullableDecimalSerde();
 
 		private DIONullableDecimalSerde()
 		{
 		}
 
-		public void Write(
+		public override void Write(
 			decimal? @object,
 			DataOutput output,
 			byte[] pageFullKey,
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			return ReadInternal(input);
 		}
 
-		public decimal? Read(
+		public override decimal? Read(
 			DataInput input,
 			byte[] resourceKey)
 		{

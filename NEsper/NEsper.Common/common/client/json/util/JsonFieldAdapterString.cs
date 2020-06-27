@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Text.Json;
+
 namespace com.espertech.esper.common.client.json.util
 {
     public interface JsonFieldAdapterString<T> : JsonFieldAdapter
@@ -14,6 +16,6 @@ namespace com.espertech.esper.common.client.json.util
 
         void Write(
             T value,
-            JsonWriter writer);
+            Utf8JsonWriter writer);
     }
 } // end of namespace

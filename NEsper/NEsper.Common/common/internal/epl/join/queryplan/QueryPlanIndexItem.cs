@@ -31,11 +31,11 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             Type[] hashPropTypes,
             EventPropertyValueGetter hashGetter,
             MultiKeyFromObjectArray transformFireAndForget,
-            DataInputOutputSerde<object> hashKeySerde,
+            DataInputOutputSerde hashKeySerde,
             string[] rangeProps,
             Type[] rangePropTypes,
             EventPropertyValueGetter[] rangeGetters,
-            DataInputOutputSerde<object>[] rangeKeySerdes,
+            DataInputOutputSerde[] rangeKeySerdes,
             bool unique,
             EventAdvancedIndexProvisionRuntime advancedIndexProvisionDesc)
         {
@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         
         public MultiKeyFromObjectArray TransformFireAndForget { get; }
         
-        public DataInputOutputSerde<object> HashKeySerde { get; }
+        public DataInputOutputSerde HashKeySerde { get; }
 
         public Type[] HashPropTypes { get; }
 
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
 
         public EventPropertyValueGetter[] RangeGetters { get; }
         
-        public DataInputOutputSerde<Object>[] RangeKeySerdes { get; }
+        public DataInputOutputSerde[] RangeKeySerdes { get; }
 
         public bool IsUnique { get; }
 

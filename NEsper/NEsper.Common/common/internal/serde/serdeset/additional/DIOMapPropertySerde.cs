@@ -15,40 +15,40 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.additional
 {
-    public class DIOMapPropertySerde : DataInputOutputSerde<IDictionary<string, object>>
+    public class DIOMapPropertySerde : DataInputOutputSerdeBase<IDictionary<string, object>>
     {
         private readonly string[] _keys;
-        private readonly DataInputOutputSerde<IDictionary<string, object>>[] _serdes;
+        private readonly DataInputOutputSerde[] _serdes;
 
         public DIOMapPropertySerde(
             string[] keys,
-            DataInputOutputSerde<IDictionary<string, object>>[] serdes)
+            DataInputOutputSerde[] serdes)
         {
             _keys = keys;
             _serdes = serdes;
         }
 
-        public IDictionary<string, object> Read(
+        public override IDictionary<string, object> Read(
             DataInput input,
             byte[] unitKey)
         {
-            IDictionary<string, object> map = new Dictionary<string, object>(CollectionUtil.CapacityHashMap(_keys.Length));
+            var map = new Dictionary<string, object>();
             for (var i = 0; i < _keys.Length; i++) {
-                object value = _serdes[i].Read(input, unitKey);
+                var value = _serdes[i].ReadAny(input, unitKey);
                 map.Put(_keys[i], value);
             }
 
             return map;
         }
 
-        public void Write(
+        public override void Write(
             IDictionary<string, object> @object,
             DataOutput output,
             byte[] unitKey,
             EventBeanCollatedWriter writer)
         {
             for (var i = 0; i < _keys.Length; i++) {
-                object value = _keys[i];
+                var value = _keys[i];
                 _serdes[i].Write(value, output, unitKey, writer);
             }
         }

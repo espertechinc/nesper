@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
         private readonly string _indexProp;
         private readonly Type _indexType;
         private readonly EventPropertyValueGetter _valueGetter;
-        private readonly DataInputOutputSerde<object> _indexSerde;
+        private readonly DataInputOutputSerde _indexSerde;
 
         public PropertySortedFactoryFactory(
             int indexedStreamNum,
@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             string indexProp,
             Type indexType,
             EventPropertyValueGetter valueGetter,
-            DataInputOutputSerde<object> indexSerde)
+            DataInputOutputSerde indexSerde)
             : base(indexedStreamNum, subqueryNum, isFireAndForget)
         {
             _indexProp = indexProp;

@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
         private readonly int streamNum;
         private readonly string[] propertyNames;
         private readonly Type[] propertyTypes;
-        private readonly DataInputOutputSerde<Object>[] propertySerdes;
+        private readonly DataInputOutputSerde[] propertySerdes;
         private readonly bool unique;
         private readonly EventPropertyValueGetter[] propertyGetters;
         private readonly bool isFireAndForget;
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
             int streamNum,
             string[] propertyNames,
             Type[] propertyTypes,
-            DataInputOutputSerde<object>[] propertySerdes,
+            DataInputOutputSerde[] propertySerdes,
             bool unique,
             EventPropertyValueGetter[] propertyGetters,
             bool isFireAndForget)

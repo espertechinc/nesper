@@ -20,38 +20,45 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	/// <summary>
 	/// Binding for nullable boolean values.
 	/// </summary>
-	public class DIOBigIntegerSerde : DataInputOutputSerde<BigInteger?> {
-	    public readonly static DIOBigIntegerSerde INSTANCE = new DIOBigIntegerSerde();
+	public class DIOBigIntegerSerde : DataInputOutputSerdeBase<BigInteger>
+	{
+		public static readonly DIOBigIntegerSerde INSTANCE = new DIOBigIntegerSerde();
 
-	    private DIOBigIntegerSerde() {
-	    }
+		private DIOBigIntegerSerde()
+		{
+		}
+		
+		public override void Write(
+			BigInteger @object,
+			DataOutput output,
+			byte[] pageFullKey,
+			EventBeanCollatedWriter writer)
+		{
+			Write(@object, output);
+		}
 
-	    public void Write(BigInteger? @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
-	        Write(@object, output);
-	    }
+		public void Write(
+			BigInteger bigInteger,
+			DataOutput stream)
+		{
+			DIOBigIntegerUtil.WriteBigInt(bigInteger, stream);
+		}
 
-	    public void Write(BigInteger? bigInteger, DataOutput stream) {
-	        bool isNull = bigInteger == null;
-	        stream.WriteBoolean(isNull);
-	        if (!isNull) {
-	            DIOBigIntegerUtil.WriteBigInt(bigInteger.Value, stream);
-	        }
-	    }
+		public BigInteger Read(DataInput input)
+		{
+			return ReadInternal(input);
+		}
 
-	    public BigInteger? Read(DataInput input) {
-	        return ReadInternal(input);
-	    }
+		public override BigInteger Read(
+			DataInput input,
+			byte[] resourceKey)
+		{
+			return ReadInternal(input);
+		}
 
-	    public BigInteger? Read(DataInput input, byte[] resourceKey) {
-	        return ReadInternal(input);
-	    }
-
-	    private BigInteger? ReadInternal(DataInput input) {
-	        bool isNull = input.ReadBoolean();
-	        if (isNull) {
-	            return null;
-	        }
-	        return DIOBigIntegerUtil.ReadBigInt(input);
-	    }
+		private BigInteger ReadInternal(DataInput input)
+		{
+			return DIOBigIntegerUtil.ReadBigInt(input);
+		}
 	}
 } // end of namespace

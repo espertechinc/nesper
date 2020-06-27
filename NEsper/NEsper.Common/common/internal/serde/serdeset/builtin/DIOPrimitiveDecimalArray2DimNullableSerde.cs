@@ -16,13 +16,13 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOPrimitiveDecimalArray2DimNullableSerde : DataInputOutputSerde<decimal[][]> {
-	    public readonly static DIOPrimitiveDecimalArray2DimNullableSerde INSTANCE = new DIOPrimitiveDecimalArray2DimNullableSerde();
+	public class DIOPrimitiveDecimalArray2DimNullableSerde : DataInputOutputSerdeBase<decimal[][]> {
+	    public static readonly DIOPrimitiveDecimalArray2DimNullableSerde INSTANCE = new DIOPrimitiveDecimalArray2DimNullableSerde();
 
 	    private DIOPrimitiveDecimalArray2DimNullableSerde() {
 	    }
 
-	    public void Write(decimal[][] @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
+	    public override void Write(decimal[][] @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
 	        if (@object == null) {
 	            output.WriteInt(-1);
 	            return;
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        }
 	    }
 
-	    public decimal[][] Read(DataInput input, byte[] unitKey) {
+	    public override decimal[][] Read(DataInput input, byte[] unitKey) {
 	        int len = input.ReadInt();
 	        if (len == -1) {
 	            return null;

@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 
 	        return new CodegenClass(
 		        CodegenClassType.EVENTSERDE,
-		        typeof(DataInputOutputSerde<object>),
+		        typeof(DataInputOutputSerde),
 		        className,
 		        classScope,
 		        members,

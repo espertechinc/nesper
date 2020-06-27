@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	/// <summary>
 	///     Binding for nullable character values.
 	/// </summary>
-	public class DIONullableCharacterSerde : DataInputOutputSerde<char?>
+	public class DIONullableCharacterSerde : DataInputOutputSerdeBase<char?>
     {
         public static readonly DIONullableCharacterSerde INSTANCE = new DIONullableCharacterSerde();
 
@@ -22,14 +22,14 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
         {
         }
 
-        public char? Read(
+        public override char? Read(
             DataInput input,
             byte[] resourceKey)
         {
             return ReadInternal(input);
         }
 
-        public void Write(
+        public override void Write(
             char? @object,
             DataOutput output,
             byte[] pageFullKey,

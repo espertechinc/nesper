@@ -16,9 +16,9 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOPrimitiveByteArraySerde : DataInputOutputSerde<byte[]>
+	public class DIOPrimitiveByteArraySerde : DataInputOutputSerdeBase<byte[]>
 	{
-		public readonly static DIOPrimitiveByteArraySerde INSTANCE = new DIOPrimitiveByteArraySerde();
+		public static readonly DIOPrimitiveByteArraySerde INSTANCE = new DIOPrimitiveByteArraySerde();
 
 		private DIOPrimitiveByteArraySerde()
 		{
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			return ReadInternal(input);
 		}
 
-		public void Write(
+		public override void Write(
 			byte[] @object,
 			DataOutput output,
 			byte[] unitKey,
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			WriteInternal(@object, output);
 		}
 
-		public byte[] Read(
+		public override byte[] Read(
 			DataInput input,
 			byte[] unitKey)
 		{

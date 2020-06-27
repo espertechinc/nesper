@@ -19,13 +19,13 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	/// <summary>
 	/// Binding for nullable integer values.
 	/// </summary>
-	public class DIONullableIntegerSerde : DataInputOutputSerde<int?> {
-	    public readonly static DIONullableIntegerSerde INSTANCE = new DIONullableIntegerSerde();
+	public class DIONullableIntegerSerde : DataInputOutputSerdeBase<int?> {
+	    public static readonly DIONullableIntegerSerde INSTANCE = new DIONullableIntegerSerde();
 
 	    private DIONullableIntegerSerde() {
 	    }
 
-	    public void Write(int? @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
+	    public override void Write(int? @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
 	        Write(@object, output);
 	    }
 
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        return ReadInternal(input);
 	    }
 
-	    public int? Read(DataInput input, byte[] resourceKey) {
+	    public override int? Read(DataInput input, byte[] resourceKey) {
 	        return ReadInternal(input);
 	    }
 

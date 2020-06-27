@@ -11,6 +11,8 @@ using System;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
+using com.espertech.esper.common.@internal.@event.path;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -19,15 +21,21 @@ namespace com.espertech.esper.common.@internal.serde
 {
     public class CodegenSharableSerdeClassArrayTyped : CodegenFieldSharable
     {
-        private readonly CodegenSharableSerdeName name;
-        private readonly Type[] valueTypes;
+        private readonly CodegenSharableSerdeName _name;
+        private readonly Type[] _valueTypes;
+        private readonly DataInputOutputSerdeForge[] _serdes;
+        private readonly CodegenClassScope _classScope;
 
         public CodegenSharableSerdeClassArrayTyped(
             CodegenSharableSerdeName name,
-            Type[] valueTypes)
+            Type[] valueTypes,
+            DataInputOutputSerdeForge[] serdes,
+            CodegenClassScope classScope)
         {
-            this.name = name;
-            this.valueTypes = valueTypes;
+            _name = name;
+            _valueTypes = valueTypes;
+            _serdes = serdes;
+            _classScope = classScope;
         }
 
         public Type Type()
@@ -38,8 +46,10 @@ namespace com.espertech.esper.common.@internal.serde
         public CodegenExpression InitCtorScoped()
         {
             return ExprDotMethodChain(EPStatementInitServicesConstants.REF)
-                .Get(EPStatementInitServicesConstants.DATAINPUTOUTPUTSERDEPROVIDER)
-                .Add(name.MethodName, new Type[] { typeof(object) }, Constant(valueTypes));
+                .Get(EPStatementInitServicesConstants.EVENTTYPERESOLVER)
+                .Add(EventTypeResolverConstants.GETEVENTSERDEFACTORY)
+                .Add(_name.MethodName, DataInputOutputSerdeForgeExtensions.CodegenArray(
+                    _serdes, _classScope.NamespaceScope.InitMethod, _classScope, null));
         }
 
         public override bool Equals(object o)
@@ -54,18 +64,18 @@ namespace com.espertech.esper.common.@internal.serde
 
             var that = (CodegenSharableSerdeClassArrayTyped) o;
 
-            if (name != that.name) {
+            if (_name != that._name) {
                 return false;
             }
 
             // Probably incorrect - comparing Object[] arrays with Arrays.equals
-            return CompatExtensions.AreEqual(valueTypes, that.valueTypes);
+            return CompatExtensions.AreEqual(_valueTypes, that._valueTypes);
         }
 
         public override int GetHashCode()
         {
-            var result = name.GetHashCode();
-            result = 31 * result + CompatExtensions.Hash(valueTypes);
+            var result = _name.GetHashCode();
+            result = 31 * result + CompatExtensions.Hash(_valueTypes);
             return result;
         }
 

@@ -19,13 +19,13 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	/// <summary>
 	/// Binding for nullable boolean values.
 	/// </summary>
-	public class DIONullableBooleanSerde : DataInputOutputSerde<bool?> {
-	    public readonly static DIONullableBooleanSerde INSTANCE = new DIONullableBooleanSerde();
+	public class DIONullableBooleanSerde : DataInputOutputSerdeBase<bool?> {
+	    public static readonly DIONullableBooleanSerde INSTANCE = new DIONullableBooleanSerde();
 
 	    private DIONullableBooleanSerde() {
 	    }
 
-	    public void Write(bool? @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
+	    public override void Write(bool? @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
 	        Write(@object, output);
 	    }
 
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        return ReadInternal(input);
 	    }
 
-	    public bool? Read(DataInput input, byte[] resourceKey) {
+	    public override bool? Read(DataInput input, byte[] resourceKey) {
 	        return ReadInternal(input);
 	    }
 

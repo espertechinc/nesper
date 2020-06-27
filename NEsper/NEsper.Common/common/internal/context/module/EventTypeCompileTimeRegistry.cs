@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.context.module
         public void NewType(EventType type)
         {
             try {
-                EventTypeUtility.ValidateModifiers(type.FullName, type.Metadata.BusModifier, type.Metadata.AccessModifier);
+                EventTypeUtility.ValidateModifiers(type.Name, type.Metadata.BusModifier, type.Metadata.AccessModifier);
             } catch (ExprValidationException e) {
                 throw new ArgumentException(e.Message, e);
             }

@@ -26,11 +26,13 @@ using com.espertech.esper.common.@internal.@event.xml;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.@event.path
 {
     public class EventTypeCollectorImpl : EventTypeCollector
     {
+        private readonly IContainer _container;
         private readonly IDictionary<string, EventType> _moduleEventTypes;
         private readonly BeanEventTypeFactory _beanEventTypeFactory;
         private readonly ClassLoader _classLoader;
@@ -44,6 +46,7 @@ namespace com.espertech.esper.common.@internal.@event.path
         private readonly IList<EventTypeCollectedSerde> _serdes = new List<EventTypeCollectedSerde>();
         
         public EventTypeCollectorImpl(
+            IContainer container,
             IDictionary<string, EventType> moduleEventTypes,
             BeanEventTypeFactory beanEventTypeFactory,
             ClassLoader classLoader,
@@ -55,6 +58,7 @@ namespace com.espertech.esper.common.@internal.@event.path
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             ImportService importService)
         {
+            _container = container;
             _moduleEventTypes = moduleEventTypes;
             _beanEventTypeFactory = beanEventTypeFactory;
             _classLoader = classLoader;
@@ -200,7 +204,7 @@ namespace com.espertech.esper.common.@internal.@event.path
                     schemaModel = XSDSchemaMapper.LoadAndMap(
                         config.SchemaResource,
                         config.SchemaText,
-                        _importService);
+                        _container.ResourceManager());
                 }
                 catch (Exception ex) {
                     throw new EPException(ex.Message, ex);
@@ -265,7 +269,7 @@ namespace com.espertech.esper.common.@internal.@event.path
 
         public void RegisterSerde(
             EventTypeMetadata metadata,
-            DataInputOutputSerde<object> underlyingSerde,
+            DataInputOutputSerde underlyingSerde,
             Type underlyingClass)
         {
             _serdes.Add(new EventTypeCollectedSerde(metadata, underlyingSerde, underlyingClass));

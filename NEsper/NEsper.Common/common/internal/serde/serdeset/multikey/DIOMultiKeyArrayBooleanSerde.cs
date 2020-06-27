@@ -17,11 +17,11 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.multikey
 {
-	public class DIOMultiKeyArrayBooleanSerde : DataInputOutputSerde<MultiKeyArrayBoolean>
+	public class DIOMultiKeyArrayBooleanSerde : DataInputOutputSerdeBase<MultiKeyArrayBoolean>
 	{
 		public readonly static DIOMultiKeyArrayBooleanSerde INSTANCE = new DIOMultiKeyArrayBooleanSerde();
 
-		public void Write(
+		public override void Write(
 			MultiKeyArrayBoolean mk,
 			DataOutput output,
 			byte[] unitKey,
@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.multikey
 			WriteInternal(mk.Keys, output);
 		}
 
-		public MultiKeyArrayBoolean Read(
+		public override MultiKeyArrayBoolean Read(
 			DataInput input,
 			byte[] unitKey)
 		{

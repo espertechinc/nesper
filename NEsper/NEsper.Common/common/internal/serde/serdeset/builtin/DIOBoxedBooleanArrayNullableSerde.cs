@@ -16,49 +16,70 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOBoxedBooleanArrayNullableSerde : DataInputOutputSerde<bool?[]> {
-	    public readonly static DIOBoxedBooleanArrayNullableSerde INSTANCE = new DIOBoxedBooleanArrayNullableSerde();
+	public class DIOBoxedBooleanArrayNullableSerde : DataInputOutputSerdeBase<bool?[]>
+	{
+		public static readonly DIOBoxedBooleanArrayNullableSerde INSTANCE = new DIOBoxedBooleanArrayNullableSerde();
 
-	    private DIOBoxedBooleanArrayNullableSerde() {
-	    }
+		private DIOBoxedBooleanArrayNullableSerde()
+		{
+		}
 
-	    public void Write(bool?[] @object, DataOutput output) {
-	        WriteInternal(@object, output);
-	    }
+		public void Write(
+			bool?[] @object,
+			DataOutput output)
+		{
+			WriteInternal(@object, output);
+		}
 
-	    public bool?[] Read(DataInput input) {
-	        return ReadInternal(input);
-	    }
+		public bool?[] Read(DataInput input)
+		{
+			return ReadInternal(input);
+		}
 
-	    public void Write(bool?[] @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
-	        WriteInternal(@object, output);
-	    }
+		public override void Write(
+			bool?[] @object,
+			DataOutput output,
+			byte[] unitKey,
+			EventBeanCollatedWriter writer)
+		{
+			WriteInternal(@object, output);
+		}
 
-	    public bool?[] Read(DataInput input, byte[] unitKey) {
-	        return ReadInternal(input);
-	    }
+		public override bool?[] Read(
+			DataInput input,
+			byte[] unitKey)
+		{
+			return ReadInternal(input);
+		}
 
-	    private void WriteInternal(bool?[] @object, DataOutput output) {
-	        if (@object == null) {
-	            output.WriteInt(-1);
-	            return;
-	        }
-	        output.WriteInt(@object.Length);
-	        foreach (bool? i in @object) {
-	            DIONullableBooleanSerde.INSTANCE.Write(i, output);
-	        }
-	    }
+		private void WriteInternal(
+			bool?[] @object,
+			DataOutput output)
+		{
+			if (@object == null) {
+				output.WriteInt(-1);
+				return;
+			}
 
-	    private bool?[] ReadInternal(DataInput input) {
-	        int len = input.ReadInt();
-	        if (len == -1) {
-	            return null;
-	        }
-	        bool?[] array = new bool?[len];
-	        for (int i = 0; i < len; i++) {
-	            array[i] = DIONullableBooleanSerde.INSTANCE.Read(input);
-	        }
-	        return array;
-	    }
+			output.WriteInt(@object.Length);
+			foreach (bool? i in @object) {
+				DIONullableBooleanSerde.INSTANCE.Write(i, output);
+			}
+		}
+
+		private bool?[] ReadInternal(DataInput input)
+		{
+			int len = input.ReadInt();
+			if (len == -1) {
+				return null;
+			}
+
+			bool?[] array = new bool?[len];
+			for (int i = 0; i < len; i++) {
+				array[i] = DIONullableBooleanSerde.INSTANCE.Read(input);
+			}
+
+			return array;
+		}
 	}
 } // end of namespace

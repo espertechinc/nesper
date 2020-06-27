@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 
 			return new CodegenClass(
 				CodegenClassType.KEYPROVISIONINGSERDE,
-				typeof(DataInputOutputSerde<object>),
+				typeof(DataInputOutputSerde),
 				className,
 				classScope,
 				members,

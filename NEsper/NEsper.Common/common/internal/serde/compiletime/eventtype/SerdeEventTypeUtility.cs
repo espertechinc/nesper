@@ -137,7 +137,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 			}
 			else {
 				var uuid = GenerateClassNameUUID();
-				className = GenerateClassNameWithUUID(typeof(DataInputOutputSerde<object>), eventType.Metadata.Name, uuid);
+				className = GenerateClassNameWithUUID(typeof(DataInputOutputSerde), eventType.Metadata.Name, uuid);
 			}
 
 			var optionalApplicationSerde = resolver.SerdeForEventTypeExternalProvider(eventType, raw);

@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.view.firstunique
     {
         private ExprEvaluator criteriaEval;
         private Type[] criteriaTypes;
-        private DataInputOutputSerde<object> keySerde;
+        private DataInputOutputSerde keySerde;
         private EventType eventType;
 
         public ExprEvaluator CriteriaEval {
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.view.firstunique
             set => criteriaTypes = value;
         }
 
-        public DataInputOutputSerde<object> KeySerde {
+        public DataInputOutputSerde KeySerde {
             get => keySerde;
             set => keySerde = value;
         }

@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             string deploymentId,
             VariableMetaData metaData,
             string optionalDeploymentIdContext,
-            DataInputOutputSerde<object> optionalSerde);
+            DataInputOutputSerde optionalSerde);
 
         /// <summary>
         ///     Returns a reader that provides access to variable values. The reader considers the

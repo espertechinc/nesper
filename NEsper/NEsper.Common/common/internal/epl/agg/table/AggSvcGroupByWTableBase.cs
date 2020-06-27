@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
             ApplyLeaveInternal(eventsPerStream, groupByKey, exprEvaluatorContext);
         }
 
-        void ApplyEnterGroupKey(
+        protected void ApplyEnterGroupKey(
             EventBean[] eventsPerStream,
             object groupByKeyUntransformed,
             ExprEvaluatorContext exprEvaluatorContext)
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
             ApplyEnterTableKey(eventsPerStream, groupByKey, exprEvaluatorContext);
         }
 
-        void ApplyLeaveGroupKey(
+        protected void ApplyLeaveGroupKey(
             EventBean[] eventsPerStream,
             object groupByKeyUntransformed,
             ExprEvaluatorContext exprEvaluatorContext)

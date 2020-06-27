@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
     public class TableSerdes
     {
         public TableSerdes(
-            DataInputOutputSerde<object>[] column,
+            DataInputOutputSerde[] column,
             DataInputOutputSerde<AggregationRow> aggregations)
         {
             if (column == null || aggregations == null) {
@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             Aggregations = aggregations;
         }
 
-        public DataInputOutputSerde<object>[] ColumnStartingZero { get; }
+        public DataInputOutputSerde[] ColumnStartingZero { get; }
 
         public DataInputOutputSerde<AggregationRow> Aggregations { get; }
     }

@@ -128,7 +128,7 @@ namespace com.espertech.esper.common.@internal.context.module
 
         void ActivateVariable(
             string name,
-            DataInputOutputSerde<object> serde);
+            DataInputOutputSerde serde);
 
         void ActivateContext(
             string name,

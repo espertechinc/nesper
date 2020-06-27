@@ -7,19 +7,15 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.IO;
 
 using com.espertech.esper.common.client.serde;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.io;
 
-using java.sql;
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIODateTimeOffsetArrayNullableSerde : DataInputOutputSerde<DateTimeOffset?[]>
+	public class DIODateTimeOffsetArrayNullableSerde : DataInputOutputSerdeBase<DateTimeOffset?[]>
 	{
-		public readonly static DIODateTimeOffsetArrayNullableSerde INSTANCE = new DIODateTimeOffsetArrayNullableSerde();
+		public static readonly DIODateTimeOffsetArrayNullableSerde INSTANCE = new DIODateTimeOffsetArrayNullableSerde();
 
 		private DIODateTimeOffsetArrayNullableSerde()
 		{
@@ -37,7 +33,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			return ReadInternal(input);
 		}
 
-		public void Write(
+		public override void Write(
 			DateTimeOffset?[] @object,
 			DataOutput output,
 			byte[] unitKey,
@@ -46,7 +42,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			WriteInternal(@object, output);
 		}
 
-		public DateTimeOffset?[] Read(
+		public override DateTimeOffset?[] Read(
 			DataInput input,
 			byte[] unitKey)
 		{
@@ -63,8 +59,8 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			}
 
 			output.WriteInt(@object.Length);
-			foreach (DateTimeOffset? i in @object) {
-				DIODateTimeOffsetSerde.INSTANCE.Write(i, output);
+			foreach (var value in @object) {
+				DIODateTimeOffsetSerde.INSTANCE.Write(value.Value, output);
 			}
 		}
 
@@ -75,7 +71,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 				return null;
 			}
 
-			DateTimeOffset?[] array = new DateTimeOffset?[len];
+			var array = new DateTimeOffset?[len];
 			for (int i = 0; i < len; i++) {
 				array[i] = DIODateTimeOffsetSerde.INSTANCE.Read(input);
 			}

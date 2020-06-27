@@ -34,21 +34,26 @@ namespace com.espertech.esper.common.@internal.filterspec
             CodegenMethodScope parent,
             SAIFFInitializeSymbolWEventType symbols)
         {
-            var method = parent.MakeChild(typeof(FilterSpecParam), GetType(), classScope);
-
+            var method = parent
+                .MakeChild(typeof(FilterSpecParam), GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(ExprFilterSpecLookupable), "lookupable", LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
-                .DeclareVar(typeof(FilterOperator), "op", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
+                .DeclareVar<ExprFilterSpecLookupable>(
+                    "lookupable",
+                    LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
+                .DeclareVar<FilterOperator>("op", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
+            
+            var getFilterValue = new CodegenExpressionLambda(method.Block)
+                .WithParams(FilterSpecParam.GET_FILTER_VALUE_FP);
+            var inner = NewInstance<ProxyFilterSpecParam>(
+                Ref("lookupable"),
+                Ref("op"),
+                getFilterValue);
 
-            CodegenExpressionNewAnonymousClass param = NewAnonymousClass(method.Block, typeof(FilterSpecParam), Arrays.AsList(Ref("lookupable"), Ref("op")));
-            var getFilterValue = CodegenMethod
-                .MakeParentNode(typeof(FilterValueSetParam), GetType(), classScope)
-                .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
-            param.AddMethod("getFilterValue", getFilterValue);
-            getFilterValue.Block
-                .MethodReturn(FilterValueSetParamImpl.CodegenNew(ConstantNull()));
+            getFilterValue
+                .Block
+                .BlockReturn(FilterValueSetParamImpl.CodegenNew(ConstantNull()));
 
-            method.Block.MethodReturn(param);
+            method.Block.MethodReturn(inner);
             return method;
         }
 

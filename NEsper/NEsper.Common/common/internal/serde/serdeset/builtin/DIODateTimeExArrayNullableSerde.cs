@@ -12,9 +12,9 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIODateTimeExArrayNullableSerde : DataInputOutputSerde<DateTimeEx[]>
+	public class DIODateTimeExArrayNullableSerde : DataInputOutputSerdeBase<DateTimeEx[]>
 	{
-		public readonly static DIODateTimeExArrayNullableSerde INSTANCE = new DIODateTimeExArrayNullableSerde();
+		public static readonly DIODateTimeExArrayNullableSerde INSTANCE = new DIODateTimeExArrayNullableSerde();
 
 		private DIODateTimeExArrayNullableSerde()
 		{
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			return ReadInternal(input);
 		}
 
-		public void Write(
+		public override void Write(
 			DateTimeEx[] @object,
 			DataOutput output,
 			byte[] unitKey,
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			WriteInternal(@object, output);
 		}
 
-		public DateTimeEx[] Read(
+		public override DateTimeEx[] Read(
 			DataInput input,
 			byte[] unitKey)
 		{

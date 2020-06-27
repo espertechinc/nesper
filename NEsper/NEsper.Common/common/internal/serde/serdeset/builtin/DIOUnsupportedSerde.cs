@@ -16,15 +16,15 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOUnsupportedSerde<TE> : DataInputOutputSerde<TE>
+	public class DIOUnsupportedSerde<TE> : DataInputOutputSerdeBase<TE>
 	{
-		public readonly static DIOUnsupportedSerde<TE> INSTANCE = new DIOUnsupportedSerde<TE>();
+		public static readonly DIOUnsupportedSerde<TE> INSTANCE = new DIOUnsupportedSerde<TE>();
 
 		private DIOUnsupportedSerde()
 		{
 		}
 
-		public void Write(
+		public override void Write(
 			TE @object,
 			DataOutput output,
 			byte[] unitKey,
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			throw new UnsupportedOperationException("Operation not supported");
 		}
 
-		public TE Read(
+		public override TE Read(
 			DataInput input,
 			byte[] unitKey)
 		{

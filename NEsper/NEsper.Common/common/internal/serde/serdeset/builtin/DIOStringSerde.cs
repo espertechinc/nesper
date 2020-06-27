@@ -19,13 +19,13 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	/// <summary>
 	/// Binding for (nullable) String-typed values.
 	/// </summary>
-	public class DIOStringSerde : DataInputOutputSerde<string> {
-	    public readonly static DIOStringSerde INSTANCE = new DIOStringSerde();
+	public class DIOStringSerde : DataInputOutputSerdeBase<string> {
+	    public static readonly DIOStringSerde INSTANCE = new DIOStringSerde();
 
 	    private DIOStringSerde() {
 	    }
 
-	    public void Write(string @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
+	    public override void Write(string @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
 	        Write(@object, output);
 	    }
 
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        return ReadInternal(input);
 	    }
 
-	    public string Read(DataInput input, byte[] resourceKey) {
+	    public override string Read(DataInput input, byte[] resourceKey) {
 	        return ReadInternal(input);
 	    }
 

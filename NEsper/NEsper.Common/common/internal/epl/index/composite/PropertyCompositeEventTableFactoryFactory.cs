@@ -23,11 +23,11 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
         private readonly EventPropertyValueGetter _keyGetter;
         private readonly string[] _keyProps;
         private readonly Type[] _keyTypes;
-        private readonly DataInputOutputSerde<object> _keySerde;
+        private readonly DataInputOutputSerde _keySerde;
         private readonly EventPropertyValueGetter[] _rangeGetters;
         private readonly string[] _rangeProps;
         private readonly Type[] _rangeTypes;
-        private readonly DataInputOutputSerde<object>[] _rangeKeySerdes;
+        private readonly DataInputOutputSerde[] _rangeKeySerdes;
         private readonly int? _subqueryNum;
 
         public PropertyCompositeEventTableFactoryFactory(

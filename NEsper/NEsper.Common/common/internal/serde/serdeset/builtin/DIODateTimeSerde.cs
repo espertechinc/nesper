@@ -16,28 +16,28 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIODateTimeSerde : DataInputOutputSerde<DateTime?>
+	public class DIODateTimeSerde : DataInputOutputSerdeBase<DateTime>
 	{
-		public readonly static DIODateTimeSerde INSTANCE = new DIODateTimeSerde();
+		public static readonly DIODateTimeSerde INSTANCE = new DIODateTimeSerde();
 
 		private DIODateTimeSerde()
 		{
 		}
 
 		public void Write(
-			DateTime? @object,
+			DateTime @object,
 			DataOutput output)
 		{
 			WriteInternal(@object, output);
 		}
 
-		public DateTime? Read(DataInput input)
+		public DateTime Read(DataInput input)
 		{
 			return ReadInternal(input);
 		}
 
-		public void Write(
-			DateTime? @object,
+		public override void Write(
+			DateTime @object,
 			DataOutput output,
 			byte[] unitKey,
 			EventBeanCollatedWriter writer)
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			WriteInternal(@object, output);
 		}
 
-		public DateTime? Read(
+		public override DateTime Read(
 			DataInput input,
 			byte[] unitKey)
 		{
@@ -53,25 +53,16 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 		}
 
 		internal static void WriteInternal(
-			DateTime? @object,
+			DateTime @object,
 			DataOutput output)
 		{
-			if (@object == null) {
-				output.WriteLong(-1);
-				return;
-			}
-
-			output.WriteLong(DateTimeHelper.UtcNanos(@object.Value));
+			output.WriteLong(DateTimeHelper.UtcNanos(@object));
 		}
 
-		internal static DateTime? ReadInternal(DataInput input)
+		internal static DateTime ReadInternal(DataInput input)
 		{
-			long value = input.ReadLong();
-			if (value == -1) {
-				return null;
-			}
-
-			return DateTimeHelper.TimeFromNanos(value);
+			long utcNanos = input.ReadLong();
+			return DateTimeHelper.TimeFromNanos(utcNanos);
 		}
 	}
 } // end of namespace

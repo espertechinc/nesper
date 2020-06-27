@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         private PropertyHashedEventTableFactory primaryKeyIndexFactory;
         private StatementContext statementContextCreateTable;
         private TableSerdes tableSerdes;
-        private DataInputOutputSerde<Object> primaryKeySerde;
+        private DataInputOutputSerde primaryKeySerde;
         private MultiKeyFromObjectArray primaryKeyObjectArrayTransform;
         private MultiKeyFromMultiKey primaryKeyIntoTableTransform;
 
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             set => tableSerdes = value;
         }
 
-        public DataInputOutputSerde<object> PrimaryKeySerde {
+        public DataInputOutputSerde PrimaryKeySerde {
             get => primaryKeySerde;
             set => primaryKeySerde = value;
         }

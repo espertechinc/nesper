@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.view.derived
             string[] additionalProps,
             ExprEvaluator[] additionalEvals,
             Type[] additionalTypes,
-            DataInputOutputSerde<object>[] additionalSerdes)
+            DataInputOutputSerde[] additionalSerdes)
         {
             this.AdditionalProps = additionalProps;
             this.AdditionalEvals = additionalEvals;
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         public string[] AdditionalProps { get; }
 
-        public DataInputOutputSerde<object>[] AdditionalSerdes { get; }
+        public DataInputOutputSerde[] AdditionalSerdes { get; }
 
         public ExprEvaluator[] AdditionalEvals { get; }
 

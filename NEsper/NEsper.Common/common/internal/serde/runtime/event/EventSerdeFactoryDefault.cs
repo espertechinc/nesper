@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.serde.runtime.@event
 			return DIOUnsupportedSerde<EventBean>.INSTANCE;
 		}
 
-		public DataInputOutputSerde<object> ListEvents(EventType eventType)
+		public DataInputOutputSerde ListEvents(EventType eventType)
 		{
 			return DIOUnsupportedSerde<object>.INSTANCE;
 		}
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.serde.runtime.@event
 			return DIOUnsupportedSerde<EventBean>.INSTANCE;
 		}
 
-		public DataInputOutputSerde<object> NullableEventOrUnderlying(EventType eventType)
+		public DataInputOutputSerde NullableEventOrUnderlying(EventType eventType)
 		{
 			return DIOUnsupportedSerde<object>.INSTANCE;
 		}
@@ -74,12 +74,12 @@ namespace com.espertech.esper.common.@internal.serde.runtime.@event
 			return null;
 		}
 
-		public DataInputOutputSerde<object> ObjectArrayMayNullNull<E>(DataInputOutputSerde<E>[] serdes)
+		public DataInputOutputSerde ObjectArrayMayNullNull<E>(DataInputOutputSerde<E>[] serdes)
 		{
 			return DIOUnsupportedSerde<object>.INSTANCE;
 		}
 
-		public DataInputOutputSerde<object> NullableEventArrayOrUnderlying(EventType eventType)
+		public DataInputOutputSerde NullableEventArrayOrUnderlying(EventType eventType)
 		{
 			return DIOUnsupportedSerde<object>.INSTANCE;
 		}

@@ -11,7 +11,7 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.@event.json.serde
 {
-    public class DIOJsonAnyValueSerde : DataInputOutputSerde<object>
+    public class DIOJsonAnyValueSerde : DataInputOutputSerde
     {
         public static readonly DIOJsonAnyValueSerde INSTANCE = new DIOJsonAnyValueSerde();
 
@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serde
             DIOJsonSerdeHelper.WriteValue(@object, output);
         }
 
-        public object Read(
+        public object ReadAny(
             DataInput input,
             byte[] unitKey)
         {

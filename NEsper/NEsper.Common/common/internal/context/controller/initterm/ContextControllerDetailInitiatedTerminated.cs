@@ -27,6 +27,6 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 
         public Type[] DistinctTypes { get; set; }
         
-        public DataInputOutputSerde<object> DistinctSerde { get; set; }
+        public DataInputOutputSerde DistinctSerde { get; set; }
     }
 } // end of namespace

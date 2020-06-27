@@ -19,13 +19,13 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	/// <summary>
 	/// Binding for nullable float values.
 	/// </summary>
-	public class DIONullableFloatSerde : DataInputOutputSerde<float?> {
-	    public readonly static DIONullableFloatSerde INSTANCE = new DIONullableFloatSerde();
+	public class DIONullableFloatSerde : DataInputOutputSerdeBase<float?> {
+	    public static readonly DIONullableFloatSerde INSTANCE = new DIONullableFloatSerde();
 
 	    private DIONullableFloatSerde() {
 	    }
 
-	    public void Write(float? @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
+	    public override void Write(float? @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
 	        Write(@object, output);
 	    }
 
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        return ReadInternal(input);
 	    }
 
-	    public float? Read(DataInput input, byte[] resourceKey) {
+	    public override float? Read(DataInput input, byte[] resourceKey) {
 	        return ReadInternal(input);
 	    }
 

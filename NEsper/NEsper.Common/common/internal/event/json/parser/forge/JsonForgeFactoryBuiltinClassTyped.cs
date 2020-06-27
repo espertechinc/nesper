@@ -63,16 +63,16 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 			WRITE_FORGES.Put(typeof(string), JsonWriteForgeString.INSTANCE);
 			WRITE_FORGES.Put(typeof(char?), JsonWriteForgeStringWithToString.INSTANCE);
 			WRITE_FORGES.Put(typeof(bool?), JsonWriteForgeBoolean.INSTANCE);
-			WRITE_FORGES.Put(typeof(byte?), JsonWriteForgeNumberWithToString.INSTANCE);
-			WRITE_FORGES.Put(typeof(short?), JsonWriteForgeNumberWithToString.INSTANCE);
-			WRITE_FORGES.Put(typeof(int?), JsonWriteForgeNumberWithToString.INSTANCE);
-			WRITE_FORGES.Put(typeof(long?), JsonWriteForgeNumberWithToString.INSTANCE);
-			WRITE_FORGES.Put(typeof(float?), JsonWriteForgeNumberWithToString.INSTANCE);
-			WRITE_FORGES.Put(typeof(double?), JsonWriteForgeNumberWithToString.INSTANCE);
-			WRITE_FORGES.Put(typeof(decimal?), JsonWriteForgeNumberWithToString.INSTANCE);
+			WRITE_FORGES.Put(typeof(byte?), JsonWriteForgeNumber.INSTANCE);
+			WRITE_FORGES.Put(typeof(short?), JsonWriteForgeNumber.INSTANCE);
+			WRITE_FORGES.Put(typeof(int?), JsonWriteForgeNumber.INSTANCE);
+			WRITE_FORGES.Put(typeof(long?), JsonWriteForgeNumber.INSTANCE);
+			WRITE_FORGES.Put(typeof(float?), JsonWriteForgeNumber.INSTANCE);
+			WRITE_FORGES.Put(typeof(double?), JsonWriteForgeNumber.INSTANCE);
+			WRITE_FORGES.Put(typeof(decimal?), JsonWriteForgeNumber.INSTANCE);
 
-			WRITE_FORGES.Put(typeof(BigInteger?), JsonWriteForgeNumberWithToString.INSTANCE);
-			WRITE_FORGES.Put(typeof(BigInteger), JsonWriteForgeNumberWithToString.INSTANCE);
+			WRITE_FORGES.Put(typeof(BigInteger?), JsonWriteForgeNumber.INSTANCE);
+			WRITE_FORGES.Put(typeof(BigInteger), JsonWriteForgeNumber.INSTANCE);
 			WRITE_FORGES.Put(typeof(Guid), JsonWriteForgeStringWithToString.INSTANCE);
 			WRITE_FORGES.Put(typeof(DateTimeEx), JsonWriteForgeStringWithToString.INSTANCE);
 			WRITE_FORGES.Put(typeof(DateTimeOffset), JsonWriteForgeStringWithToString.INSTANCE);
@@ -323,7 +323,7 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 						}
 					}
 					else {
-						Type startArrayDelegateClass = START_ARRAY_FORGES.Get(type);
+						var startArrayDelegateClass = START_ARRAY_FORGES.Get(type);
 						if (startArrayDelegateClass == null) {
 							throw GetUnsupported(type, fieldName);
 						}

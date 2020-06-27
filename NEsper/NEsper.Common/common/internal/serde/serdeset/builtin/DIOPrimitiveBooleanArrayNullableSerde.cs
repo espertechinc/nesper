@@ -16,8 +16,8 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOPrimitiveBooleanArrayNullableSerde : DataInputOutputSerde<bool[]> {
-	    public readonly static DIOPrimitiveBooleanArrayNullableSerde INSTANCE = new DIOPrimitiveBooleanArrayNullableSerde();
+	public class DIOPrimitiveBooleanArrayNullableSerde : DataInputOutputSerdeBase<bool[]> {
+	    public static readonly DIOPrimitiveBooleanArrayNullableSerde INSTANCE = new DIOPrimitiveBooleanArrayNullableSerde();
 
 	    private DIOPrimitiveBooleanArrayNullableSerde() {
 	    }
@@ -30,11 +30,11 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        return ReadInternal(input);
 	    }
 
-	    public void Write(bool[] @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
+	    public override void Write(bool[] @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
 	        WriteInternal(@object, output);
 	    }
 
-	    public bool[] Read(DataInput input, byte[] unitKey) {
+	    public override bool[] Read(DataInput input, byte[] unitKey) {
 	        return ReadInternal(input);
 	    }
 

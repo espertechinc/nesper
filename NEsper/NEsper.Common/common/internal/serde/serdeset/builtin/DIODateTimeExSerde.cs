@@ -17,8 +17,8 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIODateTimeExSerde : DataInputOutputSerde<DateTimeEx> {
-	    public readonly static DIODateTimeExSerde INSTANCE = new DIODateTimeExSerde();
+	public class DIODateTimeExSerde : DataInputOutputSerdeBase<DateTimeEx> {
+	    public static readonly DIODateTimeExSerde INSTANCE = new DIODateTimeExSerde();
 
 	    private DIODateTimeExSerde() {
 	    }
@@ -31,11 +31,11 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        return ReadValue(input);
 	    }
 
-	    public void Write(DateTimeEx @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
+	    public override void Write(DateTimeEx @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
 	        WriteValue(@object, output);
 	    }
 
-	    public DateTimeEx Read(DataInput input, byte[] unitKey) {
+	    public override DateTimeEx Read(DataInput input, byte[] unitKey) {
 	        return ReadValue(input);
 	    }
 

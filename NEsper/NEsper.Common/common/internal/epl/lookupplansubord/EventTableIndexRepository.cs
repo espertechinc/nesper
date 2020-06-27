@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             string indexName,
             string indexModuleName,
             AgentInstanceContext agentInstanceContext,
-            DataInputOutputSerde<object> optionalValueSerde)
+            DataInputOutputSerde optionalValueSerde)
         {
             IndexMultiKey indexMultiKey = desc.ToIndexMultiKey();
             if (desc.HashPropsAsList.IsEmpty() &&
@@ -159,7 +159,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             IEnumerable<EventBean> dataWindowContents,
             AgentInstanceContext agentInstanceContext,
             bool allowIndexExists,
-            DataInputOutputSerde<object> optionalValueSerde)
+            DataInputOutputSerde optionalValueSerde)
         {
             if (explicitIndexes.ContainsKey(explicitIndexName)) {
                 if (allowIndexExists) {
@@ -186,7 +186,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             EventType eventType,
             IEnumerable<EventBean> dataWindowContents,
             AgentInstanceContext agentInstanceContext,
-            DataInputOutputSerde<object> optionalValueSerde)
+            DataInputOutputSerde optionalValueSerde)
         {
             Pair<IndexMultiKey, EventTableAndNamePair> pair = AddExplicitIndexOrReuse(
                 desc,
@@ -222,7 +222,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             string indexModuleName,
             bool mustCoerce,
             AgentInstanceContext agentInstanceContext,
-            DataInputOutputSerde<object> optionalValueSerde)
+            DataInputOutputSerde optionalValueSerde)
         {
             // not resolved as full match and not resolved as unique index match, allocate
             IndexMultiKey indexPropKey = indexItem.ToIndexMultiKey();

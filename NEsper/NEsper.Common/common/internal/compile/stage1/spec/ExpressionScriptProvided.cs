@@ -67,7 +67,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
         public CodegenExpression Make(
             CodegenMethodScope parent,
-            ModuleScriptInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(ExpressionScriptProvided), GetType(), classScope);

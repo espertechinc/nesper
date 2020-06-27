@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
                 expressions[i] = serdes[i].Codegen(method, classScope, optionalEventTypeResolver);
             }
 
-            return NewArrayWithInit(typeof(DataInputOutputSerde<object>), expressions);
+            return NewArrayWithInit(typeof(DataInputOutputSerde), expressions);
         }
     }
 }

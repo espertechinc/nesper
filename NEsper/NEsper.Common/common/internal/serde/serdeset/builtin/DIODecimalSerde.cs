@@ -19,8 +19,8 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	/// <summary>
 	/// Binding for non-null decimal values.
 	/// </summary>
-	public class DIODecimalSerde : DataInputOutputSerde<decimal> {
-	    public readonly static DIODecimalSerde INSTANCE = new DIODecimalSerde();
+	public class DIODecimalSerde : DataInputOutputSerdeBase<decimal> {
+	    public static readonly DIODecimalSerde INSTANCE = new DIODecimalSerde();
 
 	    /// <summary>
 	    /// Ctor.
@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	    private DIODecimalSerde() {
 	    }
 
-	    public void Write(decimal @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
+	    public override void Write(decimal @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
 	        output.WriteDecimal(@object);
 	    }
 
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        stream.WriteDecimal(@object);
 	    }
 
-	    public decimal Read(DataInput s, byte[] resourceKey) {
+	    public override decimal Read(DataInput s, byte[] resourceKey) {
 	        return s.ReadDecimal();
 	    }
 

@@ -17,8 +17,7 @@ using com.espertech.esper.common.@internal.@event.path;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.compat.collections;
 
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; // exprDotMethodChain
-using static com.espertech.esper.common.@internal.@event.path.EventTypeResolver; // GETEVENTSERDEFACTORY
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.serde.compiletime.sharable
 {
@@ -49,8 +48,8 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.sharable
 		public CodegenExpression InitCtorScoped()
 		{
 			return ExprDotMethodChain(EPStatementInitServicesConstants.REF)
-				.Add(EPStatementInitServicesConstants.GETEVENTTYPERESOLVER)
-				.Add(EventTypeResolver.GETEVENTSERDEFACTORY)
+				.Get(EPStatementInitServicesConstants.EVENTTYPERESOLVER)
+				.Add(EventTypeResolverConstants.GETEVENTSERDEFACTORY)
 				.Add(
 					_name.MethodName,
 					DataInputOutputSerdeForgeExtensions.CodegenArray(

@@ -33,6 +33,12 @@ namespace com.espertech.esper.common.@internal.context.util
             this.statementContext = statementContext;
             this.allowTableAccess = allowTableAccess;
         }
+        
+        public virtual object FilterReboolConstant
+        {
+            get => null;
+            set { }
+        }
 
         /// <summary>
         ///     Returns the time provider.
@@ -68,7 +74,7 @@ namespace com.espertech.esper.common.@internal.context.util
             throw new UnsupportedOperationException("Agent-instance lock not available");
 
         public ExceptionHandlingService ExceptionHandlingService => statementContext.ExceptionHandlingService;
-        
+
         public TableExprEvaluatorContext TableExprEvaluatorContext {
             get {
                 if (!allowTableAccess) {

@@ -114,7 +114,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             set => _namespaceContext = value;
         }
 
-        public DataInputOutputSerde<object> UnderlyingBindingDIO
+        public DataInputOutputSerde UnderlyingBindingDIO
         {
             get => null;
             set => throw new UnsupportedOperationException("XML event type does not receive a serde");

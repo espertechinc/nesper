@@ -622,6 +622,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
         private static ResolveTypesResult ResolveTypes(
             CreateDataFlowDesc desc,
+            string @namespace,
             StatementBaseInfo @base,
             StatementCompileTimeServices services)
         {

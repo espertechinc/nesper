@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             bool coerceOnAddOnly,
             bool unique,
             string optionalIndexName,
-            DataInputOutputSerde<Object> optionalValueSerde,
+            DataInputOutputSerde optionalValueSerde,
             bool isFireAndForget)
         {
             var indexProps = item.HashProps;

@@ -16,13 +16,13 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOPrimitiveBooleanArray2DimNullableSerde : DataInputOutputSerde<bool[][]> {
-	    public readonly static DIOPrimitiveBooleanArray2DimNullableSerde INSTANCE = new DIOPrimitiveBooleanArray2DimNullableSerde();
+	public class DIOPrimitiveBooleanArray2DimNullableSerde : DataInputOutputSerdeBase<bool[][]> {
+	    public static readonly DIOPrimitiveBooleanArray2DimNullableSerde INSTANCE = new DIOPrimitiveBooleanArray2DimNullableSerde();
 
 	    private DIOPrimitiveBooleanArray2DimNullableSerde() {
 	    }
 
-	    public void Write(bool[][] @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
+	    public override void Write(bool[][] @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
 	        if (@object == null) {
 	            output.WriteInt(-1);
 	            return;
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        }
 	    }
 
-	    public bool[][] Read(DataInput input, byte[] unitKey) {
+	    public override bool[][] Read(DataInput input, byte[] unitKey) {
 	        int len = input.ReadInt();
 	        if (len == -1) {
 	            return null;

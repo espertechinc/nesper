@@ -19,13 +19,13 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	/// <summary>
 	/// Binding for non-null byte values.
 	/// </summary>
-	public class DIOByteSerde : DataInputOutputSerde<byte> {
-	    public readonly static DIOByteSerde INSTANCE = new DIOByteSerde();
+	public class DIOByteSerde : DataInputOutputSerdeBase<byte> {
+	    public static readonly DIOByteSerde INSTANCE = new DIOByteSerde();
 
 	    private DIOByteSerde() {
 	    }
 
-	    public void Write(byte @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
+	    public override void Write(byte @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
 	        output.WriteByte(@object);
 	    }
 
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        stream.WriteByte(@object);
 	    }
 
-	    public byte Read(DataInput s, byte[] resourceKey) {
+	    public override byte Read(DataInput s, byte[] resourceKey) {
 	        return s.ReadByte();
 	    }
 

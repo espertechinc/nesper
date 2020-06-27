@@ -16,15 +16,15 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOPrimitiveCharArrayNullableSerde : DataInputOutputSerde<char[]>
+	public class DIOPrimitiveCharArrayNullableSerde : DataInputOutputSerdeBase<char[]>
 	{
-		public readonly static DIOPrimitiveCharArrayNullableSerde INSTANCE = new DIOPrimitiveCharArrayNullableSerde();
+		public static readonly DIOPrimitiveCharArrayNullableSerde INSTANCE = new DIOPrimitiveCharArrayNullableSerde();
 
 		private DIOPrimitiveCharArrayNullableSerde()
 		{
 		}
 
-		public void Write(
+		public override void Write(
 			char[] @object,
 			DataOutput output,
 			byte[] unitKey,
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			WriteInternal(@object, output);
 		}
 
-		public char[] Read(
+		public override char[] Read(
 			DataInput input,
 			byte[] unitKey)
 		{

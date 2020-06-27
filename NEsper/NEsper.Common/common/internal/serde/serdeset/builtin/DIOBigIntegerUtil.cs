@@ -17,39 +17,44 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOBigIntegerUtil {
-	    /// <summary>
-	    /// NOTE: Code-generation-invoked method, method name and parameter order matters
-	    /// </summary>
-	    /// <param name="bigInteger">value</param>
-	    /// <param name="stream">output</param>
-	    /// <throws>IOException io error</throws>
-	    public static void WriteBigInt(BigInteger bigInteger, DataOutput stream) {
-	        byte[] a = bigInteger.ToByteArray();
-	        if (a.Length > Short.MAX_VALUE) {
-	            throw new ArgumentException("BigInteger byte array is larger than 0x7fff bytes");
-	        }
-	        int firstByte = a[0];
-	        stream.WriteShort((firstByte < 0) ? (-a.Length) : a.Length);
-	        stream.WriteByte(firstByte);
-	        stream.Write(a, 1, a.Length - 1);
-	    }
+	public class DIOBigIntegerUtil
+	{
+		/// <summary>
+		/// NOTE: Code-generation-invoked method, method name and parameter order matters
+		/// </summary>
+		/// <param name="bigInteger">value</param>
+		/// <param name="stream">output</param>
+		/// <throws>IOException io error</throws>
+		public static void WriteBigInt(
+			BigInteger bigInteger,
+			DataOutput stream)
+		{
+			var byteArray = bigInteger.ToByteArray();
+			if (byteArray.Length > Int16.MaxValue) {
+				throw new ArgumentException("BigInteger byte array is larger than 0x7fff bytes");
+			}
 
-	    /// <summary>
-	    /// NOTE: Code-generation-invoked method, method name and parameter order matters
-	    /// </summary>
-	    /// <param name="input">input</param>
-	    /// <returns>big int</returns>
-	    /// <throws>IOException io error</throws>
-	    public static BigInteger ReadBigInt(DataInput input) {
-	        int len = input.ReadShort();
-	        if (len < 0) {
-	            len = -len;
-	        }
-	        byte[] a = new byte[len];
-	        a[0] = input.ReadByte();
-	        input.ReadFully(a, 1, a.Length - 1);
-	        return new BigInteger(a);
-	    }
+			var length = (short) byteArray.Length;
+			stream.WriteShort(length);
+			stream.Write(byteArray, 0, byteArray.Length);
+		}
+
+		/// <summary>
+		/// NOTE: Code-generation-invoked method, method name and parameter order matters
+		/// </summary>
+		/// <param name="input">input</param>
+		/// <returns>big int</returns>
+		/// <throws>IOException io error</throws>
+		public static BigInteger ReadBigInt(DataInput input)
+		{
+			var len = input.ReadShort();
+			if (len < 0) {
+				throw new IllegalStateException("Negative length on byte array");
+			}
+
+			var byteArray = new byte[len];
+			input.ReadFully(byteArray);
+			return new BigInteger(byteArray);
+		}
 	}
 } // end of namespace

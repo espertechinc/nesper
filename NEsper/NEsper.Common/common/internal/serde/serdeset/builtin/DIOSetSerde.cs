@@ -18,16 +18,16 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOSetSerde : DataInputOutputSerde<ISet<object>>
+	public class DIOSetSerde : DataInputOutputSerdeBase<ISet<object>>
 	{
-		private readonly DataInputOutputSerde<object> inner;
+		private readonly DataInputOutputSerde inner;
 
-		public DIOSetSerde(DataInputOutputSerde<object> inner)
+		public DIOSetSerde(DataInputOutputSerde inner)
 		{
 			this.inner = inner;
 		}
 
-		public void Write(
+		public override void Write(
 			ISet<object> set,
 			DataOutput output,
 			byte[] unitKey,
@@ -39,14 +39,14 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			}
 		}
 
-		public ISet<object> Read(
+		public override ISet<object> Read(
 			DataInput input,
 			byte[] unitKey)
 		{
 			var size = input.ReadInt();
 			var set = new HashSet<object>();
 			for (int i = 0; i < size; i++) {
-				set.Add(inner.Read(input, unitKey));
+				set.Add(inner.ReadAny(input, unitKey));
 			}
 
 			return set;

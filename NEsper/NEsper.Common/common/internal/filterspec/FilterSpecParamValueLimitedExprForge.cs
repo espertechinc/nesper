@@ -50,29 +50,34 @@ namespace com.espertech.esper.common.@internal.filterspec
 			CodegenMethodScope parent,
 			SAIFFInitializeSymbolWEventType symbols)
 		{
-			var method = parent.MakeChild(typeof(FilterSpecParam), this.GetType(), classScope);
+			var method = parent
+				.MakeChild(typeof(FilterSpecParam), GetType(), classScope);
+			method.Block
+				.DeclareVar<ExprFilterSpecLookupable>(
+					"lookupable",
+					LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
+				.DeclareVar<FilterOperator>("op", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
+
+			var getFilterValue = new CodegenExpressionLambda(method.Block)
+				.WithParams(FilterSpecParam.GET_FILTER_VALUE_FP);
+			var inner = NewInstance<ProxyFilterSpecParam>(
+				Ref("lookupable"),
+				Ref("op"),
+				getFilterValue);
+
 			var rhsExpression = CodegenLegoMethodExpression.CodegenExpression(_value.Forge, method, classScope);
 			var matchEventConvertor = _convertor.Make(method, classScope);
-
-			method.Block
-				.DeclareVar(typeof(ExprFilterSpecLookupable), "lookupable", LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
-				.DeclareVar(typeof(FilterOperator), "op", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
-
-			CodegenExpressionNewAnonymousClass param = NewAnonymousClass(method.Block, typeof(FilterSpecParam), Arrays.AsList(Ref("lookupable"), Ref("op")));
-			var getFilterValue = CodegenMethod.MakeParentNode(typeof(FilterValueSetParam), this.GetType(), classScope)
-				.AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
-			param.AddMethod("getFilterValue", getFilterValue);
-
+			
 			CodegenExpression valueExpr = LocalMethod(rhsExpression, Ref("eps"), ConstantTrue(), REF_EXPREVALCONTEXT);
 			if (_numberCoercer != null) {
 				valueExpr = _numberCoercer.CoerceCodegenMayNullBoxed(valueExpr, _value.Forge.EvaluationType, method, classScope);
 			}
 
 			getFilterValue.Block
-				.DeclareVar(typeof(EventBean[]), "eps", LocalMethod(matchEventConvertor, FilterSpecParam.REF_MATCHEDEVENTMAP))
-				.MethodReturn(FilterValueSetParamImpl.CodegenNew(valueExpr));
+				.DeclareVar<EventBean[]>("eps", LocalMethod(matchEventConvertor, FilterSpecParam.REF_MATCHEDEVENTMAP))
+				.BlockReturn(FilterValueSetParamImpl.CodegenNew(valueExpr));
 
-			method.Block.MethodReturn(param);
+			method.Block.MethodReturn(inner);
 			return method;
 		}
 

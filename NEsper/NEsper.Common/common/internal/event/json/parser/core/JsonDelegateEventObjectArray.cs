@@ -53,9 +53,12 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.core
             ICollection<object> events,
             Type componentType)
         {
-            var array = Array.CreateInstance(componentType, events.Count);
-            for (var ii = 0; ii < events.Count; ii++) {
-                array.SetValue(events[ii], ii);
+            var length = events.Count;
+            var array = Array.CreateInstance(componentType, length);
+            var enumerator = events.GetEnumerator();
+            
+            for (var ii = 0; ii < length && enumerator.MoveNext(); ii++) {
+                array.SetValue(enumerator.Current, ii);
             }
 
             return array;

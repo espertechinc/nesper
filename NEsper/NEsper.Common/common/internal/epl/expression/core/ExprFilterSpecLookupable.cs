@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 
         public bool IsNonPropertyEval => _isNonPropertyEval;
 
-        public DataInputOutputSerde<object> ValueSerde => ValueSerde;
+        public DataInputOutputSerde ValueSerde => ValueSerde;
 
         public ExprEvaluator Expr => _expr;
 

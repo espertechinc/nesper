@@ -6,59 +6,75 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.IO;
-
 using com.espertech.esper.common.client.serde;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOBoxedCharacterArray2DimNullableSerde : DataInputOutputSerde<char?[][]> {
-	    public readonly static DIOBoxedCharacterArray2DimNullableSerde INSTANCE = new DIOBoxedCharacterArray2DimNullableSerde();
+    public class DIOBoxedCharacterArray2DimNullableSerde : DataInputOutputSerdeBase<char?[][]>
+    {
+        public static readonly DIOBoxedCharacterArray2DimNullableSerde INSTANCE = new DIOBoxedCharacterArray2DimNullableSerde();
 
-	    private DIOBoxedCharacterArray2DimNullableSerde() {
-	    }
+        private DIOBoxedCharacterArray2DimNullableSerde()
+        {
+        }
 
-	    public void Write(char?[][] @object, DataOutput output) {
-	        WriteInternal(@object, output);
-	    }
+        public void Write(
+            char?[][] @object,
+            DataOutput output)
+        {
+            WriteInternal(@object, output);
+        }
 
-	    public char?[][] Read(DataInput input) {
-	        return ReadInternal(input);
-	    }
+        public char?[][] Read(DataInput input)
+        {
+            return ReadInternal(input);
+        }
 
-	    public void Write(char?[][] @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
-	        WriteInternal(@object, output);
-	    }
+        public override void Write(
+            char?[][] @object,
+            DataOutput output,
+            byte[] unitKey,
+            EventBeanCollatedWriter writer)
+        {
+            WriteInternal(@object, output);
+        }
 
-	    public char?[][] Read(DataInput input, byte[] unitKey) {
-	        return ReadInternal(input);
-	    }
+        public override char?[][] Read(
+            DataInput input,
+            byte[] unitKey)
+        {
+            return ReadInternal(input);
+        }
 
-	    private void WriteInternal(char?[][] @object, DataOutput output) {
-	        if (@object == null) {
-	            output.WriteInt(-1);
-	            return;
-	        }
-	        output.WriteInt(@object.Length);
-	        foreach (char?[] i in @object) {
-	            DIOBoxedCharacterArrayNullableSerde.INSTANCE.Write(i, output);
-	        }
-	    }
+        private void WriteInternal(
+            char?[][] @object,
+            DataOutput output)
+        {
+            if (@object == null) {
+                output.WriteInt(-1);
+                return;
+            }
 
-	    private char?[][] ReadInternal(DataInput input) {
-	        int len = input.ReadInt();
-	        if (len == -1) {
-	            return null;
-	        }
-	        char?[][] array = new char?[len][];
-	        for (int i = 0; i < len; i++) {
-	            array[i] = DIOBoxedCharacterArrayNullableSerde.INSTANCE.Read(input);
-	        }
-	        return array;
-	    }
-	}
+            output.WriteInt(@object.Length);
+            foreach (var i in @object) {
+                DIOBoxedCharacterArrayNullableSerde.INSTANCE.Write(i, output);
+            }
+        }
+
+        private char?[][] ReadInternal(DataInput input)
+        {
+            var len = input.ReadInt();
+            if (len == -1) {
+                return null;
+            }
+
+            var array = new char?[len][];
+            for (var i = 0; i < len; i++) {
+                array[i] = DIOBoxedCharacterArrayNullableSerde.INSTANCE.Read(input);
+            }
+
+            return array;
+        }
+    }
 } // end of namespace

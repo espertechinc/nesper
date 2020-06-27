@@ -36,6 +36,12 @@ namespace com.espertech.esper.common.@internal.context.util
             this.context = context;
             this.tableExprEvaluatorContext = tableExprEvaluatorContext;
         }
+        
+        public virtual object FilterReboolConstant
+        {
+            get => null;
+            set { }
+        }
 
         public string StatementName => context.StatementName;
 

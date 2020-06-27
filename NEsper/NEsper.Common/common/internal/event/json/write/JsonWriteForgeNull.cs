@@ -19,15 +19,20 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.@event.json.write
 {
-	public class JsonWriteForgeNull : JsonWriteForge {
+	public class JsonWriteForgeNull : JsonWriteForge
+	{
+		public readonly static JsonWriteForgeNull INSTANCE = new JsonWriteForgeNull();
 
-	    public readonly static JsonWriteForgeNull INSTANCE = new JsonWriteForgeNull();
+		private JsonWriteForgeNull()
+		{
+		}
 
-	    private JsonWriteForgeNull() {
-	    }
-
-	    public CodegenExpression CodegenWrite(JsonWriteForgeRefs refs, CodegenMethod method, CodegenClassScope classScope) {
-	        return ExprDotMethod(refs.Writer, "writeLiteral", Constant("null"));
-	    }
+		public CodegenExpression CodegenWrite(
+			JsonWriteForgeRefs refs,
+			CodegenMethod method,
+			CodegenClassScope classScope)
+		{
+			return ExprDotMethod(refs.Writer, "WriteNullValue");
+		}
 	}
 } // end of namespace

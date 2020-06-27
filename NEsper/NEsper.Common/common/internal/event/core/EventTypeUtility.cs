@@ -268,7 +268,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             return ResolveTypeCodegenGivenResolver(
                 eventType,
                 ExprDotMethodChain(initServicesRef)
-                    .Add(EPStatementInitServicesConstants.GETEVENTTYPERESOLVER));
+                    .Get(EPStatementInitServicesConstants.EVENTTYPERESOLVER));
         }
 
         public static CodegenExpression ResolveTypeCodegenGivenResolver(
@@ -366,7 +366,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             getterType = Boxing.GetBoxedType(getterType);
             CodegenExpressionNewAnonymousClass anonymous = newAnonymousClass(method.Block, interfaceClass);
 
-            List<CodegenNamedParam> parameters;
+            IList<CodegenNamedParam> parameters;
             if (interfaceClass == typeof(EventPropertyValueGetter)) {
                 parameters = CodegenNamedParam.From(typeof(EventBean), "bean");
             } else if (interfaceClass == typeof(ExprEventEvaluator)) {

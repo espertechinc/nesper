@@ -6,59 +6,75 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.IO;
-
 using com.espertech.esper.common.client.serde;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOBoxedBooleanArray2DimNullableSerde : DataInputOutputSerde<bool?[][]> {
-	    public readonly static DIOBoxedBooleanArray2DimNullableSerde INSTANCE = new DIOBoxedBooleanArray2DimNullableSerde();
+    public class DIOBoxedBooleanArray2DimNullableSerde : DataInputOutputSerdeBase<bool?[][]>
+    {
+        public static readonly DIOBoxedBooleanArray2DimNullableSerde INSTANCE = new DIOBoxedBooleanArray2DimNullableSerde();
 
-	    private DIOBoxedBooleanArray2DimNullableSerde() {
-	    }
+        private DIOBoxedBooleanArray2DimNullableSerde()
+        {
+        }
 
-	    public void Write(bool?[][] @object, DataOutput output) {
-	        WriteInternal(@object, output);
-	    }
+        public void Write(
+            bool?[][] @object,
+            DataOutput output)
+        {
+            WriteInternal(@object, output);
+        }
 
-	    public bool?[][] Read(DataInput input) {
-	        return ReadInternal(input);
-	    }
+        public bool?[][] Read(DataInput input)
+        {
+            return ReadInternal(input);
+        }
 
-	    public void Write(bool?[][] @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
-	        WriteInternal(@object, output);
-	    }
+        public override void Write(
+            bool?[][] @object,
+            DataOutput output,
+            byte[] unitKey,
+            EventBeanCollatedWriter writer)
+        {
+            WriteInternal(@object, output);
+        }
 
-	    public bool?[][] Read(DataInput input, byte[] unitKey) {
-	        return ReadInternal(input);
-	    }
+        public override bool?[][] Read(
+            DataInput input,
+            byte[] unitKey)
+        {
+            return ReadInternal(input);
+        }
 
-	    private void WriteInternal(bool?[][] @object, DataOutput output) {
-	        if (@object == null) {
-	            output.WriteInt(-1);
-	            return;
-	        }
-	        output.WriteInt(@object.Length);
-	        foreach (bool?[] i in @object) {
-	            DIOBoxedBooleanArrayNullableSerde.INSTANCE.Write(i, output);
-	        }
-	    }
+        private void WriteInternal(
+            bool?[][] @object,
+            DataOutput output)
+        {
+            if (@object == null) {
+                output.WriteInt(-1);
+                return;
+            }
 
-	    private bool?[][] ReadInternal(DataInput input) {
-	        int len = input.ReadInt();
-	        if (len == -1) {
-	            return null;
-	        }
-	        bool?[][] array = new bool?[len][];
-	        for (int i = 0; i < len; i++) {
-	            array[i] = DIOBoxedBooleanArrayNullableSerde.INSTANCE.Read(input);
-	        }
-	        return array;
-	    }
-	}
+            output.WriteInt(@object.Length);
+            foreach (var i in @object) {
+                DIOBoxedBooleanArrayNullableSerde.INSTANCE.Write(i, output);
+            }
+        }
+
+        private bool?[][] ReadInternal(DataInput input)
+        {
+            var len = input.ReadInt();
+            if (len == -1) {
+                return null;
+            }
+
+            var array = new bool?[len][];
+            for (var i = 0; i < len; i++) {
+                array[i] = DIOBoxedBooleanArrayNullableSerde.INSTANCE.Read(input);
+            }
+
+            return array;
+        }
+    }
 } // end of namespace

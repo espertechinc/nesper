@@ -37,8 +37,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         ExprAggregateNodeBase AggregationExpression { get; }
 
         AggregationPortableValidation AggregationPortableValidation { get; }
-        
-        MathContext OptionalMathContext { get; }
 
         void InitMethodForge(
             int col,

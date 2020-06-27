@@ -19,7 +19,7 @@ using com.espertech.esper.compat.collections;
 namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 {
 	public class VMExtendedBuiltinSerdeFactory {
-	    public static DataInputOutputSerde<object> GetSerde(Type type) {
+	    public static DataInputOutputSerde GetSerde(Type type) {
 	        if (type == typeof(BigInteger)) {
 	            return DIOBigIntegerSerde.INSTANCE;
 	        }

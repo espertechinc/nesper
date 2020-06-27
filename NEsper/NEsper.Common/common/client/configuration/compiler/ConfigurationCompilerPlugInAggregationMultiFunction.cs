@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// <value>additional optional properties</value>
         public IDictionary<string, object> AdditionalConfiguredProperties { get; set; }
         
-        public CodegenExpression ToCodegenExpression() {
+        public CodegenExpression ToExpression() {
             return CodegenExpressionBuilder.NewInstance(
                 typeof(ConfigurationCompilerPlugInAggregationMultiFunction),
                 CodegenExpressionBuilder.Constant(FunctionNames),

@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.view.sort
 
         public bool UseCollatorSort { get; set; }
 
-        public DataInputOutputSerde<object>[] SortSerdes { get; set; }
+        public DataInputOutputSerde[] SortSerdes { get; set; }
 
 
         public string ViewName => ViewEnum.SORT_WINDOW.GetViewName();

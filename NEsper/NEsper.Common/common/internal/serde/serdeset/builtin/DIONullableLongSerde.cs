@@ -19,13 +19,13 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	/// <summary>
 	/// Binding for nullable long values.
 	/// </summary>
-	public class DIONullableLongSerde : DataInputOutputSerde<long?> {
-	    public readonly static DIONullableLongSerde INSTANCE = new DIONullableLongSerde();
+	public class DIONullableLongSerde : DataInputOutputSerdeBase<long?> {
+	    public static readonly DIONullableLongSerde INSTANCE = new DIONullableLongSerde();
 
 	    private DIONullableLongSerde() {
 	    }
 
-	    public void Write(long? @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
+	    public override void Write(long? @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
 	        Write(@object, output);
 	    }
 
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        return ReadInternal(input);
 	    }
 
-	    public long? Read(DataInput input, byte[] resourceKey) {
+	    public override long? Read(DataInput input, byte[] resourceKey) {
 	        return ReadInternal(input);
 	    }
 

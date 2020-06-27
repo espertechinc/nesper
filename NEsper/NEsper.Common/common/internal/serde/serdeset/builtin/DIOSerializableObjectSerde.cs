@@ -20,12 +20,12 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	/// <summary>
 	/// Serde that serializes and de-serializes using <seealso cref="ObjectInputStream" /> and <seealso cref="ObjectOutputStream" />.
 	/// </summary>
-	public class DIOSerializableObjectSerde : DataInputOutputSerde<object> {
+	public class DIOSerializableObjectSerde : DataInputOutputSerde {
 
 	    /// <summary>
 	    /// Instance.
 	    /// </summary>
-	    public readonly static DIOSerializableObjectSerde INSTANCE = new DIOSerializableObjectSerde();
+	    public static readonly DIOSerializableObjectSerde INSTANCE = new DIOSerializableObjectSerde();
 
 	    private DIOSerializableObjectSerde() {
 	    }
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        output.Write(objectBytes);
 	    }
 
-	    public object Read(DataInput input, byte[] resourceKey) {
+	    public object ReadAny(DataInput input, byte[] resourceKey) {
 	        int size = input.ReadInt();
 	        byte[] buf = new byte[size];
 	        input.ReadFully(buf);

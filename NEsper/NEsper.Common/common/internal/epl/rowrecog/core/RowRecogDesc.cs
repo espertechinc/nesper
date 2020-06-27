@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
         public Type[] PartitionEvalTypes { get; set; }
 
-        public DataInputOutputSerde<object> PartitionEvalSerde { get; set; }
+        public DataInputOutputSerde PartitionEvalSerde { get; set; }
         public int[] MultimatchStreamNumToVariable { get; set; }
 
         public ExprEvaluator PartitionEvalMayNull { get; set; }

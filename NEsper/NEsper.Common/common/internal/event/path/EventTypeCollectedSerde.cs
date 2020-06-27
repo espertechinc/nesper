@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.@event.path
     {
         public EventTypeCollectedSerde(
             EventTypeMetadata metadata,
-            DataInputOutputSerde<object> underlyingSerde,
+            DataInputOutputSerde underlyingSerde,
             Type underlying)
         {
             Metadata = metadata;
@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.@event.path
 
         public EventTypeMetadata Metadata { get; }
 
-        public DataInputOutputSerde<object> UnderlyingSerde { get; }
+        public DataInputOutputSerde UnderlyingSerde { get; }
 
         public Type Underlying { get; }
     }

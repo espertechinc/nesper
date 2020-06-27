@@ -19,15 +19,15 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	/// <summary>
 	/// Binding for nullable short-typed values.
 	/// </summary>
-	public class DIONullableShortSerde : DataInputOutputSerde<short?>
+	public class DIONullableShortSerde : DataInputOutputSerdeBase<short?>
 	{
-		public readonly static DIONullableShortSerde INSTANCE = new DIONullableShortSerde();
+		public static readonly DIONullableShortSerde INSTANCE = new DIONullableShortSerde();
 
 		private DIONullableShortSerde()
 		{
 		}
 
-		public void Write(
+		public override void Write(
 			short? @object,
 			DataOutput output,
 			byte[] pageFullKey,
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			return ReadInternal(input);
 		}
 
-		public short? Read(
+		public override short? Read(
 			DataInput input,
 			byte[] resourceKey)
 		{

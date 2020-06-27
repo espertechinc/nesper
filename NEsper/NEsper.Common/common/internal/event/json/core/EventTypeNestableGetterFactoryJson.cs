@@ -22,17 +22,15 @@ using com.espertech.esper.common.@internal.@event.property;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
-
 namespace com.espertech.esper.common.@internal.@event.json.core
 {
 	public class EventTypeNestableGetterFactoryJson : EventTypeNestableGetterFactory
 	{
-
-		private readonly JsonEventTypeDetail detail;
+		private readonly JsonEventTypeDetail _detail;
 
 		public EventTypeNestableGetterFactoryJson(JsonEventTypeDetail detail)
 		{
-			this.detail = detail;
+			this._detail = detail;
 		}
 
 		public EventPropertyGetterSPI GetPropertyDynamicGetter(
@@ -42,20 +40,18 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			EventBeanTypedEventFactory eventBeanTypedEventFactory,
 			BeanEventTypeFactory beanEventTypeFactory)
 		{
-			object type = nestableTypes.Get(prop.PropertyNameAtomic);
-			if (type == null && detail.IsDynamic) { // we do not know this property
+			var type = nestableTypes.Get(prop.PropertyNameAtomic);
+			if (type == null && _detail.IsDynamic) { // we do not know this property
 				if (prop is PropertySimple) {
 					return new JsonGetterDynamicSimpleSchema(prop.PropertyNameAtomic);
 				}
 
-				if (prop is DynamicIndexedProperty) {
-					DynamicIndexedProperty indexed = (DynamicIndexedProperty) prop;
-					return new JsonGetterDynamicIndexedSchema(indexed.PropertyNameAtomic, indexed.Index);
+				if (prop is DynamicIndexedProperty dynamicIndexedProperty) {
+					return new JsonGetterDynamicIndexedSchema(dynamicIndexedProperty.PropertyNameAtomic, dynamicIndexedProperty.Index);
 				}
 
-				if (prop is DynamicMappedProperty) {
-					DynamicMappedProperty mapped = (DynamicMappedProperty) prop;
-					return new JsonGetterDynamicMappedSchema(mapped.PropertyNameAtomic, mapped.Key);
+				if (prop is DynamicMappedProperty mappedProperty) {
+					return new JsonGetterDynamicMappedSchema(mappedProperty.PropertyNameAtomic, mappedProperty.Key);
 				}
 
 				throw new IllegalStateException("Unrecognized dynamic property " + prop);
@@ -71,26 +67,25 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 					return GetGetterProperty(prop.PropertyNameAtomic, null, eventBeanTypedEventFactory);
 				}
 
-				if (type is TypeBeanOrUnderlying) {
-					EventType eventType = ((TypeBeanOrUnderlying) type).EventType;
+				if (type is TypeBeanOrUnderlying typeBeanOrUnderlying) {
+					var eventType = typeBeanOrUnderlying.EventType;
 					return GetGetterBeanNested(prop.PropertyNameAtomic, eventType, eventBeanTypedEventFactory);
 				}
 
 				return null;
 			}
 
-			if (prop is DynamicIndexedProperty) {
-				DynamicIndexedProperty indexed = (DynamicIndexedProperty) prop;
+			if (prop is DynamicIndexedProperty indexed) {
 				if (type == null) {
 					return null;
 				}
 
-				if (type is Type && ((Type) type).IsArray) {
+				if (type is Type asType && asType.IsArray) {
 					return GetGetterIndexedClassArray(
 						prop.PropertyNameAtomic,
 						indexed.Index,
 						eventBeanTypedEventFactory,
-						((Type) type).ComponentType,
+						asType.GetElementType(),
 						beanEventTypeFactory);
 				}
 
@@ -101,14 +96,18 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 				return null;
 			}
 
-			if (prop is DynamicMappedProperty) {
-				DynamicMappedProperty mapped = (DynamicMappedProperty) prop;
+			if (prop is DynamicMappedProperty dynamicMappedProperty) {
 				if (type == null) {
 					return null;
 				}
 
-				if (type is IDictionary || type == typeof(IDictionary)) {
-					return GetGetterMappedProperty(prop.PropertyNameAtomic, mapped.Key);
+				if (type is IDictionary<string, object>) {
+					return GetGetterMappedProperty(prop.PropertyNameAtomic, dynamicMappedProperty.Key);
+				}
+
+				var asType = type as Type;
+				if (asType != null && asType.IsGenericStringDictionary()) {
+					return GetGetterMappedProperty(prop.PropertyNameAtomic, dynamicMappedProperty.Key);
 				}
 
 				return null;
@@ -124,7 +123,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			EventBeanTypedEventFactory eventBeanTypedEventFactory,
 			BeanEventTypeFactory beanEventTypeFactory)
 		{
-			JsonUnderlyingField field = FindField(mappedPropertyName);
+			var field = FindField(mappedPropertyName);
 			if (field == null) {
 				return null;
 			}
@@ -143,7 +142,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			EventBeanTypedEventFactory eventBeanTypedEventFactory,
 			BeanEventTypeFactory beanEventTypeFactory)
 		{
-			JsonUnderlyingField field = FindField(indexedPropertyName);
+			var field = FindField(indexedPropertyName);
 			if (field == null) {
 				return null;
 			}
@@ -160,20 +159,20 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			BeanEventType nativeFragmentType,
 			EventBeanTypedEventFactory eventBeanTypedEventFactory)
 		{
-			JsonUnderlyingField field = FindField(name);
+			var field = FindField(name);
 			if (field == null) {
 				return null;
 			}
 
 			if (field.OptionalField != null) {
-				if (field.OptionalField.Type.IsArray) {
+				if (field.OptionalField.FieldType.IsArray) {
 					return new JsonGetterSimpleProvidedWFragmentArray(field.OptionalField, nativeFragmentType, eventBeanTypedEventFactory);
 				}
 
 				return new JsonGetterSimpleProvidedWFragmentSimple(field.OptionalField, nativeFragmentType, eventBeanTypedEventFactory);
 			}
 
-			return new JsonGetterSimpleSchemaWFragment(field, detail.UnderlyingClassName, null, eventBeanTypedEventFactory);
+			return new JsonGetterSimpleSchemaWFragment(field, _detail.UnderlyingClassName, null, eventBeanTypedEventFactory);
 		}
 
 		public EventPropertyGetterSPI GetGetterEventBean(
@@ -195,7 +194,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			EventType eventType,
 			EventBeanTypedEventFactory eventBeanTypedEventFactory)
 		{
-			JsonUnderlyingField field = FindField(name);
+			var field = FindField(name);
 			if (field == null) {
 				return null;
 			}
@@ -204,7 +203,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 				return new JsonGetterSimpleProvidedWFragmentSimple(field.OptionalField, eventType, eventBeanTypedEventFactory);
 			}
 
-			return new JsonGetterSimpleSchemaWFragment(field, detail.UnderlyingClassName, eventType, eventBeanTypedEventFactory);
+			return new JsonGetterSimpleSchemaWFragment(field, _detail.UnderlyingClassName, eventType, eventBeanTypedEventFactory);
 		}
 
 		public EventPropertyGetterSPI GetGetterBeanNestedArray(
@@ -212,7 +211,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			EventType eventType,
 			EventBeanTypedEventFactory eventBeanTypedEventFactory)
 		{
-			JsonUnderlyingField field = FindField(name);
+			var field = FindField(name);
 			if (field == null) {
 				return null;
 			}
@@ -221,7 +220,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 				return new JsonGetterSimpleProvidedWFragmentArray(field.OptionalField, eventType, eventBeanTypedEventFactory);
 			}
 
-			return new JsonGetterSimpleSchemaWFragmentArray(field, detail.UnderlyingClassName, eventType, eventBeanTypedEventFactory);
+			return new JsonGetterSimpleSchemaWFragmentArray(field, _detail.UnderlyingClassName, eventType, eventBeanTypedEventFactory);
 		}
 
 		public EventPropertyGetterSPI GetGetterIndexedEventBean(
@@ -238,16 +237,16 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			EventType innerType,
 			BeanEventTypeFactory beanEventTypeFactory)
 		{
-			JsonUnderlyingField field = FindField(propertyNameAtomic);
+			var field = FindField(propertyNameAtomic);
 			if (field == null) {
 				return null;
 			}
 
 			if (field.OptionalField != null) {
-				return new JsonGetterIndexedProvided(index, detail.UnderlyingClassName, innerType, eventBeanTypedEventFactory, field.OptionalField);
+				return new JsonGetterIndexedProvided(index, _detail.UnderlyingClassName, innerType, eventBeanTypedEventFactory, field.OptionalField);
 			}
 
-			return new JsonGetterIndexedSchema(index, detail.UnderlyingClassName, innerType, eventBeanTypedEventFactory, field);
+			return new JsonGetterIndexedSchema(index, _detail.UnderlyingClassName, innerType, eventBeanTypedEventFactory, field);
 		}
 
 		public EventPropertyGetterSPI GetGetterIndexedClassArray(
@@ -257,7 +256,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			Type componentType,
 			BeanEventTypeFactory beanEventTypeFactory)
 		{
-			JsonUnderlyingField field = FindField(propertyNameAtomic);
+			var field = FindField(propertyNameAtomic);
 			if (field == null) {
 				return null;
 			}
@@ -266,23 +265,23 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 				return new JsonGetterIndexedProvidedBaseNative(eventBeanTypedEventFactory, beanEventTypeFactory, componentType, field.OptionalField, index);
 			}
 
-			return new JsonGetterIndexedSchema(index, detail.UnderlyingClassName, null, eventBeanTypedEventFactory, field);
+			return new JsonGetterIndexedSchema(index, _detail.UnderlyingClassName, null, eventBeanTypedEventFactory, field);
 		}
 
 		public EventPropertyGetterSPI GetGetterMappedProperty(
 			string propertyNameAtomic,
 			string key)
 		{
-			JsonUnderlyingField field = FindField(propertyNameAtomic);
+			var field = FindField(propertyNameAtomic);
 			if (field == null) {
 				return null;
 			}
 
 			if (field.OptionalField != null) {
-				return new JsonGetterMappedProvided(key, detail.UnderlyingClassName, field.OptionalField);
+				return new JsonGetterMappedProvided(key, _detail.UnderlyingClassName, field.OptionalField);
 			}
 
-			return new JsonGetterMappedSchema(key, detail.UnderlyingClassName, field);
+			return new JsonGetterMappedSchema(key, _detail.UnderlyingClassName, field);
 		}
 
 		public EventPropertyGetterSPI GetGetterNestedEntryBeanArray(
@@ -292,16 +291,16 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			EventType innerType,
 			EventBeanTypedEventFactory eventBeanTypedEventFactory)
 		{
-			JsonUnderlyingField field = FindField(propertyNameAtomic);
+			var field = FindField(propertyNameAtomic);
 			if (field == null) {
 				return null;
 			}
 
 			if (field.OptionalField != null) {
-				return new JsonGetterNestedArrayIndexedProvided(index, (JsonEventPropertyGetter) getter, detail.UnderlyingClassName, field.OptionalField);
+				return new JsonGetterNestedArrayIndexedProvided(index, (JsonEventPropertyGetter) getter, _detail.UnderlyingClassName, field.OptionalField);
 			}
 
-			return new JsonGetterNestedArrayIndexedSchema(index, (JsonEventPropertyGetter) getter, detail.UnderlyingClassName, field);
+			return new JsonGetterNestedArrayIndexedSchema(index, (JsonEventPropertyGetter) getter, _detail.UnderlyingClassName, field);
 		}
 
 		public EventPropertyGetterSPI GetGetterIndexedEntryEventBeanArrayElement(
@@ -312,7 +311,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			throw MakeIllegalState();
 		}
 
-		public EventPropertyGetterSPI GetGetterIndexedEntryPOJO(
+		public EventPropertyGetterSPI GetGetterIndexedEntryPONO(
 			string propertyNameAtomic,
 			int index,
 			BeanEventPropertyGetter nestedGetter,
@@ -320,7 +319,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			BeanEventTypeFactory beanEventTypeFactory,
 			Type propertyTypeGetter)
 		{
-			JsonUnderlyingField field = FindField(propertyNameAtomic);
+			var field = FindField(propertyNameAtomic);
 			if (field.OptionalField == null) {
 				throw MakeIllegalState();
 			}
@@ -341,7 +340,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			return null;
 		}
 
-		public EventPropertyGetterSPI GetGetterNestedPOJOProp(
+		public EventPropertyGetterSPI GetGetterNestedPONOProp(
 			string propertyName,
 			BeanEventPropertyGetter nestedGetter,
 			EventBeanTypedEventFactory eventBeanTypedEventFactory,
@@ -349,7 +348,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			Type nestedReturnType,
 			Type nestedComponentType)
 		{
-			JsonUnderlyingField field = FindField(propertyName);
+			var field = FindField(propertyName);
 			if (field == null || field.OptionalField == null) {
 				return null;
 			}
@@ -376,7 +375,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			EventPropertyGetter nestedGetter,
 			EventBeanTypedEventFactory eventBeanTypedEventFactory)
 		{
-			return new JsonGetterDynamicNestedSchema(propertyName, (JsonEventPropertyGetter) nestedGetter, detail.UnderlyingClassName);
+			return new JsonGetterDynamicNestedSchema(propertyName, (JsonEventPropertyGetter) nestedGetter, _detail.UnderlyingClassName);
 		}
 
 		public EventPropertyGetterSPI GetGetterNestedEntryBean(
@@ -385,19 +384,30 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			EventType innerType,
 			EventBeanTypedEventFactory eventBeanTypedEventFactory)
 		{
-			JsonUnderlyingField field = FindField(propertyName);
+			var field = FindField(propertyName);
 			if (field == null) {
 				return null;
 			}
 
 			if (field.OptionalField != null) {
-				return new JsonGetterNestedProvided((JsonEventPropertyGetter) innerGetter, detail.UnderlyingClassName, field.OptionalField);
+				return new JsonGetterNestedProvided((JsonEventPropertyGetter) innerGetter, _detail.UnderlyingClassName, field.OptionalField);
 			}
 
-			return new JsonGetterNestedSchema((JsonEventPropertyGetter) innerGetter, detail.UnderlyingClassName, field);
+			return new JsonGetterNestedSchema((JsonEventPropertyGetter) innerGetter, _detail.UnderlyingClassName, field);
 		}
 
-		public JsonEventPropertyGetter GetGetterRootedDynamicNested(
+		public EventPropertyGetterSPI GetGetterRootedDynamicNested(
+			Property prop,
+			EventBeanTypedEventFactory eventBeanTypedEventFactory,
+			BeanEventTypeFactory beanEventTypeFactory)
+		{
+			return GetGetterRootedDynamicNestedInternal(
+				prop,
+				eventBeanTypedEventFactory,
+				beanEventTypeFactory);
+		}
+
+		public JsonEventPropertyGetter GetGetterRootedDynamicNestedInternal(
 			Property prop,
 			EventBeanTypedEventFactory eventBeanTypedEventFactory,
 			BeanEventTypeFactory beanEventTypeFactory)
@@ -405,22 +415,22 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			if (prop is DynamicSimpleProperty) {
 				return new JsonGetterDynamicSimpleSchema(prop.PropertyNameAtomic);
 			}
-			else if (prop is DynamicIndexedProperty) {
-				DynamicIndexedProperty indexed = (DynamicIndexedProperty) prop;
+			else if (prop is DynamicIndexedProperty indexed) {
 				return new JsonGetterDynamicIndexedSchema(indexed.PropertyNameAtomic, indexed.Index);
 			}
-			else if (prop is DynamicMappedProperty) {
-				DynamicMappedProperty mapped = (DynamicMappedProperty) prop;
+			else if (prop is DynamicMappedProperty mapped) {
 				return new JsonGetterDynamicMappedSchema(mapped.PropertyNameAtomic, mapped.Key);
 			}
-			else if (prop is NestedProperty) {
-				NestedProperty nested = (NestedProperty) prop;
-				JsonEventPropertyGetter[] getters = new JsonEventPropertyGetter[nested.Properties.Count];
-				for (int i = 0; i < nested.Properties.Count; i++) {
-					getters[i] = GetGetterRootedDynamicNested(nested.Properties.Get(i), eventBeanTypedEventFactory, beanEventTypeFactory);
+			else if (prop is NestedProperty nested) {
+				var getters = new JsonEventPropertyGetter[nested.Properties.Count];
+				for (var i = 0; i < nested.Properties.Count; i++) {
+					getters[i] = GetGetterRootedDynamicNestedInternal(
+						nested.Properties[i],
+						eventBeanTypedEventFactory,
+						beanEventTypeFactory);
 				}
 
-				return new JsonGetterDynamicNestedChain(detail.UnderlyingClassName, getters);
+				return new JsonGetterDynamicNestedChain(_detail.UnderlyingClassName, getters);
 			}
 			else {
 				throw new IllegalStateException("Rerecognized dynamic property " + prop);
@@ -429,7 +439,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 
 		private JsonUnderlyingField FindField(string name)
 		{
-			return detail.FieldDescriptors.Get(name);
+			return _detail.FieldDescriptors.Get(name);
 		}
 
 		private IllegalStateException MakeIllegalState()

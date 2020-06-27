@@ -71,6 +71,7 @@ namespace com.espertech.esper.common.@internal.context.module
         private readonly StatementType _statementType;
         private readonly object _userObjectCompileTime;
         private readonly bool _writesToTables;
+        private readonly ExpressionScriptProvided[] _onScripts;
 
         public StatementInformationalsCompileTime(
             string statementNameCompileTime,
@@ -103,7 +104,8 @@ namespace com.espertech.esper.common.@internal.context.module
             bool instrumented,
             CodegenNamespaceScope namespaceScope,
             string insertIntoLatchName,
-            bool allowSubscriber)
+            bool allowSubscriber,
+            ExpressionScriptProvided[] onScripts)
         {
             _statementNameCompileTime = statementNameCompileTime;
             _alwaysSynthesizeOutputEvents = alwaysSynthesizeOutputEvents;
@@ -136,6 +138,7 @@ namespace com.espertech.esper.common.@internal.context.module
             _namespaceScope = namespaceScope;
             _insertIntoLatchName = insertIntoLatchName;
             _allowSubscriber = allowSubscriber;
+            _onScripts = onScripts;
         }
 
         public CodegenExpression Make(
@@ -184,6 +187,7 @@ namespace com.espertech.esper.common.@internal.context.module
                 .SetProperty(info, "SubstitutionParamNames", MakeSubstitutionParamNames(method, classScope))
                 .SetProperty(info, "InsertIntoLatchName", Constant(_insertIntoLatchName))
                 .SetProperty(info, "IsAllowSubscriber", Constant(_allowSubscriber))
+                .SetProperty(info, "OnScripts", MakeOnScripts(_onScripts, method, classScope))
                 .MethodReturn(info);
             return LocalMethod(method);
         }

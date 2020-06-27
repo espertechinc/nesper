@@ -8,11 +8,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.serde.serdeset.builtin;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -22,20 +21,16 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 {
 	public class SerdeCompileTimeResolverUtil
 	{
-
 		// Order of resolution:
 		// (1) any serde providers are asked first, first one taking it counts
-		// (2) class implements Externalizable (when allowed)
-		// (3) class implements Serializable (when allowed)
+		// (2) class implements Serializable (when allowed)
 		internal static SerdeProvision DetermineSerde(
 			Type type,
 			ICollection<SerdeProvider> serdeProviders,
 			bool allowSerializable,
-			bool allowExternalizable,
 			bool allowSerializationFallback,
 			SerdeProviderAdditionalInfo additionalInfo)
 		{
-
 			SerdeProvision serde;
 			if (!serdeProviders.IsEmpty()) {
 				serde = DetermineSerdeFromProviders(type, serdeProviders, additionalInfo);
@@ -44,22 +39,22 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 				}
 
 				if (type.IsArray) {
-					SerdeProvision componentSerde = DetermineSerdeFromProviders(type.ComponentType, serdeProviders, additionalInfo);
+					SerdeProvision componentSerde = DetermineSerdeFromProviders(type.GetElementType(), serdeProviders, additionalInfo);
 					if (componentSerde != null) {
 						return new SerdeProvisionParameterized(
 							typeof(DIONullableObjectArraySerde),
-							vars->Constant(type.ComponentType),
-							vars->componentSerde.ToForge().Codegen(vars.Method, vars.Scope, vars.OptionalEventTypeResolver));
+							vars => Constant(type.GetElementType()),
+							vars => componentSerde.ToForge().Codegen(vars.Method, vars.Scope, vars.OptionalEventTypeResolver));
 					}
 				}
 			}
 
-			serde = DetermineSerializable(type, allowExternalizable, allowSerializable, allowSerializationFallback);
+			serde = DetermineSerializable(type, allowSerializable, allowSerializationFallback);
 			if (serde != null) {
 				return serde;
 			}
 
-			throw MakeFailedToFindException(type, allowExternalizable, allowSerializable, serdeProviders.Count, additionalInfo);
+			throw MakeFailedToFindException(type, allowSerializable, serdeProviders.Count, additionalInfo);
 		}
 
 		private static SerdeProvision DetermineSerdeFromProviders(
@@ -79,10 +74,13 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 						return serde;
 					}
 				}
-				catch (DataInputOutputSerdeException ex) {
-					throw ex;
+				catch (DataInputOutputSerdeException) {
+					throw;
 				}
-				catch (RuntimeException ex) {
+				catch (EPException) {
+					throw;
+				}
+				catch (Exception ex) {
 					throw HandleProviderRuntimeException(provider, type, ex);
 				}
 			}
@@ -92,7 +90,6 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 
 		private static SerdeProvision DetermineSerializable(
 			Type type,
-			bool allowExternalizable,
 			bool allowSerializable,
 			bool allowSerializationFallback)
 		{
@@ -100,19 +97,11 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 				return new SerdeProvisionByClass(typeof(DIOSerializableObjectSerde));
 			}
 
-			if (TypeHelper.IsImplementsInterface(type, typeof(Externalizable)) && allowExternalizable) {
+			if (type.IsSerializable && allowSerializable) {
 				return new SerdeProvisionByClass(typeof(DIOSerializableObjectSerde));
 			}
 
-			if (type.IsArray && TypeHelper.IsImplementsInterface(type.ComponentType, typeof(Externalizable)) && allowExternalizable) {
-				return new SerdeProvisionByClass(typeof(DIOSerializableObjectSerde));
-			}
-
-			if (TypeHelper.IsImplementsInterface(type, typeof(Serializable)) && allowSerializable) {
-				return new SerdeProvisionByClass(typeof(DIOSerializableObjectSerde));
-			}
-
-			if (type.IsArray && TypeHelper.IsImplementsInterface(type.ComponentType, typeof(Serializable)) && allowSerializable) {
+			if (type.IsArray && type.GetElementType().IsSerializable && allowSerializable) {
 				return new SerdeProvisionByClass(typeof(DIOSerializableObjectSerde));
 			}
 
@@ -122,7 +111,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 		private static DataInputOutputSerdeException HandleProviderRuntimeException(
 			SerdeProvider provider,
 			Type type,
-			RuntimeException ex)
+			Exception ex)
 		{
 			return new DataInputOutputSerdeException(
 				"Unexpected exception invoking serde provider '" + provider.GetType().Name + "' passing '" + type.Name + "': " + ex.Message,
@@ -131,7 +120,6 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 
 		private static DataInputOutputSerdeException MakeFailedToFindException(
 			Type clazz,
-			bool allowExternalizable,
 			bool allowSerializable,
 			int numSerdeProviders,
 			SerdeProviderAdditionalInfo additionalInfo)
@@ -142,9 +130,6 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 				"' for use with " +
 				additionalInfo +
 				" (" +
-				"allowExternalizable=" +
-				allowExternalizable +
-				"," +
 				"allowSerializable=" +
 				allowSerializable +
 				"," +

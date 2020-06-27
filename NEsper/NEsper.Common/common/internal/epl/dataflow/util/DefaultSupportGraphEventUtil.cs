@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 using System.Xml;
 
 using com.espertech.esper.common.client;
@@ -171,11 +172,13 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             int myInt,
             String myString)
         {
-            return new JsonObject()
-                .Add("myDouble", myDouble)
-                .Add("myInt", myInt)
-                .Add("myString", myString)
-                .ToString();
+            return JsonSerializer.Serialize<object>(
+                new {
+                    MyDouble = myDouble,
+                    MyInt = myInt,
+                    MyString = myString
+                },
+                new JsonSerializerOptions());
         }
 
         public class MyDefaultSupportGraphEvent

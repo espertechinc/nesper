@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             AggSvcGroupByReclaimAgedEvalFuncFactory reclaimMaxAge,
             AggSvcGroupByReclaimAgedEvalFuncFactory reclaimFreq,
             TimeAbacus timeAbacus,
-            DataInputOutputSerde<object> groupKeySerde);
+            DataInputOutputSerde groupKeySerde);
 
         AggregationServiceFactory GroupByRollup(
             AggregationServiceFactory nonHAFactory,

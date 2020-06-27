@@ -16,8 +16,8 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOBoxedDoubleArray2DimNullableSerde : DataInputOutputSerde<double?[][]> {
-	    public readonly static DIOBoxedDoubleArray2DimNullableSerde INSTANCE = new DIOBoxedDoubleArray2DimNullableSerde();
+	public class DIOBoxedDoubleArray2DimNullableSerde : DataInputOutputSerdeBase<double?[][]> {
+	    public static readonly DIOBoxedDoubleArray2DimNullableSerde INSTANCE = new DIOBoxedDoubleArray2DimNullableSerde();
 
 	    private DIOBoxedDoubleArray2DimNullableSerde() {
 	    }
@@ -30,11 +30,11 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        return ReadInternal(input);
 	    }
 
-	    public void Write(double?[][] @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
+	    public override void Write(double?[][] @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
 	        WriteInternal(@object, output);
 	    }
 
-	    public double?[][] Read(DataInput input, byte[] unitKey) {
+	    public override double?[][] Read(DataInput input, byte[] unitKey) {
 	        return ReadInternal(input);
 	    }
 

@@ -20,6 +20,22 @@ namespace com.espertech.esper.common.@internal.@event.json.serde
         }
 
         public void Write(
+            object @object,
+            DataOutput output,
+            byte[] unitKey,
+            EventBeanCollatedWriter writer)
+        {
+            Write((object[]) @object, output, unitKey, writer);
+        }
+
+        object DataInputOutputSerde.ReadAny(
+            DataInput input,
+            byte[] unitKey)
+        {
+            return Read(input, unitKey);
+        }
+
+        public void Write(
             object[] @object,
             DataOutput output,
             byte[] unitKey,

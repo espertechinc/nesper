@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.delegates.endv
 	    }
 
 	    public CodegenExpression CaptureValue(JsonEndValueRefs refs, CodegenMethod method, CodegenClassScope classScope) {
-	        return ExprDotMethod(Ref("this"), "valueToObject");
+	        return ExprDotMethod(Ref("this"), "ValueToObject");
 	    }
 	}
 } // end of namespace

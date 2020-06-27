@@ -23,56 +23,56 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
         EventTableFactory CreateHashedOnly(
             int indexedStreamNum,
             EventType eventType,
-            String[] indexProps,
+            string[] indexProps,
             Type[] indexTypes,
             MultiKeyFromObjectArray transformFireAndForget,
-            DataInputOutputSerde<Object> keySerde,
+            DataInputOutputSerde keySerde,
             bool unique,
-            String optionalIndexName,
+            string optionalIndexName,
             EventPropertyValueGetter getter,
-            DataInputOutputSerde<Object> optionalValueSerde,
+            DataInputOutputSerde optionalValueSerde,
             bool isFireAndForget,
             EventTableFactoryFactoryContext eventTableFactoryContext);
 
         EventTableFactory CreateUnindexed(
             int indexedStreamNum,
             EventType eventType,
-            DataInputOutputSerde<Object> optionalValueSerde,
+            DataInputOutputSerde optionalValueSerde,
             bool isFireAndForget,
             EventTableFactoryFactoryContext eventTableFactoryContext);
 
         EventTableFactory CreateSorted(
             int indexedStreamNum,
             EventType eventType,
-            String indexedProp,
+            string indexedProp,
             Type indexType,
             EventPropertyValueGetter getter,
-            DataInputOutputSerde<Object> serde,
-            DataInputOutputSerde<Object> optionalValueSerde,
+            DataInputOutputSerde serde,
+            DataInputOutputSerde optionalValueSerde,
             bool isFireAndForget,
             EventTableFactoryFactoryContext eventTableFactoryContext);
 
         EventTableFactory CreateComposite(
             int indexedStreamNum,
             EventType eventType,
-            String[] indexProps,
+            string[] indexProps,
             Type[] indexCoercionTypes,
             EventPropertyValueGetter indexGetter,
             MultiKeyFromObjectArray transformFireAndForget,
-            DataInputOutputSerde<Object> keySerde,
-            String[] rangeProps,
+            DataInputOutputSerde keySerde,
+            string[] rangeProps,
             Type[] rangeCoercionTypes,
             EventPropertyValueGetter[] rangeGetters,
-            DataInputOutputSerde<Object>[] rangeSerdes,
-            DataInputOutputSerde<Object> optionalValueSerde,
+            DataInputOutputSerde[] rangeSerdes,
+            DataInputOutputSerde optionalValueSerde,
             bool isFireAndForget);
 
         EventTableFactory CreateInArray(
             int streamNum,
             EventType eventType,
-            String[] propertyNames,
+            string[] propertyNames,
             Type[] indexTypes,
-            DataInputOutputSerde<Object>[] indexSerdes,
+            DataInputOutputSerde[] indexSerdes,
             bool unique,
             EventPropertyValueGetter[] getters,
             bool isFireAndForget,

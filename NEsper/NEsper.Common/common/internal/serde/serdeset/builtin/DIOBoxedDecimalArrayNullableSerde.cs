@@ -16,9 +16,9 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOBoxedDecimalArrayNullableSerde : DataInputOutputSerde<decimal?[]>
+	public class DIOBoxedDecimalArrayNullableSerde : DataInputOutputSerdeBase<decimal?[]>
 	{
-		public readonly static DIOBoxedDecimalArrayNullableSerde INSTANCE = new DIOBoxedDecimalArrayNullableSerde();
+		public static readonly DIOBoxedDecimalArrayNullableSerde INSTANCE = new DIOBoxedDecimalArrayNullableSerde();
 
 		private DIOBoxedDecimalArrayNullableSerde()
 		{
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			return ReadInternal(input);
 		}
 
-		public void Write(
+		public override void Write(
 			decimal?[] @object,
 			DataOutput output,
 			byte[] unitKey,
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			WriteInternal(@object, output);
 		}
 
-		public decimal?[] Read(
+		public override decimal?[] Read(
 			DataInput input,
 			byte[] unitKey)
 		{

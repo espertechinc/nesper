@@ -12,18 +12,18 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.multikey
 {
-    public class DIOMultiKeyArrayCharSerde : DataInputOutputSerde<MultiKeyArrayChar>
+    public class DIOMultiKeyArrayCharSerde : DataInputOutputSerdeBase<MultiKeyArrayChar>
     {
         public static readonly DIOMultiKeyArrayCharSerde INSTANCE = new DIOMultiKeyArrayCharSerde();
 
-        public MultiKeyArrayChar Read(
+        public override MultiKeyArrayChar Read(
             DataInput input,
             byte[] unitKey)
         {
             return new MultiKeyArrayChar(ReadInternal(input));
         }
 
-        public void Write(
+        public override void Write(
             MultiKeyArrayChar mk,
             DataOutput output,
             byte[] unitKey,

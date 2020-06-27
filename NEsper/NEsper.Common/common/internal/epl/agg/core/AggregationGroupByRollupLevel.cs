@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             int levelNumber,
             int levelOffset,
             int[] rollupKeys,
-            DataInputOutputSerde<object> subkeySerde)
+            DataInputOutputSerde subkeySerde)
         {
             LevelNumber = levelNumber;
             LevelOffset = levelOffset;
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
         public int[] RollupKeys { get; }
 
-        public DataInputOutputSerde<object> SubkeySerde { get; }
+        public DataInputOutputSerde SubkeySerde { get; }
 
         public abstract object ComputeSubkey(object groupKey);
 

@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.classprovided.core;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.compat;
@@ -21,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 
         public void NewClass(ClassProvided detail)
         {
-            if (!detail.Visibility.IsModuleProvidedAccessModifier) {
+            if (!detail.Visibility.IsModuleProvidedAccessModifier()) {
                 throw new IllegalStateException("Invalid visibility for contexts");
             }
 

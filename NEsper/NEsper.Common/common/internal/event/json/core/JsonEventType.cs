@@ -8,17 +8,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web.UI;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.json.minimaljson;
 using com.espertech.esper.common.client.meta;
-using com.espertech.esper.common.@internal.collection;
-using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
-using com.espertech.esper.common.@internal.@event.json.compiletime;
 using com.espertech.esper.common.@internal.@event.json.parser.core;
 using com.espertech.esper.common.@internal.@event.json.writer;
 using com.espertech.esper.common.@internal.@event.property;
@@ -38,8 +32,8 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 		private Type delegateType;
 		private JsonDelegateFactory delegateFactory;
 		private Type underlyingType;
-		protected EventPropertyDescriptor[] writablePropertyDescriptors;
-		protected IDictionary<string, Pair<EventPropertyDescriptor, JsonEventBeanPropertyWriter>> propertyWriters;
+		private EventPropertyDescriptor[] writablePropertyDescriptors;
+		private IDictionary<string, Pair<EventPropertyDescriptor, JsonEventBeanPropertyWriter>> propertyWriters;
 
 		public JsonEventType(
 			EventTypeMetadata metadata,
@@ -67,7 +61,12 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			this.underlyingType = underlyingStandInClass;
 		}
 
-		public override JsonEventBeanPropertyWriter GetWriter(string propertyName)
+		public override EventPropertyWriterSPI GetWriter(string propertyName)
+		{
+			return GetInternalWriter(propertyName);
+		}
+		
+		public JsonEventBeanPropertyWriter GetInternalWriter(string propertyName)
 		{
 			if (writablePropertyDescriptors == null) {
 				InitializeWriters();
@@ -102,13 +101,14 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			return null;
 		}
 
-		public EventPropertyDescriptor[] GetWriteableProperties()
-		{
-			if (writablePropertyDescriptors == null) {
-				InitializeWriters();
-			}
+		public override EventPropertyDescriptor[] WriteableProperties {
+			get {
+				if (writablePropertyDescriptors == null) {
+					InitializeWriters();
+				}
 
-			return writablePropertyDescriptors;
+				return writablePropertyDescriptors;
+			}
 		}
 
 		public override EventPropertyDescriptor GetWritableProperty(string propertyName)
@@ -159,7 +159,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 
 			var writers = new JsonEventBeanPropertyWriter[properties.Length];
 			for (var i = 0; i < properties.Length; i++) {
-				writers[i] = GetWriter(properties[i]);
+				writers[i] = GetInternalWriter(properties[i]);
 				if (writers[i] == null) {
 					return null;
 				}
@@ -168,43 +168,44 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			return new JsonEventBeanWriterPerProp(writers);
 		}
 
-		public Type GetUnderlyingType()
-		{
-			if (underlyingType == null) {
-				throw new EPException("Underlying type has not been set");
-			}
+		public override Type UnderlyingType {
+			get {
+				if (underlyingType == null) {
+					throw new EPException("Underlying type has not been set");
+				}
 
-			return underlyingType;
+				return underlyingType;
+			}
 		}
 
 		public void Initialize(ClassLoader classLoader)
 		{
 			// resolve underlying type
 			try {
-				underlyingType = Type.ForName(detail.UnderlyingClassName, true, classLoader);
+				underlyingType = classLoader.GetClass(detail.UnderlyingClassName);
 			}
-			catch (ClassNotFoundException ex) {
+			catch (TypeLoadException ex) {
 				throw new EPException("Failed to load Json underlying class: " + ex.Message, ex);
 			}
 
 			// resolve delegate
 			try {
-				this.delegateType = Type.ForName(detail.DelegateClassName, true, classLoader);
+				delegateType = classLoader.GetClass(detail.DelegateClassName);
 			}
-			catch (ClassNotFoundException e) {
+			catch (TypeLoadException e) {
 				throw new EPException("Failed to find class: " + e.Message, e);
 			}
 
 			// resolve handler factory
 			Type delegateFactory;
 			try {
-				delegateFactory = Type.ForName(detail.DelegateFactoryClassName, true, classLoader);
+				delegateFactory = classLoader.GetClass(detail.DelegateFactoryClassName);
 			}
-			catch (ClassNotFoundException e) {
+			catch (TypeLoadException e) {
 				throw new EPException("Failed to find class: " + e.Message, e);
 			}
 
-			this.delegateFactory = (JsonDelegateFactory) TypeHelper.Instantiate(typeof(JsonDelegateFactory), delegateFactory);
+			this.delegateFactory = TypeHelper.Instantiate<JsonDelegateFactory>(delegateFactory);
 		}
 
 		public object Parse(string json)
@@ -213,14 +214,15 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 				var handler = new JsonHandlerDelegator();
 				var @delegate = delegateFactory.Make(handler, null);
 				handler.Delegate = @delegate;
+				
 				JsonParser parser = new JsonParser(handler);
 				parser.Parse(json);
 				return @delegate.GetResult();
 			}
-			catch (EPException ex) {
-				throw ex;
+			catch (EPException) {
+				throw;
 			}
-			catch (RuntimeException ex) {
+			catch (Exception ex) {
 				throw new EPException("Failed to parse Json: " + ex.Message, ex);
 			}
 		}

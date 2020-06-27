@@ -41,7 +41,9 @@ namespace com.espertech.esper.common.@internal.compile.faf
             this._forge = forge;
         }
 
-        public CodegenClass Forge(bool includeDebugSymbols)
+        public CodegenClass Forge(
+            bool includeDebugSymbols,
+            bool fireAndForget)
         {
             var debugInformationProvider = new Supplier<string>(
                 () => {

@@ -19,13 +19,13 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	/// <summary>
 	/// Binding for non-null integer values.
 	/// </summary>
-	public class DIOIntegerSerde : DataInputOutputSerde<int> {
-	    public readonly static DIOIntegerSerde INSTANCE = new DIOIntegerSerde();
+	public class DIOIntegerSerde : DataInputOutputSerdeBase<int> {
+	    public static readonly DIOIntegerSerde INSTANCE = new DIOIntegerSerde();
 
 	    private DIOIntegerSerde() {
 	    }
 
-	    public void Write(int @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
+	    public override void Write(int @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
 	        Write(@object, output);
 	    }
 
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        stream.WriteInt(@object);
 	    }
 
-	    public int Read(DataInput s, byte[] resourceKey) {
+	    public override int Read(DataInput s, byte[] resourceKey) {
 	        return s.ReadInt();
 	    }
 

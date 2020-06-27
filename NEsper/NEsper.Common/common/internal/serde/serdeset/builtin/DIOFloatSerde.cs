@@ -19,13 +19,13 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	/// <summary>
 	/// Binding for non-null float values.
 	/// </summary>
-	public class DIOFloatSerde : DataInputOutputSerde<float> {
-	    public readonly static DIOFloatSerde INSTANCE = new DIOFloatSerde();
+	public class DIOFloatSerde : DataInputOutputSerdeBase<float> {
+	    public static readonly DIOFloatSerde INSTANCE = new DIOFloatSerde();
 
 	    private DIOFloatSerde() {
 	    }
 
-	    public void Write(float @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
+	    public override void Write(float @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
 	        output.WriteFloat(@object);
 	    }
 
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        return input.ReadFloat();
 	    }
 
-	    public float Read(DataInput input, byte[] resourceKey) {
+	    public override float Read(DataInput input, byte[] resourceKey) {
 	        return input.ReadFloat();
 	    }
 	}

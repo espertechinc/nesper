@@ -18,12 +18,12 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOBigIntegerArray2DimNullableSerde : DataInputOutputSerde<BigInteger[][]> {
-	    public readonly static DIOBigIntegerArray2DimNullableSerde INSTANCE = new DIOBigIntegerArray2DimNullableSerde();
+	public class DIOBigIntegerArray2DimNullableSerde : DataInputOutputSerdeBase<BigInteger[][]> {
+	    public static readonly DIOBigIntegerArray2DimNullableSerde INSTANCE = new DIOBigIntegerArray2DimNullableSerde();
 
 	    private DIOBigIntegerArray2DimNullableSerde() {
 	    }
-
+	    
 	    public void Write(BigInteger[][] @object, DataOutput output) {
 	        WriteInternal(@object, output);
 	    }
@@ -32,11 +32,11 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        return ReadInternal(input);
 	    }
 
-	    public void Write(BigInteger[][] @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
+	    public override void Write(BigInteger[][] @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
 	        WriteInternal(@object, output);
 	    }
 
-	    public BigInteger[][] Read(DataInput input, byte[] unitKey) {
+	    public override BigInteger[][] Read(DataInput input, byte[] unitKey) {
 	        return ReadInternal(input);
 	    }
 

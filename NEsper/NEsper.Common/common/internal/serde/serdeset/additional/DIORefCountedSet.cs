@@ -18,16 +18,16 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.additional
 {
-	public class DIORefCountedSet : DataInputOutputSerde<RefCountedSet<object>>
+	public class DIORefCountedSet : DataInputOutputSerdeBase<RefCountedSet<object>>
 	{
-		private readonly DataInputOutputSerde<object> _inner;
+		private readonly DataInputOutputSerde _inner;
 
-		public DIORefCountedSet(DataInputOutputSerde<object> inner)
+		public DIORefCountedSet(DataInputOutputSerde inner)
 		{
 			_inner = inner;
 		}
 
-		public void Write(
+		public override void Write(
 			RefCountedSet<object> valueSet,
 			DataOutput output,
 			byte[] unitKey,
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.additional
 			output.WriteInt(valueSet.NumValues);
 		}
 
-		public RefCountedSet<object> Read(
+		public override RefCountedSet<object> Read(
 			DataInput input,
 			byte[] unitKey)
 		{
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.additional
 			var refSet = valueSet.RefSet;
 			int size = input.ReadInt();
 			for (int i = 0; i < size; i++) {
-				var key = _inner.Read(input, unitKey);
+				var key = _inner.ReadAny(input, unitKey);
 				var @ref = input.ReadInt();
 				refSet.Put(key, @ref);
 			}

@@ -19,15 +19,15 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	/// <summary>
 	/// Binding for non-null character values.
 	/// </summary>
-	public class DIOCharacterSerde : DataInputOutputSerde<char>
+	public class DIOCharacterSerde : DataInputOutputSerdeBase<char>
 	{
-		public readonly static DIOCharacterSerde INSTANCE = new DIOCharacterSerde();
+		public static readonly DIOCharacterSerde INSTANCE = new DIOCharacterSerde();
 
 		private DIOCharacterSerde()
 		{
 		}
 
-		public void Write(
+		public override void Write(
 			char @object,
 			DataOutput output,
 			byte[] pageFullKey,
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			stream.WriteChar(@object);
 		}
 
-		public char Read(
+		public override char Read(
 			DataInput s,
 			byte[] resourceKey)
 		{

@@ -16,8 +16,8 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOBoxedLongArrayNullableSerde : DataInputOutputSerde<long?[]> {
-	    public readonly static DIOBoxedLongArrayNullableSerde INSTANCE = new DIOBoxedLongArrayNullableSerde();
+	public class DIOBoxedLongArrayNullableSerde : DataInputOutputSerdeBase<long?[]> {
+	    public static readonly DIOBoxedLongArrayNullableSerde INSTANCE = new DIOBoxedLongArrayNullableSerde();
 
 	    private DIOBoxedLongArrayNullableSerde() {
 	    }
@@ -30,11 +30,11 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        return ReadInternal(input);
 	    }
 
-	    public void Write(long?[] @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
+	    public override void Write(long?[] @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
 	        WriteInternal(@object, output);
 	    }
 
-	    public long?[] Read(DataInput input, byte[] unitKey) {
+	    public override long?[] Read(DataInput input, byte[] unitKey) {
 	        return ReadInternal(input);
 	    }
 

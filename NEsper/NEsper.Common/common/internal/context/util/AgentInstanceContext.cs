@@ -67,6 +67,11 @@ namespace com.espertech.esper.common.@internal.context.util
             InstrumentationProvider = instrumentationProvider;
         }
 
+        public virtual object FilterReboolConstant {
+            get => null;
+            set { }
+        }
+
         public AgentInstanceFilterProxy AgentInstanceFilterProxy { get; }
 
         public Attribute[] Annotations => StatementContext.Annotations;

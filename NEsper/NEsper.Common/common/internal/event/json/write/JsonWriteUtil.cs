@@ -8,9 +8,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.IO;
 using System.Numerics;
 using System.Reflection;
+using System.Text.Json;
 
 using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.json.parser.core;
@@ -30,14 +31,14 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="value">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteNullableString(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			string value)
 		{
 			if (value == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 			}
 			else {
-				writer.WriteString(value);
+				writer.WriteStringValue(value);
 			}
 		}
 
@@ -48,14 +49,14 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="value">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteNullableStringToString(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			object value)
 		{
 			if (value == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 			}
 			else {
-				writer.WriteString(value.ToString());
+				writer.WriteStringValue(value.ToString());
 			}
 		}
 
@@ -66,14 +67,14 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="value">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteNullableBoolean(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			bool? value)
 		{
 			if (value == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 			}
 			else {
-				writer.WriteLiteral(value ? "true" : "false");
+				writer.WriteBooleanValue(value.Value);
 			}
 		}
 
@@ -83,15 +84,72 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="writer">writer</param>
 		/// <param name="value">value</param>
 		/// <throws>IOException io error</throws>
+		public static void WriteBigInteger(
+			Utf8JsonWriter writer,
+			BigInteger value)
+		{
+			var asByteArray = value.ToByteArray();
+			writer.WriteStartObject();
+			writer.WriteString("$type", typeof(BigInteger).FullName);
+			writer.WriteBase64String("value", asByteArray);
+			writer.WriteEndObject();
+		}
+
+		/// <summary>
+		/// NOTE: Code-generation-invoked method, method name and parameter order matters
+		/// </summary>
+		/// <param name="writer">writer</param>
+		/// <param name="value">value</param>
+		/// <throws>IOException io error</throws>
 		public static void WriteNullableNumber(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			object value)
 		{
 			if (value == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
+			} else if (value is long longValue) {
+				writer.WriteNumberValue(longValue);
+			} else if (value is int intValue) {
+				writer.WriteNumberValue(intValue);
+			} else if (value is short shortValue) {
+				writer.WriteNumberValue(shortValue);
+			} else if (value is decimal decimalValue) {
+				writer.WriteNumberValue(decimalValue);
+			} else if (value is double doubleValue) {
+				writer.WriteNumberValue(doubleValue);
+			} else if (value is float floatValue) {
+				writer.WriteNumberValue(floatValue);
+			} else if (value is BigInteger bigIntegerValue) {
+				WriteBigInteger(writer, bigIntegerValue);
+			} else {
+				throw new InvalidDataException("unable to determine number type");
 			}
-			else {
-				writer.WriteNumber(value.ToString());
+		}
+
+		/// <summary>
+		/// NOTE: Code-generation-invoked method, method name and parameter order matters
+		/// </summary>
+		/// <param name="writer">writer</param>
+		/// <param name="value">value</param>
+		/// <throws>IOException io error</throws>
+		public static void WriteNumber(
+			Utf8JsonWriter writer,
+			object value)
+		{
+			if (value is long longValue) {
+				writer.WriteNumberValue(longValue);
+			} else if (value is int intValue) {
+				writer.WriteNumberValue(intValue);
+			} else if (value is short shortValue) {
+				writer.WriteNumberValue(shortValue);
+			} else if (value is decimal decimalValue) {
+				writer.WriteNumberValue(decimalValue);
+			} else if (value is double doubleValue) {
+				writer.WriteNumberValue(doubleValue);
+			} else if (value is float floatValue) {
+				writer.WriteNumberValue(floatValue);
+			} else {
+				throw new InvalidDataException("unable to determine number type");
 			}
 		}
 
@@ -102,26 +160,21 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimString(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			string[][] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (string[] strings in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			
+			foreach (var strings in array) {
 				WriteArrayString(writer, strings);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -131,26 +184,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimCharacter(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			char?[][] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
+			writer.WriteStartArray();
 			foreach (var characters in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
 				WriteArrayCharacter(writer, characters);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -160,26 +207,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimLong(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			long?[][] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (long?[] longs in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var longs in array) {
 				WriteArrayLong(writer, longs);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -189,26 +230,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimInteger(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			int?[][] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (int?[] ints in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var ints in array) {
 				WriteArrayInteger(writer, ints);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -219,27 +254,21 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="factory">write class</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimAppClass(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			object[][] array,
 			JsonDelegateFactory factory)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (object[] values in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var values in array) {
 				WriteArrayAppClass(writer, values, factory);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -249,26 +278,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimShort(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			short?[][] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
+			writer.WriteStartArray();
 			foreach (var shorts in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
 				WriteArrayShort(writer, shorts);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -278,26 +301,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimDouble(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			double?[][] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (Double[] doubles in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var doubles in array) {
 				WriteArrayDouble(writer, doubles);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -307,26 +324,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimFloat(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			float?[][] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (Float[] floats in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var floats in array) {
 				WriteArrayFloat(writer, floats);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -336,26 +347,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimByte(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			byte?[][] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (Byte[] b in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var b in array) {
 				WriteArrayByte(writer, b);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -365,26 +370,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimBoolean(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			bool?[][] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (bool?[] bools in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var bools in array) {
 				WriteArrayBoolean(writer, bools);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -394,26 +393,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimBigInteger(
-			JsonWriter writer,
-			BigInteger?[][] array)
+			Utf8JsonWriter writer,
+			BigInteger[][] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (BigInteger?[] b in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var b in array) {
 				WriteArrayBigInteger(writer, b);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -423,26 +416,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimObjectToString(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			object[][] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (object[] b in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var b in array) {
 				WriteArrayObjectToString(writer, b);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -452,26 +439,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimBooleanPrimitive(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			bool[][] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (bool[] b in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var b in array) {
 				WriteArrayBooleanPrimitive(writer, b);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -481,26 +462,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimBytePrimitive(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			byte[][] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (byte[] bytes in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var bytes in array) {
 				WriteArrayBytePrimitive(writer, bytes);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -510,26 +485,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimShortPrimitive(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			short[][] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (short[] shorts in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var shorts in array) {
 				WriteArrayShortPrimitive(writer, shorts);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -539,26 +508,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimIntPrimitive(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			int[][] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (int[] ints in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var ints in array) {
 				WriteArrayIntPrimitive(writer, ints);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -568,26 +531,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimLongPrimitive(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			long[][] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (long[] longs in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var longs in array) {
 				WriteArrayLongPrimitive(writer, longs);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -597,26 +554,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimFloatPrimitive(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			float[][] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (float[] floats in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var floats in array) {
 				WriteArrayFloatPrimitive(writer, floats);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -626,26 +577,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimDoublePrimitive(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			double[][] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (double[] doubles in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var doubles in array) {
 				WriteArrayDoublePrimitive(writer, doubles);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -655,26 +600,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArray2DimCharPrimitive(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			char[][] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (char[] chars in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var chars in array) {
 				WriteArrayCharPrimitive(writer, chars);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -684,25 +623,19 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayString(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			string[] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (string string in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
-				WriteNullableString(writer, string);
+			writer.WriteStartArray();
+			foreach (var value in array) {
+				WriteNullableString(writer, value);
 			}
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -712,25 +645,19 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="values">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteCollectionString(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			ICollection<string> values)
 		{
 			if (values == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (string string in values) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
-				WriteNullableString(writer, string);
+			writer.WriteStartArray();
+			foreach (var value in values) {
+				WriteNullableString(writer, value);
 			}
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -741,32 +668,26 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="factory">delegate factory</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteCollectionAppClass(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			ICollection<object> values,
 			JsonDelegateFactory factory)
 		{
 			if (values == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (object value in values) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var value in values) {
 				if (value == null) {
-					writer.WriteLiteral("null");
+					writer.WriteNullValue();
 				}
 				else {
 					factory.Write(writer, value);
 				}
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -777,32 +698,26 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="factory">delegate factory</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayAppClass(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			object[] values,
 			JsonDelegateFactory factory)
 		{
 			if (values == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (object value in values) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var value in values) {
 				if (value == null) {
-					writer.WriteLiteral("null");
+					writer.WriteNullValue();
 				}
 				else {
 					factory.Write(writer, value);
 				}
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -812,26 +727,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayCharacter(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			char?[] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (Character character in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var character in array) {
 				WriteNullableStringToString(writer, character);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -841,26 +750,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayLong(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			long?[] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (long? l in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var l in array) {
 				WriteNullableNumber(writer, l);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -870,26 +773,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayInteger(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			int?[] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (int? i in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var i in array) {
 				WriteNullableNumber(writer, i);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -899,26 +796,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="values">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteCollectionNumber(
-			JsonWriter writer,
-			ICollection<Number> values)
+			Utf8JsonWriter writer,
+			ICollection<object> values)
 		{
 			if (values == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (Number i in values) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var i in values) {
 				WriteNullableNumber(writer, i);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -928,26 +819,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayShort(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			short?[] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (short? s in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var s in array) {
 				WriteNullableNumber(writer, s);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -957,26 +842,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayDouble(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			double?[] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (Double d in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var d in array) {
 				WriteNullableNumber(writer, d);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -986,26 +865,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayFloat(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			float?[] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (Float f in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var f in array) {
 				WriteNullableNumber(writer, f);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -1015,26 +888,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayByte(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			byte?[] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (Byte b in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var b in array) {
 				WriteNullableNumber(writer, b);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -1044,26 +911,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayBoolean(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			bool?[] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (bool? b in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var b in array) {
 				WriteNullableBoolean(writer, b);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -1073,26 +934,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="values">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteCollectionBoolean(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			ICollection<bool?> values)
 		{
 			if (values == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (bool? b in values) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var b in values) {
 				WriteNullableBoolean(writer, b);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -1102,55 +957,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayBigInteger(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			BigInteger[] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (BigInteger b in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var b in array) {
 				WriteNullableNumber(writer, b);
 			}
 
-			writer.WriteArrayClose();
-		}
-
-		/// <summary>
-		/// NOTE: Code-generation-invoked method, method name and parameter order matters
-		/// </summary>
-		/// <param name="writer">writer</param>
-		/// <param name="array">value</param>
-		/// <throws>IOException io error</throws>
-		public static void WriteArrayBigDecimal(
-			JsonWriter writer,
-			BigDecimal[] array)
-		{
-			if (array == null) {
-				writer.WriteLiteral("null");
-				return;
-			}
-
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (BigDecimal b in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
-				WriteNullableNumber(writer, b);
-			}
-
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -1160,26 +980,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayBooleanPrimitive(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			bool[] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (bool b in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
-				writer.WriteLiteral(b ? "true" : "false");
+			writer.WriteStartArray();
+			foreach (var b in array) {
+				writer.WriteBooleanValue(b);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -1189,26 +1003,23 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayBytePrimitive(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			byte[] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (byte b in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
-				writer.WriteNumber(b.ToString());
+			writer.WriteStartArray();
+			foreach (var b in array) {
+				// Bytes are not natively supported by JSON, but we can
+				// just increase their size to fit into the standard set
+				// of numbers.  Just be sure to decode as bytes.
+				writer.WriteNumberValue(b);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -1218,26 +1029,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayShortPrimitive(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			short[] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (short s in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
-				writer.WriteNumber(s.ToString());
+			writer.WriteStartArray();
+			foreach (var s in array) {
+				writer.WriteNumberValue(s);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -1247,26 +1052,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayIntPrimitive(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			int[] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (int i in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
-				writer.WriteNumber(i.ToString());
+			writer.WriteStartArray();
+			foreach (var i in array) {
+				writer.WriteNumberValue(i);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -1276,26 +1075,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayLongPrimitive(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			long[] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (long l in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
-				writer.WriteNumber(l.ToString());
+			writer.WriteStartArray();
+			foreach (var l in array) {
+				writer.WriteNumberValue(l);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -1305,26 +1098,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayFloatPrimitive(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			float[] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (float f in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
-				writer.WriteNumber(f.ToString(CultureInfo.InvariantCulture));
+			writer.WriteStartArray();
+			foreach (var f in array) {
+				writer.WriteNumberValue(f);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -1334,26 +1121,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayDoublePrimitive(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			double[] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (double d in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
-				writer.WriteNumber(d.ToString(CultureInfo.InvariantCulture));
+			writer.WriteStartArray();
+			foreach (var d in array) {
+				writer.WriteNumberValue(d);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -1363,26 +1144,20 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayCharPrimitive(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			char[] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (char c in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
-				writer.WriteString(c.ToString());
+			writer.WriteStartArray();
+			foreach (var c in array) {
+				writer.WriteStringValue(c.ToString());
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -1392,31 +1167,25 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteArrayObjectToString(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			object[] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (object value in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var value in array) {
 				if (value == null) {
-					writer.WriteLiteral("null");
+					writer.WriteNullValue();
 				}
 				else {
-					writer.WriteString(value.ToString());
+					writer.WriteStringValue(value.ToString());
 				}
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -1426,7 +1195,7 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteEnumArray(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			object[] array)
 		{
 			WriteObjectArrayWToString(writer, array);
@@ -1438,9 +1207,10 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="writer">writer</param>
 		/// <param name="values">value</param>
 		/// <throws>IOException io error</throws>
-		public static void WriteEnumCollection(
-			JsonWriter writer,
-			ICollection values)
+		public static void WriteEnumCollection<T>(
+			Utf8JsonWriter writer,
+			ICollection<T> values)
+			where T : Enum
 		{
 			WriteCollectionWToString(writer, values);
 		}
@@ -1452,7 +1222,7 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteEnumArray2Dim(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			object[][] array)
 		{
 			WriteObjectArray2DimWToString(writer, array);
@@ -1466,36 +1236,45 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="jsonValue">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteJsonValue(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			string name,
 			object jsonValue)
 		{
 			if (jsonValue == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 			}
-			else if (jsonValue is bool) {
-				writer.WriteLiteral((bool) jsonValue ? "true" : "false");
+			else if (jsonValue is bool boolValue) {
+				writer.WriteBooleanValue(boolValue);
 			}
-			else if (jsonValue is string) {
-				writer.WriteString((string) jsonValue);
+			else if (jsonValue is string stringValue) {
+				writer.WriteStringValue(stringValue);
 			}
-			else if (jsonValue.IsNumber()) {
-				writer.WriteNumber(jsonValue.ToString());
+			else if (jsonValue is long longValue) {
+				writer.WriteNumberValue(longValue);
+			} else if (jsonValue is int intValue) {
+				writer.WriteNumberValue(intValue);
+			} else if (jsonValue is short shortValue) {
+				writer.WriteNumberValue(shortValue);
+			} else if (jsonValue is decimal decimalValue) {
+				writer.WriteNumberValue(decimalValue);
+			} else if (jsonValue is double doubleValue) {
+				writer.WriteNumberValue(doubleValue);
+			} else if (jsonValue is float floatValue) {
+				writer.WriteNumberValue(floatValue);
 			}
 			else if (jsonValue is object[]) {
 				WriteJsonArray(writer, name, (object[]) jsonValue);
 			}
+			else if (jsonValue is JsonEventObjectBase jsonEventObjectBase) {
+				writer.WriteStartObject();
+				jsonEventObjectBase.WriteTo(writer);
+				writer.WriteEndObject();
+			}
 			else if (jsonValue is IDictionary<string, object> mapValue) {
 				WriteJsonMap(writer, mapValue);
 			}
-			else if (jsonValue is JsonEventObjectBase) {
-				writer.WriteObjectOpen();
-				JsonEventObjectBase und = (JsonEventObjectBase) jsonValue;
-				und.Write(writer);
-				writer.WriteObjectClose();
-			}
 			else {
-				log.Warn("Unknown json value of type " + jsonValue.GetType() + " encountered, skipping member '" + name + "'");
+				Log.Warn("Unknown json value of type " + jsonValue.GetType() + " encountered, skipping member '" + name + "'");
 			}
 		}
 
@@ -1506,28 +1285,22 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="map">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteJsonMap(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			IDictionary<string, object> map)
 		{
 			if (map == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
+			
+			writer.WriteStartObject();
 
-			writer.WriteObjectOpen();
-			bool first = true;
-			foreach (KeyValuePair<string, object> entry in map) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
-				writer.WriteMemberName(entry.Key);
-				writer.WriteMemberSeparator();
+			foreach (var entry in map) {
+				writer.WritePropertyName(entry.Key);
 				WriteJsonValue(writer, entry.Key, entry.Value);
 			}
 
-			writer.WriteObjectClose();
+			writer.WriteEndObject();
 		}
 
 		/// <summary>
@@ -1538,27 +1311,21 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="array">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteJsonArray(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			string name,
 			object[] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (object item in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var item in array) {
 				WriteJsonValue(writer, name, item);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -1569,12 +1336,12 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="nestedFactory">writer for nested object</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteNested(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			object nested,
 			JsonDelegateFactory nestedFactory)
 		{
 			if (nested == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
@@ -1588,15 +1355,15 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="nested">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteNested(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			JsonEventObjectBase nested)
 		{
 			if (nested == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			nested.Write(writer);
+			nested.WriteTo(writer);
 		}
 
 		/// <summary>
@@ -1607,27 +1374,21 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="nestedFactory">writer for nested object</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteNestedArray(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			object[] nesteds,
 			JsonDelegateFactory nestedFactory)
 		{
 			if (nesteds == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (object nested in nesteds) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var nested in nesteds) {
 				nestedFactory.Write(writer, nested);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -1637,54 +1398,42 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="nesteds">value</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteNestedArray(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			JsonEventObjectBase[] nesteds)
 		{
 			if (nesteds == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (JsonEventObjectBase nested in nesteds) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
-				nested.Write(writer);
+			writer.WriteStartArray();
+			foreach (var nested in nesteds) {
+				nested.WriteTo(writer);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		private static void WriteObjectArrayWToString(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			object[] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (object @object in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var @object in array) {
 				if (@object == null) {
-					writer.WriteLiteral("null");
+					writer.WriteNullValue();
 				}
 				else {
-					writer.WriteString(@object.ToString());
+					writer.WriteStringValue(@object.ToString());
 				}
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		/// <summary>
@@ -1694,55 +1443,42 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 		/// <param name="values">collection</param>
 		/// <throws>IOException io error</throws>
 		public static void WriteCollectionWToString<T>(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			ICollection<T> values)
-			where T : class
 		{
 			if (values == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (T @object in values) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var @object in values) {
 				if (@object == null) {
-					writer.WriteLiteral("null");
+					writer.WriteNullValue();
 				}
 				else {
-					writer.WriteString(@object.ToString());
+					writer.WriteStringValue(@object.ToString());
 				}
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 
 		private static void WriteObjectArray2DimWToString(
-			JsonWriter writer,
+			Utf8JsonWriter writer,
 			object[][] array)
 		{
 			if (array == null) {
-				writer.WriteLiteral("null");
+				writer.WriteNullValue();
 				return;
 			}
 
-			writer.WriteArrayOpen();
-			bool first = true;
-			foreach (object[] objects in array) {
-				if (!first) {
-					writer.WriteObjectSeparator();
-				}
-
-				first = false;
+			writer.WriteStartArray();
+			foreach (var objects in array) {
 				WriteObjectArrayWToString(writer, objects);
 			}
 
-			writer.WriteArrayClose();
+			writer.WriteEndArray();
 		}
 	}
 } // end of namespace

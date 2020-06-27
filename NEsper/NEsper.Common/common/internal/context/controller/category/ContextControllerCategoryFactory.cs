@@ -38,8 +38,8 @@ namespace com.espertech.esper.common.@internal.context.controller.category
             bool forStatement,
             int nestingLevel,
             object partitionKey,
-            IDictionary<int, ContextControllerStatementDesc> statements,
             ContextControllerStatementDesc optionalStatementDesc,
+            IDictionary<int, ContextControllerStatementDesc> statements,
             AgentInstanceContext agentInstanceContextStatement)
         {
             if (!forStatement) {

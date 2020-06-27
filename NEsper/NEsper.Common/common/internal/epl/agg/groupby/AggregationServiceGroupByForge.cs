@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                 .DeclareVar<AggregationServiceFactory>(
                     "svcFactory",
                     NewInstance(classNames.ServiceFactory, Ref("this")))
-                .DeclareVar<DataInputOutputSerde<object>>(
+                .DeclareVar<DataInputOutputSerde>(
                     "serde", aggGroupByDesc.GroupByMultiKey.GetExprMKSerde(method, classScope))
                 .MethodReturn(
                     ExprDotMethodChain(EPStatementInitServicesConstants.REF)

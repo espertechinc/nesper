@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 	    }
 
 	    public string ForgeClassName() {
-	        return typeof(DataInputOutputSerde<object>).FullName;
+	        return typeof(DataInputOutputSerde).FullName;
 	    }
 
 	    public CodegenExpression Codegen(CodegenMethod method, CodegenClassScope classScope, CodegenExpression optionalEventTypeResolver) {

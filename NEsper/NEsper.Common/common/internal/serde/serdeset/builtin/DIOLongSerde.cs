@@ -19,13 +19,13 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	/// <summary>
 	/// Binding for non-null long values.
 	/// </summary>
-	public class DIOLongSerde : DataInputOutputSerde<long> {
-	    public readonly static DIOLongSerde INSTANCE = new DIOLongSerde();
+	public class DIOLongSerde : DataInputOutputSerdeBase<long> {
+	    public static readonly DIOLongSerde INSTANCE = new DIOLongSerde();
 
 	    private DIOLongSerde() {
 	    }
 
-	    public void Write(long @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
+	    public override void Write(long @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
 	        output.WriteLong(@object);
 	    }
 
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        stream.WriteLong(@object);
 	    }
 
-	    public long Read(DataInput s, byte[] resourceKey) {
+	    public override long Read(DataInput s, byte[] resourceKey) {
 	        return s.ReadLong();
 	    }
 

@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 	    }
 
 	    public CodegenExpression CodegenWrite(JsonWriteForgeRefs refs, CodegenMethod method, CodegenClassScope classScope) {
-	        return StaticMethod(delegateFactoryClassName, "writeStatic", refs.Writer, refs.Field);
+	        return StaticMethod(delegateFactoryClassName, "WriteStatic", refs.Writer, refs.Field);
 	    }
 	}
 } // end of namespace

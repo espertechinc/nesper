@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             Type[] groupKeyTypes,
             ExprEvaluator groupKeyEval,
             bool isDefaultLevel,
-            DataInputOutputSerde<object> keySerde)
+            DataInputOutputSerde keySerde)
         {
             RowFactory = rowFactory;
             RowSerde = rowSerde;
@@ -44,6 +44,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
 
         public bool IsDefaultLevel { get; }
         
-        public DataInputOutputSerde<object> KeySerde { get; }
+        public DataInputOutputSerde KeySerde { get; }
     }
 } // end of namespace

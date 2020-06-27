@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 	    }
 
 	    public CodegenExpression CodegenWrite(JsonWriteForgeRefs refs, CodegenMethod method, CodegenClassScope classScope) {
-	        if (methodName.Equals("writeJsonValue") || methodName.Equals("writeJsonArray")) {
+	        if (methodName.Equals("WriteJsonValue") || methodName.Equals("WriteJsonArray")) {
 	            return StaticMethod(typeof(JsonWriteUtil), methodName, refs.Writer, refs.Name, refs.Field);
 	        } else {
 	            return StaticMethod(typeof(JsonWriteUtil), methodName, refs.Writer, refs.Field);

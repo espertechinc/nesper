@@ -7,33 +7,26 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 
-namespace com.espertech.esper.common.@internal.@event.json.core
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+
+namespace com.espertech.esper.common.@internal.@event.json.write
 {
-	public class JsonEventUnderlyingKeySetIterator : IEnumerator<string> {
-	    private readonly JsonEventObjectBase jeu;
-	    private readonly IEnumerator<string> keyIter;
-	    private int count;
+	public class JsonWriteForgeNumber : JsonWriteForge {
 
-	    public JsonEventUnderlyingKeySetIterator(JsonEventObjectBase jeu, ISet<string> keySet) {
-	        this.jeu = jeu;
-	        this.keyIter = keySet.Iterator();
+	    public readonly static JsonWriteForgeNumber INSTANCE = new JsonWriteForgeNumber();
+
+	    private JsonWriteForgeNumber() {
 	    }
 
-	    public bool HasNext() {
-	        return count < jeu.NativeSize || keyIter.HasNext;
-	    }
-
-	    public string Next() {
-	        if (count < jeu.NativeSize) {
-	            return jeu.GetNativeKey(count++);
-	        }
-	        return keyIter.Next();
+	    public CodegenExpression CodegenWrite(JsonWriteForgeRefs refs, CodegenMethod method, CodegenClassScope classScope) {
+	        return StaticMethod(typeof(JsonWriteUtil), "WriteNullableNumber", refs.Writer, refs.Field);
 	    }
 	}
 } // end of namespace

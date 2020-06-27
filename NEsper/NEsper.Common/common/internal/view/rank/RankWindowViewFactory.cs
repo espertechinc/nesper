@@ -43,9 +43,9 @@ namespace com.espertech.esper.common.@internal.view.rank
 
         public Type[] CriteriaTypes { get; set; }
 
-        public DataInputOutputSerde<object> KeySerde { get; set; }
+        public DataInputOutputSerde KeySerde { get; set; }
         
-        public DataInputOutputSerde<object>[] SortSerdes { get; set; }
+        public DataInputOutputSerde[] SortSerdes { get; set; }
         
         public string ViewName => ViewEnum.RANK_WINDOW.GetViewName();
 

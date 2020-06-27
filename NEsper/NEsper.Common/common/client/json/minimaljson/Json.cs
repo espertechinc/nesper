@@ -25,18 +25,23 @@ namespace com.espertech.esper.common.client.json.minimaljson
 {
 	/// <summary>
 	/// This class serves as the entry point to the minimal-json API.
-	/// <para />To <strong>parse</strong> a given JSON input, use the <code>parse()</code> methods like in this
-	/// example:
+	/// <para>
+	/// To <strong>parse</strong> a given JSON input, use the <code>parse()</code> methods like in this example:
 	/// JsonObject object = Json.parse(string).asObject();
-	/// <para />To <strong>create</strong> a JSON data structure to be serialized, use the methods
+	/// </para>
+	/// <para>
+	/// To <strong>create</strong> a JSON data structure to be serialized, use the methods
 	/// <code>value()</code>, <code>array()</code>, and <code>object()</code>. For example, the following
 	/// snippet will produce the JSON string <em>{"foo": 23, "bar": true}</em>:
 	/// String string = Json.object().add("foo", 23).add("bar", true).toString();
-	/// <para />To create a JSON array from a given Java array, you can use one of the <code>array()</code>methods with varargs parameters:
+	/// </para>
+	/// <para>
+	/// To create a JSON array from a given Java array, you can use one of the <code>array()</code>methods with varargs parameters:
 	/// String[] names = ...
 	/// JsonArray array = Json.array(names);
+	/// </para>
 	/// </summary>
-	public final class Json {
+	public sealed class Json {
 
 	    private Json() {
 	        // not meant to be instantiated

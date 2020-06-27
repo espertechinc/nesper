@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
 
         TableSerdes TableSerdes { get; set; }
 
-        DataInputOutputSerde<object> PrimaryKeySerde { get; set; }
+        DataInputOutputSerde PrimaryKeySerde { get; set; }
 
         MultiKeyFromObjectArray PrimaryKeyObjectArrayTransform { get; set; }
 

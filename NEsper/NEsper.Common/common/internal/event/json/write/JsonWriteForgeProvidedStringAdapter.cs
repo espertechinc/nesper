@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 	    }
 
 	    public CodegenExpression CodegenWrite(JsonWriteForgeRefs refs, CodegenMethod method, CodegenClassScope classScope) {
-	        return ExprDotMethod(NewInstance(adapterClass), "write", refs.Field, refs.Writer);
+	        return ExprDotMethod(NewInstance(adapterClass), "Write", refs.Field, refs.Writer);
 	    }
 	}
 } // end of namespace

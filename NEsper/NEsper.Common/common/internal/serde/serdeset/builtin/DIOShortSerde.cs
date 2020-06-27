@@ -19,13 +19,13 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	/// <summary>
 	/// Binding for non-null short values.
 	/// </summary>
-	public class DIOShortSerde : DataInputOutputSerde<short> {
-	    public readonly static DIOShortSerde INSTANCE = new DIOShortSerde();
+	public class DIOShortSerde : DataInputOutputSerdeBase<short> {
+	    public static readonly DIOShortSerde INSTANCE = new DIOShortSerde();
 
 	    private DIOShortSerde() {
 	    }
 
-	    public void Write(short @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
+	    public override void Write(short @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
 	        output.WriteShort(@object);
 	    }
 
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        stream.WriteShort(@object);
 	    }
 
-	    public short Read(DataInput input, byte[] resourceKey) {
+	    public override short Read(DataInput input, byte[] resourceKey) {
 	        return input.ReadShort();
 	    }
 

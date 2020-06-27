@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
         {
             return name.ToLowerInvariant() switch {
                 "countminsketchadd" => CountMinSketchAggType.ADD,
-                "countminsketch" => CountMinSketchAggType.STATE
+                "countminsketch" => CountMinSketchAggType.STATE,
                 _ => null
             };
         }

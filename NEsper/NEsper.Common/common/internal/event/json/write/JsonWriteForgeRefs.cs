@@ -22,6 +22,9 @@ namespace com.espertech.esper.common.@internal.@event.json.write
             Name = name;
         }
 
+        /// <summary>
+        /// Returns the expression that yields the Utf8JsonWriter. 
+        /// </summary>
         public CodegenExpression Writer { get; }
 
         public CodegenExpression Field { get; }

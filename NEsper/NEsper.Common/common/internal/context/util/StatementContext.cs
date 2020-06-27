@@ -221,6 +221,12 @@ namespace com.espertech.esper.common.@internal.context.util
         public PatternSubexpressionPoolStmtSvc PatternSubexpressionPoolSvc { get; }
 
         public StatementInformationalsRuntime StatementInformationals { get; }
+        
+        public virtual object FilterReboolConstant
+        {
+            get => null;
+            set { }
+        }
 
         public void AddFinalizeCallback(StatementFinalizeCallback callback)
         {

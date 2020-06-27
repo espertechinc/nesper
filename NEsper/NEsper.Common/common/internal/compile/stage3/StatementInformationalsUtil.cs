@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.util;
@@ -27,6 +28,10 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 {
     public class StatementInformationalsUtil
     {
+        public const string EPL_ONSTART_SCRIPT_NAME = "on_statement_start";
+        public const string EPL_ONSTOP_SCRIPT_NAME = "on_statement_stop";
+        public const string EPL_ONLISTENERUPDATE_SCRIPT_NAME = "on_statement_listener_update";
+
         public static StatementInformationalsCompileTime GetInformationals(
             StatementBaseInfo @base,
             IList<FilterSpecCompiled> filterSpecCompileds,
@@ -105,6 +110,18 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             }
 
             bool allowSubscriber = services.Configuration.Compiler.ByteCode.IsAllowSubscriber;
+            
+            IList<ExpressionScriptProvided> statementScripts = @base.StatementSpec.Raw.ScriptExpressions;
+            IList<ExpressionScriptProvided> onScripts = new List<ExpressionScriptProvided>();
+            if (statementScripts != null) {
+                foreach (ExpressionScriptProvided script in statementScripts) {
+                    if (script.Name.Equals(EPL_ONLISTENERUPDATE_SCRIPT_NAME) ||
+                        script.Name.Equals(EPL_ONSTART_SCRIPT_NAME) ||
+                        script.Name.Equals(EPL_ONSTOP_SCRIPT_NAME)) {
+                        onScripts.Add(script);
+                    }
+                }
+            }
 
             return new StatementInformationalsCompileTime(
                 @base.StatementName,
@@ -131,13 +148,14 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 selectSubscriberDescriptor.SelectClauseColumnNames,
                 selectSubscriberDescriptor.IsForClauseDelivery,
                 selectSubscriberDescriptor.GroupDelivery,
-                allowSubscriber,
                 selectSubscriberDescriptor.GroupDeliveryMultiKey,
                 properties,
                 @base.StatementSpec.Raw.MatchRecognizeSpec != null,
                 services.IsInstrumented,
                 namespaceScope,
-                insertIntoLatchName);
+                insertIntoLatchName,
+                allowSubscriber,
+                onScripts.ToArray());
         }
 
         private static bool IsNeedDedup(IList<FilterSpecCompiled> filterSpecCompileds)

@@ -28,6 +28,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
         public int NumLevels => Levels.Length;
         
-        public DataInputOutputSerde<object>[] KeySerdes => Levels.Select(v => v.SubkeySerde).ToArray();
+        public DataInputOutputSerde[] KeySerdes => Levels.Select(v => v.SubkeySerde).ToArray();
     }
 }

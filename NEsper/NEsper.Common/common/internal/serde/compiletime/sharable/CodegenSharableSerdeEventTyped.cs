@@ -43,8 +43,8 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.sharable
 	        CodegenExpression type = EventTypeUtility
 		        .ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF);
 	        return ExprDotMethodChain(EPStatementInitServicesConstants.REF)
-		        .Add(EPStatementInitServices.GETEVENTTYPERESOLVER)
-		        .Add(EventTypeResolver.GETEVENTSERDEFACTORY)
+		        .Get(EPStatementInitServicesConstants.EVENTTYPERESOLVER)
+		        .Add(EventTypeResolverConstants.GETEVENTSERDEFACTORY)
 		        .Add(name.MethodName, type);
 	    }
 

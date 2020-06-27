@@ -14,6 +14,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.@event.bean.core
 {
@@ -24,20 +25,24 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 	{
 		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+		private readonly IObjectCopier _copier;
 		private readonly BeanEventType _beanEventType;
 		private readonly EventBeanTypedEventFactory _eventAdapterService;
 
 		/// <summary>
 		/// Ctor.
 		/// </summary>
+		/// <param name="copier">object copier</param>
 		/// <param name="beanEventType">event type</param>
 		/// <param name="eventAdapterService">for creating the event object</param>
 		public BeanEventBeanSerializableCopyMethod(
+			IObjectCopier copier,
 			BeanEventType beanEventType,
 			EventBeanTypedEventFactory eventAdapterService)
 		{
-			this._beanEventType = beanEventType;
-			this._eventAdapterService = eventAdapterService;
+			_beanEventType = beanEventType;
+			_eventAdapterService = eventAdapterService;
+			_copier = copier;
 		}
 
 		public EventBean Copy(EventBean theEvent)
@@ -45,7 +50,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 			object underlying = theEvent.Underlying;
 			object copied;
 			try {
-				copied = SerializableObjectCopier.Copy(underlying);
+				copied = _copier.Copy(underlying);
 			}
 			catch (IOException e) {
 				Log.Error("IOException copying event object for update: " + e.Message, e);

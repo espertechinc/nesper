@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.@event.path
 
         void RegisterSerde(
             EventTypeMetadata metadata,
-            DataInputOutputSerde<object> underlyingSerde,
+            DataInputOutputSerde underlyingSerde,
             Type underlyingClass);
     }
 } // end of namespace

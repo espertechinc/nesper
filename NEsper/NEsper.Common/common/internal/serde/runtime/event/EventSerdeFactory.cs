@@ -19,11 +19,11 @@ namespace com.espertech.esper.common.@internal.serde.runtime.@event
 	    void VerifyHaDeployment(bool targetHa) ;
 	    DataInputOutputSerde<EventBean> NullableEvent(EventType eventType);
 	    DataInputOutputSerde<EventBean> NullableEventArray(EventType eventType);
-	    DataInputOutputSerde<object> NullableEventOrUnderlying(EventType eventType);
-	    DataInputOutputSerde<object> NullableEventArrayOrUnderlying(EventType eventType);
+	    DataInputOutputSerde NullableEventOrUnderlying(EventType eventType);
+	    DataInputOutputSerde NullableEventArrayOrUnderlying(EventType eventType);
 	    DIOSerdeTreeMapEventsMayDeque TreeMapEventsMayDeque<TE>(DataInputOutputSerde<TE>[] criteriaSerdes, EventType eventType);
-	    DataInputOutputSerde<object> ObjectArrayMayNullNull<TE>(DataInputOutputSerde<TE>[] serdes);
-	    DataInputOutputSerde<object> ListEvents(EventType eventType);
+	    DataInputOutputSerde ObjectArrayMayNullNull<TE>(DataInputOutputSerde<TE>[] serdes);
+	    DataInputOutputSerde ListEvents(EventType eventType);
 	    DataInputOutputSerde<TE> LinkedHashMapEventsAndInt<TE>(EventType eventType);
 	    DataInputOutputSerde<TE> RefCountedSetAtomicInteger<TE>(EventType eventType);
 	    DataInputOutputSerde<EventBean> NullableEventMayCollate(EventType eventType);

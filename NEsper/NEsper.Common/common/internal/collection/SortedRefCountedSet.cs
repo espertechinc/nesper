@@ -9,6 +9,8 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.compat;
+
 namespace com.espertech.esper.common.@internal.collection
 {
     /// <summary>
@@ -25,7 +27,7 @@ namespace com.espertech.esper.common.@internal.collection
         public SortedRefCountedSet()
         {
             CountPoints = 0;
-            RefSet = new SortedList<TK, MutableInt>();
+            RefSet = new SortedList<TK, AtomicLong>();
         }
 
         /// <summary>
@@ -37,7 +39,7 @@ namespace com.espertech.esper.common.@internal.collection
         ///     Gets the ref set.
         /// </summary>
         /// <value>The ref set.</value>
-        public SortedList<TK, MutableInt> RefSet { get; }
+        public SortedList<TK, AtomicLong> RefSet { get; }
 
         /// <summary> Returns the largest key value, or null if the collection is empty.</summary>
         /// <returns>
@@ -62,13 +64,13 @@ namespace com.espertech.esper.common.@internal.collection
         /// </param>
         public virtual void Add(TK key)
         {
-            MutableInt value;
+            AtomicLong value;
             if (!RefSet.TryGetValue(key, out value)) {
-                RefSet.Add(key, new MutableInt());
+                RefSet.Add(key, new AtomicLong());
                 CountPoints++;
             }
             else {
-                value.Value++;
+                value.IncrementAndGet();
             }
         }
 
@@ -81,9 +83,9 @@ namespace com.espertech.esper.common.@internal.collection
             TK key,
             int numReferences)
         {
-            MutableInt value;
+            AtomicLong value;
             if (!RefSet.TryGetValue(key, out value)) {
-                RefSet[key] = new MutableInt(numReferences);
+                RefSet[key] = new AtomicLong(numReferences);
                 return;
             }
 
@@ -109,7 +111,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// <throws>  IllegalStateException is a key is removed that wasn't added to the map </throws>
         public virtual void Remove(TK key)
         {
-            MutableInt value;
+            AtomicLong value;
 
             if (!RefSet.TryGetValue(key, out value)) {
                 // This could happen if a sort operation gets a remove stream that duplicates events.
@@ -119,37 +121,16 @@ namespace com.espertech.esper.common.@internal.collection
             }
 
             --CountPoints;
-            if (value.Value == 1) {
+            
+            //if (value.Get() == 1)
+
+            if (value.DecrementAndGet() == 0) {
                 RefSet.Remove(key);
                 return;
             }
 
-            value.Value--;
+            //value.DecrementAndGet();
             //refSet[key] = value;
-        }
-
-        public sealed class MutableInt : IComparable
-        {
-            public int Value = 1;
-
-            public MutableInt()
-            {
-            }
-
-            public MutableInt(int initialValue)
-            {
-                Value = initialValue;
-            }
-
-            public int CompareTo(object obj)
-            {
-                var other = obj as MutableInt;
-                if (other == null) {
-                    throw new ArgumentException("invalid argument to comparison");
-                }
-
-                return Value.CompareTo(other.Value);
-            }
         }
     }
 }

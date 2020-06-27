@@ -19,8 +19,8 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	/// <summary>
 	/// Binding for non-null double values.
 	/// </summary>
-	public class DIODoubleSerde : DataInputOutputSerde<double> {
-	    public readonly static DIODoubleSerde INSTANCE = new DIODoubleSerde();
+	public class DIODoubleSerde : DataInputOutputSerdeBase<double> {
+	    public static readonly DIODoubleSerde INSTANCE = new DIODoubleSerde();
 
 	    /// <summary>
 	    /// Ctor.
@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	    private DIODoubleSerde() {
 	    }
 
-	    public void Write(double @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
+	    public override void Write(double @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
 	        output.WriteDouble(@object);
 	    }
 
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        stream.WriteDouble(@object);
 	    }
 
-	    public double Read(DataInput s, byte[] resourceKey) {
+	    public override double Read(DataInput s, byte[] resourceKey) {
 	        return s.ReadDouble();
 	    }
 
