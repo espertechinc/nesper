@@ -79,9 +79,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.updatedispatch
             }
 
             _view.Execute();
-            _isCompleted = true;
-
-            _earlier = null;
+            Completed();
         }
 
         #endregion Dispatchable Members
@@ -92,5 +90,18 @@ namespace com.espertech.esper.runtime.@internal.kernel.updatedispatch
         {
             return _isCompleted;
         }
+
+        public void Cancelled()
+        {
+            Completed();
+        }
+
+        private void Completed()
+        {
+            _isCompleted = true;
+            _earlier = null;
+        }
+
+        public UpdateDispatchView View => _view;
     }
 }

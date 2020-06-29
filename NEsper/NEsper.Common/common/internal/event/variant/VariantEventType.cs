@@ -159,7 +159,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
             return false;
         }
 
-        public EventType[] SuperTypes => null;
+        public IList<EventType> SuperTypes => null;
 
         public IEnumerable<EventType> DeepSuperTypes => EmptySet<EventType>.Instance;
 

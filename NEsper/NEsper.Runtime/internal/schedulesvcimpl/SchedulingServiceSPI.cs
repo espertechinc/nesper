@@ -16,19 +16,6 @@ namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
     /// </summary>
     public interface SchedulingServiceSPI : SchedulingService
     {
-        /// <summary>
-        /// Take a statement's schedules out of the currently active set of schedules.
-        /// </summary>
-        /// <param name="statementId">statements to take out</param>
-        /// <returns>schedules</returns>
-        ScheduleSet Take(ICollection<int> statementId);
-
-        /// <summary>
-        /// Apply the set of schedules.
-        /// </summary>
-        /// <param name="scheduleSet">to apply</param>
-        void Apply(ScheduleSet scheduleSet);
-
         long? NearestTimeHandle { get; }
 
         void VisitSchedules(ScheduleVisitor visitor);
@@ -37,5 +24,7 @@ namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
         /// Initialization is optional and provides a chance to preload things after statements are available.
         /// </summary>
         void Init();
+        
+        void Transfer(ICollection<int> statementIds, SchedulingServiceSPI schedulingService);
     }
 }

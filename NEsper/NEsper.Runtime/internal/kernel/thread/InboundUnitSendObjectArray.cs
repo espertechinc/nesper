@@ -7,47 +7,47 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Reflection;
+
+using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.runtime.@internal.kernel.service;
 
 namespace com.espertech.esper.runtime.@internal.kernel.thread
 {
-    /// <summary>
-    ///     Inbound work unit processing a map event.
-    /// </summary>
-    public class InboundUnitSendObjectArray : InboundUnitRunnable
+	/// <summary>
+	///     Inbound work unit processing a map event.
+	/// </summary>
+	public class InboundUnitSendObjectArray : InboundUnitRunnable
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(InboundUnitSendObjectArray));
-
+        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly string eventTypeName;
-        private readonly object[] properties;
-        private readonly EPEventServiceImpl runtime;
 
-        /// <summary>
-        ///     Ctor.
-        /// </summary>
-        /// <param name="properties">to send</param>
-        /// <param name="eventTypeName">type name</param>
-        /// <param name="runtime">to process</param>
+        private readonly object[] properties;
+        private readonly EPRuntimeEventProcessWrapped runtime;
+        private readonly EPServicesEvaluation services;
+
         public InboundUnitSendObjectArray(
             object[] properties,
             string eventTypeName,
-            EPEventServiceImpl runtime)
+            EPRuntimeEventProcessWrapped runtime,
+            EPServicesEvaluation services)
         {
-            this.eventTypeName = eventTypeName;
             this.properties = properties;
+            this.eventTypeName = eventTypeName;
             this.runtime = runtime;
+            this.services = services;
         }
 
         public void Run()
         {
             try {
-                var eventBean = runtime.Services.EventTypeResolvingBeanFactory.AdapterForObjectArray(properties, eventTypeName);
+                var eventBean = services.EventTypeResolvingBeanFactory.AdapterForObjectArray(properties, eventTypeName);
                 runtime.ProcessWrappedEvent(eventBean);
             }
             catch (Exception e) {
-                runtime.Services.ExceptionHandlingService.HandleInboundPoolException(runtime.RuntimeURI, e, properties);
-                Log.Error("Unexpected error processing Object-array event: " + e.Message, e);
+                services.ExceptionHandlingService.HandleInboundPoolException(runtime.URI, e, properties);
+                log.Error("Unexpected error processing Object-array event: " + e.Message, e);
             }
         }
     }

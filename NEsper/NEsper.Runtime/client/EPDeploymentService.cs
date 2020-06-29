@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.runtime.client
@@ -21,6 +22,12 @@ namespace com.espertech.esper.runtime.client
         /// </summary>
         /// <value>deployment ids</value>
         string[] Deployments { get; }
+
+        /// <summary>
+        ///     Returns an iterator of deployment state listeners (read-only)
+        /// </summary>
+        /// <value>listeners</value>
+        IEnumerator<DeploymentStateListener> DeploymentStateListeners { get; }
 
         /// <summary>
         ///     Deploy a compiled module and with the default options.
@@ -66,6 +73,9 @@ namespace com.espertech.esper.runtime.client
 
         /// <summary>
         ///     Undeploy all deployments and with the default options.
+        ///     <para>
+        ///         Does not un-deploy staged deployments.
+        ///     </para>
         /// </summary>
         /// <throws>EPUndeployException when the undeployment failed, of the deployments may remain deployed</throws>
         void UndeployAll();
@@ -79,9 +89,10 @@ namespace com.espertech.esper.runtime.client
 
         /// <summary>
         ///     Returns the statement of a given deployment.
-        ///     <para />
-        ///     A statement is uniquely identified by the deployment id that deployed the statement
-        ///     and by the statement name.
+        ///     <para>
+        ///         A statement is uniquely identified by the deployment id that deployed the statement
+        ///         and by the statement name.
+        ///     </para>
         /// </summary>
         /// <param name="deploymentId">deployment id of the statement</param>
         /// <param name="statementName">statement name</param>
@@ -92,8 +103,9 @@ namespace com.espertech.esper.runtime.client
 
         /// <summary>
         ///     Returns the deployment.
-        ///     <para />
-        ///     A deployment is uniquely identified by its deployment id.
+        ///     <para>
+        ///         A deployment is uniquely identified by its deployment id.
+        ///     </para>
         /// </summary>
         /// <param name="deploymentId">the deployment id of the deployment</param>
         /// <returns>deployment or null if the deployment could not be found</returns>
@@ -112,14 +124,70 @@ namespace com.espertech.esper.runtime.client
         void RemoveDeploymentStateListener(DeploymentStateListener listener);
 
         /// <summary>
-        ///     Returns an iterator of deployment state listeners (read-only)
-        /// </summary>
-        /// <value>listeners</value>
-        IEnumerator<DeploymentStateListener> DeploymentStateListeners { get; }
-
-        /// <summary>
         ///     Removes all deployment state listener
         /// </summary>
         void RemoveAllDeploymentStateListeners();
+        
+        /// <summary>
+        /// Roll-out multiple deployments. See {@link #rollout(Collection, RolloutOptions)}.
+        /// </summary>
+        /// <param name="items">compiled units and deployment options</param>
+        /// <returns>deployment</returns>
+        /// <exception cref="EPDeployException">when any of the deployments failed</exception>
+        EPDeploymentRollout Rollout(ICollection<EPDeploymentRolloutCompiled> items);
+
+        /// <summary>
+        /// Roll-out multiple deployments.
+        /// <p>
+        ///     Deploys each compiled module, either deploying all compilation units or deploying none of the compilation units.
+        /// </p>
+        /// <p>
+        ///     Does not reorder compilation units and expects compilation units to be ordered according to module dependencies (if any).
+        /// </p>
+        /// <p>
+        ///     The step-by-step is as allows:
+        /// </p>
+        /// <ol>
+        ///     <li>For each compilation unit, determine the deployment id or use the deployment id when provided in the deployment options; Check that all deployment ids do not already exist</li>
+        ///     <li>For each compilation unit, load compilation unit via classloader and validate basic class-related information such as manifest information and version</li>
+        ///     <li>For each compilation unit, check deployment preconditions and resolve deployment dependencies on EPL objects</li>
+        ///     <li>For each compilation unit, initialize statement-internal objects</li>
+        ///     <li>For each compilation unit, perform internal deployment of each statement of each module</li>
+        /// </ol>
+        /// <p>
+        ///     In case any of the above steps fail the runtime completely rolls back all changes.
+        /// </p>
+        /// </summary>
+        /// <param name="items">compiled units and deployment options</param>
+        /// <param name="options">rollout options</param>
+        /// <returns>deployment</returns>
+        /// <exception cref="EPDeployException">when any of the deployments failed</exception>
+        EPDeploymentRollout Rollout(ICollection<EPDeploymentRolloutCompiled> items, RolloutOptions options);
+
+        /// <summary>
+        /// Obtain information about other deployments that are depending on the given deployment,
+        /// i.e. EPL objects that this deployment provides to other deployments.
+        /// This method acquires the runtime-wide event processing read lock for the duration.
+        /// Does not return dependencies on predefined EPL objects such as configured event types or variables.
+        /// Does not return deployment-internal dependencies i.e. dependencies on EPL objects that are defined by the same deployment.
+        /// </summary>
+        /// 
+        /// <param name="deploymentId">deployment id</param>
+        /// <returns>dependencies or null if the deployment is not found</returns>
+        /// <exception cref="EPException">when the required lock cannot be obtained</exception>
+        EPDeploymentDependencyProvided GetDeploymentDependenciesProvided(string deploymentId);
+
+        /// <summary>
+        /// Obtain information about the dependencies that the given deployment has on other deployments,
+        /// i.e. EPL objects that this deployment consumes from other deployments.
+        /// This method acquires the runtime-wide event processing read lock for the duration.
+        /// Does not return dependencies on predefined EPL objects such as configured event types or variables.
+        /// Does not return deployment-internal dependencies i.e. dependencies on EPL objects that are defined by the same deployment.
+        /// </summary>
+        /// 
+        /// <param name="deploymentId">deployment id</param>
+        /// <returns>dependencies or null if the deployment is not found</returns>
+        /// <exception cref="EPException">when the required lock cannot be obtained</exception>
+        EPDeploymentDependencyConsumed GetDeploymentDependenciesConsumed(string deploymentId);
     }
 } // end of namespace

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\src\Espertech\NEsper-master\NEsper\grammar\EsperEPL2Grammar.g4 by ANTLR 4.7.1
+// Generated from C:\Src\Espertech\NEsper-8.5.0\NEsper\grammar\EsperEPL2Grammar.g4 by ANTLR 4.7.1
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -68,6 +68,16 @@ public partial class EsperEPL2GrammarBaseVisitor<Result> : AbstractParseTreeVisi
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitStartJsonValueRule([NotNull] EsperEPL2GrammarParser.StartJsonValueRuleContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.classDecl"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitClassDecl([NotNull] EsperEPL2GrammarParser.ClassDeclContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.expressionDecl"/>.
 	/// <para>
@@ -769,6 +779,16 @@ public partial class EsperEPL2GrammarBaseVisitor<Result> : AbstractParseTreeVisi
 	/// <return>The visitor result.</return>
 	public virtual Result VisitCreateExpressionExpr([NotNull] EsperEPL2GrammarParser.CreateExpressionExprContext context) { return VisitChildren(context); }
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.createClassExpr"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitCreateClassExpr([NotNull] EsperEPL2GrammarParser.CreateClassExprContext context) { return VisitChildren(context); }
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.createContextDetail"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -938,6 +958,16 @@ public partial class EsperEPL2GrammarBaseVisitor<Result> : AbstractParseTreeVisi
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitColumnList([NotNull] EsperEPL2GrammarParser.ColumnListContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.columnListKeywordAllowed"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitColumnListKeywordAllowed([NotNull] EsperEPL2GrammarParser.ColumnListKeywordAllowedContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.fromClause"/>.
 	/// <para>
@@ -1289,6 +1319,16 @@ public partial class EsperEPL2GrammarBaseVisitor<Result> : AbstractParseTreeVisi
 	/// <return>The visitor result.</return>
 	public virtual Result VisitRowLimit([NotNull] EsperEPL2GrammarParser.RowLimitContext context) { return VisitChildren(context); }
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.crontabLimitParameterSetList"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitCrontabLimitParameterSetList([NotNull] EsperEPL2GrammarParser.CrontabLimitParameterSetListContext context) { return VisitChildren(context); }
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.crontabLimitParameterSet"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -1639,16 +1679,6 @@ public partial class EsperEPL2GrammarBaseVisitor<Result> : AbstractParseTreeVisi
 	/// <return>The visitor result.</return>
 	public virtual Result VisitSubstitutionCanChain([NotNull] EsperEPL2GrammarParser.SubstitutionCanChainContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainedFunction"/>.
-	/// <para>
-	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
-	/// on <paramref name="context"/>.
-	/// </para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	public virtual Result VisitChainedFunction([NotNull] EsperEPL2GrammarParser.ChainedFunctionContext context) { return VisitChildren(context); }
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.newAssign"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -1960,36 +1990,6 @@ public partial class EsperEPL2GrammarBaseVisitor<Result> : AbstractParseTreeVisi
 	/// <return>The visitor result.</return>
 	public virtual Result VisitFirstLastWindowAggregation([NotNull] EsperEPL2GrammarParser.FirstLastWindowAggregationContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.eventPropertyOrLibFunction"/>.
-	/// <para>
-	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
-	/// on <paramref name="context"/>.
-	/// </para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	public virtual Result VisitEventPropertyOrLibFunction([NotNull] EsperEPL2GrammarParser.EventPropertyOrLibFunctionContext context) { return VisitChildren(context); }
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.libFunction"/>.
-	/// <para>
-	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
-	/// on <paramref name="context"/>.
-	/// </para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	public virtual Result VisitLibFunction([NotNull] EsperEPL2GrammarParser.LibFunctionContext context) { return VisitChildren(context); }
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.libFunctionWithClass"/>.
-	/// <para>
-	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
-	/// on <paramref name="context"/>.
-	/// </para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	public virtual Result VisitLibFunctionWithClass([NotNull] EsperEPL2GrammarParser.LibFunctionWithClassContext context) { return VisitChildren(context); }
-	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.libFunctionNoClass"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
@@ -1999,26 +1999,6 @@ public partial class EsperEPL2GrammarBaseVisitor<Result> : AbstractParseTreeVisi
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
 	public virtual Result VisitLibFunctionNoClass([NotNull] EsperEPL2GrammarParser.LibFunctionNoClassContext context) { return VisitChildren(context); }
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.funcIdentTop"/>.
-	/// <para>
-	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
-	/// on <paramref name="context"/>.
-	/// </para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	public virtual Result VisitFuncIdentTop([NotNull] EsperEPL2GrammarParser.FuncIdentTopContext context) { return VisitChildren(context); }
-	/// <summary>
-	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.funcIdentInner"/>.
-	/// <para>
-	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
-	/// on <paramref name="context"/>.
-	/// </para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	/// <return>The visitor result.</return>
-	public virtual Result VisitFuncIdentInner([NotNull] EsperEPL2GrammarParser.FuncIdentInnerContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.funcIdentChained"/>.
 	/// <para>
@@ -2550,7 +2530,7 @@ public partial class EsperEPL2GrammarBaseVisitor<Result> : AbstractParseTreeVisi
 	/// <return>The visitor result.</return>
 	public virtual Result VisitNumericListParameter([NotNull] EsperEPL2GrammarParser.NumericListParameterContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.eventProperty"/>.
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainable"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -2558,9 +2538,9 @@ public partial class EsperEPL2GrammarBaseVisitor<Result> : AbstractParseTreeVisi
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitEventProperty([NotNull] EsperEPL2GrammarParser.EventPropertyContext context) { return VisitChildren(context); }
+	public virtual Result VisitChainable([NotNull] EsperEPL2GrammarParser.ChainableContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.eventPropertyAtomic"/>.
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableRootWithOpt"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -2568,9 +2548,9 @@ public partial class EsperEPL2GrammarBaseVisitor<Result> : AbstractParseTreeVisi
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitEventPropertyAtomic([NotNull] EsperEPL2GrammarParser.EventPropertyAtomicContext context) { return VisitChildren(context); }
+	public virtual Result VisitChainableRootWithOpt([NotNull] EsperEPL2GrammarParser.ChainableRootWithOptContext context) { return VisitChildren(context); }
 	/// <summary>
-	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.eventPropertyIdent"/>.
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableElements"/>.
 	/// <para>
 	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
 	/// on <paramref name="context"/>.
@@ -2578,7 +2558,57 @@ public partial class EsperEPL2GrammarBaseVisitor<Result> : AbstractParseTreeVisi
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	/// <return>The visitor result.</return>
-	public virtual Result VisitEventPropertyIdent([NotNull] EsperEPL2GrammarParser.EventPropertyIdentContext context) { return VisitChildren(context); }
+	public virtual Result VisitChainableElements([NotNull] EsperEPL2GrammarParser.ChainableElementsContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableAtomicWithOpt"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitChainableAtomicWithOpt([NotNull] EsperEPL2GrammarParser.ChainableAtomicWithOptContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableAtomic"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitChainableAtomic([NotNull] EsperEPL2GrammarParser.ChainableAtomicContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableArray"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitChainableArray([NotNull] EsperEPL2GrammarParser.ChainableArrayContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableWithArgs"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitChainableWithArgs([NotNull] EsperEPL2GrammarParser.ChainableWithArgsContext context) { return VisitChildren(context); }
+	/// <summary>
+	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableIdent"/>.
+	/// <para>
+	/// The default implementation returns the result of calling <see cref="AbstractParseTreeVisitor{Result}.VisitChildren(IRuleNode)"/>
+	/// on <paramref name="context"/>.
+	/// </para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	public virtual Result VisitChainableIdent([NotNull] EsperEPL2GrammarParser.ChainableIdentContext context) { return VisitChildren(context); }
 	/// <summary>
 	/// Visit a parse tree produced by <see cref="EsperEPL2GrammarParser.identOrTicked"/>.
 	/// <para>

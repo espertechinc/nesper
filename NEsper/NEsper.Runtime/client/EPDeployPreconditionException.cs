@@ -19,8 +19,9 @@ namespace com.espertech.esper.runtime.client
         /// Ctor.
         /// </summary>
         /// <param name="message">message</param>
-        public EPDeployPreconditionException(string message)
-            : base("A precondition is not satisfied: " + message)
+        /// <param name="rolloutItemNumber">rollout item number when using rollout</param>
+        public EPDeployPreconditionException(string message, int rolloutItemNumber)
+            : base("A precondition is not satisfied: " + message, rolloutItemNumber)
         {
         }
 
@@ -29,8 +30,9 @@ namespace com.espertech.esper.runtime.client
         /// </summary>
         /// <param name="message">message</param>
         /// <param name="cause">cause</param>
-        public EPDeployPreconditionException(string message, Exception cause)
-            : base("A precondition is not satisfied: " + message, cause)
+        /// <param name="rolloutItemNumber">rollout item number when using rollout</param>
+        public EPDeployPreconditionException(string message, Exception cause, int rolloutItemNumber)
+            : base("A precondition is not satisfied: " + message, cause, rolloutItemNumber)
         {
         }
     }

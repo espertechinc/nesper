@@ -21,26 +21,19 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
     /// </summary>
     public class InboundUnitSendWrapped : InboundUnitRunnable
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
+        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly EventBean eventBean;
         private readonly EPRuntimeEventProcessWrapped runtime;
-        private readonly EPServicesContext services;
+        private readonly EPServicesEvaluation services;
 
-        /// <summary>
-        ///     Ctor.
-        /// </summary>
-        /// <param name="theEvent">inbound event, wrapped</param>
-        /// <param name="runtime">to process</param>
-        /// <param name="services">services</param>
         public InboundUnitSendWrapped(
-            EventBean theEvent,
-            EPServicesContext services,
-            EPRuntimeEventProcessWrapped runtime)
+            EventBean eventBean,
+            EPRuntimeEventProcessWrapped runtime,
+            EPServicesEvaluation services)
         {
-            eventBean = theEvent;
-            this.services = services;
+            this.eventBean = eventBean;
             this.runtime = runtime;
+            this.services = services;
         }
 
         public void Run()
@@ -49,8 +42,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
                 runtime.ProcessWrappedEvent(eventBean);
             }
             catch (Exception e) {
-                services.ExceptionHandlingService.HandleInboundPoolException(services.RuntimeURI, e, eventBean);
-                Log.Error("Unexpected error processing wrapped event: " + e.Message, e);
+                services.ExceptionHandlingService.HandleInboundPoolException(runtime.URI, e, eventBean);
+                log.Error("Unexpected error processing wrapped event: " + e.Message, e);
             }
         }
     }

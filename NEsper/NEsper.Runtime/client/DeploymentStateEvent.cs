@@ -20,16 +20,19 @@ namespace com.espertech.esper.runtime.client
         /// <param name="deploymentId">deployment id</param>
         /// <param name="moduleName">module name</param>
         /// <param name="statements">statements</param>
+        /// <param name="rolloutItemNumber">rollout item number when using rollout</param>
         public DeploymentStateEvent(
             string runtimeURI,
             string deploymentId,
             string moduleName,
-            EPStatement[] statements)
+            EPStatement[] statements,
+            int rolloutItemNumber)
         {
             RuntimeURI = runtimeURI;
             DeploymentId = deploymentId;
             ModuleName = moduleName;
             Statements = statements;
+            RolloutItemNumber = rolloutItemNumber;
         }
 
         /// <summary>
@@ -55,5 +58,10 @@ namespace com.espertech.esper.runtime.client
         /// </summary>
         /// <value>statements</value>
         public EPStatement[] Statements { get; }
+        
+        /// <summary>
+        /// Returns the rollout item number, or -1 when not using rollout
+        /// </summary>
+        public int RolloutItemNumber { get; }
     }
 } // end of namespace

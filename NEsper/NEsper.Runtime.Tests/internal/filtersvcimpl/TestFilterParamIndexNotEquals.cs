@@ -74,14 +74,14 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         private void VerifyBooleanPrimitive(FilterParamIndexBase index, bool testValue, int numExpected)
         {
             testBean.BoolPrimitive = testValue;
-            index.MatchEvent(testEventBean, matchesList);
+            index.MatchEvent(testEventBean, matchesList, TODO);
             Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 
         private void VerifyString(FilterParamIndexBase index, string testValue, int numExpected)
         {
             testBean.TheString = testValue;
-            index.MatchEvent(testEventBean, matchesList);
+            index.MatchEvent(testEventBean, matchesList, TODO);
             Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 

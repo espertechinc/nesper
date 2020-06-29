@@ -23,8 +23,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
     /// </summary>
     public abstract class FilterParamIndexDoubleRangeBase : FilterParamIndexLookupableBase
     {
-        private readonly IDictionary<DoubleRange, EventEvaluator> _rangesNullEndpoints;
-
+        protected EventEvaluator RangesNullEndpoints;
         protected readonly OrderedDictionary<DoubleRange, EventEvaluator> Ranges;
         protected double LargestRangeValueDouble = double.MinValue;
 
@@ -34,8 +33,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             FilterOperator filterOperator)
             : base(filterOperator, lookupable)
         {
-            Ranges = new OrderedDictionary<DoubleRange, EventEvaluator>(new DoubleRangeComparator());
-            _rangesNullEndpoints = new Dictionary<DoubleRange, EventEvaluator>();
+            Ranges = new OrderedDictionary<DoubleRange, EventEvaluator>(DoubleRangeComparator.INSTANCE);
             ReadWriteLock = readWriteLock;
         }
 
@@ -53,7 +51,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
             var range = (DoubleRange) expressionValue;
             if (range.Max == null || range.Min == null) {
-                return _rangesNullEndpoints.Get(range);
+                return RangesNullEndpoints;
             }
 
             return Ranges.Get(range);
@@ -69,7 +67,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
             var range = (DoubleRange) expressionValue;
             if (range.Max == null || range.Min == null) {
-                _rangesNullEndpoints.Put(range, matcher); // endpoints null - we don't enter
+                RangesNullEndpoints = matcher;
                 return;
             }
 
@@ -85,11 +83,11 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             var range = (DoubleRange) filterConstant;
 
             if (range.Max == null || range.Min == null) {
-                _rangesNullEndpoints.Delete(range);
+                RangesNullEndpoints = null;
+                return;
             }
-            else {
-                Ranges.Delete(range);
-            }
+
+            Ranges.Delete(range);
         }
 
         public override void GetTraverseStatement(
@@ -98,7 +96,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             ArrayDeque<FilterItem> evaluatorStack)
         {
             foreach (var entry in Ranges) {
-                evaluatorStack.Add(new FilterItem(Lookupable.Expression, FilterOperator, entry.Key));
+                evaluatorStack.Add(new FilterItem(Lookupable.Expression, FilterOperator, entry.Key, this));
                 entry.Value.GetTraverseStatement(traverse, statementIds, evaluatorStack);
                 evaluatorStack.RemoveLast();
             }

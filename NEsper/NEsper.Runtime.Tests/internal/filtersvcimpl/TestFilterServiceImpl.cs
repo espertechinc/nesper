@@ -12,6 +12,7 @@ using System.Reflection;
 using com.espertech.esper.collection;
 using com.espertech.esper.common;
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.common.@internal.support;
@@ -173,7 +174,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             // send event
             var theEvent = MakeTypeOneEvent(1, "HELLO", false, 1);
             var matches = new List<FilterHandle>();
-            filterService.Evaluate(theEvent, matches);
+            filterService.Evaluate(theEvent, (ICollection<FilterHandle>) matches, (ExprEvaluatorContext) TODO);
             foreach (var match in matches)
             {
                 ((FilterHandleCallback) match).MatchFound(theEvent, null);
@@ -190,7 +191,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             for (var i = 0; i < events.Count; i++)
             {
                 IList<FilterHandle> matchList = new List<FilterHandle>();
-                filterService.Evaluate(events[i], matchList);
+                filterService.Evaluate(events[i], (ICollection<FilterHandle>) matchList, (ExprEvaluatorContext) TODO);
                 foreach (var match in matchList)
                 {
                     var handle = (SupportFilterHandle) match;

@@ -8,13 +8,14 @@
 
 using System.Collections.Generic;
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.runtime.@internal.metrics.instrumentation;
 
-using static com.espertech.esper.common.@internal.compile.stage2.FilterSpecCompilerPlanner;
+using static com.espertech.esper.common.@internal.compile.stage2.FilterSpecCompilerIndexPlanner;
 
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
@@ -65,7 +66,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         public override void MatchEvent(
             EventBean theEvent,
-            ICollection<FilterHandle> matches)
+            ICollection<FilterHandle> matches,
+            ExprEvaluatorContext ctx)
         {
             if (InstrumentationHelper.ENABLED) {
                 InstrumentationHelper.Get().QFilterBoolean(this);
@@ -84,7 +86,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                         InstrumentationHelper.Get().AFilterBooleanExpr(result);
                         if (result)
                         {
-                            evals.Value.MatchEvent(theEvent, matches);
+                            evals.Value.MatchEvent(theEvent, matches, ctx);
                         }
                     }
                 }
@@ -94,7 +96,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                     {
                         if (evals.Key.Evaluate(theEvent))
                         {
-                            evals.Value.MatchEvent(theEvent, matches);
+                            evals.Value.MatchEvent(theEvent, matches, ctx);
                         }
                     }
                 }

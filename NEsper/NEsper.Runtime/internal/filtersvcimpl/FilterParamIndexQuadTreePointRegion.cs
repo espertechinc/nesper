@@ -30,7 +30,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         private static readonly QuadTreeCollector<ICollection<FilterHandle>> _collector =
             new ProxyQuadTreeCollector<ICollection<FilterHandle>>()
             {
-                ProcCollectInto = (@event, eventEvaluator, c) => ((EventEvaluator) eventEvaluator).MatchEvent(@event, c)
+                ProcCollectInto = (@event, eventEvaluator, c, ctx) => ((EventEvaluator) eventEvaluator).MatchEvent(@event, c, ctx)
             };
 
         public FilterParamIndexQuadTreePointRegion(IReaderWriterLock readWriteLock, ExprFilterSpecLookupable lookupable)
@@ -46,14 +46,17 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 quadTreeConfig.Height);
         }
 
-        public override void MatchEvent(EventBean theEvent, ICollection<FilterHandle> matches)
+        public override void MatchEvent(
+            EventBean theEvent,
+            ICollection<FilterHandle> matches,
+            ExprEvaluatorContext ctx)
         {
             var x = (_advancedIndex.X.Get(theEvent)).AsDouble();
             var y = (_advancedIndex.Y.Get(theEvent)).AsDouble();
             var width = (_advancedIndex.Width.Get(theEvent)).AsDouble();
             var height = (_advancedIndex.Height.Get(theEvent)).AsDouble();
             PointRegionQuadTreeFilterIndexCollect<EventEvaluator, ICollection<FilterHandle>>.CollectRange(
-                _quadTree, x, y, width, height, theEvent, matches, _collector);
+                _quadTree, x, y, width, height, theEvent, matches, _collector, ctx);
         }
 
         public override EventEvaluator Get(object filterConstant)
@@ -85,7 +88,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             ICollection<int> statementIds,
             ArrayDeque<FilterItem> evaluatorStack)
         {
-            evaluatorStack.AddFirst(new FilterItem(_advancedIndex.Expression, FilterOperator.ADVANCED_INDEX));
+            evaluatorStack.AddFirst(new FilterItem(_advancedIndex.Expression, FilterOperator.ADVANCED_INDEX, this));
             PointRegionQuadTreeFilterIndexTraverse.Traverse(_quadTree, @object => {
                 if (@object is FilterHandleSetNode filterHandleSetNode) {
                     filterHandleSetNode.GetTraverseStatement(traverse, statementIds, evaluatorStack);

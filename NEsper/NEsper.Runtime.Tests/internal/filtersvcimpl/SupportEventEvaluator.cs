@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -30,7 +31,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         public void MatchEvent(
             EventBean theEvent,
-            ICollection<FilterHandle> matches)
+            ICollection<FilterHandle> matches,
+            ExprEvaluatorContext ctx)
         {
             countInvoked++;
             LastEvent = theEvent;

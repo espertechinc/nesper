@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
@@ -37,9 +38,9 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.option;
 using com.espertech.esper.runtime.client.plugin;
 using com.espertech.esper.runtime.client.util;
+using com.espertech.esper.runtime.@internal.kernel.stage;
 using com.espertech.esper.runtime.@internal.kernel.statement;
 using com.espertech.esper.runtime.@internal.kernel.thread;
-using com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics;
 
 namespace com.espertech.esper.runtime.@internal.kernel.service
 {
@@ -56,7 +57,11 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         private volatile EPRuntimeEnv runtimeEnvironment;
         private readonly IDictionary<string, EPRuntimeSPI> runtimes;
         private readonly CopyOnWriteArraySet<EPRuntimeStateListener> serviceListeners;
-
+        
+        private AtomicBoolean _serviceStatusProvider;
+        private EPRuntimeCompileReflectiveSPI _compileReflective;
+        private EPRuntimeStatementSelectionSPI _statementSelection;
+        
         /// <summary>
         ///     Constructor - initializes services.
         /// </summary>
@@ -117,6 +122,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             configLastProvided = TakeSnapshot(configuration);
         }
 
+        public IContainer Container { get; }
+
         public string URI { get; }
 
         public EPEventService EventService {
@@ -136,6 +143,16 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 }
 
                 return runtimeEnvironment.DeploymentService;
+            }
+        }
+
+        public EPStageService StageService {
+            get {
+                if (runtimeEnvironment == null) {
+                    throw new EPRuntimeDestroyedException(URI);
+                }
+
+                return runtimeEnvironment.StageService;
             }
         }
 
@@ -173,6 +190,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                         DestroyEngineMetrics(runtimeEnvironment.Services.RuntimeURI);
                     }
 
+                    ServiceStatusProvider?.Set(false);
+                    runtimeEnvironment.StageService.Destroy();
+
                     // assign null value
                     var runtimeToDestroy = runtimeEnvironment;
                     runtimeToDestroy.Services.TimerService.StopInternalClock(false);
@@ -198,6 +218,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
                     // assign null - making EPRuntime and EPAdministrator unobtainable
                     runtimeEnvironment = null;
+                    runtimeToDestroy.StageService.Clear();
 
                     runtimeToDestroy.Runtime.Destroy();
                     runtimeToDestroy.DeploymentService.Destroy();
@@ -348,6 +369,26 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             }
         }
 
+        public EPRuntimeStatementSelectionSPI StatementSelectionSvc {
+            get {
+                if (_statementSelection == null) {
+                    _statementSelection = new EPRuntimeStatementSelectionSPI(this);
+                }
+
+                return _statementSelection;
+            }
+        }
+
+        public EPRuntimeCompileReflectiveSPI ReflectiveCompileSvc {
+            get {
+                if (_compileReflective == null) {
+                    _compileReflective = new EPRuntimeCompileReflectiveSPI(new EPRuntimeCompileReflectiveService(), this);
+                }
+
+                return _compileReflective;
+            }
+        }
+
         public EPCompilerPathable RuntimePath {
             get {
                 var services = runtimeEnvironment.Services;
@@ -376,6 +417,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                     services.TablePathRegistry,
                     services.ContextPathRegistry,
                     services.ScriptPathRegistry,
+                    services.ClassProvidedPathRegistry.Copy(),
                     eventTypes,
                     variables);
             }
@@ -473,7 +515,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             }
 
             // new runtime
-            var eventService = epServicesContextFactory.CreateEPRuntime(services, ServiceStatusProvider);
+            EPEventServiceImpl eventService = epServicesContextFactory.CreateEPRuntime(services, ServiceStatusProvider);
 
             eventService.InternalEventRouter = services.InternalEventRouter;
             services.InternalEventRouteDest = eventService;
@@ -492,18 +534,42 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             EPContextPartitionService contextPartitionService = new EPContextPartitionServiceImpl(services);
             EPVariableService variableService = new EPVariableServiceImpl(services);
             EPMetricsService metricsService = new EPMetricsServiceImpl(services);
-            EPFireAndForgetService fireAndForgetService = new EPFireAndForgetServiceImpl(services, ServiceStatusProvider);
+            EPFireAndForgetService fireAndForgetService = new EpFireAndForgetServiceImpl(services, ServiceStatusProvider);
+            EPStageServiceSPI stageService = new EPStageServiceImpl(services, _serviceStatusProvider);
 
             // Build runtime environment
             runtimeEnvironment = new EPRuntimeEnv(
-                services, eventService, deploymentService, eventTypeService, contextPartitionService, variableService, metricsService,
-                fireAndForgetService);
+                services,
+                eventService,
+                deploymentService,
+                eventTypeService,
+                contextPartitionService,
+                variableService,
+                metricsService,
+                fireAndForgetService,
+                stageService);
+
+            // Stage Recovery
+            var stageIterator = services.StageRecoveryService.StagesIterate();
+            while (stageIterator.MoveNext()) {
+                var entry = stageIterator.Current;
+
+                long currentTimeStage;
+                if (services.EpServicesHA.CurrentTimeAsRecovered == null) {
+                    currentTimeStage = services.SchedulingService.Time;
+                } else if (!services.EpServicesHA.CurrentTimeStageAsRecovered.TryGetValue(entry.Value, out currentTimeStage)) {
+                    currentTimeStage = services.SchedulingService.Time;
+                }
+                
+                stageService.RecoverStage(entry.Key, entry.Value, currentTimeStage);
+            }
 
             // Deployment Recovery
             var deploymentIterator = services.DeploymentRecoveryService.Deployments();
             ISet<EventType> protectedVisibleTypes = new LinkedHashSet<EventType>();
             while (deploymentIterator.MoveNext()) {
                 var entry = deploymentIterator.Current;
+                var deploymentId = entry.Key;
 
                 StatementUserObjectRuntimeOption userObjectResolver = new ProxyStatementUserObjectRuntimeOption {
                     ProcGetUserObject = env => entry.Value.UserObjectsRuntime.Get(env.StatementId)
@@ -533,8 +599,14 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 DeploymentInternal deployerResult;
                 try {
                     deployerResult = Deployer.DeployRecover(
-                        entry.Key, entry.Value.StatementIdFirstStatement, entry.Value.Compiled, statementNameResolver, userObjectResolver,
-                        substitutionParameterResolver, this);
+                        deploymentId,
+                        entry.Value.StatementIdFirstStatement,
+                        entry.Value.Compiled,
+                        statementNameResolver,
+                        userObjectResolver,
+                        substitutionParameterResolver,
+                        null,
+                        this);
                 }
                 catch (EPDeployException ex) {
                     throw new EPException(ex.Message, ex);
@@ -546,6 +618,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                         eventType.Metadata.TypeClass == EventTypeTypeClass.STREAM) {
                         protectedVisibleTypes.Add(eventType);
                     }
+                }
+                
+                // handle staged deployments
+                var stageUri = services.StageRecoveryService.DeploymentGetStage(deploymentId);
+                if (stageUri != null) {
+                    stageService.RecoverDeployment(stageUri, deployerResult);
                 }
             }
 
@@ -561,10 +639,13 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             ISet<EventType> filterServiceTypes = new LinkedHashSet<EventType>(services.EventTypeRepositoryBus.AllTypes);
             filterServiceTypes.AddAll(protectedVisibleTypes);
             Supplier<ICollection<EventType>> availableTypes = () => filterServiceTypes;
-            services.FilterService.Init(availableTypes);
+            services.FilterServiceSPI.Init(availableTypes);
 
             // Schedule service init
-            services.SchedulingService.Init();
+            services.SchedulingServiceSPI.Init();
+            
+            // Stage services init
+            stageService.RecoveredStageInitialize(availableTypes);
 
             // Start clocking
             if (configLastProvided.Runtime.Threading.IsInternalTimerEnabled) {
@@ -576,7 +657,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
             // Initialize extension services
             if (services.RuntimeExtensionServices != null) {
-                ((RuntimeExtensionServicesSPI) services.RuntimeExtensionServices).Init(services, eventService, deploymentService);
+                ((RuntimeExtensionServicesSPI) services.RuntimeExtensionServices).Init(services, eventService, deploymentService, stageService);
             }
 
             // Start metrics reporting, if any
@@ -748,6 +829,16 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             }
         }
 
-        public IContainer Container { get; }
+        public void TraverseStatements(BiConsumer<EPDeployment, EPStatement> consumer)
+        {
+            foreach (var deploymentId in DeploymentService.Deployments) {
+                var deployment = DeploymentService.GetDeployment(deploymentId);
+                if (deployment != null) {
+                    foreach (var stmt in deployment.Statements) {
+                        consumer.Invoke(deployment, stmt);
+                    }
+                }
+            }
+        }
     }
 } // end of namespace

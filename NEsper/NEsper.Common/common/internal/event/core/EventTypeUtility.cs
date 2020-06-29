@@ -1863,13 +1863,13 @@ namespace com.espertech.esper.common.@internal.@event.core
             EventType type,
             string startProposed,
             string endProposed,
-            EventType[] superTypes)
+            IList<EventType> superTypes)
         {
             // determine start&end timestamp as inherited
             var startTimestampPropertyName = startProposed;
             var endTimestampPropertyName = endProposed;
 
-            if (superTypes != null && superTypes.Length > 0) {
+            if (superTypes != null && superTypes.Count > 0) {
                 foreach (var superType in superTypes) {
                     if (superType.StartTimestampPropertyName != null) {
                         if (startTimestampPropertyName != null &&

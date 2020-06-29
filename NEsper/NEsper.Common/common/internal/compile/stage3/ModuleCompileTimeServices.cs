@@ -10,6 +10,7 @@ using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.compile.stage1;
 using com.espertech.esper.common.@internal.context.compile;
 using com.espertech.esper.common.@internal.context.module;
+using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.classprovided.compiletime;
 using com.espertech.esper.common.@internal.epl.dataflow.core;
 using com.espertech.esper.common.@internal.epl.expression.declared.compiletime;
@@ -62,6 +63,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             ModuleAccessModifierService moduleVisibilityRules,
             NamedWindowCompileTimeResolver namedWindowCompileTimeResolver,
             NamedWindowCompileTimeRegistry namedWindowCompileTimeRegistry,
+            ParentClassLoader parentClassLoader,
             PatternObjectResolutionService patternObjectResolutionService,
             ScriptCompileTimeRegistry scriptCompileTimeRegistry,
             ScriptCompileTimeResolver scriptCompileTimeResolver,
@@ -95,6 +97,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             ModuleVisibilityRules = moduleVisibilityRules;
             NamedWindowCompileTimeResolver = namedWindowCompileTimeResolver;
             NamedWindowCompileTimeRegistry = namedWindowCompileTimeRegistry;
+            ParentClassLoader = parentClassLoader;
             PatternObjectResolutionService = patternObjectResolutionService;
             ScriptServiceCompileTime = scriptServiceCompileTime;
             ScriptCompileTimeRegistry = scriptCompileTimeRegistry;
@@ -137,6 +140,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             ModuleVisibilityRules = null;
             NamedWindowCompileTimeResolver = null;
             NamedWindowCompileTimeRegistry = null;
+            ParentClassLoader = null;
             PatternObjectResolutionService = null;
             ScriptServiceCompileTime = null;
             ScriptCompileTimeRegistry = null;
@@ -198,6 +202,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
         public PatternObjectResolutionService PatternObjectResolutionService { get; }
 
+        public ParentClassLoader ParentClassLoader { get; }
         public ScriptServiceCompileTime ScriptServiceCompileTime { get; }
 
         public ScriptCompileTimeRegistry ScriptCompileTimeRegistry { get; }

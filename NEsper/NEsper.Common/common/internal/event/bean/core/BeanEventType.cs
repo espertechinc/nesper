@@ -204,7 +204,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public string[] PropertyNames => Stem.PropertyNames;
 
-        public EventType[] SuperTypes { get; }
+        public IList<EventType> SuperTypes { get; }
 
         public IEnumerable<EventType> DeepSuperTypes => DeepSuperTypesCollection;
 

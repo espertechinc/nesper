@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.collection;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 
@@ -18,12 +19,22 @@ namespace com.espertech.esper.common.@internal.collection
 {
     public class PathRegistry<TK, TE> where TK : class
     {
-        private readonly IDictionary<TK, PathModuleEntry<TE>> _entities = new HashMap<TK, PathModuleEntry<TE>>();
+        private readonly IDictionary<TK, PathModuleEntry<TE>> _entities;
 
         public PathRegistry(PathRegistryObjectType objectType)
         {
             ObjectType = objectType;
+            _entities = new HashMap<TK, PathModuleEntry<TE>>();
         }
+
+        public PathRegistry(
+            PathRegistryObjectType objectType,
+            IDictionary<TK, PathModuleEntry<TE>> entities)
+        {
+            ObjectType = objectType;
+            _entities = entities;
+        }
+
 
         public PathRegistryObjectType ObjectType { get; }
 
@@ -183,6 +194,15 @@ namespace com.espertech.esper.common.@internal.collection
 
                 _entities.Put(entry.Key, entry.Value);
             }
+        }
+        
+        public PathRegistry<TK, TE> Copy() {
+            var copy = new HashMap<TK, PathModuleEntry<TE>>();
+            foreach (var entry in _entities) {
+                PathModuleEntry<TE> entryCopy = entry.Value.Copy();
+                copy[entry.Key] = entryCopy;
+            }
+            return new PathRegistry<TK, TE>(ObjectType, copy);
         }
     }
 } // end of namespace

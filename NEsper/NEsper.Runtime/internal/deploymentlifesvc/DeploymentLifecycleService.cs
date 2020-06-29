@@ -25,7 +25,7 @@ namespace com.espertech.esper.runtime.@internal.deploymentlifesvc
             string deploymentId,
             DeploymentInternal deployment);
 
-        DeploymentInternal Undeploy(string deploymentId);
+        DeploymentInternal RemoveDeployment(string deploymentId);
 
         DeploymentInternal GetDeploymentByCRC(long deploymentId);
 

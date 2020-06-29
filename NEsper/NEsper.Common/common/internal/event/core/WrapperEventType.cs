@@ -331,7 +331,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             return null;
         }
 
-        public EventType[] SuperTypes => null;
+        public IList<EventType> SuperTypes => null;
 
         public bool IsProperty(string property)
         {

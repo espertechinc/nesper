@@ -186,7 +186,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             return propertyType != null;
         }
 
-        public EventType[] SuperTypes => _optionalSuperTypes;
+        public IList<EventType> SuperTypes => _optionalSuperTypes;
 
         public ICollection<EventType> DeepSuperTypesCollection => _optionalDeepSuperTypes;
 

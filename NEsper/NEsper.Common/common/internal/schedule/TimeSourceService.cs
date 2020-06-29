@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 namespace com.espertech.esper.common.@internal.schedule
 {
     public interface TimeSourceService
@@ -14,5 +16,21 @@ namespace com.espertech.esper.common.@internal.schedule
         /// Returns time in millis.
         /// </summary>
         long TimeMillis { get; }
+    }
+
+    public class ProxyTimeSourceService : TimeSourceService
+    {
+        public Func<long> ProcTimeMillis { get; set; }
+
+        public ProxyTimeSourceService()
+        {
+        }
+
+        public ProxyTimeSourceService(Func<long> procTimeMillis)
+        {
+            ProcTimeMillis = procTimeMillis;
+        }
+
+        public long TimeMillis => ProcTimeMillis.Invoke();
     }
 }

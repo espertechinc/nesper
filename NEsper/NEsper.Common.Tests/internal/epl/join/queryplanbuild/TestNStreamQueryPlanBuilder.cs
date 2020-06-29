@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.epl.join.indexlookupplan;
 using com.espertech.esper.common.@internal.epl.join.querygraph;
 using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.bean;
 using com.espertech.esper.common.@internal.supportunit.@event;
@@ -59,7 +60,18 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         [Test]
         public void TestBuild()
         {
-            QueryPlanForge plan = NStreamQueryPlanBuilder.Build(queryGraph, typesPerStream, new HistoricalViewableDesc(6), dependencyGraph, null, false, new string[queryGraph.NumStreams][][], new TableMetaData[queryGraph.NumStreams], new StreamJoinAnalysisResultCompileTime(5));
+            var plan = NStreamQueryPlanBuilder.Build(
+                queryGraph,
+                typesPerStream,
+                new HistoricalViewableDesc(6),
+                dependencyGraph,
+                null,
+                false,
+                new string[queryGraph.NumStreams][][],
+                new TableMetaData[queryGraph.NumStreams],
+                new StreamJoinAnalysisResultCompileTime(5),
+                null,
+                SerdeCompileTimeResolverNonHA.INSTANCE);
 
             log.Debug(".testBuild plan=" + plan);
         }
@@ -73,12 +85,23 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 log.Debug(".testCreateStreamPlan index " + i + " = " + indexes[i]);
             }
 
-            QueryPlanNodeForge plan = NStreamQueryPlanBuilder.CreateStreamPlan(0, new int[] { 2, 4, 3, 1 }, queryGraph, indexes, typesPerStream, new bool[5], null, new TableMetaData[queryGraph.NumStreams], new StreamJoinAnalysisResultCompileTime(5));
+            var plan = NStreamQueryPlanBuilder.CreateStreamPlan(
+                0,
+                new int[] {2, 4, 3, 1},
+                queryGraph,
+                indexes,
+                typesPerStream,
+                new bool[5],
+                null,
+                new TableMetaData[queryGraph.NumStreams],
+                new StreamJoinAnalysisResultCompileTime(5),
+                null,
+                SerdeCompileTimeResolverNonHA.INSTANCE);
 
             log.Debug(".testCreateStreamPlan plan=" + plan);
 
-            Assert.IsTrue(plan is NestedIterationNodeForge);
-            NestedIterationNodeForge nested = (NestedIterationNodeForge) plan;
+            Assert.IsTrue(plan.Forge is NestedIterationNodeForge);
+            NestedIterationNodeForge nested = (NestedIterationNodeForge) plan.Forge;
             TableLookupNodeForge tableLookupSpec = (TableLookupNodeForge) nested.ChildNodes[0];
 
             // Check lookup strategy for first lookup

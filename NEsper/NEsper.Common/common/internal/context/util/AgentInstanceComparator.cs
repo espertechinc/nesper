@@ -16,8 +16,8 @@ namespace com.espertech.esper.common.@internal.context.util
     {
         public static AgentInstanceComparator INSTANCE = new AgentInstanceComparator();
 
-        private readonly EPStatementAgentInstanceHandleComparator _innerComparator =
-            new EPStatementAgentInstanceHandleComparator();
+        private readonly EPStatementAgentInstanceHandleComparer _innerComparer =
+            new EPStatementAgentInstanceHandleComparer();
 
         public int Compare(
             AgentInstance ai1,
@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.context.util
         {
             EPStatementAgentInstanceHandle o1 = ai1.AgentInstanceContext.EpStatementAgentInstanceHandle;
             EPStatementAgentInstanceHandle o2 = ai2.AgentInstanceContext.EpStatementAgentInstanceHandle;
-            return _innerComparator.Compare(o1, o2);
+            return _innerComparer.Compare(o1, o2);
         }
     }
 }

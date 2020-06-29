@@ -31,11 +31,12 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         /// <summary>
         ///     Send an event represented by a Avro GenericData.Record to the event stream processing runtime.
-        ///     <para />
-        ///     Use the route method for sending events into the runtime from within UpdateListener code,
-        ///     to avoid the possibility of a stack overflow due to nested calls to sendEvent
-        ///     (except with the outbound-threading configuration), see {@link EventServiceRouteEventCommon#routeEventAvro(Object,
-        ///     String)}}).
+        ///     <para>
+        ///         Use the route method for sending events into the runtime from within UpdateListener code,
+        ///         to avoid the possibility of a stack overflow due to nested calls to sendEvent
+        ///         (except with the outbound-threading configuration), see {@link EventServiceRouteEventCommon#routeEventAvro(Object,
+        ///         String)}}).
+        ///     </para>
         /// </summary>
         /// <param name="avroGenericDataDotRecord">is the event to sent to the runtime</param>
         /// <param name="avroEventTypeName">event type name</param>

@@ -290,8 +290,8 @@ namespace com.espertech.esper.runtime.@internal.metrics.stmtmetrics
 
         public void Dispose()
         {
-            schedule.Clear();
-            metricsExecutor.Dispose();
+            schedule?.Clear();
+            metricsExecutor?.Dispose();
         }
 
         private bool IsConsiderSchedule(long value)

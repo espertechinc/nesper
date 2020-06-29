@@ -178,7 +178,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             return GetGetterIndexed(indexedPropertyName);
         }
 
-        public abstract EventType[] SuperTypes { get; }
+        public abstract IList<EventType> SuperTypes { get; }
         public abstract IEnumerable<EventType> DeepSuperTypes { get; }
         public abstract ICollection<EventType> DeepSuperTypesCollection { get; }
         public abstract string StartTimestampPropertyName { get; }

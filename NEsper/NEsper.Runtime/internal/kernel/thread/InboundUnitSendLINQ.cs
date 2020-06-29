@@ -9,6 +9,8 @@
 using System;
 using System.Reflection;
 using System.Xml.Linq;
+
+using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.runtime.@internal.kernel.service;
 
@@ -22,8 +24,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly string eventTypeName;
-        private readonly EPEventServiceImpl runtime;
         private readonly XElement theEvent;
+        private readonly EPRuntimeEventProcessWrapped runtime;
+        private readonly EPServicesEvaluation services;
 
         /// <summary>Ctor. </summary>
         /// <param name="theEvent">document</param>
@@ -32,22 +35,24 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
         public InboundUnitSendLINQ(
             XElement theEvent,
             string eventTypeName,
-            EPEventServiceImpl runtime)
+            EPRuntimeEventProcessWrapped runtime,
+            EPServicesEvaluation services)
         {
             this.theEvent = theEvent;
             this.eventTypeName = eventTypeName;
             this.runtime = runtime;
+            this.services = services;
         }
 
         public void Run()
         {
             try {
-                var eventBean = runtime.Services.EventTypeResolvingBeanFactory.AdapterForXML(theEvent, eventTypeName);
+                var eventBean = services.EventTypeResolvingBeanFactory.AdapterForXML(theEvent, eventTypeName);
                 runtime.ProcessWrappedEvent(eventBean);
             }
             catch (Exception e) {
-                runtime.Services.ExceptionHandlingService.HandleInboundPoolException(runtime.RuntimeURI, e, theEvent);
-                Log.Error("Unexpected error processing DOM event: " + e.Message, e);
+                services.ExceptionHandlingService.HandleInboundPoolException(runtime.URI, e, theEvent);
+                Log.Error("Unexpected error processing Json event: " + e.Message, e);
             }
         }
     }

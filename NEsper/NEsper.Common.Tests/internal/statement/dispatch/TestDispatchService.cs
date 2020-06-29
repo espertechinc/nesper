@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using NUnit.Framework;
@@ -22,32 +23,6 @@ namespace com.espertech.esper.common.@internal.statement.dispatch
         }
 
         private DispatchService service;
-
-        public class SupportDispatchable : Dispatchable
-        {
-            private static IList<SupportDispatchable> instanceList = new List<SupportDispatchable>();
-            private int numExecuted;
-
-            public void Execute()
-            {
-                numExecuted++;
-                instanceList.Add(this);
-            }
-
-            public int GetAndResetNumExecuted()
-            {
-                var val = numExecuted;
-                numExecuted = 0;
-                return val;
-            }
-
-            public static IList<SupportDispatchable> GetAndResetInstanceList()
-            {
-                var instances = instanceList;
-                instanceList = new List<SupportDispatchable>();
-                return instances;
-            }
-        }
 
         [Test]
         public void TestAdd()
@@ -106,6 +81,39 @@ namespace com.espertech.esper.common.@internal.statement.dispatch
 
             service.Dispatch();
             Assert.AreEqual(0, disOne.GetAndResetNumExecuted());
+        }
+
+        public class SupportDispatchable : Dispatchable
+        {
+            private static IList<SupportDispatchable> instanceList = new List<SupportDispatchable>();
+            private int numExecuted;
+
+            public void Execute()
+            {
+                numExecuted++;
+                instanceList.Add(this);
+            }
+
+            public int GetAndResetNumExecuted()
+            {
+                var val = numExecuted;
+                numExecuted = 0;
+                return val;
+            }
+
+            public static IList<SupportDispatchable> GetAndResetInstanceList()
+            {
+                var instances = instanceList;
+                instanceList = new List<SupportDispatchable>();
+                return instances;
+            }
+
+            public UpdateDispatchView View => throw new NotSupportedException();
+
+            public void Cancelled()
+            {
+                throw new NotSupportedException();
+            }
         }
     }
 } // end of namespace

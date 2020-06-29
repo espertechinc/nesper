@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.client
     /// allows it to use the byte code.
     /// </summary>
     [Serializable]
-    public class EpCompiledManifest
+    public class EPCompiledManifest
     {
         private readonly string _compilerVersion;
         private readonly string _moduleProviderClassName;
@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.client
         /// <param name="moduleProviderClassName">class name of the class providing the module, or null for fire-and-forget query</param>
         /// <param name="queryProviderClassName">class name of the class providing the fire-and-forget query, or null when this is a module</param>
         /// <param name="targetHa">indicates whether the compiler targets high-availability</param>
-        public EpCompiledManifest(
+        public EPCompiledManifest(
             string compilerVersion,
             string moduleProviderClassName,
             string queryProviderClassName,
@@ -94,13 +94,13 @@ namespace com.espertech.esper.common.client
         /// <param name="input">input</param>
         /// <returns>manifest</returns>
         /// <throws>IOException when an IO exception occurs</throws>
-        public static EpCompiledManifest Read(DataInput input)
+        public static EPCompiledManifest Read(DataInput input)
         {
             string compilerVersion = input.ReadUTF();
             string moduleClassName = ReadNullableString(input);
             string queryClassName = ReadNullableString(input);
             bool targetHa = input.ReadBoolean();
-            return new EpCompiledManifest(compilerVersion, moduleClassName, queryClassName, targetHa);
+            return new EPCompiledManifest(compilerVersion, moduleClassName, queryClassName, targetHa);
         }
 
         private void WriteNullableString(

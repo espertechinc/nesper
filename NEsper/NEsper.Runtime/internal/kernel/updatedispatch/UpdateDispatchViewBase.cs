@@ -82,6 +82,19 @@ namespace com.espertech.esper.runtime.@internal.kernel.updatedispatch
             lastIterableEvent = null;
         }
 
-        public abstract void NewResult(UniformPair<EventBean[]> result);
+        public virtual UpdateDispatchView View => this;
+
+        public virtual void NewResult(UniformPair<EventBean[]> result)
+        {
+        }
+
+        public override void Update(EventBean[] newData, EventBean[] oldData)
+        {
+        }
+
+        public virtual void Cancelled()
+        {
+            Clear();
+        }
     }
 } // end of namespace

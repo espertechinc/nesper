@@ -84,7 +84,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         private void Verify(FilterParamIndexBase index, long? testValue, int numExpected)
         {
             testBean.LongBoxed = testValue;
-            index.MatchEvent(testEventBean, matchesList);
+            index.MatchEvent(testEventBean, matchesList, TODO);
             Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 

@@ -17,7 +17,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
     public abstract class FilterParamIndexStringRangeBase : FilterParamIndexLookupableBase
     {
-        private readonly IDictionary<StringRange, EventEvaluator> _rangesNullEndpoints;
+        protected EventEvaluator RangesNullEndpoints;
         protected readonly OrderedDictionary<StringRange, EventEvaluator> Ranges;
 
         protected FilterParamIndexStringRangeBase(
@@ -27,7 +27,6 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             : base(filterOperator, lookupable)
         {
             Ranges = new OrderedDictionary<StringRange, EventEvaluator>(new StringRangeComparator());
-            _rangesNullEndpoints = new Dictionary<StringRange, EventEvaluator>();
             ReadWriteLock = readWriteLock;
         }
 
@@ -45,7 +44,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
             var range = (StringRange) expressionValue;
             if (range.Max == null || range.Min == null) {
-                return _rangesNullEndpoints.Get(range);
+                return RangesNullEndpoints;
             }
 
             return Ranges.Get(range);
@@ -61,7 +60,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
             var range = (StringRange) expressionValue;
             if (range.Max == null || range.Min == null) {
-                _rangesNullEndpoints.Put(range, matcher); // endpoints null - we don't enter
+                RangesNullEndpoints = matcher;
                 return;
             }
 
@@ -72,7 +71,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         {
             var range = (StringRange) filterConstant;
             if (range.Max == null || range.Min == null) {
-                _rangesNullEndpoints.Delete(range);
+                RangesNullEndpoints = null;
             }
             else {
                 Ranges.Remove(range);
@@ -85,7 +84,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             ArrayDeque<FilterItem> evaluatorStack)
         {
             foreach (var entry in Ranges) {
-                evaluatorStack.Add(new FilterItem(Lookupable.Expression, FilterOperator, entry.Key));
+                evaluatorStack.Add(new FilterItem(Lookupable.Expression, FilterOperator, entry.Key, this));
                 entry.Value.GetTraverseStatement(traverse, statementIds, evaluatorStack);
                 evaluatorStack.RemoveLast();
             }

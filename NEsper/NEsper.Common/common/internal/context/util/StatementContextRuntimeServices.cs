@@ -39,7 +39,8 @@ using com.espertech.esper.common.@internal.statement.resource;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.previous;
 using com.espertech.esper.compat.directory;
-using com.espertech.esper.container;
+
+using IContainer = com.espertech.esper.container.IContainer;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
@@ -90,6 +91,7 @@ namespace com.espertech.esper.common.@internal.context.util
             ViewFactoryService viewFactoryService,
             ViewServicePreviousFactory viewServicePreviousFactory)
         {
+            Container = container;
             ContextManagementService = contextManagementService;
             ContextServiceFactory = contextServiceFactory;
             DatabaseConfigService = databaseConfigService;
@@ -133,6 +135,55 @@ namespace com.espertech.esper.common.@internal.context.util
             ViewFactoryService = viewFactoryService;
             ViewServicePreviousFactory = viewServicePreviousFactory;
         }
+
+        public StatementContextRuntimeServices(IContainer container)
+        {
+            Container = container;
+            ContextManagementService = null;
+            ContextServiceFactory = null;
+            DatabaseConfigService = null;
+            DataFlowFilterServiceAdapter = null;
+            DataflowService = null;
+            RuntimeURI = null;
+            RuntimeEnvContext = null;
+            ImportServiceRuntime = null;
+            RuntimeSettingsService = null;
+            RuntimeExtensionServices = null;
+            Runtime = null;
+            EPRuntimeRenderEvent = null;
+            EventServiceSendEventInternal = null;
+            EPRuntimeEventProcessWrapped = null;
+            EventBeanService = null;
+            EventBeanTypedEventFactory = null;
+            EventTableIndexService = null;
+            EventTypeAvroHandler = null;
+            EventTypePathRegistry = null;
+            EventTypeRepositoryPreconfigured = null;
+            EventTypeResolvingBeanFactory = null;
+            ExceptionHandlingService = null;
+            ExpressionResultCacheService = null;
+            FilterBooleanExpressionFactory = null;
+            FilterSharedBoolExprRepository = null;
+            FilterSharedLookupableRepository = null;
+            HistoricalDataCacheFactory = null;
+            InternalEventRouter = null;
+            MetricReportingService = null;
+            NamedWindowConsumerManagementService = null;
+            NamedWindowManagementService = null;
+            PathContextRegistry = null;
+            PathNamedWindowRegistry = null;
+            RowRecogStateRepoFactory = null;
+            ResultSetProcessorHelperFactory = null;
+            StatementAgentInstanceLockFactory = null;
+            StatementResourceHolderBuilder = null;
+            TableExprEvaluatorContext = null;
+            TableManagementService = null;
+            VariableManagementService = null;
+            ViewFactoryService = null;
+            ViewServicePreviousFactory = null;
+        }
+
+        public IContainer Container { get; set; }
 
         public ContextManagementService ContextManagementService { get; }
 

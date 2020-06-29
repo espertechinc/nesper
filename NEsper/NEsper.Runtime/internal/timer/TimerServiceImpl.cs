@@ -31,9 +31,9 @@ namespace com.espertech.esper.runtime.@internal.timer
         /// </summary>
         /// <value></value>
 
-        public ITimerCallback Callback
-        {
-            set { this._timerCallback = value; }
+        public ITimerCallback Callback {
+            get => this._timerCallback;
+            set => this._timerCallback = value;
         }
 
         /// <summary>
@@ -48,9 +48,7 @@ namespace com.espertech.esper.runtime.@internal.timer
 
         public bool AreStatsEnabled
         {
-            get {
-                return _timerTask.EnableStats;
-            }
+            get => _timerTask.EnableStats;
             set {
                 if (value)
                 {
@@ -63,28 +61,16 @@ namespace com.espertech.esper.runtime.@internal.timer
             }
         }
 
-        public long MaxDrift
-        {
-            get { return _timerTask.MaxDrift; }
-        }
+        public long MaxDrift => _timerTask.MaxDrift;
 
-        public long LastDrift
-        {
-            get { return _timerTask.LastDrift; }
-        }
+        public long LastDrift => _timerTask.LastDrift;
 
-        public long TotalDrift
-        {
-            get { return _timerTask.TotalDrift; }
-        }
+        public long TotalDrift => _timerTask.TotalDrift;
 
         ///<summary>
         /// Gets the number of times the timer has been invoked.
         ///</summary>
-        public long InvocationCount
-        {
-            get { return _timerTask.InvocationCount; }
-        }
+        public long InvocationCount => _timerTask.InvocationCount;
 
         /// <summary>
         /// Gets the unique id for the timer.
@@ -93,18 +79,18 @@ namespace com.espertech.esper.runtime.@internal.timer
         public Guid Id { get; private set; }
 
         /// <summary>
-        /// Gets the engine URI.
+        /// Gets the runtime URI.
         /// </summary>
-        /// <value>The engine URI.</value>
-        public string EngineURI { get; private set; }
+        /// <value>The runtime URI.</value>
+        public string RuntimeUri { get; private set; }
 
         /// <summary> Constructor.</summary>
         /// <param name="msecTimerResolution">is the millisecond resolution or interval the internal timer thread processes schedules</param>
-        /// <param name="engineURI">engine URI</param>
-        public TimerServiceImpl(String engineURI, long msecTimerResolution)
+        /// <param name="runtimeURI">runtime URI</param>
+        public TimerServiceImpl(string runtimeURI, long msecTimerResolution)
         {
             Id = Guid.NewGuid();
-            EngineURI = engineURI;
+            RuntimeUri = runtimeURI;
             MsecTimerResolution = msecTimerResolution;
             _timerTaskCancelled = false;
         }
@@ -114,7 +100,7 @@ namespace com.espertech.esper.runtime.@internal.timer
         /// </summary>
         /// <param name="state">The user state object.</param>
 
-        private void OnTimerElapsed(Object state)
+        private void OnTimerElapsed(object state)
         {
             if (!_timerTaskCancelled)
             {

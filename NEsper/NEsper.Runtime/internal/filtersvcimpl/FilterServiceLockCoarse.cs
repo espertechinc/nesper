@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.compat.threading.locks;
@@ -21,8 +22,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         public FilterServiceLockCoarse(
             IReaderWriterLockManager rwLockManager, 
-            bool allowIsolation) : 
-            base(FilterServiceGranularLockFactoryNone.Instance, allowIsolation)
+            int stageId) : 
+            base(FilterServiceGranularLockFactoryNone.Instance, stageId)
         {
             _lock = rwLockManager.CreateLock(GetType());
         }
@@ -40,28 +41,30 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         public override IDictionary<EventTypeIdPair, IDictionary<int, IList<FilterItem[]>>> Get(ISet<int> statementId)
         {
             using (_lock.WriteLock.Acquire()) {
-                return base.GetInternal(statementId);
-            }
-        }
-
-        public override long Evaluate(
-            EventBean theEvent,
-            ICollection<FilterHandle> matches)
-        {
-            using (_lock.ReadLock.Acquire())
-            {
-                return EvaluateInternal(theEvent, matches);
+                return GetInternal(statementId);
             }
         }
 
         public override long Evaluate(
             EventBean theEvent,
             ICollection<FilterHandle> matches,
-            int statementId)
+            ExprEvaluatorContext ctx)
         {
             using (_lock.ReadLock.Acquire())
             {
-                return EvaluateInternal(theEvent, matches, statementId);
+                return EvaluateInternal(theEvent, matches, ctx);
+            }
+        }
+
+        public override long Evaluate(
+            EventBean theEvent,
+            ICollection<FilterHandle> matches,
+            int statementId,
+            ExprEvaluatorContext ctx)
+        {
+            using (_lock.ReadLock.Acquire())
+            {
+                return EvaluateInternal(theEvent, matches, statementId, ctx);
             }
         }
 

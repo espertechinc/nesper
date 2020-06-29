@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.client
         ///     </para>
         /// </summary>
         /// <value>an array of event types</value>
-        EventType[] SuperTypes { get; }
+        IList<EventType> SuperTypes { get; }
 
         /// <summary>
         ///     Returns iterator over all super types to event type, going up the hierarchy and including all

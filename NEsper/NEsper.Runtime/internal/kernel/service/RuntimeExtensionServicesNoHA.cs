@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.runtime.@internal.kernel.stage;
+
 namespace com.espertech.esper.runtime.@internal.kernel.service
 {
     public class RuntimeExtensionServicesNoHA : RuntimeExtensionServicesSPI
@@ -15,7 +17,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         public void Init(
             EPServicesContext servicesContext,
             EPEventServiceSPI runtimeSPI,
-            EPDeploymentServiceSPI adminSPI)
+            EPDeploymentServiceSPI adminSPI,
+            EPStageServiceSPI stageServiceSPI)
         {
         }
 
@@ -23,9 +26,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         {
         }
 
-        public bool IsHAEnabled()
-        {
-            return false;
+        public bool IsHAEnabled {
+            get { return false; }
         }
     }
 } // end of namespace

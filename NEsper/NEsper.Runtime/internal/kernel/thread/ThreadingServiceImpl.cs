@@ -45,7 +45,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
         private IExecutorService _routeThreadPool;
         private IExecutorService _outboundThreadPool;
 
-        private EPServicesContext _servicesContext;
+        private EPServicesEvaluation _services;
 
         private int _lockTimeout;
 
@@ -76,32 +76,34 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
             set => _lockTimeout = value;
         }
 
-        public void InitThreading(EPServicesContext services, EPEventServiceImpl runtime)
+        public void InitThreading(
+            string uri,
+            EPServicesEvaluation services)
         {
-            _servicesContext = services;
+            _services = services;
 
             if (_isInboundThreading)
             {
                 _inboundQueue = MakeQueue(_config.ThreadPoolInboundCapacity, _config.ThreadPoolInboundBlocking);
-                _inboundThreadPool = GetThreadPool(services.RuntimeURI, "Inbound", _inboundQueue, _config.ThreadPoolInboundNumThreads);
+                _inboundThreadPool = GetThreadPool(uri, "Inbound", _inboundQueue, _config.ThreadPoolInboundNumThreads);
             }
 
             if (_isTimerThreading)
             {
                 _timerQueue = MakeQueue(_config.ThreadPoolTimerExecCapacity, _config.ThreadPoolTimerExecBlocking);
-                _timerThreadPool = GetThreadPool(services.RuntimeURI, "TimerExec", _timerQueue, _config.ThreadPoolTimerExecNumThreads);
+                _timerThreadPool = GetThreadPool(uri, "TimerExec", _timerQueue, _config.ThreadPoolTimerExecNumThreads);
             }
 
             if (_isRouteThreading)
             {
                 _routeQueue = MakeQueue(_config.ThreadPoolRouteExecCapacity, _config.ThreadPoolRouteExecBlocking);
-                _routeThreadPool = GetThreadPool(services.RuntimeURI, "RouteExec", _routeQueue, _config.ThreadPoolRouteExecNumThreads);
+                _routeThreadPool = GetThreadPool(uri, "RouteExec", _routeQueue, _config.ThreadPoolRouteExecNumThreads);
             }
 
             if (_isOutboundThreading)
             {
                 _outboundQueue = MakeQueue(_config.ThreadPoolOutboundCapacity, _config.ThreadPoolOutboundBlocking);
-                _outboundThreadPool = GetThreadPool(services.RuntimeURI, "Outbound", _outboundQueue, _config.ThreadPoolOutboundNumThreads);
+                _outboundThreadPool = GetThreadPool(uri, "Outbound", _outboundQueue, _config.ThreadPoolOutboundNumThreads);
             }
         }
 
@@ -220,7 +222,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
             EventBean @event,
             EPRuntimeEventProcessWrapped runtimeEventSender)
         {
-            SubmitInbound(new InboundUnitSendWrapped(@event, _servicesContext, runtimeEventSender));
+            SubmitInbound(new InboundUnitSendWrapped(@event, runtimeEventSender, _services));
         }
 
         private static void StopPool(IExecutorService executorService, IBlockingQueue<Runnable> queue, string name)

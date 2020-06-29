@@ -54,7 +54,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         public void TestBuildNoOuter()
         {
             var graph = MakeQueryGraph();
-            var spec = TwoStreamQueryPlanBuilder.Build(typesPerStream, graph, null, new StreamJoinAnalysisResultCompileTime(2));
+            var specDesc = TwoStreamQueryPlanBuilder.Build(typesPerStream, graph, null, new StreamJoinAnalysisResultCompileTime(2), null);
+            var spec = specDesc.Forge;
 
             EPAssertionUtil.AssertEqualsExactOrder(new[] { "P01", "P02" }, spec.IndexSpecs[0].IndexProps[0]);
             EPAssertionUtil.AssertEqualsExactOrder(new[] { "P11", "P12" }, spec.IndexSpecs[1].IndexProps[0]);
@@ -65,7 +66,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         public void TestBuildOuter()
         {
             var graph = MakeQueryGraph();
-            var spec = TwoStreamQueryPlanBuilder.Build(typesPerStream, graph, OuterJoinType.LEFT, new StreamJoinAnalysisResultCompileTime(2));
+            var specDesc = TwoStreamQueryPlanBuilder.Build(typesPerStream, graph, OuterJoinType.LEFT, new StreamJoinAnalysisResultCompileTime(2), null);
+            var spec = specDesc.Forge;
 
             EPAssertionUtil.AssertEqualsExactOrder(new[] { "P01", "P02" }, spec.IndexSpecs[0].IndexProps[0]);
             EPAssertionUtil.AssertEqualsExactOrder(new[] { "P11", "P12" }, spec.IndexSpecs[1].IndexProps[0]);

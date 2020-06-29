@@ -116,6 +116,11 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
             Assert.AreEqual("f", result.MethodName);
             Assert.AreEqual("a", result.ArgString);
 
+            result = ParseMappedProperty("f('.')");
+            Assert.AreEqual(null, result.ClassName);
+            Assert.AreEqual("f",  result.MethodName);
+            Assert.AreEqual(".", result.ArgString);
+
             Assert.IsNull(ParseMappedProperty("('a')"));
             Assert.IsNull(ParseMappedProperty(""));
         }

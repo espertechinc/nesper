@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 true,
                 null,
                 null);
-            AssertPlan(plan);
+            AssertPlan(plan.Forge);
 
             plan = QueryPlanBuilder.GetPlan(
                 typesPerStream,
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 true,
                 null,
                 null);
-            AssertPlan(plan);
+            AssertPlan(plan.Forge);
 
             FilterExprAnalyzer.Analyze(SupportExprNodeFactory.GetInstance(container).MakeEqualsNode(), queryGraph, false);
             plan = QueryPlanBuilder.GetPlan(
@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 true,
                 null,
                 null);
-            AssertPlan(plan);
+            AssertPlan(plan.Forge);
 
             plan = QueryPlanBuilder.GetPlan(
                 typesPerStream,
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 true,
                 null,
                 null);
-            AssertPlan(plan);
+            AssertPlan(plan.Forge);
         }
     }
 } // end of namespace

@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.compat.collections;
 
@@ -24,11 +25,13 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         ///     Perform the matching of an event based on the event property values, adding any callbacks for matches found to
         ///     the matches list.
         /// </summary>
-        /// <param name="theTheEvent">is the event object wrapper to obtain event property values from</param>
+        /// <param name="theEvent">is the event object wrapper to obtain event property values from</param>
         /// <param name="matches">accumulates the matching filter callbacks</param>
+        /// <param name="ctx">evaluator context</param>
         void MatchEvent(
-            EventBean theTheEvent,
-            ICollection<FilterHandle> matches);
+            EventBean theEvent,
+            ICollection<FilterHandle> matches,
+            ExprEvaluatorContext ctx);
 
         void GetTraverseStatement(
             EventTypeIndexTraverse traverse,

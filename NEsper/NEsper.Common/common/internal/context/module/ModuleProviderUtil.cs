@@ -5,23 +5,27 @@ using System.Text;
 using System.Threading.Tasks;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.collection;
+using com.espertech.esper.common.@internal.epl.classprovided.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.context.module
 {
     public class ModuleProviderUtil
     {
-        public static ModuleProviderResult Analyze(
+        public static ModuleProviderCLPair Analyze(
             EPCompiled compiled,
-            ImportService importService)
+            ClassLoader classLoader,
+            PathRegistry<String, ClassProvided> classProvidedPathRegistry)
         {
             var resourceClassName = compiled.Manifest.ModuleProviderClassName;
 
             // load module resource class
             Type clazz;
             try {
-                clazz = TypeHelper.ResolveType(resourceClassName, true);
+                clazz = classLoader.GetClass(resourceClassName);
             }
             catch (Exception e) {
                 throw new EPException(e);
@@ -39,7 +43,7 @@ namespace com.espertech.esper.common.@internal.context.module
                 throw new EPException(e);
             }
 
-            return new ModuleProviderResult(moduleResource);
+            return new ModuleProviderCLPair(null, moduleResource);
         }
     }
 }

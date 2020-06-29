@@ -16,6 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Threading" Version="4.3.0" />
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.7.2" />
     <PackageReference Include="Castle.Core" Version="4.2.1" />
     <PackageReference Include="Castle.Windsor" Version="4.1.0" />
@@ -23,6 +24,10 @@
     <PackageReference Include="Common.Logging.Core" Version="3.4.1" />
     <PackageReference Include="Crc32.NET" Version="1.2.0" />
     <PackageReference Include="XLR8.CGLib" Version="1.1.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(NetFramework)' == ''">
+    <Compile Remove="compat\PerformanceObserverWin.cs" />
   </ItemGroup>
 
 </Project>

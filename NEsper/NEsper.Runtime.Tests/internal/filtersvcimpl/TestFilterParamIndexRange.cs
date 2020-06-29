@@ -232,14 +232,14 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         private void VerifyDoublePrimitive(FilterParamIndexBase index, double testValue, int numExpected)
         {
             testBean.DoublePrimitive = testValue;
-            index.MatchEvent(testEventBean, matchesList);
+            index.MatchEvent(testEventBean, matchesList, TODO);
             Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 
         private void VerifyLongPrimitive(FilterParamIndexBase index, long testValue, int numExpected)
         {
             testBean.LongPrimitive = testValue;
-            index.MatchEvent(testEventBean, matchesList);
+            index.MatchEvent(testEventBean, matchesList, TODO);
             Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 

@@ -30,10 +30,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         ///     Constructor - takes the event type index to manipulate as its parameter.
         /// </summary>
         /// <param name="eventTypeIndex">index to manipulate</param>
-        /// <param name="allowIsolation">indicator whether isolated service provider is allowed for the runtime</param>
         public EventTypeIndexBuilder(
-            EventTypeIndex eventTypeIndex,
-            bool allowIsolation)
+            EventTypeIndex eventTypeIndex)
         {
             this.eventTypeIndex = eventTypeIndex;
             callbacksLock = new MonitorSlimLock(LockConstants.DefaultTimeout);

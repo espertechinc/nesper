@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net462;netcoreapp3.1</TargetFrameworks>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <AssemblyName>NEsper.Avro.Tests</AssemblyName>
+        <AssemblyTitle>NEsper.Avro.Tests</AssemblyTitle>
+        <PackageId>NEsper.Avro.Tests</PackageId>
+        <RootNamespace>NEsper.Avro</RootNamespace>
+        <Description>Tests for Avro support for NEsper.</Description>
+        <Summary>Tests for Avro support for NEsper.</Summary>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+        <NoWarn>CS1591;</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+        <PackageReference Include="NUnit" Version="3.10.1" />
+        <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+        <PackageReference Include="Apache.Avro" Version="1.9.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\NEsper\NEsper.Common\NEsper.Common.csproj" />
+      <ProjectReference Include="..\NEsper.Avro\NEsper.Avro.csproj" />
+    </ItemGroup>
+
+</Project>

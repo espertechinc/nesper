@@ -18,8 +18,17 @@ namespace com.espertech.esper.common.@internal.collection
 {
     public class PathModuleEntry<TE>
     {
-        private readonly IDictionary<string, PathDeploymentEntry<TE>> _modules =
-            new Dictionary<string, PathDeploymentEntry<TE>>().WithNullKeySupport();
+        private readonly IDictionary<string, PathDeploymentEntry<TE>> _modules;
+
+        public PathModuleEntry()
+        {
+            _modules = new Dictionary<string, PathDeploymentEntry<TE>>().WithNullKeySupport();
+        }
+
+        public PathModuleEntry(IDictionary<String, PathDeploymentEntry<TE>> modules)
+        {
+            _modules = modules;
+        }
 
         public void Add(
             string moduleName,
@@ -161,5 +170,15 @@ namespace com.espertech.esper.common.@internal.collection
                 consumer.Invoke(entry.Key, entry.Value.Entity);
             }
         }
+        
+        public PathModuleEntry<TE> Copy() {
+            var copy = new HashMap<String, PathDeploymentEntry<TE>>();
+            foreach (var entry in _modules) {
+                PathDeploymentEntry<TE> copyEntry = entry.Value.Copy();
+                copy[entry.Key] = copyEntry;
+            }
+            return new PathModuleEntry<TE>(copy);
+        }
+
     }
 } // end of namespace

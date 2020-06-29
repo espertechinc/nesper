@@ -86,37 +86,26 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 // find matching index
                 foreach (var index in currentNode.Indizes)
                 {
-                    for (var i = 0; i < @params.Length; i++)
-                    {
+                    for (var i = 0; i < @params.Length; i++) {
                         var param = @params[i];
-                        // if property-based index, we prefer this in matching
-                        if (index is FilterParamIndexLookupableBase)
-                        {
+                        var indexMatch = false;
+                        if (index is FilterParamIndexLookupableBase) {
                             var baseIndex = (FilterParamIndexLookupableBase) index;
                             if (param.Lookupable.Expression.Equals(baseIndex.Lookupable.Expression) &&
-                                param.FilterOperator.Equals(baseIndex.FilterOperator))
-                            {
-                                var found = RemoveFromIndex(filterCallback, index, @params, currentLevel + 1, param.FilterForValue);
-                                if (found)
-                                {
-                                    indexFound = baseIndex;
-                                    break;
-                                }
+                                param.FilterOperator.Equals(baseIndex.FilterOperator)) {
+                                indexMatch = true;
                             }
                         }
-                        else if (index is FilterParamIndexBooleanExpr && currentLevel == @params.Length - 1)
-                        {
-                            // if boolean-expression then match only if this is the last parameter,
-                            // all others considered are higher order and sort ahead
-                            if (param.FilterOperator.Equals(FilterOperator.BOOLEAN_EXPRESSION))
-                            {
-                                var booleanIndex = (FilterParamIndexBooleanExpr) index;
-                                bool found = booleanIndex.RemoveMayNotExist(param.FilterForValue);
-                                if (found)
-                                {
-                                    indexFound = booleanIndex;
-                                    break;
-                                }
+                        else if (index is FilterParamIndexBooleanExpr && param.FilterOperator == FilterOperator.BOOLEAN_EXPRESSION) {
+                            indexMatch = true;
+                        }
+
+
+                        if (indexMatch) {
+                            bool found = RemoveFromIndex(filterCallback, index, @params, currentLevel + 1, param.FilterForValue);
+                            if (found) {
+                                indexFound = index;
+                                break;
                             }
                         }
                     }

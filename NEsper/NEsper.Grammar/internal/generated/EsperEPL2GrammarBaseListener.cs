@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-// Generated from C:\src\Espertech\NEsper-master\NEsper\grammar\EsperEPL2Grammar.g4 by ANTLR 4.7.1
+// Generated from C:\Src\Espertech\NEsper-8.5.0\NEsper\grammar\EsperEPL2Grammar.g4 by ANTLR 4.7.1
 
 // Unreachable code detected
 #pragma warning disable 0162
@@ -75,6 +75,18 @@ public partial class EsperEPL2GrammarBaseListener : IEsperEPL2GrammarListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitStartJsonValueRule([NotNull] EsperEPL2GrammarParser.StartJsonValueRuleContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.classDecl"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterClassDecl([NotNull] EsperEPL2GrammarParser.ClassDeclContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.classDecl"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitClassDecl([NotNull] EsperEPL2GrammarParser.ClassDeclContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.expressionDecl"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -916,6 +928,18 @@ public partial class EsperEPL2GrammarBaseListener : IEsperEPL2GrammarListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitCreateExpressionExpr([NotNull] EsperEPL2GrammarParser.CreateExpressionExprContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.createClassExpr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterCreateClassExpr([NotNull] EsperEPL2GrammarParser.CreateClassExprContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.createClassExpr"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitCreateClassExpr([NotNull] EsperEPL2GrammarParser.CreateClassExprContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.createContextDetail"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -1119,6 +1143,18 @@ public partial class EsperEPL2GrammarBaseListener : IEsperEPL2GrammarListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitColumnList([NotNull] EsperEPL2GrammarParser.ColumnListContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.columnListKeywordAllowed"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterColumnListKeywordAllowed([NotNull] EsperEPL2GrammarParser.ColumnListKeywordAllowedContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.columnListKeywordAllowed"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitColumnListKeywordAllowed([NotNull] EsperEPL2GrammarParser.ColumnListKeywordAllowedContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.fromClause"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -1540,6 +1576,18 @@ public partial class EsperEPL2GrammarBaseListener : IEsperEPL2GrammarListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitRowLimit([NotNull] EsperEPL2GrammarParser.RowLimitContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.crontabLimitParameterSetList"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterCrontabLimitParameterSetList([NotNull] EsperEPL2GrammarParser.CrontabLimitParameterSetListContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.crontabLimitParameterSetList"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitCrontabLimitParameterSetList([NotNull] EsperEPL2GrammarParser.CrontabLimitParameterSetListContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.crontabLimitParameterSet"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -1960,18 +2008,6 @@ public partial class EsperEPL2GrammarBaseListener : IEsperEPL2GrammarListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitSubstitutionCanChain([NotNull] EsperEPL2GrammarParser.SubstitutionCanChainContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.chainedFunction"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterChainedFunction([NotNull] EsperEPL2GrammarParser.ChainedFunctionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainedFunction"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitChainedFunction([NotNull] EsperEPL2GrammarParser.ChainedFunctionContext context) { }
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.newAssign"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -2362,42 +2398,6 @@ public partial class EsperEPL2GrammarBaseListener : IEsperEPL2GrammarListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitFirstLastWindowAggregation([NotNull] EsperEPL2GrammarParser.FirstLastWindowAggregationContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.eventPropertyOrLibFunction"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterEventPropertyOrLibFunction([NotNull] EsperEPL2GrammarParser.EventPropertyOrLibFunctionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.eventPropertyOrLibFunction"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitEventPropertyOrLibFunction([NotNull] EsperEPL2GrammarParser.EventPropertyOrLibFunctionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.libFunction"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterLibFunction([NotNull] EsperEPL2GrammarParser.LibFunctionContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.libFunction"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitLibFunction([NotNull] EsperEPL2GrammarParser.LibFunctionContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.libFunctionWithClass"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterLibFunctionWithClass([NotNull] EsperEPL2GrammarParser.LibFunctionWithClassContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.libFunctionWithClass"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitLibFunctionWithClass([NotNull] EsperEPL2GrammarParser.LibFunctionWithClassContext context) { }
-	/// <summary>
 	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.libFunctionNoClass"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
@@ -2409,30 +2409,6 @@ public partial class EsperEPL2GrammarBaseListener : IEsperEPL2GrammarListener {
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitLibFunctionNoClass([NotNull] EsperEPL2GrammarParser.LibFunctionNoClassContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.funcIdentTop"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterFuncIdentTop([NotNull] EsperEPL2GrammarParser.FuncIdentTopContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.funcIdentTop"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitFuncIdentTop([NotNull] EsperEPL2GrammarParser.FuncIdentTopContext context) { }
-	/// <summary>
-	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.funcIdentInner"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void EnterFuncIdentInner([NotNull] EsperEPL2GrammarParser.FuncIdentInnerContext context) { }
-	/// <summary>
-	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.funcIdentInner"/>.
-	/// <para>The default implementation does nothing.</para>
-	/// </summary>
-	/// <param name="context">The parse tree.</param>
-	public virtual void ExitFuncIdentInner([NotNull] EsperEPL2GrammarParser.FuncIdentInnerContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.funcIdentChained"/>.
 	/// <para>The default implementation does nothing.</para>
@@ -3070,41 +3046,101 @@ public partial class EsperEPL2GrammarBaseListener : IEsperEPL2GrammarListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitNumericListParameter([NotNull] EsperEPL2GrammarParser.NumericListParameterContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.eventProperty"/>.
+	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.chainable"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterEventProperty([NotNull] EsperEPL2GrammarParser.EventPropertyContext context) { }
+	public virtual void EnterChainable([NotNull] EsperEPL2GrammarParser.ChainableContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.eventProperty"/>.
+	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainable"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitEventProperty([NotNull] EsperEPL2GrammarParser.EventPropertyContext context) { }
+	public virtual void ExitChainable([NotNull] EsperEPL2GrammarParser.ChainableContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.eventPropertyAtomic"/>.
+	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableRootWithOpt"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterEventPropertyAtomic([NotNull] EsperEPL2GrammarParser.EventPropertyAtomicContext context) { }
+	public virtual void EnterChainableRootWithOpt([NotNull] EsperEPL2GrammarParser.ChainableRootWithOptContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.eventPropertyAtomic"/>.
+	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableRootWithOpt"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitEventPropertyAtomic([NotNull] EsperEPL2GrammarParser.EventPropertyAtomicContext context) { }
+	public virtual void ExitChainableRootWithOpt([NotNull] EsperEPL2GrammarParser.ChainableRootWithOptContext context) { }
 	/// <summary>
-	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.eventPropertyIdent"/>.
+	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableElements"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void EnterEventPropertyIdent([NotNull] EsperEPL2GrammarParser.EventPropertyIdentContext context) { }
+	public virtual void EnterChainableElements([NotNull] EsperEPL2GrammarParser.ChainableElementsContext context) { }
 	/// <summary>
-	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.eventPropertyIdent"/>.
+	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableElements"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
-	public virtual void ExitEventPropertyIdent([NotNull] EsperEPL2GrammarParser.EventPropertyIdentContext context) { }
+	public virtual void ExitChainableElements([NotNull] EsperEPL2GrammarParser.ChainableElementsContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableAtomicWithOpt"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterChainableAtomicWithOpt([NotNull] EsperEPL2GrammarParser.ChainableAtomicWithOptContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableAtomicWithOpt"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitChainableAtomicWithOpt([NotNull] EsperEPL2GrammarParser.ChainableAtomicWithOptContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableAtomic"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterChainableAtomic([NotNull] EsperEPL2GrammarParser.ChainableAtomicContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableAtomic"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitChainableAtomic([NotNull] EsperEPL2GrammarParser.ChainableAtomicContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableArray"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterChainableArray([NotNull] EsperEPL2GrammarParser.ChainableArrayContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableArray"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitChainableArray([NotNull] EsperEPL2GrammarParser.ChainableArrayContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableWithArgs"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterChainableWithArgs([NotNull] EsperEPL2GrammarParser.ChainableWithArgsContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableWithArgs"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitChainableWithArgs([NotNull] EsperEPL2GrammarParser.ChainableWithArgsContext context) { }
+	/// <summary>
+	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableIdent"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterChainableIdent([NotNull] EsperEPL2GrammarParser.ChainableIdentContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="EsperEPL2GrammarParser.chainableIdent"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitChainableIdent([NotNull] EsperEPL2GrammarParser.ChainableIdentContext context) { }
 	/// <summary>
 	/// Enter a parse tree produced by <see cref="EsperEPL2GrammarParser.identOrTicked"/>.
 	/// <para>The default implementation does nothing.</para>

@@ -82,7 +82,7 @@ namespace com.espertech.esper.compiler.@internal.util
             }
         }
 
-        private static EpCompiledManifest CompileToBytes(
+        private static EPCompiledManifest CompileToBytes(
             IList<Compilable> compilables,
             string optionalModuleName,
             IDictionary<ModuleProperty, object> moduleProperties,
@@ -144,7 +144,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 out assembly);
 
             // create module XML
-            return new EpCompiledManifest(COMPILER_VERSION, moduleProviderClassName, null);
+            return new EPCompiledManifest(COMPILER_VERSION, moduleProviderClassName, null);
         }
 
         private static string CompileModule(

@@ -20,8 +20,14 @@ namespace com.espertech.esper.runtime.client
         /// <param name="deploymentId">deployment id</param>
         /// <param name="moduleName">module name</param>
         /// <param name="statements">statements</param>
-        public DeploymentStateEventUndeployed(string runtimeURI, string deploymentId, string moduleName, EPStatement[] statements)
-            : base(runtimeURI, deploymentId, moduleName, statements)
+        /// <param name="rolloutItemNumber">rollout item number when using rollout</param>
+        public DeploymentStateEventUndeployed(
+            string runtimeURI,
+            string deploymentId,
+            string moduleName,
+            EPStatement[] statements,
+            int rolloutItemNumber)
+            : base(runtimeURI, deploymentId, moduleName, statements, rolloutItemNumber)
         {
         }
     }

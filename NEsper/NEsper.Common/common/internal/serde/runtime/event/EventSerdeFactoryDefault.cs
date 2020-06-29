@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.serde.runtime.@event
 		{
 		}
 
-		public void VerifyHaDeployment(bool targetHA)
+		public void VerifyHADeployment(bool targetHA)
 		{
 			// no verification required
 		}

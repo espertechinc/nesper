@@ -47,7 +47,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             int numExpected)
         {
             testBean.ShortBoxed = testValue;
-            index.MatchEvent(testEventBean, matchesList);
+            index.MatchEvent(testEventBean, matchesList, TODO);
             Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 
@@ -57,7 +57,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             int numExpected)
         {
             testBean.BoolPrimitive = testValue;
-            index.MatchEvent(testEventBean, matchesList);
+            index.MatchEvent(testEventBean, matchesList, TODO);
             Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 
@@ -67,7 +67,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             int numExpected)
         {
             testBean.TheString = testValue;
-            index.MatchEvent(testEventBean, matchesList);
+            index.MatchEvent(testEventBean, matchesList, TODO);
             Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 
@@ -77,7 +77,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             int numExpected)
         {
             testBean.FloatPrimitive = testValue;
-            index.MatchEvent(testEventBean, matchesList);
+            index.MatchEvent(testEventBean, matchesList, TODO);
             Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 

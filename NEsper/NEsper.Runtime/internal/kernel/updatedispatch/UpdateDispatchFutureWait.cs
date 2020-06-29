@@ -77,8 +77,20 @@ namespace com.espertech.esper.runtime.@internal.kernel.updatedispatch
             }
 
             _view.Execute();
-            _isCompleted = true;
+            Completed();
+        }
 
+        public UpdateDispatchView View => _view;
+
+        public void Cancelled()
+        {
+            Completed();
+        }
+
+        private void Completed()
+        {
+            _isCompleted = true;
+ 
             if (_later != null)
             {
                 lock (_later)
@@ -86,6 +98,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.updatedispatch
                     Monitor.Pulse(_later);
                 }
             }
+
             _earlier = null;
             _later = null;
         }

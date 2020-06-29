@@ -73,9 +73,10 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         public override void MatchEvent(
             EventBean theEvent,
-            ICollection<FilterHandle> matches)
+            ICollection<FilterHandle> matches,
+            ExprEvaluatorContext ctx)
         {
-            var propertyValue = Lookupable.Getter.Get(theEvent);
+            var propertyValue = Lookupable.Eval.Eval(theEvent, ctx);
             if (InstrumentationHelper.ENABLED) {
                 InstrumentationHelper.Get().QFilterReverseIndex(this, propertyValue);
             }
@@ -119,13 +120,13 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                         continue;
                     }
 
-                    matcher.MatchEvent(theEvent, matches);
+                    matcher.MatchEvent(theEvent, matches, ctx);
                 }
 
                 if (filterOperator == FilterOperator.GREATER_OR_EQUAL) {
                     var matcher = constantsMap.Get(propertyValue);
                     if (matcher != null) {
-                        matcher.MatchEvent(theEvent, matches);
+                        matcher.MatchEvent(theEvent, matches, ctx);
                     }
                 }
             }
@@ -141,7 +142,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             ArrayDeque<FilterItem> evaluatorStack)
         {
             foreach (var entry in constantsMap) {
-                evaluatorStack.Add(new FilterItem(Lookupable.Expression, FilterOperator, entry.Key));
+                evaluatorStack.Add(new FilterItem(Lookupable.Expression, FilterOperator, entry.Key, this));
                 entry.Value.GetTraverseStatement(traverse, statementIds, evaluatorStack);
                 evaluatorStack.RemoveLast();
             }

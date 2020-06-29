@@ -227,7 +227,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             foreach (var theEvent in unmatchedEvents)
             {
                 IList<FilterHandle> matches = new List<FilterHandle>();
-                topNode.MatchEvent(theEvent, matches);
+                topNode.MatchEvent(theEvent, matches, TODO);
                 Assert.IsTrue(matches.Count == 0);
             }
 
@@ -235,7 +235,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             foreach (var theEvent in matchedEvents)
             {
                 IList<FilterHandle> matches = new List<FilterHandle>();
-                topNode.MatchEvent(theEvent, matches);
+                topNode.MatchEvent(theEvent, matches, TODO);
                 Assert.IsTrue(matches.Count == 1);
             }
 
@@ -252,7 +252,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             foreach (var theEvent in matchedEvents)
             {
                 IList<FilterHandle> matches = new List<FilterHandle>();
-                topNode.MatchEvent(theEvent, matches);
+                topNode.MatchEvent(theEvent, matches, TODO);
                 Assert.IsTrue(matches.Count == 0);
             }
         }

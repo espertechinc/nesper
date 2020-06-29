@@ -20,11 +20,15 @@ namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
     /// <summary>
     /// Implements the schedule service by simply keeping a sorted set of long millisecond
     /// values and a set of handles for each.
-    /// <para />Synchronized since statement creation and event evaluation by multiple (event send) threads
+    /// <para>
+    /// Synchronized since statement creation and event evaluation by multiple (event send) threads
     /// can lead to callbacks added/removed asynchronously.
+    /// </para>
     /// </summary>
     public class SchedulingServiceImpl : SchedulingServiceSPI
     {
+        private readonly int _stageId;
+
         // Map of time and handle
         private readonly OrderedDictionary<long, IDictionary<long, ScheduleHandle>> _timeHandleMap;
 
@@ -37,9 +41,11 @@ namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
         /// <summary>
         /// Constructor.
         /// </summary>
+        /// <param name="stageId">stage id or -1 when not applicable</param>
         /// <param name="timeSourceService">time source provider</param>
-        public SchedulingServiceImpl(TimeSourceService timeSourceService)
+        public SchedulingServiceImpl(int stageId, TimeSourceService timeSourceService)
         {
+            _stageId = stageId;
             _timeHandleMap = new OrderedDictionary<long, IDictionary<long, ScheduleHandle>>();
             _handleSetMap = new Dictionary<ScheduleHandle, IDictionary<long, ScheduleHandle>>();
             // initialize time to just before now as there is a check for duplicate external time events
@@ -179,35 +185,22 @@ namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
             }
         }
 
-        public ScheduleSet Take(ICollection<int> statementIds)
+        public void Transfer(ICollection<int> statementIds, SchedulingServiceSPI schedulingService)
         {
-            var list = new List<ScheduleSetEntry>();
             var currentTime = Time;
+            var targetTime = schedulingService.Time;
+            
             foreach (var schedule in _timeHandleMap)
             {
                 foreach (var entry in schedule.Value)
                 {
                     if (statementIds.Contains(entry.Value.StatementId))
                     {
-                        var relative = schedule.Key - currentTime;
-                        list.Add(new ScheduleSetEntry(relative, entry.Key, entry.Value));
+                        long relative = ScheduleTransferHelper.ComputeTransferTime(currentTime, targetTime, schedule.Key);
+                        Remove(entry.Value, entry.Key);
+                        schedulingService.Add(relative, entry.Value, entry.Key);
                     }
                 }
-            }
-
-            foreach (var entry in list)
-            {
-                Remove(entry.Handle, entry.ScheduleSlot);
-            }
-
-            return new ScheduleSet(list);
-        }
-
-        public void Apply(ScheduleSet scheduleSet)
-        {
-            foreach (var entry in scheduleSet.List)
-            {
-                Add(entry.Time, entry.Handle, entry.ScheduleSlot);
             }
         }
 

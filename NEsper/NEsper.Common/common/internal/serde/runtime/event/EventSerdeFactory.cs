@@ -16,7 +16,7 @@ using com.espertech.esper.compat.collections;
 namespace com.espertech.esper.common.@internal.serde.runtime.@event
 {
 	public interface EventSerdeFactory {
-	    void VerifyHaDeployment(bool targetHa) ;
+	    void VerifyHADeployment(bool targetHa) ;
 	    DataInputOutputSerde<EventBean> NullableEvent(EventType eventType);
 	    DataInputOutputSerde<EventBean> NullableEventArray(EventType eventType);
 	    DataInputOutputSerde NullableEventOrUnderlying(EventType eventType);

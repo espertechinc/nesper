@@ -21,6 +21,7 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.db;
+using com.espertech.esper.common.@internal.epl.agg.table;
 using com.espertech.esper.common.@internal.epl.dataflow.ops;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.type;
@@ -72,7 +73,9 @@ namespace com.espertech.esper.common.client.configuration
             Assert.IsFalse(compiler.ViewResources.IsIterableUnbound);
             Assert.IsTrue(compiler.ViewResources.IsOutputLimitOpt);
             Assert.IsFalse(compiler.Logging.IsEnableCode);
+            Assert.IsFalse(compiler.Logging.IsEnableFilterPlan);
             Assert.AreEqual(16, compiler.Execution.FilterServiceMaxFilterWidth);
+            Assert.AreEqual(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, compiler.Execution.FilterIndexPlanning);
             Assert.IsTrue(compiler.Execution.IsEnabledDeclaredExprValueCache);
             var byteCode = compiler.ByteCode;
             Assert.IsFalse(byteCode.IsIncludeComments);
@@ -89,6 +92,10 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierTable);
             Assert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierVariable);
             Assert.AreEqual(EventTypeBusModifier.NONBUS, byteCode.BusModifierEventType);
+            Assert.AreEqual(8, byteCode.ThreadPoolCompilerNumThreads);
+            Assert.IsNull(byteCode.ThreadPoolCompilerCapacity);
+            Assert.AreEqual(16*1024, byteCode.MaxMethodsPerClass);
+            Assert.IsTrue(byteCode.IsAllowInlinedClass);
             Assert.AreEqual(StreamSelector.ISTREAM_ONLY, compiler.StreamSelection.DefaultStreamSelector);
             Assert.IsFalse(compiler.Language.IsSortUsingCollator);
             Assert.IsFalse(compiler.Expression.IsIntegerDivision);
@@ -98,7 +105,13 @@ namespace com.espertech.esper.common.client.configuration
             Assert.IsFalse(compiler.Expression.IsDuckTyping);
             Assert.IsNull(compiler.Expression.MathContext);
             Assert.AreEqual("js", compiler.Scripts.DefaultDialect);
-
+            Assert.IsTrue(compiler.Scripts.IsEnabled);
+            Assert.IsTrue(compiler.Serde.IsEnableExtendedBuiltin);
+            Assert.IsFalse(compiler.Serde.IsEnableExternalizable);
+            Assert.IsFalse(compiler.Serde.IsEnableSerializable);
+            Assert.IsFalse(compiler.Serde.IsEnableSerializationFallback);
+            Assert.IsTrue(compiler.Serde.SerdeProviderFactories.IsEmpty());
+            
             var runtime = config.Runtime;
             Assert.IsTrue(runtime.Threading.IsInsertIntoDispatchPreserveOrder);
             Assert.AreEqual(100, runtime.Threading.InsertIntoDispatchTimeout);
@@ -469,10 +482,23 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual("observer2", pluginPattern.Name);
             Assert.AreEqual(PatternObjectType.OBSERVER, pluginPattern.PatternObjectType);
 
+            // assert plug-in date-time method and enum-method
+            IList<ConfigurationCompilerPlugInDateTimeMethod> configDTM = compiler.PlugInDateTimeMethods;
+            Assert.AreEqual(1, configDTM.Count);
+            ConfigurationCompilerPlugInDateTimeMethod dtmOne = configDTM[0];
+            Assert.AreEqual("methodname1", dtmOne.Name);
+            Assert.AreEqual("com.mycompany.MyDateTimeMethodForge", dtmOne.ForgeClassName);
+            IList<ConfigurationCompilerPlugInEnumMethod> configENM = compiler.PlugInEnumMethods;
+            Assert.AreEqual(1, configENM.Count);
+            ConfigurationCompilerPlugInEnumMethod enmOne = configENM[0];
+            Assert.AreEqual("methodname2", enmOne.Name);
+            Assert.AreEqual("com.mycompany.MyEnumMethodForge", enmOne.ForgeClassName);
+
             Assert.IsTrue(compiler.ViewResources.IsIterableUnbound);
             Assert.IsFalse(compiler.ViewResources.IsOutputLimitOpt);
 
             Assert.IsTrue(compiler.Logging.IsEnableCode);
+            Assert.IsTrue(compiler.Logging.IsEnableFilterPlan);
 
             Assert.AreEqual(StreamSelector.RSTREAM_ISTREAM_BOTH, compiler.StreamSelection.DefaultStreamSelector);
 
@@ -491,9 +517,14 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual(NameAccessModifier.PUBLIC, byteCode.AccessModifierTable);
             Assert.AreEqual(NameAccessModifier.INTERNAL, byteCode.AccessModifierVariable);
             Assert.AreEqual(EventTypeBusModifier.BUS, byteCode.BusModifierEventType);
+            Assert.AreEqual(1234, byteCode.ThreadPoolCompilerNumThreads);
+            Assert.AreEqual(4321, (int) byteCode.ThreadPoolCompilerCapacity);
+            Assert.AreEqual(5555, byteCode.MaxMethodsPerClass);
+            Assert.IsFalse(byteCode.IsAllowInlinedClass);
             Assert.AreEqual(StreamSelector.RSTREAM_ISTREAM_BOTH, compiler.StreamSelection.DefaultStreamSelector);
 
             Assert.AreEqual(100, compiler.Execution.FilterServiceMaxFilterWidth);
+            Assert.AreEqual(ConfigurationCompilerExecution.FilterIndexPlanning.NONE, compiler.Execution.FilterIndexPlanning);
             Assert.IsFalse(compiler.Execution.IsEnabledDeclaredExprValueCache);
 
             Assert.IsTrue(compiler.Language.IsSortUsingCollator);
@@ -507,7 +538,17 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual(MidpointRounding.ToEven, compiler.Expression.MathContext.RoundingMode);
 
             Assert.AreEqual("abc", compiler.Scripts.DefaultDialect);
+            Assert.IsFalse(compiler.Scripts.IsEnabled);
 
+            Assert.IsFalse(compiler.Serde.IsEnableExtendedBuiltin);
+            Assert.IsTrue(compiler.Serde.IsEnableExternalizable);
+            Assert.IsTrue(compiler.Serde.IsEnableSerializable);
+            Assert.IsTrue(compiler.Serde.IsEnableSerializationFallback);
+            IList<String> serdeProviderFactories = compiler.Serde.SerdeProviderFactories;
+            Assert.AreEqual(2, serdeProviderFactories.Count);
+            Assert.AreEqual("a.b.c.MySerdeProviderFactoryOne", serdeProviderFactories[0]);
+            Assert.AreEqual("a.b.c.MySerdeProviderFactoryTwo", serdeProviderFactories[1]);
+            
             /*
              * RUNTIME
              *

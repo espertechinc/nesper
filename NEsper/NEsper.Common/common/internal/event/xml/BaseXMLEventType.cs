@@ -130,7 +130,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             return XPathExpression.Compile(xPathExpression, NamespaceContext);
         }
 
-        public override EventType[] SuperTypes => null;
+        public override IList<EventType> SuperTypes => null;
 
         public override IEnumerable<EventType> DeepSuperTypes => null;
 

@@ -8,7 +8,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.module;
@@ -18,7 +20,6 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.metrics.stmtmetrics;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.threadlocal;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.@internal.kernel.statement;
@@ -37,55 +38,55 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(StatementResultServiceImpl));
 
-        private readonly EPServicesContext epServicesContext;
-        private readonly bool outboundThreading;
+        private readonly EPServicesContext _epServicesContext;
+        private readonly bool _outboundThreading;
 
-        private readonly StatementInformationalsRuntime statementInformationals;
+        private readonly StatementInformationalsRuntime _statementInformationals;
 
         // Part of the statement context
-        private EPStatementSPI epStatement;
+        private EPStatementSPI _epStatement;
 
-        private bool forClauseDelivery;
-        private ExprEvaluator groupDeliveryExpressions;
-        private EPRuntimeSPI runtime;
-        private string[] selectClauseColumnNames;
+        private bool _forClauseDelivery;
+        private ExprEvaluator _groupDeliveryExpressions;
+        private EPRuntimeSPI _runtime;
+        private string[] _selectClauseColumnNames;
 
         // For natural delivery derived out of select-clause expressions
-        private Type[] selectClauseTypes;
+        private Type[] _selectClauseTypes;
 
         /// <summary>
         ///     Buffer for holding dispatchable events.
         /// </summary>
-        protected IThreadLocal<StatementDispatchTLEntry> statementDispatchTL;
+        protected IThreadLocal<StatementDispatchTLEntry> StatementDispatchTl;
 
         // Listeners and subscribers and derived information
-        private StatementMetricHandle statementMetricHandle;
+        private StatementMetricHandle _statementMetricHandle;
 
-        private ISet<object> statementOutputHooks;
-        private ResultDeliveryStrategy statementResultNaturalStrategy;
+        private ISet<object> _statementOutputHooks;
+        private ResultDeliveryStrategy _statementResultNaturalStrategy;
 
         public StatementResultServiceImpl(
             StatementInformationalsRuntime statementInformationals,
             EPServicesContext epServicesContext)
         {
-            statementDispatchTL = new SlimThreadLocal<StatementDispatchTLEntry>(() => new StatementDispatchTLEntry());
-            this.statementInformationals = statementInformationals;
-            this.epServicesContext = epServicesContext;
-            outboundThreading = epServicesContext.ThreadingService.IsOutboundThreading;
+            StatementDispatchTl = new SlimThreadLocal<StatementDispatchTLEntry>(() => new StatementDispatchTLEntry());
+            _statementInformationals = statementInformationals;
+            _epServicesContext = epServicesContext;
+            _outboundThreading = epServicesContext.ThreadingService.IsOutboundThreading;
             IsMakeSynthetic = statementInformationals.IsAlwaysSynthesizeOutputEvents;
         }
 
-        public int StatementId => epStatement.StatementContext.StatementId;
+        public int StatementId => _epStatement.StatementContext.StatementId;
 
         public EPStatementListenerSet StatementListenerSet { get; private set; }
 
-        public IThreadLocal<StatementDispatchTLEntry> DispatchTL => statementDispatchTL;
+        public IThreadLocal<StatementDispatchTLEntry> DispatchTL => StatementDispatchTl;
 
         public bool IsMakeSynthetic { get; private set; }
 
         public bool IsMakeNatural { get; private set; }
 
-        public string StatementName => epStatement.Name;
+        public string StatementName => _epStatement.Name;
 
         // Called by OutputProcessView
         public void Indicate(
@@ -93,10 +94,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             StatementDispatchTLEntry dispatchTLEntry)
         {
             if (results != null) {
-                if (statementMetricHandle.IsEnabled) {
+                if (_statementMetricHandle.IsEnabled) {
                     var numIStream = results.First?.Length ?? 0;
                     var numRStream = results.Second?.Length ?? 0;
-                    epServicesContext.MetricReportingService.AccountOutput(statementMetricHandle, numIStream, numRStream, epStatement, runtime);
+                    _epServicesContext.MetricReportingService.AccountOutput(_statementMetricHandle, numIStream, numRStream, _epStatement, _runtime);
                 }
 
                 var lastResults = dispatchTLEntry.Results;
@@ -117,12 +118,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
             if (InstrumentationHelper.ENABLED) {
                 InstrumentationHelper.Get().QStatementResultExecute(
-                    events, epStatement.DeploymentId, epStatement.StatementId, epStatement.Name, Thread.CurrentThread.ManagedThreadId);
+                    events, _epStatement.DeploymentId, _epStatement.StatementId, _epStatement.Name, Thread.CurrentThread.ManagedThreadId);
                 InstrumentationHelper.Get().AStatementResultExecute();
             }
 
-            if (outboundThreading) {
-                epServicesContext.ThreadingService.SubmitOutbound(new OutboundUnitRunnable(events, this));
+            if (_outboundThreading) {
+                _epServicesContext.ThreadingService.SubmitOutbound(new OutboundUnitRunnable(events, this));
             }
             else {
                 ProcessDispatch(events);
@@ -135,9 +136,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             EPStatementSPI epStatement,
             EPRuntimeSPI runtime)
         {
-            this.epStatement = epStatement;
-            this.runtime = runtime;
-            statementMetricHandle = epStatement.StatementContext.EpStatementHandle.MetricsHandle;
+            _epStatement = epStatement;
+            _runtime = runtime;
+            _statementMetricHandle = epStatement.StatementContext.EpStatementHandle.MetricsHandle;
         }
 
         public void SetSelectClause(
@@ -146,10 +147,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             bool forClauseDelivery,
             ExprEvaluator groupDeliveryExpressions)
         {
-            this.selectClauseTypes = selectClauseTypes;
-            this.selectClauseColumnNames = selectClauseColumnNames;
-            this.forClauseDelivery = forClauseDelivery;
-            this.groupDeliveryExpressions = groupDeliveryExpressions;
+            _selectClauseTypes = selectClauseTypes;
+            _selectClauseColumnNames = selectClauseColumnNames;
+            _forClauseDelivery = forClauseDelivery;
+            _groupDeliveryExpressions = groupDeliveryExpressions;
         }
 
         public void SetUpdateListeners(
@@ -157,10 +158,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             bool isRecovery)
         {
             // indicate that listeners were updated for potential persistence of listener set, once the statement context is known
-            if (epStatement != null) {
+            if (_epStatement != null) {
                 if (!isRecovery) {
-                    var stmtCtx = epStatement.StatementContext;
-                    epServicesContext.EpServicesHA.ListenerRecoveryService.Put(
+                    var stmtCtx = _epStatement.StatementContext;
+                    _epServicesContext.EpServicesHA.ListenerRecoveryService.Put(
                         stmtCtx.StatementId, 
                         stmtCtx.StatementName, 
                         listenerSet.Listeners);
@@ -171,23 +172,23 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
             IsMakeNatural = StatementListenerSet.Subscriber != null;
             IsMakeSynthetic = StatementListenerSet.Listeners.Length != 0 
-                              || statementInformationals.IsAlwaysSynthesizeOutputEvents;
+                              || _statementInformationals.IsAlwaysSynthesizeOutputEvents;
 
             if (StatementListenerSet.Subscriber == null) {
-                statementResultNaturalStrategy = null;
+                _statementResultNaturalStrategy = null;
                 IsMakeNatural = false;
                 return;
             }
 
             try {
-                statementResultNaturalStrategy = ResultDeliveryStrategyFactory.Create(
-                    epStatement,
+                _statementResultNaturalStrategy = ResultDeliveryStrategyFactory.Create(
+                    _epStatement,
                     StatementListenerSet.Subscriber, 
                     StatementListenerSet.SubscriberMethodName,
-                    selectClauseTypes, 
-                    selectClauseColumnNames, 
-                    runtime.URI, 
-                    runtime.ServicesContext.ImportServiceRuntime);
+                    _selectClauseTypes, 
+                    _selectClauseColumnNames, 
+                    _runtime.URI, 
+                    _runtime.ServicesContext.ImportServiceRuntime);
                 IsMakeNatural = true;
             }
             catch (ResultDeliveryStrategyInvalidException ex) {
@@ -202,13 +203,13 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         public void ProcessDispatch(UniformPair<EventBean[]> events)
         {
             // Plain all-events delivery
-            if (!forClauseDelivery) {
+            if (!_forClauseDelivery) {
                 DispatchInternal(events);
                 return;
             }
 
             // Discrete delivery
-            if (groupDeliveryExpressions == null) {
+            if (_groupDeliveryExpressions == null) {
                 var todeliver = new UniformPair<EventBean[]>(null, null);
                 if (events != null) {
                     if (events.First != null) {
@@ -252,42 +253,29 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
         public void ClearDeliveriesRemoveStream(EventBean[] removedEvents)
         {
-            StatementDispatchTLEntry entry = DispatchTL.GetOrCreate();
+            var entry = DispatchTL.GetOrCreate();
 
-            ArrayDeque<UniformPair<EventBean[]>> results = entry.Results;
-            
-            IEnumerator<UniformPair<EventBean[]>> enumerator = entry.Results.iterator();
-            while (enumerator.MoveNext()) {
-                var pair = enumerator.Current;
-                if (pair.Second == null) {
-                    continue;
-                }
-
-                bool containsDeleted = false;
-                foreach (EventBean removedEvent in removedEvents) {
-                    foreach (EventBean dispatchEvent in pair.Second) {
-                        if (removedEvent == dispatchEvent) {
-                            containsDeleted = true;
-                            break;
+            entry.Results.RemoveWhere(
+                pair => {
+                    if (pair.Second != null) {
+                        foreach (var removedEvent in removedEvents) {
+                            if (pair.Second.Any(dispatchEvent => removedEvent == dispatchEvent)) {
+                                return true;
+                            }
                         }
                     }
 
-                    if (containsDeleted) {
-                        break;
-                    }
-                }
-
-                if (containsDeleted) {
-                    enumerator.remove();
-                }
-            }
+                    return false;
+                },
+                pair => {
+                });
 
             if (!entry.Results.IsEmpty()) {
                 return;
             }
 
             entry.IsDispatchWaiting = false;
-            epServicesContext.DispatchService.RemoveAll(epStatement.DispatchChildView);
+            _epServicesContext.DispatchService.RemoveAll(_epStatement.DispatchChildView);
         }
 
         private IDictionary<object, UniformPair<EventBean[]>> GetGroupedResults(UniformPair<EventBean[]> events)
@@ -320,7 +308,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 }
 
                 eventsPerStream[0] = evalEvent;
-                var key = groupDeliveryExpressions.Evaluate(eventsPerStream, true, epStatement.StatementContext);
+                var key = _groupDeliveryExpressions.Evaluate(eventsPerStream, true, _epStatement.StatementContext);
 
                 var groupEntry = groups.Get(key);
                 if (groupEntry == null) {
@@ -356,15 +344,15 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
         private void DispatchInternal(UniformPair<EventBean[]> events)
         {
-            statementResultNaturalStrategy?.Execute(events);
+            _statementResultNaturalStrategy?.Execute(events);
 
             var newEventArr = events?.First;
             var oldEventArr = events?.Second;
-            var updateEventArgs = new UpdateEventArgs(runtime, epStatement, newEventArr, oldEventArr);
+            var updateEventArgs = new UpdateEventArgs(_runtime, _epStatement, newEventArr, oldEventArr);
 
             foreach (var listener in StatementListenerSet.Listeners) {
                 try {
-                    listener.Update(epStatement, updateEventArgs);
+                    listener.Update(_epStatement, updateEventArgs);
                 }
                 catch (Exception ex) {
                     var message = string.Format(

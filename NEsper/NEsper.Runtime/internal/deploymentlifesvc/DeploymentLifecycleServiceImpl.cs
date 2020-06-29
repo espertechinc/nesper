@@ -20,6 +20,13 @@ namespace com.espertech.esper.runtime.@internal.deploymentlifesvc
     public class DeploymentLifecycleServiceImpl : DeploymentLifecycleService
     {
         private readonly IDictionary<long, DeploymentInternal> deploymentsByCRC = new Dictionary<long, DeploymentInternal>();
+        
+        private readonly int _stageId;
+
+        public DeploymentLifecycleServiceImpl(int stageId)
+        {
+            this._stageId = stageId;
+        }
 
         public void AddDeployment(
             string deploymentId,
@@ -44,7 +51,7 @@ namespace com.espertech.esper.runtime.@internal.deploymentlifesvc
 
         public string[] DeploymentIds => DeploymentMap.Keys.ToArray();
 
-        public DeploymentInternal Undeploy(string deploymentId)
+        public DeploymentInternal RemoveDeployment(string deploymentId)
         {
             var deployment = DeploymentMap.Delete(deploymentId);
             if (deployment != null)

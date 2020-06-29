@@ -566,7 +566,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 
 		public static void AddJsonUnderlyingClass(
 			IDictionary<string, EventType> moduleTypes,
-			ClassLoader classLoader,
+			ParentClassLoader classLoader,
 			string optionalDeploymentId)
 		{
 			foreach (var eventType in moduleTypes) {
@@ -576,14 +576,14 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 
 		public static void AddJsonUnderlyingClass(
 			PathRegistry<string, EventType> pathEventTypes,
-			ClassLoader classLoader)
+			ParentClassLoader classLoader)
 		{
 			pathEventTypes.Traverse(type => AddJsonUnderlyingClassInternal(type, classLoader, null));
 		}
 
 		private static void AddJsonUnderlyingClassInternal(
 			EventType eventType,
-			ClassLoader classLoader,
+			ParentClassLoader classLoader,
 			string optionalDeploymentId)
 		{
 			if (!(eventType is JsonEventType)) {

@@ -69,7 +69,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             Assert.IsTrue(topNode.Contains(testFilterCallback[0]));
 
             // Attempt a match
-            topNode.MatchEvent(eventBean, matches);
+            topNode.MatchEvent(eventBean, matches, TODO);
             Assert.IsTrue(matches.Count == 1);
             matches.Clear();
 
@@ -80,7 +80,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             Assert.IsTrue(topNode.Indizes[0].CountExpensive == 1);
 
             // Match again
-            topNode.MatchEvent(eventBean, matches);
+            topNode.MatchEvent(eventBean, matches, TODO);
             Assert.IsTrue(matches.Count == 1);
             matches.Clear();
 
@@ -91,7 +91,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             Assert.IsTrue(topNode.Indizes[0].CountExpensive == 2);
 
             // match
-            topNode.MatchEvent(eventBean, matches);
+            topNode.MatchEvent(eventBean, matches, TODO);
             Assert.IsTrue(matches.Count == 2);
             matches.Clear();
 
@@ -102,7 +102,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             Assert.IsTrue(topNode.Indizes[0].CountExpensive == 2);
             Assert.IsTrue(topNode.Indizes[1].CountExpensive == 1);
 
-            topNode.MatchEvent(eventBean, matches);
+            topNode.MatchEvent(eventBean, matches, TODO);
             Assert.IsTrue(matches.Count == 3);
             matches.Clear();
 
@@ -113,7 +113,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             Assert.IsTrue(topNode.Indizes[1].CountExpensive == 1);
             Assert.IsTrue(topNode.Indizes[2].CountExpensive == 1);
 
-            topNode.MatchEvent(eventBean, matches);
+            topNode.MatchEvent(eventBean, matches, TODO);
             Assert.IsTrue(matches.Count == 4);
             matches.Clear();
 
@@ -129,7 +129,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             Assert.IsTrue(nextLevelSetNode != null);
             Assert.IsTrue(nextLevelSetNode.Indizes.Count == 1);
 
-            topNode.MatchEvent(eventBean, matches);
+            topNode.MatchEvent(eventBean, matches, TODO);
             Assert.IsTrue(matches.Count == 5);
             matches.Clear();
 
@@ -137,7 +137,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                     "TheString", FilterOperator.EQUAL, "beta");
             IndexTreeBuilderAdd.Add(filterSpec, testFilterCallback[6], topNode, lockFactory);
 
-            topNode.MatchEvent(eventBean, matches);
+            topNode.MatchEvent(eventBean, matches, TODO);
             Assert.IsTrue(matches.Count == 5);
             matches.Clear();
 
@@ -148,7 +148,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             var nodeTwo = (FilterHandleSetNode) nextLevelSetNode.Indizes[0].Get("jack");
             Assert.IsTrue(nodeTwo.FilterCallbackCount == 2);
 
-            topNode.MatchEvent(eventBean, matches);
+            topNode.MatchEvent(eventBean, matches, TODO);
             Assert.IsTrue(matches.Count == 6);
             matches.Clear();
 
@@ -158,7 +158,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                     "ShortPrimitive", FilterOperator.EQUAL, (short) 20);
             IndexTreeBuilderAdd.Add(filterSpec, testFilterCallback[8], topNode, lockFactory);
 
-            topNode.MatchEvent(eventBean, matches);
+            topNode.MatchEvent(eventBean, matches, TODO);
             Assert.IsTrue(matches.Count == 7);
             matches.Clear();
 
@@ -175,7 +175,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                     "TheString", FilterOperator.EQUAL, "joe");
             IndexTreeBuilderAdd.Add(filterSpec, testFilterCallback[11], topNode, lockFactory);
 
-            topNode.MatchEvent(eventBean, matches);
+            topNode.MatchEvent(eventBean, matches, TODO);
             Assert.IsTrue(matches.Count == 8);
             matches.Clear();
         }
@@ -190,7 +190,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             IndexTreeBuilderAdd.Add(filterSpecNoParams, testFilterCallback[0], top, lockFactory);
 
             // Try a match
-            top.MatchEvent(eventBean, matches);
+            top.MatchEvent(eventBean, matches, TODO);
             Assert.IsTrue(matches.Count == 1);
             matches.Clear();
 
@@ -198,7 +198,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             IndexTreeBuilderRemove.Remove(eventType, testFilterCallback[0], filterSpecNoParams[0], top);
 
             // Match should not be found
-            top.MatchEvent(eventBean, matches);
+            top.MatchEvent(eventBean, matches, TODO);
             Assert.IsTrue(matches.Count == 0);
             matches.Clear();
 
@@ -228,42 +228,42 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                     "LongPrimitive", FilterOperator.EQUAL, 10L);
             IndexTreeBuilderAdd.Add(filterSpecFive, testFilterCallback[5], top, lockFactory);
 
-            top.MatchEvent(eventBean, matches);
+            top.MatchEvent(eventBean, matches, TODO);
             Assert.IsTrue(matches.Count == 5);
             matches.Clear();
 
             // Remove some of the nodes
             IndexTreeBuilderRemove.Remove(eventType, testFilterCallback[2], filterSpecTwo[0], top);
 
-            top.MatchEvent(eventBean, matches);
+            top.MatchEvent(eventBean, matches, TODO);
             Assert.IsTrue(matches.Count == 4);
             matches.Clear();
 
             // Remove some of the nodes
             IndexTreeBuilderRemove.Remove(eventType, testFilterCallback[4], filterSpecFour[0], top);
 
-            top.MatchEvent(eventBean, matches);
+            top.MatchEvent(eventBean, matches, TODO);
             Assert.IsTrue(matches.Count == 3);
             matches.Clear();
 
             // Remove some of the nodes
             IndexTreeBuilderRemove.Remove(eventType, testFilterCallback[5], filterSpecFive[0], top);
 
-            top.MatchEvent(eventBean, matches);
+            top.MatchEvent(eventBean, matches, TODO);
             Assert.IsTrue(matches.Count == 2);
             matches.Clear();
 
             // Remove some of the nodes
             IndexTreeBuilderRemove.Remove(eventType, testFilterCallback[1], filterSpecOne[0], top);
 
-            top.MatchEvent(eventBean, matches);
+            top.MatchEvent(eventBean, matches, TODO);
             Assert.IsTrue(matches.Count == 1);
             matches.Clear();
 
             // Remove some of the nodes
             IndexTreeBuilderRemove.Remove(eventType, testFilterCallback[3], filterSpecThree[0], top);
 
-            top.MatchEvent(eventBean, matches);
+            top.MatchEvent(eventBean, matches, TODO);
             Assert.IsTrue(matches.Count == 0);
             matches.Clear();
         }

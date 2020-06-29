@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
@@ -95,9 +96,10 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         public override void MatchEvent(
             EventBean theEvent,
-            ICollection<FilterHandle> matches)
+            ICollection<FilterHandle> matches,
+            ExprEvaluatorContext ctx)
         {
-            var attributeValue = Lookupable.Getter.Get(theEvent);
+            var attributeValue = Lookupable.Eval.Eval(theEvent, ctx);
             if (InstrumentationHelper.ENABLED) {
                 InstrumentationHelper.Get().QFilterReverseIndex(this, attributeValue);
             }
@@ -117,7 +119,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 // if all known evaluators are matching, invoke all
                 if (evalNotMatching == null) {
                     foreach (var eval in evaluatorsSet) {
-                        eval.MatchEvent(theEvent, matches);
+                        eval.MatchEvent(theEvent, matches, ctx);
                     }
 
                     if (InstrumentationHelper.ENABLED) {
@@ -139,7 +141,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 // handle partial matches: loop through all evaluators and see which one should not be matching, match all else
                 foreach (var eval in evaluatorsSet) {
                     if (!evalNotMatching.Contains(eval)) {
-                        eval.MatchEvent(theEvent, matches);
+                        eval.MatchEvent(theEvent, matches, ctx);
                     }
                 }
             }

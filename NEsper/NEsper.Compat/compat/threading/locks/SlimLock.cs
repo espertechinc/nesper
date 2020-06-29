@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -103,12 +104,6 @@ namespace com.espertech.esper.compat.threading.locks
             }
         }
 
-        [DllImport("Kernel32.dll")]
-        private static extern bool QueryPerformanceCounter(out long lpPerformanceCount);
-
-        [DllImport("Kernel32.dll")]
-        private static extern bool QueryPerformanceFrequency(out long lpFrequency);
-
         /// <summary>
         /// Enters the lock spin with a timeout.  Returns true if the
         /// lock was acquired within the time allotted.
@@ -123,35 +118,34 @@ namespace com.espertech.esper.compat.threading.locks
 
             long time;
 
-            QueryPerformanceCounter(out time);
-
-            var factor = PerformanceObserverWin.MpMilli;
-            var begTime = time;
-            var endTime = begTime + timeoutInMillis / factor;
-
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+            
             if (isMultiProcessor)
             {
                 if (EnterMyLockSpinWait(thread)) return true;
                 if (EnterMyLockSpinWait(thread)) return true;
                 if (EnterMyLockSpinWait(thread)) return true;
 
-                QueryPerformanceCounter(out time);
-                if (time > endTime) return false;
+                if (stopWatch.ElapsedMilliseconds > timeoutInMillis) {
+                    return false;
+                }
             }
 
             if (EnterMyLockSleep(thread, 0)) return true;
             if (EnterMyLockSleep(thread, 0)) return true;
             if (EnterMyLockSleep(thread, 0)) return true;
 
-            QueryPerformanceCounter(out time);
-            if (time > endTime) return false;
+            if (stopWatch.ElapsedMilliseconds > timeoutInMillis) {
+                return false;
+            }
 
             while (true)
             {
                 if (EnterMyLockSleep(thread, 10)) return true;
-
-                QueryPerformanceCounter(out time);
-                if (time > endTime) return false;
+                if (stopWatch.ElapsedMilliseconds > timeoutInMillis) {
+                    return false;
+                }
             }
         }
 
@@ -190,7 +184,13 @@ namespace com.espertech.esper.compat.threading.locks
                 Interlocked.Exchange(ref _myLockThread, null);
             }
         }
-
+        
+        // Mileage will vary by host, but this value defines the number of average
+        // spins for a single microsecond.  As I stated, this will vary greatly by
+        // host.  Expect that we will need to revisit this to come up with a proper
+        // way to calibrate this value for each environment.
+        public static double SpinIterationsPerMicro = 3.83d;
+        
         public static readonly bool IsMultiProcessor;
 
         private static readonly int SpinWait0;
@@ -202,10 +202,10 @@ namespace com.espertech.esper.compat.threading.locks
         {
             IsMultiProcessor = Environment.ProcessorCount > 1;
 
-            SpinWait0 = PerformanceObserverWin.SpinIterationsPerMicro * 5;
-            SpinWait1 = PerformanceObserverWin.SpinIterationsPerMicro * 10;
-            SpinWait2 = PerformanceObserverWin.SpinIterationsPerMicro * 25;
-            SpinWait3 = PerformanceObserverWin.SpinIterationsPerMicro * 50;
+            SpinWait0 = (int) (SpinIterationsPerMicro * 5);
+            SpinWait1 = (int) (SpinIterationsPerMicro * 10);
+            SpinWait2 = (int) (SpinIterationsPerMicro * 25);
+            SpinWait3 = (int) (SpinIterationsPerMicro * 50);
         }
 
         public static void SmartWait(int iter)

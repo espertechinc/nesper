@@ -24,7 +24,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
                 (
                     @event,
                     s,
-                    target) => {
+                    target,
+                    ctx) => {
                         var num = int.Parse(((string) s).Substring(1));
                         if (target.ContainsKey(num))
                         {
@@ -39,7 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
                 (
                     @event,
                     s,
-                    target) => target.Add(s));
+                    target,
+                    ctx) => target.Add(s));
 
         public static readonly SupportQuadTreeUtil.Querier<PointRegionQuadTree<object>> POINTREGION_FI_QUERIER =
         (
@@ -50,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             height) => {
                 IList<object> received = new List<object>();
                 PointRegionQuadTreeFilterIndexCollect<string, ICollection<object>>
-                    .CollectRange(tree, x, y, width, height, null, received, COLLECTION_COLLECTOR);
+                    .CollectRange(tree, x, y, width, height, null, received, COLLECTION_COLLECTOR, null);
                 return received.IsEmpty() ? null : received;
             };
 
@@ -99,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
         {
             IDictionary<int, string> received = new SortedDictionary<int, string>();
             PointRegionQuadTreeFilterIndexCollect<string, IDictionary<int, string>>
-                .CollectRange(tree, x, y, width, height, null, received, MAP_COLLECTOR);
+                .CollectRange(tree, x, y, width, height, null, received, MAP_COLLECTOR, null);
             AssertCompare(tree, expected, received);
         }
 

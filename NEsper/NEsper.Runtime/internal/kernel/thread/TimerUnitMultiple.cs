@@ -48,7 +48,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
         public void Run()
         {
             try {
-                EPEventServiceImpl.ProcessStatementScheduleMultiple(handle, callbackObject, services);
+                EPEventServiceHelper.ProcessStatementScheduleMultiple(handle, callbackObject, services);
 
                 // Let listeners know of results
                 runtime.Dispatch();

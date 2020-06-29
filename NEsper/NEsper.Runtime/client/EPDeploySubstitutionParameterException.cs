@@ -19,8 +19,11 @@ namespace com.espertech.esper.runtime.client
         /// Ctor
         /// </summary>
         /// <param name="message">message</param>
-        public EPDeploySubstitutionParameterException(string message)
-            : this(message, null)
+        /// <param name="rolloutItemNumber">rollout item number when using rollout</param>
+        public EPDeploySubstitutionParameterException(
+            string message,
+            int rolloutItemNumber)
+            : this(message, null, rolloutItemNumber)
         {
         }
 
@@ -29,8 +32,12 @@ namespace com.espertech.esper.runtime.client
         /// </summary>
         /// <param name="message">message</param>
         /// <param name="cause">cause</param>
-        public EPDeploySubstitutionParameterException(string message, Exception cause)
-            : base("Substitution parameters have not been provided: " + message, cause)
+        /// <param name="rolloutItemNumber">rollout item number when using rollout</param>
+        public EPDeploySubstitutionParameterException(
+            string message,
+            Exception cause,
+            int rolloutItemNumber)
+            : base("Substitution parameters have not been provided: " + message, cause, rolloutItemNumber)
         {
         }
     }

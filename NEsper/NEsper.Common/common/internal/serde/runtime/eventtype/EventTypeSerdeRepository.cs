@@ -14,7 +14,7 @@ using com.espertech.esper.common.@internal.@event.path;
 
 namespace com.espertech.esper.common.@internal.serde.runtime.eventtype
 {
-    internal interface EventTypeSerdeRepository
+    public interface EventTypeSerdeRepository
     {
         void AddSerdes(
             string deploymentId,

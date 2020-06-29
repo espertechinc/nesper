@@ -56,15 +56,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             BeanEventType type,
             string property)
         {
-            try
-            {
-                type.GetPropertyType(property);
-                Assert.Fail();
-            }
-            catch (PropertyAccessException)
-            {
-                // expected
-            }
+            Assert.IsNull(type.GetPropertyType(property));
         }
 
         private static void RunTest(

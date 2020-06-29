@@ -22,11 +22,11 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
     public interface ThreadingService : ThreadingCommon, IDisposable
     {
         /// <summary>Initialize thread pools. </summary>
-        /// <param name="services">engine-level service context</param>
-        /// <param name="runtime">runtime</param>
+        /// <param name="uri">the engine uri</param>
+        /// <param name="services">services ... </param>
         void InitThreading(
-            EPServicesContext services,
-            EPEventServiceImpl runtime);
+            string uri,
+            EPServicesEvaluation services);
 
         /// <summary>Returns true for timer execution threading enabled. </summary>
         /// <value>indicator</value>

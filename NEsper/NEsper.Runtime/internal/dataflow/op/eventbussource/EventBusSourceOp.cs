@@ -50,12 +50,20 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.eventbussource
         {
             var adapter = agentInstanceContext.DataFlowFilterServiceAdapter;
             var filterService = agentInstanceContext.FilterService;
-            var filterValues = FilterSpecActivatable.EvaluateValueSet(factory.FilterSpecActivatable.Parameters, null, agentInstanceContext);
-            adapter.AddFilterCallback(
-                this, agentInstanceContext, factory.FilterSpecActivatable.FilterForEventType, filterValues,
-                factory.FilterSpecActivatable.FilterCallbackId);
-            var filtersVersion = filterService.FiltersVersion;
-            agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;
+            var filterValues = factory.FilterSpecActivatable.Plan.EvaluateValueSet(
+                null,
+                agentInstanceContext,
+                agentInstanceContext.StatementContextFilterEvalEnv);
+            if (filterValues != null) {
+                adapter.AddFilterCallback(
+                    this,
+                    agentInstanceContext,
+                    factory.FilterSpecActivatable.FilterForEventType,
+                    filterValues,
+                    factory.FilterSpecActivatable.FilterCallbackId);
+                var filtersVersion = filterService.FiltersVersion;
+                agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;
+            }
         }
 
         public void Close(DataFlowOpCloseContext closeContext)
@@ -63,13 +71,20 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.eventbussource
             lock (this) {
                 var adapter = agentInstanceContext.DataFlowFilterServiceAdapter;
                 var filterService = agentInstanceContext.FilterService;
-                var filterValues = FilterSpecActivatable.EvaluateValueSet(
-                    factory.FilterSpecActivatable.Parameters, null, agentInstanceContext);
-                adapter.RemoveFilterCallback(
-                    this, agentInstanceContext, factory.FilterSpecActivatable.FilterForEventType, filterValues,
-                    factory.FilterSpecActivatable.FilterCallbackId);
-                var filtersVersion = filterService.FiltersVersion;
-                agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;
+                var filterValues = factory.FilterSpecActivatable.Plan.EvaluateValueSet(
+                    null,
+                    agentInstanceContext,
+                    agentInstanceContext.StatementContextFilterEvalEnv);
+                if (filterValues != null) {
+                    adapter.RemoveFilterCallback(
+                        this,
+                        agentInstanceContext,
+                        factory.FilterSpecActivatable.FilterForEventType,
+                        filterValues,
+                        factory.FilterSpecActivatable.FilterCallbackId);
+                    var filtersVersion = filterService.FiltersVersion;
+                    agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;
+                }
             }
         }
 

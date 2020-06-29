@@ -11,6 +11,7 @@ using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -63,12 +64,13 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         public void MatchEvent(
             EventBean theEvent,
-            ICollection<FilterHandle> matches)
+            ICollection<FilterHandle> matches,
+            ExprEvaluatorContext ctx)
         {
             var eventType = theEvent.EventType;
 
             // Attempt to match exact type
-            MatchType(eventType, theEvent, matches);
+            MatchType(eventType, theEvent, matches, ctx);
 
             // No supertype means we are done
             if (eventType.SuperTypes == null) {
@@ -76,7 +78,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             }
 
             foreach (var superType in eventType.DeepSuperTypes) {
-                MatchType(superType, theEvent, matches);
+                MatchType(superType, theEvent, matches, ctx);
             }
         }
 
@@ -168,7 +170,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         private void MatchType(
             EventType eventType,
             EventBean eventBean,
-            ICollection<FilterHandle> matches)
+            ICollection<FilterHandle> matches,
+            ExprEvaluatorContext ctx)
         {
             FilterHandleSetNode rootNode = null;
 
@@ -182,7 +185,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 return;
             }
 
-            rootNode.MatchEvent(eventBean, matches);
+            rootNode.MatchEvent(eventBean, matches, ctx);
         }
     }
 } // end of namespace

@@ -98,7 +98,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
             // Check matching without an index node
             IList<FilterHandle> matches = new List<FilterHandle>();
-            testNode.MatchEvent(eventBean, matches);
+            testNode.MatchEvent(eventBean, matches, TODO);
             Assert.AreEqual(1, matches.Count);
             Assert.AreEqual(expr, matches[0]);
             matches.Clear();
@@ -111,7 +111,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             index.Put("DepositEvent_1", testEvaluator);
 
             // Verify matcher instance stored in index is called
-            testNode.MatchEvent(eventBean, matches);
+            testNode.MatchEvent(eventBean, matches, TODO);
 
             Assert.IsTrue(testEvaluator.GetAndResetCountInvoked() == 1);
             Assert.IsTrue(testEvaluator.LastEvent == eventBean);

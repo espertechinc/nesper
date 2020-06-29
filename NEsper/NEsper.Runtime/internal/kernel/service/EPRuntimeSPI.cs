@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.function;
 using com.espertech.esper.container;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.@internal.kernel.thread;
@@ -31,5 +32,11 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         EPEventServiceSPI EventServiceSPI { get; }
 
         ThreadingService ThreadingService { get; }
+        
+        EPRuntimeStatementSelectionSPI StatementSelectionSvc { get; }
+
+        EPRuntimeCompileReflectiveSPI ReflectiveCompileSvc { get; }
+
+        void TraverseStatements(BiConsumer<EPDeployment, EPStatement> consumer);
     }
 } // end of namespace

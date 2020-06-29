@@ -90,6 +90,13 @@ namespace com.espertech.esper.runtime.client
         /// <throws>EPRuntimeDestroyedException thrown when the runtime has been destroyed</throws>
         EPDeploymentService DeploymentService { get; }
 
+		/// <summary>
+		/// Returns the stage service, for managing stages
+		/// </summary>
+		/// <value>stage service</value>
+		/// <throws>EPRuntimeDestroyedException thrown when the runtime has been destroyed</throws>
+        EPStageService StageService { get; }
+
         /// <summary>
         /// Returns true if the runtime is in destroyed state, or false if not.
         /// </summary>
@@ -175,7 +182,8 @@ namespace com.espertech.esper.runtime.client
 	    IDictionary<string, object> ConfigurationTransient { get; }
 
 	    /// <summary>
-	    /// Returns a path object for use by the compiler that represents the EPL objects deployed into the runtime.
+	    /// Returns a path object for use by the compiler that represents a snapshot of the EPL objects deployed into the runtime
+	    /// at the time of this call. The EPL objects deployed after a call to this method are not included.
 	    /// </summary>
 	    /// <returns>path</returns>
 	    EPCompilerPathable RuntimePath { get; }
