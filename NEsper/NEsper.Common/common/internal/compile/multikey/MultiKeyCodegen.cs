@@ -9,16 +9,14 @@
 using System;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.variant;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
@@ -28,8 +26,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 {
 	public class MultiKeyCodegen
 	{
-
-		public static CodegenExpressionNewAnonymousClass CodegenEvaluatorReturnObjectOrArray(
+		public static CodegenExpression CodegenEvaluatorReturnObjectOrArray(
 			ExprForge[] forges,
 			CodegenMethod method,
 			Type generator,
@@ -38,7 +35,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			return CodegenEvaluatorReturnObjectOrArrayWCoerce(forges, null, false, method, generator, classScope);
 		}
 
-		public static CodegenExpressionNewAnonymousClass CodegenEvaluatorReturnObjectOrArrayWCoerce(
+		public static CodegenExpression CodegenEvaluatorReturnObjectOrArrayWCoerce(
 			ExprForge[] forges,
 			Type[] targetTypes,
 			bool arrayMultikeyWhenSingleEvaluator,
@@ -46,32 +43,35 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			Type generator,
 			CodegenClassScope classScope)
 		{
-			CodegenExpressionNewAnonymousClass evaluator = NewAnonymousClass(method.Block, typeof(ExprEvaluator));
-			CodegenMethod evaluate = CodegenMethod
-				.MakeParentNode(typeof(object), generator, classScope)
-				.AddParam(ExprForgeCodegenNames.PARAMS);
-			evaluator.AddMethod("evaluate", evaluate);
+			var evaluate = new CodegenExpressionLambda(method.Block)
+				.WithParams(PARAMS);
+			var evaluator = NewInstance<ProxyExprEvaluator>(evaluate);
 
-			ExprForgeCodegenSymbol exprSymbol = new ExprForgeCodegenSymbol(true, null);
-			CodegenMethod exprMethod = evaluate
+			// CodegenMethod evaluate = CodegenMethod
+			// 	.MakeParentNode(typeof(object), generator, classScope)
+			// 	.AddParam(ExprForgeCodegenNames.PARAMS);
+			// evaluator.AddMethod("evaluate", evaluate);
+
+			var exprSymbol = new ExprForgeCodegenSymbol(true, null);
+			var exprMethod = method
 				.MakeChildWithScope(typeof(object), typeof(CodegenLegoMethodExpression), exprSymbol, classScope)
 				.AddParam(ExprForgeCodegenNames.PARAMS);
 
-			CodegenExpression[] expressions = new CodegenExpression[forges.Length];
-			for (int i = 0; i < forges.Length; i++) {
+			var expressions = new CodegenExpression[forges.Length];
+			for (var i = 0; i < forges.Length; i++) {
 				expressions[i] = forges[i].EvaluateCodegen(forges[i].EvaluationType, exprMethod, exprSymbol, classScope);
 			}
 
-			exprSymbol.DerivedSymbolsCodegen(evaluate, exprMethod.Block, classScope);
+			exprSymbol.DerivedSymbolsCodegen(method, exprMethod.Block, classScope);
 
 			if (forges.Length == 0) {
 				exprMethod.Block.MethodReturn(ConstantNull());
 			}
 			else if (forges.Length == 1) {
-				Type evaluationType = forges[0].EvaluationType;
+				var evaluationType = forges[0].EvaluationType;
 				CodegenExpression coerced;
 				if (arrayMultikeyWhenSingleEvaluator && evaluationType.IsArray) {
-					Type clazz = MultiKeyPlanner.GetMKClassForComponentType(evaluationType.ComponentType);
+					var clazz = MultiKeyPlanner.GetMKClassForComponentType(evaluationType.GetElementType());
 					coerced = NewInstance(clazz, expressions[0]);
 				}
 				else {
@@ -82,8 +82,8 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			}
 			else {
 				exprMethod.Block.DeclareVar(typeof(object[]), "values", NewArrayByLength(typeof(object), Constant(forges.Length)));
-				for (int i = 0; i < forges.Length; i++) {
-					CodegenExpression coerced = ExprNodeUtilityCodegen.CodegenCoerce(
+				for (var i = 0; i < forges.Length; i++) {
+					var coerced = ExprNodeUtilityCodegen.CodegenCoerce(
 						expressions[i],
 						forges[i].EvaluationType,
 						targetTypes == null ? null : targetTypes[i],
@@ -146,18 +146,18 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			CodegenMethodScope parent,
 			CodegenClassScope classScope)
 		{
-			CodegenMethod eventUnpackMethod = parent
+			var eventUnpackMethod = parent
 				.MakeChildWithScope(typeof(object), typeof(CodegenLegoMethodExpression), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(ExprForgeCodegenNames.PARAMS);
 
-			ExprForgeCodegenSymbol exprSymbol = new ExprForgeCodegenSymbol(true, null);
-			CodegenMethod exprMethod = eventUnpackMethod
+			var exprSymbol = new ExprForgeCodegenSymbol(true, null);
+			var exprMethod = eventUnpackMethod
 				.MakeChildWithScope(typeof(object), typeof(CodegenLegoMethodExpression), exprSymbol, classScope)
 				.AddParam(ExprForgeCodegenNames.PARAMS);
 
-			CodegenExpression[] expressions = new CodegenExpression[expressionNodes.Length];
-			for (int i = 0; i < expressionNodes.Length; i++) {
-				ExprForge forge = expressionNodes[i].Forge;
+			var expressions = new CodegenExpression[expressionNodes.Length];
+			for (var i = 0; i < expressionNodes.Length; i++) {
+				var forge = expressionNodes[i].Forge;
 				expressions[i] = CodegenExpressionMayCoerce(forge, multiKeyClassRef.MKTypes[i], exprMethod, exprSymbol, classScope);
 			}
 
@@ -199,32 +199,35 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			CodegenMethod method,
 			CodegenClassScope classScope)
 		{
-			CodegenExpressionNewAnonymousClass fromClass = NewAnonymousClass(method.Block, typeof(MultiKeyFromObjectArray));
-			CodegenMethod from = CodegenMethod
-				.MakeParentNode(typeof(object), typeof(MultiKeyCodegen), classScope)
-				.AddParam(typeof(object[]), "keys");
-			fromClass.AddMethod("from", from);
+			var fromLambda = new CodegenExpressionLambda(method.Block).WithParam<object[]>("keys");
+			var fromClass = NewInstance<ProxyMultiKeyFromMultiKey>(fromLambda);
+
+			// CodegenExpressionNewAnonymousClass fromClass = NewAnonymousClass(method.Block, typeof(MultiKeyFromObjectArray));
+			// CodegenMethod from = CodegenMethod
+			// 	.MakeParentNode(typeof(object), typeof(MultiKeyCodegen), classScope)
+			// 	.AddParam(typeof(object[]), "keys");
+			// fromClass.AddMethod("from", from);
 
 			if (optionalMultiKeyClasses == null || optionalMultiKeyClasses.ClassNameMK == null) {
-				from.Block.MethodReturn(ArrayAtIndex(Ref("keys"), Constant(0)));
+				fromLambda.Block.BlockReturn(ArrayAtIndex(Ref("keys"), Constant(0)));
 			}
 			else if (optionalMultiKeyClasses.MKTypes.Length == 1) {
-				Type paramType = optionalMultiKeyClasses.MKTypes[0];
+				var paramType = optionalMultiKeyClasses.MKTypes[0];
 				if (paramType == null || !paramType.IsArray) {
-					from.Block.MethodReturn(ArrayAtIndex(Ref("keys"), Constant(0)));
+					fromLambda.Block.BlockReturn(ArrayAtIndex(Ref("keys"), Constant(0)));
 				}
 				else {
-					Type mktype = MultiKeyPlanner.GetMKClassForComponentType(paramType.GetElementType());
-					from.Block.MethodReturn(NewInstance(mktype, Cast(paramType, ArrayAtIndex(Ref("keys"), Constant(0)))));
+					var mktype = MultiKeyPlanner.GetMKClassForComponentType(paramType.GetElementType());
+					fromLambda.Block.BlockReturn(NewInstance(mktype, Cast(paramType, ArrayAtIndex(Ref("keys"), Constant(0)))));
 				}
 			}
 			else {
-				CodegenExpression[] expressions = new CodegenExpression[optionalMultiKeyClasses.MKTypes.Length];
-				for (int i = 0; i < expressions.Length; i++) {
+				var expressions = new CodegenExpression[optionalMultiKeyClasses.MKTypes.Length];
+				for (var i = 0; i < expressions.Length; i++) {
 					expressions[i] = Cast(optionalMultiKeyClasses.MKTypes[i], ArrayAtIndex(Ref("keys"), Constant(i)));
 				}
 
-				from.Block.MethodReturn(NewInstance(optionalMultiKeyClasses.ClassNameMK, expressions));
+				fromLambda.Block.BlockReturn(NewInstance(optionalMultiKeyClasses.ClassNameMK, expressions));
 			}
 
 			return fromClass;
@@ -235,25 +238,29 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			CodegenMethod method,
 			CodegenClassScope classScope)
 		{
-			CodegenExpressionNewAnonymousClass fromClass = NewAnonymousClass(method.Block, typeof(MultiKeyFromMultiKey));
-			CodegenMethod from = CodegenMethod.MakeParentNode(typeof(object), typeof(MultiKeyCodegen), classScope)
-				.AddParam(typeof(object), "key");
-			fromClass.AddMethod("from", from);
+			var fromLambda = new CodegenExpressionLambda(method.Block).WithParam<object>("key");
+			var fromInstance = NewInstance<ProxyMultiKeyFromMultiKey>(fromLambda);
+			
+			// CodegenExpressionNewAnonymousClass fromClass = NewAnonymousClass(method.Block, typeof(MultiKeyFromMultiKey));
+			// var from = bytecodemodel.@base.CodegenMethod
+			// 	.MakeParentNode(typeof(object), typeof(MultiKeyCodegen), classScope)
+			// 	.AddParam(typeof(object), "key");
+			// fromClass.AddMethod("from", from);
 
 			if (optionalMultiKeyClasses == null || optionalMultiKeyClasses.ClassNameMK == null || optionalMultiKeyClasses.MKTypes.Length == 1) {
-				from.Block.MethodReturn(Ref("key"));
+				fromLambda.Block.BlockReturn(Ref("key"));
 			}
 			else {
-				CodegenExpression[] expressions = new CodegenExpression[optionalMultiKeyClasses.MKTypes.Length];
-				from.Block.DeclareVar(typeof(MultiKeyArrayOfKeys<>), "mk", Cast(typeof(MultiKeyArrayOfKeys<>), Ref("key")));
-				for (int i = 0; i < expressions.Length; i++) {
-					expressions[i] = Cast(optionalMultiKeyClasses.MKTypes[i], ExprDotMethod(Ref("mk"), "getKey", Constant(i)));
+				var expressions = new CodegenExpression[optionalMultiKeyClasses.MKTypes.Length];
+				fromLambda.Block.DeclareVar(typeof(MultiKeyArrayOfKeys<object>), "mk", Cast(typeof(MultiKeyArrayOfKeys<object>), Ref("key")));
+				for (var i = 0; i < expressions.Length; i++) {
+					expressions[i] = Cast(optionalMultiKeyClasses.MKTypes[i], ExprDotMethod(Ref("mk"), "GetKey", Constant(i)));
 				}
 
-				from.Block.MethodReturn(NewInstance(optionalMultiKeyClasses.ClassNameMK, expressions));
+				fromLambda.Block.BlockReturn(NewInstance(optionalMultiKeyClasses.ClassNameMK, expressions));
 			}
 
-			return fromClass;
+			return fromInstance;
 		}
 
 		public static CodegenExpression CodegenGetterEventDistinct(
@@ -267,12 +274,12 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 				return ConstantNull();
 			}
 
-			string[] propertyNames = eventType.PropertyNames;
-			EventTypeSPI spi = (EventTypeSPI) eventType;
+			var propertyNames = eventType.PropertyNames;
+			var spi = (EventTypeSPI) eventType;
 			if (propertyNames.Length == 1) {
-				string propertyName = propertyNames[0];
-				Type result = eventType.GetPropertyType(propertyName);
-				EventPropertyGetterSPI getter = spi.GetGetterSPI(propertyName);
+				var propertyName = propertyNames[0];
+				var result = eventType.GetPropertyType(propertyName);
+				var getter = spi.GetGetterSPI(propertyName);
 				return EventTypeUtility.CodegenGetterWCoerceWArray(
 					typeof(EventPropertyValueGetter),
 					getter,
@@ -283,9 +290,9 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 					classScope);
 			}
 
-			EventPropertyGetterSPI[] getters = new EventPropertyGetterSPI[propertyNames.Length];
-			Type[] getterResultTypes = new Type[propertyNames.Length];
-			for (int i = 0; i < propertyNames.Length; i++) {
+			var getters = new EventPropertyGetterSPI[propertyNames.Length];
+			var getterResultTypes = new Type[propertyNames.Length];
+			for (var i = 0; i < propertyNames.Length; i++) {
 				getterResultTypes[i] = eventType.GetPropertyType(propertyNames[i]);
 				getters[i] = spi.GetGetterSPI(propertyNames[i]);
 			}
@@ -303,22 +310,28 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			CodegenMethod method,
 			CodegenClassScope classScope)
 		{
-			CodegenExpressionNewAnonymousClass evaluator = NewAnonymousClass(method.Block, typeof(ExprEvaluator));
-			CodegenMethod evaluate = CodegenMethod
-				.MakeParentNode(typeof(object), typeof(StmtClassForgeableMultiKey), classScope)
-				.AddParam(ExprForgeCodegenNames.PARAMS);
-			evaluator.AddMethod("evaluate", evaluate);
+			var evaluate = new CodegenExpressionLambda(method.Block)
+				.WithParams(PARAMS);
+			var evaluator = NewInstance<ProxyExprEvaluator>(evaluate);
+			
+			// CodegenExpressionNewAnonymousClass evaluator = NewAnonymousClass(method.Block, typeof(ExprEvaluator));
+			// CodegenMethod evaluate = CodegenMethod
+			// 	.MakeParentNode(typeof(object), typeof(StmtClassForgeableMultiKey), classScope)
+			// 	.AddParam(ExprForgeCodegenNames.PARAMS);
+			//
+			// evaluator.AddMethod("evaluate", evaluate);
 
-			ExprForgeCodegenSymbol exprSymbol = new ExprForgeCodegenSymbol(true, null);
-			CodegenMethod exprMethod = evaluate.MakeChildWithScope(typeof(object), typeof(CodegenLegoMethodExpression), exprSymbol, classScope)
+			var exprSymbol = new ExprForgeCodegenSymbol(true, null);
+			var exprMethod = method
+				.MakeChildWithScope(typeof(object), typeof(CodegenLegoMethodExpression), exprSymbol, classScope)
 				.AddParam(ExprForgeCodegenNames.PARAMS);
 
-			CodegenExpression[] expressions = new CodegenExpression[expressionNodes.Length];
-			for (int i = 0; i < expressionNodes.Length; i++) {
+			var expressions = new CodegenExpression[expressionNodes.Length];
+			for (var i = 0; i < expressionNodes.Length; i++) {
 				expressions[i] = CodegenExpressionMayCoerce(expressionNodes[i], multiKeyClassRef.MKTypes[i], exprMethod, exprSymbol, classScope);
 			}
 
-			exprSymbol.DerivedSymbolsCodegen(evaluate, exprMethod.Block, classScope);
+			exprSymbol.DerivedSymbolsCodegen(method, exprMethod.Block, classScope);
 			exprMethod.Block.MethodReturn(NewInstance(multiKeyClassRef.ClassNameMK, expressions));
 
 			evaluate.Block.MethodReturn(LocalMethod(exprMethod, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
@@ -333,16 +346,15 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			CodegenMethod method,
 			CodegenClassScope classScope)
 		{
-			CodegenMethod get = CodegenMethod.MakeParentNode(typeof(object), typeof(StmtClassForgeableMultiKey), classScope)
-				.AddParam(typeof(EventBean), "bean");
-			CodegenExpressionNewAnonymousClass getter = NewAnonymousClass(method.Block, typeof(EventPropertyValueGetter));
-			getter.AddMethod("get", get);
+			var get = new CodegenExpressionLambda(method.Block)
+				.WithParams(CodegenNamedParam.From(typeof(EventBean), "bean"));
+			var anonymous = NewInstance<ProxyEventPropertyValueGetter>(get);
 
-			CodegenExpression[] expressions = new CodegenExpression[getters.Length];
-			for (int i = 0; i < getters.Length; i++) {
-				expressions[i] = getters[i].UnderlyingGetCodegen(Ref("und"), get, classScope);
-				Type mkType = multiKeyClassRef.MKTypes[i];
-				Type getterType = getterResultTypes[i];
+			var expressions = new CodegenExpression[getters.Length];
+			for (var i = 0; i < getters.Length; i++) {
+				expressions[i] = getters[i].UnderlyingGetCodegen(Ref("und"), method, classScope);
+				var mkType = multiKeyClassRef.MKTypes[i];
+				var getterType = getterResultTypes[i];
 				expressions[i] = ExprNodeUtilityCodegen.CodegenCoerce(expressions[i], getterType, mkType, true);
 			}
 
@@ -350,7 +362,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 				.DeclareVar(eventType.UnderlyingType, "und", Cast(eventType.UnderlyingType, ExprDotUnderlying(Ref("bean"))))
 				.MethodReturn(NewInstance(multiKeyClassRef.ClassNameMK, expressions));
 
-			return getter;
+			return anonymous;
 		}
 
 		private static CodegenExpression CodegenMultikeyGetterBeanGet(
@@ -360,24 +372,21 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			CodegenMethod method,
 			CodegenClassScope classScope)
 		{
-			CodegenMethod get = CodegenMethod
-				.MakeParentNode(typeof(object), typeof(StmtClassForgeableMultiKey), classScope)
-				.AddParam(typeof(EventBean), "bean");
-			CodegenExpressionNewAnonymousClass getter = NewAnonymousClass(method.Block, typeof(EventPropertyValueGetter));
-			getter.AddMethod("get", get);
-
-			CodegenExpression[] expressions = new CodegenExpression[getters.Length];
-			for (int i = 0; i < getters.Length; i++) {
-				expressions[i] = getters[i].EventBeanGetCodegen(Ref("bean"), get, classScope);
-				Type mkType = multiKeyClassRef.MKTypes[i];
-				Type getterType = getterResultTypes[i];
+			var get = new CodegenExpressionLambda(method.Block)
+				.WithParams(CodegenNamedParam.From(typeof(EventBean), "bean"));
+			var lambda = NewInstance<ProxyEventPropertyValueGetter>(get);
+			
+			var expressions = new CodegenExpression[getters.Length];
+			for (var i = 0; i < getters.Length; i++) {
+				expressions[i] = getters[i].EventBeanGetCodegen(Ref("bean"), method, classScope);
+				var mkType = multiKeyClassRef.MKTypes[i];
+				var getterType = getterResultTypes[i];
 				expressions[i] = ExprNodeUtilityCodegen.CodegenCoerce(expressions[i], getterType, mkType, true);
 			}
 
-			get.Block
-				.MethodReturn(NewInstance(multiKeyClassRef.ClassNameMK, expressions));
+			get.Block.BlockReturn(NewInstance(multiKeyClassRef.ClassNameMK, expressions));
 
-			return getter;
+			return lambda;
 		}
 	}
 } // end of namespace

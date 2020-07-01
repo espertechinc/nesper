@@ -47,7 +47,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             int numExpected)
         {
             testBean.ShortBoxed = testValue;
-            index.MatchEvent(testEventBean, matchesList, TODO);
+            index.MatchEvent(testEventBean, matchesList, null);
             Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 
@@ -57,7 +57,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             int numExpected)
         {
             testBean.BoolPrimitive = testValue;
-            index.MatchEvent(testEventBean, matchesList, TODO);
+            index.MatchEvent(testEventBean, matchesList, null);
             Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 
@@ -67,7 +67,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             int numExpected)
         {
             testBean.TheString = testValue;
-            index.MatchEvent(testEventBean, matchesList, TODO);
+            index.MatchEvent(testEventBean, matchesList, null);
             Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 
@@ -77,7 +77,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             int numExpected)
         {
             testBean.FloatPrimitive = testValue;
-            index.MatchEvent(testEventBean, matchesList, TODO);
+            index.MatchEvent(testEventBean, matchesList, null);
             Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 
@@ -90,7 +90,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         private ExprFilterSpecLookupable MakeLookupable(string fieldName)
         {
-            return new ExprFilterSpecLookupable(fieldName, testEventType.GetGetter(fieldName), testEventType.GetPropertyType(fieldName), false);
+            SupportExprEventEvaluator eval = new SupportExprEventEvaluator(testEventType.GetGetter(fieldName));
+            return new ExprFilterSpecLookupable(fieldName, eval, null, testEventType.GetPropertyType(fieldName), false, null);
         }
 
         [Test, RunInApplicationDomain]

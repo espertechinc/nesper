@@ -6,12 +6,19 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+using System.Collections.Generic;
+
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.compile.stage1;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage1.specmapper;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.compiler.@internal.util
 {
@@ -46,6 +53,31 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 
             return raw.StreamSpecs[0].ViewSpecs[0].ObjectParameters[0];
+        }
+
+        public Type CompileStandInClass(
+            CodegenClassType classType,
+            String classNameSimple,
+            ModuleCompileTimeServices services)
+        {
+            var classes = new Dictionary<String, byte[]>();
+            var namespaceScope = new CodegenNamespaceScope(services.Namespace, null, false);
+            var classScope = new CodegenClassScope(true, namespaceScope, null);
+            var clazz = new CodegenClass(
+                classType,
+                null,
+                classNameSimple,
+                classScope,
+                EmptyList<CodegenTypedParam>.Instance,
+                null,
+                new CodegenClassMethods(),
+                new CodegenClassProperties(),
+                EmptyList<CodegenInnerClass>.Instance);
+            
+            // this mechanism is not fully baked, we need a better mechanism that allows us to output
+            // the contents of the assembly that we are generating items into.
+
+            throw new NotImplementedException();
         }
     }
 } // end of namespace

@@ -156,7 +156,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
             // add additional forgeables
             foreach (StmtForgeMethodResult additional in dataflowForge.Forgables) {
-                foreach (var v in Enumerable.Reverse(additional.Forgables)) {
+                foreach (var v in Enumerable.Reverse(additional.Forgeables)) {
                     forgeables.Insert(0, v);
                 }
 

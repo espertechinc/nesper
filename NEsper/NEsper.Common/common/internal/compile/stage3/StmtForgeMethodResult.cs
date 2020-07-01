@@ -18,20 +18,20 @@ namespace com.espertech.esper.common.@internal.compile.stage3
     public class StmtForgeMethodResult
     {
         public StmtForgeMethodResult(
-            IList<StmtClassForgeable> forgables,
+            IList<StmtClassForgeable> forgeables,
             IList<FilterSpecCompiled> filtereds,
             IList<ScheduleHandleCallbackProvider> scheduleds,
             IList<NamedWindowConsumerStreamSpec> namedWindowConsumers,
             IList<FilterSpecParamExprNodeForge> filterBooleanExpressions)
         {
-            Forgables = forgables;
+            Forgeables = forgeables;
             Filtereds = filtereds;
             Scheduleds = scheduleds;
             NamedWindowConsumers = namedWindowConsumers;
             FilterBooleanExpressions = filterBooleanExpressions;
         }
 
-        public IList<StmtClassForgeable> Forgables { get; }
+        public IList<StmtClassForgeable> Forgeables { get; }
 
         public IList<ScheduleHandleCallbackProvider> Scheduleds { get; }
 

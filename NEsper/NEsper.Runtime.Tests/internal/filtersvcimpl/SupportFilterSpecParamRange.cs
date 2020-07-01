@@ -57,21 +57,26 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         /// <returns>upper endpoint</returns>
         public FilterSpecParamFilterForEval Max { get; }
 
-        public override object GetFilterValue(
+        public override FilterValueSetParam GetFilterValue(
             MatchedEventMap matchedEvents,
             ExprEvaluatorContext exprEvaluatorContext,
             StatementContextFilterEvalEnv filterEvalEnv)
         {
-            if (Lkupable.ReturnType == typeof(string))
-            {
-                return new StringRange(
-                    (string) Min.GetFilterValue(matchedEvents, exprEvaluatorContext, filterEvalEnv),
-                    (string) Max.GetFilterValue(matchedEvents, exprEvaluatorContext, filterEvalEnv));
+            ExprFilterSpecLookupable lookupable = this.Lkupable.Make(matchedEvents, exprEvaluatorContext);
+            Object range;
+            
+            if (lookupable.ReturnType == typeof(string)) {
+                var begin = (string) Min.GetFilterValue(matchedEvents, exprEvaluatorContext, filterEvalEnv);
+                var end = (string) Max.GetFilterValue(matchedEvents, exprEvaluatorContext, filterEvalEnv);
+                range = new StringRange(begin, end);
+            }
+            else {
+                var begin = (double) Min.GetFilterValue(matchedEvents, exprEvaluatorContext, filterEvalEnv);
+                var end = (double) Max.GetFilterValue(matchedEvents, exprEvaluatorContext, filterEvalEnv);
+                range = new DoubleRange(begin, end);
             }
 
-            var begin = (double) Min.GetFilterValue(matchedEvents, exprEvaluatorContext, filterEvalEnv);
-            var end = (double) Max.GetFilterValue(matchedEvents, exprEvaluatorContext, filterEvalEnv);
-            return new DoubleRange(begin, end);
+            return new FilterValueSetParamImpl(lookupable, FilterOperator, range);
         }
 
         public override string ToString()

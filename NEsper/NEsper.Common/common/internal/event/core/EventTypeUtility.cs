@@ -364,6 +364,9 @@ namespace com.espertech.esper.common.@internal.@event.core
             CodegenClassScope classScope)
         {
             getterType = Boxing.GetBoxedType(getterType);
+            
+            
+            
             CodegenExpressionNewAnonymousClass anonymous = newAnonymousClass(method.Block, interfaceClass);
 
             IList<CodegenNamedParam> parameters;

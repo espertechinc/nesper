@@ -263,7 +263,7 @@ namespace com.espertech.esper.common.client.configuration.common
             NamespacePrefixes.PutAll(prefixNamespaceMap);
         }
 
-        public CodegenExpression ToCodegenExpression(
+        public CodegenExpression ToExpression(
             CodegenMethodScope parent,
             CodegenClassScope scope)
         {

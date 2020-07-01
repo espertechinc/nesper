@@ -48,12 +48,13 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         /// <returns>constant value</returns>
         public object FilterConstant { get; }
 
-        public override object GetFilterValue(
+        public override FilterValueSetParam GetFilterValue(
             MatchedEventMap matchedEvents,
             ExprEvaluatorContext exprEvaluatorContext,
             StatementContextFilterEvalEnv filterEvalEnv)
         {
-            return FilterConstant;
+            ExprFilterSpecLookupable lookupable = this.Lkupable.Make(matchedEvents, exprEvaluatorContext);
+            return new FilterValueSetParamImpl(lookupable, FilterOperator, FilterConstant);
         }
 
         public override string ToString()

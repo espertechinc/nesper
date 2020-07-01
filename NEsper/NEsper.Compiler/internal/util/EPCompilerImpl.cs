@@ -15,6 +15,7 @@ using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
+using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.module;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.compile.stage1;
@@ -22,6 +23,7 @@ using com.espertech.esper.common.@internal.compile.stage1.specmapper;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.compile;
+using com.espertech.esper.common.@internal.epl.classprovided.compiletime;
 using com.espertech.esper.common.@internal.epl.expression.declared.compiletime;
 using com.espertech.esper.common.@internal.epl.script.compiletime;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
@@ -70,7 +72,7 @@ namespace com.espertech.esper.compiler.@internal.util
             try {
                 var module = EPLModuleUtil.ParseInternal(epl, null);
                 IList<Compilable> compilables = new List<Compilable>();
-                foreach (var item in module.Items) {
+                foreach (var item in module.Items.Where(m => !m.IsCommentOnly)) {
                     var stmtEpl = item.Expression;
                     compilables.Add(new CompilableEPL(stmtEpl));
                 }
@@ -80,7 +82,8 @@ namespace com.espertech.esper.compiler.@internal.util
                 var moduleUses = DetermineModuleUses(moduleName, arguments.Options, module);
 
                 // get compile services
-                var compileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses);
+                ModuleCompileTimeServices compileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses, false);
+                AddModuleImports(module.Imports, compileTimeServices);
 
                 // compile
                 return CompilerHelperModuleProvider.Compile(
@@ -108,7 +111,7 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             var arguments = new CompilerArguments(configuration);
             arguments.Configuration = configuration;
-            var compileTimeServices = GetCompileTimeServices(arguments, null, null);
+            var compileTimeServices = GetCompileTimeServices(arguments, null, null, false);
             return new EPCompilerSPIExpressionImpl(compileTimeServices);
         }
 
@@ -125,7 +128,8 @@ namespace com.espertech.esper.compiler.@internal.util
                     ContextCompileTimeResolverEmpty.INSTANCE,
                     TableCompileTimeResolverEmpty.INSTANCE,
                     ScriptCompileTimeResolverEmpty.INSTANCE,
-                    new CompilerServicesImpl());
+                    new CompilerServicesImpl(),
+                    new ClassProvidedExtensionImpl(ClassProvidedCompileTimeResolverEmpty.INSTANCE));
                 var statementSpec = ParseWalk(stmtText, mapEnv);
                 var unmapped = StatementSpecMapper.Unmap(statementSpec);
                 return unmapped.ObjectModel;
@@ -156,18 +160,8 @@ namespace com.espertech.esper.compiler.@internal.util
             var moduleUses = DetermineModuleUses(moduleName, arguments.Options, module);
 
             // get compile services
-            var compileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses);
-
-            if (module.Imports != null) {
-                foreach (var imported in module.Imports) {
-                    try {
-                        compileTimeServices.ImportServiceCompileTime.AddImport(imported);
-                    }
-                    catch (ImportException e) {
-                        throw new EPCompileException("Invalid module import: " + e.Message, e);
-                    }
-                }
-            }
+            ModuleCompileTimeServices compileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses, false);
+            AddModuleImports(module.Imports, compileTimeServices);
 
             IList<Compilable> compilables = new List<Compilable>();
             foreach (var item in module.Items) {
@@ -267,7 +261,7 @@ namespace com.espertech.esper.compiler.@internal.util
             var moduleName = DetermineModuleName(arguments.Options, module);
             var moduleUses = DetermineModuleUses(moduleName, arguments.Options, module);
 
-            var moduleCompileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses);
+            ModuleCompileTimeServices moduleCompileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses, false);
 
             var statementNumber = 0;
             try {
@@ -283,10 +277,10 @@ namespace com.espertech.esper.compiler.@internal.util
                     }
 
                     if (item.Expression != null) {
-                        ParseWalk(new CompilableEPL(item.Expression), services);
+                        CompilerHelperSingleEPL.ParseCompileInlinedClassesWalk(new CompilableEPL(item.Expression), services);
                     }
                     else if (item.Model != null) {
-                        ParseWalk(new CompilableSODA(item.Model), services);
+                        CompilerHelperSingleEPL.ParseCompileInlinedClassesWalk(new CompilableSODA(item.Model), services);
                         item.Model.ToEPL();
                     }
                     else {
@@ -314,7 +308,8 @@ namespace com.espertech.esper.compiler.@internal.util
             var moduleName = arguments.Options.ModuleName?.Invoke(new ModuleNameContext(null));
             var moduleUses = arguments.Options.ModuleUses?.Invoke(new ModuleUsesContext(moduleName, null));
 
-            var compileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses);
+
+            ModuleCompileTimeServices compileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses, true);
             try {
                 return CompilerHelperFAFProvider.Compile(compilable, compileTimeServices, arguments);
             }
@@ -355,6 +350,22 @@ namespace com.espertech.esper.compiler.@internal.util
             return options.ModuleUses != null
                 ? options.ModuleUses.Invoke(new ModuleUsesContext(moduleName, module.Uses))
                 : module.Uses;
+        }
+
+        private void AddModuleImports(
+            ICollection<Import> imports,
+            ModuleCompileTimeServices compileTimeServices)
+        {
+            if (imports != null) {
+                foreach (var imported in imports) {
+                    try {
+                        compileTimeServices.ImportServiceCompileTime.AddImport(imported);
+                    }
+                    catch (ImportException e) {
+                        throw new EPCompileException("Invalid module import: " + e.Message, e);
+                    }
+                }
+            }
         }
     }
 } // end of namespace

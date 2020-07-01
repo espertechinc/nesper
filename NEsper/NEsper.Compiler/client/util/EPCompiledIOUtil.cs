@@ -28,6 +28,11 @@ namespace com.espertech.esper.compiler.client.util
 	    /// </summary>
 	    public const string MANIFEST_QUERYPROVIDERCLASSNAME = "Esper-QueryProvider";
 
+	    /// <summary>
+	    /// Name of the attribute providing the flag whether the compiler targets high-availability.
+	    /// </summary>
+	    public const string MANIFEST_TARGETHA = "Esper-TargetHA";
+	    
 #if NOT_SUPPORTED
         /// <summary>
         /// Write the compiled to a jar file. Overwrites the existing jar file.

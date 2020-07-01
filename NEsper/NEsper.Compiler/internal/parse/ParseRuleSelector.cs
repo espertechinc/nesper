@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using Antlr4.Runtime.Tree;
 
 using com.espertech.esper.grammar.@internal.generated;
@@ -24,5 +26,21 @@ namespace com.espertech.esper.compiler.@internal.parse
         /// <returns>the AST tree as a result of the parsing</returns>
         /// <throws>RecognitionException is a parse exception</throws>
         ITree InvokeParseRule(EsperEPL2GrammarParser parser);
+    }
+
+    public class ProxyParseRuleSelector : ParseRuleSelector
+    {
+        public Func<EsperEPL2GrammarParser, ITree> ProcInvokeParseRule { get; set; }
+
+        public ProxyParseRuleSelector()
+        {
+        }
+
+        public ProxyParseRuleSelector(Func<EsperEPL2GrammarParser, ITree> procInvokeParseRule)
+        {
+            ProcInvokeParseRule = procInvokeParseRule;
+        }
+
+        public ITree InvokeParseRule(EsperEPL2GrammarParser parser) => ProcInvokeParseRule.Invoke(parser);
     }
 } // end of namespace

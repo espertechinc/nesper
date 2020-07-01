@@ -11,7 +11,7 @@ namespace com.espertech.esper.common.client.serde
 	/// <summary>
 	///     Factory for serde providers.
 	/// </summary>
-	internal interface SerdeProviderFactory
+	public interface SerdeProviderFactory
     {
 	    /// <summary>
 	    ///     Called by the runtimeonce at initialization time, returns a serde provider.

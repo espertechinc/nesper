@@ -19,6 +19,7 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.classprovided.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.util;
+using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -30,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 	public class ClassProvidedCompileTimeResolverImpl : ClassProvidedCompileTimeResolver
 	{
 		private readonly string moduleName;
-		private readonly ISet<string> moduleUses;
+		private readonly ICollection<string> moduleUses;
 		private readonly ClassProvidedCompileTimeRegistry locals;
 		private readonly PathRegistry<string, ClassProvided> path;
 		private readonly ModuleDependenciesCompileTime moduleDependencies;
@@ -38,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 
 		public ClassProvidedCompileTimeResolverImpl(
 			string moduleName,
-			ISet<string> moduleUses,
+			ICollection<string> moduleUses,
 			ClassProvidedCompileTimeRegistry locals,
 			PathRegistry<string, ClassProvided> path,
 			ModuleDependenciesCompileTime moduleDependencies,
@@ -108,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 		public Pair<Type, string[]> ResolveAggregationMultiFunction(string name)
 		{
 			Func<ExtensionAggregationMultiFunctionAttribute, ISet<string>> nameProvision = anno => {
-				ISet<string> names = new HashSet<string>(2);
+				ISet<string> names = new HashSet<string>();
 				string[] split = anno.Names.SplitCsv();
 				foreach (var nameprovided in split) {
 					names.Add(nameprovided.Trim());
@@ -152,7 +153,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 			ClassProvidedCompileTimeRegistry locals,
 			PathRegistry<string, ClassProvided> path,
 			string objectName,
-			ISet<string> moduleUses,
+			ICollection<string> moduleUses,
 			ModuleDependenciesCompileTime moduleDependencies,
 			Func<T, ISet<string>> namesProvider)
 			where T : Attribute
@@ -183,12 +184,12 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 			Type annotationType,
 			string objectName,
 			Func<T, ISet<string>> namesProvider)
+			where T : Attribute
 		{
 			var foundLocal = new List<Pair<Type, T>>();
 			foreach (var entry in locals.Classes) {
-				TypeHelper.TraverseAnnotations(
+				EPTypeHelper.TraverseAnnotations<T>(
 					entry.Value.ClassesMayNull,
-					annotationType,
 					(clazz, annotation) => {
 						var t = (T) annotation;
 						var names = namesProvider.Invoke(t);
@@ -216,19 +217,24 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 			PathRegistry<string, ClassProvided> path,
 			Type annotationType,
 			string objectName,
-			ISet<string> moduleUses,
+			ICollection<string> moduleUses,
 			ModuleDependenciesCompileTime moduleDependencies,
 			Func<T, ISet<string>> namesProvider)
+			where T : Attribute
 		{
+			// TBD: Verify that annotationType is derived from T
+			if (!typeof(T).IsAssignableFrom(annotationType)) {
+				throw new ArgumentException("cannot assign annotationType from " + typeof(T).FullName);
+			}
+		
 			IList<PathFunc<T>> foundPath = new List<PathFunc<T>>();
 			path.TraverseWithModule((moduleName, classProvided) => {
-				TypeHelper.TraverseAnnotations(
+				EPTypeHelper.TraverseAnnotations<T>(
 					classProvided.ClassesMayNull,
-					annotationType,
 					(
 						clazz,
 						annotation) => {
-						var t = (T) annotation;
+						var t = annotation;
 						var names = namesProvider.Invoke(t);
 						foreach (var name in names) {
 							if (soughtName.Equals(name)) {

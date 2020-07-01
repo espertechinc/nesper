@@ -6,10 +6,28 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 namespace com.espertech.esper.common.@internal.collection
 {
     public interface MultiKeyFromObjectArray
     {
         object From(object[] values);
+    }
+
+    public class ProxyMultiKeyFromObjectArray : MultiKeyFromObjectArray
+    {
+        public Func<object[], object> ProcFrom { get; set; }
+
+        public ProxyMultiKeyFromObjectArray()
+        {
+        }
+
+        public ProxyMultiKeyFromObjectArray(Func<object[], object> procFrom)
+        {
+            ProcFrom = procFrom;
+        }
+
+        public object From(object[] values) => ProcFrom.Invoke(values);
     }
 } // end of namespace

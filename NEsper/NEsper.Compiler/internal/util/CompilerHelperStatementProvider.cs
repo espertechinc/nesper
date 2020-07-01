@@ -8,16 +8,21 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+
+using Antlr4.Runtime.Misc;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.compile.stage1;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
+using com.espertech.esper.common.@internal.context.aifactory.createclass;
 using com.espertech.esper.common.@internal.context.aifactory.createcontext;
 using com.espertech.esper.common.@internal.context.aifactory.createdataflow;
 using com.espertech.esper.common.@internal.context.aifactory.createexpression;
@@ -33,6 +38,8 @@ using com.espertech.esper.common.@internal.context.compile;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.annotation;
+using com.espertech.esper.common.@internal.epl.classprovided.compiletime;
+using com.espertech.esper.common.@internal.epl.expression.chain;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.expression.ops;
@@ -42,6 +49,7 @@ using com.espertech.esper.common.@internal.epl.expression.visitor;
 using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.util;
+using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.settings;
@@ -57,20 +65,26 @@ namespace com.espertech.esper.compiler.@internal.util
 {
     public class CompilerHelperStatementProvider
     {
-        public static string CompileItem(
+        public static CompilableItem CompileItem(
             Compilable compilable,
             string optionalModuleName,
             string moduleIdentPostfix,
             int statementNumber,
-            string @namespace,
             ISet<string> statementNames,
-            StatementCompileTimeServices compileTimeServices,
+            ModuleCompileTimeServices moduleCompileTimeServices,
             CompilerOptions compilerOptions,
             out Assembly assembly)
         {
-            // Stage 1 - parse statement
-            var raw = ParseWalk(compilable, compileTimeServices);
+            StatementCompileTimeServices compileTimeServices = new StatementCompileTimeServices(statementNumber, moduleCompileTimeServices);
 
+            // Stage 0 - parse and compile-inline-classes and walk statement
+            CompilerHelperSingleResult walked = ParseCompileInlinedClassesWalk(compilable, compileTimeServices);
+            StatementSpecRaw raw = walked.StatementSpecRaw;
+            String classNameCreateClass = null;
+            if (raw.CreateClassProvided != null) {
+                classNameCreateClass = DetermineClassNameCreateClass(walked.ClassesInlined);
+            }
+            
             try {
                 // Stage 2(a) - precompile: compile annotations
                 var annotations = AnnotationUtil.CompileAnnotations(
@@ -166,7 +180,7 @@ namespace com.espertech.esper.compiler.@internal.util
                     raw.IntoTableSpec?.Name,
                     compilable,
                     optionalModuleName);
-                var specCompiled = StatementRawCompiler.Compile(
+                var compiledDesc = StatementRawCompiler.Compile(
                     raw,
                     compilable,
                     false,
@@ -176,6 +190,7 @@ namespace com.espertech.esper.compiler.@internal.util
                     tableAccessNodes,
                     statementRawInfo,
                     compileTimeServices);
+                var specCompiled = compiledDesc.Compiled;
                 var statementIdentPostfix = IdentifierUtil.GetIdentifierMayStartNumeric(statementName);
 
                 // get compile-time user object
@@ -222,6 +237,9 @@ namespace com.espertech.esper.compiler.@internal.util
                 else if (raw.CreateExpressionDesc != null) {
                     forgeMethod = new StmtForgeMethodCreateExpression(@base);
                 }
+                else if (raw.CreateClassProvided != null) {
+                    forgeMethod = new StmtForgeMethodCreateClass(@base, walked.ClassesInlined, classNameCreateClass);
+                }
                 else if (raw.CreateWindowDesc != null) {
                     forgeMethod = new StmtForgeMethodCreateWindow(@base);
                 }
@@ -252,16 +270,23 @@ namespace com.espertech.esper.compiler.@internal.util
 
                 // Stage 3(b) - forge-factory-to-forge
                 var classPostfix = moduleIdentPostfix + "_" + statementIdentPostfix;
-                var forgables = new List<StmtClassForgeable>();
+                var forgeables = new List<StmtClassForgeable>();
+                
+                // add forgeables from filter-related processing i.e. multikeys
+                foreach (var additional in compiledDesc.AdditionalForgeables) {
+                    var namespaceScope = new CodegenNamespaceScope(compileTimeServices.Namespace, null, false);
+                    forgeables.Add(additional.Make(namespaceScope, classPostfix));
+                }
+                
                 var filterSpecCompileds = new List<FilterSpecCompiled>();
-                var scheduleHandleCallbackProviders =
-                    new List<ScheduleHandleCallbackProvider>();
+                var scheduleHandleCallbackProviders = new List<ScheduleHandleCallbackProvider>();
                 var namedWindowConsumers = new List<NamedWindowConsumerStreamSpec>();
                 var filterBooleanExpressions = new List<FilterSpecParamExprNodeForge>();
-                var result = forgeMethod.Make(@namespace, classPostfix, compileTimeServices);
-                forgables.AddAll(result.Forgables);
-                VerifyForgables(forgables);
-
+                
+                var result = forgeMethod.Make(compileTimeServices.Namespace, classPostfix, compileTimeServices);
+                forgeables.AddAll(result.Forgeables);
+                VerifyForgeables(forgeables);
+                
                 filterSpecCompileds.AddAll(result.Filtereds);
                 scheduleHandleCallbackProviders.AddAll(result.Scheduleds);
                 namedWindowConsumers.AddAll(result.NamedWindowConsumers);
@@ -296,14 +321,29 @@ namespace com.espertech.esper.compiler.@internal.util
                 VerifySubstitutionParams(raw.SubstitutionParameters);
 
                 // Stage 4 - forge-to-class (forge with statement-fields last)
-                IList<CodegenClass> classes = new List<CodegenClass>(forgables.Count);
-                foreach (var forgable in forgables) {
-                    var clazz = forgable.Forge(true);
-                    classes.Add(clazz);
-                }
+                var classes = forgeables
+                    .Select(forgeable => forgeable.Forge(true, false))
+                    .ToList();
 
-                // Stage 5 - compile "fields" class first and all the rest later
-                var sorted = SortClasses(classes);
+                // Stage 5 - refactor methods to make sure the constant pool does not grow too large for any given class
+                CompilerHelperRefactorToStaticMethods.RefactorMethods(
+                    classes, compileTimeServices.Configuration.Compiler.ByteCode.MaxMethodsPerClass);
+
+                // Stage 6 - sort to make the "fields" class first and all the rest later
+                var sorted = classes
+                    .OrderBy(c => c.ClassType.GetSortCode())
+                    .ToList();
+
+                // We are making sure JsonEventType receives the underlying class itself
+                CompilableItemPostCompileLatch postCompile = CompilableItemPostCompileLatchDefault.INSTANCE;
+                foreach (var eventType in compileTimeServices.EventTypeCompileTimeRegistry.NewTypesAdded) {
+                    if (eventType is JsonEventType) {
+                        postCompile = new CompilableItemPostCompileLatchJson(
+                            compileTimeServices.EventTypeCompileTimeRegistry.NewTypesAdded,
+                            compileTimeServices.ParentClassLoader);
+                        break;
+                    }
+                }
 
                 var compiler = new RoslynCompiler()
                     .WithCodeLogging(compileTimeServices.Configuration.Compiler.Logging.IsEnableCode)
@@ -312,10 +352,16 @@ namespace com.espertech.esper.compiler.@internal.util
 
                 assembly = compiler.Compile();
 
-                return CodeGenerationIDGenerator.GenerateClassNameWithNamespace(
-                    @namespace,
+                string statementProviderClassName = CodeGenerationIDGenerator.GenerateClassNameWithNamespace(
+                    compileTimeServices.Namespace,
                     typeof(StatementProvider),
                     classPostfix);
+
+                var additionalClasses = new HashMap<String, byte[]>(walked.ClassesInlined.Bytes);
+                compileTimeServices.ClassProvidedCompileTimeResolver.AddTo(additionalClasses);
+                compileTimeServices.ClassProvidedCompileTimeRegistry.AddTo(additionalClasses);
+
+                return new CompilableItem(statementProviderClassName, classes, postCompile, additionalClasses);
             }
             catch (StatementSpecCompileException) {
                 throw;
@@ -332,25 +378,22 @@ namespace com.espertech.esper.compiler.@internal.util
             }
         }
 
-        private static IList<CodegenClass> SortClasses(IList<CodegenClass> classes)
+        private static String DetermineClassNameCreateClass(ClassProvidedPrecompileResult classesInlined)
         {
-            IList<CodegenClass> sorted = new List<CodegenClass>(classes.Count);
-            foreach (var clazz in classes) {
-                if (clazz.OptionalInterfaceImplemented == typeof(StatementFields)) {
-                    sorted.Add(clazz);
+            String className = null;
+            for (int i = classesInlined.Classes.Count - 1; i >= 0; i--) {
+                var clazz = classesInlined.Classes[i];
+                if (clazz.FullName.Contains("+")) { // TBD: <<-- Evaluation, converted from JVM notation to CLR
+                    continue;
                 }
+
+                return clazz.FullName;
             }
 
-            foreach (var clazz in classes) {
-                if (clazz.OptionalInterfaceImplemented != typeof(StatementFields)) {
-                    sorted.Add(clazz);
-                }
-            }
-
-            return sorted;
+            throw new IllegalStateException("Could not determine class name, entries are: " + classesInlined.Bytes.Keys);
         }
 
-        private static void VerifyForgables(IList<StmtClassForgeable> forgables)
+        private static void VerifyForgeables(IList<StmtClassForgeable> forgables)
         {
             // there can only be one class of the same name
             ISet<string> names = new HashSet<string>();
@@ -414,7 +457,11 @@ namespace com.espertech.esper.compiler.@internal.util
             NamedWindowCompileTimeResolver service)
         {
             foreach (var dotNode in chainedExpressionsDot) {
-                var proposedWindow = dotNode.ChainSpec[0].Name;
+                if (dotNode.ChainSpec.IsEmpty()) {
+                    continue;
+                }
+                
+                var proposedWindow = dotNode.ChainSpec[0].GetRootNameOrEmptyString();
                 var namedWindowDetail = service.Resolve(proposedWindow);
                 if (namedWindowDetail == null) {
                     continue;
@@ -430,17 +477,18 @@ namespace com.espertech.esper.compiler.@internal.util
                         proposedWindow,
                         StreamSpecOptions.DEFAULT));
 
-                var firstChain = dotNode.ChainSpec.DeleteAt(0);
-                if (!firstChain.Parameters.IsEmpty()) {
-                    if (firstChain.Parameters.Count == 1) {
-                        raw.WhereClause = firstChain.Parameters[0];
-                    }
-                    else {
+                
+                var modified = new List<Chainable>(dotNode.ChainSpec);
+                var firstChain = modified.DeleteAt(0);
+                var firstChainParams = firstChain.GetParametersOrEmpty();
+                if (!firstChainParams.IsEmpty()) {
+                    if (firstChainParams.Count == 1) {
+                        raw.WhereClause = firstChainParams[0];
+                    } else {
                         ExprAndNode andNode = new ExprAndNodeImpl();
-                        foreach (var node in firstChain.Parameters) {
+                        foreach (ExprNode node in firstChainParams) {
                             andNode.AddChildNode(node);
                         }
-
                         raw.WhereClause = andNode;
                     }
                 }
@@ -449,6 +497,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 ExprSubselectNode subselect = new ExprSubselectRowNode(raw);
                 subselects.Add(subselect);
                 dotNode.ChildNodes = new ExprNode[] {subselect};
+                dotNode.ChainSpec = modified;
             }
         }
 

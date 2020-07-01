@@ -94,9 +94,12 @@ namespace com.espertech.esper.compiler.@internal.parse
             catch (RecognitionException ex)
             {
                 tokens.Fill();
-                if (rewriteScript && IsContainsScriptExpression(tokens))
+                if (rewriteScript)
                 {
-                    return HandleScriptRewrite(tokens, eplStatementErrorMsg, addPleaseCheck, parseRuleSelector);
+                    if (IsContainsScriptOrClassExpression(tokens))
+                    {
+                        return HandleScriptAndClassRewrite(tokens, eplStatementErrorMsg, addPleaseCheck, parseRuleSelector);
+                    }
                 }
 
                 Log.Debug("Error parsing statement [" + expression + "]", ex);
@@ -120,9 +123,12 @@ namespace com.espertech.esper.compiler.@internal.parse
 
                 if (e.InnerException is RecognitionException recognitionException)
                 {
-                    if (rewriteScript && IsContainsScriptExpression(tokens))
+                    if (rewriteScript)
                     {
-                        return HandleScriptRewrite(tokens, eplStatementErrorMsg, addPleaseCheck, parseRuleSelector);
+                        if (IsContainsScriptOrClassExpression(tokens))
+                        {
+                            return HandleScriptAndClassRewrite(tokens, eplStatementErrorMsg, addPleaseCheck, parseRuleSelector);
+                        }
                     }
 
                     throw ExceptionConvertor.ConvertStatement(recognitionException, eplStatementErrorMsg, addPleaseCheck, parser);
@@ -132,9 +138,9 @@ namespace com.espertech.esper.compiler.@internal.parse
             }
 
             // if we are re-writing scripts and contain a script, then rewrite
-            if (rewriteScript && IsContainsScriptExpression(tokens))
+            if (rewriteScript && IsContainsScriptOrClassExpression(tokens))
             {
-                return HandleScriptRewrite(tokens, eplStatementErrorMsg, addPleaseCheck, parseRuleSelector);
+                return HandleScriptAndClassRewrite(tokens, eplStatementErrorMsg, addPleaseCheck, parseRuleSelector);
             }
 
             if (Log.IsDebugEnabled)
@@ -150,10 +156,16 @@ namespace com.espertech.esper.compiler.@internal.parse
                 expressionWithoutAnnotation = GetNoAnnotation(expression, epl.annotationEnum(), tokens);
             }
 
-            return new ParseResult(tree, expressionWithoutAnnotation, tokens, new EmptyList<string>());
+            return new ParseResult(
+                tree,
+                expressionWithoutAnnotation,
+                tokens,
+                EmptyList<string>.Instance,
+                EmptyList<string>.Instance);
+
         }
 
-        private static ParseResult HandleScriptRewrite(
+        private static ParseResult HandleScriptAndClassRewrite(
             CommonTokenStream tokens,
             string eplStatementErrorMsg,
             bool addPleaseCheck,
@@ -161,9 +173,14 @@ namespace com.espertech.esper.compiler.@internal.parse
         {
             var rewriteExpression = RewriteTokensScript(tokens);
             var result = Parse(rewriteExpression.RewrittenEPL, eplStatementErrorMsg, addPleaseCheck, parseRuleSelector, false);
-            return new ParseResult(result.Tree, result.ExpressionWithoutAnnotations, result.TokenStream, rewriteExpression.Scripts);
+            return new ParseResult(
+                result.Tree,
+                result.ExpressionWithoutAnnotations,
+                result.TokenStream,
+                rewriteExpression.Scripts,
+                rewriteExpression.Classes);
         }
-
+        
         private static string GetNoAnnotation(
             string expression,
             IList<EsperEPL2GrammarParser.AnnotationEnumContext> annos,
@@ -213,42 +230,64 @@ namespace com.espertech.esper.compiler.@internal.parse
             return null;
         }
 
-        private static ScriptResult RewriteTokensScript(CommonTokenStream tokens)
+        private static ScriptOrClassResult RewriteTokensScript(CommonTokenStream tokens)
         {
             IList<string> scripts = new List<string>();
+            IList<string> classes = new List<string>();
 
-            IList<UniformPair<int>> scriptTokenIndexRanges = new List<UniformPair<int>>();
-            for (var i = 0; i < tokens.Size; i++)
-            {
-                if (tokens.Get(i).Type == EsperEPL2GrammarParser.EXPRESSIONDECL)
-                {
-                    var tokenBefore = GetTokenBefore(i, tokens);
+            IList<UniformPair<int>> tokenIndexRanges = new List<UniformPair<int>>();
+            int tokenIndex = 0;
+
+            while (tokenIndex < tokens.Size) {
+                if (tokens.Get(tokenIndex).Type == EsperEPL2GrammarParser.EXPRESSIONDECL) {
+                    var tokenBefore = GetTokenBefore(tokenIndex, tokens);
                     var isCreateExpressionClause = tokenBefore != null && tokenBefore.Type == EsperEPL2GrammarParser.CREATE;
-                    var nameAndNameStart = FindScriptName(i + 1, tokens);
+                    var nameAndNameStart = FindScriptName(tokenIndex + 1, tokens);
 
                     var startIndex = FindStartTokenScript(nameAndNameStart.Second, tokens, EsperEPL2GrammarParser.LBRACK);
-                    if (startIndex != -1)
-                    {
+                    if (startIndex != -1) {
                         var endIndex = FindEndTokenScript(
-                            startIndex + 1, tokens, EsperEPL2GrammarParser.RBRACK, EsperEPL2GrammarParser.GetAfterScriptTokens(),
+                            startIndex + 1,
+                            tokens,
+                            EsperEPL2GrammarParser.RBRACK,
+                            EsperEPL2GrammarParser.GetAfterScriptTokens(),
                             !isCreateExpressionClause);
-                        if (endIndex != -1)
-                        {
+                        if (endIndex != -1) {
                             var writer = new StringWriter();
-                            for (var j = startIndex + 1; j < endIndex; j++)
-                            {
+                            for (var j = startIndex + 1; j < endIndex; j++) {
                                 writer.Write(tokens.Get(j).Text);
                             }
 
                             scripts.Add(writer.ToString());
-                            scriptTokenIndexRanges.Add(new UniformPair<int>(startIndex, endIndex));
+                            tokenIndexRanges.Add(new UniformPair<int>(startIndex, endIndex));
+                            tokenIndex = endIndex;
                         }
                     }
                 }
+
+                if (tokens.Get(tokenIndex).Type == EsperEPL2GrammarParser.CLASSDECL) {
+                    int startIndex = FindTokenClass(tokenIndex, tokens);
+                    if (startIndex != -1) {
+                        int endIndex = FindTokenClass(startIndex + 1, tokens);
+                        if (endIndex != -1) {
+
+                            StringWriter writer = new StringWriter();
+                            for (int j = startIndex + 1; j < endIndex; j++) {
+                                writer.Write(tokens.Get(j).Text);
+                            }
+
+                            classes.Add(writer.ToString());
+                            tokenIndexRanges.Add(new UniformPair<int>(startIndex, endIndex));
+                            tokenIndex = endIndex;
+                        }
+                    }
+                }
+
+                tokenIndex++;
             }
 
-            var rewrittenEPL = RewriteScripts(scriptTokenIndexRanges, tokens);
-            return new ScriptResult(rewrittenEPL, scripts);
+            var rewrittenEPL = RewriteEPL(tokenIndexRanges, tokens);
+            return new ScriptOrClassResult(rewrittenEPL, scripts, classes);
         }
 
         private static IToken GetTokenBefore(
@@ -304,7 +343,7 @@ namespace com.espertech.esper.compiler.@internal.parse
             return new Pair<string, int>(lastIdent, lastIdentIndex);
         }
 
-        private static string RewriteScripts(
+        private static string RewriteEPL(
             IList<UniformPair<int>> ranges,
             ITokenStream tokens)
         {
@@ -358,6 +397,10 @@ namespace com.espertech.esper.compiler.@internal.parse
                         writer.Write("\\'");
                         writer.Write(t.Text.Substring(1, t.Text.Length - 2));
                         writer.Write("\\'");
+                    }
+                    else if (t.Type == EsperEPL2GrammarParser.STRING_LITERAL)
+                    {
+                        writer.Write(t.Text.Replace("'", "\\'"));
                     }
                     else
                     {
@@ -422,10 +465,19 @@ namespace com.espertech.esper.compiler.@internal.parse
             return indexLast;
         }
 
-        private static bool IsContainsScriptExpression(ITokenStream tokens)
+        private static bool IsContainsScriptOrClassExpression(ITokenStream tokens)
         {
             for (var i = 0; i < tokens.Size; i++)
             {
+                if (tokens.Get(i).Type == EsperEPL2GrammarParser.CLASSDECL) {
+                    int startTokenTripleQuote = FindTokenClass(i + 1, tokens);
+                    if (startTokenTripleQuote != -1) {
+                        int endTokenTripleQuote = FindTokenClass(startTokenTripleQuote + 1, tokens);
+                        if (endTokenTripleQuote != -1) {
+                            return true;
+                        }
+                    }
+                }
                 if (tokens.Get(i).Type == EsperEPL2GrammarParser.EXPRESSIONDECL)
                 {
                     var startTokenLcurly = FindStartTokenScript(i + 1, tokens, EsperEPL2GrammarParser.LCURLY);
@@ -453,6 +505,20 @@ namespace com.espertech.esper.compiler.@internal.parse
             {
                 if (tokens.Get(i).Type == tokenTypeSearch)
                 {
+                    return i;
+                }
+            }
+
+            return found;
+        }
+
+        private static int FindTokenClass(
+            int startIndex,
+            ITokenStream tokens)
+        {
+            int found = -1;
+            for (int i = startIndex; i < tokens.Size; i++) {
+                if (tokens.Get(i).Type == EsperEPL2GrammarParser.TRIPLEQUOTE) {
                     return i;
                 }
             }
@@ -508,19 +574,23 @@ namespace com.espertech.esper.compiler.@internal.parse
             }
         }
 
-        public class ScriptResult
+        public class ScriptOrClassResult
         {
-            public ScriptResult(
+            public ScriptOrClassResult(
                 string rewrittenEPL,
-                IList<string> scripts)
+                IList<string> scripts,
+                IList<string> classes)
             {
-                this.RewrittenEPL = rewrittenEPL;
-                this.Scripts = scripts;
+                RewrittenEPL = rewrittenEPL;
+                Scripts = scripts;
+                Classes = classes;
             }
 
             public string RewrittenEPL { get; }
 
             public IList<string> Scripts { get; }
+            
+            public IList<string> Classes { get; }
         }
 
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

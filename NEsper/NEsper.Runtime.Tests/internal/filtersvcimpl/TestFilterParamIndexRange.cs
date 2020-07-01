@@ -232,14 +232,14 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         private void VerifyDoublePrimitive(FilterParamIndexBase index, double testValue, int numExpected)
         {
             testBean.DoublePrimitive = testValue;
-            index.MatchEvent(testEventBean, matchesList, TODO);
+            index.MatchEvent(testEventBean, matchesList, null);
             Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 
         private void VerifyLongPrimitive(FilterParamIndexBase index, long testValue, int numExpected)
         {
             testBean.LongPrimitive = testValue;
-            index.MatchEvent(testEventBean, matchesList, TODO);
+            index.MatchEvent(testEventBean, matchesList, null);
             Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 
@@ -251,7 +251,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         private ExprFilterSpecLookupable MakeLookupable(string fieldName)
         {
-            return new ExprFilterSpecLookupable(fieldName, testEventType.GetGetter(fieldName), testEventType.GetPropertyType(fieldName), false);
+            SupportExprEventEvaluator eval = new SupportExprEventEvaluator(testEventType.GetGetter(fieldName));
+            return new ExprFilterSpecLookupable(fieldName, eval, null, testEventType.GetPropertyType(fieldName), false, null);
         }
     }
 } // end of namespace

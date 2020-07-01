@@ -51,11 +51,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         private ExprFilterSpecLookupable MakeLookupable(string fieldName)
         {
-            return new ExprFilterSpecLookupable(
-                fieldName,
-                eventType.GetGetter(fieldName),
-                eventType.GetPropertyType(fieldName),
-                false);
+            SupportExprEventEvaluator eval = new SupportExprEventEvaluator(eventType.GetGetter(fieldName));
+            return new ExprFilterSpecLookupable(fieldName, eval, null, eventType.GetPropertyType(fieldName), false, null);
         }
 
         [Test, RunInApplicationDomain]

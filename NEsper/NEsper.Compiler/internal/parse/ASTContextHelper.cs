@@ -123,7 +123,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                     propertyEvalSpec = null;
 
                     IList<string> propertyNames = new List<string>();
-                    IList<EsperEPL2GrammarParser.EventPropertyContext> properties = partition.eventProperty();
+                    IList<EsperEPL2GrammarParser.ChainableContext> properties = partition.chainable();
                     foreach (var property in properties)
                     {
                         var propertyName = ASTUtil.GetPropertyName(property, 0);
@@ -160,7 +160,8 @@ namespace com.espertech.esper.compiler.@internal.parse
                 IList<ContextSpecHashItem> rawSpecs = new List<ContextSpecHashItem>(coalesces.Count);
                 foreach (var coalesce in coalesces)
                 {
-                    var func = ASTLibFunctionHelper.GetLibFunctionChainSpec(coalesce.libFunctionNoClass(), astExprNodeMap);
+                    var chain = ASTChainSpecHelper.GetChainables(coalesce.chainable(), astExprNodeMap);
+                    var func = chain[0];
                     var filterSpec = ASTFilterSpecHelper.WalkFilterSpec(coalesce.eventFilterExpression(), propertyEvalSpec, astExprNodeMap);
                     propertyEvalSpec = null;
                     rawSpecs.Add(new ContextSpecHashItem(func, filterSpec));
@@ -232,10 +233,13 @@ namespace com.espertech.esper.compiler.@internal.parse
                 return ContextSpecConditionNever.INSTANCE;
             }
 
-            if (ctx.crontabLimitParameterSet() != null)
-            {
-                var crontab = ASTExprHelper.ExprCollectSubNodes(ctx.crontabLimitParameterSet(), 0, astExprNodeMap);
-                return new ContextSpecConditionCrontab(crontab, immediate);
+            if (ctx.crontabLimitParameterSetList() != null) {
+                var crontabs = new List<IList<ExprNode>>();
+                foreach (var crontabCtx in ctx.crontabLimitParameterSetList().crontabLimitParameterSet()) {
+                    var crontab = ASTExprHelper.ExprCollectSubNodes(crontabCtx, 0, astExprNodeMap);
+                    crontabs.Add(crontab);
+                }
+                return new ContextSpecConditionCrontab(crontabs, immediate);
             }
 
             if (ctx.patternInclusionExpression() != null)

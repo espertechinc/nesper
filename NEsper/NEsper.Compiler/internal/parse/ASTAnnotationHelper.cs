@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.grammar.@internal.generated;
 
@@ -100,10 +101,10 @@ namespace com.espertech.esper.compiler.@internal.parse
             ImportServiceCompileTime importService)
         {
             var enumValueText = ctx.GetText();
-            object enumValue;
+            ValueAndFieldDesc enumValueAndField;
             try
             {
-                enumValue = ImportCompileTimeUtil.ResolveIdentAsEnumConst(enumValueText, importService, true);
+                enumValueAndField = ImportCompileTimeUtil.ResolveIdentAsEnumConst(enumValueText, importService, ExtensionClassEmpty.INSTANCE, true);
             }
             catch (ExprValidationException)
             {
@@ -112,18 +113,19 @@ namespace com.espertech.esper.compiler.@internal.parse
                     "' is not recognized as an enumeration value, please check imports or use a primitive or string type");
             }
 
-            if (enumValue != null)
+            if (enumValueAndField != null)
             {
-                return enumValue;
+                return enumValueAndField.Value;
             }
 
             // resolve as class
+            object enumValue = null;
             if (enumValueText.EndsWith(".class") && enumValueText.Length > 6)
             {
                 try
                 {
                     var name = enumValueText.Substring(0, enumValueText.Length - 6);
-                    enumValue = importService.ResolveClass(name, true);
+                    enumValue = importService.ResolveClass(name, true, ExtensionClassEmpty.INSTANCE);
                 }
                 catch (ImportException)
                 {

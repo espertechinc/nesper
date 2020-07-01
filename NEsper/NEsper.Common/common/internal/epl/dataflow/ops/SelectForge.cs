@@ -196,7 +196,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             initializeResult.TypeDescriptors = new[] {new GraphTypeDesc(false, true, outputEventType)};
             initializeResult.AdditionalForgeables = forgeablesResult.ForgeResult;
 
-            foreach (var forgable in forgeablesResult.ForgeResult.Forgables) {
+            foreach (var forgable in forgeablesResult.ForgeResult.Forgeables) {
                 if (forgable.ForgeableType == StmtClassForgeableType.AIFACTORYPROVIDER) {
                     classNameAIFactoryProvider = forgable.ClassName;
                 } else if (forgable.ForgeableType == StmtClassForgeableType.FIELDS) {

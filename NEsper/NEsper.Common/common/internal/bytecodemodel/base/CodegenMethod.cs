@@ -147,13 +147,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return AddChild(new CodegenMethod(returnType, null, generator, symbolProvider, env));
         }
 
-        public static CodegenMethod MakeParentNode<T>(
-            Type generator,
-            CodegenScope env)
-        {
-            return MakeMethod(typeof(T), generator, env);
-        }
-
         public static CodegenMethod MakeMethod(
             Type returnType,
             Type generator,
@@ -183,13 +176,40 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return new CodegenMethod(returnType, null, generator, symbolProvider, env);
         }
 
+        public static CodegenMethod MakeParentNode<T>(
+            Type generator,
+            CodegenScope env)
+        {
+            return MakeMethod(typeof(T), generator, env);
+        }
+
+        public static CodegenMethod MakeParentNode(
+            Type returnType,
+            Type generator,
+            CodegenScope env)
+        {
+            if (returnType == null) {
+                throw new ArgumentException("Invalid null return type");
+            }
+
+            return new CodegenMethod(returnType, null, generator, CodegenSymbolProviderEmpty.INSTANCE, env);
+        }
+
         public static CodegenMethod MakeParentNode(
             Type returnType,
             Type generator,
             CodegenSymbolProvider symbolProvider,
             CodegenScope env)
         {
-            return MakeParentNode(returnType.FullName, generator, symbolProvider, env);
+            if (returnType == null) {
+                throw new ArgumentException("Invalid null return type");
+            }
+
+            if (symbolProvider == null) {
+                throw new ArgumentException("No symbol provider");
+            }
+
+            return new CodegenMethod(returnType, null, generator, symbolProvider, env);
         }
 
         public static CodegenMethod MakeParentNode(

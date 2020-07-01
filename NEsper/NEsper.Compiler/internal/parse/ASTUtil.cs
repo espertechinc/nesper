@@ -32,6 +32,17 @@ namespace com.espertech.esper.compiler.@internal.parse
 
         private const string PROPERTY_ENABLED_AST_DUMP = "ENABLE_AST_DUMP";
 
+        public static IList<String> GetIdentList(EsperEPL2GrammarParser.ColumnListKeywordAllowedContext ctx) {
+            if (ctx == null || ctx.IsEmpty) {
+                return EmptyList<string>.Instance;
+            }
+            var parameters = new List<String>(ctx.keywordAllowedIdent().Length);
+            foreach (EsperEPL2GrammarParser.KeywordAllowedIdentContext ident in ctx.keywordAllowedIdent()) {
+                parameters.Add(ident.GetText());
+            }
+            return parameters;
+        }
+
         public static IList<string> GetIdentList(EsperEPL2GrammarParser.ColumnListContext ctx)
         {
             if (ctx == null || ctx.IsEmpty)
@@ -236,92 +247,8 @@ namespace com.espertech.esper.compiler.@internal.parse
             printer.WriteLine();
         }
 
-        /// <summary>
-        /// Escape all unescape dot characters in the text (identifier only) passed in.
-        /// </summary>
-        /// <param name="identifierToEscape">text to escape</param>
-        /// <returns>text where dots are escaped</returns>
-        internal static string EscapeDot(string identifierToEscape)
-        {
-            var indexof = identifierToEscape.IndexOf(".");
-            if (indexof == -1)
-            {
-                return identifierToEscape;
-            }
-
-            var builder = new StringBuilder();
-            for (var i = 0; i < identifierToEscape.Length; i++)
-            {
-                var c = identifierToEscape[i];
-                if (c != '.')
-                {
-                    builder.Append(c);
-                    continue;
-                }
-
-                if (i > 0)
-                {
-                    if (identifierToEscape[i - 1] == '\\')
-                    {
-                        builder.Append('.');
-                        continue;
-                    }
-                }
-
-                builder.Append('\\');
-                builder.Append('.');
-            }
-
-            return builder.ToString();
-        }
-
-        /// <summary>
-        /// Un-Escape all escaped dot characters in the text (identifier only) passed in.
-        /// </summary>
-        /// <param name="identifierToUnescape">text to un-escape</param>
-        /// <returns>string</returns>
-        public static string UnescapeDot(string identifierToUnescape)
-        {
-            var indexof = identifierToUnescape.IndexOf(".");
-            if (indexof == -1)
-            {
-                return identifierToUnescape;
-            }
-
-            indexof = identifierToUnescape.IndexOf("\\");
-            if (indexof == -1)
-            {
-                return identifierToUnescape;
-            }
-
-            var builder = new StringBuilder();
-            var index = -1;
-            var max = identifierToUnescape.Length - 1;
-            do
-            {
-                index++;
-                var c = identifierToUnescape[index];
-                if (c != '\\')
-                {
-                    builder.Append(c);
-                    continue;
-                }
-
-                if (index < identifierToUnescape.Length - 1)
-                {
-                    if (identifierToUnescape[index + 1] == '.')
-                    {
-                        builder.Append('.');
-                        index++;
-                    }
-                }
-            } while (index < max);
-
-            return builder.ToString();
-        }
-
         public static string GetPropertyName(
-            EsperEPL2GrammarParser.EventPropertyContext ctx,
+            EsperEPL2GrammarParser.ChainableContext ctx,
             int startNode)
         {
             var buf = new StringBuilder();

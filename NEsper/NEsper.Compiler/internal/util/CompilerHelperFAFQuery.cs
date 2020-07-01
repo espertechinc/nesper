@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -22,7 +23,6 @@ namespace com.espertech.esper.compiler.@internal.util
         public static string CompileQuery(
             FAFQueryMethodForge query,
             string classPostfix,
-            string @namespace,
             ModuleCompileTimeServices compileTimeServices,
             out Assembly assembly)
         {
@@ -30,22 +30,22 @@ namespace com.espertech.esper.compiler.@internal.util
                 typeof(StatementFields),
                 classPostfix);
             var packageScope = new CodegenNamespaceScope(
-                @namespace,
+                compileTimeServices.Namespace,
                 statementFieldsClassName,
                 compileTimeServices.IsInstrumented());
 
             var queryMethodProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(FAFQueryMethodProvider),
                 classPostfix);
-            var forgablesQueryMethod = query.MakeForgeables(queryMethodProviderClassName, classPostfix, packageScope);
+            var forgeablesQueryMethod = query.MakeForgeables(queryMethodProviderClassName, classPostfix, packageScope);
 
-            IList<StmtClassForgable> forgables = new List<StmtClassForgable>(forgablesQueryMethod);
-            forgables.Add(new StmtClassForgableStmtFields(statementFieldsClassName, packageScope, 0));
+            IList<StmtClassForgeable> forgeables = new List<StmtClassForgeable>(forgeablesQueryMethod);
+            forgeables.Add(new StmtClassForgeableStmtFields(statementFieldsClassName, packageScope, 0));
 
             // forge with statement-fields last
-            var classes = new List<CodegenClass>(forgables.Count);
-            foreach (var forgable in forgables) {
-                var clazz = forgable.Forge(true);
+            var classes = new List<CodegenClass>(forgeables.Count);
+            foreach (var forgeable in forgeables) {
+                var clazz = forgeable.Forge(true);
                 classes.Add(clazz);
             }
 
@@ -53,11 +53,10 @@ namespace com.espertech.esper.compiler.@internal.util
             assembly = null;
 
             // compile with statement-field first
-            classes.Sort(
-                (
-                        o1,
-                        o2) => o1.OptionalInterfaceImplemented == typeof(StatementFields) ? -1 : 0);
-
+            classes = classes
+                .OrderBy(c => c.ClassType.GetSortCode())
+                .ToList();
+            
             var compiler = new RoslynCompiler()
                 .WithCodeLogging(compileTimeServices.Configuration.Compiler.Logging.IsEnableCode)
                 .WithCodeAuditDirectory(compileTimeServices.Configuration.Compiler.Logging.AuditDirectory)

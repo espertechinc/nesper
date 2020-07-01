@@ -6,20 +6,25 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.grammar.@internal.generated;
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.epl.expression.core;
 
-namespace com.espertech.esper.compiler.@internal.parse
+namespace com.espertech.esper.runtime.@internal.support
 {
-    public class PropertyParserANTLR
-    {
-        public static bool IsNestedPropertyWithNonSimpleLead(EsperEPL2GrammarParser.EventPropertyContext ctx)
-        {
-            if (ctx.eventPropertyAtomic().Length == 1) {
-                return false;
-            }
+	public class SupportExprEventEvaluator : ExprEventEvaluator
+	{
+		private readonly EventPropertyValueGetter _getter;
 
-            var atomic = ctx.eventPropertyAtomic()[0];
-            return atomic.lb != null || atomic.lp != null || atomic.q1 != null;
-        }
-    }
+		public SupportExprEventEvaluator(EventPropertyValueGetter getter)
+		{
+			_getter = getter;
+		}
+
+		public object Eval(
+			EventBean @event,
+			ExprEvaluatorContext ctx)
+		{
+			return _getter.Get(@event);
+		}
+	}
 } // end of namespace

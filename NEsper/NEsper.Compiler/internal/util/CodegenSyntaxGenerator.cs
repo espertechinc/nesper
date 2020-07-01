@@ -128,7 +128,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
             CodeGenerationUtil.Importsdecl(builder, imports);
             CodeGenerationUtil.NamespaceDecl(builder, clazz.Namespace);
-            CodeGenerationUtil.Classimplements(builder, clazz.ClassName, clazz.OptionalInterfaceImplemented, null, true, false);
+            CodeGenerationUtil.Classimplements(builder, clazz.ClassName, clazz.BaseList, true, false);
 
             // members
             GenerateCodeMembers(builder, clazz.ExplicitMembers, clazz.OptionalCtor, 2);
@@ -150,8 +150,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 CodeGenerationUtil.Classimplements(
                     builder,
                     inner.ClassName,
-                    inner.InterfaceImplemented,
-                    inner.InterfaceGenericClass,
+                    inner.BaseList,
                     false,
                     false);
 
@@ -213,8 +212,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 CodeGenerationUtil.Classimplements(
                     builder,
                     inner.ClassName,
-                    inner.InterfaceImplemented,
-                    inner.InterfaceGenericClass,
+                    inner.BaseList,
                     false,
                     false);
 

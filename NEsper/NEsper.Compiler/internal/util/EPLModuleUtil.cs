@@ -380,17 +380,26 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             ISet<int> result = null;
 
-            var index = -1;
-            foreach (var token in tokens) {
-                index++;
-                var t = token;
+            int index = 0;
+            while (index < tokens.Count) {
+                var t = tokens[index];
                 if (t.Type == EsperEPL2GrammarParser.EXPRESSIONDECL) {
                     if (result == null) {
                         result = new HashSet<int>();
                     }
 
-                    GetSkippedSemicolonsBetweenSquareBrackets(index, tokens, result);
+                    index = GetSkippedSemicolonsBetweenSquareBrackets(index, tokens, result);
                 }
+
+                if (t.Type == EsperEPL2GrammarParser.CLASSDECL) {
+                    if (result == null) {
+                        result = new HashSet<int>();
+                    }
+
+                    index = GetSkippedSemicolonsBetweenTripleQuotes(index, tokens, result);
+                }
+
+                index++;
             }
 
             return result ?? new EmptySet<int>();
@@ -399,43 +408,36 @@ namespace com.espertech.esper.compiler.@internal.util
         /// <summary>
         ///     Find content between square brackets
         /// </summary>
-        private static void GetSkippedSemicolonsBetweenSquareBrackets(
+        private static int GetSkippedSemicolonsBetweenSquareBrackets(
             int index,
             IList<IToken> tokens,
-            ISet<int> result)
+            ICollection<int> result)
         {
             // Handle EPL expression "{text}" and script expression "[text]"
             var indexFirstCurly = IndexFirstToken(index, tokens, EsperEPL2GrammarParser.LCURLY);
             var indexFirstSquare = IndexFirstToken(index, tokens, EsperEPL2GrammarParser.LBRACK);
             if (indexFirstSquare == -1) {
-                return;
+                return index;
             }
 
             if (indexFirstCurly != -1 && indexFirstCurly < indexFirstSquare) {
-                return;
+                return index;
             }
 
             var indexCloseSquare = FindEndSquareBrackets(indexFirstSquare, tokens);
             if (indexCloseSquare == -1) {
-                return;
+                return index;
             }
 
             if (indexFirstSquare == indexCloseSquare - 1) {
                 GetSkippedSemicolonsBetweenSquareBrackets(indexCloseSquare, tokens, result);
             }
             else {
-                var current = indexFirstSquare;
-                while (current < indexCloseSquare) {
-                    var t = tokens[current];
-                    if (t.Type == EsperEPL2GrammarParser.SEMI) {
-                        result.Add(current);
-                    }
-
-                    current++;
-                }
+                GetSkippedSemicolonsBetweenIndexes(indexFirstSquare, indexCloseSquare, tokens, result);
             }
+            return indexCloseSquare;
         }
-
+        
         private static int FindEndSquareBrackets(
             int startIndex,
             IList<IToken> tokens)
@@ -489,6 +491,46 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             var classNameRegEx = "(\\w+\\.)+\\*";
             return importName.Matches(classNameRegEx);
+        }
+
+        /// <summary>
+        /// Find content between triple quotes
+        /// </summary>
+        private static int GetSkippedSemicolonsBetweenTripleQuotes(
+            int index,
+            IList<IToken> tokens,
+            ICollection<int> result)
+        {
+            // Handle class """{text}"""
+            int indexFirstTriple = IndexFirstToken(index, tokens, EsperEPL2GrammarParser.TRIPLEQUOTE);
+            if (indexFirstTriple == -1) {
+                return index;
+            }
+
+            int indexCloseTriple = IndexFirstToken(indexFirstTriple + 1, tokens, EsperEPL2GrammarParser.TRIPLEQUOTE);
+            if (indexCloseTriple == -1) {
+                return index;
+            }
+
+            GetSkippedSemicolonsBetweenIndexes(indexFirstTriple, indexCloseTriple, tokens, result);
+            return indexCloseTriple;
+        }
+
+        private static void GetSkippedSemicolonsBetweenIndexes(
+            int indexOpen,
+            int indexClose,
+            IList<IToken> tokens,
+            ICollection<int> result)
+        {
+            int current = indexOpen;
+            while (current < indexClose) {
+                var t = tokens[current];
+                if (t.Type == EsperEPL2GrammarParser.SEMI) {
+                    result.Add(current);
+                }
+
+                current++;
+            }
         }
     }
 } // end of namespace

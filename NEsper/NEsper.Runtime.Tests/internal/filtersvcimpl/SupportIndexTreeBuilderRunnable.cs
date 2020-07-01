@@ -77,7 +77,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
             // Fire a no-match
             IList<FilterHandle> matches = new List<FilterHandle>();
-            topNode.MatchEvent(unmatchedEvent, matches, TODO);
+            topNode.MatchEvent(unmatchedEvent, matches, null);
 
             if (matches.Count != 0)
             {
@@ -94,7 +94,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             }
 
             // Fire a match
-            topNode.MatchEvent(matchedEvent, matches, TODO);
+            topNode.MatchEvent(matchedEvent, matches, null);
 
             if (matches.Count != 1)
             {

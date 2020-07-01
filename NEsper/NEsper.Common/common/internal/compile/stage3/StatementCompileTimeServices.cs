@@ -143,6 +143,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
         public string Namespace => _services.Namespace;
 
+        public ClassLoader ParentClassLoader => _services.ParentClassLoader;
+
         public SerdeEventTypeCompileTimeRegistry SerdeEventTypeRegistry => _services.SerdeEventTypeRegistry;
 
         public SerdeCompileTimeResolver SerdeResolver => _services.SerdeResolver;

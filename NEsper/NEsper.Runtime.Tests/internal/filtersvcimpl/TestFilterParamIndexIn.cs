@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common;
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
@@ -84,13 +85,14 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         private void Verify(FilterParamIndexBase index, long? testValue, int numExpected)
         {
             testBean.LongBoxed = testValue;
-            index.MatchEvent(testEventBean, matchesList, TODO);
+            index.MatchEvent(testEventBean, matchesList, null);
             Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 
         private ExprFilterSpecLookupable MakeLookupable(string fieldName)
         {
-            return new ExprFilterSpecLookupable(fieldName, testEventType.GetGetter(fieldName), testEventType.GetPropertyType(fieldName), false);
+            SupportExprEventEvaluator eval = new SupportExprEventEvaluator(testEventType.GetGetter(fieldName));
+            return new ExprFilterSpecLookupable(fieldName, eval, null, testEventType.GetPropertyType(fieldName), false, null);
         }
     }
 } // end of namespace

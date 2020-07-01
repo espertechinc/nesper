@@ -9,8 +9,12 @@
 using System;
 using System.Collections.Generic;
 
+using Antlr4.Runtime.Misc;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
+using com.espertech.esper.common.client.configuration.compiler;
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1;
@@ -18,6 +22,9 @@ using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.compile;
 using com.espertech.esper.common.@internal.context.module;
+using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.classprovided.compiletime;
+using com.espertech.esper.common.@internal.epl.classprovided.core;
 using com.espertech.esper.common.@internal.epl.expression.declared.compiletime;
 using com.espertech.esper.common.@internal.epl.expression.declared.core;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
@@ -39,9 +46,14 @@ using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.eventtypefactory;
 using com.espertech.esper.common.@internal.@event.eventtyperepo;
+using com.espertech.esper.common.@internal.@event.json.compiletime;
 using com.espertech.esper.common.@internal.@event.path;
 using com.espertech.esper.common.@internal.@event.xml;
+using com.espertech.esper.common.@internal.serde.compiletime.eventtype;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
+using com.espertech.esper.common.@internal.serde.runtime.@event;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client;
@@ -54,10 +66,11 @@ namespace com.espertech.esper.compiler.@internal.util
         internal static ModuleCompileTimeServices GetCompileTimeServices(
             CompilerArguments arguments,
             string moduleName,
-            ICollection<string> moduleUses)
+            ICollection<string> moduleUses,
+            bool isFireAndForget)
         {
             try {
-                return GetServices(arguments, moduleName, moduleUses);
+                return GetServices(arguments, moduleName, moduleUses, isFireAndForget);
             }
             catch (EPCompileException) {
                 throw;
@@ -73,17 +86,16 @@ namespace com.espertech.esper.compiler.@internal.util
         private static ModuleCompileTimeServices GetServices(
             CompilerArguments arguments,
             string moduleName,
-            ICollection<string> moduleUses)
+            ICollection<string> moduleUses,
+            bool isFireAndForget)
         {
             var configuration = arguments.Configuration;
             var path = arguments.Path;
             var options = arguments.Options;
 
-            // script
-            var scriptServiceCompileTime = MakeScriptService(configuration);
-
             // imports
             var importServiceCompileTime = MakeImportService(configuration);
+            var classLoaderParent = new ParentClassLoader(importServiceCompileTime.ClassLoader);
             var container = importServiceCompileTime.Container;
 
             // resolve pre-configured bean event types, make bean-stem service
@@ -95,13 +107,43 @@ namespace com.espertech.esper.compiler.@internal.util
                 resolvedBeanEventTypes,
                 EventBeanTypedEventFactoryCompileTime.INSTANCE);
 
-            // build preconfigured type system
+            // allocate repositories
             var eventTypeRepositoryPreconfigured = new EventTypeRepositoryImpl(true);
             var eventTypeCompileRegistry = new EventTypeCompileTimeRegistry(eventTypeRepositoryPreconfigured);
             var beanEventTypeFactoryPrivate = new BeanEventTypeFactoryPrivate(
-                EventBeanTypedEventFactoryCompileTime.INSTANCE,
-                EventTypeFactoryImpl.GetInstance(container),
-                beanEventTypeStemService);
+                EventBeanTypedEventFactoryCompileTime.INSTANCE, EventTypeFactoryImpl.GetInstance(container), beanEventTypeStemService);
+            var variableRepositoryPreconfigured = new VariableRepositoryPreconfigured();
+
+            // allocate path registries
+            var pathEventTypes = new PathRegistry<string, EventType>(PathRegistryObjectType.EVENTTYPE);
+            var pathNamedWindows = new PathRegistry<string, NamedWindowMetaData>(PathRegistryObjectType.NAMEDWINDOW);
+            var pathTables = new PathRegistry<string, TableMetaData>(PathRegistryObjectType.TABLE);
+            var pathContexts = new PathRegistry<string, ContextMetaData>(PathRegistryObjectType.CONTEXT);
+            var pathVariables = new PathRegistry<string, VariableMetaData>(PathRegistryObjectType.VARIABLE);
+            var pathExprDeclared = new PathRegistry<string, ExpressionDeclItem>(PathRegistryObjectType.EXPRDECL);
+            var pathScript = new PathRegistry<NameAndParamNum, ExpressionScriptProvided>(PathRegistryObjectType.SCRIPT);
+            var pathClassProvided = new PathRegistry<String, ClassProvided>(PathRegistryObjectType.CLASSPROVIDED);
+
+            // add runtime-path which is the information an existing runtime may have
+            if (path.CompilerPathables != null) {
+                foreach (EPCompilerPathable pathable in path.CompilerPathables) {
+                    EPCompilerPathableImpl impl = (EPCompilerPathableImpl) pathable;
+                    pathVariables.MergeFrom(impl.VariablePathRegistry);
+                    pathEventTypes.MergeFrom(impl.EventTypePathRegistry);
+                    pathExprDeclared.MergeFrom(impl.ExprDeclaredPathRegistry);
+                    pathNamedWindows.MergeFrom(impl.NamedWindowPathRegistry);
+                    pathTables.MergeFrom(impl.TablePathRegistry);
+                    pathContexts.MergeFrom(impl.ContextPathRegistry);
+                    pathScript.MergeFrom(impl.ScriptPathRegistry);
+                    pathClassProvided.MergeFrom(impl.ClassProvidedPathRegistry);
+                    eventTypeRepositoryPreconfigured.MergeFrom(impl.EventTypePreconfigured);
+                    variableRepositoryPreconfigured.MergeFrom(impl.VariablePreconfigured);
+
+                    JsonEventTypeUtility.AddJsonUnderlyingClass(pathEventTypes, classLoaderParent);
+                }
+            }
+            
+            // build preconfigured type system
             EventTypeRepositoryBeanTypeUtil.BuildBeanTypes(
                 beanEventTypeStemService,
                 eventTypeRepositoryPreconfigured,
@@ -121,7 +163,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 configuration.Common.EventTypesNestableObjectArrayEvents,
                 beanEventTypeFactoryPrivate,
                 importServiceCompileTime);
-            var xmlFragmentEventTypeFactory = new XMLFragmentEventTypeFactory(
+            XMLFragmentEventTypeFactory xmlFragmentEventTypeFactory = new XMLFragmentEventTypeFactory(
                 beanEventTypeFactoryPrivate,
                 eventTypeCompileRegistry,
                 eventTypeRepositoryPreconfigured);
@@ -130,9 +172,8 @@ namespace com.espertech.esper.compiler.@internal.util
                 configuration.Common.EventTypesXMLDOM,
                 beanEventTypeFactoryPrivate,
                 xmlFragmentEventTypeFactory,
-                container.ResourceManager());
-            //importServiceCompileTime);
-            var eventTypeAvroHandler = EventTypeAvroHandlerFactory.Resolve(
+                importServiceCompileTime);
+            EventTypeAvroHandler eventTypeAvroHandler = EventTypeAvroHandlerFactory.Resolve(
                 importServiceCompileTime,
                 configuration.Common.EventMeta.AvroSettings,
                 EventTypeAvroHandlerConstants.COMPILE_TIME_HANDLER_IMPL);
@@ -147,7 +188,6 @@ namespace com.espertech.esper.compiler.@internal.util
                 EventTypeFactoryImpl.GetInstance(container));
 
             // build preconfigured variables
-            var variableRepositoryPreconfigured = new VariableRepositoryPreconfigured();
             VariableUtil.ConfigureVariables(
                 variableRepositoryPreconfigured,
                 configuration.Common.Variables,
@@ -156,38 +196,34 @@ namespace com.espertech.esper.compiler.@internal.util
                 eventTypeRepositoryPreconfigured,
                 beanEventTypeFactoryPrivate);
 
-            // determine all event types that are in path
-            var pathEventTypes = new PathRegistry<string, EventType>(PathRegistryObjectType.EVENTTYPE);
-            var pathNamedWindows = new PathRegistry<string, NamedWindowMetaData>(PathRegistryObjectType.NAMEDWINDOW);
-            var pathTables = new PathRegistry<string, TableMetaData>(PathRegistryObjectType.TABLE);
-            var pathContexts = new PathRegistry<string, ContextMetaData>(PathRegistryObjectType.CONTEXT);
-            var pathVariables = new PathRegistry<string, VariableMetaData>(PathRegistryObjectType.VARIABLE);
-            var pathExprDeclared = new PathRegistry<string, ExpressionDeclItem>(PathRegistryObjectType.EXPRDECL);
-            var pathScript = new PathRegistry<NameAndParamNum, ExpressionScriptProvided>(PathRegistryObjectType.SCRIPT);
-
             var deploymentNumber = -1;
 
             foreach (var unit in path.Compileds) {
                 deploymentNumber++;
-                var provider = ModuleProviderUtil.Analyze(unit, importServiceCompileTime);
+                var provider = ModuleProviderUtil.Analyze(unit, classLoaderParent, pathClassProvided);
                 var unitModuleName = provider.ModuleProvider.ModuleName;
 
                 // initialize event types
-                IDictionary<string, EventType> moduleTypes = new Dictionary<string, EventType>();
+                var moduleTypes = new Dictionary<string, EventType>();
                 var eventTypeResolver = new EventTypeResolverImpl(
                     moduleTypes,
                     pathEventTypes,
                     eventTypeRepositoryPreconfigured,
-                    beanEventTypeFactoryPrivate);
+                    beanEventTypeFactoryPrivate,
+                    EventSerdeFactoryDefault.INSTANCE);
                 var eventTypeCollector = new EventTypeCollectorImpl(
+                    container,
                     moduleTypes,
                     beanEventTypeFactoryPrivate,
+                    provider.ClassLoader,
                     EventTypeFactoryImpl.GetInstance(container),
                     beanEventTypeStemService,
                     eventTypeResolver,
                     xmlFragmentEventTypeFactory,
                     eventTypeAvroHandler,
-                    EventBeanTypedEventFactoryCompileTime.INSTANCE);
+                    EventBeanTypedEventFactoryCompileTime.INSTANCE,
+                    importServiceCompileTime);
+
                 try {
                     provider.ModuleProvider.InitializeEventTypes(
                         new EPModuleEventTypeInitServicesImpl(eventTypeCollector, eventTypeResolver));
@@ -195,11 +231,12 @@ namespace com.espertech.esper.compiler.@internal.util
                 catch (Exception e) {
                     throw new EPException(e);
                 }
+                
+                JsonEventTypeUtility.AddJsonUnderlyingClass(moduleTypes, classLoaderParent, null);
 
                 // initialize named windows
-                IDictionary<string, NamedWindowMetaData> moduleNamedWindows =
-                    new Dictionary<string, NamedWindowMetaData>();
-                NamedWindowCollector namedWindowCollector = new NamedWindowCollectorImpl(moduleNamedWindows);
+                var moduleNamedWindows = new Dictionary<string, NamedWindowMetaData>();
+                var namedWindowCollector = new NamedWindowCollectorImpl(moduleNamedWindows);
                 try {
                     provider.ModuleProvider.InitializeNamedWindows(
                         new EPModuleNamedWindowInitServicesImpl(namedWindowCollector, eventTypeResolver));
@@ -209,8 +246,8 @@ namespace com.espertech.esper.compiler.@internal.util
                 }
 
                 // initialize tables
-                IDictionary<string, TableMetaData> moduleTables = new Dictionary<string, TableMetaData>();
-                TableCollector tableCollector = new TableCollectorImpl(moduleTables);
+                var moduleTables = new Dictionary<string, TableMetaData>();
+                var tableCollector = new TableCollectorImpl(moduleTables);
                 try {
                     provider.ModuleProvider.InitializeTables(
                         new EPModuleTableInitServicesImpl(tableCollector, eventTypeResolver));
@@ -233,7 +270,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 }
 
                 // initialize create-contexts
-                IDictionary<string, ContextMetaData> moduleContexts = new Dictionary<string, ContextMetaData>();
+                var moduleContexts = new Dictionary<string, ContextMetaData>();
                 var contextCollector = new ContextCollectorImpl(moduleContexts);
                 try {
                     provider.ModuleProvider.InitializeContexts(
@@ -244,7 +281,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 }
 
                 // initialize variables
-                IDictionary<string, VariableMetaData> moduleVariables = new Dictionary<string, VariableMetaData>();
+                var moduleVariables = new Dictionary<string, VariableMetaData>();
                 var variableCollector = new VariableCollectorImpl(moduleVariables);
                 try {
                     provider.ModuleProvider.InitializeVariables(
@@ -255,9 +292,8 @@ namespace com.espertech.esper.compiler.@internal.util
                 }
 
                 // initialize module expressions
-                IDictionary<string, ExpressionDeclItem> moduleExprDeclareds =
-                    new Dictionary<string, ExpressionDeclItem>();
-                ExprDeclaredCollector exprDeclaredCollector = new ExprDeclaredCollectorCompileTime(moduleExprDeclareds);
+                var moduleExprDeclareds = new Dictionary<string, ExpressionDeclItem>();
+                var exprDeclaredCollector = new ExprDeclaredCollectorCompileTime(moduleExprDeclareds);
                 try {
                     provider.ModuleProvider.InitializeExprDeclareds(
                         new EPModuleExprDeclaredInitServicesImpl(exprDeclaredCollector));
@@ -267,8 +303,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 }
 
                 // initialize module scripts
-                IDictionary<NameAndParamNum, ExpressionScriptProvided> moduleScripts =
-                    new Dictionary<NameAndParamNum, ExpressionScriptProvided>();
+                var moduleScripts = new Dictionary<NameAndParamNum, ExpressionScriptProvided>();
                 var scriptCollector = new ScriptCollectorCompileTime(moduleScripts);
                 try {
                     provider.ModuleProvider.InitializeScripts(new EPModuleScriptInitServicesImpl(scriptCollector));
@@ -277,6 +312,15 @@ namespace com.espertech.esper.compiler.@internal.util
                     throw new EPException(e);
                 }
 
+                // initialize inlined classes
+                var moduleClassProvideds = new Dictionary<String, ClassProvided>();
+                var classProvidedCollector = new ClassProvidedCollectorCompileTime(moduleClassProvideds, classLoaderParent);
+                try {
+                    provider.ModuleProvider.InitializeClassProvided(new EPModuleClassProvidedInitServicesImpl(classProvidedCollector));
+                } catch (Exception e) {
+                    throw new EPException(e);
+                }
+                
                 // save path-visibility event types and named windows to the path
                 var deploymentId = "D" + deploymentNumber;
                 try {
@@ -321,28 +365,18 @@ namespace com.espertech.esper.compiler.@internal.util
                             pathScript.Add(entry.Key, unitModuleName, entry.Value, deploymentId);
                         }
                     }
+                    
+                    foreach (var entry in moduleClassProvideds) {
+                        if (entry.Value.Visibility.IsNonPrivateNonTransient()) {
+                            pathClassProvided.Add(entry.Key, unitModuleName, entry.Value, deploymentId);
+                        }
+                    }
                 }
                 catch (PathException ex) {
                     throw new EPCompileException(
                         "Invalid path: " + ex.Message,
                         ex,
                         new EmptyList<EPCompileExceptionItem>());
-                }
-            }
-
-            // add runtime-path which is the information an existing runtime may have
-            if (path.CompilerPathables != null) {
-                foreach (var pathable in path.CompilerPathables) {
-                    var impl = (EPCompilerPathableImpl) pathable;
-                    pathVariables.MergeFrom(impl.VariablePathRegistry);
-                    pathEventTypes.MergeFrom(impl.EventTypePathRegistry);
-                    pathExprDeclared.MergeFrom(impl.ExprDeclaredPathRegistry);
-                    pathNamedWindows.MergeFrom(impl.NamedWindowPathRegistry);
-                    pathTables.MergeFrom(impl.TablePathRegistry);
-                    pathContexts.MergeFrom(impl.ContextPathRegistry);
-                    pathScript.MergeFrom(impl.ScriptPathRegistry);
-                    eventTypeRepositoryPreconfigured.MergeFrom(impl.EventTypePreconfigured);
-                    variableRepositoryPreconfigured.MergeFrom(impl.VariablePreconfigured);
                 }
             }
 
@@ -355,63 +389,80 @@ namespace com.espertech.esper.compiler.@internal.util
                 eventTypeCompileRegistry,
                 eventTypeRepositoryPreconfigured,
                 pathEventTypes,
-                moduleDependencies);
+                moduleDependencies,
+                isFireAndForget);
 
             // build named window registry
             var namedWindowCompileTimeRegistry = new NamedWindowCompileTimeRegistry();
-            NamedWindowCompileTimeResolver namedWindowCompileTimeResolver = new NamedWindowCompileTimeResolverImpl(
+            var namedWindowCompileTimeResolver = new NamedWindowCompileTimeResolverImpl(
                 moduleName,
                 moduleUses,
                 namedWindowCompileTimeRegistry,
                 pathNamedWindows,
-                moduleDependencies);
+                moduleDependencies,
+                isFireAndForget);
 
             // build context registry
             var contextCompileTimeRegistry = new ContextCompileTimeRegistry();
-            ContextCompileTimeResolver contextCompileTimeResolver = new ContextCompileTimeResolverImpl(
+            var contextCompileTimeResolver = new ContextCompileTimeResolverImpl(
                 moduleName,
                 moduleUses,
                 contextCompileTimeRegistry,
                 pathContexts,
-                moduleDependencies);
+                moduleDependencies,
+                isFireAndForget);
 
             // build variable registry
             var variableCompileTimeRegistry = new VariableCompileTimeRegistry();
-            VariableCompileTimeResolver variableCompileTimeResolver = new VariableCompileTimeResolverImpl(
+            var variableCompileTimeResolver = new VariableCompileTimeResolverImpl(
                 moduleName,
                 moduleUses,
                 variableRepositoryPreconfigured,
                 variableCompileTimeRegistry,
                 pathVariables,
-                moduleDependencies);
+                moduleDependencies,
+                isFireAndForget);
 
             // build declared-expression registry
             var exprDeclaredCompileTimeRegistry = new ExprDeclaredCompileTimeRegistry();
-            ExprDeclaredCompileTimeResolver exprDeclaredCompileTimeResolver = new ExprDeclaredCompileTimeResolverImpl(
+            var exprDeclaredCompileTimeResolver = new ExprDeclaredCompileTimeResolverImpl(
                 moduleName,
                 moduleUses,
                 exprDeclaredCompileTimeRegistry,
                 pathExprDeclared,
-                moduleDependencies);
+                moduleDependencies,
+                isFireAndForget);
 
             // build table-registry
-            IDictionary<string, TableMetaData> localTables = new Dictionary<string, TableMetaData>();
+            var localTables = new Dictionary<string, TableMetaData>();
             var tableCompileTimeRegistry = new TableCompileTimeRegistry(localTables);
-            TableCompileTimeResolver tableCompileTimeResolver = new TableCompileTimeResolverImpl(
+            var tableCompileTimeResolver = new TableCompileTimeResolverImpl(
                 moduleName,
                 moduleUses,
                 tableCompileTimeRegistry,
                 pathTables,
-                moduleDependencies);
+                moduleDependencies,
+                isFireAndForget);
 
             // build script registry
             var scriptCompileTimeRegistry = new ScriptCompileTimeRegistry();
-            ScriptCompileTimeResolver scriptCompileTimeResolver = new ScriptCompileTimeResolverImpl(
+            var scriptCompileTimeResolver = new ScriptCompileTimeResolverImpl(
                 moduleName,
                 moduleUses,
                 scriptCompileTimeRegistry,
                 pathScript,
-                moduleDependencies);
+                moduleDependencies,
+                isFireAndForget);
+
+            // build classes registry
+            var classProvidedCompileTimeRegistry = new ClassProvidedCompileTimeRegistry();
+            var classProvidedCompileTimeResolver = new ClassProvidedCompileTimeResolverImpl(
+                moduleName,
+                moduleUses,
+                classProvidedCompileTimeRegistry,
+                pathClassProvided,
+                moduleDependencies,
+                isFireAndForget);
 
             // view resolution
             var plugInViews = new PluggableObjectCollection();
@@ -428,20 +479,62 @@ namespace com.espertech.esper.compiler.@internal.util
             PatternObjectResolutionService patternResolutionService =
                 new PatternObjectResolutionServiceImpl(plugInPatternObj);
 
-            var indexCompileTimeRegistry =
-                new IndexCompileTimeRegistry(new Dictionary<IndexCompileTimeKey, IndexDetailForge>());
+            var indexCompileTimeRegistry = new IndexCompileTimeRegistry(new Dictionary<IndexCompileTimeKey, IndexDetailForge>());
 
-            ModuleAccessModifierService moduleVisibilityRules =
-                new ModuleAccessModifierServiceImpl(options, configuration.Compiler.ByteCode);
+            var moduleVisibilityRules = new ModuleAccessModifierServiceImpl(options, configuration.Compiler.ByteCode);
 
-            DatabaseConfigServiceCompileTime databaseConfigServiceCompileTime =
+            var databaseConfigServiceCompileTime =
                 new DatabaseConfigServiceImpl(
                     container,
                     configuration.Common.DatabaseReferences,
                     importServiceCompileTime);
 
-            CompilerServices compilerServices = new CompilerServicesImpl();
+            var compilerServices = new CompilerServicesImpl();
 
+            var targetHA = configuration.GetType().Name.EndsWith("ConfigurationHA");
+            var serdeEventTypeRegistry = new SerdeEventTypeCompileTimeRegistryImpl(targetHA);
+            SerdeCompileTimeResolver serdeResolver = targetHA
+                ? MakeSerdeResolver(configuration.Compiler.Serde, configuration.Common.TransientConfiguration)
+                : SerdeCompileTimeResolverNonHA.INSTANCE;
+
+            return new ModuleCompileTimeServices(
+                container,
+                compilerServices,
+                configuration,
+                classProvidedCompileTimeRegistry,
+                classProvidedCompileTimeResolver,
+                contextCompileTimeRegistry,
+                contextCompileTimeResolver,
+                beanEventTypeStemService,
+                beanEventTypeFactoryPrivate,
+                databaseConfigServiceCompileTime,
+                importServiceCompileTime,
+                exprDeclaredCompileTimeRegistry,
+                exprDeclaredCompileTimeResolver,
+                eventTypeAvroHandler,
+                eventTypeCompileRegistry,
+                eventTypeCompileTimeResolver,
+                eventTypeRepositoryPreconfigured,
+                isFireAndForget,
+                indexCompileTimeRegistry,
+                moduleDependencies,
+                moduleVisibilityRules,
+                namedWindowCompileTimeResolver,
+                namedWindowCompileTimeRegistry,
+                classLoaderParent,
+                patternResolutionService,
+                scriptCompileTimeRegistry,
+                scriptCompileTimeResolver,
+                serdeEventTypeRegistry,
+                serdeResolver,
+                tableCompileTimeRegistry,
+                tableCompileTimeResolver,
+                variableCompileTimeRegistry,
+                variableCompileTimeResolver,
+                viewResolutionService,
+                xmlFragmentEventTypeFactory);
+           
+#if false            
             return new ModuleCompileTimeServices(
                 container,
                 compilerServices,
@@ -473,6 +566,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 variableCompileTimeResolver,
                 viewResolutionService,
                 xmlFragmentEventTypeFactory);
+#endif
         }
 
 
@@ -525,12 +619,62 @@ namespace com.espertech.esper.compiler.@internal.util
                         config.RethrowExceptions,
                         config.EventTypeName);
                 }
+
+                foreach (var config in configuration.Compiler.PlugInDateTimeMethods) {
+                    importService.AddPlugInDateTimeMethod(config.Name, config);
+                }
+
+                foreach (var config in configuration.Compiler.PlugInEnumMethods) {
+                    importService.AddPlugInEnumMethod(config.Name, config);
+                }
             }
             catch (ImportException ex) {
                 throw new ConfigurationException("Error configuring compiler: " + ex.Message, ex);
             }
 
             return importService;
+        }
+
+
+        private static SerdeCompileTimeResolver MakeSerdeResolver(
+            ConfigurationCompilerSerde config,
+            IDictionary<String, Object> transientConfiguration)
+        {
+            var context = new SerdeProviderFactoryContext();
+
+            IList<SerdeProvider> providers = null;
+            if (config.SerdeProviderFactories != null) {
+                foreach (var factory in config.SerdeProviderFactories) {
+                    try {
+                        var instance = TypeHelper.Instantiate<SerdeProviderFactory>(
+                            factory,
+                            TransientConfigurationResolver.ResolveClassForNameProvider(transientConfiguration));
+                        var provider = instance.GetProvider(context);
+                        if (provider == null) {
+                            throw new ConfigurationException("Binding provider factory '" + factory + "' returned a null value");
+                        }
+
+                        if (providers == null) {
+                            providers = new List<SerdeProvider>();
+                        }
+
+                        providers.Add(provider);
+                    }
+                    catch (Exception ex) {
+                        throw new ConfigurationException("Binding provider factory '" + factory + "' failed to initialize: " + ex.Message, ex);
+                    }
+                }
+            }
+
+            if (providers == null) {
+                providers = EmptyList<SerdeProvider>.Instance;
+            }
+
+            return new SerdeCompileTimeResolverImpl(
+                providers,
+                config.IsEnableExtendedBuiltin,
+                config.IsEnableSerializable,
+                config.IsEnableSerializationFallback);
         }
     }
 } // end of namespace
