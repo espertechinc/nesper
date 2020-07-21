@@ -19,7 +19,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public void Run(RegressionEnvironment env)
         {
             var text =
-                "@Name('s0') select SupportStaticMethodLib.Sleep(100) as val from SupportTemperatureBean as temp";
+                "@name('s0') select SupportStaticMethodLib.Sleep(100) as val from SupportTemperatureBean as temp";
             env.CompileDeploy(text).AddListener("s0");
 
             var startTime = PerformanceObserver.MilliTime;
@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             env.UndeployAll();
 
             // test plug-in single-row function
-            var textSingleRow = "@Name('s0') select sleepme(100) as val from SupportTemperatureBean as temp";
+            var textSingleRow = "@name('s0') select sleepme(100) as val from SupportTemperatureBean as temp";
             env.CompileDeploy(textSingleRow).AddListener("s0");
 
             startTime = PerformanceObserver.MilliTime;

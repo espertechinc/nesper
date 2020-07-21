@@ -33,10 +33,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             env.CompileDeployWBusPublicType(eplSchema, path);
 
             // ESPER-568
-            env.CompileDeploy("@Name('create') create window S2Win#time(25 hour)#firstunique(company) as S2", path);
+            env.CompileDeploy("@name('create') create window S2Win#time(25 hour)#firstunique(company) as S2", path);
             env.CompileDeploy("insert into S2Win select * from S2#firstunique(company)", path);
             env.CompileDeploy("on S2 as a update S2Win as b set total = b.value + a.value", path);
-            env.CompileDeploy("@Name('s0') select count(*) as cnt from S2Win", path).AddListener("s0");
+            env.CompileDeploy("@name('s0') select count(*) as cnt from S2Win", path).AddListener("s0");
 
             CreateSendEvent(env, "S2", "AComp", 3.0, 0.0);
             Assert.AreEqual(1L, env.Listener("s0").AssertOneGetNewAndReset().Get("cnt"));

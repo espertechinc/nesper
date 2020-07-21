@@ -128,6 +128,11 @@ namespace com.espertech.esper.regressionrun.suite.epl
         {
             RegressionRunner.Run(session, EPLInsertIntoWrapper.Executions());
         }
+        
+        [Test, RunInApplicationDomain]
+        public void TestEPLInsertIntoEventTypedColumnFromProp() {
+            RegressionRunner.Run(session, EPLInsertIntoEventTypedColumnFromProp.Executions());
+        }
 
         private static void Configure(Configuration configuration)
         {
@@ -273,6 +278,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             configuration.Compiler.AddPlugInSingleRowFunction("generateMap", typeof(EPLInsertIntoTransposeStream), "LocalGenerateMap");
             configuration.Compiler.AddPlugInSingleRowFunction("generateOA", typeof(EPLInsertIntoTransposeStream), "LocalGenerateOA");
             configuration.Compiler.AddPlugInSingleRowFunction("generateAvro", typeof(EPLInsertIntoTransposeStream), "LocalGenerateAvro");
+            configuration.Compiler.AddPlugInSingleRowFunction("generateJson", typeof(EPLInsertIntoTransposeStream), "LocalGenerateJson");
             configuration.Compiler.AddPlugInSingleRowFunction("custom", typeof(SupportStaticMethodLib), "MakeSupportBean");
             configuration.Compiler.AddPlugInSingleRowFunction("customOne", typeof(SupportStaticMethodLib), "MakeSupportBean");
             configuration.Compiler.AddPlugInSingleRowFunction("customTwo", typeof(SupportStaticMethodLib), "MakeSupportBeanNumeric");

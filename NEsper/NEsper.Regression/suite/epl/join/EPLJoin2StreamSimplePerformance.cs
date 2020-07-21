@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         private static void SetupStatement(RegressionEnvironment env)
         {
-            var epl = "@Name('s0') select * from " +
+            var epl = "@name('s0') select * from " +
                       "SupportMarketDataBean#length(1000000)," +
                       "SupportBean#length(1000000)" +
                       " where Symbol=TheString";

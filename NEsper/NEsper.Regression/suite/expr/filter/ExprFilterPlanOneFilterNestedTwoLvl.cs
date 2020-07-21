@@ -18,7 +18,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
     [TestFixture]
     public class ExprFilterPlanOneFilterNestedTwoLvl
     {
-        public static IList<FilterTestMultiStmtExecution> Executions()
+        public static IList<FilterTestMultiStmtExecution> Executions(bool withStats)
         {
             IList<FilterTestMultiStmtPermutable> cases = new List<FilterTestMultiStmtPermutable>();
 
@@ -99,7 +99,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             return FilterTestMultiStmtRunner.ComputePermutations(
                 typeof(ExprFilterPlanOneFilterNestedTwoLvl),
                 new PermutationSpec(true),
-                cases);
+                cases,
+                withStats);
         }
     }
 } // end of namespace

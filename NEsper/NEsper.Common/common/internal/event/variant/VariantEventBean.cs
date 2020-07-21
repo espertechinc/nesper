@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.@event.variant
@@ -42,7 +44,10 @@ namespace com.espertech.esper.common.@internal.@event.variant
 
         public object this[string property] => Get(property);
 
-        public object Underlying => UnderlyingEventBean.Underlying;
+        public object Underlying {
+            get => UnderlyingEventBean.Underlying;
+            set => throw new NotSupportedException();
+        }
 
         public object GetFragment(string propertyExpression)
         {

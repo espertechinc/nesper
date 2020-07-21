@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create subquery
                 var eplSubquery =
-                    "@Name('s0') select P00, (select * from MyInfra) @eventbean as detail from SupportBean_S0";
+                    "@name('s0') select P00, (select * from MyInfra) @eventbean as detail from SupportBean_S0";
                 env.CompileDeploy(eplSubquery, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(0));

@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select * from SupportRecogBean#keepall " +
+                var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  measures A.TheString as a_string, " +
                            "       C.TheString as c_string, " +
@@ -113,7 +113,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select * from SupportRecogBean#keepall " +
+                var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  partition by Cat" +
                            "  measures A.Cat as Cat, A.TheString as a_string, " +

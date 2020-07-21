@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
             // test exception by graph source
             env.CompileDeploy(
-                "@Name('flow') create dataflow MyDataFlow DefaultSupportSourceOp -> outstream<SupportBean> {}");
+                "@name('flow') create dataflow MyDataFlow DefaultSupportSourceOp -> outstream<SupportBean> {}");
 
             var op = new DefaultSupportSourceOp(new object[] {new EPRuntimeException("My-Exception-Is-Here")});
             var options = new EPDataFlowInstantiationOptions();
@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
             // test exception by operator
             env.CompileDeploy(
-                "@Name('flow') create dataflow MyDataFlow DefaultSupportSourceOp -> outstream<SupportBean> {}" +
+                "@name('flow') create dataflow MyDataFlow DefaultSupportSourceOp -> outstream<SupportBean> {}" +
                 "MyExceptionOp(outstream) {}");
 
             var opTwo = new DefaultSupportSourceOp(new object[] {new SupportBean("E1", 1)});

@@ -88,7 +88,8 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 typeof(SupportObjectArrayEvent),
                 typeof(SupportCollectionEvent),
                 typeof(SupportResponseEvent),
-                typeof(SupportAvroArrayEvent)
+                typeof(SupportAvroArrayEvent),
+                typeof(SupportJsonArrayEvent)
             }) {
                 configuration.Common.AddEventType(clazz);
             }
@@ -121,6 +122,13 @@ namespace com.espertech.esper.regressionrun.suite.epl
                             "splitSentenceMethodReturnAvro",
                             "splitSentenceBeanMethodReturnAvro",
                             "splitWordMethodReturnAvro"
+                        };
+                    }
+                    else if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
+                        methods = new string[] {
+                            "splitSentenceMethodReturnJson",
+                            "splitSentenceBeanMethodReturnJson",
+                            "splitWordMethodReturnJson"
                         };
                     }
                     else {

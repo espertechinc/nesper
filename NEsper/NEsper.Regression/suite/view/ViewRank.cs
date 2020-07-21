@@ -87,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@Name('s0') select prevwindow(ev) as win, prev(0, ev) as prev0, prev(1, ev) as prev1, prev(2, ev) as prev2, prev(3, ev) as prev3, prev(4, ev) as prev4 " +
+                    "@name('s0') select prevwindow(ev) as win, prev(0, ev) as prev0, prev(1, ev) as prev1, prev(2, ev) as prev2, prev(3, ev) as prev3, prev(4, ev) as prev4 " +
                     "from SupportBean#rank(TheString, 3, IntPrimitive) as ev";
                 env.CompileDeploy(text).AddListener("s0");
 
@@ -131,7 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select prevwindow(ev) as win, prev(0, ev) as prev0, prev(1, ev) as prev1, prev(2, ev) as prev2, prev(3, ev) as prev3, prev(4, ev) as prev4 " +
+                    "@name('s0') select prevwindow(ev) as win, prev(0, ev) as prev0, prev(1, ev) as prev1, prev(2, ev) as prev2, prev(3, ev) as prev3, prev(4, ev) as prev4 " +
                     "from SupportBean#rank(TheString, 3, IntPrimitive) as ev";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -162,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.UndeployAll();
 
                 epl =
-                    "@Name('s0') select irstream * from SupportBean#groupwin(TheString)#rank(IntPrimitive, 2, DoublePrimitive) as ev";
+                    "@name('s0') select irstream * from SupportBean#groupwin(TheString)#rank(IntPrimitive, 2, DoublePrimitive) as ev";
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
 
                 var fields = new[] { "TheString", "IntPrimitive", "LongPrimitive", "DoublePrimitive" };
@@ -236,7 +236,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 var fields = new[] { "TheString", "IntPrimitive", "LongPrimitive", "DoublePrimitive" };
                 var epl =
-                    "@Name('s0') select irstream * from SupportBean#rank(TheString, IntPrimitive, 3, LongPrimitive, DoublePrimitive)";
+                    "@name('s0') select irstream * from SupportBean#rank(TheString, IntPrimitive, 3, LongPrimitive, DoublePrimitive)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(MakeEvent("E1", 100, 1L, 10d));
@@ -344,9 +344,9 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 var fields = new[] { "TheString", "IntPrimitive", "LongPrimitive" };
                 var epl =
-                    "@Name('create') create window MyWindow#rank(TheString, 3, IntPrimitive asc) as SupportBean;\n" +
+                    "@name('create') create window MyWindow#rank(TheString, 3, IntPrimitive asc) as SupportBean;\n" +
                     "insert into MyWindow select * from SupportBean;\n" +
-                    "@Name('s0') select irstream * from MyWindow;\n" +
+                    "@name('s0') select irstream * from MyWindow;\n" +
                     "on SupportBean_A delete from MyWindow mw where TheString = Id;\n";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -455,7 +455,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var fields = new[] { "TheString", "IntPrimitive", "LongPrimitive" };
-                var epl = "@Name('s0') select irstream * from SupportBean.ext:rank(TheString, 3, IntPrimitive)";
+                var epl = "@name('s0') select irstream * from SupportBean.ext:rank(TheString, 3, IntPrimitive)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("s0"), fields, null);
@@ -578,7 +578,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var fields = new[] { "TheString", "IntPrimitive", "LongPrimitive" };
-                var epl = "@Name('s0') select irstream * from SupportBean#rank(TheString, 4, IntPrimitive desc)";
+                var epl = "@name('s0') select irstream * from SupportBean#rank(TheString, 4, IntPrimitive desc)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(MakeEvent("E1", 10, 0L));

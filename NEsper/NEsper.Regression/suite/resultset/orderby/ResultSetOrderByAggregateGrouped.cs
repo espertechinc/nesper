@@ -165,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select Symbol, Volume, sum(Price) as mySum from " +
+                var epl = "@name('s0') select Symbol, Volume, sum(Price) as mySum from " +
                           "SupportMarketDataBean#length(20) " +
                           "group by Symbol " +
                           "output every 6 events " +
@@ -212,7 +212,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select Symbol, Volume, sum(Price) as mySum from " +
+                var epl = "@name('s0') select Symbol, Volume, sum(Price) as mySum from " +
                           "SupportMarketDataBean#length(20) " +
                           "group by Symbol " +
                           "output every 6 events " +
@@ -232,7 +232,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 // Instead of the row-per-group behavior, these should
                 // get row-per-event behavior since there are properties
                 // in the order-by that are not in the select expression.
-                var epl = "@Name('s0') select Symbol, sum(Price) from " +
+                var epl = "@name('s0') select Symbol, sum(Price) from " +
                           "SupportMarketDataBean#length(20) " +
                           "group by Symbol " +
                           "output every 6 events " +
@@ -250,7 +250,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select Symbol, sum(Price) from " +
+                    "@name('s0') select Symbol, sum(Price) from " +
                     "SupportMarketDataBean#length(20) as one, " +
                     "SupportBeanString#length(100) as two " +
                     "where one.Symbol = two.TheString " +
@@ -275,7 +275,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select Symbol, Volume, sum(Price) from " +
+                var epl = "@name('s0') select Symbol, Volume, sum(Price) from " +
                           "SupportMarketDataBean#length(20) " +
                           "group by Symbol " +
                           "output last every 6 events " +
@@ -292,7 +292,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select Symbol, Volume, sum(Price) from " +
+                var epl = "@name('s0') select Symbol, Volume, sum(Price) from " +
                           "SupportMarketDataBean#length(20) as one, " +
                           "SupportBeanString#length(100) as two " +
                           "where one.Symbol = two.TheString " +
@@ -318,7 +318,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 string[] fields = {"Symbol", "TheString", "sumPrice"};
-                var epl = "@Name('s0') select Symbol, TheString, sum(Price) as sumPrice from " +
+                var epl = "@name('s0') select Symbol, TheString, sum(Price) as sumPrice from " +
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
                           "where one.Symbol = two.TheString " +

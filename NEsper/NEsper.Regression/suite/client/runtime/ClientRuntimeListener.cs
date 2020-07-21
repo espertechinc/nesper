@@ -19,6 +19,8 @@ using com.espertech.esper.regressionlib.support.util;
 using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
 
+using Newtonsoft.Json.Linq;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.client.runtime
@@ -43,28 +45,21 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('bean') select * from " +
-                    BEAN_TYPENAME +
-                    ";\n" +
-                    "@Name('map') select * from " +
-                    MAP_TYPENAME +
-                    ";\n" +
-                    "@Name('oa') select * from " +
-                    OA_TYPENAME +
-                    ";\n" +
-                    "@Name('xml') select * from " +
-                    XML_TYPENAME +
-                    ";\n" +
-                    "@Name('avro') select * from " +
-                    AVRO_TYPENAME +
-                    ";\n" +
-                    "@Name('trigger') select * from SupportBean;";
+                    "@name('bean') select * from " + BEAN_TYPENAME + ";\n" +
+                    "@name('map') select * from " + MAP_TYPENAME + ";\n" +
+                    "@name('oa') select * from " + OA_TYPENAME + ";\n" +
+                    "@name('xml') select * from " + XML_TYPENAME + ";\n" +
+                    "@name('avro') select * from " + AVRO_TYPENAME + ";\n" +
+                    "@public @buseventtype create json schema JsonEvent(ident string);\n" +
+                    "@name('json') select * from JsonEvent;\n" +
+                    "@name('trigger') select * from SupportBean;";
                 env.CompileDeploy(epl)
                     .AddListener("map")
                     .AddListener("oa")
                     .AddListener("xml")
                     .AddListener("avro")
-                    .AddListener("bean");
+                    .AddListener("bean")
+                    .AddListener("json");
 
                 env.Statement("trigger").Events += (
                     sender,
@@ -80,16 +75,18 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     var xml = "<Myevent Ident=\"XXXXXX\"></Myevent>\n".Replace("XXXXXX", ident);
                     processEvent.RouteEventXMLDOM(SupportXML.GetDocument(xml).DocumentElement, XML_TYPENAME);
 
-                    var avroSchema = AvroSchemaUtil
-                        .ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME));
+                    var avroSchema = AvroSchemaUtil.ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME));
                     var datum = new GenericRecord(avroSchema.AsRecordSchema());
                     datum.Put("Ident", ident);
                     processEvent.RouteEventAvro(datum, AVRO_TYPENAME);
+
+                    var jsonObject = new JObject(new JProperty("ident", ident));
+                    processEvent.RouteEventJson(jsonObject.ToString(), "JsonEvent");
                 };
 
                 env.SendEventBean(new SupportBean("xy", -1));
 
-                foreach (var name in new[] { "map", "bean", "oa", "xml", "avro" }) {
+                foreach (var name in new[] { "map", "bean", "oa", "xml", "avro", "json" }) {
                     var listener = env.Listener(name);
                     Assert.IsTrue(listener.IsInvoked, "failed for " + name);
                     Assert.AreEqual("xy", env.Listener(name).AssertOneGetNewAndReset().Get("Ident"));

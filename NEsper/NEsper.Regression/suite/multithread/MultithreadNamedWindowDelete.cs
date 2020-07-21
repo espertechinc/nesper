@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             var path = new RegressionPath();
             env.CompileDeploy(
-                "@Name('create') create window MyWindow#keepall() as select TheString, LongPrimitive from SupportBean",
+                "@name('create') create window MyWindow#keepall() as select TheString, LongPrimitive from SupportBean",
                 path);
             var listenerWindow = new SupportMTUpdateListener();
             env.Statement("create").AddListener(listenerWindow);
@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var stmtTextDelete = "on SupportBean_A as S0 delete from MyWindow as win where win.TheString = S0.Id";
             env.CompileDeploy(stmtTextDelete, path);
 
-            env.CompileDeploy("@Name('s0') select irstream TheString, LongPrimitive from MyWindow", path);
+            env.CompileDeploy("@name('s0') select irstream TheString, LongPrimitive from MyWindow", path);
             var listenerConsumer = new SupportMTUpdateListener();
             env.Statement("s0").AddListener(listenerConsumer);
 

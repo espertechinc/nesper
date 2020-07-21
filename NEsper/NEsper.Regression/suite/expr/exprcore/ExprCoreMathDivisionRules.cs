@@ -18,130 +18,120 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
-    public class ExprCoreMathDivisionRules
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            var executions = new List<RegressionExecution>();
-            executions.Add(new ExprCoreMathRulesBigInt());
-            executions.Add(new ExprCoreMathRulesLong());
-            executions.Add(new ExprCoreMathRulesFloat());
-            executions.Add(new ExprCoreMathRulesDouble());
-            executions.Add(new ExprCoreMathRulesInt());
-            return executions;
-        }
+	public class ExprCoreMathDivisionRules
+	{
 
-        private static void SendEvent(
-            RegressionEnvironment env,
-            int intPrimitive,
-            int? intBoxed)
-        {
-            var bean = new SupportBean();
-            bean.IntBoxed = intBoxed;
-            bean.IntPrimitive = intPrimitive;
-            env.SendEventBean(bean);
-        }
+		public static ICollection<RegressionExecution> Executions()
+		{
+			var executions = new List<RegressionExecution>();
+			executions.Add(new ExprCoreMathRulesBigInt());
+			executions.Add(new ExprCoreMathRulesLong());
+			executions.Add(new ExprCoreMathRulesFloat());
+			executions.Add(new ExprCoreMathRulesDouble());
+			executions.Add(new ExprCoreMathRulesInt());
+			return executions;
+		}
 
-        public class ExprCoreMathRulesBigInt : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select BigIntegerHelper.ValueOf(4)/BigIntegerHelper.ValueOf(2) as c0 from SupportBean";
-                env.CompileDeploy(epl).AddListener("s0");
+		public class ExprCoreMathRulesBigInt : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var epl = "@name('s0') select BigInteger.valueOf(4)/BigInteger.valueOf(2) as c0 from SupportBean";
+				env.CompileDeploy(epl).AddListener("s0");
 
-                Assert.AreEqual(typeof(BigInteger?), env.Statement("s0").EventType.GetPropertyType("c0"));
+				Assert.AreEqual(typeof(BigInteger), env.Statement("s0").EventType.GetPropertyType("c0"));
 
-                var fields = new [] { "c0" };
-                env.SendEventBean(new SupportBean());
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {
-                        new BigInteger(4) / new BigInteger(2)
-                    });
+				var fields = "c0".SplitCsv();
+				env.SendEventBean(new SupportBean());
+				EPAssertionUtil.AssertProps(
+					env.Listener("s0").AssertOneGetNewAndReset(),
+					fields,
+					new BigInteger(4) / new BigInteger(2));
 
-                env.UndeployAll();
-            }
-        }
+				env.UndeployAll();
+			}
+		}
 
-        public class ExprCoreMathRulesLong : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select 10L/2L as c0 from SupportBean";
-                env.CompileDeploy(epl).AddListener("s0");
+		public class ExprCoreMathRulesLong : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var epl = "@name('s0') select 10L/2L as c0 from SupportBean";
+				env.CompileDeploy(epl).AddListener("s0");
 
-                Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("c0"));
+				Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("c0"));
 
-                var fields = new [] { "c0" };
-                env.SendEventBean(new SupportBean());
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {5L});
+				var fields = "c0".SplitCsv();
+				env.SendEventBean(new SupportBean());
+				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, 5L);
 
-                env.UndeployAll();
-            }
-        }
+				env.UndeployAll();
+			}
+		}
 
-        public class ExprCoreMathRulesFloat : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select 10f/2f as c0 from SupportBean";
-                env.CompileDeploy(epl).AddListener("s0");
+		public class ExprCoreMathRulesFloat : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var epl = "@name('s0') select 10f/2f as c0 from SupportBean";
+				env.CompileDeploy(epl).AddListener("s0");
 
-                Assert.AreEqual(typeof(float?), env.Statement("s0").EventType.GetPropertyType("c0"));
+				Assert.AreEqual(typeof(float?), env.Statement("s0").EventType.GetPropertyType("c0"));
 
-                var fields = new [] { "c0" };
-                env.SendEventBean(new SupportBean());
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {5f});
+				var fields = "c0".SplitCsv();
+				env.SendEventBean(new SupportBean());
+				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, 5f);
 
-                env.UndeployAll();
-            }
-        }
+				env.UndeployAll();
+			}
+		}
 
-        public class ExprCoreMathRulesDouble : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select 10d/0d as c0 from SupportBean";
-                env.CompileDeploy(epl).AddListener("s0");
+		public class ExprCoreMathRulesDouble : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var epl = "@name('s0') select 10d/0d as c0 from SupportBean";
+				env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new [] { "c0" };
-                env.SendEventBean(new SupportBean());
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {null});
+				var fields = "c0".SplitCsv();
+				env.SendEventBean(new SupportBean());
+				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {null});
 
-                env.UndeployAll();
-            }
-        }
+				env.UndeployAll();
+			}
+		}
 
-        public class ExprCoreMathRulesInt : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select IntPrimitive/IntBoxed as result from SupportBean";
-                env.CompileDeploy(epl).AddListener("s0");
+		public class ExprCoreMathRulesInt : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var epl = "@name('s0') select IntPrimitive/IntBoxed as result from SupportBean";
+				env.CompileDeploy(epl).AddListener("s0");
 
-                Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("result"));
+				Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("result"));
 
-                SendEvent(env, 100, 3);
-                Assert.AreEqual(33, env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
+				SendEvent(env, 100, 3);
+				Assert.AreEqual(33, env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
 
-                SendEvent(env, 100, null);
-                Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
+				SendEvent(env, 100, null);
+				Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
 
-                SendEvent(env, 100, 0);
-                Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
+				SendEvent(env, 100, 0);
+				Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
 
-                env.UndeployAll();
-            }
-        }
-    }
+				env.UndeployAll();
+			}
+		}
+
+		private static void SendEvent(
+			RegressionEnvironment env,
+			int intPrimitive,
+			int? intBoxed)
+		{
+			var bean = new SupportBean();
+			bean.IntBoxed = intBoxed;
+			bean.IntPrimitive = intPrimitive;
+			env.SendEventBean(bean);
+		}
+	}
 } // end of namespace

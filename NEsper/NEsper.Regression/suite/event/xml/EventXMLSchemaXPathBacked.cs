@@ -6,11 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using System.Xml;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
+using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
@@ -18,20 +20,48 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
-    public class EventXMLSchemaXPathBacked : RegressionExecution
+    public class EventXMLSchemaXPathBacked
     {
-        public void Run(RegressionEnvironment env)
+        public static List<RegressionExecution> Executions()
         {
-            RunAssertion(env, true, "XMLSchemaConfigOne");
+            var execs = new List<RegressionExecution>();
+            execs.Add(new EventXMLSchemaXPathBackedPreconfig());
+            execs.Add(new EventXMLSchemaXPathBackedCreateSchema());
+            return execs;
+        }
+
+        public class EventXMLSchemaXPathBackedPreconfig : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunAssertion(env, true, "XMLSchemaConfigOne", new RegressionPath());
+            }
+        }
+
+        public class EventXMLSchemaXPathBackedCreateSchema : RegressionExecution {
+            public void Run (RegressionEnvironment env)
+            {
+                var resourceManager = env.Container.ResourceManager();
+                var schemaUriSimpleSchema = resourceManager.GetResourceAsStream("regression/simpleSchema.xsd").ConsumeStream();
+                var epl = "@public @buseventtype " +
+                             "@XMLSchema(rootElementName='simpleEvent', schemaResource='" + schemaUriSimpleSchema + "', xpathPropertyExpr=true)" +
+                             "@XMLSchemaNamespacePrefix(prefix='ss', namespace='samples:schemas:simpleSchema')" +
+                             "@XMLSchemaField(name='customProp', xpath='count(/ss:simpleEvent/ss:nested3/ss:nested4)', type='number')" +
+                             "create xml schema MyEventCreateSchema()";
+                var path = new RegressionPath ();
+                env.CompileDeploy (epl, path);
+                RunAssertion (env, true, "MyEventCreateSchema", path);
+            }
         }
 
         internal static void RunAssertion(
             RegressionEnvironment env,
-            bool xpath,
-            string typeName)
+            bool xpath, 
+            string typeName,
+            RegressionPath path)
         {
-            var stmtSelectWild = "@Name('s0') select * from " + typeName;
-            env.CompileDeploy(stmtSelectWild).AddListener("s0");
+            var stmtSelectWild = "@name('s0') select * from " + typeName;
+            env.CompileDeploy(stmtSelectWild, path).AddListener("s0");
             var type = env.Statement("s0").EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(type);
 
@@ -45,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 type.PropertyDescriptors);
             env.UndeployModuleContaining("s0");
 
-            var stmt = "@Name('s0') select nested1 as nodeProp," +
+            var stmt = "@name('s0') select nested1 as nodeProp," +
                        "prop4 as nested1Prop," +
                        "nested1.prop2 as nested2Prop," +
                        "nested3.nested4('a').prop5[1] as complexProp," +
@@ -57,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                        typeName +
                        "#length(100)";
 
-            env.CompileDeploy(stmt).AddListener("s0");
+            env.CompileDeploy(stmt, path).AddListener("s0");
             type = env.Statement("s0").EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(type);
             CollectionAssert.AreEquivalent(

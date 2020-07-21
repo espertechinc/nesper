@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using Avro.Generic;
@@ -70,6 +71,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 theEvent.Put("P00", p00);
                 env.SendEventAvro(theEvent, name);
             }
+            else if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
+                String json = "{\"id\": \"" + id + "\", \"p00\": " + p00 + "}";
+                env.EventService.SendEventJson(json, name);
+            }
             else {
                 Assert.Fail();
             }
@@ -79,43 +84,56 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
+                var path = new RegressionPath();
+                var jsonSchemas =
+                    "@public @buseventtype create json schema S0_JSON(id String, p00 int);\n" +
+                    "@public @buseventtype create json schema S1_JSON(id String, p00 int);\n" +
+                    "@public @buseventtype @JsonSchema(className='" + nameof(MyLocalJsonProvidedS0) + "') create json schema S0_JSONCLASSPROVIDED();\n" +
+                    "@public @buseventtype @JsonSchema(className='" + nameof(MyLocalJsonProvidedS1) + "') create json schema S1_JSONCLASSPROVIDED();\n";
+                env.CompileDeploy(jsonSchemas, path);
+
                 var milestone = new AtomicLong();
 
                 foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
-                    var s0Type = "S0_" + rep.GetUndName();
-                    var s1Type = "S1_" + rep.GetUndName();
-                    var eplOne = "select S0.Id as S0_Id, S1.Id as S1_Id, S0.P00 as S0_P00, S1.P00 as S1_P00 from " +
-                                 s0Type + "#keepall as S0, " +
-                                 s1Type + "#keepall as S1 " +
+                    var s0Type = "S0_" + rep.GetName();
+                    var s1Type = "S1_" + rep.GetName();
+                    var eplOne = "select S0.Id as s0id, S1.Id as s1id, S0.P00 as s0p00, S1.P00 as s1p00 from " +
+                                 s0Type +
+                                 "#keepall as S0, " +
+                                 s1Type +
+                                 "#keepall as S1 " +
                                  " where S0.Id = S1.Id";
-                    TryJoinAssertion(env, eplOne, rep, "S0_Id,S1_Id,S0_P00,S1_P00", milestone);
+                    TryJoinAssertion(env, eplOne, rep, "s0id,s1id,s0p00,s1p00", milestone, path, typeof(MyLocalJsonProvidedWFields));
                 }
 
                 foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
-                    var s0Type = "S0_" + rep.GetUndName();
-                    var s1Type = "S1_" + rep.GetUndName();
+                    var s0Type = "S0_" + rep.GetName();
+                    var s1Type = "S1_" + rep.GetName();
                     var eplTwo = "select * from " +
-                                 s0Type + "#keepall as S0, " +
-                                 s1Type + "#keepall as S1 " +
-                                 " where S0.Id = S1.Id";
-                    TryJoinAssertion(env, eplTwo, rep, "S0.Id,S1.Id,S0.P00,S1.P00", milestone);
+                                 s0Type + "#keepall as s0, " +
+                                 s1Type + "#keepall as s1 " +
+                                 " where s0.Id = s1.Id";
+                    TryJoinAssertion(env, eplTwo, rep, "s0.Id,s1.Id,s0.P00,s1.P00", milestone, path, typeof(MyLocalJsonProvidedWildcard));
                 }
+
+                env.UndeployAll();
             }
 
             private static void TryJoinAssertion(
                 RegressionEnvironment env,
-                string epl,
+                String epl,
                 EventRepresentationChoice rep,
-                string columnNames,
-                AtomicLong milestone)
+                String columnNames,
+                AtomicLong milestone,
+                RegressionPath path,
+                Type jsonClass)
             {
-                env.CompileDeployAddListenerMile(
-                    "@Name('s0')" + rep.GetAnnotationText() + epl,
-                    "s0",
-                    milestone.GetAndIncrement());
+                env.CompileDeploy("@name('s0')" + rep.GetAnnotationTextWJsonProvided(jsonClass) + epl, path)
+                    .AddListener("s0")
+                    .MilestoneInc(milestone);
 
-                var s0Name = "S0_" + rep.GetUndName();
-                var s1Name = "S1_" + rep.GetUndName();
+                var s0Name = "S0_" + rep.GetName();
+                var s1Name = "S1_" + rep.GetName();
 
                 SendRepEvent(env, rep, s0Name, "a", 1);
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
@@ -132,7 +150,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 SendRepEvent(env, rep, s0Name, "c", 4);
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
 
-                env.UndeployAll();
+                env.UndeployModuleContaining("s0");
             }
         }
 
@@ -142,7 +160,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 // Test for Esper-122
                 var joinStatement =
-                    "@Name('s0') select S0.Id, S1.Id, S0.P00, S1.P00 from MapS0#keepall as S0, MapS1#keepall as S1" +
+                    "@name('s0') select S0.Id, S1.Id, S0.P00, S1.P00 from MapS0#keepall as S0, MapS1#keepall as S1" +
                     " where S0.Id = S1.Id";
                 env.CompileDeployAddListenerMileZero(joinStatement, "s0");
 
@@ -166,7 +184,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 // Test for Esper-122
                 var epl = "insert into S0Stream select 's0' as streamone, * from SupportBean;\n" +
                           "insert into S1Stream select 's1' as streamtwo, * from SupportBean;\n" +
-                          "@Name('s0') select * from S0Stream#keepall as a, S1Stream#keepall as b where a.IntBoxed = b.IntBoxed";
+                          "@name('s0') select * from S0Stream#keepall as a, S1Stream#keepall as b where a.IntBoxed = b.IntBoxed";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 for (var i = 0; i < 100; i++) {
@@ -175,6 +193,36 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 env.UndeployAll();
             }
+        }
+        
+        [Serializable]
+        public class MyLocalJsonProvidedS0
+        {
+            public string id;
+            public int p00;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedS1
+        {
+            public string id;
+            public int p00;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedWFields
+        {
+            public string s0id;
+            public string s1id;
+            public int s0p00;
+            public int s1p00;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedWildcard
+        {
+            public MyLocalJsonProvidedS0 s0;
+            public MyLocalJsonProvidedS1 s1;
         }
     }
 } // end of namespace

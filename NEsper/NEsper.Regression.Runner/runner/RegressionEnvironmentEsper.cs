@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.compat;
+using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
@@ -20,6 +21,8 @@ namespace com.espertech.esper.regressionrun.Runner
             : base(configuration, runtime)
         {
         }
+        
+        public override EPCompiler Compiler => EPCompilerProvider.Compiler;
 
         public override RegressionEnvironment Milestone(long num)
         {

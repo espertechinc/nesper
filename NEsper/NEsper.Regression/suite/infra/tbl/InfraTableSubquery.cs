@@ -28,6 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             execs.Add(new InfraTableSubqueryAgainstKeyed());
             execs.Add(new InfraTableSubqueryAgainstUnkeyed());
             execs.Add(new InfraTableSubquerySecondaryIndex());
+            execs.Add(new InfraTableSubqueryInFilter());
             return execs;
         }
 
@@ -70,6 +71,50 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 new object[] {expectedSum});
         }
 
+        internal class InfraTableSubqueryInFilter : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "create table MyTable(tablecol string primary key);\n" +
+                             "insert into MyTable select p00 as tablecol from SupportBean_S0;\n" +
+                             "@name('s0') select * from SupportBean(theString=(select tablecol from MyTable).orderBy().firstOf())";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendAssert(env, "E", false);
+                SendS0(env, "E");
+                SendAssert(env, "E", true);
+                SendS0(env, "C");
+                SendAssert(env, "E", false);
+                SendAssert(env, "C", true);
+
+                env.Milestone(0);
+
+                SendAssert(env, "A", false);
+                SendAssert(env, "C", true);
+                SendS0(env, "A");
+                SendAssert(env, "A", true);
+                SendAssert(env, "C", false);
+
+                env.UndeployAll();
+            }
+
+            private void SendS0(
+                RegressionEnvironment env,
+                string p00)
+            {
+                env.SendEventBean(new SupportBean_S0(0, p00));
+            }
+
+            private void SendAssert(
+                RegressionEnvironment env,
+                string theString,
+                bool expected)
+            {
+                env.SendEventBean(new SupportBean(theString, 0));
+                Assert.AreEqual(expected, env.Listener("s0").IsInvokedAndReset);
+            }
+        }
+
         internal class InfraTableSubqueryAgainstKeyed : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -85,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "select sum(IntPrimitive) as total from SupportBean group by TheString",
                     path);
                 env.CompileDeploy(
-                        "@Name('s0') select (select total from varagg where key = S0.P00) as value " +
+                        "@name('s0') select (select total from varagg where key = S0.P00) as value " +
                         "from SupportBean_S0 as S0",
                         path)
                     .AddListener("s0");
@@ -110,7 +155,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.CompileDeploy("create table InfraOne (string string, IntPrimitive int)", path);
                 env.CompileDeploy(
-                        "@Name('s0') select (select IntPrimitive from InfraOne where string = S0.P00) as c0 from SupportBean_S0 as S0",
+                        "@name('s0') select (select IntPrimitive from InfraOne where string = S0.P00) as c0 from SupportBean_S0 as S0",
                         path)
                     .AddListener("s0");
                 env.CompileDeploy(
@@ -151,7 +196,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(eplInto, path);
 
                 var eplSubselect =
-                    "@Name('s0') select (select value from MyTable as tbl where sb.TheString = tbl.p2) as c0 from SupportBean as sb";
+                    "@name('s0') select (select value from MyTable as tbl where sb.TheString = tbl.p2) as c0 from SupportBean as sb";
                 env.CompileDeploy(eplSubselect, path).AddListener("s0");
 
                 SendInsertUpdate(env, "G1", "SG1", "P2_1", 10);

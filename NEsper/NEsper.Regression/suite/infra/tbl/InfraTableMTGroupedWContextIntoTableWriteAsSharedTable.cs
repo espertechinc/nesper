@@ -99,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             }
 
             // each group should total up to "numLoops*numThreads"
-            env.CompileDeploy("@Name('s0') " + eplAssert, path).AddListener("s0");
+            env.CompileDeploy("@name('s0') " + eplAssert, path).AddListener("s0");
             var listener = env.Listener("s0");
 
             int? expected = numLoops * numThreads;

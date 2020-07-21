@@ -74,6 +74,26 @@ namespace com.espertech.esper.regressionrun.suite.@event
             ConfigureNestedSimple(configuration);
             ConfigureUnderlyingSimple(configuration);
             ConfigureSuperType(configuration);
+            ConfigureManufacturerTypes(configuration);
+            ConfigureGetterTypes(configuration);
+        }
+
+        private static void ConfigureGetterTypes(Configuration configuration)
+        {
+            var eventTypeMeta = new ConfigurationCommonEventTypeXMLDOM();
+            eventTypeMeta.RootElementName = EventInfraGetterSimpleNoFragment.XMLTYPENAME;
+            var schema = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                         "<xs:schema targetNamespace=\"http://www.espertech.com/schema/esper\" elementFormDefault=\"qualified\" xmlns:esper=\"http://www.espertech.com/schema/esper\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n" +
+                         "\t<xs:element name=\"" +
+                         EventInfraGetterSimpleNoFragment.XMLTYPENAME +
+                         "\">\n" +
+                         "\t\t<xs:complexType>\n" +
+                         "\t\t\t<xs:attribute name=\"property\" type=\"xs:string\" use=\"required\"/>\n" +
+                         "\t\t</xs:complexType>\n" +
+                         "\t</xs:element>\n" +
+                         "</xs:schema>\n";
+            eventTypeMeta.SchemaText = schema;
+            configuration.Common.AddEventType(EventInfraGetterSimpleNoFragment.XMLTYPENAME, eventTypeMeta);
         }
 
         private static void ConfigureSuperType(Configuration configuration)
@@ -371,22 +391,22 @@ namespace com.espertech.esper.regressionrun.suite.@event
         private static void ConfiguredNestedDynamicRootedSimple(Configuration configuration)
         {
             configuration.Common.AddEventType(
-                EventInfraPropertyNestedDynamicRootedSimple.MAP_TYPENAME,
+                EventInfraPropertyDynamicNestedRootedSimple.MAP_TYPENAME,
                 Collections.EmptyDataMap);
 
-            var type_2 = EventInfraPropertyNestedDynamicRootedSimple.OA_TYPENAME + "_2";
+            var type_2 = EventInfraPropertyDynamicNestedRootedSimple.OA_TYPENAME + "_2";
             string[] names_2 = {"NestedNestedValue"};
             object[] types_2 = {typeof(object)};
             configuration.Common.AddEventType(type_2, names_2, types_2);
-            
-            var type_1 = EventInfraPropertyNestedDynamicRootedSimple.OA_TYPENAME + "_1";
+
+            var type_1 = EventInfraPropertyDynamicNestedRootedSimple.OA_TYPENAME + "_1";
             string[] names_1 = {"NestedValue", "NestedNested"};
             object[] types_1 = {typeof(object), type_2};
             configuration.Common.AddEventType(type_1, names_1, types_1);
-            
+
             string[] names = {"SimpleProperty", "Nested"};
             object[] types = {typeof(object), type_1};
-            configuration.Common.AddEventType(EventInfraPropertyNestedDynamicRootedSimple.OA_TYPENAME, names, types);
+            configuration.Common.AddEventType(EventInfraPropertyDynamicNestedRootedSimple.OA_TYPENAME, names, types);
 
             var eventTypeMeta = new ConfigurationCommonEventTypeXMLDOM();
             eventTypeMeta.RootElementName = "Myevent";
@@ -398,13 +418,13 @@ namespace com.espertech.esper.regressionrun.suite.@event
                          "\t</xs:element>\n" +
                          "</xs:schema>\n";
             eventTypeMeta.SchemaText = schema;
-            configuration.Common.AddEventType(EventInfraPropertyNestedDynamicRootedSimple.XML_TYPENAME, eventTypeMeta);
+            configuration.Common.AddEventType(EventInfraPropertyDynamicNestedRootedSimple.XML_TYPENAME, eventTypeMeta);
 
             var s3 = SchemaBuilder.Record(
-                EventInfraPropertyNestedDynamicRootedSimple.AVRO_TYPENAME + "_3",
+                EventInfraPropertyDynamicNestedRootedSimple.AVRO_TYPENAME + "_3",
                 TypeBuilder.OptionalInt("NestedNestedValue"));
             var s2 = SchemaBuilder.Record(
-                EventInfraPropertyNestedDynamicRootedSimple.AVRO_TYPENAME + "_2",
+                EventInfraPropertyDynamicNestedRootedSimple.AVRO_TYPENAME + "_2",
                 TypeBuilder.OptionalInt("NestedValue"),
                 TypeBuilder.Field(
                     "NestedNested",
@@ -412,7 +432,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
                         TypeBuilder.IntType(),
                         s3)));
             var avroSchema = SchemaBuilder.Record(
-                EventInfraPropertyNestedDynamicRootedSimple.AVRO_TYPENAME + "_1",
+                EventInfraPropertyDynamicNestedRootedSimple.AVRO_TYPENAME + "_1",
                 TypeBuilder.Field(
                     "SimpleProperty",
                     TypeBuilder.Union(
@@ -425,17 +445,17 @@ namespace com.espertech.esper.regressionrun.suite.@event
                         s2)));
 
             configuration.Common.AddEventTypeAvro(
-                EventInfraPropertyNestedDynamicRootedSimple.AVRO_TYPENAME,
+                EventInfraPropertyDynamicNestedRootedSimple.AVRO_TYPENAME,
                 new ConfigurationCommonEventTypeAvro(avroSchema));
         }
 
         private static void ConfigureNestedDynamicRootedNonSimple(Configuration configuration)
         {
             configuration.Common.AddEventType(
-                EventInfraPropertyNestedDynamicRootedNonSimple.MAP_TYPENAME,
+                EventInfraPropertyDynamicNestedRootedNonSimple.MAP_TYPENAME,
                 Collections.EmptyDataMap);
 
-            var nestedName = EventInfraPropertyNestedDynamicRootedNonSimple.OA_TYPENAME + "_1";
+            var nestedName = EventInfraPropertyDynamicNestedRootedNonSimple.OA_TYPENAME + "_1";
             string[] namesNested = {"Indexed", "Mapped", "ArrayProperty", "MapProperty"};
             object[] typesNested = {
                 typeof(int[]), typeof(IDictionary<string, object>), typeof(int[]), typeof(IDictionary<string, object>)
@@ -443,7 +463,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddEventType(nestedName, namesNested, typesNested);
             string[] names = {"someprop", "Item"};
             object[] types = {typeof(string), nestedName};
-            configuration.Common.AddEventType(EventInfraPropertyNestedDynamicRootedNonSimple.OA_TYPENAME, names, types);
+            configuration.Common.AddEventType(EventInfraPropertyDynamicNestedRootedNonSimple.OA_TYPENAME, names, types);
 
             var eventTypeMeta = new ConfigurationCommonEventTypeXMLDOM();
             eventTypeMeta.RootElementName = "Myevent";
@@ -456,11 +476,11 @@ namespace com.espertech.esper.regressionrun.suite.@event
                          "</xs:schema>\n";
             eventTypeMeta.SchemaText = schema;
             configuration.Common.AddEventType(
-                EventInfraPropertyNestedDynamicRootedNonSimple.XML_TYPENAME,
+                EventInfraPropertyDynamicNestedRootedNonSimple.XML_TYPENAME,
                 eventTypeMeta);
 
             var s1 = SchemaBuilder.Record(
-                EventInfraPropertyNestedDynamicRootedNonSimple.AVRO_TYPENAME + "_1",
+                EventInfraPropertyDynamicNestedRootedNonSimple.AVRO_TYPENAME + "_1",
                 TypeBuilder.Field(
                     "Indexed",
                     TypeBuilder.Union(
@@ -476,37 +496,37 @@ namespace com.espertech.esper.regressionrun.suite.@event
                         TypeBuilder.Map(
                             TypeBuilder.IntType()))));
             var avroSchema = SchemaBuilder.Record(
-                EventInfraPropertyNestedDynamicRootedNonSimple.AVRO_TYPENAME,
+                EventInfraPropertyDynamicNestedRootedNonSimple.AVRO_TYPENAME,
                 TypeBuilder.Field(
                     "Item",
                     TypeBuilder.Union(
                         TypeBuilder.IntType(),
                         s1)));
             configuration.Common.AddEventTypeAvro(
-                EventInfraPropertyNestedDynamicRootedNonSimple.AVRO_TYPENAME,
+                EventInfraPropertyDynamicNestedRootedNonSimple.AVRO_TYPENAME,
                 new ConfigurationCommonEventTypeAvro(avroSchema));
         }
 
         private static void ConfigureNestedDynamicDeep(Configuration configuration)
         {
             var top = Collections.SingletonDataMap("Item", typeof(IDictionary<string, object>));
-            configuration.Common.AddEventType(EventInfraPropertyNestedDynamicDeep.MAP_TYPENAME, top);
+            configuration.Common.AddEventType(EventInfraPropertyDynamicNestedDeep.MAP_TYPENAME, top);
 
-            var type_3 = EventInfraPropertyNestedDynamicDeep.OA_TYPENAME + "_3";
+            var type_3 = EventInfraPropertyDynamicNestedDeep.OA_TYPENAME + "_3";
             string[] names_3 = {"NestedNestedValue"};
             object[] types_3 = {typeof(object)};
             configuration.Common.AddEventType(type_3, names_3, types_3);
-            var type_2 = EventInfraPropertyNestedDynamicDeep.OA_TYPENAME + "_2";
+            var type_2 = EventInfraPropertyDynamicNestedDeep.OA_TYPENAME + "_2";
             string[] names_2 = {"NestedNested", "NestedValue"};
             object[] types_2 = {type_3, typeof(object)};
             configuration.Common.AddEventType(type_2, names_2, types_2);
-            var type_1 = EventInfraPropertyNestedDynamicDeep.OA_TYPENAME + "_1";
+            var type_1 = EventInfraPropertyDynamicNestedDeep.OA_TYPENAME + "_1";
             string[] names_1 = {"Nested"};
             object[] types_1 = {type_2};
             configuration.Common.AddEventType(type_1, names_1, types_1);
             string[] names = {"Item"};
             object[] types = {type_1};
-            configuration.Common.AddEventType(EventInfraPropertyNestedDynamicDeep.OA_TYPENAME, names, types);
+            configuration.Common.AddEventType(EventInfraPropertyDynamicNestedDeep.OA_TYPENAME, names, types);
 
             var eventTypeMeta = new ConfigurationCommonEventTypeXMLDOM();
             eventTypeMeta.RootElementName = "Myevent";
@@ -525,13 +545,13 @@ namespace com.espertech.esper.regressionrun.suite.@event
                          "\t</xs:element>\n" +
                          "</xs:schema>\n";
             eventTypeMeta.SchemaText = schema;
-            configuration.Common.AddEventType(EventInfraPropertyNestedDynamicDeep.XML_TYPENAME, eventTypeMeta);
+            configuration.Common.AddEventType(EventInfraPropertyDynamicNestedDeep.XML_TYPENAME, eventTypeMeta);
 
             var s3 = SchemaBuilder.Record(
-                EventInfraPropertyNestedDynamicDeep.AVRO_TYPENAME + "_3",
+                EventInfraPropertyDynamicNestedDeep.AVRO_TYPENAME + "_3",
                 TypeBuilder.OptionalInt("NestedNestedValue"));
             var s2 = SchemaBuilder.Record(
-                EventInfraPropertyNestedDynamicDeep.AVRO_TYPENAME + "_2",
+                EventInfraPropertyDynamicNestedDeep.AVRO_TYPENAME + "_2",
                 TypeBuilder.OptionalInt("NestedValue"),
                 TypeBuilder.Field(
                     "NestedNested",
@@ -539,17 +559,17 @@ namespace com.espertech.esper.regressionrun.suite.@event
                         TypeBuilder.IntType(),
                         s3)));
             var s1 = SchemaBuilder.Record(
-                EventInfraPropertyNestedDynamicDeep.AVRO_TYPENAME + "_1",
+                EventInfraPropertyDynamicNestedDeep.AVRO_TYPENAME + "_1",
                 TypeBuilder.Field(
                     "Nested",
                     TypeBuilder.Union(
                         TypeBuilder.IntType(),
                         s2)));
             var avroSchema = SchemaBuilder.Record(
-                EventInfraPropertyNestedDynamicDeep.AVRO_TYPENAME,
+                EventInfraPropertyDynamicNestedDeep.AVRO_TYPENAME,
                 TypeBuilder.Field("Item", s1));
             configuration.Common.AddEventTypeAvro(
-                EventInfraPropertyNestedDynamicDeep.AVRO_TYPENAME,
+                EventInfraPropertyDynamicNestedDeep.AVRO_TYPENAME,
                 new ConfigurationCommonEventTypeAvro(avroSchema));
         }
 
@@ -572,17 +592,17 @@ namespace com.espertech.esper.regressionrun.suite.@event
                          "\t</xs:element>\n" +
                          "</xs:schema>\n";
             eventTypeMeta.SchemaText = schema;
-            configuration.Common.AddEventType(EventInfraPropertyNestedDynamic.XML_TYPENAME, eventTypeMeta);
+            configuration.Common.AddEventType(EventInfraPropertyDynamicNested.XML_TYPENAME, eventTypeMeta);
 
             var top = Collections.SingletonDataMap("Item", typeof(IDictionary<string, object>));
-            configuration.Common.AddEventType(EventInfraPropertyNestedDynamic.MAP_TYPENAME, top);
+            configuration.Common.AddEventType(EventInfraPropertyDynamicNested.MAP_TYPENAME, top);
 
             string[] names = {"Item"};
             object[] types = {typeof(object)};
-            configuration.Common.AddEventType(EventInfraPropertyNestedDynamic.OA_TYPENAME, names, types);
+            configuration.Common.AddEventType(EventInfraPropertyDynamicNested.OA_TYPENAME, names, types);
 
             var s1 = SchemaBuilder.Record(
-                EventInfraPropertyNestedDynamic.AVRO_TYPENAME + "_1",
+                EventInfraPropertyDynamicNested.AVRO_TYPENAME + "_1",
                 TypeBuilder.Field(
                     "Id",
                     TypeBuilder.Union(
@@ -591,10 +611,10 @@ namespace com.espertech.esper.regressionrun.suite.@event
                             TypeBuilder.Property(PROP_STRING_KEY, PROP_STRING_VALUE)),
                         TypeBuilder.NullType())));
             var avroSchema = SchemaBuilder.Record(
-                EventInfraPropertyNestedDynamic.AVRO_TYPENAME,
+                EventInfraPropertyDynamicNested.AVRO_TYPENAME,
                 TypeBuilder.Field("Item", s1));
             configuration.Common.AddEventTypeAvro(
-                EventInfraPropertyNestedDynamic.AVRO_TYPENAME,
+                EventInfraPropertyDynamicNested.AVRO_TYPENAME,
                 new ConfigurationCommonEventTypeAvro(avroSchema));
         }
 
@@ -789,6 +809,95 @@ namespace com.espertech.esper.regressionrun.suite.@event
                 new ConfigurationCommonEventTypeAvro(eventInfraEventRenderSchema));
         }
 
+        private static void ConfigureManufacturerTypes(Configuration configuration)
+        {
+            var myXMLEventConfig = new ConfigurationCommonEventTypeXMLDOM();
+            myXMLEventConfig.RootElementName = "myevent";
+            var schema = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                         "<xs:schema targetNamespace=\"http://www.espertech.com/schema/esper\" elementFormDefault=\"qualified\" xmlns:esper=\"http://www.espertech.com/schema/esper\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n" +
+                         "\t<xs:element name=\"myevent\">\n" +
+                         "\t\t<xs:complexType>\n" +
+                         "\t\t\t<xs:attribute name=\"p0\" type=\"xs:string\" use=\"required\"/>\n" +
+                         "\t\t\t<xs:attribute name=\"p1\" type=\"xs:int\" use=\"required\"/>\n" +
+                         "\t\t</xs:complexType>\n" +
+                         "\t</xs:element>\n" +
+                         "</xs:schema>\n";
+            myXMLEventConfig.SchemaText = schema;
+            configuration.Common.AddEventType(EventInfraManufacturer.XML_TYPENAME, myXMLEventConfig);
+
+            var avroSchema = SchemaBuilder.Record(
+                EventInfraManufacturer.AVRO_TYPENAME,
+                TypeBuilder.Field(
+                    "p1",
+                    TypeBuilder.StringType(
+                        TypeBuilder.Property(PROP_STRING_KEY, PROP_STRING_VALUE))),
+                TypeBuilder.Field(
+                    "p2",
+                    TypeBuilder.IntType()));
+
+            configuration.Common.AddEventTypeAvro(EventInfraManufacturer.AVRO_TYPENAME, new ConfigurationCommonEventTypeAvro(avroSchema));
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestEventInfraPropertyUnderlyingSimple()
+        {
+            RegressionRunner.Run(session, new EventInfraPropertyUnderlyingSimple());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestEventInfraPropertyMappedIndexed()
+        {
+            RegressionRunner.Run(session, new EventInfraPropertyMappedIndexed());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestEventInfraPropertyDynamicSimple()
+        {
+            RegressionRunner.Run(session, new EventInfraPropertyDynamicSimple());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestEventInfraPropertyNestedSimple()
+        {
+            RegressionRunner.Run(session, new EventInfraPropertyNestedSimple());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestEventInfraPropertyDynamicNonSimple()
+        {
+            RegressionRunner.Run(session, new EventInfraPropertyDynamicNonSimple());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestEventInfraPropertyNestedIndexed()
+        {
+            RegressionRunner.Run(session, new EventInfraPropertyNestedIndexed());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestEventInfraPropertyDynamicNested()
+        {
+            RegressionRunner.Run(session, new EventInfraPropertyDynamicNested());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestEventInfraPropertyDynamicNestedRootedSimple()
+        {
+            RegressionRunner.Run(session, new EventInfraPropertyDynamicNestedRootedSimple());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestEventInfraPropertyDynamicNestedDeep()
+        {
+            RegressionRunner.Run(session, new EventInfraPropertyDynamicNestedDeep());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestEventInfraPropertyDynamicNestedRootedNonSimple()
+        {
+            RegressionRunner.Run(session, new EventInfraPropertyDynamicNestedRootedNonSimple());
+        }
+
         [Test, RunInApplicationDomain]
         public void TestEventInfraEventRenderer()
         {
@@ -802,21 +911,9 @@ namespace com.espertech.esper.regressionrun.suite.@event
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEventInfraPropertyAccessPerformance()
+        public void TestEventInfraSuperType()
         {
-            RegressionRunner.Run(session, new EventInfraPropertyAccessPerformance());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventInfraPropertyDynamicNonSimple()
-        {
-            RegressionRunner.Run(session, new EventInfraPropertyDynamicNonSimple());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestEventInfraPropertyDynamicSimple()
-        {
-            RegressionRunner.Run(session, new EventInfraPropertyDynamicSimple());
+            RegressionRunner.Run(session, new EventInfraSuperType());
         }
 
         [Test, RunInApplicationDomain]
@@ -826,57 +923,135 @@ namespace com.espertech.esper.regressionrun.suite.@event
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEventInfraPropertyMappedIndexed()
+        public void TestEventInfraManufacturer()
         {
-            RegressionRunner.Run(session, new EventInfraPropertyMappedIndexed());
+            RegressionRunner.Run(session, new EventInfraManufacturer());
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEventInfraPropertyNestedDynamic()
+        public void TestEventInfraPropertyAccessPerformance()
         {
-            RegressionRunner.Run(session, new EventInfraPropertyNestedDynamic());
+            RegressionRunner.Run(session, new EventInfraPropertyAccessPerformance());
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEventInfraPropertyNestedDynamicDeep()
+        public void TestEventInfraGetterSimpleNoFragment()
         {
-            RegressionRunner.Run(session, new EventInfraPropertyNestedDynamicDeep());
+            RegressionRunner.Run(session, new EventInfraGetterSimpleNoFragment());
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEventInfraPropertyNestedDynamicRootedNonSimple()
+        public void TestEventInfraGetterSimpleFragment()
         {
-            RegressionRunner.Run(session, new EventInfraPropertyNestedDynamicRootedNonSimple());
+            RegressionRunner.Run(session, new EventInfraGetterSimpleFragment());
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEventInfraPropertyNestedDynamicRootedSimple()
+        public void TestEventInfraGetterMapped()
         {
-            RegressionRunner.Run(session, new EventInfraPropertyNestedDynamicRootedSimple());
+            RegressionRunner.Run(session, new EventInfraGetterMapped());
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEventInfraPropertyNestedIndexed()
+        public void TestEventInfraGetterIndexed()
         {
-            RegressionRunner.Run(session, new EventInfraPropertyNestedIndexed());
+            RegressionRunner.Run(session, new EventInfraGetterIndexed());
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEventInfraPropertyNestedSimple()
+        public void TestEventInfraGetterDynamicIndexed()
         {
-            RegressionRunner.Run(session, new EventInfraPropertyNestedSimple());
+            RegressionRunner.Run(session, new EventInfraGetterDynamicIndexed());
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEventInfraPropertyUnderlyingSimple()
+        public void TestEventInfraGetterDynamicIndexexPropertyPredefined()
         {
-            RegressionRunner.Run(session, new EventInfraPropertyUnderlyingSimple());
+            RegressionRunner.Run(session, new EventInfraGetterDynamicIndexexPropertyPredefined());
         }
 
         [Test, RunInApplicationDomain]
-        public void TestEventInfraSuperType()
+        public void TestEventInfraGetterDynamicSimplePropertyPredefined()
         {
-            RegressionRunner.Run(session, new EventInfraSuperType());
+            RegressionRunner.Run(session, new EventInfraGetterDynamicSimplePropertyPredefined());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestEventInfraGetterDynamicMapped()
+        {
+            RegressionRunner.Run(session, new EventInfraGetterDynamicMapped());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestEventInfraGetterDynamicSimple()
+        {
+            RegressionRunner.Run(session, new EventInfraGetterDynamicSimple());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestEventInfraGetterDynamicNested()
+        {
+            RegressionRunner.Run(session, new EventInfraGetterDynamicNested());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestEventInfraGetterNestedSimpleNoFragment()
+        {
+            RegressionRunner.Run(session, new EventInfraGetterNestedSimple());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestEventInfraGetterNestedArray()
+        {
+            RegressionRunner.Run(session, new EventInfraGetterNestedArray());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestEventInfraGetterNestedSimpleDeep()
+        {
+            RegressionRunner.Run(session, new EventInfraGetterNestedSimpleDeep());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestEventInfraGetterDynamicNestedDeep()
+        {
+            RegressionRunner.Run(session, new EventInfraGetterDynamicNestedDeep());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestEventInfraContainedSimple()
+        {
+            RegressionRunner.Run(session, new EventInfraContainedSimple());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestEventInfraContainedIndexedWithIndex()
+        {
+            RegressionRunner.Run(session, new EventInfraContainedIndexedWithIndex());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestEventInfraContainedNested()
+        {
+            RegressionRunner.Run(session, new EventInfraContainedNested());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestEventInfraContainedNestedArray()
+        {
+            RegressionRunner.Run(session, new EventInfraContainedNestedArray());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestEventInfraPropertyIndexedRuntimeIndex()
+        {
+            RegressionRunner.Run(session, new EventInfraPropertyIndexedRuntimeIndex());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestEventInfraPropertyMappedRuntimeKey()
+        {
+            RegressionRunner.Run(session, new EventInfraPropertyMappedRuntimeKey());
         }
     }
 } // end of namespace

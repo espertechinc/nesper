@@ -97,7 +97,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 "  then insert into OutputAlerts select 'EXPIRED' as type, -1L as cnt, null as contributors;\n" +
                 "\n" +
                 // For more output: "@Audit() select * from CountStream;\n" +
-                "@Name('output') select * from OutputAlerts;\n";
+                "@name('output') select * from OutputAlerts;\n";
             var compiled = env.CompileWBusPublicType(epl);
             env.Deploy(compiled);
             var listener = new SupportUpdateListener();

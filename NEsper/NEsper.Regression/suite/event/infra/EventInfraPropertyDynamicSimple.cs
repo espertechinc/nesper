@@ -11,7 +11,7 @@ using System.Xml;
 
 using Avro.Generic;
 
-using com.espertech.esper.collection;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -22,105 +22,119 @@ using NEsper.Avro.Extensions;
 
 using NUnit.Framework;
 
-using static com.espertech.esper.regressionlib.support.@event.ValueWithExistsFlag;
 using static com.espertech.esper.regressionlib.support.@event.SupportEventInfra;
+using static com.espertech.esper.regressionlib.support.@event.ValueWithExistsFlag;
 
 namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
-    public class EventInfraPropertyDynamicSimple : RegressionExecution
-    {
-        public static readonly string XML_TYPENAME = typeof(EventInfraPropertyDynamicSimple).Name + "XML";
-        public static readonly string MAP_TYPENAME = typeof(EventInfraPropertyDynamicSimple).Name + "Map";
-        public static readonly string OA_TYPENAME = typeof(EventInfraPropertyDynamicSimple).Name + "OA";
-        public static readonly string AVRO_TYPENAME = typeof(EventInfraPropertyDynamicSimple).Name + "Avro";
+	public class EventInfraPropertyDynamicSimple : RegressionExecution
+	{
+		public static readonly string XML_TYPENAME = nameof(EventInfraPropertyDynamicSimple) + "XML";
+		public static readonly string MAP_TYPENAME = nameof(EventInfraPropertyDynamicSimple) + "Map";
+		public static readonly string OA_TYPENAME = nameof(EventInfraPropertyDynamicSimple) + "OA";
+		public static readonly string AVRO_TYPENAME = nameof(EventInfraPropertyDynamicSimple) + "Avro";
+		public static readonly string JSON_TYPENAME = nameof(EventInfraPropertyDynamicSimple) + "Json";
 
-        public void Run(RegressionEnvironment env)
-        {
-            // Bean
-            Pair<object, object>[] beanTests = {
-                new Pair<object, object>(new SupportMarkerImplA("e1"), Exists("e1")),
-                new Pair<object, object>(new SupportMarkerImplB(1), Exists(1)),
-                new Pair<object, object>(new SupportMarkerImplC(), NotExists())
-            };
-            RunAssertion(env, typeof(SupportMarkerInterface).Name, FBEAN, null, beanTests, typeof(object));
+		public bool ExcludeWhenInstrumented()
+		{
+			return true;
+		}
 
-            // Map
-            Pair<object, object>[] mapTests = {
-                new Pair<object, object>(Collections.SingletonMap("somekey", "10"), NotExists()),
-                new Pair<object, object>(Collections.SingletonMap("Id", "abc"), Exists("abc")),
-                new Pair<object, object>(Collections.SingletonMap("Id", 10), Exists(10))
-            };
-            RunAssertion(env, MAP_TYPENAME, FMAP, null, mapTests, typeof(object));
+		public void Run(RegressionEnvironment env)
+		{
+			var path = new RegressionPath();
 
-            // Object-Array
-            Pair<object, object>[] oaTests = {
-                new Pair<object, object>(new object[] {1, null}, Exists(null)),
-                new Pair<object, object>(new object[] {2, "abc"}, Exists("abc")),
-                new Pair<object, object>(new object[] {3, 10}, Exists(10))
-            };
-            RunAssertion(env, OA_TYPENAME, FOA, null, oaTests, typeof(object));
+			// Bean
+			var beanTests = new Pair<object, object>[] {
+				new Pair<object, object>(new SupportMarkerImplA("e1"), Exists("e1")),
+				new Pair<object, object>(new SupportMarkerImplB(1), Exists(1)),
+				new Pair<object, object>(new SupportMarkerImplC(), NotExists())
+			};
+			RunAssertion(env, nameof(SupportMarkerInterface), FBEAN, null, beanTests, typeof(object), path);
 
-            // XML
-            Pair<object, object>[] xmlTests = {
-                new Pair<object, object>("", NotExists()),
-                new Pair<object, object>("<Id>10</Id>", Exists("10")),
-                new Pair<object, object>("<Id>abc</Id>", Exists("abc"))
-            };
-            RunAssertion(env, XML_TYPENAME, FXML, xmlToValue, xmlTests, typeof(XmlNode));
+			// Map
+			var mapTests = new Pair<object, object>[] {
+				new Pair<object, object>(Collections.SingletonMap("somekey", "10"), NotExists()),
+				new Pair<object, object>(Collections.SingletonMap("id", "abc"), Exists("abc")),
+				new Pair<object, object>(Collections.SingletonMap("id", 10), Exists(10)),
+			};
+			RunAssertion(env, MAP_TYPENAME, FMAP, null, mapTests, typeof(object), path);
 
-            // Avro
-            var avroSchema = AvroSchemaUtil
-                .ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME));
-            var datumEmpty = new GenericRecord(SchemaBuilder.Record(AVRO_TYPENAME));
-            var datumOne = new GenericRecord(avroSchema.AsRecordSchema());
-            datumOne.Put("Id", 101);
-            var datumTwo = new GenericRecord(avroSchema.AsRecordSchema());
-            datumTwo.Put("Id", null);
-            Pair<object, object>[] avroTests = {
-                new Pair<object, object>(datumEmpty, NotExists()),
-                new Pair<object, object>(datumOne, Exists(101)),
-                new Pair<object, object>(datumTwo, Exists(null))
-            };
-            RunAssertion(env, AVRO_TYPENAME, FAVRO, null, avroTests, typeof(object));
-        }
+			// Object-Array
+			var oaTests = new Pair<object, object>[] {
+				new Pair<object, object>(new object[] {1, null}, Exists(null)),
+				new Pair<object, object>(new object[] {2, "abc"}, Exists("abc")),
+				new Pair<object, object>(new object[] {3, 10}, Exists(10)),
+			};
+			RunAssertion(env, OA_TYPENAME, FOA, null, oaTests, typeof(object), path);
 
-        private void RunAssertion(
-            RegressionEnvironment env,
-            string typename,
-            FunctionSendEvent send,
-            Func<object, object> optionalValueConversion,
-            Pair<object, object>[] tests,
-            Type expectedPropertyType)
-        {
-            var stmtText = "@Name('s0') select Id? as myId, exists(Id?) as exists_myId from " + typename;
-            env.CompileDeploy(stmtText).AddListener("s0");
+			// XML
+			var xmlTests = new Pair<object, object>[] {
+				new Pair<object, object>("", NotExists()),
+				new Pair<object, object>("<id>10</id>", Exists("10")),
+				new Pair<object, object>("<id>abc</id>", Exists("abc")),
+			};
+			RunAssertion(env, XML_TYPENAME, FXML, xmlToValue, xmlTests, typeof(XmlNode), path);
 
-            Assert.AreEqual(expectedPropertyType, env.Statement("s0").EventType.GetPropertyType("myId"));
-            Assert.AreEqual(typeof(bool?), env.Statement("s0").EventType.GetPropertyType("exists_myId"));
+			// Avro
+			var avroSchema = AvroSchemaUtil.ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME)).AsRecordSchema();
+			var datumEmpty = new GenericRecord(SchemaBuilder.Record(AVRO_TYPENAME));
+			var datumOne = new GenericRecord(avroSchema);
+			datumOne.Put("id", 101);
+			var datumTwo = new GenericRecord(avroSchema);
+			datumTwo.Put("id", null);
+			var avroTests = new Pair<object, object>[] {
+				new Pair<object, object>(datumEmpty, NotExists()),
+				new Pair<object, object>(datumOne, Exists(101)),
+				new Pair<object, object>(datumTwo, Exists(null))
+			};
+			RunAssertion(env, AVRO_TYPENAME, FAVRO, null, avroTests, typeof(object), path);
 
-            foreach (var pair in tests) {
-                send.Invoke(env, pair.First, typename);
-                var @event = env.Listener("s0").AssertOneGetNewAndReset();
-                AssertValueMayConvert(
-                    @event,
-                    "myId",
-                    (ValueWithExistsFlag) pair.Second,
-                    optionalValueConversion);
-            }
+			// Json
+			env.CompileDeploy("@JsonSchema(dynamic=true) @public @buseventtype create json schema " + JSON_TYPENAME + "()", path);
+			var jsonTests = new Pair<object, object>[] {
+				new Pair<object, object>("{}", NotExists()),
+				new Pair<object, object>("{\"id\": 10}", Exists(10)),
+				new Pair<object, object>("{\"id\": \"abc\"}", Exists("abc"))
+			};
+			RunAssertion(env, JSON_TYPENAME, FJSON, null, jsonTests, typeof(object), path);
+		}
 
-            env.UndeployAll();
-        }
+		private void RunAssertion(
+			RegressionEnvironment env,
+			string typename,
+			FunctionSendEvent send,
+			Func<object, object> optionalValueConversion,
+			Pair<object, object>[] tests,
+			Type expectedPropertyType,
+			RegressionPath path)
+		{
 
-        private void AddMapEventType(RegressionEnvironment env)
-        {
-        }
+			var stmtText = "@name('s0') select id? as myid, exists(id?) as exists_myid from " + typename;
+			env.CompileDeploy(stmtText, path).AddListener("s0");
 
-        private void AddOAEventType(RegressionEnvironment env)
-        {
-        }
+			Assert.AreEqual(expectedPropertyType, env.Statement("s0").EventType.GetPropertyType("myid"));
+			Assert.AreEqual(typeof(bool?), env.Statement("s0").EventType.GetPropertyType("exists_myid"));
 
-        private void AddAvroEventType(RegressionEnvironment env)
-        {
-        }
-    }
+			foreach (var pair in tests) {
+				send.IsNumber();
+				var @event = env.Listener("s0").AssertOneGetNewAndReset();
+				SupportEventInfra.AssertValueMayConvert(@event, "myid", (ValueWithExistsFlag) pair.Second, optionalValueConversion);
+			}
+
+			env.UndeployAll();
+		}
+
+		private void AddMapEventType(RegressionEnvironment env)
+		{
+		}
+
+		private void AddOAEventType(RegressionEnvironment env)
+		{
+		}
+
+		private void AddAvroEventType(RegressionEnvironment env)
+		{
+		}
+	}
 } // end of namespace

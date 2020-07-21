@@ -75,19 +75,19 @@ namespace NEsper.Examples.MatchMaker
             sender.SendEvent(user2);
 
             Log.Info("Sending some near locations");
-            user1.SetLocation(8.99999, 10);
+            user1.WithLocation(8.99999, 10);
             sender.SendEvent(user1);
 
-            user1.SetLocation(9, 10);
+            user1.WithLocation(9, 10);
             sender.SendEvent(user1);
 
-            user1.SetLocation(11, 10);
+            user1.WithLocation(11, 10);
             sender.SendEvent(user1);
 
-            user1.SetLocation(11.0000001, 10);
+            user1.WithLocation(11.0000001, 10);
             sender.SendEvent(user1);
 
-            user2.SetLocation(10.0000001, 9);
+            user2.WithLocation(10.0000001, 9);
             sender.SendEvent(user2);
 
             user1 = new MobileUserBean(1, 10, 10,
@@ -127,7 +127,7 @@ namespace NEsper.Examples.MatchMaker
                 var x = 10 + random.Next(i) / 100000;
                 var y = 10 + random.Next(i) / 100000;
 
-                user2.SetLocation(x, y);
+                user2.WithLocation(x, y);
                 sender.SendEvent(user2);
 
                 if (_continuousSimulation) {

@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             // select/read
             var eplSubselect =
-                "@Name('s0') select (select count(*) from vartotal where topgroup=sb.IntPrimitive) as c0 " +
+                "@name('s0') select (select count(*) from vartotal where topgroup=sb.IntPrimitive) as c0 " +
                 "from SupportBean as sb";
             env.CompileDeploy(eplSubselect, path).AddListener("s0");
 

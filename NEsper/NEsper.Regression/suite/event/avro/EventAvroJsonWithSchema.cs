@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
         public void Run(RegressionEnvironment env)
         {
             var fields = "name,favorite_number,favorite_color";
-            env.CompileDeploy("@Name('s0') select " + fields + " from User").AddListener("s0");
+            env.CompileDeploy("@name('s0') select " + fields + " from User").AddListener("s0");
 
             var schema =
                 AvroSchemaUtil.ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured("User"));

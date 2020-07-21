@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using Avro.Generic;
@@ -63,17 +64,18 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             }
             else {
                 schemaCompiled = env.Compile(
-                    "create " + rep.GetOutputTypeCreateSchemaName() + " schema MySchema (P0 string, P1 string)",
+                    rep.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMySchema>() +
+                    "create schema MySchema (p0 string, p1 string)",
                     options => {
-                        options.BusModifierEventType = ctx => EventTypeBusModifier.BUS;
-                        options.AccessModifierEventType = ctx => NameAccessModifier.PUBLIC;
+                        options.SetBusModifierEventType(ctx => EventTypeBusModifier.BUS);
+                        options.SetAccessModifierEventType(ctx => NameAccessModifier.PUBLIC);
                     });
             }
 
             path.Add(schemaCompiled);
             env.Deploy(schemaCompiled);
 
-            env.CompileDeploy("@Name('create') create table TheTable (P0 string, P1 string)", path);
+            env.CompileDeploy("@name('create') create table TheTable (P0 string, P1 string)", path);
             env.CompileDeploy("insert into TheTable select * from MySchema", path);
 
             if (bean) {
@@ -123,15 +125,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var path = new RegressionPath();
 
                 var eplCreateTable =
-                    "@Name('S0') create table MyTable(c0 long, pkey1 int primary key, pKey0 string primary key)";
+                    "@name('S0') create table MyTable(c0 long, pkey1 int primary key, pKey0 string primary key)";
                 env.CompileDeploy(eplCreateTable, path);
 
                 var eplIntoTable =
-                    "@Name('Insert-Into-Table') insert into MyTable select IntPrimitive as pkey1, LongPrimitive as c0, TheString as pKey0 from SupportBean";
+                    "@name('Insert-Into-Table') insert into MyTable select IntPrimitive as pkey1, LongPrimitive as c0, TheString as pKey0 from SupportBean";
                 env.CompileDeploy(eplIntoTable, path);
 
                 var eplDeleteTable =
-                    "@Name('Delete-Table') on SupportBean_S0 delete from MyTable where pkey1 = Id and pKey0 = P00";
+                    "@name('Delete-Table') on SupportBean_S0 delete from MyTable where pkey1 = Id and pKey0 = P00";
                 env.CompileDeploy(eplDeleteTable, path);
 
                 env.Milestone(1);
@@ -203,8 +205,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "TheString" };
-                var epl = "@Name('create') create table MyTableSM(TheString string);\n" +
-                          "@Name('tbl-insert') insert into MyTableSM select TheString from SupportBean;\n";
+                var epl = "@name('create') create table MyTableSM(TheString string);\n" +
+                          "@name('tbl-insert') insert into MyTableSM select TheString from SupportBean;\n";
                 env.CompileDeploy(epl);
 
                 EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("create"), fields, new object[0][]);
@@ -235,7 +237,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@Name('create') create table MyTableIISA(pkey string primary key)", path);
+                env.CompileDeploy("@name('create') create table MyTableIISA(pkey string primary key)", path);
                 env.CompileDeploy(
                     "insert into MyTableIISA select TheString as pkey from SupportBean where MyTableIISA[TheString] is null",
                     path);
@@ -294,7 +296,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@Name('create') create table MyTableNWM(pkey string)", path);
+                env.CompileDeploy("@name('create') create table MyTableNWM(pkey string)", path);
                 env.CompileDeploy("create window MyWindow#keepall as SupportBean", path);
                 env.CompileDeploy(
                     "on SupportBean as sb merge MyWindow when not matched " +
@@ -318,16 +320,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@Name('createOne') create table MyTableOne(pkey string primary key, col int)", path);
-                env.CompileDeploy("@Name('createTwo') create table MyTableTwo(pkey string primary key, col int)", path);
+                env.CompileDeploy("@name('createOne') create table MyTableOne(pkey string primary key, col int)", path);
+                env.CompileDeploy("@name('createTwo') create table MyTableTwo(pkey string primary key, col int)", path);
 
-                var eplSplit = "@Name('split') on SupportBean \n" +
+                var eplSplit = "@name('split') on SupportBean \n" +
                                "  insert into MyTableOne select TheString as pkey, IntPrimitive as col where IntPrimitive > 0\n" +
                                "  insert into MyTableTwo select TheString as pkey, IntPrimitive as col where IntPrimitive < 0\n" +
                                "  insert into OtherStream select TheString as pkey, IntPrimitive as col where IntPrimitive = 0\n";
                 env.CompileDeploy(eplSplit, path);
 
-                env.CompileDeploy("@Name('s1') select * from OtherStream", path).AddListener("s1");
+                env.CompileDeploy("@name('s1') select * from OtherStream", path).AddListener("s1");
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 AssertSplitStream(
@@ -398,7 +400,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy("create window MyWindow#unique(TheString) as SupportBean", path);
                 env.CompileDeploy("insert into MyWindow select * from SupportBean", path);
                 env.CompileDeploy(
-                    "@Name('create') create table MyTableIIF(pKey0 string primary key, pkey1 int primary key)",
+                    "@name('create') create table MyTableIIF(pKey0 string primary key, pkey1 int primary key)",
                     path);
                 env.CompileDeploy(
                     "on SupportBean_S1 insert into MyTableIIF select TheString as pKey0, IntPrimitive as pkey1 from MyWindow",
@@ -443,8 +445,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var fields = new [] { "TheString" };
                 var path = new RegressionPath();
-                env.CompileDeploy("@Name('create') create table MyTableIIU(TheString string)", path);
-                env.CompileDeploy("@Name('tbl-insert') insert into MyTableIIU select TheString from SupportBean", path);
+                env.CompileDeploy("@name('create') create table MyTableIIU(TheString string)", path);
+                env.CompileDeploy("@name('tbl-insert') insert into MyTableIIU select TheString from SupportBean", path);
 
                 EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("create"), fields, new object[0][]);
 
@@ -484,7 +486,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "pkey","thesum" };
-                var epl = "@Name('create') create table MyTableIIK(" +
+                var epl = "@name('create') create table MyTableIIK(" +
                           "pkey string primary key," +
                           "thesum sum(int));\n";
                 epl += "insert into MyTableIIK select TheString as pkey from SupportBean;\n";
@@ -579,6 +581,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public string P0 { get; }
 
             public string P1 { get; }
+        }
+        
+        [Serializable]
+        public class MyLocalJsonProvidedMySchema 
+        {
+            public String p0;
+            public String p1;
         }
     }
 } // end of namespace

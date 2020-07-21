@@ -89,13 +89,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 // create window
                 var stmtTextCreate = namedWindow
-                    ? "@Name('CreateInfra') create window MyInfra#keepall as select TheString as a, IntPrimitive as b from SupportBean"
-                    : "@Name('CreateInfra') create table MyInfra (a string primary key, b int)";
+                    ? "@name('CreateInfra') create window MyInfra#keepall as select TheString as a, IntPrimitive as b from SupportBean"
+                    : "@name('CreateInfra') create table MyInfra (a string primary key, b int)";
                 var path = new RegressionPath();
                 env.CompileDeploy(stmtTextCreate, path).AddListener("CreateInfra");
 
                 // create delete stmt
-                var stmtTextDelete = "@Name('OnDelete') on SupportBean_A delete from MyInfra";
+                var stmtTextDelete = "@name('OnDelete') on SupportBean_A delete from MyInfra";
                 env.CompileDeploy(stmtTextDelete, path).AddListener("OnDelete");
                 EPAssertionUtil.AssertEqualsAnyOrder(
                     env.Statement("OnDelete").EventType.PropertyNames,
@@ -103,12 +103,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create insert into
                 var stmtTextInsertOne =
-                    "@Name('Insert') insert into MyInfra select TheString as a, IntPrimitive as b from SupportBean";
+                    "@name('Insert') insert into MyInfra select TheString as a, IntPrimitive as b from SupportBean";
                 env.CompileDeploy(stmtTextInsertOne, path);
 
                 // create consumer
                 string[] fields = {"a", "b"};
-                var stmtTextSelect = "@Name('Select') select irstream MyInfra.a as a, b from MyInfra as S1";
+                var stmtTextSelect = "@name('Select') select irstream MyInfra.a as a, b from MyInfra as S1";
                 env.CompileDeploy(stmtTextSelect, path).AddListener("Select");
 
                 // Delete all events, no result expected
@@ -221,14 +221,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 // create infra
                 var stmtTextCreate = namedWindow
-                    ? "@Name('CreateInfra') create window MyInfra#keepall as select TheString as a, IntPrimitive as b from SupportBean"
-                    : "@Name('CreateInfra') create table MyInfra(a string primary key, b int)";
+                    ? "@name('CreateInfra') create window MyInfra#keepall as select TheString as a, IntPrimitive as b from SupportBean"
+                    : "@name('CreateInfra') create table MyInfra(a string primary key, b int)";
                 var path = new RegressionPath();
                 env.CompileDeploy(stmtTextCreate, path).AddListener("CreateInfra");
 
                 // create delete stmt
                 var stmtTextDelete =
-                    "@Name('OnDelete') on pattern [every ea=SupportBean_A or every eb=SupportBean_B] delete from MyInfra";
+                    "@name('OnDelete') on pattern [every ea=SupportBean_A or every eb=SupportBean_B] delete from MyInfra";
                 env.CompileDeploy(stmtTextDelete, path).AddListener("OnDelete");
 
                 // create insert into
@@ -320,8 +320,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create infra
                 var stmtTextCreate = namedWindow
-                    ? "@Name('CreateInfra') create window MyInfra#keepall as select TheString as a, IntPrimitive as b from SupportBean"
-                    : "@Name('CreateInfra') create table MyInfra (a string primary key, b int)";
+                    ? "@name('CreateInfra') create window MyInfra#keepall as select TheString as a, IntPrimitive as b from SupportBean"
+                    : "@name('CreateInfra') create table MyInfra (a string primary key, b int)";
                 env.CompileDeploy(stmtTextCreate, path).AddListener("CreateInfra");
 
                 // create delete stmt

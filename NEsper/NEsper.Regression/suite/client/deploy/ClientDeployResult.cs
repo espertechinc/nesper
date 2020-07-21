@@ -46,12 +46,11 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             for (var i = 0; i < statementNames.Length; i++) {
                 var num = i;
                 try {
-                    var deployed = env.Deployment
-                        .Deploy(
-                            compiled,
-                            new DeploymentOptions()
-                                .WithDeploymentId(deploymentIds[i])
-                                .WithStatementNameRuntime(_ => statementNames[num]));
+                    var deployed = env.Deployment.Deploy(
+                        compiled,
+                        new DeploymentOptions()
+                            .WithDeploymentId(deploymentIds[i])
+                            .WithStatementNameRuntime(_ => statementNames[num]));
                     statements[i] = deployed.Statements[0];
                 }
                 catch (EPDeployException e) {
@@ -60,6 +59,22 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             }
 
             return statements;
+        }
+
+
+        private static void AssertEvent(
+            DeploymentStateEvent @event,
+            bool isDeploy,
+            String deploymentId,
+            String runtimeURI,
+            int numStatements,
+            int rolloutItemNumber)
+        {
+            Assert.AreEqual(isDeploy ? typeof(DeploymentStateEventDeployed) : typeof(DeploymentStateEventUndeployed), @event.GetType());
+            Assert.AreEqual(deploymentId, @event.DeploymentId);
+            Assert.AreEqual(runtimeURI, @event.RuntimeURI);
+            Assert.AreEqual(numStatements, @event.Statements.Length);
+            Assert.AreEqual(rolloutItemNumber, @event.RolloutItemNumber);
         }
 
         internal class ClientDeploySameDeploymentId : RegressionExecution
@@ -74,6 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     Assert.Fail();
                 }
                 catch (EPDeployException ex) {
+                    Assert.That(ex.RolloutItemNumber, Is.EqualTo(-1));
                     SupportMessageAssertUtil.AssertMessage(ex, "Deployment by id 'ABC' already exists");
                 }
 
@@ -99,12 +115,12 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 Assert.AreEqual(2, result.Statements.Length);
                 Assert.AreEqual(1, env.Deployment.Deployments.Length);
                 Assert.AreEqual(
-                    "@Name(\"StmtOne\")" +
+                    "@name(\"StmtOne\")" +
                     NEWLINE +
                     "create schema MyEvent(id String, val1 int, val2 int)",
                     env.Statement("StmtOne").GetProperty(StatementProperty.EPL));
                 Assert.AreEqual(
-                    "@Name(\"StmtTwo\")" +
+                    "@name(\"StmtTwo\")" +
                     NEWLINE +
                     "select * from MyEvent",
                     env.Statement("StmtTwo").GetProperty(StatementProperty.EPL));
@@ -118,25 +134,16 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
         {
             public void Run(RegressionEnvironment env)
             {
-                SupportDeploymentStateListener.Events.Clear();
-                var listener = new SupportDeploymentStateListener();
+                SupportDeploymentStateListener.Reset();
+                SupportDeploymentStateListener listener = new SupportDeploymentStateListener();
                 env.Deployment.AddDeploymentStateListener(listener);
 
-                env.CompileDeploy("@Name('s0') select * from SupportBean");
+                env.CompileDeploy("@name('s0') select * from SupportBean");
                 var deploymentId = env.DeploymentId("s0");
-
-                var deployed = (DeploymentStateEventDeployed) SupportDeploymentStateListener.Events[0];
-                SupportDeploymentStateListener.Events.Clear();
-                Assert.AreEqual(deploymentId, deployed.DeploymentId);
-                Assert.AreEqual("default", deployed.RuntimeURI);
-                Assert.AreEqual(1, deployed.Statements.Length);
+                AssertEvent(SupportDeploymentStateListener.GetSingleEventAndReset(), true, deploymentId, "default", 1, -1);
 
                 env.UndeployAll();
-                var undeployed = (DeploymentStateEventUndeployed) SupportDeploymentStateListener.Events[0];
-                SupportDeploymentStateListener.Events.Clear();
-                Assert.AreEqual(deploymentId, undeployed.DeploymentId);
-                Assert.AreEqual("default", undeployed.RuntimeURI);
-                Assert.AreEqual(1, undeployed.Statements.Length);
+                AssertEvent(SupportDeploymentStateListener.GetSingleEventAndReset(), false, deploymentId, "default", 1, -1);
 
                 Assert.That(() => env.Deployment.DeploymentStateListeners.Current, Throws.Nothing);
                 env.Deployment.RemoveDeploymentStateListener(listener);
@@ -145,6 +152,19 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 env.Deployment.AddDeploymentStateListener(listener);
                 env.Deployment.RemoveAllDeploymentStateListeners();
                 Assert.IsFalse(env.Deployment.DeploymentStateListeners.MoveNext());
+                
+                env.Deployment.AddDeploymentStateListener(listener);
+                EPCompiled compiledOne = env.Compile("@name('s0') select * from SupportBean;\n @name('s1') select * from SupportBean;\n");
+                EPCompiled compiledTwo = env.Compile("@name('s2') select * from SupportBean");
+                List<EPDeploymentRolloutCompiled> rolloutItems = new List<EPDeploymentRolloutCompiled>() {
+                    new EPDeploymentRolloutCompiled(compiledOne),
+                    new EPDeploymentRolloutCompiled(compiledTwo)
+                };
+                env.Rollout(rolloutItems, null);
+                IList<DeploymentStateEvent> events = SupportDeploymentStateListener.GetNEventsAndReset(2);
+                AssertEvent(events[0], true, env.DeploymentId("s0"), "default", 2, 0);
+                AssertEvent(events[1], true, env.DeploymentId("s2"), "default", 1, 1);
+                env.Deployment.RemoveAllDeploymentStateListeners();
 
                 env.UndeployAll();
             }
@@ -163,7 +183,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 }
 
                 // test statement name trim
-                env.CompileDeploy("@Name(' stmt0  ') select * from SupportBean_S0");
+                env.CompileDeploy("@name(' stmt0  ') select * from SupportBean_S0");
                 Assert.IsNotNull(env.Deployment.GetStatement(env.DeploymentId("stmt0"), "stmt0"));
 
                 try {

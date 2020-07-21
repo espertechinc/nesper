@@ -308,7 +308,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 // assert join
                 SupportQueryPlanIndexHook.Reset();
-                var epl = "@Name('s0') " +
+                var epl = "@name('s0') " +
                           INDEX_CALLBACK_HOOK +
                           "select * from SupportBean_S0 as S0 unidirectional, SupportBean_S1#keepall as S1 " +
                           "where P00 in (P10, P11) and P01 in (P12, P13)";
@@ -325,7 +325,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("create window S1Window#keepall as SupportBean_S1", path);
                 env.CompileDeploy("insert into S1Window select * from SupportBean_S1", path);
 
-                var eplNamedWindow = "@Name('s0') " +
+                var eplNamedWindow = "@name('s0') " +
                                      INDEX_CALLBACK_HOOK +
                                      "on SupportBean_S0 as S0 select * from S1Window as S1 " +
                                      "where P00 in (P10, P11) and P01 in (P12, P13)";
@@ -349,7 +349,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("create index S1Idx3 on S1Table(P12)", path);
                 env.CompileDeploy("create index S1Idx4 on S1Table(P13)", path);
 
-                var eplTable = "@Name('s0') " +
+                var eplTable = "@name('s0') " +
                                INDEX_CALLBACK_HOOK +
                                "on SupportBean_S0 as S0 select * from S1Table as S1 " +
                                "where P00 in (P10, P11) and P01 in (P12, P13)";
@@ -370,7 +370,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') " +
+                var epl = "@name('s0') " +
                           INDEX_CALLBACK_HOOK +
                           "select S0.Id as c0," +
                           "(select * from SupportBean_S1#keepall as S1 " +
@@ -459,7 +459,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 // assert join
                 SupportQueryPlanIndexHook.Reset();
-                var epl = "@Name('s0') " +
+                var epl = "@name('s0') " +
                           INDEX_CALLBACK_HOOK +
                           "select * from SupportBean_S0#keepall as S0, SupportBean_S1 as S1 unidirectional " +
                           "where P00 in (P10, P11) and P01 in (P12, P13)";
@@ -476,7 +476,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("create window S0Window#keepall as SupportBean_S0", path);
                 env.CompileDeploy("insert into S0Window select * from SupportBean_S0", path);
 
-                var eplNamedWindow = "@Name('s0') " +
+                var eplNamedWindow = "@name('s0') " +
                                      INDEX_CALLBACK_HOOK +
                                      "on SupportBean_S1 as S1 select * from S0Window as S0 " +
                                      "where P00 in (P10, P11) and P01 in (P12, P13)";
@@ -498,7 +498,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("create index S0Idx1 on S0Table(P00)", path);
                 env.CompileDeploy("create index S0Idx2 on S0Table(P01)", path);
 
-                var eplTable = "@Name('s0') " +
+                var eplTable = "@name('s0') " +
                                INDEX_CALLBACK_HOOK +
                                "on SupportBean_S1 as S1 select * from S0Table as S0 " +
                                "where P00 in (P10, P11) and P01 in (P12, P13)";
@@ -520,7 +520,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 SupportQueryPlanIndexHook.Reset();
-                var epl = "@Name('s0') " +
+                var epl = "@name('s0') " +
                           INDEX_CALLBACK_HOOK +
                           "select S1.Id as c0," +
                           "(select * from SupportBean_S0#keepall as S0 " +
@@ -608,7 +608,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 SupportQueryPlanIndexHook.Reset();
-                var epl = "@Name('s0') " +
+                var epl = "@name('s0') " +
                           INDEX_CALLBACK_HOOK +
                           "select * from SupportBean_S0 as S0 unidirectional, SupportBean_S1#keepall as S1 " +
                           "where P10 in ('a', 'b')";
@@ -643,7 +643,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 SupportQueryPlanIndexHook.Reset();
-                var epl = "@Name('s0') " +
+                var epl = "@name('s0') " +
                           INDEX_CALLBACK_HOOK +
                           "select * from SupportBean_S0 as S0 unidirectional, SupportBean_S1#keepall as S1 " +
                           "where 'a' in (P10, P11)";
@@ -679,7 +679,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var types = new EventType[3];
                 var epl =
-                    "@Name('s0') select * from SupportBean_S0 as S0 unidirectional, SupportBean_S1#keepall, SupportBean_S2#keepall ";
+                    "@name('s0') select * from SupportBean_S0 as S0 unidirectional, SupportBean_S1#keepall, SupportBean_S2#keepall ";
 
                 // 3-stream join with in-multiindex directional
                 var planInMidx = new InKeywordTableLookupPlanMultiIdxForge(

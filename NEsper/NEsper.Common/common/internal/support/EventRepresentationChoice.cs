@@ -52,7 +52,12 @@ namespace com.espertech.esper.common.@internal.support
                 _ => throw new ArgumentException("invalid value for EnumValue", nameof(enumValue))
             };
         }
-        
+
+        public static string GetAnnotationTextWJsonProvided<T>(this EventRepresentationChoice enumValue)
+        {
+            return GetAnnotationTextWJsonProvided(enumValue, typeof(T));
+        }
+
         public static string GetAnnotationTextWJsonProvided(this EventRepresentationChoice enumValue, Type jsonProvidedClass) {
             if (enumValue == EventRepresentationChoice.JSONCLASSPROVIDED) {
                 return "@JsonSchema(className='" + jsonProvidedClass.Name + "') " + 

@@ -7,125 +7,77 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Numerics;
-using System.Text;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionlib.support.expreval;
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
-    public class ExprCoreRelOp : RegressionExecution
-    {
-        private static readonly string[] FIELDS = new [] { "c0", "c1", "c2", "c3" };
+	public class ExprCoreRelOp : RegressionExecution
+	{
+		public void Run(RegressionEnvironment env)
+		{
+			RunAssertion(env, "TheString", "'B'", bean => bean.TheString = "A", bean => bean.TheString = "B", bean => bean.TheString = "C");
+			RunAssertion(env, "IntPrimitive", "2", bean => bean.IntPrimitive = 1, bean => bean.IntPrimitive = 2, bean => bean.IntPrimitive = 3);
+			RunAssertion(env, "LongBoxed", "2L", bean => bean.LongBoxed = 1L, bean => bean.LongBoxed = 2L, bean => bean.LongBoxed = 3L);
+			RunAssertion(env, "FloatPrimitive", "2f", bean => bean.FloatPrimitive = 1, bean => bean.FloatPrimitive = 2, bean => bean.FloatPrimitive = 3);
+			RunAssertion(env, "DoublePrimitive", "2d", bean => bean.DoublePrimitive = 1, bean => bean.DoublePrimitive = 2, bean => bean.DoublePrimitive = 3);
+			RunAssertion(env, "DecimalPrimitive", "2m", bean => bean.DecimalPrimitive = 1, bean => bean.DecimalPrimitive = 2, bean => bean.DecimalPrimitive = 3);
+			RunAssertion(
+				env,
+				"IntPrimitive",
+				"BigDecimal.valueOf(2, 0)",
+				bean => bean.IntPrimitive = 1,
+				bean => bean.IntPrimitive = 2,
+				bean => bean.IntPrimitive = 3);
+			RunAssertion(
+				env,
+				"bigInteger",
+				"BigInteger.valueOf(2)",
+				bean => bean.BigInteger = new BigInteger(1),
+				bean => bean.BigInteger = new BigInteger(2),
+				bean => bean.BigInteger = new BigInteger(3));
+			RunAssertion(
+				env,
+				"IntPrimitive",
+				"BigInteger.valueOf(2)",
+				bean => bean.IntPrimitive = 1,
+				bean => bean.IntPrimitive = 2,
+				bean => bean.IntPrimitive = 3);
+		}
 
-        public void Run(RegressionEnvironment env)
-        {
-            var bigIntegerHelper = typeof(BigIntegerHelper).FullName;
-            
-            RunAssertion(
-                env,
-                "TheString",
-                "'B'",
-                bean => bean.TheString = "A",
-                bean => bean.TheString = "B",
-                bean => bean.TheString = "C");
-            RunAssertion(
-                env,
-                "IntPrimitive",
-                "2",
-                bean => bean.IntPrimitive = 1,
-                bean => bean.IntPrimitive = 2,
-                bean => bean.IntPrimitive = 3);
-            RunAssertion(
-                env,
-                "LongBoxed",
-                "2L",
-                bean => bean.LongBoxed = 1L,
-                bean => bean.LongBoxed = 2L,
-                bean => bean.LongBoxed = 3L);
-            RunAssertion(
-                env,
-                "FloatPrimitive",
-                "2f",
-                bean => bean.FloatPrimitive = 1,
-                bean => bean.FloatPrimitive = 2,
-                bean => bean.FloatPrimitive = 3);
-            RunAssertion(
-                env,
-                "DoublePrimitive",
-                "2d",
-                bean => bean.DoublePrimitive = 1,
-                bean => bean.DoublePrimitive = 2,
-                bean => bean.DoublePrimitive = 3);
-            RunAssertion(
-                env,
-                "DecimalBoxed",
-                "2.0m",
-                bean => bean.DecimalBoxed = 1.0m,
-                bean => bean.DecimalBoxed = 2.0m,
-                bean => bean.DecimalBoxed = 3.0m);
-            
-            RunAssertion(
-                env,
-                "IntPrimitive",
-                "2.0m",
-                bean => bean.IntPrimitive = 1,
-                bean => bean.IntPrimitive = 2,
-                bean => bean.IntPrimitive = 3);
-            RunAssertion(
-                env,
-                "BigInteger",
-                $"{bigIntegerHelper}.ValueOf(2)",
-                bean => bean.BigInteger = new BigInteger(1),
-                bean => bean.BigInteger = new BigInteger(2),
-                bean => bean.BigInteger = new BigInteger(3));
-            RunAssertion(
-                env,
-                "IntPrimitive",
-                $"{bigIntegerHelper}.ValueOf(2)",
-                bean => bean.IntPrimitive = 1,
-                bean => bean.IntPrimitive = 2,
-                bean => bean.IntPrimitive = 3);
-        }
+		private static void RunAssertion(
+			RegressionEnvironment env,
+			string lhs,
+			string rhs,
+			Consumer<SupportBean> one,
+			Consumer<SupportBean> two,
+			Consumer<SupportBean> three)
+		{
+			var builder = new SupportEvalBuilder("SupportBean");
+			var fields = "c0,c1,c2,c3".SplitCsv();
+			builder.WithExpression(fields[0], lhs + ">=" + rhs);
+			builder.WithExpression(fields[1], lhs + ">" + rhs);
+			builder.WithExpression(fields[2], lhs + "<=" + rhs);
+			builder.WithExpression(fields[3], lhs + "<" + rhs);
 
-        private static void RunAssertion(
-            RegressionEnvironment env,
-            string lhs,
-            string rhs,
-            Consumer<SupportBean> one,
-            Consumer<SupportBean> two,
-            Consumer<SupportBean> three)
-        {
-            var writer = new StringBuilder();
-            writer.Append("@Name('s0') select ");
-            writer.Append(lhs).Append(">=").Append(rhs).Append(" as c0,");
-            writer.Append(lhs).Append(">").Append(rhs).Append(" as c1,");
-            writer.Append(lhs).Append("<=").Append(rhs).Append(" as c2,");
-            writer.Append(lhs).Append("<").Append(rhs).Append(" as c3");
-            writer.Append(" from SupportBean");
+			var beanOne = new SupportBean();
+			one.Invoke(beanOne);
+			builder.WithAssertion(beanOne).Expect(fields, false, false, true, true);
 
-            env.CompileDeploy(writer.ToString()).AddListener("s0");
+			var beanTwo = new SupportBean();
+			two.Invoke(beanTwo);
+			builder.WithAssertion(beanTwo).Expect(fields, true, false, true, false);
 
-            SendAssert(env, one, FIELDS, false, false, true, true);
-            SendAssert(env, two, FIELDS, true, false, true, false);
-            SendAssert(env, three, FIELDS, true, true, false, false);
+			var beanThree = new SupportBean();
+			three.Invoke(beanThree);
+			builder.WithAssertion(beanThree).Expect(fields, true, true, false, false);
 
-            env.UndeployAll();
-        }
-
-        private static void SendAssert(
-            RegressionEnvironment env,
-            Consumer<SupportBean> consumer,
-            string[] fields,
-            params object[] expected)
-        {
-            var bean = new SupportBean();
-            consumer.Invoke(bean);
-            env.SendEventBean(bean);
-            EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, expected);
-        }
-    }
+			builder.Run(env);
+			env.UndeployAll();
+		}
+	}
 } // end of namespace

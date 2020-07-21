@@ -138,10 +138,17 @@
     <plugin-pattern-observer namespace="ext0" name="observer1" forge-class="com.mycompany.MyObserverForge0" />
     <plugin-pattern-observer namespace="ext1" name="observer2" forge-class="com.mycompany.MyObserverForge1" />
 
-    <bytecode include-comments="true" include-debugsymbols="true" attach-epl="false" attach-module-epl="true" instrumented="true" allow-subscriber="true" access-modifier-context="internal" access-modifier-event-type="public" access-modifier-expression="internal" access-modifier-named-window="public" access-modifier-script="internal" access-modifier-table="public" access-modifier-variable="internal" bus-modifier-event-type="bus"/>
+    <plugin-method-datetime method-name="methodname1" forge-class="com.mycompany.MyDateTimeMethodForge" />
+    <plugin-method-enum method-name="methodname2" forge-class="com.mycompany.MyEnumMethodForge" />
+
+    <bytecode include-comments="true" include-debugsymbols="true" attach-epl="false" attach-module-epl="true" attach-pattern-epl="true" instrumented="true" allow-subscriber="true"
+              access-modifier-context="protected" access-modifier-event-type="public" access-modifier-expression="protected" access-modifier-named-window="public"
+              access-modifier-script="protected" access-modifier-table="public" access-modifier-variable="protected" bus-modifier-event-type="bus"
+              threadpool-compiler-num-threads="1234" threadpool-compiler-capacity="4321" max-methods-per-class="5555" allow-inlined-class="false"/>
 
     <logging>
       <code enabled="true"/>
+      <filter-plan enabled="true"/>
     </logging>
 
     <stream-selection>
@@ -150,16 +157,21 @@
 
     <language sort-using-collator="true"/>
 
-    <scripts default-dialect="abc"/>
+    <scripts default-dialect="abc" enabled="false"/>
 
     <expression integer-division="true" division-by-zero-is-null="true" udf-cache="false" extended-agg="false" ducktyping="true" math-context="Precision=2 RoundingMode=ToEven"/>
 
-    <execution filter-service-max-filter-width="100" enable-declared-expr-value-cache="false"/>
+    <execution filter-service-max-filter-width="100" enable-declared-expr-value-cache="false" filter-index-planning="none"/>
 
     <view-resources>
       <iterable-unbound enabled="true"/>
       <outputlimitopt enabled="false"/>
     </view-resources>
+
+    <serde-settings enable-extended-builtin="false" enable-serializable="true" enable-externalizable="true" enable-serialization-fallback="true">
+      <serde-provider-factory class="a.b.c.MySerdeProviderFactoryOne"/>
+      <serde-provider-factory class="a.b.c.MySerdeProviderFactoryTwo"/>
+    </serde-settings>
   </compiler>
 
   <runtime>

@@ -179,7 +179,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 var epl = "create variable int VFREQ = 15;\n" +
                           "create variable int VMIN = 8;\n" +
                           "create variable int VMAX = 17;\n" +
-                          "@Name('s0') select * from SupportMarketDataBean#lastevent output at (*/VFREQ, VMIN:VMAX, *, *, *);\n";
+                          "@name('s0') select * from SupportMarketDataBean#lastevent output at (*/VFREQ, VMIN:VMAX, *, *, *);\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 TryAssertionCrontab(env, 1);
@@ -193,7 +193,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 // every 15 minutes 8am to 5pm
                 SendTimeEvent(env, 1, 17, 10, 0, 0);
                 var expression =
-                    "@Name('s0') select * from SupportMarketDataBean#lastevent output at (*/15, 8:17, *, *, *)";
+                    "@name('s0') select * from SupportMarketDataBean#lastevent output at (*/15, 8:17, *, *, *)";
                 env.CompileDeploy(expression).AddListener("s0");
 
                 TryAssertionCrontab(env, 1);
@@ -237,7 +237,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 // every 15 minutes 8am to 5pm
                 SendTimeEvent(env, 1, 17, 10, 0, 0);
                 var expression =
-                    "@Name('s0') select * from SupportMarketDataBean#lastevent output at (*/15, 8:17, *, *, *)";
+                    "@name('s0') select * from SupportMarketDataBean#lastevent output at (*/15, 8:17, *, *, *)";
 
                 env.EplToModelCompileDeploy(expression).AddListener("s0");
 
@@ -254,7 +254,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.CompileDeploy("on SupportBean set myvar = IntPrimitive");
 
                 var expression =
-                    "@Name('s0') select Symbol from SupportMarketDataBean#length(2) output when myvar=1 then set myvar=0, count_insert_var=count_insert";
+                    "@name('s0') select Symbol from SupportMarketDataBean#length(2) output when myvar=1 then set myvar=0, count_insert_var=count_insert";
                 env.CompileDeploy(expression).AddListener("s0");
                 TryAssertion(env, 1);
                 env.UndeployAll();
@@ -270,7 +270,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.CompileDeploy("on SupportBean set myvar = IntPrimitive");
 
                 var expression =
-                    "@Name('s0') select Symbol from SupportMarketDataBean#length(2) output when myvar=1 then set myvar=0, count_insert_var=count_insert";
+                    "@name('s0') select Symbol from SupportMarketDataBean#length(2) output when myvar=1 then set myvar=0, count_insert_var=count_insert";
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.Create("Symbol");
                 model.FromClause = FromClause.Create(
@@ -295,9 +295,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 // test same variable referenced multiple times JIRA-386
                 SendTimer(env, 0);
-                env.CompileDeploy("@Name('s1') select * from SupportMarketDataBean output last when myvar=100")
+                env.CompileDeploy("@name('s1') select * from SupportMarketDataBean output last when myvar=100")
                     .AddListener("s1");
-                env.CompileDeploy("@Name('s2') select * from SupportMarketDataBean output last when myvar=100")
+                env.CompileDeploy("@name('s2') select * from SupportMarketDataBean output last when myvar=100")
                     .AddListener("s2");
 
                 env.SendEventBean(new SupportMarketDataBean("ABC", "E1", 100));
@@ -359,9 +359,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 // test count_total for insert and remove
                 var path = new RegressionPath();
-                env.CompileDeploy("@Name('var') create variable int var_cnt_total = 3", path);
+                env.CompileDeploy("@name('var') create variable int var_cnt_total = 3", path);
                 var expressionTotal =
-                    "@Name('s0') select TheString from SupportBean#length(2) output when count_insert_total = var_cnt_total or count_remove_total > 2";
+                    "@name('s0') select TheString from SupportBean#length(2) output when count_insert_total = var_cnt_total or count_remove_total > 2";
                 env.CompileDeploy(expressionTotal, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -397,7 +397,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.CompileDeploy("on SupportBean set myint = IntPrimitive, mystring = TheString");
 
                 var expression =
-                    "@Name('s0') select Symbol from SupportMarketDataBean#length(2) output when myint = 1 and mystring like 'F%'";
+                    "@name('s0') select Symbol from SupportMarketDataBean#length(2) output when myint = 1 and mystring like 'F%'";
                 env.CompileDeploy(expression);
                 var stmt = env.Statement("s0");
                 var subscriber = new SupportSubscriber();
@@ -439,7 +439,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             public void Run(RegressionEnvironment env)
             {
                 var expression =
-                    "@Name('s0') select Symbol from SupportMarketDataBean#length(2) output when count_insert >= 3";
+                    "@name('s0') select Symbol from SupportMarketDataBean#length(2) output when count_insert >= 3";
                 var stmt = env.CompileDeploy(expression).Statement("s0");
                 var subscriber = new SupportSubscriber();
                 stmt.Subscriber = subscriber;
@@ -474,7 +474,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             public void Run(RegressionEnvironment env)
             {
                 var expression =
-                    "@Name('s0') select Symbol from SupportMarketDataBean#length(2) output when count_remove >= 2";
+                    "@name('s0') select Symbol from SupportMarketDataBean#length(2) output when count_remove >= 2";
                 var stmt = env.CompileDeploy(expression).Statement("s0");
                 var subscriber = new SupportSubscriber();
                 stmt.Subscriber = subscriber;
@@ -508,7 +508,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 SendTimeEvent(env, 1, 8, 0, 0, 0);
                 var expression =
-                    "@Name('s0') select Symbol from SupportMarketDataBean#length(2) output when current_timestamp - last_output_timestamp >= 2000";
+                    "@name('s0') select Symbol from SupportMarketDataBean#length(2) output when current_timestamp - last_output_timestamp >= 2000";
                 var stmt = env.CompileDeploy(expression).Statement("s0");
                 var subscriber = new SupportSubscriber();
                 stmt.Subscriber = subscriber;
@@ -555,17 +555,17 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportMarketDataBean output when true then set myvardummy = 'b'",
-                    "Error in the output rate limiting clause: Variable 'myvardummy' of declared type System.Nullable<System.Int32> cannot be assigned a value of type System.String [select * from SupportMarketDataBean output when true then set myvardummy = 'b']");
+                    "Failed to validate the output rate limiting clause: Failed to validate assignment expression 'myvardummy=\"b\"': Variable 'myvardummy' of declared type System.Nullable<System.Int32> cannot be assigned a value of type System.String [select * from SupportMarketDataBean output when true then set myvardummy = 'b']");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportMarketDataBean output when true then set myvardummy = sum(myvardummy)",
-                    "An aggregate function may not appear in a OUTPUT LIMIT clause [select * from SupportMarketDataBean output when true then set myvardummy = sum(myvardummy)]");
+                    "Aggregation functions may not be used within update-set [select * from SupportMarketDataBean output when true then set myvardummy = sum(myvardummy)]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportMarketDataBean output when true then set 1",
-                    "Error in the output rate limiting clause: Missing variable assignment expression in assignment number 0 [select * from SupportMarketDataBean output when true then set 1]");
+                    "Failed to validate the output rate limiting clause: Failed to validate assignment expression '1': Assignment expression must receive a single variable value");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,

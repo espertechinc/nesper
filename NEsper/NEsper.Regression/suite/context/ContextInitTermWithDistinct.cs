@@ -6,12 +6,14 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
 
@@ -29,6 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             execs.Add(new ContextInitTermWithDistinctOverlappingMultiKey());
             execs.Add(new ContextInitTermWithDistinctNullSingleKey());
             execs.Add(new ContextInitTermWithDistinctNullKeyMultiKey());
+            execs.Add(new ContextInitTermWithDistinctMultikeyWArray());
             return execs;
         }
 
@@ -52,6 +55,56 @@ namespace com.espertech.esper.regressionlib.suite.context
             var bean = new SupportBean(@string, intPrimitive);
             bean.IntBoxed = intBoxed;
             env.SendEventBean(bean);
+        }
+
+        private class ContextInitTermWithDistinctMultikeyWArray : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RegressionPath path = new RegressionPath();
+                env.CompileDeploy("create context MyContext initiated by distinct(array) SupportEventWithIntArray as se", path);
+                env.CompileDeploy("@name('s0') context MyContext select context.se.id as id, sum(intPrimitive) as thesum from SupportBean", path);
+                env.AddListener("s0");
+                var fields = "id,thesum".SplitCsv();
+
+                env.SendEventBean(new SupportEventWithIntArray("SE1", new int[] {1, 2}, 0));
+                env.SendEventBean(new SupportBean("E1", 1));
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                    env.Listener("s0").GetAndResetLastNewData(),
+                    fields,
+                    new object[][] {
+                        new object[] {"SE1", 1}
+                    });
+
+                env.SendEventBean(new SupportEventWithIntArray("SE2", new int[] {1}, 0));
+                env.SendEventBean(new SupportEventWithIntArray("SE2", new int[] {1}, 0));
+                env.SendEventBean(new SupportEventWithIntArray("SE1", new int[] {1, 2}, 0));
+                env.SendEventBean(new SupportBean("E2", 2));
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                    env.Listener("s0").GetAndResetLastNewData(),
+                    fields,
+                    new object[][] {
+                        new object[] {"SE1", 3}, 
+                        new object[] {"SE2", 2}
+                    });
+
+                env.Milestone(0);
+
+                env.SendEventBean(new SupportEventWithIntArray("SE1", new int[] {1, 2}, 0));
+                env.SendEventBean(new SupportEventWithIntArray("SE2", new int[] {1}, 0));
+                env.SendEventBean(new SupportEventWithIntArray("SE3", new int[] { }, 0));
+                env.SendEventBean(new SupportBean("E3", 4));
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                    env.Listener("s0").GetAndResetLastNewData(),
+                    fields,
+                    new object[][] {
+                        new object[] {"SE1", 7}, 
+                        new object[] {"SE2", 6}, 
+                        new object[] {"SE3", 4}
+                    });
+
+                env.UndeployAll();
+            }
         }
 
         internal class ContextInitTermWithDistinctInvalid : RegressionExecution
@@ -103,7 +156,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var fields = new [] { "TheString","LongPrimitive","cnt" };
                 env.CompileDeploy(
-                    "@Name('s0') context MyContext " +
+                    "@name('s0') context MyContext " +
                     "select TheString, LongPrimitive, count(*) as cnt from SupportBean(TheString = context.S0.TheString)",
                     path);
                 env.AddListener("s0");
@@ -215,7 +268,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var fields = new [] { "Id","P00","P01","cnt" };
                 env.CompileDeploy(
-                    "@Name('s0') context MyContext " +
+                    "@name('s0') context MyContext " +
                     "select Id, P00, P01, count(*) as cnt " +
                     "from SupportBean_S0(Id = context.sb.IntPrimitive and P00 = context.sb.TheString)",
                     path);
@@ -316,7 +369,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(
                     "create context MyContext initiated by distinct(TheString) SupportBean as sb terminated after 24 hours",
                     path);
-                env.CompileDeploy("@Name('s0') context MyContext select count(*) as cnt from SupportBean", path);
+                env.CompileDeploy("@name('s0') context MyContext select count(*) as cnt from SupportBean", path);
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean(null, 10));
@@ -344,7 +397,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(
                     "create context MyContext initiated by distinct(TheString, IntBoxed, IntPrimitive) SupportBean as sb terminated after 100 hours",
                     path);
-                env.CompileDeploy("@Name('s0') context MyContext select count(*) as cnt from SupportBean", path);
+                env.CompileDeploy("@name('s0') context MyContext select count(*) as cnt from SupportBean", path);
                 env.AddListener("s0");
 
                 SendSBEvent(env, "A", null, 1);

@@ -433,7 +433,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select t1.col1, t1.col2, t2.col1, t2.col2, t3.col1, t3.col2 from Type1#keepall as t1" +
+                    "@name('s0') select t1.col1, t1.col2, t2.col1, t2.col2, t3.col1, t3.col2 from Type1#keepall as t1" +
                     " left outer join Type2#keepall as t2" +
                     " on t1.col2 = t2.col2 and t1.col1 = t2.col1" +
                     " left outer join Type3#keepall as t3" +
@@ -495,7 +495,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var fields = new [] { "S0.Id"," S0.P00"," S0.P01"," S1.Id"," S1.P10"," S1.P11"," S2.Id"," S2.P20"," S2.P21" };
 
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           "SupportBean_S0#length(1000) as S0 " +
                           " left outer join SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10 and S0.P01 = S1.P11" +
                           " left outer join SupportBean_S2#length(1000) as S2 on S0.P00 = S2.P20 and S0.P01 = S2.P21";
@@ -579,7 +579,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           "SupportBean_S0#length(1000) as S0 " +
                           "left outer join SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10 " +
                           "left outer join SupportBean_S2#length(1000) as S2 on S0.P00 = S2.P20";
@@ -597,7 +597,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// Query:
                 /// s0
                 /// </summary>
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           "SupportBean_S0#length(1000) as S0 " +
                           " left outer join SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10 " +
                           " left outer join SupportBean_S2#length(1000) as S2 on S0.P00 = S2.P20 ";
@@ -616,7 +616,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// Query: right other join is eliminated/translated
                 /// s0
                 /// </summary>
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           "SupportBean_S2#length(1000) as S2 " +
                           " right outer join SupportBean_S0#length(1000) as S0 on S0.P00 = S2.P20 " +
                           " left outer join SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10 ";
@@ -634,7 +634,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// Query: right other join is eliminated/translated
                 /// s0
                 /// </summary>
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           "SupportBean_S1#length(1000) as S1 " +
                           " right outer join SupportBean_S0#length(1000) as S0 on S0.P00 = S1.P10 " +
                           " left outer join SupportBean_S2#length(1000) as S2 on S0.P00 = S2.P20 ";
@@ -651,7 +651,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 string epl;
 
-                epl = "@Name('s0') select * from " +
+                epl = "@name('s0') select * from " +
                       "SupportBean_S0#length(1000) as S0 " +
                       " left outer join SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10 and S0.P01 = S1.P11" +
                       " left outer join SupportBean_S2#length(1000) as S2 on S0.P00 = S2.P20 and S1.P11 = S2.P21";
@@ -660,7 +660,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     epl,
                     "Failed to validate outer-join expression: Outer join ON-clause columns must refer to properties of the same joined streams when using multiple columns in the on-clause");
 
-                epl = "@Name('s0') select * from " +
+                epl = "@name('s0') select * from " +
                       "SupportBean_S0#length(1000) as S0 " +
                       " left outer join SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10 and S0.P01 = S1.P11" +
                       " left outer join SupportBean_S2#length(1000) as S2 on S2.P20 = S0.P00 and S2.P20 = S1.P11";

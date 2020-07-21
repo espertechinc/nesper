@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 return;
             }
 
-            var stmtText = "@Name('s0') select * from pattern [(every SupportBean) where myplugin:count_to(10)]";
+            var stmtText = "@name('s0') select * from pattern [(every SupportBean) where myplugin:count_to(10)]";
             env.CompileDeploy(stmtText).AddListener("s0");
 
             for (var i = 0; i < 10; i++) {
@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
             var path = new RegressionPath();
             env.CompileDeploy("create variable int COUNT_TO = 3", path);
-            var stmtText = "@Name('s0') select * from pattern [(every SupportBean) where myplugin:count_to(COUNT_TO)]";
+            var stmtText = "@name('s0') select * from pattern [(every SupportBean) where myplugin:count_to(COUNT_TO)]";
             env.CompileDeploy(stmtText, path).AddListener("s0");
 
             for (var i = 0; i < 3; i++) {

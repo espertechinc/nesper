@@ -24,10 +24,21 @@ namespace com.espertech.esper.regressionrun.suite.expr
     [TestFixture]
     public class TestSuiteExprDateTimeWConfig
     {
+        private void TryInvalidConfig(
+            Type beanEventClass,
+            ConfigurationCommonEventTypeBean configBean,
+            string expected)
+        {
+            TryInvalidConfigurationCompileAndRuntime(
+                SupportConfigFactory.GetConfiguration(),
+                config => config.Common.AddEventType(beanEventClass.Name, beanEventClass.FullName, configBean),
+                expected);
+        }
+
         [Test, RunInApplicationDomain]
         public void TestExprDTMicrosecondResolution()
         {
-            RegressionSession session = RegressionRunner.Session();
+            var session = RegressionRunner.Session();
             session.Configuration.Common.AddEventType(typeof(SupportDateTime));
             session.Configuration.Common.TimeSource.TimeUnit = TimeUnit.MICROSECONDS;
             TestSuiteExprDateTime.AddIdStsEtsEvent(session.Configuration);
@@ -38,7 +49,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [Test, RunInApplicationDomain]
         public void TestInvalidConfigure()
         {
-            ConfigurationCommonEventTypeBean configBean = new ConfigurationCommonEventTypeBean();
+            var configBean = new ConfigurationCommonEventTypeBean();
 
             configBean.StartTimestampPropertyName = null;
             configBean.EndTimestampPropertyName = "DateTimeEx";
@@ -54,22 +65,24 @@ namespace com.espertech.esper.regressionrun.suite.expr
 
             configBean.EndTimestampPropertyName = null;
             configBean.StartTimestampPropertyName = "TheString";
-            TryInvalidConfig(typeof(SupportBean), configBean, "Declared start timestamp property 'TheString' is expected to return a DateTimeEx, DateTime, DateTimeOffset or long-typed value but returns 'System.String'");
+            TryInvalidConfig(
+                typeof(SupportBean),
+                configBean,
+                "Declared start timestamp property 'TheString' is expected to return a DateTimeEx, DateTime, DateTimeOffset or long-typed value but returns 'System.String'");
 
             configBean.StartTimestampPropertyName = "LongPrimitive";
             configBean.EndTimestampPropertyName = "TheString";
-            TryInvalidConfig(typeof(SupportBean), configBean, "Declared end timestamp property 'TheString' is expected to return a DateTimeEx, DateTime, DateTimeOffset or long-typed value but returns 'System.String'");
+            TryInvalidConfig(
+                typeof(SupportBean),
+                configBean,
+                "Declared end timestamp property 'TheString' is expected to return a DateTimeEx, DateTime, DateTimeOffset or long-typed value but returns 'System.String'");
 
             configBean.StartTimestampPropertyName = "LongDate";
             configBean.EndTimestampPropertyName = "DateTimeEx";
-            TryInvalidConfig(typeof(SupportDateTime), configBean, "Declared end timestamp property 'DateTimeEx' is expected to have the same property type as the start-timestamp property 'LongDate'");
-        }
-
-        private void TryInvalidConfig(Type beanEventClass, ConfigurationCommonEventTypeBean configBean, string expected)
-        {
-            TryInvalidConfigurationCompileAndRuntime(SupportConfigFactory.GetConfiguration(),
-                config => config.Common.AddEventType(beanEventClass.Name, beanEventClass.FullName, configBean),
-                expected);
+            TryInvalidConfig(
+                typeof(SupportDateTime),
+                configBean,
+                "Declared end timestamp property 'DateTimeEx' is expected to have the same property type as the start-timestamp property 'LongDate'");
         }
     }
 } // end of namespace

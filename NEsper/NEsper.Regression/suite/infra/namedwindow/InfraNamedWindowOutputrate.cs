@@ -27,7 +27,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
             string[] fields = {"TheString", "c"};
             env.CompileDeploy(
-                    "@Name('s0') select irstream TheString, count(*) as c from MyWindowOne group by TheString output snapshot every 1 second",
+                    "@name('s0') select irstream TheString, count(*) as c from MyWindowOne group by TheString output snapshot every 1 second",
                     path)
                 .AddListener("s0");
 

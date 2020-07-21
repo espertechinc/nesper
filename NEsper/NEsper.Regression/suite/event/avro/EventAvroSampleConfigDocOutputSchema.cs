@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
         public void Run(RegressionEnvironment env)
         {
             // schema from statement
-            var epl = "@Name('s0') " +
+            var epl = "@name('s0') " +
                       EventRepresentationChoice.AVRO.GetAnnotationText() +
                       "select 1 as carId, 'abc' as carType from SupportBean";
             env.CompileDeploy(epl);
@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
                 schemaTwo.ToJsonObject().ToString(Newtonsoft.Json.Formatting.None));
             env.UndeployAll();
 
-            env.CompileDeploy("@Name('s0') select count(*) from CarLocUpdateEvent(direction = 1)#time(1 min)")
+            env.CompileDeploy("@name('s0') select count(*) from CarLocUpdateEvent(direction = 1)#time(1 min)")
                 .AddListener("s0");
             var schemaCarLocUpd = AvroSchemaUtil
                 .ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured("CarLocUpdateEvent"))

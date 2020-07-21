@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('mywindow') create window RectangleWindow#keepall as SupportSpatialEventRectangle;\n" +
+                var epl = "@name('mywindow') create window RectangleWindow#keepall as SupportSpatialEventRectangle;\n" +
                           "insert into RectangleWindow select * from SupportSpatialEventRectangle;\n" +
                           "create index MyIndex on RectangleWindow((X, Y, Width, Height) mxcifquadtree(0, 0, 100, 100));\n";
                 env.CompileDeploy(epl);

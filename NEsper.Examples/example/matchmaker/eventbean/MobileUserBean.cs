@@ -33,16 +33,32 @@ namespace NEsper.Examples.MatchMaker.eventbean
             _preferredAgeRange = preferredAgeRange;
         }
 
+        public MobileUserBean Copy()
+        {
+            return new MobileUserBean(
+                UserId,
+                LocationX,
+                LocationY,
+                _myGender,
+                _myHairColor,
+                _myAgeRange,
+                _preferredGender,
+                _preferredHairColor,
+                _preferredAgeRange
+            );
+        }
+        
         public int UserId { get; private set; }
 
         public double LocationX { get; private set; }
 
         public double LocationY { get; set; }
 
-        public void SetLocation(double locationX, double locationY)
+        public MobileUserBean WithLocation(double locationX, double locationY)
         {
             LocationX = locationX;
             LocationY = locationY;
+            return this;
         }
 
         public String MyGender

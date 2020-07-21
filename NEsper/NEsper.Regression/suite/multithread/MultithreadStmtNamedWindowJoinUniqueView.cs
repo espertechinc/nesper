@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                       "insert into A select * from MyEventA;\n" +
                       "insert into B select * from MyEventB;\n" +
                       "\n" +
-                      "@Name('stmt') select sum(A.Data) as aTotal,sum(B.Data) as bTotal " +
+                      "@name('stmt') select sum(A.Data) as aTotal,sum(B.Data) as bTotal " +
                       "from A unidirectional, B where A.Key = B.Key;\n";
             env.CompileDeploy(epl);
 

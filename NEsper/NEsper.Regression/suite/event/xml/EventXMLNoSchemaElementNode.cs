@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -14,17 +16,52 @@ using static com.espertech.esper.regressionlib.support.util.SupportXML;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
-    public class EventXMLNoSchemaElementNode : RegressionExecution
+    public class EventXMLNoSchemaElementNode
     {
-        public void Run(RegressionEnvironment env)
+        public static List<RegressionExecution> Executions()
         {
-            var stmt = "@Name('s0') select event.type as type, event.uid as uid from MyEvent";
-            env.CompileDeploy(stmt).AddListener("s0");
+            var execs = new List<RegressionExecution>();
+            execs.Add(new EventXMLNoSchemaElementNodePreconfig());
+            execs.Add(new EventXMLNoSchemaElementNodeCreateSchema());
+            return execs;
+        }
+
+        public class EventXMLNoSchemaElementNodePreconfig : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunAssertion(env, "MyEvent", new RegressionPath());
+            }
+        }
+
+        public class EventXMLNoSchemaElementNodeCreateSchema : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@public @buseventtype " +
+                          "@XMLSchema(rootElementName='batch-event')" +
+                          "@XMLSchemaField(name='event.type', xpath='//event/@type', type='string')" +
+                          "@XMLSchemaField(name='event.uid', xpath='//event/@uid', type='string')" +
+                          "create xml schema MyEventCreateSchema()";
+                var path = new RegressionPath();
+                env.CompileDeploy(epl, path);
+                RunAssertion(env, "MyEventCreateSchema", path);
+            }
+        }
+
+        private static void RunAssertion(
+            RegressionEnvironment env,
+            string eventTypeName,
+            RegressionPath path)
+        {
+
+            var stmt = "@name('s0') select event.type as type, event.uid as uid from " + eventTypeName;
+            env.CompileDeploy(stmt, path).AddListener("s0");
 
             var xml = "<batch-event>" +
                       "<event type=\"a-f-G\" uid=\"terminal.55\" time=\"2007-04-19T13:05:20.22Z\" version=\"2.0\"/>" +
                       "</batch-event>";
-            SendXMLEvent(env, xml, "MyEvent");
+            SendXMLEvent(env, xml, eventTypeName);
 
             var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
             Assert.AreEqual("a-f-G", theEvent.Get("type"));

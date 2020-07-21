@@ -188,7 +188,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select eventsAsList(TheString, filter:TheString like 'A%') as c0 from SupportBean";
+                    "@name('s0') select eventsAsList(TheString, filter:TheString like 'A%') as c0 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEventAssertEventsAsList(env, "X1", "[]");
@@ -206,7 +206,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var fields = new [] { "c0" };
                 var epl =
-                    "@Name('s0') select concatMethodAgg(TheString, filter:TheString like 'A%') as c0 from SupportBean";
+                    "@name('s0') select concatMethodAgg(TheString, filter:TheString like 'A%') as c0 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEventAssert(
@@ -244,7 +244,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var epl = "create table WordCountTable(wordcms countMinSketch());\n" +
                           "into table WordCountTable select countMinSketchAdd(TheString, filter:IntPrimitive > 0) as wordcms from SupportBean;\n" +
-                          "@Name('s0') select WordCountTable.wordcms.countMinSketchFrequency(P00) as c0 from SupportBean_S0;\n";
+                          "@name('s0') select WordCountTable.wordcms.countMinSketchFrequency(P00) as c0 from SupportBean_S0;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "hello", 0);
@@ -268,7 +268,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "myrate","myqtyrate" };
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "rate(LongPrimitive, filter:TheString like 'A%') as myrate, " +
                           "rate(LongPrimitive, IntPrimitive, filter:TheString like 'A%') as myqtyrate " +
                           "from SupportBean#length(3)";
@@ -339,7 +339,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.AdvanceTime(0);
 
                 var fields = new [] { "c0" };
-                var epl = "@Name('s0') select rate(1, filter:TheString like 'A%') as c0 from SupportBean";
+                var epl = "@name('s0') select rate(1, filter:TheString like 'A%') as c0 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEventAssertIsolated(
@@ -389,7 +389,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "c0" };
-                var epl = "@Name('s0') select nth(IntPrimitive, 1, filter:TheString like 'A%') as c0 from SupportBean";
+                var epl = "@name('s0') select nth(IntPrimitive, 1, filter:TheString like 'A%') as c0 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEventAssert(
@@ -453,7 +453,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "c0", "c1" };
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "leaving(filter:IntPrimitive=1) as c0," +
                           "leaving(filter:IntPrimitive=2) as c1" +
                           " from SupportBean#length(2)";
@@ -501,7 +501,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "sum(IntPrimitive, filter:IntPrimitive=1) as c0, sum(IntPrimitive, filter:IntPrimitive=1) as c1, " +
                           "window(*, filter:IntPrimitive=1) as c2, window(*, filter:IntPrimitive=1) as c3 " +
                           " from SupportBean#length(3)";
@@ -584,7 +584,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.CompileDeploy(eplInto, path);
 
                 var eplSelect =
-                    "@Name('s0') select MyTable.totalA as ta , MyTable.totalB as tb, MyTable.winA as wa, MyTable.winB as wb, MyTable.sortedA as sa, MyTable.sortedB as sb from SupportBean_S0";
+                    "@name('s0') select MyTable.totalA as ta , MyTable.totalB as tb, MyTable.winA as wa, MyTable.winB as wb, MyTable.sortedA as sa, MyTable.sortedB as sb from SupportBean_S0";
                 env.CompileDeploy(eplSelect, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S1(0));
@@ -619,7 +619,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "c0", "c1", "c2", "c3" };
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "first(IntPrimitive, 0, filter:TheString like 'A%') as c0," +
                           "first(IntPrimitive, 1, filter:TheString like 'A%') as c1," +
                           "last(IntPrimitive, 0, filter:TheString like 'A%') as c2," +
@@ -692,7 +692,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "aMaxby","aMinby","aSorted","bMaxby","bMinby","bSorted" };
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "maxby(IntPrimitive, filter:TheString like 'A%').TheString as aMaxby," +
                           "minby(IntPrimitive, filter:TheString like 'A%').TheString as aMinby," +
                           "sorted(IntPrimitive, filter:TheString like 'A%') as aSorted," +
@@ -774,7 +774,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "aSorted","bSorted" };
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "sorted(IntPrimitive, DoublePrimitive, filter:TheString like 'A%') as aSorted," +
                           "sorted(IntPrimitive, DoublePrimitive, filter:TheString like 'B%') as bSorted" +
                           " from SupportBean#keepall";
@@ -822,7 +822,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "aMaxby","aMaxbyever","aMinby","aMinbyever" };
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "maxby(IntPrimitive, filter:TheString like 'A%').TheString as aMaxby," +
                           "maxbyever(IntPrimitive, filter:TheString like 'A%').TheString as aMaxbyever," +
                           "minby(IntPrimitive, filter:TheString like 'A%').TheString as aMinby," +
@@ -889,7 +889,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "aFirst","aLast","aWindow","bFirst","bLast","bWindow" };
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "first(IntPrimitive, filter:TheString like 'A%') as aFirst," +
                           "last(IntPrimitive, filter:TheString like 'A%') as aLast," +
                           "window(IntPrimitive, filter:TheString like 'A%') as aWindow," +
@@ -994,7 +994,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "aFirst","aFirstever","aLast","aLastever","aCountever" };
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "first(IntPrimitive, filter:TheString like 'A%') as aFirst," +
                           "firstever(IntPrimitive, filter:TheString like 'A%') as aFirstever," +
                           "last(IntPrimitive, filter:TheString like 'A%') as aLast," +
@@ -1056,7 +1056,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "c0", "c1", "c2" };
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "window(sb, filter:TheString like 'A%') as c0," +
                           "window(sb) as c1," +
                           "window(filter:TheString like 'B%', sb) as c2" +
@@ -1092,7 +1092,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "c0", "c1", "c2" };
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "sum(IntPrimitive, filter:TheString like 'A%') as c0," +
                           "sum(IntPrimitive) as c1," +
                           "sum(filter:TheString like 'B%', IntPrimitive) as c2" +
@@ -1135,7 +1135,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "avedev(DoublePrimitive, filter:IntPrimitive between 1 and 3) as cAvedev," +
                           "avg(DoublePrimitive, filter:IntPrimitive between 1 and 3) as cAvg, " +
                           "count(*, filter:IntPrimitive between 1 and 3) as cCount, " +
@@ -1254,7 +1254,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "c0", "c1" };
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "first(*,filter:IntPrimitive=1).TheString as c0, " +
                           "first(*,filter:IntPrimitive=2).TheString as c1" +
                           " from SupportBean#length(3)";

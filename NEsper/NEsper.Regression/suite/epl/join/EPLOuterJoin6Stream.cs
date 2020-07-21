@@ -676,7 +676,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// <summary>
                 /// Query:
                 /// </summary>
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           "SupportBean_S0#length(1000) as S0 " +
                           " right outer join SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10 " +
                           " right outer join SupportBean_S2#length(1000) as S2 on S0.P00 = S2.P20 " +
@@ -696,7 +696,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// <summary>
                 /// Query:
                 /// </summary>
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           "SupportBean_S1#length(1000) as S1 " +
                           " left outer join " +
                           "SupportBean_S0#length(1000) as S0 on S0.P00 = S1.P10 " +
@@ -717,7 +717,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// <summary>
                 /// Query:
                 /// </summary>
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           "SupportBean_S2#length(1000) as S2 " +
                           " left outer join " +
                           "SupportBean_S0#length(1000) as S0 on S0.P00 = S2.P20 " +
@@ -738,7 +738,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// <summary>
                 /// Query:
                 /// </summary>
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           "SupportBean_S3#length(1000) as S3 " +
                           " left outer join SupportBean_S1#length(1000) as S1 on S1.P10 = S3.P30 " +
                           " left outer join " +
@@ -759,7 +759,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// <summary>
                 /// Query:
                 /// </summary>
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           "SupportBean_S4#length(1000) as S4 " +
                           " left outer join SupportBean_S2#length(1000) as S2 on S2.P20 = S4.P40 " +
                           " right outer join SupportBean_S5#length(1000) as S5 on S2.P20 = S5.P50 " +
@@ -780,7 +780,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// <summary>
                 /// Query:
                 /// </summary>
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           "SupportBean_S5#length(1000) as S5 " +
                           " left outer join SupportBean_S2#length(1000) as S2 on S2.P20 = S5.P50 " +
                           " right outer join SupportBean_S4#length(1000) as S4 on S2.P20 = S4.P40 " +

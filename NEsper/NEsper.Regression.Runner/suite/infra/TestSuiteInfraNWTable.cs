@@ -54,7 +54,9 @@ namespace com.espertech.esper.regressionrun.suite.infra
                 typeof(SupportMarketDataBean),
                 typeof(SupportBean_Container),
                 typeof(SupportEnum),
-                typeof(OrderBean)
+                typeof(OrderBean),
+                typeof(SupportEventWithIntArray),
+                typeof(SupportEventWithManyArray)
             }) {
                 configuration.Common.AddEventType(clazz);
             }
@@ -102,11 +104,17 @@ namespace com.espertech.esper.regressionrun.suite.infra
         [Test, RunInApplicationDomain]
         public void TestInfraNWTableInfraEventType()
         {
-            RegressionRunner.Run(_session, new InfraNWTableEventType());
+            RegressionRunner.Run(_session, InfraNWTableEventType.Executions());
+        }
+        
+        [Test, RunInApplicationDomain]
+        public void TestInfraNWTableFAFSubquery()
+         {
+            RegressionRunner.Run(_session, InfraNWTableFAFSubquery.Executions());
         }
 
         [Test, RunInApplicationDomain]
-        public void TestInfraNWTableInfraFAF()
+        public void TestInfraNWTableFAF()
         {
             RegressionRunner.Run(_session, InfraNWTableFAF.Executions());
         }
@@ -115,6 +123,12 @@ namespace com.espertech.esper.regressionrun.suite.infra
         public void TestInfraNWTableInfraFAFIndex()
         {
             RegressionRunner.Run(_session, InfraNWTableFAFIndex.Executions());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestInfraNWTableFAFResolve()
+        {
+            RegressionRunner.Run(_session, InfraNWTableFAFResolve.Executions());
         }
 
         [Test, RunInApplicationDomain]

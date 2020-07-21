@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             RegressionEnvironment env,
             string sql)
         {
-            var stmtText = "@Name('s0') select mydouble from " +
+            var stmtText = "@name('s0') select mydouble from " +
                            " sql:MyDBPlain ['" +
                            sql +
                            "'] as S0," +

@@ -15,6 +15,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.util;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.render;
 using com.espertech.esper.common.@internal.@event.util;
 
@@ -63,7 +64,15 @@ namespace com.espertech.esperio.file
 	    public void OnInput(object @object) {
 	        try {
 	            var buf = new StringBuilder();
-	            _eventShell.UnderlyingSpi = @object;
+	            if (!(_eventShell.EventType is JsonEventType)) {
+		            _eventShell.UnderlyingSpi = @object;
+	            }
+	            else {
+		            var jsonEventType = (JsonEventType) _eventShell.EventType;
+		            var underlying = jsonEventType.Parse(@object.ToString());
+		            _eventShell.Underlying = underlying;
+	            }
+
 	            RecursiveRender(_eventShell, buf, 0, _rendererMeta, _rendererOptions);
 	            _writer.Write(buf.ToString());
 	            _writer.Flush();

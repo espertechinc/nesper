@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                    "@Name('s0') select P0[0] as a, P0[1] as b, P1[0].IntPrimitive as c, P1[1] as d, P0 as e from MyArrayMap");
+                    "@name('s0') select P0[0] as a, P0[1] as b, P1[0].IntPrimitive as c, P1[1] as d, P0 as e from MyArrayMap");
                 env.AddListener("s0");
 
                 int[] p0 = {1, 2, 3};
@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 env.UndeployAll();
 
                 env.CompileDeploy(
-                    "@Name('s0') select" +
+                    "@name('s0') select" +
                     " outer.P0[0] as a," +
                     " outer.P0[1] as b," +
                     " outer.P1[0].IntPrimitive as c," +
@@ -89,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@Name('s0') select P0('k1') as a from MyMappedPropertyMap");
+                env.CompileDeploy("@name('s0') select P0('k1') as a from MyMappedPropertyMap");
                 env.AddListener("s0");
 
                 IDictionary<string, object> eventVal = new Dictionary<string, object>();
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 Assert.AreEqual(typeof(object), env.Statement("s0").EventType.GetPropertyType("a"));
                 env.UndeployAll();
 
-                env.CompileDeploy("@Name('s0') select outer.P0('k1') as a from MyMappedPropertyMapOuter");
+                env.CompileDeploy("@name('s0') select outer.P0('k1') as a from MyMappedPropertyMapOuter");
                 env.AddListener("s0");
 
                 var eventOuter = EventMapCore.MakeMap(
@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
                 // test map that contains a bean which has a map property
                 env.CompileDeploy(
-                    "@Name('s0') select outerTwo.MapProperty('xOne') as a from MyMappedPropertyMapOuterTwo");
+                    "@name('s0') select outerTwo.MapProperty('xOne') as a from MyMappedPropertyMapOuterTwo");
                 env.AddListener("s0");
 
                 var eventOuterTwo = EventMapCore.MakeMap(
@@ -149,7 +149,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                    "@Name('s0') select outer.P0.n0 as a, outer.P1[0].n0 as b, outer.P1[1].n0 as c, outer.P0 as d, outer.P1 as e from MyArrayMapTwo");
+                    "@name('s0') select outer.P0.n0 as a, outer.P1[0].n0 as b, outer.P1[1].n0 as c, outer.P0 as d, outer.P1 as e from MyArrayMapTwo");
                 env.AddListener("s0");
 
                 var n0Bean1 = EventMapCore.MakeMap(
@@ -188,7 +188,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
                 env.UndeployAll();
                 env.CompileDeploy(
-                    "@Name('s0') select outer.P0.n0? as a, outer.P1[0].n0? as b, outer.P1[1]?.n0 as c, outer.P0? as d, outer.P1? as e from MyArrayMapTwo");
+                    "@name('s0') select outer.P0.n0? as a, outer.P1[0].n0? as b, outer.P1[1]?.n0 as c, outer.P0? as d, outer.P1? as e from MyArrayMapTwo");
                 env.AddListener("s0");
 
                 env.SendEventMap(eventOuter, "MyArrayMapTwo");
@@ -208,7 +208,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                    "@Name('s0') select P0.n0 as a, P1[0].n0 as b, P1[1].n0 as c, P0 as d, P1 as e from MyMapWithAMap");
+                    "@name('s0') select P0.n0 as a, P1[0].n0 as b, P1[1].n0 as c, P0 as d, P1 as e from MyMapWithAMap");
                 env.AddListener("s0");
 
                 var n0Bean1 = EventMapCore.MakeMap(

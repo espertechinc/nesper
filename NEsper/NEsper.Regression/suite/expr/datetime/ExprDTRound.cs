@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "val0","val1","val2", "val3" };
-                var eplFragment = "@Name('s0') select " +
+                var eplFragment = "@name('s0') select " +
                                   "DateTimeEx.roundCeiling('hour') as val0," +
                                   "DateTimeOffset.roundCeiling('hour') as val1," +
                                   "DateTime.roundCeiling('hour') as val2," +
@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "val0","val1","val2","val3","val4","val5","val6" };
-                var eplFragment = "@Name('s0') select " +
+                var eplFragment = "@name('s0') select " +
                                   "DateTimeOffset.roundCeiling('msec') as val0," +
                                   "DateTimeOffset.roundCeiling('sec') as val1," +
                                   "DateTimeOffset.roundCeiling('minutes') as val2," +
@@ -117,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "val0","val1","val2","val3","val4","val5","val6" };
-                var eplFragment = "@Name('s0') select " +
+                var eplFragment = "@name('s0') select " +
                                   "DateTimeOffset.roundFloor('msec') as val0," +
                                   "DateTimeOffset.roundFloor('sec') as val1," +
                                   "DateTimeOffset.roundFloor('minutes') as val2," +
@@ -165,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "val0","val1","val2","val3","val4","val5","val6" };
-                var eplFragment = "@Name('s0') select " +
+                var eplFragment = "@name('s0') select " +
                                   "DateTimeOffset.roundHalf('msec') as val0," +
                                   "DateTimeOffset.roundHalf('sec') as val1," +
                                   "DateTimeOffset.roundHalf('minutes') as val2," +
@@ -207,7 +207,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 // test rounding up/down
                 env.UndeployAll();
                 fields = new [] { "val0" };
-                eplFragment = "@Name('s0') select DateTimeOffset.roundHalf('min') as val0 from SupportDateTime";
+                eplFragment = "@name('s0') select DateTimeOffset.roundHalf('min') as val0 from SupportDateTime";
                 env.CompileDeployAddListenerMile(eplFragment, "s0", 1);
 
                 env.SendEventBean(SupportDateTime.Make("2002-05-30T15:30:29.999"));

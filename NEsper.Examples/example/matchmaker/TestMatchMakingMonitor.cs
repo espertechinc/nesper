@@ -56,6 +56,7 @@ namespace NEsper.Examples.MatchMaker
 
         #endregion
 
+        private const string EVENTTYPE = "MobileUserBean";
         private const int USER_ID_1 = 1;
         private const int USER_ID_2 = 2;
 
@@ -87,25 +88,20 @@ namespace NEsper.Examples.MatchMaker
             sender.SendEvent(user2);
 
             Assert.AreEqual(1, _listener.GetAndClearEmittedCount());
-
-            user1.SetLocation(8.99999, 10);
-            sender.SendEvent(user1);
+            _runtime.EventService.SendEventBean(user1.Copy().WithLocation(8.99999, 10), EVENTTYPE);
             Assert.AreEqual(0, _listener.GetAndClearEmittedCount());
 
-            user1.SetLocation(9, 10);
-            sender.SendEvent(user1);
+            _runtime.EventService.SendEventBean(user1.Copy().WithLocation(9, 10), EVENTTYPE);
             Assert.AreEqual(1, _listener.GetAndClearEmittedCount());
 
-            user1.SetLocation(11, 10);
-            sender.SendEvent(user1);
+            _runtime.EventService.SendEventBean(user1.Copy().WithLocation(11, 10), EVENTTYPE);
             Assert.AreEqual(1, _listener.GetAndClearEmittedCount());
 
-            user1.SetLocation(11.0000001, 10);
-            sender.SendEvent(user1);
+            _runtime.EventService.SendEventBean(user1.Copy().WithLocation(11.0000001, 10), EVENTTYPE);
             Assert.AreEqual(0, _listener.GetAndClearEmittedCount());
 
-            user2.SetLocation(10.0000001, 9);
-            sender.SendEvent(user2);
+            _runtime.EventService.SendEventBean(user2.Copy().WithLocation(10.0000001, 9), EVENTTYPE);
+            
             Assert.AreEqual(1, _listener.GetAndClearEmittedCount());
         }
 

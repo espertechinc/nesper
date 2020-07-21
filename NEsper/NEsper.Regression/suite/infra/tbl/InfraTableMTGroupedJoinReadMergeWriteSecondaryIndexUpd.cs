@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 "create table MyTable (key1 string primary key, value int);\n" +
                 "create index MyIndex on MyTable (value);\n" +
                 "on SupportBean merge MyTable where TheString = key1 when not matched then insert select TheString as key1, IntPrimitive as value;\n" +
-                "@Name('out') select * from SupportBean_S0, MyTable where value = Id;\n" +
+                "@name('out') select * from SupportBean_S0, MyTable where value = Id;\n" +
                 "on SupportBean_S1 delete from MyTable where key1 like 'B%';\n";
             env.CompileDeploy(epl).AddListener("out");
 

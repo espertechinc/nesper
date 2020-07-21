@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.compiler.@internal.parse
 {
 	[TestFixture]
-	public class TestASTUtil : AbstractRuntimeTest
+	public class TestASTUtil : AbstractCompilerTest
 	{
 		[Test]
 		public void TestEscapeDot()

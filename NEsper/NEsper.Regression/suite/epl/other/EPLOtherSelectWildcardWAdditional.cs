@@ -189,7 +189,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select *, MyString||MyString as concat from SupportBeanSimple#length(5)";
+                var text = "@name('s0') select *, MyString||MyString as concat from SupportBeanSimple#length(5)";
                 env.CompileDeploy(text).AddListener("s0");
                 AssertSimple(env);
                 env.UndeployAll();
@@ -202,10 +202,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 var text =
-                    "@Name('insert') insert into SomeEvent select *, MyString||MyString as concat from SupportBeanSimple#length(5)";
+                    "@name('insert') insert into SomeEvent select *, MyString||MyString as concat from SupportBeanSimple#length(5)";
                 env.CompileDeploy(text, path).AddListener("insert");
 
-                var textTwo = "@Name('s0') select * from SomeEvent#length(5)";
+                var textTwo = "@name('s0') select * from SomeEvent#length(5)";
                 env.CompileDeploy(textTwo, path).AddListener("s0");
                 AssertSimple(env);
                 AssertProperties(env, "insert", Collections.EmptyDataMap);
@@ -218,16 +218,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var eventNameOne = typeof(SupportBeanSimple).Name;
-                var eventNameTwo = typeof(SupportMarketDataBean).Name;
                 var path = new RegressionPath();
-
-                var text = "@Name('insert') insert into SomeJoinEvent select *, MyString||MyString as concat from " +
-                           eventNameOne + "#length(5) as eventOne, " +
-                           eventNameTwo + "#length(5) as eventTwo";
+                var text = "@name('insert') insert into SomeJoinEvent select *, MyString||MyString as concat " +
+                              "from SupportBeanSimple#length(5) as eventOne, SupportMarketDataBean#length(5) as eventTwo";
                 env.CompileDeploy(text, path).AddListener("insert");
 
-                var textTwo = "@Name('s0') select * from SomeJoinEvent#length(5)";
+                var textTwo = "@name('s0') select * from SomeJoinEvent#length(5)";
                 env.CompileDeploy(textTwo, path).AddListener("s0");
 
                 AssertNoCommonProperties(env);
@@ -243,7 +239,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var eventNameOne = typeof(SupportBeanSimple).Name;
                 var eventNameTwo = typeof(SupportMarketDataBean).Name;
-                var text = "@Name('s0') select *, MyString||MyString as concat from " +
+                var text = "@name('s0') select *, MyString||MyString as concat from " +
                            eventNameOne + "#length(5) as eventOne, " +
                            eventNameTwo + "#length(5) as eventTwo";
                 env.CompileDeploy(text).AddListener("s0");
@@ -252,7 +248,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.UndeployAll();
 
-                text = "@Name('s0') select *, MyString||MyString as concat " +
+                text = "@name('s0') select *, MyString||MyString as concat " +
                        "from " +
                        eventNameOne +
                        "#length(5) as eventOne, " +
@@ -273,7 +269,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var eventNameOne = typeof(SupportBean_A).Name;
                 var eventNameTwo = typeof(SupportBean_B).Name;
-                var text = "@Name('s0') select *, eventOne.Id||eventTwo.Id as concat " +
+                var text = "@name('s0') select *, eventOne.Id||eventTwo.Id as concat " +
                            "from " +
                            eventNameOne +
                            "#length(5) as eventOne, " +
@@ -285,7 +281,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.UndeployAll();
 
-                text = "@Name('s0') select *, eventOne.Id||eventTwo.Id as concat " +
+                text = "@name('s0') select *, eventOne.Id||eventTwo.Id as concat " +
                        "from " +
                        eventNameOne +
                        "#length(5) as eventOne, " +
@@ -304,7 +300,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select *, Indexed[0].Mapped('0ma').Value||Indexed[0].Mapped('0mb').Value as concat " +
+                var text = "@name('s0') select *, Indexed[0].Mapped('0ma').Value||Indexed[0].Mapped('0mb').Value as concat " +
                            " from SupportBeanCombinedProps#length(5)";
                 env.CompileDeploy(text).AddListener("s0");
                 AssertCombinedProps(env);
@@ -316,7 +312,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select *, TheString||TheString as concat from MyMapEventIntString#length(5)";
+                var text = "@name('s0') select *, TheString||TheString as concat from MyMapEventIntString#length(5)";
                 env.CompileDeploy(text).AddListener("s0");
 
                 // The map to send into the eventService

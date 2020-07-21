@@ -25,7 +25,37 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             var execs = new List<RegressionExecution>();
             execs.Add(new InfraSubqueryTwoConsumerWindow());
             execs.Add(new InfraSubqueryLateConsumerAggregation());
+            execs.Add(new InfraSubqueryWithFilterInParens());
             return execs;
+        }
+
+        internal class InfraSubqueryWithFilterInParens : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "create window MyWindow#keepall as SupportBean;\n" +
+                             "@name('insert') insert into MyWindow select * from SupportBean;\n" +
+                             "@name('s0') select exists (select * from MyWindow(TheString='E1')) as c0 from SupportBean_S0;\n";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendAssert(env, false);
+
+                env.SendEventBean(new SupportBean("E2", 1));
+                SendAssert(env, false);
+
+                env.SendEventBean(new SupportBean("E1", 1));
+                SendAssert(env, true);
+
+                env.UndeployAll();
+            }
+
+            private void SendAssert(
+                RegressionEnvironment env,
+                bool expected)
+            {
+                env.SendEventBean(new SupportBean_S0(0));
+                Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+            }
         }
 
         internal class InfraSubqueryTwoConsumerWindow : RegressionExecution
@@ -61,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean("E2", 1));
 
-                env.CompileDeploy("@Name('s0') select * from MyWindow where (select count(*) from MyWindow) > 0", path)
+                env.CompileDeploy("@name('s0') select * from MyWindow where (select count(*) from MyWindow) > 0", path)
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E3", 1));

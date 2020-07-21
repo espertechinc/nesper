@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select Val as value from SupportOverrideOne#length(10)";
+                var epl = "@name('s0') select Val as value from SupportOverrideOne#length(10)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportOverrideOneA("valA", "valOne", "valBase"));
@@ -78,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 var stmts = new EPStatement[epls.Length];
                 var listeners = new SupportUpdateListener[epls.Length];
                 for (var i = 0; i < epls.Length; i++) {
-                    var name = $"@Name('stmt_{i}')";
+                    var name = $"@name('stmt_{i}')";
                     env.CompileDeploy(name + epls[i]);
                     stmts[i] = env.Statement("stmt_" + i);
                     listeners[i] = new SupportUpdateListener();

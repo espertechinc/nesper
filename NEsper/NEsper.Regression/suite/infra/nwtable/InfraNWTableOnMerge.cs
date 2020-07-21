@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -26,8 +27,11 @@ using com.espertech.esper.runtime.client.scopetest;
 using NEsper.Avro.Extensions;
 using NEsper.Avro.Util.Support;
 
+using Newtonsoft.Json.Linq;
+
 using NUnit.Framework;
 
+using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
 using static com.espertech.esper.regressionlib.support.util.SupportAdminUtil;
 
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
@@ -105,6 +109,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             execs.Add(new InfraPropertyEvalInsertNoMatch(true));
             execs.Add(new InfraPropertyEvalUpdate(false));
 
+            execs.Add(new InfraSetArrayElementWithIndex(false, false));
+            execs.Add(new InfraSetArrayElementWithIndex(true, true));
+
+            execs.Add(new InfraSetArrayElementWithIndexInvalid());
+            
             return execs;
         }
 
@@ -431,6 +440,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 record.Put("col2", innerRecord);
                 env.EventService.SendEventAvro(record, "MyEventSchema");
             }
+            else if (eventRepresentationEnum.IsJsonEvent()) {
+                var inner = new JObject(
+                    new JProperty("in1", col2in1),
+                    new JProperty("in2", col2in2));
+                var outer = new JObject(
+                    new JProperty("col1", col1),
+                    new JProperty("col2", inner));
+                env.EventService.SendEventJson(outer.ToString(), "MyEventSchema");
+            }
             else {
                 Assert.Fail();
             }
@@ -465,6 +483,157 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.SendEventMap(theEvent, "MyEvent");
             }
         }
+        
+        internal class InfraSetArrayElementWithIndex : RegressionExecution
+		{
+			private readonly bool soda;
+			private readonly bool namedWindow;
+
+			public InfraSetArrayElementWithIndex(
+				bool soda,
+				bool namedWindow)
+			{
+				this.soda = soda;
+				this.namedWindow = namedWindow;
+			}
+
+			public void Run(RegressionEnvironment env)
+			{
+				RunAssertionSetWithIndex(env, namedWindow, soda, "thearray[cnt]=1, thearray[intPrimitive]=2", 0, 1, 2, 0);
+				RunAssertionSetWithIndex(env, namedWindow, soda, "cnt=cnt+1,thearray[cnt]=1", 1, 0, 1, 0);
+				RunAssertionSetWithIndex(env, namedWindow, soda, "cnt=cnt+1,thearray[cnt]=3,cnt=cnt+1,thearray[cnt]=4", 2, 0, 3, 4);
+				RunAssertionSetWithIndex(env, namedWindow, soda, "cnt=cnt+1,thearray[initial.cnt]=3", 1, 3, 0, 0);
+			}
+
+			private static void RunAssertionSetWithIndex(
+				RegressionEnvironment env,
+				bool namedWindow,
+				bool soda,
+				string setter,
+				int cntExpected,
+				params double[] thearrayExpected)
+			{
+				var path = new RegressionPath();
+				var eplCreate = namedWindow
+					? "@name('create') create window MyInfra#keepall(cnt int, thearray double[primitive]);\n"
+					: "@name('create') create table MyInfra(cnt int, thearray double[primitive]);\n";
+				eplCreate += "@priority(1) on SupportBean merge MyInfra when not matched then insert select 0 as cnt, new double[3] as thearray;\n";
+				env.CompileDeploy(eplCreate, path);
+
+				var epl = "on SupportBean update MyInfra set " + setter;
+				env.CompileDeploy(soda, epl, path);
+
+				env.SendEventBean(new SupportBean("E1", 1));
+				var @event = env.GetEnumerator("create").Advance();
+				EPAssertionUtil.AssertProps(@event, "cnt,thearray".SplitCsv(), new object[] {
+					cntExpected, thearrayExpected
+				});
+
+				env.UndeployAll();
+			}
+		}
+
+		internal class InfraSetArrayElementWithIndexInvalid : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var path = new RegressionPath();
+				var eplTable = "@name('create') create table MyInfra(doublearray double[primitive], intarray int[primitive], notAnArray int)";
+				env.Compile(eplTable, path);
+
+				// invalid property
+                TryInvalidCompile(
+					env,
+					path,
+					"on SupportBean update MyInfra set c1[0]=1",
+					"Failed to validate assignment expression 'c1[0]=1': Property 'c1[0]' is not available for write access");
+				TryInvalidCompile(
+					env,
+					path,
+					"on SupportBean update MyInfra set c('a')=1",
+					"Failed to validate assignment expression 'c('a')=1': Property 'c('a')' is not available for write access");
+
+				// index expression is not Integer
+				TryInvalidCompile(
+					env,
+					path,
+					"on SupportBean update MyInfra set doublearray[null]=1",
+					"Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'null' returns 'null' for expression 'doublearray'");
+
+				// type incompatible cannot assign
+				TryInvalidCompile(
+					env,
+					path,
+					"on SupportBean update MyInfra set intarray[intPrimitive]='x'",
+					"Failed to validate assignment expression 'intarray[intPrimitive]=\"x\"': Invalid assignment to property 'intarray' component type 'int' from expression returning 'java.lang.String'");
+				TryInvalidCompile(
+					env,
+					path,
+					"on SupportBean update MyInfra set intarray[intPrimitive]=1L",
+					"Failed to validate assignment expression 'intarray[intPrimitive]=1': Invalid assignment to property 'intarray' component type 'int' from expression returning 'long'");
+
+				// not-an-array
+				TryInvalidCompile(
+					env,
+					path,
+					"on SupportBean update MyInfra set notAnArray[intPrimitive]=1",
+					"Failed to validate assignment expression 'notAnArray[intPrimitive]=1': Property 'notAnArray' is not an array");
+
+				// not found
+				TryInvalidCompile(
+					env,
+					path,
+					"on SupportBean update MyInfra set dummy[intPrimitive]=1",
+					"Failed to validate assignment expression 'dummy[intPrimitive]=1': Property 'dummy' could not be found");
+
+				// property found in updating-event
+				TryInvalidCompile(
+					env,
+					path,
+					"create schema UpdateEvent(dummy int[primitive]);\n" +
+					"on UpdateEvent update MyInfra set dummy[10]=1;\n",
+					"Failed to validate assignment expression 'dummy[10]=1': Property 'dummy[10]' is not available for write access");
+
+				TryInvalidCompile(
+					env,
+					path,
+					"create schema UpdateEvent(dummy int[primitive], position int);\n" +
+					"on UpdateEvent update MyInfra set dummy[position]=1;\n",
+					"Failed to validate assignment expression 'dummy[position]=1': Property 'dummy' could not be found");
+
+				path.Clear();
+
+				// runtime-behavior for index-overflow and null-array and null-index and
+				var epl = "@name('create') create table MyInfra(doublearray double[primitive]);\n" +
+				          "@priority(1) on SupportBean merge MyInfra when not matched then insert select new double[3] as doublearray;\n" +
+				          "on SupportBean update MyInfra set doublearray[intBoxed]=doubleBoxed;\n";
+				env.CompileDeploy(epl);
+
+				// index returned is too large
+				try {
+					var sb = new SupportBean();
+					sb.IntBoxed = 10;
+					sb.DoubleBoxed = 10d;
+					env.SendEventBean(sb);
+					Assert.Fail();
+				}
+				catch (Exception ex) {
+					Assert.IsTrue(ex.Message.Contains("Array length 3 less than index 10 for property 'doublearray'"));
+				}
+
+				// index returned null
+				var sbIndexNull = new SupportBean();
+				sbIndexNull.DoubleBoxed = 10d;
+				env.SendEventBean(sbIndexNull);
+
+				// rhs returned null for array-of-primitive
+				var sbRHSNull = new SupportBean();
+				sbRHSNull.IntBoxed = 1;
+				env.SendEventBean(sbRHSNull);
+
+				env.UndeployAll();
+			}
+		}
 
         internal class InfraPropertyEvalInsertNoMatch : RegressionExecution
         {
@@ -481,11 +650,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
 
                 var stmtTextCreateOne = namedWindow
-                    ? "@Name('create') create window MyInfra#keepall() as (c1 string, c2 string)"
-                    : "@Name('create') create table MyInfra(c1 string primary key, c2 string)";
+                    ? "@name('create') create window MyInfra#keepall() as (c1 string, c2 string)"
+                    : "@name('create') create table MyInfra(c1 string primary key, c2 string)";
                 env.CompileDeploy(stmtTextCreateOne, path);
 
-                var epl = "@Name('merge') on OrderBean[Books] " +
+                var epl = "@name('merge') on OrderBean[Books] " +
                           "merge MyInfra mw " +
                           "insert select BookId as c1, Title as c2 ";
                 env.CompileDeploy(epl, path).AddListener("merge");
@@ -518,8 +687,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 string[] fields = {"p0", "p1"};
                 var path = new RegressionPath();
                 var stmtTextCreateOne = namedWindow
-                    ? "@Name('create') create window MyInfra#keepall() as (p0 string, p1 int)"
-                    : "@Name('create') create table MyInfra(p0 string primary key, p1 int)";
+                    ? "@name('create') create window MyInfra#keepall() as (p0 string, p1 int)"
+                    : "@name('create') create table MyInfra(p0 string primary key, p1 int)";
                 env.CompileDeploy(stmtTextCreateOne, path);
                 env.CompileDeploy(
                     "on SupportBean_Container[Beans] merge MyInfra where TheString=p0 " +
@@ -559,13 +728,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create window
                 var stmtTextCreateOne = namedWindow
-                    ? "@Name('create') create window MyInfra#keepall() as (p0 string, p1 int)"
-                    : "@Name('create') create table MyInfra(p0 string primary key, p1 int)";
+                    ? "@name('create') create window MyInfra#keepall() as (p0 string, p1 int)"
+                    : "@name('create') create table MyInfra(p0 string primary key, p1 int)";
                 env.CompileDeploy(stmtTextCreateOne, path);
 
                 // create merge
                 var stmtTextMerge =
-                    "@Name('merge') on SupportBean sb merge MyInfra where TheString = p0 when matched " +
+                    "@name('merge') on SupportBean sb merge MyInfra where TheString = p0 when matched " +
                     "then delete " +
                     "then update set p1 = IntPrimitive";
                 env.CompileDeploy(stmtTextMerge, path).AddListener("merge");
@@ -609,13 +778,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create window
                 var stmtTextCreateOne = namedWindow
-                    ? "@Name('create') create window MyInfra#keepall() as (p0 string, p1 int)"
-                    : "@Name('create') create table MyInfra(p0 string primary key, p1 int)";
+                    ? "@name('create') create window MyInfra#keepall() as (p0 string, p1 int)"
+                    : "@name('create') create table MyInfra(p0 string primary key, p1 int)";
                 env.CompileDeploy(stmtTextCreateOne, path);
 
                 // create merge
                 var stmtTextMerge =
-                    "@Name('merge') on SupportBean sb merge MyInfra insert select TheString as p0, IntPrimitive as p1";
+                    "@name('merge') on SupportBean sb merge MyInfra insert select TheString as p0, IntPrimitive as p1";
                 env.CompileDeploy(stmtTextMerge, path).AddListener("merge");
                 Assert.AreEqual(
                     StatementType.ON_MERGE,
@@ -666,17 +835,17 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create window
                 var stmtTextCreateOne = namedWindow
-                    ? "@Name('create') create window MyInfra.win:keepall() as SupportBean"
-                    : "@Name('create') create table MyInfra(TheString string primary key, IntPrimitive int)";
+                    ? "@name('create') create window MyInfra.win:keepall() as SupportBean"
+                    : "@name('create') create table MyInfra(TheString string primary key, IntPrimitive int)";
                 env.CompileDeploy(stmtTextCreateOne, path).AddListener("create");
 
                 // create merge
                 var stmtTextMerge = namedWindow
-                    ? "@Name('merge') on SupportBean sb merge MyInfra mw where sb.TheString = mw.TheString " +
+                    ? "@name('merge') on SupportBean sb merge MyInfra mw where sb.TheString = mw.TheString " +
                       "when matched and sb.IntPrimitive < 0 then delete " +
                       "when not matched and IntPrimitive > 0 then insert select *" +
                       "when matched and sb.IntPrimitive > 0 then update set IntPrimitive = sb.IntPrimitive + mw.IntPrimitive"
-                    : "@Name('merge') on SupportBean sb merge MyInfra mw where sb.TheString = mw.TheString " +
+                    : "@name('merge') on SupportBean sb merge MyInfra mw where sb.TheString = mw.TheString " +
                       "when matched and sb.IntPrimitive < 0 then delete " +
                       "when not matched and IntPrimitive > 0 then insert select TheString, IntPrimitive " +
                       "when matched and sb.IntPrimitive > 0 then update set IntPrimitive = sb.IntPrimitive + mw.IntPrimitive";
@@ -761,22 +930,22 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var fields = new [] { "p0","p1" };
                 var path = new RegressionPath();
                 var createEPL = namedWindow
-                    ? "@Name('Window') create window InsertOnlyInfra#unique(p0) as (p0 string, p1 int)"
-                    : "@Name('Window') create table InsertOnlyInfra (p0 string primary key, p1 int)";
+                    ? "@name('Window') create window InsertOnlyInfra#unique(p0) as (p0 string, p1 int)"
+                    : "@name('Window') create table InsertOnlyInfra (p0 string primary key, p1 int)";
                 env.CompileDeploy(createEPL, path);
 
                 string epl;
                 if (useEquivalent) {
                     epl =
-                        "@Name('on') on SupportBean merge InsertOnlyInfra where 1=2 when not matched then insert select TheString as p0, IntPrimitive as p1";
+                        "@name('on') on SupportBean merge InsertOnlyInfra where 1=2 when not matched then insert select TheString as p0, IntPrimitive as p1";
                 }
                 else if (useColumnNames) {
                     epl =
-                        "@Name('on') on SupportBean as provider merge InsertOnlyInfra insert(p0, p1) select provider.TheString, IntPrimitive";
+                        "@name('on') on SupportBean as provider merge InsertOnlyInfra insert(p0, p1) select provider.TheString, IntPrimitive";
                 }
                 else {
                     epl =
-                        "@Name('on') on SupportBean merge InsertOnlyInfra insert select TheString as p0, IntPrimitive as p1";
+                        "@name('on') on SupportBean merge InsertOnlyInfra insert select TheString as p0, IntPrimitive as p1";
                 }
 
                 env.CompileDeploy(soda, epl, path);
@@ -826,16 +995,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var fields = new [] { "TheString","IntPrimitive","IntBoxed" };
                 var path = new RegressionPath();
                 var createEPL = namedWindow
-                    ? "@Name('Window') create window MyMergeInfra#unique(TheString) as SupportBean"
-                    : "@Name('Window') create table MyMergeInfra (TheString string primary key, IntPrimitive int, IntBoxed int)";
+                    ? "@name('Window') create window MyMergeInfra#unique(TheString) as SupportBean"
+                    : "@name('Window') create table MyMergeInfra (TheString string primary key, IntPrimitive int, IntBoxed int)";
                 env.CompileDeploy(createEPL, path).AddListener("Window");
 
                 env.CompileDeploy(
-                    "@Name('Insert') insert into MyMergeInfra select TheString, IntPrimitive, IntBoxed from SupportBean(BoolPrimitive)",
+                    "@name('Insert') insert into MyMergeInfra select TheString, IntPrimitive, IntBoxed from SupportBean(BoolPrimitive)",
                     path);
-                env.CompileDeploy("@Name('Delete') on SupportBean_A delete from MyMergeInfra", path);
+                env.CompileDeploy("@name('Delete') on SupportBean_A delete from MyMergeInfra", path);
 
-                var epl = "@Name('Merge') on SupportBean(BoolPrimitive=false) as up " +
+                var epl = "@name('Merge') on SupportBean(BoolPrimitive=false) as up " +
                           "merge MyMergeInfra as mv " +
                           "where mv.TheString=up.TheString " +
                           "when matched and up.IntPrimitive<0 then " +
@@ -862,7 +1031,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // test stream wildcard
                 env.SendEventBean(new SupportBean_A("A2"));
                 env.UndeployModuleContaining("Merge");
-                epl = "@Name('Merge') on SupportBean(BoolPrimitive = false) as up " +
+                epl = "@name('Merge') on SupportBean(BoolPrimitive = false) as up " +
                       "merge MyMergeInfra as mv " +
                       "where mv.TheString = up.TheString " +
                       "when not matched then " +
@@ -912,7 +1081,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 epl += namedWindow
                     ? "create window MyInfraMI#keepall as MySchema;\n"
                     : "create table MyInfraMI (col1 string primary key, col2 int);\n";
-                epl += "@Name('Merge') on MyEvent " +
+                epl += "@name('Merge') on MyEvent " +
                        "merge MyInfraMI " +
                        "where col1=in1 " +
                        "when not matched and in1 like \"A%\" then " +
@@ -981,8 +1150,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var epl = "create schema MyEvent as (in1 string, in2 int);\n" +
                           "create schema MySchema as (col1 string, col2 int);\n";
                 epl += namedWindow
-                    ? "@Name('create') create window MyInfraNWC#keepall as MySchema;\n"
-                    : "@Name('create') create table MyInfraNWC (col1 string, col2 int);\n";
+                    ? "@name('create') create window MyInfraNWC#keepall as MySchema;\n"
+                    : "@name('create') create table MyInfraNWC (col1 string, col2 int);\n";
                 epl += "on SupportBean_A delete from MyInfraNWC;\n";
                 epl += "on MyEvent me " +
                        "merge MyInfraNWC mw " +
@@ -1071,7 +1240,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 epl =
                     "on SupportBean_A merge MergeInfra as windowevent where Id = TheString when not matched and exists(select * from MergeInfra mw where mw.TheString = windowevent.TheString) is not null then insert into ABC select '1'";
-                SupportMessageAssertUtil.TryInvalidCompile(
+                TryInvalidCompile(
                     env,
                     path,
                     epl,
@@ -1079,14 +1248,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 epl = "on SupportBean_A as up merge ABCInfra as mv when not matched then insert (col) select 1";
                 if (namedWindow) {
-                    SupportMessageAssertUtil.TryInvalidCompile(
+                    TryInvalidCompile(
                         env,
                         path,
                         epl,
                         "Validation failed in when-not-matched (clause 1): Event type named 'ABCInfra' has already been declared with differing column name or type information: The property 'val' is not provided but required [on SupportBean_A as up merge ABCInfra as mv when not matched then insert (col) select 1]");
                 }
                 else {
-                    SupportMessageAssertUtil.TryInvalidCompile(
+                    TryInvalidCompile(
                         env,
                         path,
                         epl,
@@ -1095,7 +1264,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 epl =
                     "on SupportBean_A as up merge MergeInfra as mv where mv.BoolPrimitive=true when not matched then update set IntPrimitive = 1";
-                SupportMessageAssertUtil.TryInvalidCompile(
+                TryInvalidCompile(
                     env,
                     path,
                     epl,
@@ -1104,7 +1273,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 if (namedWindow) {
                     epl =
                         "on SupportBean_A as up merge MergeInfra as mv where mv.TheString=Id when matched then insert select *";
-                    SupportMessageAssertUtil.TryInvalidCompile(
+                    TryInvalidCompile(
                         env,
                         path,
                         epl,
@@ -1116,21 +1285,21 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 }
 
                 epl = "on SupportBean as up merge MergeInfra as mv";
-                SupportMessageAssertUtil.TryInvalidCompile(
+                TryInvalidCompile(
                     env,
                     path,
                     epl,
                     "Unexpected end-of-input at line 1 column 4");
 
                 epl = "on SupportBean as up merge MergeInfra as mv where a=b when matched";
-                SupportMessageAssertUtil.TryInvalidCompile(
+                TryInvalidCompile(
                     env,
                     path,
                     epl,
                     "Incorrect syntax near end-of-input ('matched' is a reserved keyword) expecting 'then' but found EOF at line 1 column 66 [");
 
                 epl = "on SupportBean as up merge MergeInfra as mv where a=b when matched and then delete";
-                SupportMessageAssertUtil.TryInvalidCompile(
+                TryInvalidCompile(
                     env,
                     path,
                     epl,
@@ -1138,7 +1307,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 epl =
                     "on SupportBean as up merge MergeInfra as mv where BoolPrimitive=true when not matched then insert select *";
-                SupportMessageAssertUtil.TryInvalidCompile(
+                TryInvalidCompile(
                     env,
                     path,
                     epl,
@@ -1146,7 +1315,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 epl =
                     "on SupportBean_A as up merge MergeInfra as mv where mv.BoolPrimitive=true when not matched then insert select IntPrimitive";
-                SupportMessageAssertUtil.TryInvalidCompile(
+                TryInvalidCompile(
                     env,
                     path,
                     epl,
@@ -1154,11 +1323,26 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 epl =
                     "on SupportBean_A as up merge MergeInfra as mv where mv.BoolPrimitive=true when not matched then insert select * where TheString = 'A'";
-                SupportMessageAssertUtil.TryInvalidCompile(
+                TryInvalidCompile(
                     env,
                     path,
                     epl,
                     "Failed to validate match where-clause expression 'TheString=\"A\"': Property named 'TheString' is not valid in any stream [on SupportBean_A as up merge MergeInfra as mv where mv.BoolPrimitive=true when not matched then insert select * where TheString = 'A']");
+
+                epl = "create variable int myvariable;\n" +
+                      "on SupportBean_A merge MergeInfra when matched then update set myvariable = 1;\n";
+                TryInvalidCompile(
+                    env,
+                    path,
+                    epl,
+                    "Left-hand-side does not allow variables for variable 'myvariable'");
+
+                epl = "on SupportBean_A merge MergeInfra when matched then update set theString[1][2] = 1;\n";
+                TryInvalidCompile(
+                    env,
+                    path,
+                    epl,
+                    "Unrecognized left-hand-side assignment 'theString[1][2]'");
 
                 env.UndeployAll();
 
@@ -1169,11 +1353,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy("create map schema SomeOther as (c1 int)", path);
                 env.CompileDeploy("create map schema MyEvent as (so SomeOther)", path);
 
-                SupportMessageAssertUtil.TryInvalidCompile(
+                TryInvalidCompile(
                     env,
                     path,
                     "on MyEvent as me update AInfra set c = me.so",
-                    "Invalid assignment to property 'c' event type 'Composite' from event type 'SomeOther' [on MyEvent as me update AInfra set c = me.so]");
+                    "Failed to validate assignment expression 'c=me.so': Invalid assignment to property 'c' event type 'Composite' from event type 'SomeOther' [on MyEvent as me update AInfra set c = me.so]");
 
                 env.UndeployAll();
             }
@@ -1195,21 +1379,22 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var schema = eventRepresentationEnum.GetAnnotationText() +
-                             " create schema MyInnerSchema(in1 string, in2 int);\n" +
-                             eventRepresentationEnum.GetAnnotationText() +
-                             " create schema MyEventSchema(col1 string, col2 MyInnerSchema)";
+                var schema =
+                    eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyInnerSchema>() +
+                    " create schema MyInnerSchema(in1 string, in2 int);\n" +
+                    eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyEventSchema>() +
+                    " create schema MyEventSchema(col1 string, col2 MyInnerSchema)";
                 env.CompileDeployWBusPublicType(schema, path);
 
                 var eplCreate = namedWindow
-                    ? eventRepresentationEnum.GetAnnotationText() +
+                    ? eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyInfraITV>() +
                       " create window MyInfraITV#keepall as (c1 string, c2 MyInnerSchema)"
-                    : eventRepresentationEnum.GetAnnotationText() +
-                      " create table MyInfraITV as (c1 string primary key, c2 MyInnerSchema)";
+                    : "create table MyInfraITV as (c1 string primary key, c2 MyInnerSchema)";
+                
                 env.CompileDeploy(eplCreate, path);
-                env.CompileDeploy("@Name('createvar') create variable boolean myvar", path);
+                env.CompileDeploy("@name('createvar') create variable boolean myvar", path);
 
-                var epl = "@Name('Merge') on MyEventSchema me " +
+                var epl = "@name('Merge') on MyEventSchema me " +
                           "merge MyInfraITV mw " +
                           "where me.col1 = mw.c1 " +
                           " when not matched and myvar then " +
@@ -1300,12 +1485,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
 
                 var eplCreate = namedWindow
-                    ? "@Name('create') create window MyInfraPM#keepall as (c1 string, c2 string)"
-                    : "@Name('create') create table MyInfraPM as (c1 string primary key, c2 string primary key)";
+                    ? "@name('create') create window MyInfraPM#keepall as (c1 string, c2 string)"
+                    : "@name('create') create table MyInfraPM as (c1 string primary key, c2 string primary key)";
                 env.CompileDeploy(eplCreate, path);
 
                 var epl =
-                    "@Name('Merge') on pattern[every a=SupportBean(TheString like 'A%') -> b=SupportBean(TheString like 'B%', IntPrimitive = a.IntPrimitive)] me " +
+                    "@name('Merge') on pattern[every a=SupportBean(TheString like 'A%') -> b=SupportBean(TheString like 'B%', IntPrimitive = a.IntPrimitive)] me " +
                     "merge MyInfraPM mw " +
                     "where me.a.TheString = mw.c1 and me.b.TheString = mw.c2 " +
                     "when not matched then " +
@@ -1354,8 +1539,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var epl = "create schema WinOMISSchema as (v1 string, v2 int);\n";
                 epl += namedWindow
-                    ? "@Name('Create') create window WinOMIS#keepall as WinOMISSchema;\n"
-                    : "@Name('Create') create table WinOMIS as (v1 string primary key, v2 int);\n";
+                    ? "@name('Create') create window WinOMIS#keepall as WinOMISSchema;\n"
+                    : "@name('Create') create table WinOMIS as (v1 string primary key, v2 int);\n";
                 epl += "on SupportBean_ST0 as st0 merge WinOMIS as win where win.v1=st0.Key0 " +
                        "when not matched " +
                        "then insert into StreamOne select * " +
@@ -1363,10 +1548,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                        "then insert into StreamThree(Id, Key0) select st0.Id, st0.Key0 " +
                        "then insert into StreamFour select Id, Key0 where Key0=\"K2\" " +
                        "then insert into WinOMIS select Key0 as v1, P00 as v2;\n";
-                epl += "@Name('s1') select * from StreamOne;\n";
-                epl += "@Name('s2') select * from StreamTwo;\n";
-                epl += "@Name('s3') select * from StreamThree;\n";
-                epl += "@Name('s4') select * from StreamFour;\n";
+                epl += "@name('s1') select * from StreamOne;\n";
+                epl += "@name('s2') select * from StreamTwo;\n";
+                epl += "@name('s3') select * from StreamThree;\n";
+                epl += "@name('s4') select * from StreamFour;\n";
                 env.CompileDeploy(epl).AddListener("s1").AddListener("s2").AddListener("s3").AddListener("s4");
 
                 env.SendEventBean(new SupportBean_ST0("ID1", "K1", 1));
@@ -1413,12 +1598,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var path = new RegressionPath();
                 var eplCreate = namedWindow
-                    ? "@Name('Create') create window WinMDU#keepall as SupportBean"
-                    : "@Name('Create') create table WinMDU (TheString string primary key, IntPrimitive int)";
+                    ? "@name('Create') create window WinMDU#keepall as SupportBean"
+                    : "@name('Create') create table WinMDU (TheString string primary key, IntPrimitive int)";
                 env.CompileDeploy(eplCreate, path);
                 env.CompileDeploy("insert into WinMDU select TheString, IntPrimitive from SupportBean", path);
 
-                var epl = "@Name('merge') on SupportBean_ST0 as st0 merge WinMDU as win where st0.Key0=win.TheString " +
+                var epl = "@name('merge') on SupportBean_ST0 as st0 merge WinMDU as win where st0.Key0=win.TheString " +
                           "when matched " +
                           "then delete where IntPrimitive<0 " +
                           "then update set IntPrimitive=st0.P00 where IntPrimitive=3000 or P00=3000 " +
@@ -1503,8 +1688,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var path = new RegressionPath();
                 var eplCreateOne = namedWindow
-                    ? "@Name('Create') create window InfraOne#unique(string) (string string, IntPrimitive int)"
-                    : "@Name('Create') create table InfraOne (string string primary key, IntPrimitive int)";
+                    ? "@name('Create') create window InfraOne#unique(string) (string string, IntPrimitive int)"
+                    : "@name('Create') create table InfraOne (string string primary key, IntPrimitive int)";
                 env.CompileDeploy(eplCreateOne, path);
                 AssertStatelessStmt(env, "Create", false);
 
@@ -1555,7 +1740,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     : "create table MyInfraUOF(TheString string primary key, IntPrimitive int, IntBoxed int, DoublePrimitive double);\n";
                 epl +=
                     "insert into MyInfraUOF select TheString, IntPrimitive, IntBoxed, DoublePrimitive from SupportBean;\n";
-                epl += "@Name('Merge') on SupportBean_S0 as sb " +
+                epl += "@name('Merge') on SupportBean_S0 as sb " +
                        "merge MyInfraUOF as mywin where mywin.TheString = sb.P00 when matched then " +
                        "update set IntPrimitive=Id, IntBoxed=mywin.IntPrimitive, DoublePrimitive=initial.IntPrimitive;\n";
 
@@ -1603,15 +1788,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public void Run(RegressionEnvironment env)
             {
-                var epl = eventRepresentationEnum.GetAnnotationText() +
+                var epl = eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyEvent>() +
                           " create schema MyEvent as (name string, value double);\n" +
                           (namedWindow
-                              ? eventRepresentationEnum.GetAnnotationText() +
+                              ? eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyEvent>() +
                                 " create window MyInfraIOS#unique(name) as MyEvent;\n"
                               : "create table MyInfraIOS (name string primary key, value double primary key);\n"
                           ) +
                           "insert into MyInfraIOS select * from MyEvent;\n" +
-                          eventRepresentationEnum.GetAnnotationText() +
+                          eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedInputEvent>() +
                           " create schema InputEvent as (col1 string, col2 double);\n" +
                           "\n" +
                           "on MyEvent as eme\n" +
@@ -1620,7 +1805,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                           "      insert into OtherStreamOne select eme.name as event_name, MyInfraIOS.value as status\n" +
                           "   when not matched then\n" +
                           "      insert into OtherStreamOne select eme.name as event_name, 0d as status;\n" +
-                          "@Name('s0') select * from OtherStreamOne;\n";
+                          "@name('s0') select * from OtherStreamOne;\n";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
                 MakeSendNameValueEvent(env, eventRepresentationEnum, "MyEvent", "name1", 10d);
@@ -1672,6 +1857,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     record.Put("value", value);
                     env.EventService.SendEventAvro(record, typeName);
                 }
+                else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
+                    env.EventService.SendEventJson(
+                        new JObject(new JProperty("name", name), new JProperty("value", value)).ToString(),
+                        typeName);
+                }
                 else {
                     Assert.Fail();
                 }
@@ -1692,6 +1882,31 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 RunUpdateNestedEvent(env, namedWindow, "map");
                 RunUpdateNestedEvent(env, namedWindow, "objectarray");
             }
+        }
+        
+        [Serializable] public class MyLocalJsonProvidedMyEvent {
+            public String name;
+            public double value;
+        }
+
+        [Serializable] public class MyLocalJsonProvidedInputEvent {
+            public String col1;
+            public double col2;
+        }
+
+        [Serializable] public class MyLocalJsonProvidedMyInnerSchema {
+            public String in1;
+            public int in2;
+        }
+
+        [Serializable] public class MyLocalJsonProvidedMyEventSchema {
+            public String col1;
+            public MyLocalJsonProvidedMyInnerSchema col2;
+        }
+
+        [Serializable] public class MyLocalJsonProvidedMyInfraITV {
+            public String c1;
+            public MyLocalJsonProvidedMyInnerSchema c2;
         }
     }
 } // end of namespace

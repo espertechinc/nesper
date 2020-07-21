@@ -87,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 // test simple properties
                 MyOperatorOneForge.Operators.Clear();
                 env.Compile(
-                    "@Name('flow') create dataflow MyGraph MyOperatorOne {" +
+                    "@name('flow') create dataflow MyGraph MyOperatorOne {" +
                     "  theString = 'a'," +
                     "  theInt: 1," +
                     "  theBool: true," +
@@ -121,7 +121,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 // test array etc. properties
                 MyOperatorTwoForge.Operators.Clear();
                 env.Compile(
-                    "@Name('flow') create dataflow MyGraph MyOperatorTwo {\n" +
+                    "@name('flow') create dataflow MyGraph MyOperatorTwo {\n" +
                     "  TheStringArray: ['a', \"b\"],\n" +
                     "  TheIntArray: [1, 2, 3],\n" +
                     "  TheObjectArray: ['a', 1],\n" +

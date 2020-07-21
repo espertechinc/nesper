@@ -21,29 +21,29 @@ using NUnit.Framework;
 namespace com.espertech.esper.compiler.@internal.parse
 {
 	[TestFixture]
-	public class TestEPLParser : AbstractRuntimeTest
+	public class TestEPLParser : AbstractCompilerTest
 	{
 
 		[Test]
 		public void TestDisplayAST()
 		{
-			string expression = "select * from A where exp > ANY (select a from B)";
+			var expression = "select * from A where exp > ANY (select a from B)";
 
 			Log.Debug(".testDisplayAST parsing: " + expression);
-			Pair<ITree, CommonTokenStream> ast = Parse(expression);
+			var ast = Parse(expression);
 			SupportParserHelper.DisplayAST(ast.First);
 
 			Log.Debug(".testDisplayAST walking...");
-			EPLTreeWalkerListener listener = SupportEPLTreeWalkerFactory.MakeWalker(container, ast.Second);
+			var listener = SupportEPLTreeWalkerFactory.MakeWalker(container, ast.Second);
 
-			ParseTreeWalker walker = new ParseTreeWalker(); // create standard walker
+			var walker = new ParseTreeWalker(); // create standard walker
 			walker.Walk(listener, (IParseTree) ast.First); // initiate walk of tree with listener
 		}
 
 		[Test]
 		public void TestInvalidCases()
 		{
-			string className = typeof(SupportBean).Name;
+			var className = typeof(SupportBean).Name;
 
 			AssertIsInvalid(className + "(val=10000).");
 			AssertIsInvalid("select * from com.xxx().std:win(3) where a not is null");
@@ -214,8 +214,8 @@ namespace com.espertech.esper.compiler.@internal.parse
 		[Test]
 		public void TestValidCases()
 		{
-			string className = typeof(SupportBean).Name;
-			string preFill = "select * from " + className;
+			var className = typeof(SupportBean).Name;
+			var preFill = "select * from " + className;
 
 			// output rate limiting
 			AssertIsValid("select a from B output snapshot every 1 milliseconds");
@@ -686,14 +686,14 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsValid("@SomeOther(tags=@inner1(a=4), moretags=@inner2(a=3)) select * from B");
 			AssertIsValid("@SomeOther(innerdata={1, 2, 3}) select * from B");
 			AssertIsValid("@SomeOther(innerdata={1, 2, 3}) select * from B");
-			string text = "@EPL(\n" +
-			              "  name=\"MyStmtName\", \n" +
-			              "  description=\"Selects all fields\", \n" +
-			              "  onUpdate=\"some test\", \n" +
-			              "  onUpdateRemove=\"some text\", \n" +
-			              "  tags=@Tags" +
-			              ")\n" +
-			              "select * from MyField";
+			var text = "@EPL(\n" +
+			           "  name=\"MyStmtName\", \n" +
+			           "  description=\"Selects all fields\", \n" +
+			           "  onUpdate=\"some test\", \n" +
+			           "  onUpdateRemove=\"some text\", \n" +
+			           "  tags=@Tags" +
+			           ")\n" +
+			           "select * from MyField";
 			AssertIsValid(text);
 			text = "@EPL(name=\"MyStmtName\"," +
 			       "  tags=@Tags(" +
@@ -751,8 +751,8 @@ namespace com.espertech.esper.compiler.@internal.parse
 		[Test]
 		public void TestBitWiseCases()
 		{
-			string className = typeof(SupportBean).Name;
-			string eplSmt = "select (intPrimitive & intBoxed) from " + className;
+			var className = typeof(SupportBean).Name;
+			var eplSmt = "select (intPrimitive & intBoxed) from " + className;
 			AssertIsValid(eplSmt + ".win:lenght()");
 			eplSmt = "select boolPrimitive|boolBoxed from " + className;
 			AssertIsValid(eplSmt + "().std:win(20)");
@@ -763,8 +763,8 @@ namespace com.espertech.esper.compiler.@internal.parse
 		[Test]
 		public void TestIfThenElseCase()
 		{
-			string className = typeof(SupportBean).Name;
-			string eplSmt = "select case when 1 then (a + 1) when 2 then (a*2) end from " + className;
+			var className = typeof(SupportBean).Name;
+			var eplSmt = "select case when 1 then (a + 1) when 2 then (a*2) end from " + className;
 			AssertIsValid(eplSmt + ".win:lenght()");
 			eplSmt = "select case a when 1 then (a + 1) end from " + className;
 			AssertIsValid(eplSmt + ".win:lenght()");
@@ -782,7 +782,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 		private void TryJoin(string joinType)
 		{
-			string className = typeof(SupportBean).Name;
+			var className = typeof(SupportBean).Name;
 			AssertIsValid(
 				"select intPrimitive from " +
 				className +
@@ -814,7 +814,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		private void AssertIsValid(string text)
 		{
 			Log.Debug(".assertIsValid Trying text=" + text);
-			Pair<ITree, CommonTokenStream> ast = Parse(text);
+			var ast = Parse(text);
 			Log.Debug(".assertIsValid success, tree walking...");
 
 			SupportParserHelper.DisplayAST(ast.First);

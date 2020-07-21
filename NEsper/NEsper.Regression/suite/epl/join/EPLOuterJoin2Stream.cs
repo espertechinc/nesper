@@ -58,6 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             execs.Add(new EPLJoinRightOuterJoin());
             execs.Add(new EPLJoinLeftOuterJoin());
             execs.Add(new EPLJoinEventType());
+            execs.Add(new EPLJoinFullOuterMultikeyWArrayPrimitive());
             return execs;
         }
 
@@ -133,7 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             RegressionEnvironment env,
             string outerJoinType)
         {
-            var joinStatement = "@Name('s0') select irstream S0.Id, S0.P00, S1.Id, S1.P10 from " +
+            var joinStatement = "@name('s0') select irstream S0.Id, S0.P00, S1.Id, S1.P10 from " +
                                 "SupportBean_S0#length(3) as S0 " +
                                 outerJoinType +
                                 " outer join " +
@@ -149,6 +150,62 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             env.SendEventBean(theEvent);
         }
 
+        internal class EPLJoinFullOuterMultikeyWArrayPrimitive : RegressionExecution {
+            public void Run (RegressionEnvironment env) {
+                string epl = "@name('s0') select * " +
+                             "from SupportEventWithIntArray#keepall one " +
+                             "full outer join " +
+                             "SupportEventWithManyArray#keepall two " +
+                             "on array = intOne";
+                env.CompileDeploy (epl).AddListener ("s0");
+
+                SendIntArrayAssert (env, "IA1", new int[] { 1, 2 }, new object[][] {  
+                    new object[] { "IA1", null } });
+                SendManyArrayAssert (env, "MA1", new int[] { 3, 4 }, new object[][] {  
+                    new object[] { null, "MA1" } });
+                SendIntArrayAssert (env, "IA2", new int[] { 1 }, new object[][] {  
+                    new object[] { "IA2", null } });
+                SendManyArrayAssert (env, "MA2", new int[] { 2 }, new object[][] {  
+                    new object[] { null, "MA2" } });
+
+                env.Milestone (0);
+
+                SendManyArrayAssert (env, "MA3", new int[] { 1 }, new object[][] {  
+                    new object[] { "IA2", "MA3" } });
+                SendIntArrayAssert (env, "IA3", new int[] { 3, 4 }, new object[][] {  
+                    new object[] { "IA3", "MA1" } });
+                SendManyArrayAssert (env, "MA4", new int[] { 3, 4 }, new object[][] {  
+                    new object[] { "IA3", "MA4" } });
+                SendIntArrayAssert (env, "IA4", new int[] { 3, 4 }, new object[][] { 
+                    new object[] { "IA4", "MA1" }, 
+                    new object[] { "IA4", "MA4" } });
+
+                env.UndeployAll ();
+            }
+
+            private void SendIntArrayAssert(
+                RegressionEnvironment env,
+                string id,
+                int[] array,
+                object[][] expected)
+            {
+                env.SendEventBean(new SupportEventWithIntArray(id, array));
+                AssertEvents(env, expected);
+            }
+
+            private void SendManyArrayAssert (RegressionEnvironment env, string id, int[] intOne, object[][] expected) {
+                env.SendEventBean (new SupportEventWithManyArray (id).WithIntOne (intOne));
+                AssertEvents (env, expected);
+            }
+
+            private void AssertEvents(
+                RegressionEnvironment env,
+                object[][] expected)
+            {
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(env.Listener("s0").GetAndResetLastNewData(), "one.id,two.id".SplitCsv(), expected);
+            }
+        }
+        
         internal class EPLJoinRangeOuterJoin : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -156,7 +213,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var milestone = new AtomicLong();
 
                 var stmtOne =
-                    "@Name('s0') select sb.TheString as sbstr, sb.IntPrimitive as sbint, sbr.Key as sbrk, sbr.RangeStart as sbrs, sbr.RangeEnd as sbre " +
+                    "@name('s0') select sb.TheString as sbstr, sb.IntPrimitive as sbint, sbr.Key as sbrk, sbr.RangeStart as sbrs, sbr.RangeEnd as sbre " +
                     "from SupportBean#keepall sb " +
                     "full outer join " +
                     "SupportBeanRange#keepall sbr " +
@@ -166,7 +223,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 TryAssertion(env, stmtOne, milestone);
 
                 var stmtTwo =
-                    "@Name('s0') select sb.TheString as sbstr, sb.IntPrimitive as sbint, sbr.Key as sbrk, sbr.RangeStart as sbrs, sbr.RangeEnd as sbre " +
+                    "@name('s0') select sb.TheString as sbstr, sb.IntPrimitive as sbint, sbr.Key as sbrk, sbr.RangeStart as sbrs, sbr.RangeEnd as sbre " +
                     "from SupportBeanRange#keepall sbr " +
                     "full outer join " +
                     "SupportBean#keepall sb " +
@@ -176,7 +233,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 TryAssertion(env, stmtTwo, milestone);
 
                 var stmtThree =
-                    "@Name('s0') select sb.TheString as sbstr, sb.IntPrimitive as sbint, sbr.Key as sbrk, sbr.RangeStart as sbrs, sbr.RangeEnd as sbre " +
+                    "@name('s0') select sb.TheString as sbstr, sb.IntPrimitive as sbint, sbr.Key as sbrk, sbr.RangeStart as sbrs, sbr.RangeEnd as sbre " +
                     "from SupportBeanRange#keepall sbr " +
                     "full outer join " +
                     "SupportBean#keepall sb " +
@@ -266,7 +323,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select TheString, IntPrimitive, Symbol, Volume " +
+                var epl = "@name('s0') select TheString, IntPrimitive, Symbol, Volume " +
                           "from SupportMarketDataBean#keepall " +
                           "full outer join SupportBean#groupwin(TheString, IntPrimitive)#length(2) " +
                           "on TheString = Symbol " +
@@ -494,7 +551,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select S0.Id, S0.P00, S0.P01, S1.Id, S1.P10, S1.P11 from " +
+                var epl = "@name('s0') select S0.Id, S0.P00, S0.P01, S1.Id, S1.P10, S1.P11 from " +
                           "SupportBean_S0#length(3) as S0 " +
                           "left outer join " +
                           "SupportBean_S1#length(5) as S1" +
@@ -512,7 +569,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "S0.Id"," S0.P00"," S0.P01"," S1.Id"," S1.P10"," S1.P11" };
-                var epl = "@Name('s0') select S0.Id, S0.P00, S0.P01, S1.Id, S1.P10, S1.P11 from " +
+                var epl = "@name('s0') select S0.Id, S0.P00, S0.P01, S1.Id, S1.P10, S1.P11 from " +
                           "SupportBean_S0#length(3) as S0 " +
                           "right outer join " +
                           "SupportBean_S1#length(5) as S1" +
@@ -549,7 +606,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "S0.TheString"," S1.TheString" };
-                var epl = "@Name('s0') select S0.TheString, S1.TheString from " +
+                var epl = "@name('s0') select S0.TheString, S1.TheString from " +
                           "SupportBean(TheString like 'S0%')#keepall as S0 " +
                           "right outer join " +
                           "SupportBean(TheString like 'S1%')#keepall as S1" +

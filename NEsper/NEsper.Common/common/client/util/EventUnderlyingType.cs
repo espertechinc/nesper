@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.client.util
         MAP,
 
         /// <summary>
-        ///     Event representation is Avro (GenericData.Record).
+        ///     Event representation is Avro (GenericRecord).
         /// </summary>
         AVRO,
         

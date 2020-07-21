@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
         private void RunAssertionObjectArrayWithMap(RegressionEnvironment env)
         {
             env.CompileDeploy(
-                "@Name('s0') select " +
+                "@name('s0') select " +
                 "p0 as c0, " +
                 "p1.im as c1, " +
                 "p2[0].im as c2, " +
@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             env.UndeployAll();
 
             // test inserting from array to map
-            env.CompileDeploy("@Name('s0') insert into MapType(im) select p0 from OAType").AddListener("s0");
+            env.CompileDeploy("@name('s0') insert into MapType(im) select p0 from OAType").AddListener("s0");
             env.SendEventObjectArray(new object[] {"E1", null, null, null}, "OAType");
             Assert.IsTrue(env.Listener("s0").AssertOneGetNew() is MappedEventBean);
             Assert.AreEqual("E1", env.Listener("s0").AssertOneGetNewAndReset().Get("im"));
@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             env.CompileDeployWBusPublicType(schema, path);
 
             env.CompileDeploy(
-                "@Name('s0') select oa1.p0 as c0, oa1.p1 as c1, oa2[0].p0 as c2, oa2[1].p1 as c3 from MapTypeWOA",
+                "@name('s0') select oa1.p0 as c0, oa1.p1 as c1, oa2[0].p0 as c2, oa2[1].p1 as c3 from MapTypeWOA",
                 path);
             env.AddListener("s0");
 
@@ -96,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             env.UndeployModuleContaining("s0");
 
             // test inserting from map to array
-            env.CompileDeploy("@Name('s0') insert into OATypeInMap select 'a' as p0, 1 as p1 from MapTypeWOA", path)
+            env.CompileDeploy("@name('s0') insert into OATypeInMap select 'a' as p0, 1 as p1 from MapTypeWOA", path)
                 .AddListener("s0");
             env.SendEventMap(data, "MapTypeWOA");
             Assert.IsTrue(env.Listener("s0").AssertOneGetNew() is ObjectArrayBackedEventBean);

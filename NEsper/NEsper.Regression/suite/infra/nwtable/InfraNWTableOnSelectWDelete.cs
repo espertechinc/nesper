@@ -42,13 +42,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
 
                 var eplCreate = namedWindow
-                    ? "@Name('create') create window MyInfra#keepall as SupportBean"
-                    : "@Name('create') create table MyInfra (TheString string primary key, IntPrimitive int primary key)";
+                    ? "@name('create') create window MyInfra#keepall as SupportBean"
+                    : "@name('create') create table MyInfra (TheString string primary key, IntPrimitive int primary key)";
                 env.CompileDeploy(eplCreate, path);
 
                 env.CompileDeploy("insert into MyInfra select TheString, IntPrimitive from SupportBean", path);
 
-                var eplSelectDelete = "@Name('s0') on SupportBean_S0 as S0 " +
+                var eplSelectDelete = "@name('s0') on SupportBean_S0 as S0 " +
                                       "select and delete window(win.*).aggregate(0,(result,value) -> result+value.IntPrimitive) as c0 " +
                                       "from MyInfra as win where S0.P00=win.TheString";
                 env.CompileDeploy(eplSelectDelete, path).AddListener("s0");

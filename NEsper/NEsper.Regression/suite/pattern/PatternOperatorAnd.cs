@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var fields = new [] { "c0", "c1" };
 
                 var epl =
-                    "@Name('s0') select a.TheString as c0, b.TheString as c1 from pattern [a=SupportBean(IntPrimitive=0) and b=SupportBean(IntPrimitive=1)]";
+                    "@name('s0') select a.TheString as c0, b.TheString as c1 from pattern [a=SupportBean(IntPrimitive=0) and b=SupportBean(IntPrimitive=1)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 // ESPER-402
                 var pattern =
-                    "@Name('s0') insert into NumberOfWaitingCalls(calls) " +
+                    "@name('s0') insert into NumberOfWaitingCalls(calls) " +
                     " select count(*)" +
                     " from pattern[every call=SupportBean_A ->" +
                     " (not SupportBean_B(Id=call.Id) and" +
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 // When all other sub-expressions to an AND are gone,
                 // then there is no need to retain events of the subexpression still active
 
-                var epl = "@Name('s0') select * from pattern [a=SupportBean_A and every b=SupportBean_B]";
+                var epl = "@name('s0') select * from pattern [a=SupportBean_A and every b=SupportBean_B]";
                 env.CompileDeploy(epl);
 
                 env.SendEventBean(new SupportBean_A("A1"));

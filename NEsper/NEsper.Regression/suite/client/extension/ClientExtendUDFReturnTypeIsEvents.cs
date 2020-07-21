@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             path.Add(compiled);
 
             env.CompileDeploy(
-                "@Name('s0') select " +
+                "@name('s0') select " +
                 methodName +
                 "(TheString).where(v -> v.Id in ('id1', 'id3')) as c0 from SupportBean",
                 path);

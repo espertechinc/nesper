@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, 0);
 
                 var fields = new [] { "Symbol" };
-                var text = "@Name('s0') select irstream * from SupportMarketDataBean#time_batch(1 sec)";
+                var text = "@name('s0') select irstream * from SupportMarketDataBean#time_batch(1 sec)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 SendTimer(env, 1500);
@@ -233,7 +233,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var fields = new [] { "TheString" };
 
                 SendTimer(env, 0);
-                var epl = "@Name('s0') select irstream * from SupportBean#time_batch(10 sec)";
+                var epl = "@name('s0') select irstream * from SupportBean#time_batch(10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("s0"), fields, null);
@@ -315,7 +315,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 SendCurrentTime(env, "2002-02-01T09:00:00.000");
 
-                env.CompileDeployAddListenerMileZero("@Name('s0') select * from SupportBean#time_batch(1 month)", "s0");
+                env.CompileDeployAddListenerMileZero("@name('s0') select * from SupportBean#time_batch(1 month)", "s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 SendCurrentTimeWithMinus(env, "2002-03-01T09:00:00.000", 1);
@@ -354,7 +354,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 SendTimer(env, 1000);
 
-                var epl = "@Name('s0') select irstream * from SupportBean#time_batch(1, \"START_EAGER,FORCE_UPDATE\")";
+                var epl = "@name('s0') select irstream * from SupportBean#time_batch(1, \"START_EAGER,FORCE_UPDATE\")";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendTimer(env, 1999);
@@ -405,7 +405,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, 0);
 
                 var text =
-                    "@Name('s0') select irstream Symbol from SupportMarketDataBean#time_batch(1 sec, \"START_EAGER, FORCE_UPDATE\")";
+                    "@name('s0') select irstream Symbol from SupportMarketDataBean#time_batch(1 sec, \"START_EAGER, FORCE_UPDATE\")";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 SendTimer(env, 1000);
@@ -450,7 +450,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select irstream * from SupportMarketDataBean#time_batch(1 sec)";
+                var text = "@name('s0') select irstream * from SupportMarketDataBean#time_batch(1 sec)";
                 env.CompileDeploy(text).AddListener("s0");
 
                 var random = new Random();
@@ -485,7 +485,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var fields = new [] { "TheString" };
 
                 SendTimer(env, 0);
-                var epl = "@Name('s0') select irstream * from SupportBean#time_batch(10 sec)";
+                var epl = "@name('s0') select irstream * from SupportBean#time_batch(10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("s0"), fields, null);
@@ -572,7 +572,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var fields = new [] { "TheString" };
 
                 SendTimer(env, 0);
-                var epl = "@Name('s0') select irstream * from SupportBean#time_batch(10 sec)";
+                var epl = "@name('s0') select irstream * from SupportBean#time_batch(10 sec)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendTimer(env, 1000);
@@ -652,7 +652,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from SupportBean#time_batch(10 minutes)";
+                var epl = "@name('s0') select * from SupportBean#time_batch(10 minutes)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.AdvanceTime(0);
@@ -672,7 +672,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(00);
 
-                var epl = "@Name('s0') select * from SupportBean#time_batch(10 minutes, 10L)";
+                var epl = "@name('s0') select * from SupportBean#time_batch(10 minutes, 10L)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.AdvanceTime(10);

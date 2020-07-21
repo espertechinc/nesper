@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             string messageOrNull)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("@Name('create') create table " + name + "(value " + declared + ")", path);
+            env.CompileDeploy("@name('create') create table " + name + "(value " + declared + ")", path);
 
             try {
                 var epl = "into table " +
@@ -416,11 +416,6 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 TryInvalidCompile(
                     env,
                     path,
-                    "create table abc as (arr int[] primary key)",
-                    "Column 'arr' may not be tagged as primary key, an array-typed column cannot become a primary key column [");
-                TryInvalidCompile(
-                    env,
-                    path,
                     "create table abc as (arr SupportBean primary key)",
                     "Column 'arr' may not be tagged as primary key, received unexpected event type 'SupportBean' [");
                 TryInvalidCompile(
@@ -511,7 +506,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env,
                     path,
                     "select aggvar_grouped_string.total from SupportBean",
-                    "Failed to validate select-clause expression 'aggvar_grouped_string.total': Failed to resolve property 'aggvar_grouped_string.total' to a stream or nested property in a stream [");
+                    "Failed to validate select-clause expression 'aggvar_grouped_string.total': Failed to resolve property 'aggvar_grouped_string.total' to a stream or nested property in a stream");
                 TryInvalidCompile(
                     env,
                     path,
@@ -527,8 +522,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 TryInvalidCompile(
                     env,
                     path,
-                    "select dummy['a'] from SupportBean",
-                    "Failed to validate select-clause expression 'dummy[\"a\"]': Failed to resolve table name 'dummy' to a table");
+                    "select dummy[IntPrimitive] from SupportBean",
+                    "Failed to validate select-clause expression 'dummy[IntPrimitive]': Failed to resolve table name 'dummy' to a property, single-row function, aggregation function, script, stream or class name");
                 TryInvalidCompile(
                     env,
                     path,
@@ -560,14 +555,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env,
                     path,
                     "select * from SupportBean#time(aggvar_ungrouped.total sec)",
-                    "Failed to validate data window declaration: Error in view 'time', Invalid parameter expression 0 for Time view: Failed to validate view parameter expression 'aggvar_ungrouped.total seconds': Invalid use of table access expression, expression 'aggvar_ungrouped' is not allowed here");
+                    "Invalid table expression 'aggvar_grouped_int[0].a.b [select aggvar_grouped_int[0].a.b from SupportBean]");
                 // indexed property expression but not an aggregtion-type variable
                 env.CompileDeploy("create objectarray schema MyEvent(abc int[])");
-                TryInvalidCompile(
-                    env,
-                    path,
-                    "select abc[5*5] from SupportBean",
-                    "Failed to validate select-clause expression 'abc[5*5]': Failed to resolve table name 'abc' to a table");
                 // view use
                 TryInvalidCompile(
                     env,
@@ -586,16 +576,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "select * from aggvar_grouped_string[books]",
                     "Contained-event expressions are not supported with tables");
                 // join invalid
-                TryInvalidCompile(
-                    env,
-                    path,
-                    "select aggvar_grouped_int[1].total.countMinSketchFrequency(TheString) from SupportBean",
-                    "Failed to validate select-clause expression 'aggvar_grouped_int[1].total.countMi...(62 chars)': Invalid combination of aggregation state and aggregation accessor [");
-                TryInvalidCompile(
-                    env,
-                    path,
-                    "select total.countMinSketchFrequency(TheString) from aggvar_grouped_int, SupportBean unidirectional",
-                    "Failed to validate select-clause expression 'total.countMinSketchFrequency(TheString)': Failed to validate method-chain expression 'total.countMinSketchFrequency(TheString)': Invalid combination of aggregation state and aggregation accessor [");
+                TryInvalidCompile(env, path, "select aggvar_grouped_int[1].total.countMinSketchFrequency(TheString) from SupportBean",
+                    "Failed to validate select-clause expression 'aggvar_grouped_int[1].total.countMi...(62 chars)': Failed to resolve method 'countMinSketchFrequency': Could not find enumeration method, date-time method, instance method or property named 'countMinSketchFrequency' in class 'java.lang.Long' with matching parameter number and expected parameter type(s) 'String' ");
+                TryInvalidCompile(env, path, "select total.countMinSketchFrequency(TheString) from aggvar_grouped_int, SupportBean unidirectional",
+                    "Failed to validate select-clause expression 'total.countMinSketchFrequency(TheString)': Failed to resolve method 'countMinSketchFrequency': Could not find");
                 // cannot be marked undirectional
                 TryInvalidCompile(
                     env,

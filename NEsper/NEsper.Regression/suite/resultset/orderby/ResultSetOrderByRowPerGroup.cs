@@ -210,7 +210,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@Name('s0') select irstream Symbol, sum(Price) as mysum from " +
+                var epl = "@name('s0') select irstream Symbol, sum(Price) as mysum from " +
                           "SupportMarketDataBean#length(20) " +
                           "group by Symbol " +
                           "output every 6 events " +
@@ -226,7 +226,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@Name('s0') select irstream Symbol, sum(Price) as mysum from " +
+                var epl = "@name('s0') select irstream Symbol, sum(Price) as mysum from " +
                           "SupportMarketDataBean#length(20) " +
                           "group by Symbol " +
                           "having sum(Price) > 0 " +
@@ -243,7 +243,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@Name('s0') select irstream Symbol, sum(Price) as mysum from " +
+                var epl = "@name('s0') select irstream Symbol, sum(Price) as mysum from " +
                           "SupportMarketDataBean#length(20) as one, " +
                           "SupportBeanString#length(100) as two " +
                           "where one.Symbol = two.TheString " +
@@ -272,7 +272,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@Name('s0') select irstream Symbol, sum(Price) as mysum from " +
+                var epl = "@name('s0') select irstream Symbol, sum(Price) as mysum from " +
                           "SupportMarketDataBean#length(20) as one, " +
                           "SupportBeanString#length(100) as two " +
                           "where one.Symbol = two.TheString " +
@@ -303,7 +303,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@Name('s0') select irstream Symbol, sum(Price) as mysum from " +
+                var epl = "@name('s0') select irstream Symbol, sum(Price) as mysum from " +
                           "SupportMarketDataBean#length(20) as one, " +
                           "SupportBeanString#length(100) as two " +
                           "where one.Symbol = two.TheString " +
@@ -333,7 +333,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@Name('s0') select irstream Symbol, sum(Price) as mysum from " +
+                var epl = "@name('s0') select irstream Symbol, sum(Price) as mysum from " +
                           "SupportMarketDataBean#length(20) " +
                           "group by Symbol " +
                           "output last every 6 events " +
@@ -349,7 +349,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@Name('s0') select irstream Symbol, sum(Price) as mysum from " +
+                var epl = "@name('s0') select irstream Symbol, sum(Price) as mysum from " +
                           "SupportMarketDataBean#length(20) as one, " +
                           "SupportBeanString#length(100) as two " +
                           "where one.Symbol = two.TheString " +
@@ -380,7 +380,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             {
                 var milestone = new AtomicLong();
                 string[] fields = {"Symbol", "sumPrice"};
-                var epl = "@Name('s0') select Symbol, sum(Price) as sumPrice from " +
+                var epl = "@name('s0') select Symbol, sum(Price) as sumPrice from " +
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
                           "where one.Symbol = two.TheString " +
@@ -424,7 +424,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select last(IntPrimitive) as c0, TheString as c1  " +
+                var epl = "@name('s0') select last(IntPrimitive) as c0, TheString as c1  " +
                           "from SupportBean#length_batch(5) group by TheString order by last(IntPrimitive) desc";
                 env.CompileDeploy(epl).AddListener("s0");
 

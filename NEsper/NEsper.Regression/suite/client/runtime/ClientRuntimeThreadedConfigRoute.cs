@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             // destroy all statements
             env.UndeployAll();
 
-            env.CompileDeploy("@Name('s0') select SupportStaticMethodLib.Sleep(10) from SupportBean, SupportBean");
+            env.CompileDeploy("@name('s0') select SupportStaticMethodLib.Sleep(10) from SupportBean, SupportBean");
             env.Statement("s0").AddListener(listener);
             env.SendEventBean(new SupportBean());
             try {

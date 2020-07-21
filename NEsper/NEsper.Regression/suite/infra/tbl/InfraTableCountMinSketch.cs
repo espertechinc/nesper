@@ -159,7 +159,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(eplInto, path);
 
                 var eplRead =
-                    "@Name('s0') select MyApproxNS.bytefreq.countMinSketchFrequency(Body) as freq from SupportByteArrEventStringId(Id='B')";
+                    "@name('s0') select MyApproxNS.bytefreq.countMinSketchFrequency(Body) as freq from SupportByteArrEventStringId(Id='B')";
                 env.CompileDeploy(eplRead, path).AddListener("s0");
 
                 env.SendEventBean(new SupportByteArrEventStringId("A", new byte[] {1, 2, 3}));
@@ -184,8 +184,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var epl =
                     "create table MyApproxFT(wordapprox countMinSketch({topk:3}));\n" +
                     "into table MyApproxFT select countMinSketchAdd(TheString) as wordapprox from SupportBean;\n" +
-                    "@Name('frequency') select MyApproxFT.wordapprox.countMinSketchFrequency(P00) as freq from SupportBean_S0;\n" +
-                    "@Name('topk') select MyApproxFT.wordapprox.countMinSketchTopk() as topk from SupportBean_S1;\n";
+                    "@name('frequency') select MyApproxFT.wordapprox.countMinSketchFrequency(P00) as freq from SupportBean_S0;\n" +
+                    "@name('topk') select MyApproxFT.wordapprox.countMinSketchTopk() as topk from SupportBean_S1;\n";
                 env.CompileDeploy(epl, path).AddListener("frequency").AddListener("topk");
 
                 env.SendEventBean(new SupportBean("E1", 0));
@@ -216,7 +216,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 // test join
                 var eplJoin =
-                    "@Name('join') select wordapprox.countMinSketchFrequency(S2.P20) as c0 from MyApproxFT, SupportBean_S2 S2 unidirectional";
+                    "@name('join') select wordapprox.countMinSketchFrequency(S2.P20) as c0 from MyApproxFT, SupportBean_S2 S2 unidirectional";
                 env.CompileDeploy(eplJoin, path).AddListener("join");
 
                 env.Milestone(2);
@@ -227,7 +227,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 // test subquery
                 var eplSubquery =
-                    "@Name('subq') select (select wordapprox.countMinSketchFrequency(S2.P20) from MyApproxFT) as c0 from SupportBean_S2 S2";
+                    "@name('subq') select (select wordapprox.countMinSketchFrequency(S2.P20) from MyApproxFT) as c0 from SupportBean_S2 S2";
                 env.CompileDeploy(eplSubquery, path).AddListener("subq");
 
                 env.Milestone(3);
@@ -310,12 +310,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env,
                     path,
                     "into table MyCMS select countMinSketchFrequency(TheString) as wordcms from SupportBean",
-                    "Failed to validate select-clause expression 'countMinSketchFrequency(TheString)': Count-min-sketch aggregation function 'countMinSketchFrequency' requires the use of a table-access expression [");
+                    "Failed to validate select-clause expression 'countMinSketchFrequency(TheString)': Unknown single-row function, aggregation function or mapped or indexed property named 'countMinSketchFrequency' could not be resolved ");
                 TryInvalidCompile(
                     env,
                     path,
                     "select countMinSketchFrequency() from SupportBean",
-                    "Failed to validate select-clause expression 'countMinSketchFrequency()': Count-min-sketch aggregation function 'countMinSketchFrequency' requires the use of a table-access expression");
+                    "Failed to validate select-clause expression 'countMinSketchFrequency()': Unknown single-row function, expression declaration, script or aggregation function named 'countMinSketchFrequency' could not be resolved");
 
                 // invalid "countMinSketchTopk" declarations
                 //
@@ -323,7 +323,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env,
                     path,
                     "select countMinSketchTopk() from SupportBean",
-                    "Failed to validate select-clause expression 'countMinSketchTopk()': Count-min-sketch aggregation function 'countMinSketchTopk' requires the use of a table-access expression");
+                    "Failed to validate select-clause expression 'countMinSketchTopk()': Unknown single-row function, expression declaration, script or aggregation function named 'countMinSketchTopk' could not be resolved");
                 TryInvalidCompile(
                     env,
                     path,

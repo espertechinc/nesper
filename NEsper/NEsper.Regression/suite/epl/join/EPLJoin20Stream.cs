@@ -20,7 +20,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public void Run(RegressionEnvironment env)
         {
             var buf = new StringBuilder();
-            buf.Append("@Name('s0') select * from ");
+            buf.Append("@name('s0') select * from ");
 
             var delimiter = "";
             for (var i = 0; i < 20; i++) {

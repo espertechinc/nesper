@@ -59,25 +59,25 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var path = new RegressionPath();
                 string[] fields = {"key", "value"};
                 var stmtTextCreate =
-                    "@Name('create') create window MyWindow#keepall as select TheString as key, LongBoxed as value from " +
+                    "@name('create') create window MyWindow#keepall as select TheString as key, LongBoxed as value from " +
                     typeof(SupportBean).Name;
                 var modelCreate = env.EplToModel(stmtTextCreate);
                 env.CompileDeploy(modelCreate, path).AddListener("create");
                 Assert.AreEqual(
-                    "@Name('create') create window MyWindow#keepall as select TheString as key, LongBoxed as value from SupportBean",
+                    "@name('create') create window MyWindow#keepall as select TheString as key, LongBoxed as value from SupportBean",
                     modelCreate.ToEPL());
 
-                var stmtTextOnSelect = "@Name('onselect') on SupportBean_B select mywin.* from MyWindow as mywin";
+                var stmtTextOnSelect = "@name('onselect') on SupportBean_B select mywin.* from MyWindow as mywin";
                 var modelOnSelect = env.EplToModel(stmtTextOnSelect);
                 env.CompileDeploy(modelOnSelect, path).AddListener("onselect");
 
                 var stmtTextInsert =
-                    "@Name('insert') insert into MyWindow select TheString as key, LongBoxed as value from SupportBean";
+                    "@name('insert') insert into MyWindow select TheString as key, LongBoxed as value from SupportBean";
                 var modelInsert = env.EplToModel(stmtTextInsert);
                 env.CompileDeploy(modelInsert, path).AddListener("insert");
 
                 var stmtTextSelectOne =
-                    "@Name('select') select irstream key, value*2 as value from MyWindow(key is not null)";
+                    "@name('select') select irstream key, value*2 as value from MyWindow(key is not null)";
                 var modelSelect = env.EplToModel(stmtTextSelectOne);
                 env.CompileDeploy(modelSelect, path).AddListener("select");
                 Assert.AreEqual(stmtTextSelectOne, modelSelect.ToEPL());
@@ -105,11 +105,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create delete stmt
                 var stmtTextDelete =
-                    "@Name('delete') on SupportMarketDataBean as S0 delete from MyWindow as S1 where S0.Symbol=S1.key";
+                    "@name('delete') on SupportMarketDataBean as S0 delete from MyWindow as S1 where S0.Symbol=S1.key";
                 var modelDelete = env.EplToModel(stmtTextDelete);
                 env.CompileDeploy(modelDelete, path).AddListener("delete");
                 Assert.AreEqual(
-                    "@Name('delete') on SupportMarketDataBean as S0 delete from MyWindow as S1 where S0.Symbol=S1.key",
+                    "@name('delete') on SupportMarketDataBean as S0 delete from MyWindow as S1 where S0.Symbol=S1.key",
                     modelDelete.ToEPL());
 
                 // send delete event

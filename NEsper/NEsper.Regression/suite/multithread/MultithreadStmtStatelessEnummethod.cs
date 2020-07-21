@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 return bean;
             };
 
-            var enumFilter = "@Name('s0') select Strvals.anyOf(v -> v = 'j') from SupportCollection";
+            var enumFilter = "@name('s0') select Strvals.anyOf(v -> v = 'j') from SupportCollection";
             TryCount(env, 4, 1000, enumFilter, enumCallback);
             env.UndeployAll();
         }

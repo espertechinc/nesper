@@ -55,9 +55,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var eplInto = "into table vartotal select sum(IntPrimitive) as total from SupportBean";
             env.CompileDeploy(eplInto, path);
 
-            env.CompileDeploy("@Name('s0') select * from SupportBean_S0(1 = vartotal.total)", path).AddListener("s0");
+            env.CompileDeploy("@name('s0') select * from SupportBean_S0(1 = vartotal.total)", path).AddListener("s0");
 
-            env.CompileDeploy("@Name('s1') select * from SupportBean_S0(0 = vartotal.total)", path).AddListener("s1");
+            env.CompileDeploy("@name('s1') select * from SupportBean_S0(0 = vartotal.total)", path).AddListener("s1");
 
             var writeRunnable = new WriteRunnable(env);
             var readRunnable = new ReadRunnable(env, env.Listener("s0"), env.Listener("s1"));

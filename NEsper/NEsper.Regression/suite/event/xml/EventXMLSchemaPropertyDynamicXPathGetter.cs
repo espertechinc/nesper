@@ -6,11 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using System.Xml;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
+using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
@@ -20,12 +22,50 @@ using static com.espertech.esper.regressionlib.suite.@event.xml.EventXMLSchemaPr
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
-    public class EventXMLSchemaPropertyDynamicXPathGetter : RegressionExecution
+    public class EventXMLSchemaPropertyDynamicXPathGetter
     {
-        public void Run(RegressionEnvironment env)
+        public static List<RegressionExecution> Executions()
         {
-            var stmtText = "@Name('s0') select type?,dyn[1]?,nested.nes2?,map('a')? from MyEventWithXPath";
-            env.CompileDeploy(stmtText).AddListener("s0");
+            var execs = new List<RegressionExecution>();
+            execs.Add(new EventXMLSchemaPropertyDynamicXPathGetterPreconfig());
+            execs.Add(new EventXMLSchemaPropertyDynamicXPathGetterCreateSchema());
+            return execs;
+        }
+
+        public class EventXMLSchemaPropertyDynamicXPathGetterPreconfig : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunAssertion(env, "MyEventWithXPath", new RegressionPath());
+            }
+        }
+
+        public class EventXMLSchemaPropertyDynamicXPathGetterCreateSchema : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var resourceManager = env.Container.ResourceManager();
+                var schemaUriSimpleSchema = resourceManager.GetResourceAsStream("regression/simpleSchema.xsd").ConsumeStream();
+                var epl = "@public @buseventtype " +
+                          "@XMLSchema(rootElementName='simpleEvent', schemaResource='" +
+                          schemaUriSimpleSchema +
+                          "', xpathPropertyExpr=true, " +
+                          "  eventSenderValidatesRoot=false, defaultNamespace='samples:schemas:simpleSchema')" +
+                          "@XMLSchemaNamespacePrefix(prefix='ss', namespace='samples:schemas:simpleSchema')" +
+                          "create xml schema MyEventCreateSchema()";
+                var path = new RegressionPath();
+                env.CompileDeploy(epl, path);
+                RunAssertion(env, "MyEventCreateSchema", path);
+            }
+        }
+
+        private static void RunAssertion(
+            RegressionEnvironment env,
+            string eventTypeName,
+            RegressionPath path)
+        {
+            var stmtText = "@name('s0') select type?,dyn[1]?,nested.nes2?,map('a')? from " + eventTypeName;
+            env.CompileDeploy(stmtText, path).AddListener("s0");
 
             CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {
@@ -45,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 env.Statement("s0").EventType.PropertyDescriptors);
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("s0").EventType);
 
-            var sender = env.EventService.GetEventSender("MyEventWithXPath");
+            var sender = env.EventService.GetEventSender(eventTypeName);
             var root = SupportXML.SendEvent(sender, SCHEMA_XML);
 
             var theEvent = env.Listener("s0").AssertOneGetNewAndReset();

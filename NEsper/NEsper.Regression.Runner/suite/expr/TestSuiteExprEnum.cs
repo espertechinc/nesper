@@ -6,10 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client.configuration;
-using com.espertech.esper.common.client.configuration.compiler;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.expr.enummethod;
 using com.espertech.esper.regressionlib.support.bean;
@@ -28,8 +25,6 @@ namespace com.espertech.esper.regressionrun.suite.expr
     [TestFixture]
     public class TestSuiteExprEnum
     {
-        private RegressionSession session;
-
         [SetUp]
         public void SetUp()
         {
@@ -44,6 +39,59 @@ namespace com.espertech.esper.regressionrun.suite.expr
             session = null;
         }
 
+        private RegressionSession session;
+
+        private static void Configure(Configuration configuration)
+        {
+            foreach (var clazz in new[] {
+                typeof(SupportBean_ST0_Container),
+                typeof(SupportBean),
+                typeof(SupportBean_ST0_Container),
+                typeof(SupportCollection),
+                typeof(PersonSales),
+                typeof(SupportBean_A),
+                typeof(SupportBean_ST0),
+                typeof(SupportSelectorWithListEvent),
+                typeof(SupportEnumTwoEvent),
+                typeof(SupportSelectorEvent),
+                typeof(SupportContainerEvent),
+                typeof(Item),
+                typeof(LocationReport),
+                typeof(Zone),
+                typeof(SupportBeanComplexProps),
+                typeof(SupportEventWithLongArray),
+                typeof(SupportContainerLevelEvent),
+                typeof(SupportSelectorWithListEvent),
+                typeof(SupportBean_Container),
+                typeof(SupportContainerLevel1Event),
+                typeof(BookDesc),
+                typeof(SupportEventWithManyArray)
+            }) {
+                configuration.Common.AddEventType(clazz);
+            }
+
+            configuration.Common.AddImportType(typeof(SupportEnumTwo));
+            configuration.Common.AddImportType(typeof(SupportBean_ST0_Container));
+            configuration.Common.AddImportType(typeof(LocationReportFactory));
+            configuration.Common.AddImportType(typeof(SupportCollection));
+            configuration.Common.AddImportType(typeof(ZoneFactory));
+            configuration.Compiler.Expression.UdfCache = false;
+
+            var configurationCompiler = configuration.Compiler;
+            configurationCompiler.AddPlugInSingleRowFunction("makeSampleList", typeof(SupportBean_ST0_Container).Name, "makeSampleList");
+            configurationCompiler.AddPlugInSingleRowFunction("makeSampleArray", typeof(SupportBean_ST0_Container).Name, "makeSampleArray");
+            configurationCompiler.AddPlugInSingleRowFunction("makeSampleListString", typeof(SupportCollection).Name, "makeSampleListString");
+            configurationCompiler.AddPlugInSingleRowFunction("makeSampleArrayString", typeof(SupportCollection).Name, "makeSampleArrayString");
+            configurationCompiler.AddPlugInSingleRowFunction("convertToArray", typeof(SupportSelectorWithListEvent).Name, "convertToArray");
+            configurationCompiler.AddPlugInSingleRowFunction("extractAfterUnderscore", typeof(ExprEnumGroupBy).Name, "extractAfterUnderscore");
+            configurationCompiler.AddPlugInSingleRowFunction("extractNum", typeof(ExprEnumMinMax.MyService).Name, "extractNum");
+            configurationCompiler.AddPlugInSingleRowFunction("extractBigDecimal", typeof(ExprEnumMinMax.MyService).Name, "extractBigDecimal");
+            configurationCompiler.AddPlugInSingleRowFunction("inrect", typeof(LRUtil).Name, "inrect");
+            configurationCompiler.AddPlugInSingleRowFunction("distance", typeof(LRUtil).Name, "distance");
+            configurationCompiler.AddPlugInSingleRowFunction("getZoneNames", typeof(Zone).Name, "getZoneNames");
+            configurationCompiler.AddPlugInSingleRowFunction("makeTest", typeof(SupportBean_ST0_Container).Name, "makeTest");
+        }
+
         [Test]
         public void TestExprEnumAggregate()
         {
@@ -54,6 +102,12 @@ namespace com.espertech.esper.regressionrun.suite.expr
         public void TestExprEnumAllOfAnyOf()
         {
             RegressionRunner.Run(session, ExprEnumAllOfAnyOf.Executions());
+        }
+
+        [Test]
+        public void TestExprEnumArrayOf()
+        {
+            RegressionRunner.Run(session, ExprEnumArrayOf.Executions());
         }
 
         [Test]
@@ -125,7 +179,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [Test]
         public void TestExprEnumMinMaxBy()
         {
-            RegressionRunner.Run(session, new ExprEnumMinMaxBy());
+            RegressionRunner.Run(session, ExprEnumMinMaxBy.Executions());
         }
 
         [Test]
@@ -197,62 +251,13 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [Test]
         public void TestExprEnumToMap()
         {
-            RegressionRunner.Run(session, new ExprEnumToMap());
+            RegressionRunner.Run(session, ExprEnumToMap.Executions());
         }
 
         [Test]
         public void TestExprEnumWhere()
         {
             RegressionRunner.Run(session, ExprEnumWhere.Executions());
-        }
-
-        private static void Configure(Configuration configuration)
-        {
-            foreach (Type clazz in new Type[]{
-                typeof(SupportBean_ST0_Container),
-                typeof(SupportBean),
-                typeof(SupportBean_ST0_Container),
-                typeof(SupportCollection),
-                typeof(PersonSales),
-                typeof(SupportBean_A),
-                typeof(SupportBean_ST0),
-                typeof(SupportSelectorWithListEvent),
-                typeof(SupportEnumTwoEvent),
-                typeof(SupportSelectorEvent),
-                typeof(SupportContainerEvent),
-                typeof(Item),
-                typeof(LocationReport),
-                typeof(Zone),
-                typeof(SupportBeanComplexProps),
-                typeof(SupportEventWithLongArray),
-                typeof(SupportContainerLevelEvent),
-                typeof(SupportSelectorWithListEvent),
-                typeof(SupportBean_Container),
-                typeof(SupportContainerLevel1Event), typeof(BookDesc)})
-            {
-                configuration.Common.AddEventType(clazz);
-            }
-
-            configuration.Common.AddImportType(typeof(SupportEnumTwo));
-            configuration.Common.AddImportType(typeof(SupportBean_ST0_Container));
-            configuration.Common.AddImportType(typeof(LocationReportFactory));
-            configuration.Common.AddImportType(typeof(SupportCollection));
-            configuration.Common.AddImportType(typeof(ZoneFactory));
-            configuration.Compiler.Expression.UdfCache = false;
-
-            ConfigurationCompiler configurationCompiler = configuration.Compiler;
-            configurationCompiler.AddPlugInSingleRowFunction("makeSampleList", typeof(SupportBean_ST0_Container), "MakeSampleList");
-            configurationCompiler.AddPlugInSingleRowFunction("makeSampleArray", typeof(SupportBean_ST0_Container), "MakeSampleArray");
-            configurationCompiler.AddPlugInSingleRowFunction("makeSampleListString", typeof(SupportCollection), "MakeSampleListString");
-            configurationCompiler.AddPlugInSingleRowFunction("makeSampleArrayString", typeof(SupportCollection), "MakeSampleArrayString");
-            configurationCompiler.AddPlugInSingleRowFunction("convertToArray", typeof(SupportSelectorWithListEvent), "ConvertToArray");
-            configurationCompiler.AddPlugInSingleRowFunction("extractAfterUnderscore", typeof(ExprEnumGroupBy), "ExtractAfterUnderscore");
-            configurationCompiler.AddPlugInSingleRowFunction("extractNum", typeof(ExprEnumMinMax.MyService), "ExtractNum");
-            configurationCompiler.AddPlugInSingleRowFunction("extractDecimal", typeof(ExprEnumMinMax.MyService), "ExtractDecimal");
-            configurationCompiler.AddPlugInSingleRowFunction("inrect", typeof(LRUtil), "Inrect");
-            configurationCompiler.AddPlugInSingleRowFunction("distance", typeof(LRUtil), "Distance");
-            configurationCompiler.AddPlugInSingleRowFunction("getZoneNames", typeof(Zone), "GetZoneNames");
-            configurationCompiler.AddPlugInSingleRowFunction("makeTest", typeof(SupportBean_ST0_Container), "MakeTest");
         }
     }
 } // end of namespace

@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             }
 
             // verify
-            env.CompileDeploy("@Name('s0') select varagg.theEvents as c0 from SupportBean_S0", path).AddListener("s0");
+            env.CompileDeploy("@name('s0') select varagg.theEvents as c0 from SupportBean_S0", path).AddListener("s0");
             env.SendEventBean(new SupportBean_S0(0));
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
             var window = (SupportBean[]) @event.Get("c0");

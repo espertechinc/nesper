@@ -130,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 var statementText = "insert into MyStream select map.mapOne as val1 from NestedMap#length(5)";
                 env.CompileDeploy(statementText, path);
 
-                statementText = "@Name('s0') select val1 as a from MyStream";
+                statementText = "@name('s0') select val1 as a from MyStream";
                 env.CompileDeploy(statementText, path).AddListener("s0");
 
                 var testdata = GetTestData();
@@ -152,7 +152,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@Name('s0') select * from NestedMap");
+                env.CompileDeploy("@name('s0') select * from NestedMap");
                 var eventType = env.Statement("s0").EventType;
 
                 var propertiesReceived = eventType.PropertyNames;
@@ -173,7 +173,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
         {
             public void Run(RegressionEnvironment env)
             {
-                var statementText = "@Name('s0') select " +
+                var statementText = "@name('s0') select " +
                                     "simple, object, " +
                                     "nodefmap, " +
                                     "map, " +
@@ -283,7 +283,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
         {
             public void Run(RegressionEnvironment env)
             {
-                var statementText = "@Name('s0') select " +
+                var statementText = "@name('s0') select " +
                                     "exists(map.mapOne?) as a," +
                                     "exists(map.mapOne?.simpleOne) as b," +
                                     "exists(map.mapOne?.simpleTwo) as c," +

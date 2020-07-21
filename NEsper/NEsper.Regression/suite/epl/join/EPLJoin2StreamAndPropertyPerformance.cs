@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 MyStaticEval.WaitTimeMSec = 0;
                 env.AdvanceTime(0);
 
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           " SupportBean#time(1) as sb, " +
                           " SupportBean_S0#keepall as S0 " +
                           " where myStaticEvaluator(sb.TheString, S0.P00)";
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var methodName = ".testPerformanceJoinNoResults";
 
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           "SupportMarketDataBean#length(1000000)," +
                           "SupportBean#length(1000000)" +
                           " where Symbol=TheString and Volume=LongBoxed";
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var methodName = ".testPerformanceJoinNoResults";
 
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           "SupportMarketDataBean()#length(1000000)," +
                           "SupportBean#length(1000000)" +
                           " where Symbol=TheString and Volume=LongBoxed and DoublePrimitive=Price";

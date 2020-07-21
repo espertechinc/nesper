@@ -57,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
         private void RunAssertionCodegeneratedCount(RegressionEnvironment env)
         {
-            var text = "@Name('s0') select concatWCodegen(TheString) as val from SupportBean";
+            var text = "@name('s0') select concatWCodegen(TheString) as val from SupportBean";
             env.CompileDeploy(text).AddListener("s0");
 
             env.SendEventBean(new SupportBean("E1", 0));
@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
         private void RunAssertionMultiParamSingleArray(RegressionEnvironment env)
         {
-            var text = "@Name('s0') select irstream countback({1,2,IntPrimitive}) as val from SupportBean";
+            var text = "@name('s0') select irstream countback({1,2,IntPrimitive}) as val from SupportBean";
             env.CompileDeploy(text).AddListener("s0");
 
             env.SendEventBean(new SupportBean());
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
         private void RunAssertionManagedWindow(RegressionEnvironment env)
         {
-            var text = "@Name('s0') select irstream concatstring(TheString) as val from SupportBean#length(2)";
+            var text = "@name('s0') select irstream concatstring(TheString) as val from SupportBean#length(2)";
             env.CompileDeploy(text).AddListener("s0");
 
             env.SendEventBean(new SupportBean("a", -1));
@@ -123,15 +123,15 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
         private void RunAssertionManagedGrouped(RegressionEnvironment env)
         {
             var textOne =
-                "@Name('s0') select irstream CONCATSTRING(TheString) as val from SupportBean#length(10) group by IntPrimitive";
+                "@name('s0') select irstream CONCATSTRING(TheString) as val from SupportBean#length(10) group by IntPrimitive";
             TryGrouped(env, textOne, null);
 
             var textTwo =
-                "@Name('s0') select irstream concatstring(TheString) as val from SupportBean#win:length(10) group by IntPrimitive";
+                "@name('s0') select irstream concatstring(TheString) as val from SupportBean#win:length(10) group by IntPrimitive";
             TryGrouped(env, textTwo, null);
 
             var textThree =
-                "@Name('s0') select irstream concatstring(TheString) as val from SupportBean#length(10) group by IntPrimitive";
+                "@name('s0') select irstream concatstring(TheString) as val from SupportBean#length(10) group by IntPrimitive";
             var model = env.EplToModel(textThree);
             env.CopyMayFail(model);
             Assert.AreEqual(textThree, model.ToEPL());
@@ -217,7 +217,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
         private void RunAssertionManagedDistinctAndStarParam(RegressionEnvironment env)
         {
             // test *-parameter
-            var textTwo = "@Name('s0') select concatstring(*) as val from SupportBean";
+            var textTwo = "@name('s0') select concatstring(*) as val from SupportBean";
             env.CompileDeploy(textTwo).AddListener("s0");
 
             env.SendEventBean(new SupportBean("d", -1));
@@ -239,7 +239,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.UndeployAll();
 
             // test distinct
-            var text = "@Name('s0') select irstream concatstring(distinct TheString) as val from SupportBean";
+            var text = "@name('s0') select irstream concatstring(distinct TheString) as val from SupportBean";
             env.CompileDeploy(text).AddListener("s0");
 
             env.SendEventBean(new SupportBean("a", -1));
@@ -286,7 +286,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             SupportSupportBeanAggregationFunctionFactory.InstanceCount = 0;
             var fields = new [] { "val0", "val1" };
             env.CompileDeploy(
-                    "@Name('s0') select (myagg(Id)).GetTheString() as val0, (myagg(Id)).GetIntPrimitive() as val1 from SupportBean_A")
+                    "@name('s0') select (myagg(Id)).GetTheString() as val0, (myagg(Id)).GetIntPrimitive() as val1 from SupportBean_A")
                 .AddListener("s0");
 
             env.SendEventBean(new SupportBean_A("A1"));
@@ -316,7 +316,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             RegressionEnvironment env,
             bool soda)
         {
-            var text = "@Name('s0') select irstream countboundary(1,10,IntPrimitive,*) as val from SupportBean";
+            var text = "@name('s0') select irstream countboundary(1,10,IntPrimitive,*) as val from SupportBean";
             env.CompileDeploy(soda, text).AddListener("s0");
 
             var validContext = SupportLowerUpperCompareAggregationFunctionForge.Contexts[0];
@@ -368,7 +368,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
         private void RunAssertionMultiParamNoParam(RegressionEnvironment env)
         {
-            var text = "@Name('s0') select irstream countback() as val from SupportBean";
+            var text = "@name('s0') select irstream countback() as val from SupportBean";
             env.CompileDeploy(text).AddListener("s0");
 
             env.SendEventBean(new SupportBean());
@@ -390,7 +390,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
         private void RunAssertionManagedMappedPropertyLookAlike(RegressionEnvironment env)
         {
-            var text = "@Name('s0') select irstream concatstring('a') as val from SupportBean";
+            var text = "@name('s0') select irstream concatstring('a') as val from SupportBean";
             env.CompileDeploy(text).AddListener("s0");
             Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("val"));
 

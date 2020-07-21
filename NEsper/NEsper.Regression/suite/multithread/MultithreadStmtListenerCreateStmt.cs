@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     {
         public void Run(RegressionEnvironment env)
         {
-            env.CompileDeploy("@Name('s0') select * from SupportBean");
+            env.CompileDeploy("@name('s0') select * from SupportBean");
             TryListener(env, 2, 100, env.Statement("s0"));
             env.UndeployAll();
         }

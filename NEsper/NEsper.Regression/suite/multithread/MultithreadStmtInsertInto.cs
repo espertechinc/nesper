@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 " group by Symbol",
                 path);
 
-            env.CompileDeploy("@Name('s0') select key, mycount from XStream", path);
+            env.CompileDeploy("@name('s0') select key, mycount from XStream", path);
             var listener = new SupportMTUpdateListener();
             env.Statement("s0").AddListener(listener);
 

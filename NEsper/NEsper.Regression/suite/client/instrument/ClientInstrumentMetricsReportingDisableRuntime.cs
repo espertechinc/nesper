@@ -24,16 +24,16 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             var statements = new EPStatement[5];
             SendTimer(env, 1000);
 
-            statements[0] = env.CompileDeploy("@Name('stmtmetric') select * from " + typeof(StatementMetric).FullName)
+            statements[0] = env.CompileDeploy("@name('stmtmetric') select * from " + typeof(StatementMetric).FullName)
                 .Statement("stmtmetric");
             statements[0].AddListener(env.ListenerNew());
 
-            statements[1] = env.CompileDeploy("@Name('runtimemetric') select * from " + typeof(RuntimeMetric).FullName)
+            statements[1] = env.CompileDeploy("@name('runtimemetric') select * from " + typeof(RuntimeMetric).FullName)
                 .Statement("runtimemetric");
             statements[1].AddListener(env.ListenerNew());
 
             statements[2] = env.CompileDeploy(
-                    "@Name('stmt-1') select * from SupportBean(IntPrimitive=1)#keepall where MyMetricFunctions.TakeNanos(LongPrimitive)")
+                    "@name('stmt-1') select * from SupportBean(IntPrimitive=1)#keepall where MyMetricFunctions.TakeNanos(LongPrimitive)")
                 .Statement("stmt-1");
             SendEvent(env, "E1", 1, CPUGOALONENANO);
 

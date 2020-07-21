@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var fields = new [] { "TheString" };
                 var epl = "@Priority(1) create context C1 start @now end SupportBean;\n" +
-                          "@Name('s0') @Priority(0) context C1 select * from SupportBean;\n";
+                          "@name('s0') @Priority(0) context C1 select * from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));

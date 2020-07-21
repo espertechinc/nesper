@@ -7,8 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client.configuration;
+using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.epl.expression.time.node;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.compiler.@internal.util;
@@ -32,22 +34,30 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             object expected,
             EPCompilerSPIExpression expressionCompiler)
         {
-            object actual = null;
+            var actual = CompileEvaluate(expression, expressionCompiler);
+            Assert.AreEqual(expected, actual);
+        }
+
+        private static object CompileEvaluate(
+            string expression,
+            EPCompilerSPIExpression expressionCompiler)
+        {
+            object result = null;
             try {
-                actual = expressionCompiler.CompileValidate(expression).Forge.ExprEvaluator.Evaluate(null, true, null);
+                result = expressionCompiler.CompileValidate(expression).Forge.ExprEvaluator.Evaluate(null, true, null);
             }
             catch (EPCompileException e) {
                 Assert.Fail(e.Message);
             }
 
-            Assert.AreEqual(expected, actual);
+            return result;
         }
 
-        internal class ClientCompileSPIExpression : RegressionExecution
+        private class ClientCompileSPIExpression : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var compiler = (EPCompilerSPI) EPCompilerProvider.Compiler;
+                var compiler = (EPCompilerSPI) env.Compiler;
 
                 EPCompilerSPIExpression expressionCompiler = null;
                 try {
@@ -59,6 +69,11 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
                 CompileEvaluate("1*1", 1, expressionCompiler);
                 CompileEvaluate("'a' || 'y'", "ay", expressionCompiler);
+
+                var list = (ICollection<object>) CompileEvaluate("java.util.Arrays.asList({\"a\"})", expressionCompiler);
+                EPAssertionUtil.AssertEqualsExactOrder(list.ToArray(), new object[] {"a"});
+
+                CompileEvaluate("java.util.Arrays.asList({'a', 'b'}).firstOf()", "a", expressionCompiler);
 
                 try {
                     var timePeriod = (ExprTimePeriod) expressionCompiler.CompileValidate("5 seconds");

@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             // invalid property
             TryInvalidConfigure(
                 config => { config.Common.AddEventType("InvalidMap", Collections.SingletonDataMap("key", "XXX")); },
-                "Nestable type configuration encountered an unexpected property type name 'XXX' for property 'key', expected Type or Dictionary or the name of a previously-declared Map or ObjectArray type");
+                "Nestable type configuration encountered an unexpected property type name 'XXX' for property 'key', expected Type or Dictionary or the name of a previously-declared event type");
 
             // invalid key
 #if NOT_VALID
@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
                 });
             TryInvalidConfigure(
                 config => { config.Common.AddEventType("InvalidMap", invalidTwo); },
-                "Nestable type configuration encountered an unexpected property type name 'SupportBean(null, 0)' for property 'abc', expected Type or Dictionary or the name of a previously-declared Map or ObjectArray type");
+                "Nestable type configuration encountered an unexpected property type name 'SupportBean(null, 0)' for property 'abc', expected Type or Dictionary or the name of a previously-declared event type");
         }
 
         private void TryInvalidConfigure(

@@ -42,6 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             execs.Add(new ResultSetAggregateCountJoin());
             execs.Add(new ResultSetAggregateCountDistinctGrouped());
             execs.Add(new ResultSetAggregateSumNamedWindowRemoveGroup());
+            execs.Add(new ResultSetAggregateCountDistinctMultikeyWArray());
             return execs;
         }
 
@@ -188,12 +189,43 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             return new SupportMarketDataBean(symbol, price, 0L, null);
         }
 
+        private static void SendManyArrayAssert(
+            RegressionEnvironment env,
+            int[] intOne,
+            int[] intTwo,
+            long expectedC0,
+            long expectedC1)
+        {
+            env.SendEventBean(new SupportEventWithManyArray("id").WithIntOne(intOne).WithIntTwo(intTwo));
+            EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "c0,c1".SplitCsv(), new object[] {expectedC0, expectedC1});
+        }
+
+        internal class ResultSetAggregateCountDistinctMultikeyWArray : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "@name('s0') select count(distinct intOne) as c0, count(distinct {intOne, intTwo}) as c1 from SupportEventWithManyArray#length(3)";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendManyArrayAssert(env, new int[] {1, 2}, new int[] {1}, 1, 1);
+                SendManyArrayAssert(env, new int[] {1, 2}, new int[] {1}, 1, 1);
+                SendManyArrayAssert(env, new int[] {1, 3}, new int[] {1}, 2, 2);
+
+                env.Milestone(0);
+
+                SendManyArrayAssert(env, new int[] {1, 4}, new int[] {1}, 3, 3);
+                SendManyArrayAssert(env, new int[] {1, 3}, new int[] {2}, 2, 3);
+
+                env.UndeployAll();
+            }
+        }
+
         internal class ResultSetAggregateCountPlusStar : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 // Test for ESPER-118
-                var statementText = "@Name('s0') select *, count(*) as cnt from SupportMarketDataBean";
+                var statementText = "@name('s0') select *, count(*) as cnt from SupportMarketDataBean";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 SendEvent(env, "S0", 1L);
@@ -222,7 +254,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var statementText = "@Name('s0') select count(*) as cnt from SupportMarketDataBean#time(1)";
+                var statementText = "@name('s0') select count(*) as cnt from SupportMarketDataBean#time(1)";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 SendEvent(env, "DELL", 1L);
@@ -255,7 +287,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var statementText =
-                    "@Name('s0') select irstream sum(IntPrimitive) as mysum from SupportBean having sum(IntPrimitive) = 2";
+                    "@name('s0') select irstream sum(IntPrimitive) as mysum from SupportBean having sum(IntPrimitive) = 2";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 SendEvent(env);
@@ -274,7 +306,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var statementText =
-                    "@Name('s0') select irstream count(*) as mysum from SupportBean having count(*) = 2";
+                    "@name('s0') select irstream count(*) as mysum from SupportBean having count(*) = 2";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 SendEvent(env);
@@ -334,7 +366,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 // test for ESPER-328
                 var epl =
-                    "@Name('s0') select Symbol, count(*) as cnt, avg(count(*)) as val from SupportMarketDataBean#length(3)" +
+                    "@name('s0') select Symbol, count(*) as cnt, avg(count(*)) as val from SupportMarketDataBean#length(3)" +
                     "group by Symbol order by Symbol asc";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -382,7 +414,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream Symbol, " +
+                var epl = "@name('s0') select irstream Symbol, " +
                           "count(*) as countAll, " +
                           "count(distinct Volume) as countDistVol, " +
                           "count(Volume) as countVol" +
@@ -401,7 +433,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream Symbol, " +
+                var epl = "@name('s0') select irstream Symbol, " +
                           "count(*) as countAll," +
                           "count(distinct Volume) as countDistVol," +
                           "count(all Volume) as countVol" +
@@ -421,7 +453,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream Symbol, " +
+                var epl = "@name('s0') select irstream Symbol, " +
                           "count(*) as countAll," +
                           "count(distinct Volume) as countDistVol," +
                           "count(Volume) as countVol " +
@@ -447,7 +479,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream Symbol, count(distinct Price) as countDistinctPrice " +
+                var epl = "@name('s0') select irstream Symbol, count(distinct Price) as countDistinctPrice " +
                           "from SupportMarketDataBean group by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -468,7 +500,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "insert into MyWindow select * from SupportBean;\n" +
                           "on SupportBean_A a delete from MyWindow w where w.TheString = a.Id;\n" +
                           "on SupportBean_B delete from MyWindow;\n" +
-                          "@Name('s0') select TheString, sum(IntPrimitive) as mysum from MyWindow group by TheString order by TheString";
+                          "@name('s0') select TheString, sum(IntPrimitive) as mysum from MyWindow group by TheString order by TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("A", 100));

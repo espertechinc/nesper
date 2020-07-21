@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('flow') create dataflow MyGraph Emitter -> outstream<?> {}";
+                var epl = "@name('flow') create dataflow MyGraph Emitter -> outstream<?> {}";
                 var compiledGraph = env.Compile(epl);
                 try {
                     env.Deployment.Deploy(compiledGraph, new DeploymentOptions().WithDeploymentId("DEP1"));
@@ -116,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     return;
                 }
 
-                var epl = "@Name('flow') create dataflow TheGraph\n" +
+                var epl = "@name('flow') create dataflow TheGraph\n" +
                           "create schema ABC as " +
                           typeof(SupportBean).FullName +
                           "," +
@@ -126,7 +126,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 Module module = null;
                 try {
-                    module = EPCompilerProvider.Compiler.ParseModule(epl);
+                    module = env.Compiler.ParseModule(epl);
                 }
                 catch (Exception e) {
                     Assert.Fail(e.Message);

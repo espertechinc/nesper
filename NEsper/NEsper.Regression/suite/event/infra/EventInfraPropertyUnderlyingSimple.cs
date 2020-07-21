@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Xml;
 
 using Avro.Generic;
@@ -25,255 +24,272 @@ using com.espertech.esper.regressionlib.support.util;
 using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
 
-using NUnit.Framework;
+using Newtonsoft.Json.Linq;
 
-using SupportBeanSimple = com.espertech.esper.regressionlib.support.bean.SupportBeanSimple;
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
-    public class EventInfraPropertyUnderlyingSimple : RegressionExecution
-    {
-        public delegate object FunctionSendEventIntString(
-            RegressionEnvironment env,
-            int? intValue,
-            string stringValue);
+	public class EventInfraPropertyUnderlyingSimple : RegressionExecution
+	{
+		public static readonly string BEAN_TYPENAME = nameof(SupportBeanSimple);
+		public static readonly string XML_TYPENAME = nameof(EventInfraPropertyUnderlyingSimple) + "XML";
+		public static readonly string MAP_TYPENAME = nameof(EventInfraPropertyUnderlyingSimple) + "Map";
+		public static readonly string OA_TYPENAME = nameof(EventInfraPropertyUnderlyingSimple) + "OA";
+		public static readonly string AVRO_TYPENAME = nameof(EventInfraPropertyUnderlyingSimple) + "Avro";
+		public static readonly string JSON_TYPENAME = nameof(EventInfraPropertyUnderlyingSimple) + "Json";
+		public static readonly string JSONPROVIDEDBEAN_TYPENAME = nameof(EventInfraPropertyUnderlyingSimple) + "JsonWProvided";
 
-        public static readonly string XML_TYPENAME = typeof(EventInfraPropertyUnderlyingSimple).Name + "XML";
-        public static readonly string MAP_TYPENAME = typeof(EventInfraPropertyUnderlyingSimple).Name + "Map";
-        public static readonly string OA_TYPENAME = typeof(EventInfraPropertyUnderlyingSimple).Name + "OA";
-        public static readonly string AVRO_TYPENAME = typeof(EventInfraPropertyUnderlyingSimple).Name + "Avro";
+		private static readonly ILog log = LogManager.GetLogger(typeof(EventInfraPropertyUnderlyingSimple));
 
-        private static readonly string BEAN_TYPENAME = typeof(SupportBeanSimple).Name;
+		public void Run(RegressionEnvironment env)
+		{
+			var path = new RegressionPath();
 
-        private static readonly ILog log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+			var eplJson =
+				"@public @buseventtype @name('schema') create json schema " + JSON_TYPENAME + "(myInt int, myString string);\n" +
+				"@public @buseventtype @name('schema') @JsonSchema(className='" + nameof(MyLocalJsonProvided) + "') " +
+				" create json schema " + JSONPROVIDEDBEAN_TYPENAME + "();\n";
+			env.CompileDeploy(eplJson, path);
 
-        private static readonly FunctionSendEventIntString FMAP = (
-            env,
-            a,
-            b) => {
-            IDictionary<string, object> map = new Dictionary<string, object>();
-            map.Put("MyInt", a);
-            map.Put("MyString", b);
-            env.SendEventMap(map, MAP_TYPENAME);
-            return map;
-        };
+			var pairs = new Pair<string, FunctionSendEventIntString>[] {
+				new Pair<string, FunctionSendEventIntString>(MAP_TYPENAME, FMAP),
+				new Pair<string, FunctionSendEventIntString>(OA_TYPENAME, FOA),
+				new Pair<string, FunctionSendEventIntString>(BEAN_TYPENAME, FBEAN),
+				new Pair<string, FunctionSendEventIntString>(XML_TYPENAME, FXML),
+				new Pair<string, FunctionSendEventIntString>(AVRO_TYPENAME, FAVRO),
+				new Pair<string, FunctionSendEventIntString>(JSON_TYPENAME, FJSON),
+				new Pair<string, FunctionSendEventIntString>(JSONPROVIDEDBEAN_TYPENAME, FJSON)
+			};
 
-        private static readonly FunctionSendEventIntString FOA = (
-            env,
-            a,
-            b) => {
-            object[] oa = {a, b};
-            env.SendEventObjectArray(oa, OA_TYPENAME);
-            return oa;
-        };
+			foreach (var pair in pairs) {
+				log.Info("Asserting type " + pair.First);
+				RunAssertionPassUnderlying(env, pair.First, pair.Second, path);
+				RunAssertionPropertiesWGetter(env, pair.First, pair.Second, path);
+				RunAssertionTypeValidProp(env, pair.First, pair.Second != FBEAN);
+				RunAssertionTypeInvalidProp(env, pair.First, pair.Second == FXML);
+			}
 
-        private static readonly FunctionSendEventIntString FBEAN = (
-            env,
-            a,
-            b) => {
-            var bean = new SupportBeanSimple(b, a.Value);
-            env.SendEventBean(bean);
-            return bean;
-        };
+			env.UndeployAll();
+		}
 
-        private static readonly FunctionSendEventIntString FXML = (
-            env,
-            a,
-            b) => {
-            var xml = "<Myevent MyInt=\"XXXXXX\" MyString=\"YYYYYY\">\n" +
-                      "</Myevent>\n";
-            xml = xml.Replace("XXXXXX", a.ToString());
-            xml = xml.Replace("YYYYYY", b);
-            try {
-                var d = SupportXML.SendXMLEvent(env, xml, XML_TYPENAME);
-                return d.DocumentElement;
-            }
-            catch (Exception e) {
-                throw new EPException(e);
-            }
-        };
+		private void RunAssertionPassUnderlying(
+			RegressionEnvironment env,
+			string typename,
+			FunctionSendEventIntString send,
+			RegressionPath path)
+		{
+			var epl = "@name('s0') select * from " + typename;
+			env.CompileDeploy(epl, path).AddListener("s0");
 
-        private static readonly FunctionSendEventIntString FAVRO = (
-            env,
-            a,
-            b) => {
-            var avroSchema = AvroSchemaUtil
-                .ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME))
-                .AsRecordSchema();
-            var datum = new GenericRecord(avroSchema);
-            datum.Put("MyInt", a);
-            datum.Put("MyString", b);
-            env.SendEventAvro(datum, AVRO_TYPENAME);
-            return datum;
-        };
+			var fields = "myInt,myString".SplitCsv();
 
-        public void Run(RegressionEnvironment env)
-        {
-            Pair<string, FunctionSendEventIntString>[] pairs = {
-                new Pair<string, FunctionSendEventIntString>(MAP_TYPENAME, FMAP),
-                new Pair<string, FunctionSendEventIntString>(OA_TYPENAME, FOA),
-                new Pair<string, FunctionSendEventIntString>(BEAN_TYPENAME, FBEAN),
-                new Pair<string, FunctionSendEventIntString>(XML_TYPENAME, FXML),
-                new Pair<string, FunctionSendEventIntString>(AVRO_TYPENAME, FAVRO)
-            };
+			Assert.AreEqual(typeof(int?), Boxing.GetBoxedType(env.Statement("s0").EventType.GetPropertyType("myInt")));
+			Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("myString"));
 
-            foreach (var pair in pairs) {
-                Console.WriteLine("Asserting type " + pair.First);
-                log.Info("Asserting type " + pair.First);
-                RunAssertionPassUnderlying(env, pair.First, pair.Second);
-                RunAssertionPropertiesWGetter(env, pair.First, pair.Second);
-                RunAssertionTypeValidProp(
-                    env,
-                    pair.First,
-                    pair.Second == FMAP || pair.Second == FXML || pair.Second == FOA || pair.Second == FAVRO);
-                RunAssertionTypeInvalidProp(env, pair.First, pair.Second == FXML);
-            }
-        }
+			var eventOne = send.Invoke(typename, env, 3, "some string");
 
-        private void RunAssertionPassUnderlying(
-            RegressionEnvironment env,
-            string typename,
-            FunctionSendEventIntString send)
-        {
-            var epl = "@Name('s0') select * from " + typename;
-            env.CompileDeploy(epl).AddListener("s0");
+			var @event = env.Listener("s0").AssertOneGetNewAndReset();
+			SupportEventTypeAssertionUtil.AssertConsistency(@event);
+			AssertUnderlying(typename, eventOne, @event.Underlying);
+			EPAssertionUtil.AssertProps(@event, fields, new object[] {3, "some string"});
 
-            var fields = new [] { "MyInt","MyString" };
+			var eventTwo = send.Invoke(typename, env, 4, "other string");
+			@event = env.Listener("s0").AssertOneGetNewAndReset();
+			AssertUnderlying(typename, eventTwo, @event.Underlying);
+			EPAssertionUtil.AssertProps(@event, fields, new object[] {4, "other string"});
 
-            Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("MyInt").GetBoxedType());
-            Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("MyString"));
+			env.UndeployModuleContaining("s0");
+		}
 
-            var eventOne = send.Invoke(env, 3, "some string");
+		private void AssertUnderlying(
+			string typename,
+			object expected,
+			object received)
+		{
+			if (typename.Equals(JSONPROVIDEDBEAN_TYPENAME)) {
+				Assert.IsTrue(received is MyLocalJsonProvided);
+			}
+			else if (typename.Equals(JSON_TYPENAME)) {
+				Assert.AreEqual(expected, received.ToString());
+			}
+			else {
+				Assert.AreEqual(expected, received);
+			}
+		}
 
-            var @event = env.Listener("s0").AssertOneGetNewAndReset();
-            SupportEventTypeAssertionUtil.AssertConsistency(@event);
-            Assert.AreEqual(eventOne, @event.Underlying);
-            EPAssertionUtil.AssertProps(
-                @event,
-                fields,
-                new object[] {3, "some string"});
+		private void RunAssertionPropertiesWGetter(
+			RegressionEnvironment env,
+			string typename,
+			FunctionSendEventIntString send,
+			RegressionPath path)
+		{
+			var epl = "@name('s0') select myInt, exists(myInt) as exists_myInt, myString, exists(myString) as exists_myString from " + typename;
+			env.CompileDeploy(epl, path).AddListener("s0");
 
-            var eventTwo = send.Invoke(env, 4, "other string");
-            @event = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual(eventTwo, @event.Underlying);
-            EPAssertionUtil.AssertProps(
-                @event,
-                fields,
-                new object[] {4, "other string"});
+			var fields = "myInt,exists_myInt,myString,exists_myString".SplitCsv();
 
-            env.UndeployAll();
-        }
+			var eventType = env.Statement("s0").EventType;
+			Assert.AreEqual(typeof(int?), Boxing.GetBoxedType(eventType.GetPropertyType("myInt")));
+			Assert.AreEqual(typeof(string), eventType.GetPropertyType("myString"));
+			Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_myInt"));
+			Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_myString"));
 
-        private void RunAssertionPropertiesWGetter(
-            RegressionEnvironment env,
-            string typename,
-            FunctionSendEventIntString send)
-        {
-            var epl =
-                "@Name('s0') select MyInt, exists(MyInt) as exists_MyInt, MyString, exists(MyString) as exists_MyString from " +
-                typename;
-            env.CompileDeploy(epl).AddListener("s0");
+			send.Invoke(typename, env, 3, "some string");
 
-            var fields = new [] { "MyInt","exists_MyInt","MyString","exists_MyString" };
+			var @event = env.Listener("s0").AssertOneGetNewAndReset();
+			RunAssertionEventInvalidProp(@event);
+			EPAssertionUtil.AssertProps(@event, fields, new object[] {3, true, "some string", true});
 
-            var eventType = env.Statement("s0").EventType;
-            Assert.AreEqual(typeof(int?), eventType.GetPropertyType("MyInt").GetBoxedType());
-            Assert.AreEqual(typeof(string), eventType.GetPropertyType("MyString"));
-            Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_MyInt"));
-            Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_MyString"));
+			send.Invoke(typename, env, 4, "other string");
+			@event = env.Listener("s0").AssertOneGetNewAndReset();
+			EPAssertionUtil.AssertProps(@event, fields, new object[] {4, true, "other string", true});
 
-            send.Invoke(env, 3, "some string");
+			env.UndeployModuleContaining("s0");
+		}
 
-            var @event = env.Listener("s0").AssertOneGetNewAndReset();
-            RunAssertionEventInvalidProp(@event);
-            EPAssertionUtil.AssertProps(
-                @event,
-                fields,
-                new object[] {3, true, "some string", true});
+		private void RunAssertionEventInvalidProp(EventBean @event)
+		{
+			foreach (var prop in Arrays.AsList("xxxx", "myString[1]", "myString('a')", "x.y", "myString.x")) {
+				SupportMessageAssertUtil.TryInvalidProperty(@event, prop);
+				SupportMessageAssertUtil.TryInvalidGetFragment(@event, prop);
+			}
+		}
 
-            send.Invoke(env, 4, "other string");
-            @event = env.Listener("s0").AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(
-                @event,
-                fields,
-                new object[] {4, true, "other string", true});
+		private void RunAssertionTypeValidProp(
+			RegressionEnvironment env,
+			string typeName,
+			bool boxed)
+		{
+			var eventType = !typeName.Equals(JSON_TYPENAME)
+				? env.Runtime.EventTypeService.GetEventTypePreconfigured(typeName)
+				: env.Runtime.EventTypeService.GetEventType(env.DeploymentId("schema"), typeName);
 
-            env.UndeployAll();
-        }
+			var expectedType = new object[][] {
+				new object[] {"myInt", boxed ? typeof(int?) : typeof(int), null, null},
+				new object[] {"myString", typeof(string), null, null}
+			};
+			SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedType, eventType, SupportEventTypeAssertionEnumExtensions.GetSetWithFragment());
 
-        private void RunAssertionEventInvalidProp(EventBean @event)
-        {
-            foreach (var prop in Arrays.AsList("xxxx", "MyString('a')", "x.y", "MyString.x")) {
-                SupportMessageAssertUtil.TryInvalidProperty(@event, prop);
-                SupportMessageAssertUtil.TryInvalidGetFragment(@event, prop);
-            }
-        }
+			EPAssertionUtil.AssertEqualsAnyOrder(new string[] {"myString", "myInt"}, eventType.PropertyNames);
 
-        private void RunAssertionTypeValidProp(
-            RegressionEnvironment env,
-            string typeName,
-            bool boxed)
-        {
-            var eventType = env.Runtime.EventTypeService.GetEventTypePreconfigured(typeName);
-            var intType = boxed ? typeof(int?) : typeof(int);
-            
-            object[][] expectedType = {
-                new object[] {"MyInt", intType, null, null},
-                new object[] {"MyString", typeof(string), null, null}
-            };
-            SupportEventTypeAssertionUtil.AssertEventTypeProperties(
-                expectedType,
-                eventType,
-                SupportEventTypeAssertionEnumExtensions.GetSetWithFragment());
+			Assert.IsNotNull(eventType.GetGetter("myInt"));
+			Assert.IsTrue(eventType.IsProperty("myInt"));
+			Assert.AreEqual(boxed ? typeof(int?) : typeof(int), eventType.GetPropertyType("myInt"));
+			Assert.AreEqual(
+				new EventPropertyDescriptor("myString", typeof(string), null, false, false, false, false, false),
+				eventType.GetPropertyDescriptor("myString"));
+		}
 
-            EPAssertionUtil.AssertEqualsAnyOrder(new[] {"MyString", "MyInt"}, eventType.PropertyNames);
+		private void RunAssertionTypeInvalidProp(
+			RegressionEnvironment env,
+			string typeName,
+			bool xml)
+		{
+			var eventType = env.Runtime.EventTypeService.GetEventTypePreconfigured(typeName);
 
-            Assert.IsNotNull(eventType.GetGetter("MyInt"));
-            Assert.IsTrue(eventType.IsProperty("MyInt"));
-            Assert.AreEqual(intType, eventType.GetPropertyType("MyInt"));
+			foreach (var prop in Arrays.AsList("xxxx", "myString[0]", "myString('a')", "myString.x", "myString.x.y", "myString.x")) {
+				Assert.AreEqual(false, eventType.IsProperty(prop));
+				Type expected = null;
+				if (xml) {
+					if (prop.Equals("myString[0]")) {
+						expected = typeof(string);
+					}
 
-            var myStringProperty = eventType.GetPropertyDescriptor("MyString");
-            
-            Assert.That(
-                eventType.GetPropertyDescriptor("MyString"),
-                Is.EqualTo(
-                    new EventPropertyDescriptor(
-                        "MyString",
-                        typeof(string),
-                        typeof(char),
-                        false,
-                        false,
-                        true,
-                        false,
-                        false)));
-        }
+					if (prop.Equals("myString.x?")) {
+						expected = typeof(XmlNode);
+					}
+				}
 
-        private void RunAssertionTypeInvalidProp(
-            RegressionEnvironment env,
-            string typeName,
-            bool xml)
-        {
-            var eventType = env.Runtime.EventTypeService.GetEventTypePreconfigured(typeName);
+				Assert.AreEqual(expected, eventType.GetPropertyType(prop));
+				Assert.IsNull(eventType.GetPropertyDescriptor(prop));
+				Assert.IsNull(eventType.GetFragmentType(prop));
+			}
+		}
 
-            foreach (var prop in Arrays.AsList(
-                "xxxx",
-                "MyString('a')",
-                "MyString.x",
-                "MyString.x.y",
-                "MyString.x")) {
-                Assert.IsFalse(eventType.IsProperty(prop), $"IsProperty: False For {prop}");
-                Type expected = null;
-                if (xml) {
-                    if (prop.Equals("MyString.x?")) {
-                        expected = typeof(XmlNode);
-                    }
-                }
+		delegate object FunctionSendEventIntString(
+			string eventTypeName,
+			RegressionEnvironment env,
+			int intValue,
+			string stringValue);
 
-                Assert.AreEqual(expected, eventType.GetPropertyType(prop));
-                Assert.IsNull(eventType.GetPropertyDescriptor(prop));
-                Assert.IsNull(eventType.GetFragmentType(prop));
-            }
-        }
-    }
+		private static readonly FunctionSendEventIntString FMAP = (
+			eventTypeName,
+			env,
+			a,
+			b) => {
+			IDictionary<string, object> map = new Dictionary<string, object>();
+			map.Put("myInt", a);
+			map.Put("myString", b);
+			env.SendEventMap(map, eventTypeName);
+			return map;
+		};
+
+		private static readonly FunctionSendEventIntString FOA = (
+			eventTypeName,
+			env,
+			a,
+			b) => {
+			var oa = new object[] {a, b};
+			env.SendEventObjectArray(oa, eventTypeName);
+			return oa;
+		};
+
+		private static readonly FunctionSendEventIntString FBEAN = (
+			eventTypeName,
+			env,
+			a,
+			b) => {
+			var bean = new SupportBeanSimple(b, a);
+			env.SendEventBean(bean);
+			return bean;
+		};
+
+		private static readonly FunctionSendEventIntString FXML = (
+			eventTypeName,
+			env,
+			a,
+			b) => {
+			var xml =
+				"<myevent myInt=\"XXXXXX\" myString=\"YYYYYY\">\n" +
+				"</myevent>\n";
+			xml = xml.Replace("XXXXXX", a.ToString());
+			xml = xml.Replace("YYYYYY", b);
+			var d = SupportXML.SendXMLEvent(env, xml, eventTypeName);
+			return d.DocumentElement;
+		};
+
+		private static readonly FunctionSendEventIntString FAVRO = (
+			eventTypeName,
+			env,
+			a,
+			b) => {
+			var avroSchema = AvroSchemaUtil.ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME)).AsRecordSchema();
+			var datum = new GenericRecord(avroSchema);
+			datum.Put("myInt", a);
+			datum.Put("myString", b);
+			env.SendEventAvro(datum, eventTypeName);
+			return datum;
+		};
+
+		private static readonly FunctionSendEventIntString FJSON = (
+			eventTypeName,
+			env,
+			a,
+			b) => {
+			var @object = new JObject();
+			@object.Add("myInt", a);
+			@object.Add("myString", b);
+			var json = @object.ToString();
+			env.SendEventJson(json, eventTypeName);
+			return json;
+		};
+
+		[Serializable]
+		public class MyLocalJsonProvided
+		{
+			public int? myInt;
+			public string myString;
+		}
+	}
 } // end of namespace

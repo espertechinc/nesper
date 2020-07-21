@@ -97,5 +97,11 @@ namespace com.espertech.esper.regressionrun.suite.@event
         {
             RegressionRunner.Run(session, new EventAvroSampleConfigDocOutputSchema());
         }
+        
+        [Test, RunInApplicationDomain]
+        public void TestEventAvroSupertypeInsertInto()
+        {
+            RegressionRunner.Run(session, new EventAvroSupertypeInsertInto());
+        }
     }
 } // end of namespace

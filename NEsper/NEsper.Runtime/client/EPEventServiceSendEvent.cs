@@ -65,7 +65,7 @@ namespace com.espertech.esper.runtime.client
         void SendEventXMLDOM(XmlNode node, string eventTypeName);
 
         /// <summary>
-        /// Send an event represented by a Avro GenericData.Record to the runtime.
+        /// Send an event represented by a Avro GenericRecord to the runtime.
         /// <para />Use the route method for sending events into the runtime from within UpdateListener code,
         /// to avoid the possibility of a stack overflow due to nested calls to sendEvent
         /// (except with the outbound-threading configuration), see {@link EPEventServiceRouteEvent#routeEventAvro(Object, String)}}).

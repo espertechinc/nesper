@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client.scopetest;
@@ -62,6 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             execs.Add(new ResultSetLocalUngroupedOrderBy());
             execs.Add(new ResultSetLocalEnumMethods(true));
             execs.Add(new ResultSetLocalUngroupedAggAdditionalAndPlugin());
+            execs.Add(new ResultSetLocalMultikeyWArray());
             return execs;
         }
 
@@ -71,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             MyAssertion assertion)
         {
             var epl = "create context StartS0EndS1 start SupportBean_S0 end SupportBean_S1;" +
-                      "@Name('s0') context StartS0EndS1 " +
+                      "@name('s0') context StartS0EndS1 " +
                       selected +
                       " output snapshot when terminated;";
             env.CompileDeploy(epl).AddListener("s0");
@@ -170,6 +172,66 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             EPAssertionUtil.AssertEqualsExactOrder(expectedC7, c7.ToArray());
         }
 
+        public class ResultSetLocalMultikeyWArray : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "@Name('s0') select " +
+                             "sum(value, group_by:(intArray)) as c0, " +
+                             "sum(value, group_by:(longArray)) as c1, " +
+                             "sum(value, group_by:(doubleArray)) as c2, " +
+                             "sum(value, group_by:(intArray, longArray, doubleArray)) as c3, " +
+                             "sum(value) as c4 " +
+                             "from SupportThreeArrayEvent";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendAssert(env, "E1", 10, new int[] {1}, new long[] {10}, new double[] {100}, 10, 10, 10, 10, 10);
+                SendAssert(env, "E2", 11, new int[] {2}, new long[] {20}, new double[] {200}, 11, 11, 11, 11, 21);
+
+                env.Milestone(0);
+
+                SendAssert(env, "E3", 12, new int[] {3}, new long[] {10}, new double[] {300}, 12, 22, 12, 12, 33);
+                SendAssert(env, "E4", 13, new int[] {1}, new long[] {20}, new double[] {200}, 10 + 13, 11 + 13, 11 + 13, 13, 33 + 13);
+                SendAssert(env, "E5", 14, new int[] {1}, new long[] {10}, new double[] {100}, 10 + 13 + 14, 10 + 12 + 14, 10 + 14, 10 + 14, 33 + 13 + 14);
+
+                env.Milestone(1);
+
+                SendAssert(env, "E6", 15, new int[] {3}, new long[] {20}, new double[] {300}, 12 + 15, 11 + 13 + 15, 12 + 15, 15, 33 + 13 + 14 + 15);
+                SendAssert(
+                    env,
+                    "E7",
+                    16,
+                    new int[] {2},
+                    new long[] {20},
+                    new double[] {200},
+                    11 + 16,
+                    11 + 13 + 15 + 16,
+                    11 + 13 + 16,
+                    11 + 16,
+                    33 + 13 + 14 + 15 + 16);
+
+                env.UndeployAll();
+            }
+
+            private void SendAssert(
+                RegressionEnvironment env,
+                string id,
+                int value,
+                int[] ints,
+                long[] longs,
+                double[] doubles,
+                int c0,
+                int c1,
+                int c2,
+                int c3,
+                int c4)
+            {
+                string[] fields = "c0,c1,c2,c3,c4".SplitCsv();
+                env.SendEventBean(new SupportThreeArrayEvent(id, value, ints, longs, doubles));
+                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {c0, c1, c2, c3, c4});
+            }
+        }
+
         public class ResultSetLocalUngroupedSumSimple : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -178,7 +240,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.Milestone(0);
 
                 env.AdvanceTime(0);
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "sum(LongPrimitive, group_by:(TheString, IntPrimitive)) as c0, " +
                           "sum(LongPrimitive, group_by:(TheString)) as c1, " +
                           "sum(LongPrimitive, group_by:(IntPrimitive)) as c2, " +
@@ -262,7 +324,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select coalesce(0, 1, group_by:TheString) from SupportBean",
-                    "Incorrect syntax near ':' at line 1 column 30");
+                    "Failed to validate select-clause expression 'coalesce(0,1,group_by:TheString)': Named parameters are not allowed");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select " +
@@ -343,7 +405,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 // prove there is one shared state factory
                 var theEpl = PLAN_CALLBACK_HOOK +
-                             "@Name('s0') select window(*, group_by:TheString), last(*, group_by:TheString) from SupportBean#length(2)";
+                             "@name('s0') select window(*, group_by:TheString), last(*, group_by:TheString) from SupportBean#length(2)";
                 env.Compile(theEpl);
                 var plan =
                     SupportAggLevelPlanHook.GetAndReset();
@@ -421,7 +483,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                           "insert into MyWindow select * from SupportBean;\n" +
                           "on SupportBean_S0 delete from MyWindow where P00 = TheString and Id = IntPrimitive;\n" +
                           "on SupportBean_S1 delete from MyWindow;\n" +
-                          "@Name('s0') select TheString, IntPrimitive, sum(LongPrimitive) as c0, " +
+                          "@name('s0') select TheString, IntPrimitive, sum(LongPrimitive) as c0, " +
                           "  sum(LongPrimitive, group_by:TheString) as c1 from MyWindow;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -483,7 +545,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                           "insert into MyWindow select * from SupportBean;\n" +
                           "on SupportBean_S0 delete from MyWindow where P00 = TheString and Id = IntPrimitive;\n" +
                           "on SupportBean_S1 delete from MyWindow;\n" +
-                          "@Name('s0') select TheString, IntPrimitive, sum(LongPrimitive) as c0, " +
+                          "@name('s0') select TheString, IntPrimitive, sum(LongPrimitive) as c0, " +
                           "  sum(LongPrimitive, group_by:TheString) as c1 " +
                           "  from MyWindow group by TheString, IntPrimitive;\n";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -549,7 +611,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 SendTime(env, 0);
                 var fields = new[] {"TheString", "IntPrimitive", "c0", "c1", "c2", "c3", "c4"};
-                var epl = "@Name('s0') select" +
+                var epl = "@name('s0') select" +
                           "   TheString, IntPrimitive," +
                           "   sum(LongPrimitive, group_by:(IntPrimitive, TheString)) as c0," +
                           "   sum(LongPrimitive) as c1," +
@@ -599,7 +661,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 SendTime(env, 0);
                 var fields = new[] {"TheString", "IntPrimitive", "c0", "c1", "c2", "c3", "c4"};
-                var epl = "@Name('s0') select" +
+                var epl = "@name('s0') select" +
                           "   TheString, IntPrimitive," +
                           "   window(*, group_by:(IntPrimitive, TheString)) as c0," +
                           "   window(*) as c1," +
@@ -661,7 +723,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 SendTime(env, 0);
                 var fields = new[] {"TheString", "IntPrimitive", "c0", "c1", "c2"};
-                var epl = "@Name('s0') select" +
+                var epl = "@name('s0') select" +
                           "   TheString, IntPrimitive," +
                           "   sum(LongPrimitive, group_by:(TheString)) as c0," +
                           "   sum(LongPrimitive, group_by:(IntPrimitive)) as c1," +
@@ -708,7 +770,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 SendTime(env, 0);
                 var fields = new[] {"TheString", "pct"};
-                var epl = "@Name('s0') select TheString, count(*) / count(*, group_by:()) as pct" +
+                var epl = "@name('s0') select TheString, count(*) / count(*, group_by:()) as pct" +
                           " from SupportBean#time(30 sec)" +
                           " group by TheString" +
                           " output snapshot every 10 seconds";
@@ -760,7 +822,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var cols = new[] {"c0", "c1", "c2", "c3", "c4"};
-                var epl = "@Name('s0') select LongPrimitive, " +
+                var epl = "@name('s0') select LongPrimitive, " +
                           "sum(LongPrimitive) as c0, " +
                           "sum(group_by:(),LongPrimitive) as c1, " +
                           "sum(LongPrimitive,group_by:()) as c2, " +
@@ -802,7 +864,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var cols = new[] {"c0", "c1", "c2", "c3", "c4", "c5", "c8", "c9", "c10", "c11", "c12", "c13"};
-                var epl = "@Name('s0') select IntPrimitive, " +
+                var epl = "@name('s0') select IntPrimitive, " +
                           " countever(*, IntPrimitive>0, group_by:(TheString)) as c0," +
                           " countever(*, IntPrimitive>0, group_by:()) as c1," +
                           " countever(*, group_by:(TheString)) as c2," +
@@ -871,7 +933,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 var cols =
                     "first0,first1,last0,last1,window0,window1,maxby0,maxby1,minby0,minby1,sorted0,sorted1,maxbyever0,maxbyever1,minbyever0,minbyever1,firstever0,firstever1,lastever0,lastever1"
                         .SplitCsv();
-                var epl = "@Name('s0') select IntPrimitive as c0, " +
+                var epl = "@name('s0') select IntPrimitive as c0, " +
                           " first(sb, group_by:(TheString)) as first0," +
                           " first(sb, group_by:()) as first1," +
                           " last(sb, group_by:(TheString)) as last0," +
@@ -977,7 +1039,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     "stddev0"
                 };
 
-                var epl = "@Name('s0') select IntPrimitive as c0, " +
+                var epl = "@name('s0') select IntPrimitive as c0, " +
                           "sum(IntPrimitive, group_by:()) as sum0, " +
                           "sum(IntPrimitive, group_by:(TheString)) as sum1," +
                           "avedev(IntPrimitive, group_by:(TheString)) as avedev0," +
@@ -1064,7 +1126,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl = "create objectarray schema MyEventOne (d1 String, d2 String, val int);\n" +
-                          "@Name('s0') select sum(val, group_by: d1) as c0, sum(val, group_by: d2) as c1 from MyEventOne";
+                          "@name('s0') select sum(val, group_by: d1) as c0, sum(val, group_by: d2) as c1 from MyEventOne";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
                 var cols = new[] {"c0", "c1"};
@@ -1108,7 +1170,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl = "create objectarray schema MyEventTwo (g1 String, d1 String, d2 String, val int);\n" +
-                          "@Name('s0') select sum(val) as c0, sum(val, group_by: d1) as c1, sum(val, group_by: d2) as c2 from MyEventTwo group by g1";
+                          "@name('s0') select sum(val) as c0, sum(val, group_by: d1) as c1, sum(val, group_by: d2) as c2 from MyEventTwo group by g1";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
                 var cols = new[] {"c0", "c1", "c2"};
@@ -1152,7 +1214,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var fields = new[] {"c0", "sum0", "sum1"};
-                var epl = "@Name('s0') select IntPrimitive as c0, " +
+                var epl = "@name('s0') select IntPrimitive as c0, " +
                           "sum(IntPrimitive, group_by:()) as sum0, " +
                           "sum(IntPrimitive, group_by:(TheString)) as sum1 " +
                           " from SupportBean#keepall";
@@ -1184,7 +1246,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from SupportBean having sum(IntPrimitive, group_by:TheString) > 100";
+                var epl = "@name('s0') select * from SupportBean having sum(IntPrimitive, group_by:TheString) > 100";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 MakeSendEvent(env, "E1", 95);
@@ -1204,7 +1266,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl = "create context StartS0EndS1 start SupportBean_S0 end SupportBean_S1;" +
-                          "@Name('s0') context StartS0EndS1 select TheString, sum(IntPrimitive, group_by:TheString) as c0 " +
+                          "@name('s0') context StartS0EndS1 select TheString, sum(IntPrimitive, group_by:TheString) as c0 " +
                           " from SupportBean#keepall " +
                           " output snapshot when terminated" +
                           " order by sum(IntPrimitive, group_by:TheString)" +
@@ -1241,7 +1303,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 var epl = "create window MyWindow#keepall as SupportBean;" +
                           "insert into MyWindow select * from SupportBean;" +
-                          "@Name('s0') on SupportBean_S0 select TheString, sum(IntPrimitive) as c0, sum(IntPrimitive, group_by:()) as c1" +
+                          "@name('s0') on SupportBean_S0 select TheString, sum(IntPrimitive) as c0, sum(IntPrimitive, group_by:()) as c1" +
                           " from MyWindow group by TheString;";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -1278,7 +1340,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select TheString, sum(IntPrimitive, group_by:TheString) as c0 from SupportBean#keepall, SupportBean_S0 unidirectional";
+                    "@name('s0') select TheString, sum(IntPrimitive, group_by:TheString) as c0 from SupportBean#keepall, SupportBean_S0 unidirectional";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 MakeSendEvent(env, "E1", 10);
@@ -1311,7 +1373,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var fields = new[] {"c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9"};
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "sum(LongPrimitive, group_by:TheString) as c0," +
                           "count(*, group_by:TheString) as c1," +
                           "window(*, group_by:TheString) as c2," +
@@ -1399,7 +1461,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var fields = new[] {"c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9"};
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "sum(LongPrimitive, group_by:TheString) as c0," +
                           "count(*, group_by:TheString) as c1," +
                           "window(*, group_by:TheString) as c2," +
@@ -1494,7 +1556,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select" +
+                var epl = "@name('s0') select" +
                           " window(*, group_by:()).firstOf() as c0," +
                           " window(*, group_by:TheString).firstOf() as c1," +
                           " window(IntPrimitive, group_by:()).firstOf() as c2," +
@@ -1521,7 +1583,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "count(*, group_by:(TheString, IntPrimitive)), " +
                           "count(group_by:TheString, *) " +
                           "from SupportBean";

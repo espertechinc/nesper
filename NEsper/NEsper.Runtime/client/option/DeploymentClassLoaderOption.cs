@@ -10,6 +10,9 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.runtime.client.option
 {
+	public delegate ClassLoader DeploymentClassLoaderOption(DeploymentClassLoaderContext context);
+	
+	#if false
 	/// <summary>
 	/// Implement this interface to provide a custom class loader for a deployment.
 	/// </summary>
@@ -24,4 +27,5 @@ namespace com.espertech.esper.runtime.client.option
 		/// <returns>class loader (null is not supported)</returns>
 		ClassLoader GetClassLoader(DeploymentClassLoaderContext env);
 	}
+	#endif
 } // end of namespace

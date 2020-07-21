@@ -26,5 +26,15 @@ namespace com.espertech.esper.regressionrun.suite.epl
             RegressionRunner.Run(session, new EPLScriptExpressionConfiguration());
             session.Destroy();
         }
+        
+        [Test, RunInApplicationDomain]
+        public void testEPLScriptExpressionDisable()
+        {
+            RegressionSession session = RegressionRunner.Session();
+            session.Configuration.Common.AddEventType<SupportBean>();
+            session.Configuration.Compiler.Scripts.IsEnabled = false;
+            RegressionRunner.Run(session, new EPLScriptExpressionDisable());
+            session.Destroy();
+        }
     }
 } // end of namespace

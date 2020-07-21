@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                       "insert into EventOneWindow select * from EventOne;\n" +
                       "create window EventTwoWindow#unique(Key) as EventTwo;\n" +
                       "insert into EventTwoWindow select * from EventTwo;\n" +
-                      "@Name('out') select * from EventOneWindow as e1, EventTwoWindow as e2 where e1.Key = e2.Key";
+                      "@name('out') select * from EventOneWindow as e1, EventTwoWindow as e2 where e1.Key = e2.Key";
             var deployed = CompileDeploy(epl, runtime, config);
 
             var listener = new SupportMTUpdateListener();

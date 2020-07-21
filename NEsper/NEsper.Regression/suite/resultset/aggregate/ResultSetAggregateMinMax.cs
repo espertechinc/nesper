@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "insert into NamedWindow5m select * from SupportBean;\n";
                 env.CompileDeploy(epl, path);
 
-                epl = "@Name('s0') select " +
+                epl = "@name('s0') select " +
                       "min(IntPrimitive) as lower, " +
                       "max(IntPrimitive) as upper, " +
                       "minever(IntPrimitive) as lowerever, " +
@@ -104,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "maxi","mini","max0","min0" };
-                var epl = "@Name('s0') select max(IntPrimitive) as maxi, min(IntPrimitive) as mini," +
+                var epl = "@name('s0') select max(IntPrimitive) as maxi, min(IntPrimitive) as mini," +
                           "(select max(Id) from SupportBean_S0#lastevent) as max0, (select min(Id) from SupportBean_S0#lastevent) as min0" +
                           " from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var statementText = "@Name('s0') select Price, min(Price) as minPrice " +
+                var statementText = "@name('s0') select Price, min(Price) as minPrice " +
                                     "from SupportMarketDataBean#time(30)" +
                                     "having Price >= min(Price) * (1.02)";
 

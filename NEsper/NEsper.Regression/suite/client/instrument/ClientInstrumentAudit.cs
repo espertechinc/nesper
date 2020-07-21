@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 var path = new RegressionPath();
                 path.Add(compiled);
 
-                var epl = "@Name('All-Order-Events') @Audit('stream,property') select Price from OrderEvent";
+                var epl = "@name('All-Order-Events') @Audit('stream,property') select Price from OrderEvent";
                 env.CompileDeploy(epl, path).AddListener("All-Order-Events");
 
                 if (EventRepresentationChoiceExtensions.GetEngineDefault(env.Configuration).IsObjectArrayEvent()) {
@@ -64,15 +64,15 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
         {
             public void Run(RegressionEnvironment env)
             {
+                env.AdvanceTime(1);
                 var path = new RegressionPath();
 
                 // stream, and test audit callback
                 var callback = new SupportAuditCallback();
                 AuditPath.AuditCallback = callback.Audit;
 
-#if false
                 AUDITLOG.Info("*** Stream: ");
-                env.CompileDeploy("@Name('ABC') @Audit('stream') select * from SupportBean(TheString = 'E1')");
+                env.CompileDeploy("@name('ABC') @Audit('stream') select * from SupportBean(TheString = 'E1')");
                 env.SendEventBean(new SupportBean("E1", 1));
                 Assert.AreEqual(1, callback.Audits.Count);
                 var cb = callback.Audits[0];
@@ -81,25 +81,26 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 Assert.AreEqual("ABC", cb.StatementName);
                 Assert.AreEqual(DEFAULT_RUNTIME_URI, cb.RuntimeURI);
                 Assert.AreEqual(AuditEnum.STREAM, cb.Category);
+                Assert.AreEqual(1, cb.RuntimeTime);
                 AuditPath.AuditCallback = null;
                 env.UndeployAll();
 
                 AUDITLOG.Info("*** Insert-Into: ");
-                env.CompileDeploy("@Name('insert') @Audit insert into ABC select * from SupportBean");
+                env.CompileDeploy("@name('insert') @Audit insert into ABC select * from SupportBean");
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.UndeployAll();
 
                 AUDITLOG.Info("*** Named Window And Insert-Into: ");
-                env.CompileDeploy("@Name('create') @Audit create window WinOne#keepall as SupportBean", path);
-                env.CompileDeploy("@Name('insert') @Audit insert into WinOne select * from SupportBean", path);
-                env.CompileDeploy("@Name('select') @Audit select * from WinOne", path);
+                env.CompileDeploy("@name('create') @Audit create window WinOne#keepall as SupportBean", path);
+                env.CompileDeploy("@name('insert') @Audit insert into WinOne select * from SupportBean", path);
+                env.CompileDeploy("@name('select') @Audit select * from WinOne", path);
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.UndeployAll();
                 path.Clear();
 
                 AUDITLOG.Info("*** Schedule: ");
                 env.AdvanceTime(0);
-                env.CompileDeploy("@Name('ABC') @Audit('schedule') select irstream * from SupportBean#time(1 sec)")
+                env.CompileDeploy("@name('ABC') @Audit('schedule') select irstream * from SupportBean#time(1 sec)")
                     .AddListener("ABC");
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.Listener("ABC").Reset();
@@ -110,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
 
                 // property
                 AUDITLOG.Info("*** Property: ");
-                env.CompileDeploy("@Name('ABC') @Audit('property') select IntPrimitive from SupportBean")
+                env.CompileDeploy("@name('ABC') @Audit('property') select IntPrimitive from SupportBean")
                     .AddListener("ABC");
                 env.SendEventBean(new SupportBean("E1", 50));
                 Assert.AreEqual(50, env.Listener("ABC").AssertOneGetNewAndReset().Get("IntPrimitive"));
@@ -118,26 +119,26 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
 
                 // view
                 AUDITLOG.Info("*** View: ");
-                env.CompileDeploy("@Name('ABC') @Audit('view') select IntPrimitive from SupportBean#lastevent")
+                env.CompileDeploy("@name('ABC') @Audit('view') select IntPrimitive from SupportBean#lastevent")
                     .AddListener("ABC");
                 env.SendEventBean(new SupportBean("E1", 50));
                 Assert.AreEqual(50, env.Listener("ABC").AssertOneGetNewAndReset().Get("IntPrimitive"));
                 env.UndeployAll();
 
-                env.CompileDeploy("@Name('s0') @Audit Select * From SupportBean#groupwin(TheString)#length(2)")
+                env.CompileDeploy("@name('s0') @Audit Select * From SupportBean#groupwin(TheString)#length(2)")
                     .AddListener("s0");
                 env.SendEventBean(new SupportBean("E1", 50));
                 env.UndeployAll();
 
                 env.CompileDeploy(
-                        "@Name('s0') @Audit Select * From SupportBean#groupwin(TheString)#length(2)#unique(IntPrimitive)")
+                        "@name('s0') @Audit Select * From SupportBean#groupwin(TheString)#length(2)#unique(IntPrimitive)")
                     .AddListener("s0");
                 env.SendEventBean(new SupportBean("E1", 50));
                 env.UndeployAll();
                 // expression
                 AUDITLOG.Info("*** Expression: ");
                 env.CompileDeploy(
-                        "@Name('ABC') @Audit('expression') select IntPrimitive*100 as val0, sum(IntPrimitive) as val1 from SupportBean")
+                        "@name('ABC') @Audit('expression') select IntPrimitive*100 as val0, sum(IntPrimitive) as val1 from SupportBean")
                     .AddListener("ABC");
                 env.SendEventBean(new SupportBean("E1", 50));
                 Assert.AreEqual(5000, env.Listener("ABC").AssertOneGetNew().Get("val0"));
@@ -147,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 // expression-detail
                 AUDITLOG.Info("*** Expression-Nested: ");
                 env.CompileDeploy(
-                        "@Name('ABC') @Audit('expression-nested') select ('A'||TheString)||'X' as val0 from SupportBean")
+                        "@name('ABC') @Audit('expression-nested') select ('A'||TheString)||'X' as val0 from SupportBean")
                     .AddListener("ABC");
                 env.SendEventBean(new SupportBean("E1", 50));
                 Assert.AreEqual("AE1X", env.Listener("ABC").AssertOneGetNewAndReset().Get("val0"));
@@ -156,7 +157,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 // pattern
                 AUDITLOG.Info("*** Pattern: ");
                 env.CompileDeploy(
-                        "@Name('ABC') @Audit('pattern') select a.IntPrimitive as val0 from pattern [a=SupportBean -> b=SupportBean_ST0]")
+                        "@name('ABC') @Audit('pattern') select a.IntPrimitive as val0 from pattern [a=SupportBean -> b=SupportBean_ST0]")
                     .AddListener("ABC");
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean_ST0("E2", 2));
@@ -166,7 +167,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 // pattern-instances
                 AUDITLOG.Info("*** Pattern-Lifecycle: ");
                 env.CompileDeploy(
-                        "@Name('ABC') @Audit('pattern-instances') select a.IntPrimitive as val0 from pattern [every a=SupportBean -> (b=SupportBean_ST0 and not SupportBean_ST1)]")
+                        "@name('ABC') @Audit('pattern-instances') select a.IntPrimitive as val0 from pattern [every a=SupportBean -> (b=SupportBean_ST0 and not SupportBean_ST1)]")
                     .AddListener("ABC");
                 log.Info("Sending E1");
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -180,7 +181,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 // exprdef-instances
                 AUDITLOG.Info("*** Expression-Def: ");
                 env.CompileDeploy(
-                        "@Name('ABC') @Audit('exprdef') " +
+                        "@name('ABC') @Audit('exprdef') " +
                         "expression DEF { 1 } " +
                         "expression INN {  x -> x.TheString }" +
                         "expression OUT { x -> INN(x) } " +
@@ -189,7 +190,6 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 env.SendEventBean(new SupportBean("E1", 1));
                 Assert.AreEqual(1, env.Listener("ABC").AssertOneGetNewAndReset().Get("DEF()"));
                 env.UndeployAll();
-#endif
 
                 // data flow
                 env.CompileDeploy(
@@ -215,12 +215,12 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 // table
                 AUDITLOG.Info("*** Table And Insert-Into and Into-table: ");
                 env.CompileDeploy(
-                    "@Name('create-table') @Audit create table TableOne(c0 string primary key, cnt count(*))",
+                    "@name('create-table') @Audit create table TableOne(c0 string primary key, cnt count(*))",
                     path);
                 env.CompileDeploy(
-                    "@Name('into-table') @Audit into table TableOne select count(*) as cnt from SupportBean group by TheString",
+                    "@name('into-table') @Audit into table TableOne select count(*) as cnt from SupportBean group by TheString",
                     path);
-                env.CompileDeploy("@Name('access-table') @Audit select TableOne[Id].cnt from SupportBean_ST0", path)
+                env.CompileDeploy("@name('access-table') @Audit select TableOne[Id].cnt from SupportBean_ST0", path)
                     .AddListener("access-table");
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean_ST0("E1", 0));

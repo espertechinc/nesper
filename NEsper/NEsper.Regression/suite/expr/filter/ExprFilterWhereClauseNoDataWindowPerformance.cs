@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 using com.espertech.esper.common.@internal.support;
@@ -17,39 +18,49 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.expr.filter
 {
-    public class ExprFilterWhereClauseNoDataWindowPerformance : RegressionExecution
+    public class ExprFilterWhereClauseNoDataWindowPerformance
     {
-        // Compares the performance of
-        //     select * from SupportBean(TheString = 'xyz')
-        //  against
-        //     select * from SupportBean where theString = 'xyz'
-
-        public void Run(RegressionEnvironment env)
+        public static IList<RegressionExecution> Executions()
         {
-            var module = new StringWriter();
+            IList<RegressionExecution> executions = new List<RegressionExecution>();
+            executions.Add(new ExprFilterWhereClauseNoDataWindowPerf());
+            return executions;
+        }
 
-            for (var i = 0; i < 100; i++) {
-                var epl = string.Format(
-                    "@Name('s{0}') select * from SupportBean where TheString = '{1}';\n",
-                    i,
-                    Convert.ToString(i));
-                module.Write(epl);
+        private class ExprFilterWhereClauseNoDataWindowPerf : RegressionExecution
+        {
+            // Compares the performance of
+            //     select * from SupportBean(TheString = 'xyz')
+            //  against
+            //     select * from SupportBean where theString = 'xyz'
+
+            public void Run(RegressionEnvironment env)
+            {
+                var module = new StringWriter();
+
+                for (var i = 0; i < 100; i++) {
+                    var epl = string.Format(
+                        "@name('s{0}') select * from SupportBean where TheString = '{1}';\n",
+                        i,
+                        Convert.ToString(i));
+                    module.Write(epl);
+                }
+
+                var compiled = env.Compile(module.ToString());
+                env.Deploy(compiled);
+
+                var start = PerformanceObserver.MilliTime;
+                for (var i = 0; i < 10000; i++) {
+                    var bean = new SupportBean("NOMATCH", 0);
+                    env.SendEventBean(bean);
+                }
+
+                var end = PerformanceObserver.MilliTime;
+                var delta = end - start;
+                Assert.That(delta, Is.LessThan(500), "Delta=" + delta);
+
+                env.UndeployAll();
             }
-
-            var compiled = env.Compile(module.ToString());
-            env.Deploy(compiled);
-
-            var start = PerformanceObserver.MilliTime;
-            for (var i = 0; i < 10000; i++) {
-                var bean = new SupportBean("NOMATCH", 0);
-                env.SendEventBean(bean);
-            }
-
-            var end = PerformanceObserver.MilliTime;
-            var delta = end - start;
-            Assert.That(delta, Is.LessThan(500), "Delta=" + delta);
-
-            env.UndeployAll();
         }
     }
 } // end of namespace

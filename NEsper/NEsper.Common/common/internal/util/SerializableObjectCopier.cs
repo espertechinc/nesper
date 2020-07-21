@@ -12,6 +12,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
 
+using com.espertech.esper.common.client.soda;
 using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.util
@@ -75,6 +76,11 @@ namespace com.espertech.esper.common.@internal.util
         {
             return container.ResolveSingleton<IObjectCopier>(
                 () => new SerializableObjectCopier(container));
+        }
+
+        public static T CopyMayFail<T>(IContainer container, T input)
+        {
+            return GetInstance(container).Copy<T>(input);
         }
     }
 }

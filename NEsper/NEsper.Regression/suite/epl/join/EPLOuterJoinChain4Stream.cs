@@ -494,7 +494,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// -&gt; s2
                 /// -&gt; s3
                 /// </summary>
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           "SupportBean_S0#length(1000) as S0 " +
                           " left outer join SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10 " +
                           " left outer join SupportBean_S2#length(1000) as S2 on S1.P10 = S2.P20 " +
@@ -516,7 +516,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// -&gt; s2
                 /// -&gt; s3
                 /// </summary>
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           "SupportBean_S1#length(1000) as S1 " +
                           " right outer join " +
                           "SupportBean_S0#length(1000) as S0 on S0.P00 = S1.P10 " +
@@ -540,7 +540,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// -&gt; s2
                 /// -&gt; s3
                 /// </summary>
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           "SupportBean_S2#length(1000) as S2 " +
                           " right outer join SupportBean_S1#length(1000) as S1 on S2.P20 = S1.P10 " +
                           " right outer join " +
@@ -564,7 +564,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// -&gt; s2
                 /// -&gt; s3
                 /// </summary>
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           "SupportBean_S3#length(1000) as S3 " +
                           " right outer join SupportBean_S2#length(1000) as S2 on S3.P30 = S2.P20 " +
                           " right outer join SupportBean_S1#length(1000) as S1 on S2.P20 = S1.P10 " +

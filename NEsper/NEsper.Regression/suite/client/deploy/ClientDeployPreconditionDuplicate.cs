@@ -36,6 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             execs.Add(new ClientDeployPrecondDupScript());
             execs.Add(new ClientDeployPrecondDupContext());
             execs.Add(new ClientDeployPrecondDupIndex());
+            execs.Add(new ClientDeployPrecondDupClass());
             return execs;
         }
 
@@ -74,6 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 Assert.Fail();
             }
             catch (EPDeployPreconditionException ex) {
+                Assert.That(ex.RolloutItemNumber, Is.EqualTo(-1));
                 if (!message.Equals("skip")) {
                     SupportMessageAssertUtil.AssertMessage(ex.Message, message);
                 }
@@ -194,6 +196,18 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 env.Deploy(compiled);
                 TryInvalidDeploy(env, compiled, "An index by name 'MyIndexOnNW'", MODULE_NAME_UNNAMED);
 
+                env.UndeployAll();
+            }
+        }
+
+        public class ClientDeployPrecondDupClass : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                var epl = "create inlined_class \"\"\" public class MyClass { public static String doIt() { return \"def\"; } }\"\"\"";
+                env.CompileDeploy(epl, path);
+                TryInvalidDeploy(env, epl, "An application-inlined class by name 'MyClass'", MODULE_NAME_UNNAMED);
                 env.UndeployAll();
             }
         }

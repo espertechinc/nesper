@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
     [TestFixture]
     public class ExprFilterPlanTwoFilterIndexReuse
     {
-        public static ICollection<FilterTestMultiStmtExecution> Executions()
+        public static ICollection<FilterTestMultiStmtExecution> Executions(bool withStats)
         {
             IList<FilterTestMultiStmtPermutable> cases = new List<FilterTestMultiStmtPermutable>();
 
@@ -118,7 +118,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             return FilterTestMultiStmtRunner.ComputePermutations(
                 typeof(ExprFilterPlanTwoFilterIndexReuse),
                 new PermutationSpec(true),
-                cases);
+                cases,
+                withStats);
         }
     }
 } // end of namespace

@@ -22,12 +22,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             var fields = new [] { "c0", "c1" };
             var path = new RegressionPath();
 
-            var stmtTextOne = "@Name('i0') insert irstream into MyStream " +
+            var stmtTextOne = "@name('i0') insert irstream into MyStream " +
                               "select irstream TheString as c0, istream() as c1 " +
                               "from SupportBean#lastevent";
             env.CompileDeploy(stmtTextOne, path).AddListener("i0");
 
-            var stmtTextTwo = "@Name('s0') select * from MyStream";
+            var stmtTextTwo = "@name('s0') select * from MyStream";
             env.CompileDeploy(stmtTextTwo, path).AddListener("s0");
 
             env.SendEventBean(new SupportBean("E1", 0));
@@ -65,14 +65,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 new object[0][]);
 
             // test SODA
-            var eplModel = "@Name('s1') select istream() from SupportBean";
+            var eplModel = "@name('s1') select istream() from SupportBean";
             env.EplToModelCompileDeploy(eplModel);
             Assert.AreEqual(typeof(bool?), env.Statement("s1").EventType.GetPropertyType("istream()"));
 
             // test join
             env.UndeployAll();
             fields = new [] { "c0", "c1", "c2" };
-            var stmtTextJoin = "@Name('s0') select irstream TheString as c0, Id as c1, istream() as c2 " +
+            var stmtTextJoin = "@name('s0') select irstream TheString as c0, Id as c1, istream() as c2 " +
                                "from SupportBean#lastevent, SupportBean_S0#lastevent";
             env.CompileDeploy(stmtTextJoin).AddListener("s0");
             env.SendEventBean(new SupportBean("E1", 0));

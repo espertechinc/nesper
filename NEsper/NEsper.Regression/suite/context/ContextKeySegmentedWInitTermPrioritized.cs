@@ -12,7 +12,6 @@ using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -20,7 +19,7 @@ using com.espertech.esper.regressionlib.support.context;
 
 using NUnit.Framework;
 
-using static com.espertech.esper.regressionlib.support.filter.SupportFilterHelper;
+using static com.espertech.esper.regressionlib.support.filter.SupportFilterServiceHelper;
 
 namespace com.espertech.esper.regressionlib.suite.context
 {
@@ -169,12 +168,12 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var epl = "@Name('ctx') create context CtxPartitionWCorrTerm as " +
+                var epl = "@name('ctx') create context CtxPartitionWCorrTerm as " +
                           "partition by TheString from SupportBean as sb " +
                           "terminated by SupportBean(IntPrimitive=sb.IntPrimitive)";
                 env.CompileDeploy(soda, epl, path);
                 env.CompileDeploy(
-                    "@Name('s0') context CtxPartitionWCorrTerm select TheString, sum(IntPrimitive) as theSum from SupportBean output last when terminated",
+                    "@name('s0') context CtxPartitionWCorrTerm select TheString, sum(IntPrimitive) as theSum from SupportBean output last when terminated",
                     path);
                 env.AddListener("s0");
 
@@ -226,7 +225,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fields,
                     new object[] {"A", 11 + 12});
 
-                AssertFilterCount(env, 1, "ctx");
+                AssertFilterSvcCount(env, 1, "ctx");
                 env.UndeployAll();
             }
         }
@@ -236,14 +235,14 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var epl = "@Name('ctx') create context CtxPartitionInitWCorrTerm " +
+                var epl = "@name('ctx') create context CtxPartitionInitWCorrTerm " +
                           "partition by TheString from SupportBean " +
                           "initiated by SupportBean(BoolPrimitive=true) as sb " +
                           "terminated by SupportBean(BoolPrimitive=false, IntPrimitive=sb.IntPrimitive)";
                 env.CompileDeploy(epl, path);
 
                 env.CompileDeploy(
-                    "@Name('s0') context CtxPartitionInitWCorrTerm select TheString, sum(LongPrimitive) as theSum from SupportBean output last when terminated",
+                    "@name('s0') context CtxPartitionInitWCorrTerm select TheString, sum(LongPrimitive) as theSum from SupportBean output last when terminated",
                     path);
                 env.AddListener("s0");
                 var fields = new [] { "TheString","theSum" };
@@ -283,7 +282,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fields,
                     new object[] {"A", 1 + 4 + 6L});
 
-                AssertFilterCount(env, 1, "ctx");
+                AssertFilterSvcCount(env, 1, "ctx");
                 env.UndeployAll();
             }
 
@@ -306,14 +305,14 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var epl = "@Name('ctx') create context CtxPartitionInitWCorrTerm " +
+                var epl = "@name('ctx') create context CtxPartitionInitWCorrTerm " +
                           "partition by P20 from SupportBean_S2, P10 from SupportBean_S1, P00 from SupportBean_S0 " +
                           "initiated by SupportBean_S0 as S0, SupportBean_S1 as S1 " +
                           "terminated by pattern[SupportBean_S0(Id=S0.Id) or SupportBean_S1(Id=S1.Id)]";
                 env.CompileDeploy(epl, path);
 
                 env.CompileDeploy(
-                    "@Name('s0') context CtxPartitionInitWCorrTerm " +
+                    "@name('s0') context CtxPartitionInitWCorrTerm " +
                     "select context.S0 as ctx0, context.S1 as ctx1, context.S0.Id as ctx0Id, context.S1.Id as ctx1Id, P20, sum(Id) as theSum " +
                     "from SupportBean_S2 output last when terminated",
                     path);
@@ -345,7 +344,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fields,
                     new object[] {null, 2, "B", 12});
 
-                AssertFilterCount(env, 2, "ctx");
+                AssertFilterSvcCount(env, 2, "ctx");
                 env.UndeployAll();
             }
         }
@@ -367,7 +366,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                           "initiated by SupportBean_S0(Id>0) as S0";
                 env.CompileDeploy(soda, epl, path);
                 env.CompileDeploy(
-                    "@Name('s0') context CtxInitS0PositiveId select P00, P01, context.S0 as S0, sum(Id) as theSum from SupportBean_S0",
+                    "@name('s0') context CtxInitS0PositiveId select P00, P01, context.S0 as S0, sum(Id) as theSum from SupportBean_S0",
                     path);
                 env.AddListener("s0");
 
@@ -410,13 +409,13 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var epl = "@Name('ctx') create context CtxTwoInitTerm as " +
+                var epl = "@name('ctx') create context CtxTwoInitTerm as " +
                           "partition by P01 from SupportBean_S0, P11 from SupportBean_S1, P21 from SupportBean_S2 " +
                           "initiated by SupportBean_S0(P00=\"a\"), SupportBean_S1(P10=\"b\") " +
                           "terminated by SupportBean_S2(P20=\"z\")";
                 env.CompileDeploy(soda, epl, path);
                 env.CompileDeploy(
-                    "@Name('s0') context CtxTwoInitTerm select P21, count(*) as cnt from SupportBean_S2 output last when terminated",
+                    "@name('s0') context CtxTwoInitTerm select P21, count(*) as cnt from SupportBean_S2 output last when terminated",
                     path);
 
                 env.AddListener("s0");
@@ -448,12 +447,12 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fields,
                     new object[] {"C", 0L});
 
-                AssertFilterCount(env, 2, "ctx");
+                AssertFilterSvcCount(env, 2, "ctx");
                 env.UndeployModuleContaining("s0");
 
                 env.Milestone(2);
 
-                AssertFilterCount(env, 0, "ctx");
+                AssertFilterSvcCount(env, 0, "ctx");
                 env.UndeployAll();
             }
         }
@@ -466,7 +465,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                           "partition by TheString from SupportBean(IntPrimitive > 0) " +
                           "initiated by SupportBean(IntPrimitive=0)" +
                           "terminated by SupportBean(IntPrimitive=1000);\n" +
-                          "@Name('s0') context CtxStringZeroTo1k select TheString, sum(IntPrimitive) as theSum from SupportBean output last when terminated;\n";
+                          "@name('s0') context CtxStringZeroTo1k select TheString, sum(IntPrimitive) as theSum from SupportBean output last when terminated;\n";
                 env.CompileDeploy(epl).AddListener("s0");
                 var fields = new [] { "TheString","theSum" };
 
@@ -550,13 +549,13 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('ctx') create context CtxStringZeroTo1k as " +
+                    "@name('ctx') create context CtxStringZeroTo1k as " +
                     "partition by TheString from SupportBean " +
                     "initiated by SupportBean(IntPrimitive=0)" +
                     "terminated by SupportBean(IntPrimitive=1000)",
                     path);
                 env.CompileDeploy(
-                    "@Name('s0') context CtxStringZeroTo1k select TheString, sum(IntPrimitive) as theSum from SupportBean output last when terminated",
+                    "@name('s0') context CtxStringZeroTo1k select TheString, sum(IntPrimitive) as theSum from SupportBean output last when terminated",
                     path);
 
                 env.AddListener("s0");
@@ -616,9 +615,9 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fields,
                     new object[] {"A", 40});
 
-                AssertFilterCount(env, 1, "ctx");
+                AssertFilterSvcCount(env, 1, "ctx");
                 env.UndeployModuleContaining("s0");
-                AssertFilterCount(env, 0, "ctx");
+                AssertFilterSvcCount(env, 0, "ctx");
                 env.UndeployAll();
             }
         }
@@ -629,12 +628,12 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('ctx') create context Ctx3Typed as " +
+                    "@name('ctx') create context Ctx3Typed as " +
                     "partition by P00 from SupportBean_S0, P10 from SupportBean_S1, P20 from SupportBean_S2 " +
                     "terminated by pattern[SupportBean_S1 -> SupportBean_S2]",
                     path);
                 env.CompileDeploy(
-                    "@Name('s0') context Ctx3Typed select P00, count(*) as cnt from SupportBean_S0 output last when terminated",
+                    "@name('s0') context Ctx3Typed select P00, count(*) as cnt from SupportBean_S0 output last when terminated",
                     path);
 
                 env.AddListener("s0");
@@ -674,7 +673,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fields,
                     new object[] {"A", 3L});
 
-                Assert.AreEqual(3, GetFilterCountApprox(env));
+                Assert.AreEqual(3, GetFilterSvcCountApprox(env));
                 env.UndeployAll();
             }
         }
@@ -685,11 +684,11 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('ctx') create context TwoKeyPartition " +
+                    "@name('ctx') create context TwoKeyPartition " +
                     "partition by TheString, IntPrimitive from SupportBean terminated by SupportBean(BoolPrimitive = false)",
                     path);
                 env.CompileDeploy(
-                    "@Name('s0') context TwoKeyPartition select TheString, IntPrimitive, sum(LongPrimitive) as thesum from SupportBean output last when terminated",
+                    "@name('s0') context TwoKeyPartition select TheString, IntPrimitive, sum(LongPrimitive) as thesum from SupportBean output last when terminated",
                     path);
 
                 env.AddListener("s0");
@@ -735,7 +734,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     fields,
                     new object[] {"B", 1, 31L});
 
-                AssertFilterCount(env, 1, "ctx");
+                AssertFilterSvcCount(env, 1, "ctx");
                 env.UndeployAll();
             }
         }
@@ -749,7 +748,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Audit @Name('ctx') create context MyTermByUnrelated partition by TheString from SupportBean(IntPrimitive=0) terminated by SupportBean",
                     path);
                 env.CompileDeploy(
-                    "@Name('s0') context MyTermByUnrelated select TheString, count(*) as cnt from SupportBean output last when terminated",
+                    "@name('s0') context MyTermByUnrelated select TheString, count(*) as cnt from SupportBean output last when terminated",
                     path);
                 env.AddListener("s0");
                 var fields = new [] { "TheString","cnt" };
@@ -785,7 +784,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     new[] {new object[] {"A", 1L}});
 
                 env.UndeployModuleContaining("s0");
-                AssertFilterCount(env, 0, "ctx");
+                AssertFilterSvcCount(env, 0, "ctx");
                 env.UndeployAll();
             }
         }
@@ -799,7 +798,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Audit @Name('ctx') create context MyTermByUnrelated partition by TheString from SupportBean(IntPrimitive=0) terminated by SupportBean(IntPrimitive=1)",
                     path);
                 env.CompileDeploy(
-                    "@Name('s0') context MyTermByUnrelated select TheString, count(*) as cnt from SupportBean output last when terminated",
+                    "@name('s0') context MyTermByUnrelated select TheString, count(*) as cnt from SupportBean output last when terminated",
                     path);
                 env.AddListener("s0");
                 var fields = new [] { "TheString","cnt" };
@@ -827,7 +826,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.SendEventBean(new SupportBean("A", 0));
                 env.UndeployModuleContaining("s0");
-                AssertFilterCount(env, 0, "ctx");
+                AssertFilterSvcCount(env, 0, "ctx");
                 env.UndeployAll();
             }
         }
@@ -841,7 +840,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "create context MyTermByUnrelated partition by TheString from SupportBean terminated by SupportBean_S0",
                     path);
                 env.CompileDeploy(
-                    "@Name('s0') context MyTermByUnrelated select TheString, count(*) as cnt from SupportBean output last when terminated",
+                    "@name('s0') context MyTermByUnrelated select TheString, count(*) as cnt from SupportBean output last when terminated",
                     path);
 
                 env.AddListener("s0");
@@ -888,7 +887,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "create context MyTermByTimeout partition by P00 from SupportBean_S0, P10 from SupportBean_S1 terminated by pattern [SupportBean_S0(Id<0) or SupportBean_S1(Id<0)]",
                     path);
                 env.CompileDeploy(
-                    "@Name('s0') context MyTermByTimeout select coalesce(S0.P00, S1.P10) as key, count(*) as cnt from pattern [every (S0=SupportBean_S0 or S1=SupportBean_S1)] output last when terminated",
+                    "@name('s0') context MyTermByTimeout select coalesce(S0.P00, S1.P10) as key, count(*) as cnt from pattern [every (S0=SupportBean_S0 or S1=SupportBean_S1)] output last when terminated",
                     path);
 
                 env.AddListener("s0");
@@ -953,7 +952,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "create context MyTermByTimeout partition by TheString from SupportBean terminated (*, *, *, *, *)",
                     path);
                 env.CompileDeploy(
-                    "@Name('s0') context MyTermByTimeout select TheString, count(*) as cnt from SupportBean output last when terminated",
+                    "@name('s0') context MyTermByTimeout select TheString, count(*) as cnt from SupportBean output last when terminated",
                     path);
                 env.AddListener("s0");
 
@@ -1017,7 +1016,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "create context MyTermByTimeout partition by TheString from SupportBean terminated after 10 seconds",
                     path);
                 env.CompileDeploy(
-                    "@Name('s0') context MyTermByTimeout select TheString, count(*) as cnt from SupportBean",
+                    "@name('s0') context MyTermByTimeout select TheString, count(*) as cnt from SupportBean",
                     path);
                 env.AddListener("s0");
 
@@ -1078,7 +1077,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var epl = "create objectarray schema TypeOne(poa string);\n" +
                           "create map schema TypeTwo(pmap string);\n" +
                           "create context MyContextOAMap partition by poa from TypeOne, pmap from TypeTwo terminated by TypeTwo;\n" +
-                          "@Name('s0') context MyContextOAMap select poa, count(*) as cnt from TypeOne;\n";
+                          "@name('s0') context MyContextOAMap select poa, count(*) as cnt from TypeOne;\n";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath());
 
                 env.AddListener("s0");
@@ -1130,10 +1129,10 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('ctx') create context ByP0 partition by A from ISupportA, B from ISupportB terminated by ISupportA(A='x')",
+                    "@name('ctx') create context ByP0 partition by A from ISupportA, B from ISupportB terminated by ISupportA(A='x')",
                     path);
                 env.CompileDeploy(
-                    "@Name('s0') context ByP0 select coalesce(a.A, b.B) as p0, count(*) as cnt from pattern[every (a=ISupportA or b=ISupportB)]",
+                    "@name('s0') context ByP0 select coalesce(a.A, b.B) as p0, count(*) as cnt from pattern[every (a=ISupportA or b=ISupportB)]",
                     path);
 
                 env.AddListener("s0");
@@ -1188,7 +1187,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
                 env.CompileDeploy(
                     soda,
-                    "@Name('s0') context ByP0 select TheString, count(*) as cnt from SupportBean",
+                    "@name('s0') context ByP0 select TheString, count(*) as cnt from SupportBean",
                     path);
                 env.AddListener("s0");
 

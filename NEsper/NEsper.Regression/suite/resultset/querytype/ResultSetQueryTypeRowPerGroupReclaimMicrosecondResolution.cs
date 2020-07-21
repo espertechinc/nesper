@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             env.AdvanceTime(0);
 
             var epl =
-                "@Name('s0') @IterableUnbound @Hint('reclaim_group_aged=1,reclaim_group_freq=5') select TheString, count(*) from SupportBean group by TheString";
+                "@name('s0') @IterableUnbound @Hint('reclaim_group_aged=1,reclaim_group_freq=5') select TheString, count(*) from SupportBean group by TheString";
             env.CompileDeploy(epl).AddListener("s0");
 
             env.SendEventBean(new SupportBean("E1", 0));

@@ -37,6 +37,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             execs.Add(new InfraTableIntoTableNoKeys());
             execs.Add(new InfraTableIntoTableWithKeys());
             execs.Add(new InfraTableBigNumberAggregation());
+            execs.Add(new InfraIntoTableMultikeyWArraySingleArrayKeyed());
+            execs.Add(new InfraIntoTableMultikeyWArrayTwoKeyed());
             return execs;
         }
 
@@ -53,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                              "windowb window(*) @Type('SupportBean'))";
             env.CompileDeploy(soda, eplDeclare, path);
 
-            var eplIterate = "@Name('iterate') select varagg from SupportBean_S0#lastevent";
+            var eplIterate = "@name('iterate') select varagg from SupportBean_S0#lastevent";
             env.CompileDeploy(soda, eplIterate, path);
             env.SendEventBean(new SupportBean_S0(0));
 
@@ -123,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                              "sortedb sorted(IntPrimitive) @type('SupportBean'))";
             env.CompileDeploy(soda, eplDeclare, path);
 
-            var eplIterate = "@Name('iterate') select varagg from SupportBean_S0#lastevent";
+            var eplIterate = "@name('iterate') select varagg from SupportBean_S0#lastevent";
             env.CompileDeploy(soda, eplIterate, path);
             env.SendEventBean(new SupportBean_S0(0));
 
@@ -181,7 +183,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                              "maxb max(int), maxu maxever(int), minb min(int), minu minever(int))";
             env.CompileDeploy(soda, eplDeclare, path);
 
-            var eplIterate = "@Name('iterate') select varagg from SupportBean_S0#lastevent";
+            var eplIterate = "@name('iterate') select varagg from SupportBean_S0#lastevent";
             env.CompileDeploy(soda, eplIterate, path);
             env.SendEventBean(new SupportBean_S0(0));
 
@@ -278,11 +280,94 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             Assert.AreEqual(expected, env.GetEnumerator("tbl").Advance().Get("mycnt"));
         }
 
+        internal class InfraIntoTableMultikeyWArrayTwoKeyed : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl =
+                    "@name('tbl') create table MyTable(k1 int[primitive] primary key, k2 int[primitive] primary key, thesum sum(int));\n" +
+                    "into table MyTable select intOne, intTwo, sum(value) as thesum from SupportEventWithManyArray group by intOne, intTwo;\n";
+                env.CompileDeploy(epl);
+
+                SendEvent(env, "E1", 100, new int[] {10}, new int[] {1, 2});
+                SendEvent(env, "E2", 101, new int[] {10, 20}, new int[] {1, 2});
+                SendEvent(env, "E3", 102, new int[] {10}, new int[] {1, 1});
+                SendEvent(env, "E4", 103, new int[] {10, 20}, new int[] {1, 2});
+                SendEvent(env, "E5", 104, new int[] {10}, new int[] {1, 1});
+                SendEvent(env, "E6", 105, new int[] {10, 20}, new int[] {1, 1});
+
+                env.Milestone(0);
+
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                    env.GetEnumerator("tbl"),
+                    "k1,k2,thesum".SplitCsv(),
+                    new object[][] {
+                        new object[] {new int[] {10}, new int[] {1, 2}, 100}, 
+                        new object[] {new int[] {10}, new int[] {1, 1}, 102 + 104},
+                        new object[] {new int[] {10, 20}, new int[] {1, 2}, 101 + 103}, 
+                        new object[] {new int[] {10, 20}, new int[] {1, 1}, 105},
+                    });
+
+                env.UndeployAll();
+            }
+
+            private void SendEvent(
+                RegressionEnvironment env,
+                string id,
+                int value,
+                int[] intOne,
+                int[] intTwo)
+            {
+                env.SendEventBean(new SupportEventWithManyArray(id).WithIntOne(intOne).WithIntTwo(intTwo).WithValue(value));
+            }
+        }
+
+        internal class InfraIntoTableMultikeyWArraySingleArrayKeyed : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl =
+                    "@name('tbl') create table MyTable(k int[primitive] primary key, thesum sum(int));\n" +
+                    "into table MyTable select intOne, sum(value) as thesum from SupportEventWithManyArray group by intOne;\n";
+                env.CompileDeploy(epl);
+
+                SendEvent(env, "E1", 10, new int[] {1, 2});
+                SendEvent(env, "E2", 11, new int[] {0, 2});
+                SendEvent(env, "E3", 12, new int[] {1, 1});
+                SendEvent(env, "E4", 13, new int[] {0, 2});
+                SendEvent(env, "E5", 14, new int[] {1});
+                SendEvent(env, "E6", 15, new int[] {1, 1});
+
+                env.Milestone(0);
+
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                    env.GetEnumerator("tbl"),
+                    "k,thesum".SplitCsv(),
+                    new object[][] {
+                        new object[] {new int[] {1, 2}, 10}, 
+                        new object[] {new int[] {0, 2}, 11 + 13}, 
+                        new object[] {new int[] {1, 1}, 12 + 15}, 
+                        new object[] {new int[] {1}, 14},
+                    });
+
+                env.UndeployAll();
+            }
+
+            private void SendEvent(
+                RegressionEnvironment env,
+                string id,
+                int value,
+                int[] array)
+            {
+                env.SendEventBean(new SupportEventWithManyArray(id).WithIntOne(array).WithValue(value));
+            }
+        }
+
         internal class InfraIntoTableUnkeyedSimpleSameModule : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('tbl') create table MyTable(mycnt count(*));\n" +
+                var epl = "@name('tbl') create table MyTable(mycnt count(*));\n" +
                           "into table MyTable select count(*) as mycnt from SupportBean;\n";
                 env.CompileDeploy(epl);
                 RunAssertionIntoTableUnkeyedSimple(env);
@@ -295,7 +380,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@Name('tbl') create table MyTable(mycnt count(*))", path);
+                env.CompileDeploy("@name('tbl') create table MyTable(mycnt count(*))", path);
                 env.CompileDeploy("into table MyTable select count(*) as mycnt from SupportBean;\n", path);
                 RunAssertionIntoTableUnkeyedSimple(env);
                 env.UndeployAll();
@@ -369,14 +454,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var fields = new [] { "sumint" };
                 var path = new RegressionPath();
 
-                var eplCreateTable = "@Name('Create-Table') create table MyTable(sumint sum(int))";
+                var eplCreateTable = "@name('Create-Table') create table MyTable(sumint sum(int))";
                 env.CompileDeploy(eplCreateTable, path);
 
                 var eplIntoTable =
-                    "@Name('Into-Table') into table MyTable select sum(IntPrimitive) as sumint from SupportBean";
+                    "@name('Into-Table') into table MyTable select sum(IntPrimitive) as sumint from SupportBean";
                 env.CompileDeploy(eplIntoTable, path);
 
-                var eplQueryTable = "@Name('s0') select (select sumint from MyTable) as c0 from SupportBean_S0 as S0";
+                var eplQueryTable = "@name('s0') select (select sumint from MyTable) as c0 from SupportBean_S0 as S0";
                 env.CompileDeploy(eplQueryTable, path).AddListener("s0");
 
                 env.Milestone(1);
@@ -473,15 +558,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var path = new RegressionPath();
 
                 var eplCreateTable =
-                    "@Name('Create-Table') create table MyTable(pkey string primary key, sumint sum(int))";
+                    "@name('Create-Table') create table MyTable(pkey string primary key, sumint sum(int))";
                 env.CompileDeploy(eplCreateTable, path);
 
                 var eplIntoTable =
-                    "@Name('Into-Table') into table MyTable select sum(IntPrimitive) as sumint from SupportBean group by TheString";
+                    "@name('Into-Table') into table MyTable select sum(IntPrimitive) as sumint from SupportBean group by TheString";
                 env.CompileDeploy(eplIntoTable, path);
 
                 var eplQueryTable =
-                    "@Name('s0') select (select sumint from MyTable where pkey = S0.P00) as c0 from SupportBean_S0 as S0";
+                    "@name('s0') select (select sumint from MyTable where pkey = S0.P00) as c0 from SupportBean_S0 as S0";
                 env.CompileDeploy(eplQueryTable, path).AddListener("s0");
 
                 env.Milestone(1);
@@ -589,7 +674,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var fields = new [] { "c0", "c1", "c2", "c3" };
                 var epl =
-                    "@Name('tbl') create table MyTable as (c0 avg(BigInteger), c1 avg(decimal), c2 sum(BigInteger), c3 sum(decimal));\n" +
+                    "@name('tbl') create table MyTable as (c0 avg(BigInteger), c1 avg(decimal), c2 sum(BigInteger), c3 sum(decimal));\n" +
                     "into table MyTable select avg(Bigint) as c0, avg(DecimalOne) as c1, sum(Bigint) as c2, sum(DecimalOne) as c3  from SupportBeanNumeric#lastevent;\n";
                 env.CompileDeploy(epl);
 

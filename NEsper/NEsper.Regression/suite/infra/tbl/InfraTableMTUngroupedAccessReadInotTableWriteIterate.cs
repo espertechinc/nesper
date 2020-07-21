@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.SendEventBean(MakeSupportBean("E", 1, 1, 1));
 
             env.CompileDeploy(
-                "@Name('iterate') select vartotal.S0 as c0, vartotal.S1 as c1, vartotal.S2 as c2 from SupportBean_S0#lastevent",
+                "@name('iterate') select vartotal.S0 as c0, vartotal.S1 as c1, vartotal.S2 as c2 from SupportBean_S0#lastevent",
                 path);
             env.SendEventBean(new SupportBean_S0(0));
 

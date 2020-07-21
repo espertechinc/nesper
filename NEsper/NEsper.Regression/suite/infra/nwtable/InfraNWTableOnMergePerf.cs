@@ -47,14 +47,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
                 var eplCreate = namedWindow
                     ? outputType.GetAnnotationText() +
-                      "@Name('create') create window MyWindow#keepall as (c1 string, c2 int)"
-                    : "@Name('create') create table MyWindow(c1 string primary key, c2 int)";
+                      "@name('create') create window MyWindow#keepall as (c1 string, c2 int)"
+                    : "@name('create') create table MyWindow(c1 string primary key, c2 int)";
                 env.CompileDeploy(eplCreate, path);
                 Assert.IsTrue(outputType.MatchesClass(env.Statement("create").EventType.UnderlyingType));
 
                 // preload events
                 env.CompileDeploy(
-                    "@Name('insert') insert into MyWindow select TheString as c1, IntPrimitive as c2 from SupportBean",
+                    "@name('insert') insert into MyWindow select TheString as c1, IntPrimitive as c2 from SupportBean",
                     path);
                 var totalUpdated = 5000;
                 for (var i = 0; i < totalUpdated; i++) {
@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 env.UndeployModuleContaining("insert");
 
-                var epl = "@Name('s0') on SupportBean sb merge MyWindow nw where nw.c1 = sb.TheString " +
+                var epl = "@name('s0') on SupportBean sb merge MyWindow nw where nw.c1 = sb.TheString " +
                           "when matched then update set nw.c2=sb.IntPrimitive";
                 env.CompileDeploy(epl, path);
 

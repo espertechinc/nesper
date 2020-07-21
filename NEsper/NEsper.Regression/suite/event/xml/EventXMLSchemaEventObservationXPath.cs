@@ -6,10 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
@@ -19,19 +22,57 @@ using static com.espertech.esper.regressionlib.suite.@event.xml.EventXMLSchemaEv
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
-    public class EventXMLSchemaEventObservationXPath : RegressionExecution
+    public class EventXMLSchemaEventObservationXPath
     {
-        public void Run(RegressionEnvironment env)
+        public static IList<RegressionExecution> Executions()
         {
-            var path = new RegressionPath();
-            env.CompileDeploy("@Name('s0') select countTags, countTagsInt, idarray, tagArray, tagOne from SensorEventWithXPath", path);
-            env.CompileDeploy("@Name('e0') insert into TagOneStream select tagOne.* from SensorEventWithXPath", path);
-            env.CompileDeploy("@Name('e1') select ID from TagOneStream", path);
-            env.CompileDeploy("@Name('e2') insert into TagArrayStream select tagArray as mytags from SensorEventWithXPath", path);
-            env.CompileDeploy("@Name('e3') select mytags[1].ID from TagArrayStream", path);
+            var execs = new List<RegressionExecution>();
+            execs.Add(new EventXMLSchemaEventObservationXPathPreconfig());
+            execs.Add(new EventXMLSchemaEventObservationXPathCreateSchema());
+            return execs;
+        }
+
+        public class EventXMLSchemaEventObservationXPathPreconfig : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunAssertion(env, "SensorEventWithXPath", new RegressionPath());
+            }
+        }
+
+        public class EventXMLSchemaEventObservationXPathCreateSchema : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var resourceManager = env.Container.ResourceManager();
+                var schemaUriSensorEvent = resourceManager.GetResourceAsStream("regression/sensorSchema.xsd").ConsumeStream();
+                var epl = "@public @buseventtype " +
+                          "@XMLSchema(rootElementName='Sensor', schemaResource='" +
+                          schemaUriSensorEvent +
+                          "')" +
+                          "@XMLSchemaNamespacePrefix(prefix='ss', namespace='SensorSchema')" +
+                          "@XMLSchemaField(name='countTags', xpath='count(/ss:Sensor/ss:Observation/ss:Tag)', type='number')" +
+                          "@XMLSchemaField(name='countTagsInt', xpath='count(/ss:Sensor/ss:Observation/ss:Tag)', type='number', castToType='int')" +
+                          "@XMLSchemaField(name='idarray', xpath='//ss:Tag/ss:ID', type='NODESET', castToType='String[]')" +
+                          "@XMLSchemaField(name='tagArray', xpath='//ss:Tag', type='NODESET', eventTypeName='TagEvent')" +
+                          "@XMLSchemaField(name='tagOne', xpath='//ss:Tag[position() = 1]', type='node', eventTypeName='TagEvent')" +
+                          "create xml schema MyEventCreateSchema()";
+                var path = new RegressionPath();
+                env.CompileDeploy(epl, path);
+                RunAssertion(env, "MyEventCreateSchema", path);
+            }
+        }
+
+        private static void RunAssertion(RegressionEnvironment env, string eventTypeName, RegressionPath path)
+        {
+            env.CompileDeploy("@name('s0') select countTags, countTagsInt, idarray, tagArray, tagOne from " + eventTypeName, path);
+            env.CompileDeploy("@name('e0') insert into TagOneStream select tagOne.* from " + eventTypeName, path);
+            env.CompileDeploy("@name('e1') select ID from TagOneStream", path);
+            env.CompileDeploy("@name('e2') insert into TagArrayStream select tagArray as mytags from " + eventTypeName, path);
+            env.CompileDeploy("@name('e3') select mytags[1].ID from TagArrayStream", path);
 
             var doc = SupportXML.GetDocument(OBSERVATION_XML);
-            env.SendEventXMLDOM(doc, "SensorEventWithXPath");
+            env.SendEventXMLDOM(doc, eventTypeName);
 
             SupportEventTypeAssertionUtil.AssertConsistency(env.GetEnumerator("s0").Advance());
             SupportEventTypeAssertionUtil.AssertConsistency(env.GetEnumerator("e0").Advance());

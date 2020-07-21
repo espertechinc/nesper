@@ -27,6 +27,8 @@ using com.espertech.esper.runtime.client.scopetest;
 using NEsper.Avro.Extensions;
 using NEsper.Avro.Util.Support;
 
+using Newtonsoft.Json.Linq;
+
 using NUnit.Framework;
 
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
@@ -129,7 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var epl = "create window MyWindowWUJ#keepall as SupportBean;\n" +
                           "insert into MyWindowWUJ select * from SupportBean;\n" +
                           "on SupportBean_S1 as S1 delete from MyWindowWUJ where S1.P10 = TheString;\n" +
-                          "@Name('s0') select window(win.*) as c0," +
+                          "@name('s0') select window(win.*) as c0," +
                           "window(win.*).where(v -> v.IntPrimitive < 2) as c1, " +
                           "window(win.*).toMap(k=>k.TheString,v->v.IntPrimitive) as c2 " +
                           "from SupportBean_S0 as S0 unidirectional, MyWindowWUJ as win";
@@ -304,7 +306,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                               assertion.WhereClause;
 
                     try {
-                        env.CompileDeploy("@Name('s0')" + epl, path).AddListener("s0");
+                        env.CompileDeploy("@name('s0')" + epl, path).AddListener("s0");
                     }
                     catch (EPCompileExceptionItem ex) {
                         if (assertion.EventSendAssertion == null) {
@@ -331,40 +333,35 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             public void Run(RegressionEnvironment env)
             {
                 foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
-                    tryAssertionInnerJoinLateStart(env, rep);
+                    TryAssertionInnerJoinLateStart(env, rep);
                 }
             }
 
-            private static void tryAssertionInnerJoinLateStart(
+            private static void TryAssertionInnerJoinLateStart(
                 RegressionEnvironment env,
                 EventRepresentationChoice eventRepresentationEnum)
             {
-                var schemaEPL = eventRepresentationEnum.GetAnnotationText() +
-                                "@Name('schema') create schema Product (product string, size int);\n" +
-                                eventRepresentationEnum.GetAnnotationText() +
+                var schemaEPL = eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedProduct>() +
+                                "@name('schema') create schema Product (product string, size int);\n" +
+                                eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedPortfolio>() +
                                 " create schema Portfolio (portfolio string, product string);\n";
                 var path = new RegressionPath();
                 env.CompileDeployWBusPublicType(schemaEPL, path);
 
-                env.CompileDeploy(
-                    eventRepresentationEnum.GetAnnotationText() +
-                    "@Name('window') create window ProductWin#keepall as Product",
-                    path);
+                env.CompileDeploy("@name('window') create window ProductWin#keepall as Product", path);
 
                 Assert.IsTrue(eventRepresentationEnum.MatchesClass(env.Statement("schema").EventType.UnderlyingType));
                 Assert.IsTrue(eventRepresentationEnum.MatchesClass(env.Statement("window").EventType.UnderlyingType));
 
                 env.CompileDeploy("insert into ProductWin select * from Product", path);
-                env.CompileDeploy(
-                    eventRepresentationEnum.GetAnnotationText() + " create window PortfolioWin#keepall as Portfolio",
-                    path);
+                env.CompileDeploy("create window PortfolioWin#keepall as Portfolio", path);
                 env.CompileDeploy("insert into PortfolioWin select * from Portfolio", path);
 
                 SendProduct(env, eventRepresentationEnum, "productA", 1);
                 SendProduct(env, eventRepresentationEnum, "productB", 2);
                 sendPortfolio(env, eventRepresentationEnum, "Portfolio", "productA");
 
-                var stmtText = "@Name(\"Query2\") select portfolio, ProductWin.product, size " +
+                var stmtText = "@name(\"Query2\") select portfolio, ProductWin.product, size " +
                                "from PortfolioWin unidirectional inner join ProductWin on PortfolioWin.product=ProductWin.product";
                 env.CompileDeploy(stmtText, path).AddListener("Query2");
 
@@ -411,6 +408,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     theEvent.Put("size", size);
                     env.EventService.SendEventAvro(theEvent, "Product");
                 }
+                else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
+                    var @object = new JObject();
+                    @object.Add("product", product);
+                    @object.Add("size", size);
+                    env.EventService.SendEventJson(@object.ToString(), "Product");
+                }
                 else {
                     Assert.Fail();
                 }
@@ -439,6 +442,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     theEvent.Put("portfolio", portfolio);
                     theEvent.Put("product", product);
                     env.EventService.SendEventAvro(theEvent, "Portfolio");
+                }
+                else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
+                    var @object = new JObject();
+                    @object.Add("portfolio", portfolio);
+                    @object.Add("product", product);
+                    env.EventService.SendEventJson(@object.ToString(), "Portfolio");
                 }
                 else {
                     Assert.Fail();
@@ -480,7 +489,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 }
 
                 var stmtTextOne =
-                    "@Name('s1') select S1.Location as loc, Sku as sku, avg((coalesce(TimeLeave, 250) - TimeEnter)) as avgTime, " +
+                    "@name('s1') select S1.Location as loc, Sku as sku, avg((coalesce(TimeLeave, 250) - TimeEnter)) as avgTime, " +
                     "count(TimeEnter) as cntEnter, count(TimeLeave) as cntLeave, (count(TimeEnter) - count(TimeLeave)) as diff " +
                     "from WindowLeave as S0 right outer join WindowEnter as S1 " +
                     "on S0.Id = S1.Id and S0.Location = S1.Location " +
@@ -490,7 +499,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.CompileDeploy(stmtTextOne, path);
 
                 var stmtTextTwo =
-                    "@Name('s2') select S1.Location as loc, Sku as sku, avg((coalesce(TimeLeave, 250) - TimeEnter)) as avgTime, " +
+                    "@name('s2') select S1.Location as loc, Sku as sku, avg((coalesce(TimeLeave, 250) - TimeEnter)) as avgTime, " +
                     "count(TimeEnter) as cntEnter, count(TimeLeave) as cntLeave, (count(TimeEnter) - count(TimeLeave)) as diff " +
                     "from WindowEnter as S1 left outer join WindowLeave as S0 " +
                     "on S0.Id = S1.Id and S0.Location = S1.Location " +
@@ -534,7 +543,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             {
                 var path = new RegressionPath();
                 var epl =
-                    "@Name('create') create window MyWindowFO#groupwin(TheString, IntPrimitive)#length(3) as select TheString, IntPrimitive, BoolPrimitive from SupportBean;\n" +
+                    "@name('create') create window MyWindowFO#groupwin(TheString, IntPrimitive)#length(3) as select TheString, IntPrimitive, BoolPrimitive from SupportBean;\n" +
                     "insert into MyWindowFO select TheString, IntPrimitive, BoolPrimitive from SupportBean;\n";
                 env.CompileDeploy(epl, path).AddListener("create");
 
@@ -558,7 +567,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create select stmt
                 var stmtTextSelect =
-                    "@Name('select') select TheString, IntPrimitive, count(BoolPrimitive) as cntBool, Symbol " +
+                    "@name('select') select TheString, IntPrimitive, count(BoolPrimitive) as cntBool, Symbol " +
                     "from MyWindowFO full outer join SupportMarketDataBean#keepall " +
                     "on TheString = Symbol " +
                     "group by TheString, IntPrimitive, Symbol order by TheString, IntPrimitive, Symbol";
@@ -597,14 +606,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             {
                 var path = new RegressionPath();
                 var epl =
-                    "@Name('create') create window MyWindowJNS#keepall as select TheString as a, IntPrimitive as b from SupportBean;\n" +
+                    "@name('create') create window MyWindowJNS#keepall as select TheString as a, IntPrimitive as b from SupportBean;\n" +
                     "on SupportBean_A delete from MyWindowJNS where Id = a;\n" +
                     "insert into MyWindowJNS select TheString as a, IntPrimitive as b from SupportBean;\n";
                 env.CompileDeploy(epl, path);
 
                 // create consumer
                 string[] fields = {"Symbol", "a", "b"};
-                epl = "@Name('s0') select irstream Symbol, a, b " +
+                epl = "@name('s0') select irstream Symbol, a, b " +
                       " from SupportMarketDataBean#length(10) as S0," +
                       "MyWindowJNS as S1 where S1.a = Symbol";
                 env.CompileDeploy(epl, path).AddListener("s0");
@@ -669,13 +678,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 string[] fields = {"a1", "b1", "a2", "b2"};
 
                 var epl =
-                    "@Name('createOne') create window MyWindowOne#keepall as select TheString as a1, IntPrimitive as b1 from SupportBean;\n" +
-                    "@Name('createTwo') create window MyWindowTwo#keepall as select TheString as a2, IntPrimitive as b2 from SupportBean;\n" +
+                    "@name('createOne') create window MyWindowOne#keepall as select TheString as a1, IntPrimitive as b1 from SupportBean;\n" +
+                    "@name('createTwo') create window MyWindowTwo#keepall as select TheString as a2, IntPrimitive as b2 from SupportBean;\n" +
                     "on SupportMarketDataBean(Volume=1) delete from MyWindowOne where Symbol = a1;\n" +
                     "on SupportMarketDataBean(Volume=0) delete from MyWindowTwo where Symbol = a2;\n" +
                     "insert into MyWindowOne select TheString as a1, IntPrimitive as b1 from SupportBean(BoolPrimitive = true);\n" +
                     "insert into MyWindowTwo select TheString as a2, IntPrimitive as b2 from SupportBean(BoolPrimitive = false);\n" +
-                    "@Name('s0') select irstream a1, b1, a2, b2 from MyWindowOne as S0, MyWindowTwo as S1 where S0.a1 = S1.a2;\n";
+                    "@name('s0') select irstream a1, b1, a2, b2 from MyWindowOne as S0, MyWindowTwo as S1 where S0.a1 = S1.a2;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendSupportBean(env, true, "S0", 1);
@@ -743,10 +752,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 string[] fields = {"a0", "b0", "a1", "b1"};
 
                 var epl =
-                    "@Name('create') create window MyWindowJSN#keepall as select TheString as a, IntPrimitive as b from SupportBean;\n" +
+                    "@name('create') create window MyWindowJSN#keepall as select TheString as a, IntPrimitive as b from SupportBean;\n" +
                     "on SupportMarketDataBean delete from MyWindowJSN where Symbol = a;\n" +
                     "insert into MyWindowJSN select TheString as a, IntPrimitive as b from SupportBean;\n" +
-                    "@Name('s0') select irstream S0.a as a0, S0.b as b0, S1.a as a1, S1.b as b1 from MyWindowJSN as S0, MyWindowJSN as S1 where S0.a = S1.a;\n";
+                    "@name('s0') select irstream S0.a as a0, S0.b as b0, S1.a as a1, S1.b as b1 from MyWindowJSN as S0, MyWindowJSN as S1 where S0.a = S1.a;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendSupportBean(env, "E1", 1);
@@ -781,13 +790,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 string[] fields = {"a1", "b1", "a2", "b2"};
 
                 var epl =
-                    "@Name('create') create window MyWindowJSIOne#keepall as select TheString as a1, IntPrimitive as b1 from SupportBean;\n" +
-                    "@Name('createTwo') create window MyWindowJSITwo#keepall as select TheString as a2, IntPrimitive as b2 from SupportBean;\n" +
+                    "@name('create') create window MyWindowJSIOne#keepall as select TheString as a1, IntPrimitive as b1 from SupportBean;\n" +
+                    "@name('createTwo') create window MyWindowJSITwo#keepall as select TheString as a2, IntPrimitive as b2 from SupportBean;\n" +
                     "on SupportMarketDataBean(Volume=1) delete from MyWindowJSIOne where Symbol = a1;\n" +
                     "on SupportMarketDataBean(Volume=0) delete from MyWindowJSITwo where Symbol = a2;\n" +
                     "insert into MyWindowJSIOne select TheString as a1, IntPrimitive as b1 from SupportBean(BoolPrimitive = true);\n" +
                     "insert into MyWindowJSITwo select TheString as a2, IntPrimitive as b2 from SupportBean(BoolPrimitive = false);\n" +
-                    "@Name('select') select irstream a1, b1, a2, b2 from MyWindowJSIOne as S0, MyWindowJSITwo as S1 where S0.a1 = S1.a2;\n";
+                    "@name('select') select irstream a1, b1, a2, b2 from MyWindowJSIOne as S0, MyWindowJSITwo as S1 where S0.a1 = S1.a2;\n";
                 env.CompileDeploy(epl).AddListener("select");
 
                 SendSupportBean(env, true, "S0", 1);
@@ -854,7 +863,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             {
                 var epl = "create window MyWindowU#keepall select * from SupportBean;\n" +
                           "insert into MyWindowU select * from SupportBean;\n" +
-                          "@Name('select') select w.* from MyWindowU w unidirectional, SupportBean_A#lastevent s where s.Id = w.TheString;\n";
+                          "@name('select') select w.* from MyWindowU w unidirectional, SupportBean_A#lastevent s where s.Id = w.TheString;\n";
                 env.CompileDeploy(epl).AddListener("select");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -869,6 +878,20 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 env.UndeployAll();
             }
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedProduct
+        {
+            public String product;
+            public int size;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedPortfolio
+        {
+            public String portfolio;
+            public String product;
         }
     }
 } // end of namespace

@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         {
             var startTime = PerformanceObserver.MilliTime;
             var stmtTextSet =
-                "@Name('s0') on pattern [every timer:interval(100 milliseconds)] set var1 = current_timestamp, var2 = var1 + 1, var3 = var1 + var2";
+                "@name('s0') on pattern [every timer:interval(100 milliseconds)] set var1 = current_timestamp, var2 = var1 + 1, var3 = var1 + var2";
             env.CompileDeploy(stmtTextSet).AddListener("s0");
 
             try {

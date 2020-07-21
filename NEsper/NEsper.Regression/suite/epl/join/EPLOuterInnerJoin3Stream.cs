@@ -133,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var joinStatement = "@Name('s0') select * from " +
+                var joinStatement = "@name('s0') select * from " +
                                     "SupportBean_S1#keepall as S1 inner join " +
                                     "SupportBean_S2#length(1000) as S2 on S1.P10 = S2.P20 " +
                                     "full outer join " +
@@ -147,7 +147,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var joinStatement = "@Name('s0') select * from " +
+                var joinStatement = "@name('s0') select * from " +
                                     "SupportBean_S2#length(1000) as S2 " +
                                     "inner join " +
                                     "SupportBean_S1#keepall as S1 on S1.P10 = S2.P20" +
@@ -162,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var joinStatement = "@Name('s0') select * from " +
+                var joinStatement = "@name('s0') select * from " +
                                     "SupportBean_S0#length(1000) as S0 " +
                                     "full outer join " +
                                     "SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10" +
@@ -177,7 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var joinStatement = "@Name('s0') select * from " +
+                var joinStatement = "@name('s0') select * from " +
                                     "SupportBean_S1#keepall as S1 left outer join " +
                                     "SupportBean_S0#length(1000) as S0 on S0.P00 = S1.P10 " +
                                     "inner join " +
@@ -191,7 +191,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var joinStatement = "@Name('s0') select * from " +
+                var joinStatement = "@name('s0') select * from " +
                                     "SupportBean_S2#length(1000) as S2 " +
                                     "inner join " +
                                     "SupportBean_S1#keepall as S1 on S1.P10 = S2.P20" +
@@ -206,7 +206,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var joinStatement = "@Name('s0') select * from " +
+                var joinStatement = "@name('s0') select * from " +
                                     "SupportBean_S0#length(1000) as S0 " +
                                     "right outer join " +
                                     "SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10" +

@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             runtime.Initialize();
 
             var path = new RegressionPath();
-            var eplCtx = "@Name('ctx') create context theContext " +
+            var eplCtx = "@name('ctx') create context theContext " +
                          " initiated by distinct(PartitionKey) TestEvent as test " +
                          " terminated after 100 milliseconds";
             var compiledContext = Compile(eplCtx, configuration, path);

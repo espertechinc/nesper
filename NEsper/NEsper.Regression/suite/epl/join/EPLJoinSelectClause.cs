@@ -18,7 +18,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@Name('s0') select S0.DoubleBoxed, S1.IntPrimitive*S1.IntBoxed/2.0 as div from " +
+            var epl = "@name('s0') select S0.DoubleBoxed, S1.IntPrimitive*S1.IntBoxed/2.0 as div from " +
                       "SupportBean(TheString='s0')#length(3) as S0," +
                       "SupportBean(TheString='s1')#length(3) as S1" +
                       " where S0.DoubleBoxed = S1.DoubleBoxed";

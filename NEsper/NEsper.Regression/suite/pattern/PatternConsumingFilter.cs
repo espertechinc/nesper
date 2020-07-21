@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             string pattern,
             object expected)
         {
-            env.CompileDeploy("@Name('s0') " + pattern).AddListener("s0");
+            env.CompileDeploy("@name('s0') " + pattern).AddListener("s0");
             env.SendEventBean(new SupportBean("E1", 10));
 
             if (expected is object[][]) {
@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 var fields = new [] { "a","b" };
                 var pattern =
-                    "@Name('s0') select a.TheString as a, b.TheString as b from pattern[every a=SupportBean -> b=SupportBean@consume]";
+                    "@name('s0') select a.TheString as a, b.TheString as b from pattern[every a=SupportBean -> b=SupportBean@consume]";
                 env.CompileDeploy(pattern).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 0));
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 var fields = new [] { "a","b" };
                 var pattern =
-                    "@Name('s0') select a.TheString as a, b.TheString as b from pattern[every (a=SupportBean and b=SupportBean)]";
+                    "@name('s0') select a.TheString as a, b.TheString as b from pattern[every (a=SupportBean and b=SupportBean)]";
                 env.CompileDeploy(pattern).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 0));
@@ -103,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.UndeployAll();
 
                 pattern =
-                    "@Name('s0') select a.TheString as a, b.TheString as b from pattern [every (a=SupportBean and b=SupportBean(IntPrimitive=10)@consume(2))]";
+                    "@name('s0') select a.TheString as a, b.TheString as b from pattern [every (a=SupportBean and b=SupportBean(IntPrimitive=10)@consume(2))]";
                 env.CompileDeploy(pattern).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
@@ -141,7 +141,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('A') select a.TheString as a, b.TheString as b from pattern[a=SupportBean and b=SupportBean(TheString='A')@consume]";
+                    "@name('A') select a.TheString as a, b.TheString as b from pattern[a=SupportBean and b=SupportBean(TheString='A')@consume]";
                 env.CompileDeploy(epl).AddListener("A");
 
                 string[] fields = {"a", "b"};

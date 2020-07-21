@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 "select base as vbase, sub1? as v1, sub2? as v2, suba? as va, subb as vb from SubBEvent" // 4
             };
             for (var i = 0; i < statements.Length; i++) {
-                env.CompileDeploy("@Name('s" + i + "') " + statements[i], path);
+                env.CompileDeploy("@name('s" + i + "') " + statements[i], path);
                 listeners[i] = new SupportUpdateListener();
                 env.Statement("s" + i).AddListener(listeners[i]);
             }

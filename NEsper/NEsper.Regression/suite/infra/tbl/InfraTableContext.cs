@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "context CtxNowTillS0 into table MyTable select sum(IntPrimitive) as thesum from SupportBean group by TheString",
                     path);
                 env.CompileDeploy(
-                        "@Name('s0') context CtxNowTillS0 select pkey as c0, thesum as c1 from MyTable output snapshot when terminated",
+                        "@name('s0') context CtxNowTillS0 select pkey as c0, thesum as c1 from MyTable output snapshot when terminated",
                         path)
                     .AddListener("s0");
 
@@ -129,7 +129,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "context CtxPerString into table MyTable select sum(IntPrimitive) as thesum from SupportBean",
                     path);
                 env.CompileDeploy(
-                        "@Name('s0') context CtxPerString select MyTable.thesum as c0 from SupportBean_S0",
+                        "@name('s0') context CtxPerString select MyTable.thesum as c0 from SupportBean_S0",
                         path)
                     .AddListener("s0");
 

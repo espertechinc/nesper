@@ -59,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             SupportOutputLimitOpt outputLimitOpt)
         {
             var stmtText = outputLimitOpt.GetHint() +
-                           "@Name('s0') select Symbol, sum(Price) " +
+                           "@name('s0') select Symbol, sum(Price) " +
                            "from SupportMarketDataBean#time(5.5 sec)" +
                            "group by rollup(Symbol)" +
                            "output all every 1 seconds";
@@ -149,7 +149,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             SupportOutputLimitOpt opt)
         {
             var stmtText = opt.GetHint() +
-                           "@Name('s0') select Symbol, sum(Price) " +
+                           "@name('s0') select Symbol, sum(Price) " +
                            "from SupportMarketDataBean#time(5.5 sec)" +
                            "group by rollup(Symbol)" +
                            "output last every 1 seconds";
@@ -209,7 +209,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.AdvanceTime(0);
 
             var epl = opt.GetHint() +
-                      "@Name('s0')" +
+                      "@name('s0')" +
                       "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
                       "from SupportBean#time(3.5 sec) " +
                       (join ? ", SupportBean_S0#lastevent " : "") +
@@ -318,7 +318,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.AdvanceTime(0);
 
             var epl = opt.GetHint() +
-                      "@Name('s0')" +
+                      "@name('s0')" +
                       "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
                       "from SupportBean#time(3.5 sec) " +
                       (join ? ", SupportBean_S0#lastevent " : "") +
@@ -447,7 +447,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SendTimer(env, 0);
 
                 var epl =
-                    "@Name('s0') select TheString as c0, sum(IntPrimitive) as c1 from SupportBean group by rollup(TheString) " +
+                    "@name('s0') select TheString as c0, sum(IntPrimitive) as c1 from SupportBean group by rollup(TheString) " +
                     "output snapshot every 1 seconds " +
                     "order by sum(IntPrimitive) " +
                     "limit 3";
@@ -474,7 +474,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select Symbol, sum(Price) " +
+                var stmtText = "@name('s0') select Symbol, sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec)" +
                                "group by rollup(Symbol)";
                 SendTimer(env, 0);
@@ -552,7 +552,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select Symbol, sum(Price) " +
+                var stmtText = "@name('s0') select Symbol, sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec)" +
                                "group by rollup(Symbol)" +
                                "output every 1 seconds";
@@ -656,7 +656,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select Symbol, sum(Price) " +
+                var stmtText = "@name('s0') select Symbol, sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec)" +
                                "group by rollup(Symbol)" +
                                "output first every 1 seconds";
@@ -737,7 +737,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select Symbol, sum(Price) " +
+                var stmtText = "@name('s0') select Symbol, sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec)" +
                                (join ? ",SupportBean#keepall " : " ") +
                                "group by rollup(Symbol)" +
@@ -816,7 +816,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 var fields = new [] { "c0", "c1", "c2" };
                 env.AdvanceTime(0);
 
-                var epl = "@Name('s0')" +
+                var epl = "@name('s0')" +
                           "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
                           "from SupportBean#time(3.5 sec) " +
                           (join ? ", SupportBean_S0#lastevent " : "") +
@@ -922,7 +922,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 var fields = new [] { "c0", "c1", "c2" };
                 env.AdvanceTime(0);
 
-                var epl = "@Name('s0')" +
+                var epl = "@name('s0')" +
                           "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
                           "from SupportBean#time(3.5 sec) " +
                           (join ? ", SupportBean_S0#lastevent " : "") +
@@ -1080,7 +1080,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 var fields = new [] { "c0", "c1", "c2" };
                 env.AdvanceTime(0);
 
-                var epl = "@Name('s0')" +
+                var epl = "@name('s0')" +
                           "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
                           "from SupportBean#time(3.5 sec) " +
                           (join ? ", SupportBean_S0#lastevent " : "") +
@@ -1223,7 +1223,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 var fields = new [] { "c0", "c1", "c2" };
                 env.AdvanceTime(0);
 
-                var epl = "@Name('s0')" +
+                var epl = "@name('s0')" +
                           "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
                           "from SupportBean#time(3.5 sec) " +
                           (join ? ", SupportBean_S0#lastevent " : "") +
@@ -1341,7 +1341,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 var fields = new [] { "c0", "c1", "c2" };
                 env.AdvanceTime(0);
 
-                var epl = "@Name('s0')" +
+                var epl = "@name('s0')" +
                           "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
                           "from SupportBean#time(3.5 sec) " +
                           (join ? ", SupportBean_S0#lastevent " : "") +
@@ -1483,7 +1483,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 var fields = new [] { "c0", "c1", "c2" };
                 env.AdvanceTime(0);
 
-                var epl = "@Name('s0')" +
+                var epl = "@name('s0')" +
                           "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
                           "from SupportBean#time(3.5 sec) " +
                           (join ? ", SupportBean_S0#lastevent " : "") +
@@ -1617,7 +1617,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 var fields = new [] { "c0", "c1", "c2" };
                 env.AdvanceTime(0);
 
-                var epl = "@Name('s0')" +
+                var epl = "@name('s0')" +
                           "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
                           "from SupportBean#time(3.5 sec) " +
                           (join ? ", SupportBean_S0#lastevent " : "") +

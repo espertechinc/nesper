@@ -11,12 +11,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.render;
 using com.espertech.esper.common.@internal.@event.render;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.magic;
 using com.espertech.esper.regressionlib.framework;
+
+using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
 
@@ -33,12 +37,47 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
             execs.Add(new EventRenderMapAndNestedArray());
             execs.Add(new EventRenderEmptyMap());
             execs.Add(new EventRenderEnquote());
+            execs.Add(new EventRenderJsonEventType());
             return execs;
         }
 
         private static string RemoveNewline(string text)
         {
             return text.RegexReplaceAll("\\s\\s+|\\n|\\r", " ").Trim();
+        }
+
+
+        internal class EventRenderJsonEventType : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "@public @buseventtype create json schema MyJsonEvent(p0 string, p1 int);\n" +
+                             "@name('s0') select * from MyJsonEvent#keepall;\n";
+                env.CompileDeploy(epl).AddListener("s0");
+                
+                var jobject = new JObject(
+                    new JProperty("p0", "abc"),
+                    new JProperty("p1", 10));
+                env.SendEventJson(jobject.ToString(), "MyJsonEvent");
+
+                string expected = "{\"p0\":\"abc\",\"p1\":10}";
+                string expectedWithTitle = "{\"thetitle\":{\"p0\":\"abc\",\"p1\":10}}";
+                EventBean @event = env.Statement("s0").First();
+
+                string result = env.Runtime.RenderEventService.RenderJSON("thetitle", @event);
+                Assert.AreEqual(expectedWithTitle, result);
+
+                result = env.Runtime.RenderEventService.RenderJSON("thetitle", @event);
+                Assert.AreEqual(expectedWithTitle, result);
+
+                JSONEventRenderer renderer = env.Runtime.RenderEventService.GetJSONRenderer(env.Statement("s0").EventType);
+                result = renderer.Render("thetitle", @event);
+                Assert.AreEqual(expectedWithTitle, result);
+                result = renderer.Render(@event);
+                Assert.AreEqual(expected, result);
+
+                env.UndeployAll();
+            }
         }
 
         internal class EventRenderRenderSimple : RegressionExecution
@@ -52,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                 bean.CharPrimitive = 'x';
                 bean.EnumValue = SupportEnum.ENUM_VALUE_1;
 
-                env.CompileDeploy("@Name('s0') select * from SupportBean").AddListener("s0");
+                env.CompileDeploy("@name('s0') select * from SupportBean").AddListener("s0");
                 env.SendEventBean(bean);
 
                 var result = env.Runtime.RenderEventService.RenderJSON("supportBean", env.Statement("s0").First());
@@ -78,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@Name('s0') select * from OuterMap").AddListener("s0");
+                env.CompileDeploy("@name('s0') select * from OuterMap").AddListener("s0");
 
                 IDictionary<string, object> dataInner = new LinkedHashMap<string, object>();
                 dataInner.Put("stringarr", new[] {"a", "b"});
@@ -126,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@Name('s0') select * from EmptyMapEvent");
+                env.CompileDeploy("@name('s0') select * from EmptyMapEvent");
 
                 env.SendEventBean(new EmptyMapEvent(null));
                 var result = env.Runtime.RenderEventService.RenderJSON("outer", env.GetEnumerator("s0").Advance());

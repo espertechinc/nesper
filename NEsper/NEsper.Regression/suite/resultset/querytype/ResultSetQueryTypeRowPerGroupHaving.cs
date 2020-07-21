@@ -8,7 +8,9 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
@@ -27,6 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             execs.Add(new ResultSetQueryTypeHavingCount());
             execs.Add(new ResultSetQueryTypeSumJoin());
             execs.Add(new ResultSetQueryTypeSumOneView());
+            execs.Add(new ResultSetQueryTypeRowPerGroupBatch());
             return execs;
         }
 
@@ -95,12 +98,32 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             env.SendEventBean(bean);
         }
 
+        internal class ResultSetQueryTypeRowPerGroupBatch : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.AdvanceTime(0);
+                env.CompileDeploy("@name('s0') select count(*) as y from SupportBean#time_batch(1 seconds) group by theString having count(*) > 0");
+                env.AddListener("s0");
+
+                env.SendEventBean(new SupportBean("E1", 0));
+                env.AdvanceTime(1000);
+                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "y".SplitCsv(), new object[] {1L});
+
+                env.SendEventBean(new SupportBean("E2", 0));
+                env.AdvanceTime(2000);
+                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "y".SplitCsv(), new object[] {1L});
+
+                env.UndeployAll();
+            }
+        }
+
         internal class ResultSetQueryTypeHavingCount : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@Name('s0') select * from SupportBean(IntPrimitive = 3)#length(10) as e1 group by TheString having count(*) > 2";
+                    "@name('s0') select * from SupportBean(IntPrimitive = 3)#length(10) as e1 group by TheString having count(*) > 2";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("A1", 3));
@@ -120,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream Symbol, sum(Price) as mySum " +
+                var epl = "@name('s0') select irstream Symbol, sum(Price) as mySum " +
                           "from SupportBeanString#length(100) as one, " +
                           " SupportMarketDataBean#length(3) as two " +
                           "where (Symbol='DELL' or Symbol='IBM' or Symbol='GE')" +
@@ -143,7 +166,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream Symbol, sum(Price) as mySum " +
+                var epl = "@name('s0') select irstream Symbol, sum(Price) as mySum " +
                           "from SupportMarketDataBean#length(3) " +
                           "where Symbol='DELL' or Symbol='IBM' or Symbol='GE' " +
                           "group by Symbol " +

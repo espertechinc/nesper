@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
 
                 // with hook
                 env.CompileDeploy(
-                        "@Name('s0') insert into MyEvent(isodate) select DateTimeOffset from SupportEventWithDateTimeOffset")
+                        "@name('s0') insert into MyEvent(isodate) select DateTimeOffset from SupportEventWithDateTimeOffset")
                     .AddListener("s0");
 
                 var now = DateTimeHelper.GetCurrentTimeUniversal();
@@ -94,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') " +
+                var epl = "@name('s0') " +
                           EventRepresentationChoice.AVRO.GetAnnotationText() +
                           "insert into MyEventOut select " +
                           typeof(EventAvroHook).FullName +
@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') insert into MyEventPopulate(sb) select " +
+                var epl = "@name('s0') insert into MyEventPopulate(sb) select " +
                           typeof(EventAvroHook).FullName +
                           ".MakeSupportBean() from SupportBean_S0 as e1";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -142,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@Name('NamedWindow') create window MyWindow#keepall as MyEventWSchema", path);
+                env.CompileDeploy("@name('NamedWindow') create window MyWindow#keepall as MyEventWSchema", path);
                 env.CompileDeploy("insert into MyWindow select * from MyEventWSchema", path);
                 env.CompileDeploy("on SupportBean thebean update MyWindow set sb = thebean", path);
 

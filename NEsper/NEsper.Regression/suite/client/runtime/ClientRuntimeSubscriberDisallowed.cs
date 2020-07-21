@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
     {
         public void Run(RegressionEnvironment env)
         {
-            env.CompileDeploy("@Name('s0') select * from SupportBean");
+            env.CompileDeploy("@name('s0') select * from SupportBean");
 
             var stmt = env.Statement("s0");
             TryInvalid(() => stmt.SetSubscriber(new SupportSubscriberMRD()));

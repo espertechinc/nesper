@@ -8,200 +8,181 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionlib.support.util;
-using com.espertech.esper.runtime.client.scopetest;
+using com.espertech.esper.regressionlib.support.expreval;
 
 using NUnit.Framework;
 
+using static com.espertech.esper.regressionlib.support.util.LambdaAssertionUtil;
+
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
-    public class ExprEnumFirstLastOf
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            var execs = new List<RegressionExecution>();
-            execs.Add(new ExprEnumFirstLastScalar());
-            execs.Add(new ExprEnumFirstLastProperty());
-            execs.Add(new ExprEnumFirstLastNoPred());
-            execs.Add(new ExprEnumFirstLastPredicate());
-            return execs;
-        }
+	public class ExprEnumFirstLastOf
+	{
 
-        private static void AssertId(
-            SupportListener listener,
-            string property,
-            string id)
-        {
-            var result = (SupportBean_ST0) listener.AssertOneGetNew().Get(property);
-            Assert.AreEqual(id, result.Id);
-        }
+		public static ICollection<RegressionExecution> Executions()
+		{
+			List<RegressionExecution> execs = new List<RegressionExecution>();
+			execs.Add(new ExprEnumFirstLastScalar());
+			execs.Add(new ExprEnumFirstLastEventProperty());
+			execs.Add(new ExprEnumFirstLastEvent());
+			execs.Add(new ExprEnumFirstLastEventWithPredicate());
+			return execs;
+		}
 
-        internal class ExprEnumFirstLastScalar : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new [] { "val0","val1","val2","val3" };
-                var eplFragment = "@Name('s0') select " +
-                                  "Strvals.firstOf() as val0, " +
-                                  "Strvals.lastOf() as val1, " +
-                                  "Strvals.firstOf(x -> x like '%1%') as val2, " +
-                                  "Strvals.lastOf(x -> x like '%1%') as val3 " +
-                                  " from SupportCollection";
-                env.CompileDeploy(eplFragment).AddListener("s0");
+		internal class ExprEnumFirstLastScalar : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0,c1,c2,c3,c4,c5,c6,c7".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
+				builder.WithExpression(fields[0], "strvals.firstOf()");
+				builder.WithExpression(fields[1], "strvals.lastOf()");
+				builder.WithExpression(fields[2], "strvals.firstOf(x => x like '%1%')");
+				builder.WithExpression(fields[3], "strvals.lastOf(x => x like '%1%')");
+				builder.WithExpression(fields[4], "strvals.firstOf((x, i) => x like '%1%' and i >= 1)");
+				builder.WithExpression(fields[5], "strvals.lastOf((x, i) => x like '%1%' and i >= 1)");
+				builder.WithExpression(fields[6], "strvals.firstOf((x, i, s) => x like '%1%' and i >= 1 and s > 2)");
+				builder.WithExpression(fields[7], "strvals.lastOf((x, i, s) => x like '%1%' and i >= 1 and s > 2)");
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fields,
-                    new[] {typeof(string), typeof(string), typeof(string), typeof(string)});
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(string)));
 
-                env.SendEventBean(SupportCollection.MakeString("E1,E2,E3"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E1", "E3", "E1", "E1"});
+				builder.WithAssertion(SupportCollection.MakeString("E1,E2,E3")).Expect(fields, "E1", "E3", "E1", "E1", null, null, null, null);
 
-                env.SendEventBean(SupportCollection.MakeString("E1"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E1", "E1", "E1", "E1"});
+				builder.WithAssertion(SupportCollection.MakeString("E1")).Expect(fields, "E1", "E1", "E1", "E1", null, null, null, null);
 
-                env.SendEventBean(SupportCollection.MakeString("E2,E3,E4"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E2", "E4", null, null});
+				builder.WithAssertion(SupportCollection.MakeString("E2,E3,E4")).Expect(fields, "E2", "E4", null, null, null, null, null, null);
 
-                env.SendEventBean(SupportCollection.MakeString(""));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {null, null, null, null});
+				builder.WithAssertion(SupportCollection.MakeString("")).Expect(fields, null, null, null, null, null, null, null, null);
 
-                env.SendEventBean(SupportCollection.MakeString(null));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {null, null, null, null});
+				builder.WithAssertion(SupportCollection.MakeString(null)).Expect(fields, null, null, null, null, null, null, null, null);
 
-                env.UndeployAll();
-            }
-        }
+				builder.WithAssertion(SupportCollection.MakeString("E5,E2,E3,A1,B1")).Expect(fields, "E5", "B1", "A1", "B1", "A1", "B1", "A1", "B1");
 
-        internal class ExprEnumFirstLastProperty : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new [] { "val0", "val1" };
-                var eplFragment = "@Name('s0') select " +
-                                  "Contained.firstOf().P00 as val0, " +
-                                  "Contained.lastOf().P00 as val1 " +
-                                  " from SupportBean_ST0_Container";
-                env.CompileDeploy(eplFragment).AddListener("s0");
+				builder.WithAssertion(SupportCollection.MakeString("A1,B1,E5,E2,E3")).Expect(fields, "A1", "E3", "A1", "B1", "B1", "B1", "B1", "B1");
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fields,
-                    new[] {typeof(int?), typeof(int?)});
+				builder.WithAssertion(SupportCollection.MakeString("A1,B1")).Expect(fields, "A1", "B1", "A1", "B1", "B1", "B1", null, null);
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E2,9", "E3,3"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {1, 3});
+				builder.Run(env);
+			}
+		}
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {1, 1});
+		internal class ExprEnumFirstLastEventProperty : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0,c1".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
+				builder.WithExpression(fields[0], "contained.firstOf().p00");
+				builder.WithExpression(fields[1], "contained.lastOf().p00");
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value(null));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {null, null});
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value());
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {null, null});
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E2,9", "E3,3")).Expect(fields, 1, 3);
 
-                env.UndeployAll();
-            }
-        }
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1")).Expect(fields, 1, 1);
 
-        internal class ExprEnumFirstLastNoPred : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var eplFragment = "@Name('s0') select " +
-                                  "Contained.firstOf() as val0, " +
-                                  "Contained.lastOf() as val1 " +
-                                  " from SupportBean_ST0_Container";
-                env.CompileDeploy(eplFragment).AddListener("s0");
+				builder.WithAssertion(SupportBean_ST0_Container.Make2ValueNull()).Expect(fields, null, null);
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    new [] { "val0", "val1" },
-                    new[] {typeof(SupportBean_ST0), typeof(SupportBean_ST0)});
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value()).Expect(fields, null, null);
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E3,9", "E2,9"));
-                AssertId(env.Listener("s0"), "val0", "E1");
-                AssertId(env.Listener("s0"), "val1", "E2");
-                env.Listener("s0").Reset();
+				builder.Run(env);
+			}
+		}
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value("E2,2"));
-                AssertId(env.Listener("s0"), "val0", "E2");
-                AssertId(env.Listener("s0"), "val1", "E2");
-                env.Listener("s0").Reset();
+		internal class ExprEnumFirstLastEvent : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0,c1".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
+				builder.WithExpression(fields[0], "contained.firstOf()");
+				builder.WithExpression(fields[1], "contained.lastOf()");
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value(null));
-                Assert.IsNull(env.Listener("s0").AssertOneGetNew().Get("val0"));
-                Assert.IsNull(env.Listener("s0").AssertOneGetNewAndReset().Get("val1"));
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(SupportBean_ST0)));
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value());
-                Assert.IsNull(env.Listener("s0").AssertOneGetNew().Get("val0"));
-                Assert.IsNull(env.Listener("s0").AssertOneGetNewAndReset().Get("val1"));
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E3,9", "E2,9"))
+					.Verify("c0", value => AssertId(value, "E1"))
+					.Verify("c1", value => AssertId(value, "E2"));
 
-                env.UndeployAll();
-            }
-        }
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E2,2"))
+					.Verify("c0", value => AssertId(value, "E2"))
+					.Verify("c1", value => AssertId(value, "E2"));
 
-        internal class ExprEnumFirstLastPredicate : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var eplFragment =
-                    "@Name('s0') select Contained.firstOf(x -> P00 = 9) as val from SupportBean_ST0_Container";
-                env.CompileDeploy(eplFragment).AddListener("s0");
+				builder.WithAssertion(SupportBean_ST0_Container.Make2ValueNull()).Expect(fields, null, null);
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    new [] { "val" },
-                    new[] {typeof(SupportBean_ST0)});
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value()).Expect(fields, null, null);
 
-                var bean = SupportBean_ST0_Container.Make2Value("E1,1", "E2,9", "E2,9");
-                env.SendEventBean(bean);
-                var result = (SupportBean_ST0) env.Listener("s0").AssertOneGetNewAndReset().Get("val");
-                Assert.AreSame(result, bean.Contained[1]);
+				builder.Run(env);
+			}
+		}
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value(null));
-                Assert.IsNull(env.Listener("s0").AssertOneGetNewAndReset().Get("val"));
+		internal class ExprEnumFirstLastEventWithPredicate : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
+				builder.WithExpression(fields[0], "contained.firstOf(x => p00 = 9)");
+				builder.WithExpression(fields[1], "contained.lastOf(x => p00 = 9)");
+				builder.WithExpression(fields[2], "contained.firstOf( (x, i) => p00 = 9 and i >= 1)");
+				builder.WithExpression(fields[3], "contained.lastOf( (x, i) => p00 = 9 and i >= 1)");
+				builder.WithExpression(fields[4], "contained.firstOf( (x, i, s) => p00 = 9 and i >= 1 and s > 2)");
+				builder.WithExpression(fields[5], "contained.lastOf((x, i, s) => p00 = 9 and i >= 1 and s > 2)");
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value());
-                Assert.IsNull(env.Listener("s0").AssertOneGetNewAndReset().Get("val"));
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(SupportBean_ST0)));
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E2,1", "E2,1"));
-                Assert.IsNull(env.Listener("s0").AssertOneGetNewAndReset().Get("val"));
+				SupportBean_ST0_Container beanOne = SupportBean_ST0_Container.Make2Value("E1,1", "E2,9", "E2,9");
+				builder.WithAssertion(beanOne)
+					.Expect(
+						fields,
+						beanOne.Contained[1],
+						beanOne.Contained[2],
+						beanOne.Contained[1],
+						beanOne.Contained[2],
+						beanOne.Contained[1],
+						beanOne.Contained[2]);
 
-                env.UndeployAll();
-            }
-        }
-    }
+				builder.WithAssertion(SupportBean_ST0_Container.Make2ValueNull()).Expect(fields, null, null, null, null, null, null);
+
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value()).Expect(fields, null, null, null, null, null, null);
+
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E2,1", "E2,1")).Expect(fields, null, null, null, null, null, null);
+
+				SupportBean_ST0_Container beanTwo = SupportBean_ST0_Container.Make2Value("E1,1", "E2,9");
+				builder.WithAssertion(beanTwo)
+					.Expect(
+						fields,
+						beanTwo.Contained[1],
+						beanTwo.Contained[1],
+						beanTwo.Contained[1],
+						beanTwo.Contained[1],
+						null,
+						null);
+
+				SupportBean_ST0_Container beanThree = SupportBean_ST0_Container.Make2Value("E2,9", "E1,1");
+				builder.WithAssertion(beanThree)
+					.Expect(
+						fields,
+						beanThree.Contained[0],
+						beanThree.Contained[0],
+						null,
+						null,
+						null,
+						null);
+
+				builder.Run(env);
+			}
+		}
+
+		private static void AssertId(
+			object value,
+			string id)
+		{
+			SupportBean_ST0 result = (SupportBean_ST0) value;
+			Assert.AreEqual(id, result.Id);
+		}
+	}
 } // end of namespace

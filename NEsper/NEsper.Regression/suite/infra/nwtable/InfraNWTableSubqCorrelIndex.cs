@@ -60,6 +60,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             execs.Add(new InfraNWTableSubqCorrelIndexNoIndexShareIndexChoice(true));
             execs.Add(new InfraNWTableSubqCorrelIndexNoIndexShareIndexChoice(false));
+            
+            execs.Add(new InfraNWTableSubqIndexShareMultikeyWArraySingleArray(true));
+            execs.Add(new InfraNWTableSubqIndexShareMultikeyWArraySingleArray(false));
+
+            execs.Add(new InfraNWTableSubqIndexShareMultikeyWArrayTwoArray(true));
+            execs.Add(new InfraNWTableSubqIndexShareMultikeyWArrayTwoArray(false));
 
             return execs;
         }
@@ -95,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             foreach (var assertion in assertions) {
                 log.Info("======= Testing #" + count++);
                 var consumeEpl = INDEX_CALLBACK_HOOK +
-                                 "@Name('s0') " +
+                                 "@name('s0') " +
                                  (assertion.Hint == null ? "" : assertion.Hint) +
                                  "select *, " +
                                  "(select * from MyInfra where " +
@@ -129,6 +135,126 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             }
 
             env.UndeployAll();
+        }
+
+        internal class InfraNWTableSubqIndexShareMultikeyWArraySingleArray : RegressionExecution
+        {
+            private readonly bool namedWindow;
+
+            public InfraNWTableSubqIndexShareMultikeyWArraySingleArray(bool namedWindow)
+            {
+                this.namedWindow = namedWindow;
+            }
+
+            public void Run(RegressionEnvironment env)
+            {
+                string infra;
+                RegressionPath path = new RegressionPath();
+                if (namedWindow) {
+                    infra = "@Hint('enable_window_subquery_indexshare') create window MyInfra#keepall as (k string[], v int);\n" +
+                            "create index MyInfraIndex on MyInfra(k);\n";
+                }
+                else {
+                    infra = "create table MyInfra(k string[] primary key, v int);\n";
+                }
+
+                env.CompileDeploy(infra, path);
+
+                Insert(env, path, "{'a', 'b'}", 10);
+                Insert(env, path, "{'a', 'c'}", 20);
+                Insert(env, path, "{'a'}", 30);
+
+                string epl = "@name('s0') select (select v from MyInfra as mi where mi.k = ma.stringOne) as v from SupportEventWithManyArray as ma";
+                epl = namedWindow ? "@Hint('index(MyInfraIndex, bust)')" + epl : epl;
+                env.CompileDeploy(epl, path).AddListener("s0");
+
+                SendAssertManyArray(env, "a,c", 20);
+                SendAssertManyArray(env, "a,b", 10);
+                SendAssertManyArray(env, "a", 30);
+                SendAssertManyArray(env, "a,d", null);
+
+                env.UndeployAll();
+            }
+
+            private void SendAssertManyArray(
+                RegressionEnvironment env,
+                string stringOne,
+                int? expected)
+            {
+                env.SendEventBean(new SupportEventWithManyArray("id").WithStringOne(stringOne.SplitCsv()));
+                Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("v"));
+            }
+
+            private void Insert(
+                RegressionEnvironment env,
+                RegressionPath path,
+                string k,
+                int v)
+            {
+                env.CompileExecuteFAF("insert into MyInfra(k,v) values (" + k + "," + v + ")", path);
+            }
+        }
+
+        internal class InfraNWTableSubqIndexShareMultikeyWArrayTwoArray : RegressionExecution
+        {
+            private readonly bool namedWindow;
+
+            public InfraNWTableSubqIndexShareMultikeyWArrayTwoArray(bool namedWindow)
+            {
+                this.namedWindow = namedWindow;
+            }
+
+            public void Run(RegressionEnvironment env)
+            {
+                string infra;
+                RegressionPath path = new RegressionPath();
+                if (namedWindow) {
+                    infra = "@Hint('enable_window_subquery_indexshare') create window MyInfra#keepall as (k1 string[], k2 string[], v int);\n" +
+                            "create index MyInfraIndex on MyInfra(k1, k2);\n";
+                }
+                else {
+                    infra = "create table MyInfra(k1 string[] primary key, k2 string[] primary key, v int);\n";
+                }
+
+                env.CompileDeploy(infra, path);
+
+                Insert(env, path, "{'a', 'b'}", "{'c', 'd'}", 10);
+                Insert(env, path, "{'a'}", "{'b'}", 20);
+                Insert(env, path, "{'a'}", "{'c', 'd'}", 30);
+
+                string epl =
+                    "@name('s0') select (select v from MyInfra as mi where mi.k1 = ma.stringOne and mi.k2 = ma.stringTwo) as v from SupportEventWithManyArray as ma";
+                epl = namedWindow ? "@Hint('index(MyInfraIndex, bust)')" + epl : epl;
+                env.CompileDeploy(epl, path).AddListener("s0");
+
+                SendAssertManyArray(env, "a", "b", 20);
+                SendAssertManyArray(env, "a,b", "c,d", 10);
+                SendAssertManyArray(env, "a", "c,d", 30);
+                SendAssertManyArray(env, "a", "c", null);
+                SendAssertManyArray(env, "a,b", "d,c", null);
+
+                env.UndeployAll();
+            }
+
+            private void SendAssertManyArray(
+                RegressionEnvironment env,
+                string stringOne,
+                string stringTwo,
+                int? expected)
+            {
+                env.SendEventBean(new SupportEventWithManyArray("id").WithStringOne(stringOne.SplitCsv()).WithStringTwo(stringTwo.SplitCsv()));
+                Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("v"));
+            }
+
+            private void Insert(
+                RegressionEnvironment env,
+                RegressionPath path,
+                string k1,
+                string k2,
+                int v)
+            {
+                env.CompileExecuteFAF("insert into MyInfra(k1,k2,v) values (" + k1 + "," + k2 + "," + v + ")", path);
+            }
         }
 
         internal class InfraNWTableSubqCorrelIndexNoIndexShareIndexChoice : RegressionExecution
@@ -575,11 +701,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy("insert into MyInfraNWT select TheString, IntPrimitive from SupportBean", path);
 
                 if (createExplicitIndex) {
-                    env.CompileDeploy("@Name('index') create index MyIndex on MyInfraNWT (TheString)", path);
+                    env.CompileDeploy("@name('index') create index MyIndex on MyInfraNWT (TheString)", path);
                 }
 
                 var consumeEpl =
-                    "@Name('s0') select status.*, (select * from MyInfraNWT where TheString = SupportBean_S0.P00) @eventbean as details from SupportBean_S0 as status";
+                    "@name('s0') select status.*, (select * from MyInfraNWT where TheString = SupportBean_S0.P00) @eventbean as details from SupportBean_S0 as status";
                 if (disableIndexShareConsumer) {
                     consumeEpl = "@Hint('disable_window_subquery_indexshare') " + consumeEpl;
                 }

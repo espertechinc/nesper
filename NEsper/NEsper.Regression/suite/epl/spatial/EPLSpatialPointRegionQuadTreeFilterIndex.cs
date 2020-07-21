@@ -47,9 +47,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             public void Run(RegressionEnvironment env)
             {
                 var eplNoIndex =
-                    "@Name('s0') select * from SupportSpatialAABB(point(0, 0).inside(rectangle(X, Y, Width, Height)))";
+                    "@name('s0') select * from SupportSpatialAABB(point(0, 0).inside(rectangle(X, Y, Width, Height)))";
                 env.CompileDeploy(eplNoIndex);
-                SupportFilterHelper.AssertFilterMulti(
+                SupportFilterServiceHelper.AssertFilterSvcByTypeMulti(
                     env.Statement("s0"),
                     "SupportSpatialAABB",
                     new[] {
@@ -57,10 +57,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     });
                 env.UndeployAll();
 
-                var eplIndexed = "@Name('s0') expression myindex {pointregionquadtree(0, 0, 100, 100)}" +
+                var eplIndexed = "@name('s0') expression myindex {pointregionquadtree(0, 0, 100, 100)}" +
                                  "select * from SupportSpatialAABB(point(0, 0, filterindex:myindex).inside(rectangle(X, Y, Width, Height)))";
                 env.CompileDeploy(eplIndexed);
-                SupportFilterHelper.AssertFilterMulti(
+                SupportFilterServiceHelper.AssertFilterSvcByTypeMulti(
                     env.Statement("s0"),
                     "SupportSpatialAABB",
                     new[] {
@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                    "@Name('s0') select * from SupportSpatialAABB(point(5, 10).inside(rectangle(X, Y, Width, Height)))");
+                    "@name('s0') select * from SupportSpatialAABB(point(5, 10).inside(rectangle(X, Y, Width, Height)))");
                 env.AddListener("s0");
 
                 SendRectangle(env, "R1", 0, 0, 5, 10);
@@ -129,7 +129,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                    "@Name('s0') expression myindex {pointregionquadtree(0, 0, 100, 100)}" +
+                    "@name('s0') expression myindex {pointregionquadtree(0, 0, 100, 100)}" +
                     "select * from pattern [every p=SupportSpatialPoint -> SupportSpatialAABB(point(p.Px, p.Py, filterindex:myindex).inside(rectangle(X, Y, Width, Height)))]");
                 env.AddListener("s0");
 
@@ -147,7 +147,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 var path = new RegressionPath();
                 env.CompileDeploy("create context PerPointCtx initiated by SupportSpatialPoint ssp", path);
                 env.CompileDeploy(
-                    "@Name('s0') expression myindex {pointregionquadtree(0, 0, 100, 100)}" +
+                    "@name('s0') expression myindex {pointregionquadtree(0, 0, 100, 100)}" +
                     "context PerPointCtx select count(*) from SupportSpatialAABB(point(context.ssp.Px, context.ssp.Py, filterindex:myindex).inside(rectangle(X, Y, Width, Height)))",
                     path);
                 env.AddListener("s0");
@@ -171,7 +171,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
 
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('out') expression myindex {pointregionquadtree(0, 0, 100, 100)}" +
+                var epl = "@name('out') expression myindex {pointregionquadtree(0, 0, 100, 100)}" +
                           "select p.Id as c0 from pattern [every p=SupportSpatialPoint -> every SupportSpatialAABB(point(p.Px, p.Py, filterindex:myindex).inside(rectangle(X, Y, Width, Height)))]";
                 env.CompileDeploy(epl).AddListener("out");
 
@@ -182,16 +182,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 SendPoint(env, "P2", 60, 10);
                 SendPoint(env, "P3", 10, 60);
                 SendPoint(env, "P4", 10, 10);
-                Assert.AreEqual(6, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(6, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 AssertRectanglesManyRow(env, env.Listener("out"), BOXES, "P0,P4", "P2", "P3", "P1", "P1");
 
                 env.Milestone(1);
 
-                Assert.AreEqual(6, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(6, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 AssertRectanglesManyRow(env, env.Listener("out"), BOXES, "P0,P4", "P2", "P3", "P1", "P1");
 
                 env.UndeployAll();
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
             }
         }
 
@@ -207,7 +207,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             {
                 var epl =
                     "create context PointContext initiated by SupportSpatialPoint ssp terminated by SupportBean(TheString=ssp.Id);\n" +
-                    "@Name('out') expression myindex {pointregionquadtree(0, 0, 10, 10)}" +
+                    "@name('out') expression myindex {pointregionquadtree(0, 0, 10, 10)}" +
                     "context PointContext select context.ssp.Id as c0 from SupportSpatialAABB(point(context.ssp.Px, context.ssp.Py, filterindex:myindex).inside(rectangle(X, Y, Width, Height)))";
                 env.CompileDeploy(epl).AddListener("out");
 

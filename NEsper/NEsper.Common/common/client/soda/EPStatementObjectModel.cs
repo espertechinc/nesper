@@ -235,7 +235,7 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="selectClause">specifies the select-clause, the select-clause cannot be null and must be set</param>
         /// <returns>model</returns>
-        public EPStatementObjectModel Select(SelectClause selectClause)
+        public EPStatementObjectModel SetSelect(SelectClause selectClause)
         {
             SelectClause = selectClause;
             return this;

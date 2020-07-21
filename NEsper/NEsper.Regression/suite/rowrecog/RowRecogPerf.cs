@@ -18,7 +18,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
     {
         public void Run(RegressionEnvironment env)
         {
-            var text = "@Name('s0') select * from SupportRecogBean " +
+            var text = "@name('s0') select * from SupportRecogBean " +
                        "match_recognize (" +
                        "  partition by Value " +
                        "  measures A.TheString as a_string, C.TheString as c_string " +

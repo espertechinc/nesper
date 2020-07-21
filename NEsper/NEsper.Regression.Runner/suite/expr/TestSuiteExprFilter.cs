@@ -125,13 +125,15 @@ namespace com.espertech.esper.regressionrun.suite.expr
                 "GetLocalValue");
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
+        [RunInApplicationDomain]
         public void TestExprFilterExpressions()
         {
             RegressionRunner.Run(session, ExprFilterExpressions.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
+        [RunInApplicationDomain]
         public void TestExprFilterInAndBetween()
         {
             RegressionRunner.Run(session, ExprFilterInAndBetween.Executions());
@@ -143,109 +145,127 @@ namespace com.espertech.esper.regressionrun.suite.expr
             RegressionRunner.Run(session, ExprFilterOptimizable.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
+        [RunInApplicationDomain]
         public void TestExprFilterPlanInRangeAndBetween()
         {
             RegressionRunner.Run(session, ExprFilterPlanInRangeAndBetween.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
+        [RunInApplicationDomain]
         public void TestExprFilterPlanNoFilter()
         {
-            RegressionRunner.Run(session, ExprFilterPlanNoFilter.Executions());
+            RegressionRunner.Run(session, ExprFilterPlanNoFilter.Executions(TODO));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
+        [RunInApplicationDomain]
         public void TestExprFilterPlanOneFilterNestedFourLvl()
         {
-            RegressionRunner.Run(session, ExprFilterPlanOneFilterNestedFourLvl.Executions());
+            RegressionRunner.Run(session, ExprFilterPlanOneFilterNestedFourLvl.Executions(TODO));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
+        [RunInApplicationDomain]
         public void TestExprFilterPlanOneFilterNestedThreeLvl()
         {
-            RegressionRunner.Run(session, ExprFilterPlanOneFilterNestedThreeLvl.Executions());
+            RegressionRunner.Run(session, ExprFilterPlanOneFilterNestedThreeLvl.Executions(TODO));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
+        [RunInApplicationDomain]
         public void TestExprFilterPlanOneFilterNestedTwoLvl()
         {
-            RegressionRunner.Run(session, ExprFilterPlanOneFilterNestedTwoLvl.Executions());
+            RegressionRunner.Run(session, ExprFilterPlanOneFilterNestedTwoLvl.Executions(TODO));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
+        [RunInApplicationDomain]
         public void TestExprFilterPlanOneFilterNonNested()
         {
             RegressionRunner.Run(session, ExprFilterPlanOneFilterNonNested.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
+        [RunInApplicationDomain]
         public void TestExprFilterPlanOneFilterTwoPathNested()
         {
             RegressionRunner.Run(session, ExprFilterPlanOneFilterTwoPathNested.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
+        [RunInApplicationDomain]
         public void TestExprFilterPlanOneFilterTwoPathNonNested()
         {
-            RegressionRunner.Run(session, ExprFilterPlanOneFilterTwoPathNonNested.Executions());
+            RegressionRunner.Run(session, ExprFilterPlanOneFilterTwoPathNonNested.Executions(TODO));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
+        [RunInApplicationDomain]
         public void TestExprFilterPlanThreeFilterIndexReuse()
         {
-            RegressionRunner.Run(session, ExprFilterPlanThreeFilterIndexReuse.Executions());
+            RegressionRunner.Run(session, ExprFilterPlanThreeFilterIndexReuse.Executions(TODO));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
+        [RunInApplicationDomain]
         public void TestExprFilterPlanTwoFilterDifferent()
         {
-            RegressionRunner.Run(session, ExprFilterPlanTwoFilterDifferent.Executions());
+            RegressionRunner.Run(session, ExprFilterPlanTwoFilterDifferent.Executions(TODO));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
+        [RunInApplicationDomain]
         public void TestExprFilterPlanTwoFilterIndexReuse()
         {
-            RegressionRunner.Run(session, ExprFilterPlanTwoFilterIndexReuse.Executions());
+            RegressionRunner.Run(session, ExprFilterPlanTwoFilterIndexReuse.Executions(TODO));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
+        [RunInApplicationDomain]
         public void TestExprFilterPlanTwoFilterIndexWFilterForValueReuse()
         {
-            RegressionRunner.Run(session, ExprFilterPlanTwoFilterIndexWFilterForValueReuse.Executions());
+            RegressionRunner.Run(session, ExprFilterPlanTwoFilterIndexWFilterForValueReuse.Executions(TODO));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
+        [RunInApplicationDomain]
         public void TestExprFilterPlanTwoFilterNestedTwoDiff()
         {
-            RegressionRunner.Run(session, ExprFilterPlanTwoFilterNestedTwoDiff.Executions());
+            RegressionRunner.Run(session, ExprFilterPlanTwoFilterNestedTwoDiff.Executions(TODO));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
+        [RunInApplicationDomain]
         public void TestExprFilterPlanTwoFilterNestedTwoSame()
         {
             RegressionRunner.Run(session, ExprFilterPlanTwoFilterNestedTwoSame.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
+        [RunInApplicationDomain]
         public void TestExprFilterPlanTwoFilterSame()
         {
             RegressionRunner.Run(session, ExprFilterPlanTwoFilterSame.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
+        [RunInApplicationDomain]
         public void TestExprFilterPlanTwoFilterTwoPathNestedSame()
         {
             RegressionRunner.Run(session, ExprFilterPlanTwoFilterTwoPathNestedSame.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
+        [RunInApplicationDomain]
         public void TestExprFilterWhereClause()
         {
             RegressionRunner.Run(session, ExprFilterWhereClause.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
+        [RunInApplicationDomain]
         public void TestExprFilterWhereClauseNoDataWindowPerformance()
         {
             RegressionRunner.Run(session, new ExprFilterWhereClauseNoDataWindowPerformance());

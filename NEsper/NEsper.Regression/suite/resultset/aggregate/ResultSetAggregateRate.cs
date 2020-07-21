@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 SendTimer(env, 0);
                 var milestone = new AtomicLong();
 
-                var epl = "@Name('s0') select rate(10) as myrate from SupportBean";
+                var epl = "@name('s0') select rate(10) as myrate from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 TryAssertion(env, milestone);
@@ -152,7 +152,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var fields = new [] { "myrate","myqtyrate" };
                 var epl =
-                    "@Name('s0') select RATE(LongPrimitive) as myrate, RATE(LongPrimitive, IntPrimitive) as myqtyrate from SupportBean#length(3)";
+                    "@name('s0') select RATE(LongPrimitive) as myrate, RATE(LongPrimitive, IntPrimitive) as myqtyrate from SupportBean#length(3)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, 1000, 10);

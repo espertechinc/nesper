@@ -229,7 +229,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmt = "@Name('s0') select * from pattern [" +
+                var stmt = "@name('s0') select * from pattern [" +
                            " every a=SupportBean_A -> (timer:interval(10 seconds) and not (SupportBean_B(Id=a.Id) or SupportBean_C(Id=a.Id)))" +
                            "] ";
 
@@ -280,7 +280,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var expression = "@Name('s0') select * from pattern " +
+                var expression = "@name('s0') select * from pattern " +
                                  "[every A=SupportCallEvent -> every B=SupportCallEvent(Dest=A.Dest, StartTime in [A.StartTime:A.EndTime]) where timer:within (7200000)]" +
                                  "where B.Source != A.Source";
                 env.CompileDeploy(expression);
@@ -330,7 +330,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var expression = "@Name('s0') select 'Tag May Be Broken' as alert, " +
+                var expression = "@name('s0') select 'Tag May Be Broken' as alert, " +
                                  "tagMayBeBroken.Mac, " +
                                  "tagMayBeBroken.ZoneID " +
                                  "from pattern [" +
@@ -368,7 +368,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 // It ends when a LR for the same mac and a different exit-zone comes in, or
                 // it ends when a LR for the same max and the same zone come in. The latter also starts the
                 // sub-expression again.
-                var expression = "@Name('s0') select * " +
+                var expression = "@name('s0') select * " +
                                  "from pattern [" +
                                  "every a=SupportRFIDEvent(ZoneID='1') -> (b=SupportRFIDEvent(Mac=a.Mac,ZoneID!='1') and not SupportRFIDEvent(Mac=a.Mac,ZoneID='1'))" +
                                  "]";
@@ -407,7 +407,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 // It ends when a LR for the same mac and the enter-zone comes in, or
                 // it ends when a LR for the same max and the same zone come in. The latter also starts the
                 // sub-expression again.
-                var expression = "@Name('s0') select * " +
+                var expression = "@name('s0') select * " +
                                  "from pattern [" +
                                  "every a=SupportRFIDEvent(ZoneID!='1') -> (b=SupportRFIDEvent(Mac=a.Mac,ZoneID='1') and not SupportRFIDEvent(Mac=a.Mac,ZoneID=a.ZoneID))" +
                                  "]";
@@ -445,7 +445,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var expression =
-                    "@Name('s0') select * from pattern [every A=SupportBean -> (timer:interval(1 seconds) and not SupportBean_A)]";
+                    "@name('s0') select * from pattern [every A=SupportBean -> (timer:interval(1 seconds) and not SupportBean_A)]";
 
                 env.AdvanceTime(0);
 
@@ -472,7 +472,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var expression =
-                    "@Name('s0') select * from pattern [every a=SupportBean_A -> b=SupportBean_B -> c=SupportBean_C -> d=SupportBean_D]";
+                    "@name('s0') select * from pattern [every a=SupportBean_A -> b=SupportBean_B -> c=SupportBean_C -> d=SupportBean_D]";
 
                 env.CompileDeploy(expression);
 
@@ -515,7 +515,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 // ESPER-411
                 env.CompileDeploy(
-                    "@Name('s0') select * from pattern[every a=SupportBean -> b=SupportBean(b.IntPrimitive <= a.IntPrimitive)]");
+                    "@name('s0') select * from pattern[every a=SupportBean -> b=SupportBean(b.IntPrimitive <= a.IntPrimitive)]");
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
@@ -525,7 +525,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.UndeployAll();
 
                 env.CompileDeploy(
-                    "@Name('s0') select * from pattern [every a=SupportBean -> b=SupportBean(a.IntPrimitive >= b.IntPrimitive)]");
+                    "@name('s0') select * from pattern [every a=SupportBean -> b=SupportBean(a.IntPrimitive >= b.IntPrimitive)]");
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
@@ -542,7 +542,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 env.AdvanceTime(0);
 
-                var pattern = "@Name('s0') select * from pattern [every s=SupportBean(TheString='E') -> " +
+                var pattern = "@name('s0') select * from pattern [every s=SupportBean(TheString='E') -> " +
                               "(timer:interval(10) and not SupportBean(TheString='C1'))" +
                               "or" +
                               "(SupportBean(TheString='C2') and not timer:interval(10))]";

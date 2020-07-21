@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             Assert.AreEqual(
                 typeof(object[]),
                 env.Runtime.EventTypeService.GetEventTypePreconfigured("MyMapNestedObjectArray").UnderlyingType);
-            env.CompileDeploy("@Name('s0') select lev0name.lev1name.sb.TheString as val from MyMapNestedObjectArray")
+            env.CompileDeploy("@name('s0') select lev0name.lev1name.sb.TheString as val from MyMapNestedObjectArray")
                 .AddListener("s0");
 
             IDictionary<string, object> lev2data = new Dictionary<string, object>();

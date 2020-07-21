@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
                 env.CompileDeploy("create table varaggPIN (csv csvWords(string))", path);
-                env.CompileDeploy("@Name('s0') select varaggPIN.csv as c0 from SupportBean_S0", path).AddListener("s0");
+                env.CompileDeploy("@name('s0') select varaggPIN.csv as c0 from SupportBean_S0", path).AddListener("s0");
                 env.CompileDeploy("into table varaggPIN select csvWords(TheString) as csv from SupportBean#length(3)", path);
 
                 SendWordAssert(env, "the", "the");
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var path = new RegressionPath();
                 env.CompileDeploy("create table varaggRCM (wordCount referenceCountedMap(string))", path);
                 env.CompileDeploy("into table varaggRCM select referenceCountedMap(TheString) as wordCount from SupportBean#length(3)", path);
-                env.CompileDeploy("@Name('s0') select varaggRCM.wordCount.referenceCountLookup(P00) as c0 from SupportBean_S0", path)
+                env.CompileDeploy("@name('s0') select varaggRCM.wordCount.referenceCountLookup(P00) as c0 from SupportBean_S0", path)
                     .AddListener("s0");
 
                 var words = "the,house,is,green";

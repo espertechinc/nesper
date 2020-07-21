@@ -111,6 +111,11 @@ namespace com.espertech.esper.regressionrun.suite.client
         {
             RegressionRunner.Run(_session, ClientCompileEventTypeAutoName.Executions());
         }
+        
+        [Test, RunInApplicationDomain]
+        public void TestClientCompileLarge() {
+            RegressionRunner.Run(_session, ClientCompileLarge.Executions());
+        }
 
         private static void Configure(Configuration configuration)
         {
@@ -133,6 +138,8 @@ namespace com.espertech.esper.regressionrun.suite.client
 
             configuration.Common.AddEventTypeAutoName("com.espertech.esper.regressionlib.support.autoname.one");
             configuration.Common.AddEventTypeAutoName("com.espertech.esper.regressionlib.support.autoname.two");
+            
+            configuration.Compiler.AddPlugInSingleRowFunction("func", typeof(ClientCompileLarge), "Func");
         }
     }
 } // end of namespace

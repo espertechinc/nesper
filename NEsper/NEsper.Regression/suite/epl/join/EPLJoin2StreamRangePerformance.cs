@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             var fields = new [] { "mini","maxi" };
 
-            env.CompileDeploy("@Name('s0')" + epl, path).AddListener("s0").MilestoneInc(milestone);
+            env.CompileDeploy("@name('s0')" + epl, path).AddListener("s0").MilestoneInc(milestone);
 
             // Send range query events
             log.Info("Querying");
@@ -76,9 +76,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var path = new RegressionPath();
                 var epl = "create window SBR#keepall as SupportBeanRange;\n" +
-                          "@Name('I1') insert into SBR select * from SupportBeanRange;\n" +
+                          "@name('I1') insert into SBR select * from SupportBeanRange;\n" +
                           "create window SB#keepall as SupportBean;\n" +
-                          "@Name('I2') insert into SB select * from SupportBean;\n";
+                          "@name('I2') insert into SB select * from SupportBean;\n";
                 env.CompileDeploy(epl, path).Milestone(0);
 
                 // Preload
@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 log.Info("Done preloading");
 
                 // create
-                var eplQuery = "@Name('s0') select * " +
+                var eplQuery = "@name('s0') select * " +
                                "from SB sb " +
                                "full outer join " +
                                "SBR sbr " +
@@ -125,9 +125,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var path = new RegressionPath();
                 var epl = "create window SBR#keepall as SupportBeanRange;\n" +
-                          "@Name('I1') insert into SBR select * from SupportBeanRange;\n" +
+                          "@name('I1') insert into SBR select * from SupportBeanRange;\n" +
                           "create window SB#keepall as SupportBean;\n" +
-                          "@Name('I2') insert into SB select * from SupportBean";
+                          "@name('I2') insert into SB select * from SupportBean";
                 env.CompileDeploy(epl, path).Milestone(0);
 
                 // Preload
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 log.Info("Done preloading");
 
                 // start query
-                var eplQuery = "@Name('s0') select * from SBR a, SB b where a.RangeStart < b.IntPrimitive";
+                var eplQuery = "@name('s0') select * from SBR a, SB b where a.RangeStart < b.IntPrimitive";
                 env.CompileDeploy(eplQuery, path).AddListener("s0").Milestone(1);
 
                 // Repeat
@@ -169,9 +169,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var path = new RegressionPath();
                 var epl = "create window SBR#keepall as SupportBeanRange;\n" +
-                          "@Name('I1') insert into SBR select * from SupportBeanRange;\n" +
+                          "@name('I1') insert into SBR select * from SupportBeanRange;\n" +
                           "create window SB#keepall as SupportBean;\n" +
-                          "@Name('I2') insert into SB select * from SupportBean;\n";
+                          "@name('I2') insert into SB select * from SupportBean;\n";
                 env.CompileDeploy(epl, path).Milestone(0);
 
                 // Preload
@@ -187,7 +187,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 // start query
                 var eplQuery =
-                    "@Name('s0') select * from SBR sbr, SB sb where sbr.Key = sb.TheString and sb.IntPrimitive between sbr.RangeStart and sbr.RangeEnd";
+                    "@name('s0') select * from SBR sbr, SB sb where sbr.Key = sb.TheString and sb.IntPrimitive between sbr.RangeStart and sbr.RangeEnd";
                 env.CompileDeploy(eplQuery, path).AddListener("s0").Milestone(1);
 
                 // repeat
@@ -229,7 +229,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var path = new RegressionPath();
                 var epl = "create window SB#keepall as SupportBean;\n" +
-                          "@Name('I2') insert into SB select * from SupportBean";
+                          "@name('I2') insert into SB select * from SupportBean";
                 env.CompileDeploy(epl, path).Milestone(0);
 
                 // Preload
@@ -242,7 +242,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 // start query
                 var eplQuery =
-                    "@Name('s0') select * from SupportBeanRange#lastevent sbr, SB sb where sbr.Key = sb.TheString and sb.IntPrimitive not in [sbr.RangeStart:sbr.RangeEnd]";
+                    "@name('s0') select * from SupportBeanRange#lastevent sbr, SB sb where sbr.Key = sb.TheString and sb.IntPrimitive not in [sbr.RangeStart:sbr.RangeEnd]";
                 env.CompileDeploy(eplQuery, path).AddListener("s0").Milestone(1);
 
                 // repeat
@@ -270,7 +270,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var path = new RegressionPath();
 
                 var epl = "create window SB#keepall as SupportBean;\n" +
-                          "@Name('I') insert into SB select * from SupportBean;\n";
+                          "@name('I') insert into SB select * from SupportBean;\n";
                 env.CompileDeploy(epl, path).Milestone(0);
 
                 // Preload

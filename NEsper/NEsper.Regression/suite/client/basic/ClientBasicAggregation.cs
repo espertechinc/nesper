@@ -17,7 +17,7 @@ namespace com.espertech.esper.regressionlib.suite.client.basic
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@Name('s0') select count(*) as cnt from SupportBean";
+            var epl = "@name('s0') select count(*) as cnt from SupportBean";
             env.CompileDeployAddListenerMileZero(epl, "s0");
 
             SendAssert(env, 1);

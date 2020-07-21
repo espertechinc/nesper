@@ -22,9 +22,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             var path = new RegressionPath();
 
             string[] fields = {"TheString"};
-            env.CompileDeploy("@Name('c1') create window W1#length(2) as select * from SupportBean", path);
-            env.CompileDeploy("@Name('c2') create window W2#length(2) as select * from SupportBean", path);
-            env.CompileDeploy("@Name('c3') create window W3#length(2) as select * from SupportBean", path);
+            env.CompileDeploy("@name('c1') create window W1#length(2) as select * from SupportBean", path);
+            env.CompileDeploy("@name('c2') create window W2#length(2) as select * from SupportBean", path);
+            env.CompileDeploy("@name('c3') create window W3#length(2) as select * from SupportBean", path);
 
             env.CompileDeploy("insert into W1 select * from SupportBean", path);
             env.CompileDeploy("insert rstream into W2 select rstream * from W1", path);

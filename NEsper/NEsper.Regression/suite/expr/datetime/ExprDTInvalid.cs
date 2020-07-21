@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'DateTimeOffset.set(\"invalid\")': Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value");
+                "Failed to validate select-clause expression 'DateTimeOffset.set('invalid')': Failed to resolve enumeration method, date-time method or mapped property 'utildate.set('invalid')': Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value");
 
             // invalid lambda parameter
             epl = "select DateTimeOffset.set(x -> true) from SupportDateTime";

@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.CompileDeploy(epl, path);
 
                 epl =
-                    "@Name('s0') select P00, (select window(IntPrimitive) from SupportBean#keepall sb) as val from SupportBean_S0 as S0;\n";
+                    "@name('s0') select P00, (select window(IntPrimitive) from SupportBean#keepall sb) as val from SupportBean_S0 as S0;\n";
                 env.CompileDeploy(epl, path).AddListener("s0").Milestone(0);
 
                 var fields = new [] { "P00","val" };
@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 // test named window and late start
                 env.UndeployModuleContaining("s0");
 
-                epl = "@Name('s0') select P00, (select window(IntPrimitive) from SupportWindow) as val from SupportBean_S0 as S0";
+                epl = "@name('s0') select P00, (select window(IntPrimitive) from SupportWindow) as val from SupportBean_S0 as S0";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(0));
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select P00, " +
+                var stmtText = "@name('s0') select P00, " +
                                "(select window(sb.*) from SupportBean#keepall sb where TheString = S0.P00) as val " +
                                "from SupportBean_S0 as S0";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");

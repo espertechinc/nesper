@@ -178,7 +178,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             env.AdvanceTime(startTime);
 
-            var epl = "@Name('s0') select * from pattern[" + patternExpr + "]";
+            var epl = "@name('s0') select * from pattern[" + patternExpr + "]";
             env.CompileDeploy(epl).AddListener("s0");
 
             var count = 0;

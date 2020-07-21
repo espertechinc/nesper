@@ -19,7 +19,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 {
     public class ExprFilterPlanNoFilter
     {
-        public static IList<FilterTestMultiStmtExecution> Executions()
+        public static IList<FilterTestMultiStmtExecution> Executions(bool withStats)
         {
             IList<FilterTestMultiStmtPermutable> cases = new List<FilterTestMultiStmtPermutable>();
 
@@ -33,7 +33,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             return FilterTestMultiStmtRunner.ComputePermutations(
                 typeof(ExprFilterPlanNoFilter),
                 new PermutationSpec(true),
-                cases);
+                cases,
+                withStats);
         }
     }
 } // end of namespace

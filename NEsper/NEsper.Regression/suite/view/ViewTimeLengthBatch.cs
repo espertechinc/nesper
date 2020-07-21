@@ -81,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 SendTimer(env, 1000);
 
-                var text = "@Name('s0') select irstream * from SupportMarketDataBean#time_length_batch(10 sec, 3)";
+                var text = "@name('s0') select irstream * from SupportMarketDataBean#time_length_batch(10 sec, 3)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 SendTimer(env, 1000);
@@ -159,7 +159,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var events = Get100Events();
 
                 SendTimer(env, startTime);
-                var epl = "@Name('s0') select irstream * from SupportMarketDataBean#time_length_batch(10 sec, 3)";
+                var epl = "@name('s0') select irstream * from SupportMarketDataBean#time_length_batch(10 sec, 3)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 // Send 3 events in batch
@@ -355,7 +355,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, 1000);
 
                 var text =
-                    "@Name('s0') select irstream * from SupportMarketDataBean#time_length_batch(10 sec, 3, 'force_update')";
+                    "@name('s0') select irstream * from SupportMarketDataBean#time_length_batch(10 sec, 3, 'force_update')";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 SendTimer(env, 1000);
@@ -438,7 +438,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, startTime);
 
                 var epl =
-                    "@Name('s0') select irstream * from SupportMarketDataBean#time_length_batch(10 sec, 3, 'FORCE_UPDATE')";
+                    "@name('s0') select irstream * from SupportMarketDataBean#time_length_batch(10 sec, 3, 'FORCE_UPDATE')";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 // Send 3 events in batch
@@ -687,7 +687,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var events = Get100Events();
 
                 var epl =
-                    "@Name('s0') select sum(Price) from SupportMarketDataBean#time_length_batch(10 sec, 3, 'FORCE_UPDATE')";
+                    "@name('s0') select sum(Price) from SupportMarketDataBean#time_length_batch(10 sec, 3, 'FORCE_UPDATE')";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 // Send 1 events in batch
@@ -721,7 +721,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, 1000);
 
                 var text =
-                    "@Name('s0') select irstream * from SupportMarketDataBean#time_length_batch(10 sec, 3, 'start_eager')";
+                    "@name('s0') select irstream * from SupportMarketDataBean#time_length_batch(10 sec, 3, 'start_eager')";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 SendTimer(env, 10999);
@@ -807,7 +807,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var events = Get100Events();
 
                 var epl =
-                    "@Name('s0') select sum(Price) from SupportMarketDataBean#time_length_batch(10 sec, 3, 'force_update, start_eager')";
+                    "@name('s0') select sum(Price) from SupportMarketDataBean#time_length_batch(10 sec, 3, 'force_update, start_eager')";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
 
@@ -842,7 +842,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, startTime);
 
                 var epl =
-                    "@Name('s0') select sum(Price) from SupportMarketDataBean#time_length_batch(10 sec, 3, 'force_update')";
+                    "@name('s0') select sum(Price) from SupportMarketDataBean#time_length_batch(10 sec, 3, 'force_update')";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 // No batch as we are not start eager
@@ -866,7 +866,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var premades = Get100Events();
 
                 var epl =
-                    "@Name('s0') select Price, prev(1, Price) as prevPrice, prior(1, Price) as priorPrice from SupportMarketDataBean#time_length_batch(10 sec, 3)";
+                    "@name('s0') select Price, prev(1, Price) as prevPrice, prior(1, Price) as priorPrice from SupportMarketDataBean#time_length_batch(10 sec, 3)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 // Send 3 events in batch
@@ -894,7 +894,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, startTime);
 
                 var epl =
-                    "@Name('s0') select Symbol, sum(Price) as s from SupportMarketDataBean#time_length_batch(5, 10, \"START_EAGER\") group by Symbol order by Symbol asc";
+                    "@name('s0') select Symbol, sum(Price) as s from SupportMarketDataBean#time_length_batch(5, 10, \"START_EAGER\") group by Symbol order by Symbol asc";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendTimer(env, startTime + 4000);

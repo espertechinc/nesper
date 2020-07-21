@@ -42,8 +42,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.AdvanceTime(0);
 
                 env.CompileDeploy(
-                        "@Name('s0') insert into MyStream select * from SupportBean#keepall output snapshot every 1 second;\n" +
-                        "@Name('s1') select * from MyStream")
+                        "@name('s0') insert into MyStream select * from SupportBean#keepall output snapshot every 1 second;\n" +
+                        "@name('s1') select * from MyStream")
                     .AddListener("s0")
                     .AddListener("s1");
 
@@ -74,8 +74,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.AdvanceTime(0);
 
                 env.CompileDeploy(
-                        "@Name('s0') insert into MyStream select * from SupportBean output first every 1 second;\n" +
-                        "@Name('s1') select * from MyStream")
+                        "@name('s0') insert into MyStream select * from SupportBean output first every 1 second;\n" +
+                        "@name('s1') select * from MyStream")
                     .AddListener("s0")
                     .AddListener("s1");
 

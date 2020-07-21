@@ -31,6 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             execs.Add(new EPLOtherIStreamOnly());
             execs.Add(new EPLOtherIStreamInsertIntoRStream());
             execs.Add(new EPLOtherIStreamJoin());
+            execs.Add(new EPLOtherRStreamOutputSnapshot());
             return execs;
         }
 
@@ -53,6 +54,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             theEvent.IntPrimitive = intPrimitive;
             env.SendEventBean(theEvent);
             return theEvent;
+        }
+
+        internal class EPLOtherRStreamOutputSnapshot : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "select rstream * from SupportBean#time(30 minutes) output snapshot";
+                env.CompileDeploy(epl).UndeployAll();
+            }
         }
 
         internal class EPLOtherRStreamOnlyOM : RegressionExecution
@@ -115,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@Name('s0') select rstream * from SupportBean#length(3)").AddListener("s0");
+                env.CompileDeploy("@name('s0') select rstream * from SupportBean#length(3)").AddListener("s0");
 
                 var theEvent = SendEvent(env, "a", 2);
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
@@ -137,11 +147,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('s0') insert into NextStream " +
+                    "@name('s0') insert into NextStream " +
                     "select rstream S0.TheString as TheString from SupportBean#length(3) as S0",
                     path);
                 env.AddListener("s0");
-                env.CompileDeploy("@Name('ii') select * from NextStream", path).AddListener("ii");
+                env.CompileDeploy("@name('ii') select * from NextStream", path).AddListener("ii");
 
                 SendEvent(env, "a", 2);
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
@@ -170,12 +180,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('s0') insert rstream into NextStream " +
+                    "@name('s0') insert rstream into NextStream " +
                     "select rstream S0.TheString as TheString from SupportBean#length(3) as S0",
                     path);
                 env.AddListener("s0");
 
-                env.CompileDeploy("@Name('ii') select * from NextStream", path).AddListener("ii");
+                env.CompileDeploy("@name('ii') select * from NextStream", path).AddListener("ii");
 
                 SendEvent(env, "a", 2);
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
@@ -200,7 +210,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                        "@Name('s0') select rstream S1.IntPrimitive as aID, S2.IntPrimitive as bID " +
+                        "@name('s0') select rstream S1.IntPrimitive as aID, S2.IntPrimitive as bID " +
                         "from SupportBean(TheString='a')#length(2) as S1, " +
                         "SupportBean(TheString='b')#keepall as S2" +
                         " where S1.IntPrimitive = S2.IntPrimitive")
@@ -226,7 +236,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@Name('s0') select istream * from SupportBean#length(1)").AddListener("s0");
+                env.CompileDeploy("@name('s0') select istream * from SupportBean#length(1)").AddListener("s0");
 
                 var theEvent = SendEvent(env, "a", 2);
                 Assert.AreSame(theEvent, env.Listener("s0").AssertOneGetNewAndReset().Underlying);
@@ -245,12 +255,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('s0') insert rstream into NextStream " +
+                    "@name('s0') insert rstream into NextStream " +
                     "select istream a.TheString as TheString from SupportBean#length(1) as a",
                     path);
                 env.AddListener("s0");
 
-                env.CompileDeploy("@Name('ii') select * from NextStream", path).AddListener("ii");
+                env.CompileDeploy("@name('ii') select * from NextStream", path).AddListener("ii");
 
                 SendEvent(env, "a", 2);
                 Assert.AreEqual("a", env.Listener("s0").AssertOneGetNewAndReset().Get("TheString"));
@@ -272,7 +282,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                        "@Name('s0') " +
+                        "@name('s0') " +
                         "select istream S1.IntPrimitive as aID, S2.IntPrimitive as bID " +
                         "from SupportBean(TheString='a')#length(2) as S1, " +
                         "SupportBean(TheString='b')#keepall as S2" +

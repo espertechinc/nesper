@@ -20,7 +20,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public void Run(RegressionEnvironment env)
         {
             var lineSeparator = Environment.NewLine;
-            var statement = "@Name('s0') select TheString, /* this is my string */\n" +
+            var statement = "@name('s0') select TheString, /* this is my string */\n" +
                             "IntPrimitive, // same line Comment\n" +
                             "/* Comment taking one line */\n" +
                             "// another Comment taking a line\n" +

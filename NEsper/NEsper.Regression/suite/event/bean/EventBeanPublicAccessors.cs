@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             Assert.AreEqual(EventTypeApplicationType.CLASS, type.Metadata.ApplicationType);
             Assert.AreEqual("AnotherLegacyEvent", type.Metadata.Name);
 
-            var statementText = "@Name('s0') select " +
+            var statementText = "@name('s0') select " +
                                 "fieldLegacyVal as fieldSimple," +
                                 "fieldStringArray as fieldArr," +
                                 "fieldStringArray[1] as fieldArrIndexed," +

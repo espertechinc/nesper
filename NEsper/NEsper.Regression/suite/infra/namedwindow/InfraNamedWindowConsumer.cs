@@ -35,9 +35,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "TheString" };
-                var epl = "@Name('create') create window MyWindow.win:keepall() as SupportBean;\n" +
-                          "@Name('insert') insert into MyWindow select * from SupportBean;\n" +
-                          "@Name('select') select irstream * from MyWindow;\n";
+                var epl = "@name('create') create window MyWindow.win:keepall() as SupportBean;\n" +
+                          "@name('insert') insert into MyWindow select * from SupportBean;\n" +
+                          "@name('select') select irstream * from MyWindow;\n";
                 env.CompileDeploy(epl).AddListener("select");
 
                 env.Milestone(0);
@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var fields = new [] { "c0", "c1" };
                 var epl = "create window MyWindow#length(2) as SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
-                          "@Name('s0') select TheString as c0, sum(IntPrimitive) as c1 from MyWindow;\n";
+                          "@name('s0') select TheString as c0, sum(IntPrimitive) as c1 from MyWindow;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));

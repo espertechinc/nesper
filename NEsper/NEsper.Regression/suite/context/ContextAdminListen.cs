@@ -43,8 +43,8 @@ namespace com.espertech.esper.regressionlib.suite.context
             string contextName)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("@Name('ctx') " + eplContext, path);
-            env.CompileDeploy("@Name('s0') context " + contextName + " select count(*) from SupportBean", path);
+            env.CompileDeploy("@name('ctx') " + eplContext, path);
+            env.CompileDeploy("@name('s0') context " + contextName + " select count(*) from SupportBean", path);
             var api = env.Runtime.ContextPartitionService;
             var depIdCtx = env.DeploymentId("ctx");
 
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var name = "MyContextStartS0EndS1";
                 var path = new RegressionPath();
                 var contextEPL =
-                    "@Name('ctx') create context MyContextStartS0EndS1 start SupportBean_S0 as S0 end SupportBean_S1";
+                    "@name('ctx') create context MyContextStartS0EndS1 start SupportBean_S0 as S0 end SupportBean_S1";
                 env.CompileDeploy(contextEPL, path);
                 var depIdCtx = env.DeploymentId("ctx");
 
@@ -116,9 +116,9 @@ namespace com.espertech.esper.regressionlib.suite.context
                     depIdCtx,
                     "MyContextStartS0EndS1",
                     listener);
-                env.CompileDeploy("@Name('a') context MyContextStartS0EndS1 select count(*) from SupportBean", path);
+                env.CompileDeploy("@name('a') context MyContextStartS0EndS1 select count(*) from SupportBean", path);
                 var depIdA = env.DeploymentId("a");
-                env.CompileDeploy("@Name('b') context MyContextStartS0EndS1 select count(*) from SupportBean_S0", path);
+                env.CompileDeploy("@name('b') context MyContextStartS0EndS1 select count(*) from SupportBean_S0", path);
                 var depIdB = env.DeploymentId("b");
 
                 listener.AssertAndReset(
@@ -154,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var api = env.Runtime.ContextPartitionService;
 
-                var epl = "@Name('ctx') create context MyContext start SupportBean_S0 as S0 end SupportBean_S1";
+                var epl = "@name('ctx') create context MyContext start SupportBean_S0 as S0 end SupportBean_S1";
                 var listeners = new SupportContextListener[3];
                 for (var i = 0; i < listeners.Length; i++) {
                     listeners[i] = new SupportContextListener(env);
@@ -201,14 +201,14 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('ctx') create context MyContext " +
+                    "@name('ctx') create context MyContext " +
                     "context ContextPosNeg group by IntPrimitive > 0 as pos, group by IntPrimitive < 0 as neg from SupportBean, " +
                     "context ByString partition by TheString from SupportBean",
                     path);
                 var depIdCtx = env.DeploymentId("ctx");
                 listener.AssertAndReset(EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextCreated)));
 
-                env.CompileDeploy("@Name('s0') context MyContext select count(*) from SupportBean", path);
+                env.CompileDeploy("@name('s0') context MyContext select count(*) from SupportBean", path);
                 var depIdStmt = env.DeploymentId("s0");
                 listener.AssertAndReset(
                     EventContextWStmt(
@@ -255,9 +255,9 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('ctx') create context MyContext group by IntPrimitive > 0 as pos, group by IntPrimitive < 0 as neg from SupportBean",
+                    "@name('ctx') create context MyContext group by IntPrimitive > 0 as pos, group by IntPrimitive < 0 as neg from SupportBean",
                     path);
-                env.CompileDeploy("@Name('s0') context MyContext select count(*) from SupportBean", path);
+                env.CompileDeploy("@name('s0') context MyContext select count(*) from SupportBean", path);
 
                 var allocated = listener.GetAllocatedEvents();
                 Assert.AreEqual(2, allocated.Count);
@@ -278,8 +278,8 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.Runtime.ContextPartitionService.AddContextStateListener(listener);
 
                 var epl =
-                    "@Name('ctx') create context MyContext coalesce by consistent_hash_crc32(TheString) from SupportBean granularity 2 preallocate;\n" +
-                    "@Name('s0') context MyContext select count(*) from SupportBean;\n";
+                    "@name('ctx') create context MyContext coalesce by consistent_hash_crc32(TheString) from SupportBean granularity 2 preallocate;\n" +
+                    "@name('s0') context MyContext select count(*) from SupportBean;\n";
                 env.CompileDeploy(epl);
                 var deploymentId = env.DeploymentId("s0");
 
@@ -321,12 +321,12 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('ctx') create context MyContext start SupportBean_S0 as S0 end SupportBean_S1",
+                    "@name('ctx') create context MyContext start SupportBean_S0 as S0 end SupportBean_S1",
                     path);
                 var depIdCtx = env.DeploymentId("ctx");
                 listener.AssertAndReset(EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextCreated)));
 
-                env.CompileDeploy("@Name('s0') context MyContext select count(*) from SupportBean", path);
+                env.CompileDeploy("@name('s0') context MyContext select count(*) from SupportBean", path);
                 var depIdStmt = env.DeploymentId("s0");
                 listener.AssertAndReset(
                     EventContextWStmt(

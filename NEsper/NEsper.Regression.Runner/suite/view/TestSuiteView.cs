@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client.configuration;
+using com.espertech.esper.common.@internal.epl.dataflow.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.view;
 using com.espertech.esper.regressionlib.support.bean;
@@ -53,7 +54,9 @@ namespace com.espertech.esper.regressionrun.suite.view
                 typeof(SupportBean_S1),
                 typeof(SupportBean_A),
                 typeof(SupportBean_N),
-                typeof(SupportContextInitEventWLength)
+                typeof(SupportContextInitEventWLength),
+                typeof(SupportEventWithLongArray),
+                typeof(SupportObjectArrayOneDim)
             }) {
                 configuration.Common.AddEventType(clazz.Name, clazz);
             }
@@ -70,6 +73,10 @@ namespace com.espertech.esper.regressionrun.suite.view
                 "udf",
                 typeof(ViewExpressionWindow.LocalUDF),
                 "EvaluateExpiryUDF");
+
+            configuration.Common.AddImportType(typeof(DefaultSupportSourceOp));
+            configuration.Common.AddImportType(typeof(DefaultSupportCaptureOp));
+
         }
 
         [Test, RunInApplicationDomain]
@@ -227,5 +234,11 @@ namespace com.espertech.esper.regressionrun.suite.view
         {
             RegressionRunner.Run(session, ViewUnique.Executions());
         }
+        [Test, RunInApplicationDomain]
+        public void TestViewMultikeyWArray()
+        {
+            RegressionRunner.Run(session, ViewMultikeyWArray.Executions());
+        }
+
     }
 } // end of namespace

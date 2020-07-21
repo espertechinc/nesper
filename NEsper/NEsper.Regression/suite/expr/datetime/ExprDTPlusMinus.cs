@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@Name('var') create variable long varmsec", path);
+                env.CompileDeploy("@name('var') create variable long varmsec", path);
                 var startTime = "2002-05-30T09:00:00.000";
                 env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(startTime));
 
@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "val1a", "val1b", "val1c", "val1d", "val1e",
                     "val2a", "val2b", "val2c", "val2d", "val2e",
                 };
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           
                           "current_timestamp.plus(varmsec) as val1a," +
                           "DateTimeEx.plus(varmsec) as val1b," +
@@ -164,7 +164,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "val2d",
                     "val2e"
                 };
-                var eplFragment = "@Name('s0') select " +
+                var eplFragment = "@name('s0') select " +
                                   
                                   "current_timestamp.plus(1 hour 10 sec 20 msec) as val1a," +
                                   "DateTimeEx.plus(1 hour 10 sec 20 msec) as val1b," +

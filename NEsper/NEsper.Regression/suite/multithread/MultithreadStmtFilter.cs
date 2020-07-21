@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     {
         public void Run(RegressionEnvironment env)
         {
-            var plainFilter = "@Name('s0') select count(*) as mycount from SupportBean";
+            var plainFilter = "@name('s0') select count(*) as mycount from SupportBean";
             tryCount(env, 2, 1000, plainFilter, GeneratorEnumerator.DEFAULT_SUPPORTEBEAN_CB);
             tryCount(env, 4, 1000, plainFilter, GeneratorEnumerator.DEFAULT_SUPPORTEBEAN_CB);
 
@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             };
 
             var enumFilter =
-                "@Name('s0') select count(*) as mycount from SupportCollection(Strvals.anyOf(v -> v = 'j'))";
+                "@name('s0') select count(*) as mycount from SupportCollection(Strvals.anyOf(v -> v = 'j'))";
             tryCount(env, 4, 1000, enumFilter, enumCallback);
         }
 

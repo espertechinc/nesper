@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 string[] fields = {"myint"};
                 var hookType = typeof(SupportSQLColumnTypeConversion).FullName;
                 var stmtText =
-                    $"@Name('s0') @Hook(HookType=HookType.SQLCOL, hook='{hookType}') select * from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where myint = ${{myvariableOCC}}']";
+                    $"@name('s0') @Hook(HookType=HookType.SQLCOL, hook='{hookType}') select * from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where myint = ${{myvariableOCC}}']";
                 env.CompileDeploy(stmtText);
 
                 Assert.AreEqual(typeof(bool?), env.Statement("s0").EventType.GetPropertyType("myint"));
@@ -82,7 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 string[] fields = {"myint"};
                 var hookType = typeof(SupportSQLColumnTypeConversion).FullName;
                 var stmtText =
-                    $"@Name('s0') @Hook(HookType=HookType.SQLCOL, Hook='{hookType}')select * from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where myint = ${{myvariableIPC}}']";
+                    $"@name('s0') @Hook(HookType=HookType.SQLCOL, Hook='{hookType}')select * from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where myint = ${{myvariableIPC}}']";
                 env.CompileDeploy(stmtText);
 
                 env.Runtime.VariableService.SetVariableValue(null, "myvariableIPC", "x60"); // greater 50 turns true
@@ -108,7 +108,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 var fields = new [] { "TheString","IntPrimitive" };
                 var hookType = typeof(SupportSQLOutputRowConversion).FullName;
                 var stmtText =
-                    $"@Name('s0') @Hook(HookType=HookType.SQLROW, Hook='{hookType}')select * from sql:MyDBWithTxnIso1WithReadOnly ['select * from mytesttable where myint = ${{myvariableORC}}']";
+                    $"@name('s0') @Hook(HookType=HookType.SQLROW, Hook='{hookType}')select * from sql:MyDBWithTxnIso1WithReadOnly ['select * from mytesttable where myint = ${{myvariableORC}}']";
                 env.CompileDeploy(stmtText);
 
                 Assert.AreEqual(typeof(SupportBean), env.Statement("s0").EventType.UnderlyingType);

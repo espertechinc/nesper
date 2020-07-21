@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -14,14 +16,48 @@ using static com.espertech.esper.regressionlib.support.util.SupportXML;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
-    public class EventXMLNoSchemaDotEscape : RegressionExecution
+    public class EventXMLNoSchemaDotEscape
     {
-        public void Run(RegressionEnvironment env)
+        public static List<RegressionExecution> Executions()
         {
-            var stmt = "@Name('s0') select a\\.b.c\\.d as val from AEvent";
-            env.CompileDeploy(stmt).AddListener("s0");
+            var execs = new List<RegressionExecution>();
+            execs.Add(new EventXMLNoSchemaDotEscapePreconfig());
+            execs.Add(new EventXMLNoSchemaDotEscapeCreateSchema());
+            return execs;
+        }
 
-            SendXMLEvent(env, "<myroot><a.b><c.d>value</c.d></a.b></myroot>", "AEvent");
+
+        public class EventXMLNoSchemaDotEscapePreconfig : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunAssertion(env, "AEvent", new RegressionPath());
+            }
+        }
+
+        public class EventXMLNoSchemaDotEscapeCreateSchema : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@public @buseventtype " +
+                          "@XMLSchema(rootElementName='myroot')" +
+                          "create xml schema MyEventCreateSchema()";
+                var path = new RegressionPath();
+                env.CompileDeploy(epl, path);
+                RunAssertion(env, "MyEventCreateSchema", path);
+            }
+        }
+
+        private static void RunAssertion(
+            RegressionEnvironment env,
+            string eventTypeName,
+            RegressionPath path)
+        {
+
+            var stmt = "@name('s0') select a\\.b.c\\.d as val from " + eventTypeName;
+            env.CompileDeploy(stmt, path).AddListener("s0");
+
+            SendXMLEvent(env, "<myroot><a.b><c.d>value</c.d></a.b></myroot>", eventTypeName);
             var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
             Assert.AreEqual("value", theEvent.Get("val"));
 

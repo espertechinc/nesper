@@ -36,6 +36,11 @@ namespace com.espertech.esper.common.client.module
         /// <summary>
         /// The module uses
         /// </summary>
-        USES
+        USES,
+        
+        /// <summary>
+        /// The module imports
+        /// </summary>
+        IMPORTS
     }
 } // end of namespace

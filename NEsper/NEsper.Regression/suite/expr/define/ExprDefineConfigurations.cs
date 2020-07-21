@@ -26,7 +26,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
         public void Run(RegressionEnvironment env)
         {
             env.CompileDeploy(
-                "@Name('s0') expression myExpr {v -> alwaysTrue(null) } " +
+                "@name('s0') expression myExpr {v -> alwaysTrue(null) } " +
                 "select myExpr(st0) as c0, myExpr(st1) as c1, myExpr(st0) as c2, myExpr(st1) as c3 from SupportBean_ST0#lastevent as st0, SupportBean_ST1#lastevent as st1");
             env.AddListener("s0");
 

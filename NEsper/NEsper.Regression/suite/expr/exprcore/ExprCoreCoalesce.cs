@@ -8,254 +8,250 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionlib.support.expreval;
 
 using NUnit.Framework;
 
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
+using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil; // TryInvalidCompile
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
-    public class ExprCoreCoalesce
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            var executions = new List<RegressionExecution>();
-            executions.Add(new ExprCoreCoalesceBeans());
-            executions.Add(new ExprCoreCoalesceLong());
-            executions.Add(new ExprCoreCoalesceLongOM());
-            executions.Add(new ExprCoreCoalesceLongCompile());
-            executions.Add(new ExprCoreCoalesceDouble());
-            executions.Add(new ExprCoreCoalesceNull());
-            executions.Add(new ExprCoreCoalesceInvalid());
-            return executions;
-        }
+	public class ExprCoreCoalesce
+	{
 
-        private static void TryCoalesceInvalid(
-            RegressionEnvironment env,
-            string coalesceExpr)
-        {
-            var epl = "select " + coalesceExpr + " as result from SupportBean";
-            TryInvalidCompile(env, epl, "skip");
-        }
+		public static ICollection<RegressionExecution> Executions()
+		{
+			var executions = new List<RegressionExecution>();
+			executions.Add(new ExprCoreCoalesceBeans());
+			executions.Add(new ExprCoreCoalesceLong());
+			executions.Add(new ExprCoreCoalesceLongOM());
+			executions.Add(new ExprCoreCoalesceLongCompile());
+			executions.Add(new ExprCoreCoalesceDouble());
+			executions.Add(new ExprCoreCoalesceNull());
+			executions.Add(new ExprCoreCoalesceInvalid());
+			return executions;
+		}
 
-        private static void TryCoalesceLong(RegressionEnvironment env)
-        {
-            SendEvent(env, 1L, 2, 3);
-            Assert.AreEqual(1L, env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
+		private class ExprCoreCoalesceBeans : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var epl = "@name('s0') select coalesce(a.TheString, b.TheString) as myString, coalesce(a, b) as myBean" +
+				          " from pattern [every (a=SupportBean(TheString='s0') or b=SupportBean(TheString='s1'))]";
+				env.CompileDeploy(epl).AddListener("s0");
 
-            SendBoxedEvent(env, null, 2, null);
-            Assert.AreEqual(2L, env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
+				var theEvent = SendEvent(env, "s0");
+				var eventReceived = env.Listener("s0").AssertOneGetNewAndReset();
+				Assert.AreEqual("s0", eventReceived.Get("myString"));
+				Assert.AreSame(theEvent, eventReceived.Get("myBean"));
 
-            SendBoxedEvent(env, null, null, short.Parse("3"));
-            Assert.AreEqual(3L, env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
+				theEvent = SendEvent(env, "s1");
+				eventReceived = env.Listener("s0").AssertOneGetNewAndReset();
+				Assert.AreEqual("s1", eventReceived.Get("myString"));
+				Assert.AreSame(theEvent, eventReceived.Get("myBean"));
 
-            SendBoxedEvent(env, null, null, null);
-            Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
-        }
+				env.UndeployAll();
+			}
+		}
 
-        private static SupportBean SendEvent(
-            RegressionEnvironment env,
-            string theString)
-        {
-            var bean = new SupportBean();
-            bean.TheString = theString;
-            env.SendEventBean(bean);
-            return bean;
-        }
+		private class ExprCoreCoalesceLong : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				env.CompileDeploy("@name('s0')  select coalesce(LongBoxed, IntBoxed, ShortBoxed) as result from SupportBean").AddListener("s0");
 
-        private static void SendEvent(
-            RegressionEnvironment env,
-            long longBoxed,
-            int intBoxed,
-            short shortBoxed)
-        {
-            SendBoxedEvent(env, longBoxed, intBoxed, shortBoxed);
-        }
+				Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("result"));
 
-        private static void SendBoxedEvent(
-            RegressionEnvironment env,
-            long? longBoxed,
-            int? intBoxed,
-            short? shortBoxed)
-        {
-            var bean = new SupportBean();
-            bean.LongBoxed = longBoxed;
-            bean.IntBoxed = intBoxed;
-            bean.ShortBoxed = shortBoxed;
-            env.SendEventBean(bean);
-        }
+				TryCoalesceLong(env);
 
-        private static void SendEventWithDouble(
-            RegressionEnvironment env,
-            byte? byteBoxed,
-            short? shortBoxed,
-            int? intBoxed,
-            long? longBoxed,
-            float? floatBoxed,
-            double? doubleBoxed)
-        {
-            var bean = new SupportBean();
-            bean.ByteBoxed = byteBoxed;
-            bean.ShortBoxed = shortBoxed;
-            bean.IntBoxed = intBoxed;
-            bean.LongBoxed = longBoxed;
-            bean.FloatBoxed = floatBoxed;
-            bean.DoubleBoxed = doubleBoxed;
-            env.SendEventBean(bean);
-        }
+				env.UndeployAll();
+			}
+		}
 
-        internal class ExprCoreCoalesceBeans : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl =
-                    "@Name('s0') select coalesce(a.TheString, b.TheString) as myString, coalesce(a, b) as myBean" +
-                    " from pattern [every (a=SupportBean(TheString='s0') or b=SupportBean(TheString='s1'))]";
-                env.CompileDeploy(epl).AddListener("s0");
+		private class ExprCoreCoalesceLongOM : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var epl = "select coalesce(LongBoxed,IntBoxed,ShortBoxed) as result" +
+				          " from SupportBean#length(1000)";
 
-                var theEvent = SendEvent(env, "s0");
-                var eventReceived = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual("s0", eventReceived.Get("myString"));
-                Assert.AreSame(theEvent, eventReceived.Get("myBean"));
+				var model = new EPStatementObjectModel();
+				model.SelectClause = SelectClause.Create()
+					.Add(
+						Expressions.Coalesce(
+							"LongBoxed",
+							"IntBoxed",
+							"ShortBoxed"),
+						"result");
+				model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).Name).AddView("length", Expressions.Constant(1000)));
+				model = SerializableObjectCopier.GetInstance(env.Container).Copy(model);
+				Assert.AreEqual(epl, model.ToEPL());
 
-                theEvent = SendEvent(env, "s1");
-                eventReceived = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual("s1", eventReceived.Get("myString"));
-                Assert.AreSame(theEvent, eventReceived.Get("myBean"));
+				model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
+				env.CompileDeploy(model).AddListener("s0");
+				Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("result"));
 
-                env.UndeployAll();
-            }
-        }
+				TryCoalesceLong(env);
 
-        internal class ExprCoreCoalesceLong : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                env.CompileDeploy(
-                        "@Name('s0')  select coalesce(LongBoxed, IntBoxed, ShortBoxed) as result from SupportBean")
-                    .AddListener("s0");
+				env.UndeployAll();
+			}
+		}
 
-                Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("result"));
+		private class ExprCoreCoalesceLongCompile : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var epl = "@name('s0') select coalesce(LongBoxed,IntBoxed,ShortBoxed) as result" +
+				          " from SupportBean#length(1000)";
 
-                TryCoalesceLong(env);
+				env.EplToModelCompileDeploy(epl).AddListener("s0");
+				Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("result"));
 
-                env.UndeployAll();
-            }
-        }
+				TryCoalesceLong(env);
 
-        internal class ExprCoreCoalesceLongOM : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "select coalesce(LongBoxed,IntBoxed,ShortBoxed) as result" +
-                          " from SupportBean#length(1000)";
+				env.UndeployAll();
+			}
+		}
 
-                var model = new EPStatementObjectModel();
-                model.SelectClause = SelectClause.Create()
-                    .Add(
-                        Expressions.Coalesce(
-                            "LongBoxed",
-                            "IntBoxed",
-                            "ShortBoxed"),
-                        "result");
-                model.FromClause = FromClause.Create(
-                    FilterStream.Create(typeof(SupportBean).Name).AddView("length", Expressions.Constant(1000)));
-                model = env.CopyMayFail(model);
-                Assert.AreEqual(epl, model.ToEPL());
+		private class ExprCoreCoalesceDouble : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var fields = "c0".SplitCsv();
+				var builder = new SupportEvalBuilder("SupportBean")
+					.WithExpressions(fields, "coalesce(null, ByteBoxed, ShortBoxed, IntBoxed, LongBoxed, FloatBoxed, DoubleBoxed)")
+					.WithStatementConsumer(stmt => Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("c0")));
 
-                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
-                env.CompileDeploy(model).AddListener("s0");
-                Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("result"));
+				builder.WithAssertion(MakeEventWithDouble(env, null, null, null, null, null, null)).Expect(fields, new object[] {null});
 
-                TryCoalesceLong(env);
+				builder.WithAssertion(MakeEventWithDouble(env, null, short.Parse("2"), null, null, null, 1d)).Expect(fields, 2d);
 
-                env.UndeployAll();
-            }
-        }
+				builder.WithAssertion(MakeEventWithDouble(env, null, null, null, null, null, 100d)).Expect(fields, 100d);
 
-        internal class ExprCoreCoalesceLongCompile : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select coalesce(LongBoxed,IntBoxed,ShortBoxed) as result" +
-                          " from SupportBean#length(1000)";
+				builder.WithAssertion(MakeEventWithDouble(env, null, null, null, null, 10f, 100d)).Expect(fields, 10d);
 
-                env.EplToModelCompileDeploy(epl).AddListener("s0");
-                Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("result"));
+				builder.WithAssertion(MakeEventWithDouble(env, null, null, 1, 5L, 10f, 100d)).Expect(fields, 1d);
 
-                TryCoalesceLong(env);
+				builder.WithAssertion(MakeEventWithDouble(env, byte.Parse("3"), null, null, null, null, null)).Expect(fields, 3d);
 
-                env.UndeployAll();
-            }
-        }
+				builder.WithAssertion(MakeEventWithDouble(env, null, null, null, 5L, 10f, 100d)).Expect(fields, 5d);
 
-        internal class ExprCoreCoalesceDouble : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl =
-                    "@Name('s0') select coalesce(null, ByteBoxed, ShortBoxed, IntBoxed, LongBoxed, FloatBoxed, DoubleBoxed) as result from SupportBean";
-                env.CompileDeploy(epl).AddListener("s0");
-                Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("result"));
+				builder.Run(env);
+				env.UndeployAll();
+			}
+		}
 
-                SendEventWithDouble(env, null, null, null, null, null, null);
-                Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
+		private class ExprCoreCoalesceInvalid : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				TryCoalesceInvalid(env, "coalesce(IntPrimitive)");
+				TryCoalesceInvalid(env, "coalesce(IntPrimitive, string)");
+				TryCoalesceInvalid(env, "coalesce(IntPrimitive, xxx)");
+				TryCoalesceInvalid(env, "coalesce(IntPrimitive, booleanBoxed)");
+				TryCoalesceInvalid(env, "coalesce(CharPrimitive, LongBoxed)");
+				TryCoalesceInvalid(env, "coalesce(CharPrimitive, string, string)");
+				TryCoalesceInvalid(env, "coalesce(string, LongBoxed)");
+				TryCoalesceInvalid(env, "coalesce(null, LongBoxed, string)");
+				TryCoalesceInvalid(env, "coalesce(null, null, BoolBoxed, 1l)");
+			}
+		}
 
-                SendEventWithDouble(env, null, short.Parse("2"), null, null, null, 1d);
-                Assert.AreEqual(2d, env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
+		private class ExprCoreCoalesceNull : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var fields = "c0".SplitCsv();
+				var builder = new SupportEvalBuilder("SupportBean")
+					.WithExpressions(fields, "coalesce(null, null)")
+					.WithStatementConsumer(stmt => Assert.AreEqual(null, stmt.EventType.GetPropertyType("result")));
 
-                SendEventWithDouble(env, null, null, null, null, null, 100d);
-                Assert.AreEqual(100d, env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
+				builder.WithAssertion(new SupportBean()).Expect(fields, new object[] {null});
 
-                SendEventWithDouble(env, null, null, null, null, 10f, 100d);
-                Assert.AreEqual(10d, env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
+				builder.Run(env);
+				env.UndeployAll();
+			}
+		}
 
-                SendEventWithDouble(env, null, null, 1, 5L, 10f, 100d);
-                Assert.AreEqual(1d, env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
+		private static void TryCoalesceInvalid(
+			RegressionEnvironment env,
+			string coalesceExpr)
+		{
+			var epl = "select " + coalesceExpr + " as result from SupportBean";
+			TryInvalidCompile(env, epl, "skip");
+		}
 
-                SendEventWithDouble(env, byte.Parse("3"), null, null, null, null, null);
-                Assert.AreEqual(3d, env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
+		private static void TryCoalesceLong(RegressionEnvironment env)
+		{
+			SendEvent(env, 1L, 2, 3);
+			Assert.AreEqual(1L, env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
 
-                SendEventWithDouble(env, null, null, null, 5L, 10f, 100d);
-                Assert.AreEqual(5d, env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
+			SendBoxedEvent(env, null, 2, null);
+			Assert.AreEqual(2L, env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
 
-                env.UndeployAll();
-            }
-        }
+			SendBoxedEvent(env, null, null, short.Parse("3"));
+			Assert.AreEqual(3L, env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
 
-        internal class ExprCoreCoalesceInvalid : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                TryCoalesceInvalid(env, "coalesce(IntPrimitive)");
-                TryCoalesceInvalid(env, "coalesce(IntPrimitive, string)");
-                TryCoalesceInvalid(env, "coalesce(IntPrimitive, xxx)");
-                TryCoalesceInvalid(env, "coalesce(IntPrimitive, booleanBoxed)");
-                TryCoalesceInvalid(env, "coalesce(CharPrimitive, LongBoxed)");
-                TryCoalesceInvalid(env, "coalesce(CharPrimitive, string, string)");
-                TryCoalesceInvalid(env, "coalesce(string, LongBoxed)");
-                TryCoalesceInvalid(env, "coalesce(null, LongBoxed, string)");
-                TryCoalesceInvalid(env, "coalesce(null, null, BoolBoxed, 1l)");
-            }
-        }
+			SendBoxedEvent(env, null, null, null);
+			Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
+		}
 
-        internal class ExprCoreCoalesceNull : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select coalesce(null, null) as result from SupportBean";
-                env.CompileDeploy(epl).AddListener("s0");
-                Assert.AreEqual(null, env.Statement("s0").EventType.GetPropertyType("result"));
+		private static SupportBean SendEvent(
+			RegressionEnvironment env,
+			string theString)
+		{
+			var bean = new SupportBean();
+			bean.TheString = theString;
+			env.SendEventBean(bean);
+			return bean;
+		}
 
-                env.SendEventBean(new SupportBean());
-                Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
+		private static void SendEvent(
+			RegressionEnvironment env,
+			long longBoxed,
+			int intBoxed,
+			short shortBoxed)
+		{
+			SendBoxedEvent(env, longBoxed, intBoxed, shortBoxed);
+		}
 
-                env.UndeployAll();
-            }
-        }
-    }
+		private static void SendBoxedEvent(
+			RegressionEnvironment env,
+			long? longBoxed,
+			int? intBoxed,
+			short? shortBoxed)
+		{
+			var bean = new SupportBean();
+			bean.LongBoxed = longBoxed;
+			bean.IntBoxed = intBoxed;
+			bean.ShortBoxed = shortBoxed;
+			env.SendEventBean(bean);
+		}
+
+		private static SupportBean MakeEventWithDouble(
+			RegressionEnvironment env,
+			byte? byteBoxed,
+			short? shortBoxed,
+			int? intBoxed,
+			long? longBoxed,
+			float? floatBoxed,
+			double? doubleBoxed)
+		{
+			var bean = new SupportBean();
+			bean.ByteBoxed = byteBoxed;
+			bean.ShortBoxed = shortBoxed;
+			bean.IntBoxed = intBoxed;
+			bean.LongBoxed = longBoxed;
+			bean.FloatBoxed = floatBoxed;
+			bean.DoubleBoxed = doubleBoxed;
+			return bean;
+		}
+	}
 } // end of namespace

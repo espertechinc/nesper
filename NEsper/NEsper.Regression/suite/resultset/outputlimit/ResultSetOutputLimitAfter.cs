@@ -138,7 +138,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             SupportOutputLimitOpt opt)
         {
             var epl = opt.GetHint() +
-                      "@Name('s0') select sum(IntPrimitive) as thesum " +
+                      "@name('s0') select sum(IntPrimitive) as thesum " +
                       "from SupportBean#keepall " +
                       "output after 4 events last every 2 events";
             env.CompileDeploy(epl).AddListener("s0");
@@ -223,7 +223,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                                "0.0d minutes " +
                                "5.0d seconds " +
                                "0.0d milliseconds";
-                env.CompileDeploy("@Name('s0') " + stmtText).AddListener("s0");
+                env.CompileDeploy("@name('s0') " + stmtText).AddListener("s0");
 
                 TryAssertionEveryPolicy(env, milestone);
 
@@ -244,7 +244,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 SendCurrentTime(env, "2002-02-01T09:00:00.000");
 
-                var epl = "@Name('s0') select * from SupportBean output after 1 month";
+                var epl = "@name('s0') select * from SupportBean output after 1 month";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -270,7 +270,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "TheString" };
-                var stmtText = "@Name('s0') select TheString from SupportBean#keepall output after 3 events";
+                var stmtText = "@name('s0') select TheString from SupportBean#keepall output after 3 events";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEvent(env, "E1");
@@ -336,7 +336,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 SendTimer(env, 0);
                 var fields = new [] { "TheString" };
-                var stmtText = "@Name('s0') select TheString from SupportBean#keepall output after 20 seconds";
+                var stmtText = "@name('s0') select TheString from SupportBean#keepall output after 20 seconds";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.Milestone(0);
@@ -383,7 +383,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.CompileDeploy("create variable int myvar_local = 1", path);
 
                 SendTimer(env, 0);
-                var stmtText = "@Name('s0') select TheString from SupportBean#keepall output after 20 seconds snapshot when myvar_local=1";
+                var stmtText = "@name('s0') select TheString from SupportBean#keepall output after 20 seconds snapshot when myvar_local=1";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
 
                 TryAssertionSnapshotVar(env);
@@ -401,7 +401,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 var epl = "create variable boolean myvar0 = false;\n" +
                           "create variable boolean myvar1 = false;\n" +
                           "create variable boolean myvar2 = false;\n" +
-                          "@Name('s0')\n" +
+                          "@name('s0')\n" +
                           "select a.* from SupportBean#time(10) a output after 3 events when myvar0=true then set myvar1=true, myvar2=true";
                 env.CompileDeploy(epl).AddListener("s0");
                 var depId = env.DeploymentId("s0");

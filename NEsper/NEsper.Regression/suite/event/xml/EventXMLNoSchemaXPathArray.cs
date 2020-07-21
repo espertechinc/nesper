@@ -6,17 +6,52 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.common.client.scopetest;
-using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using static com.espertech.esper.regressionlib.support.util.SupportXML;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
-    public class EventXMLNoSchemaXPathArray : RegressionExecution
+    public class EventXMLNoSchemaXPathArray
     {
-        public void Run(RegressionEnvironment env)
+        public static List<RegressionExecution> Executions()
+        {
+            var execs = new List<RegressionExecution>();
+            execs.Add(new EventXMLNoSchemaXPathArrayPreconfig());
+            execs.Add(new EventXMLNoSchemaXPathArrayCreateSchema());
+            return execs;
+        }
+
+
+        public class EventXMLNoSchemaXPathArrayPreconfig : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunAssertion(env, "Event", new RegressionPath());
+            }
+        }
+
+        public class EventXMLNoSchemaXPathArrayCreateSchema : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@public @buseventtype " +
+                          "@XMLSchema(rootElementName='Event')" +
+                          "@XMLSchemaField(name='A', xpath='//Field[@Name=\"A\"]/@Value', type='nodeset', castToType='string[]')" +
+                          "create xml schema MyEventCreateSchema()";
+                var path = new RegressionPath();
+                env.CompileDeploy(epl, path);
+                RunAssertion(env, "MyEventCreateSchema", path);
+            }
+        }
+
+        private static void RunAssertion(
+            RegressionEnvironment env,
+            string eventTypeName,
+            RegressionPath path)
         {
             var xml = "<Event IsTriggering=\"True\">\n" +
                       "<Field Name=\"A\" Value=\"987654321\"/>\n" +
@@ -31,14 +66,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                       "</Participants>\n" +
                       "</Event>";
 
-            env.CompileDeploy("@Name('s0') select * from Event").AddListener("s0");
+            env.CompileDeploy("@name('s0') select * from " + eventTypeName, path).AddListener("s0");
 
-            SendXMLEvent(env, xml, "Event");
+            SendXMLEvent(env, xml, eventTypeName);
 
             var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
             EPAssertionUtil.AssertProps(
                 theEvent,
-                new [] { "A" },
+                new[] {"A"},
                 new object[] {new object[] {"987654321", "9876543210"}});
 
             env.UndeployAll();

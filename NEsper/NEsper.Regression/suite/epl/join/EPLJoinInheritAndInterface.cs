@@ -17,7 +17,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@Name('s0') select A, B from ISupportA#length(10), ISupportB#length(10) where A = B";
+            var epl = "@name('s0') select A, B from ISupportA#length(10), ISupportB#length(10) where A = B";
             env.CompileDeployAddListenerMileZero(epl, "s0");
 
             env.SendEventBean(new ISupportAImpl("1", "ab1"));

@@ -42,10 +42,10 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual(5.5d, ParseLoadJson("5.5"));
 
 			result = ParseLoadJson("{\"name\":\"myname\",\"value\":5}");
-			EPAssertionUtil.AssertPropsMap(result.AsStringDictionary(), "name,value".Split(","), "myname", 5);
+			EPAssertionUtil.AssertPropsMap(result.AsStringDictionary(), "name,value".SplitCsv(), "myname", 5);
 
 			result = ParseLoadJson("{name:\"myname\",value:5}");
-			EPAssertionUtil.AssertPropsMap(result.AsStringDictionary(), "name,value".Split(","), "myname", 5);
+			EPAssertionUtil.AssertPropsMap(result.AsStringDictionary(), "name,value".SplitCsv(), "myname", 5);
 
 			result = ParseLoadJson("[\"one\",2]");
 			EPAssertionUtil.AssertEqualsExactOrder(new object[] {"one", 2}, (IList<object>) result);

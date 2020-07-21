@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         private void RunDocSampleUpToN(RegressionEnvironment env)
         {
             var fields = new [] { "a0_Id","a1_Id","b_Id" };
-            var epl = "@Name('s0') select * from TemperatureSensorEvent\n" +
+            var epl = "@name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
                       "  partition by Device\n" +
                       "  measures A[0].Id as a0_Id, A[1].Id as a1_Id, B.Id as b_Id\n" +
@@ -81,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             string pattern)
         {
             var fields = new [] { "a0_Id","a1_Id","a2_Id","b_Id" };
-            var epl = "@Name('s0') select * from TemperatureSensorEvent\n" +
+            var epl = "@name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
                       "  partition by Device\n" +
                       "  measures A[0].Id as a0_Id, A[1].Id as a1_Id, A[2].Id as a2_Id, B.Id as b_Id\n" +
@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         private void RunDocSampleExactlyN(RegressionEnvironment env)
         {
             var fields = new [] { "a0_Id","a1_Id" };
-            var epl = "@Name('s0') select * from TemperatureSensorEvent\n" +
+            var epl = "@name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
                       "  partition by Device\n" +
                       "  measures A[0].Id as a0_Id, A[1].Id as a1_Id\n" +
@@ -183,7 +183,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
         private void RunAssertionPrev(RegressionEnvironment env)
         {
-            var text = "@Name('s0') select * from SupportBean " +
+            var text = "@name('s0') select * from SupportBean " +
                        "match_recognize (" +
                        "  measures A as a" +
                        "  pattern (A{3}) " +
@@ -641,7 +641,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var measures = MakeMeasures(props);
             var defines = MakeDefines(props);
 
-            var text = "@Name('s0') select * from SupportBean " +
+            var text = "@name('s0') select * from SupportBean " +
                        "match_recognize (" +
                        " partition by IntPrimitive" +
                        " measures " +
@@ -769,7 +769,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                        SupportStatementCompileHook.ResetGetClassName() +
                        "')";
             var epl = hook +
-                      "@Name('s0') select * from SupportBean#keepall " +
+                      "@name('s0') select * from SupportBean#keepall " +
                       "match_recognize (" +
                       " measures A as a" +
                       " pattern (" +

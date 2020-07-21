@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 string[] fields = {"Id", "S1totals.v1", "S1totals.v2"};
                 var text =
-                    "@Name('s0') select Id, (select count(*) as v1, sum(Id) as v2 from SupportBean_S1#length(3)) as S1totals " +
+                    "@name('s0') select Id, (select count(*) as v1, sum(Id) as v2 from SupportBean_S1#length(3)) as S1totals " +
                     "from SupportBean_S0 S0";
                 env.CompileDeploy(text).AddListener("s0");
 
@@ -173,7 +173,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var stmtText = "@Name('s0') select " +
+                var stmtText = "@name('s0') select " +
                                "(select TheString as v1, IntPrimitive as v2 from SupportBean#lastevent) as subrow " +
                                "from SupportBean_S0 as S0";
                 env.CompileDeployAddListenerMile(stmtText, "s0", milestone.GetAndIncrement());
@@ -194,7 +194,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select P00, " +
+                var stmtText = "@name('s0') select P00, " +
                                "(select " +
                                "  sum(IntPrimitive) as v1, " +
                                "  sum(IntPrimitive + 1) as v2, " +

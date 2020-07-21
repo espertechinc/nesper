@@ -525,7 +525,7 @@ namespace com.espertech.esperio.csv
                     var typeAndName = regex.Split(name);
                     try {
                         name = typeAndName[1];
-                        type = TypeHelper.ResolveType(TypeHelper.GetBoxedTypeName(typeAndName[0]));
+                        type = TypeHelper.ResolveType(Boxing.GetBoxedTypeName(typeAndName[0]));
                         _propertyOrder[i] = name;
                     } catch (Exception e) {
                         Log.Warn("Unable to use given type for property, will default to String: " + _propertyOrder[i], e);

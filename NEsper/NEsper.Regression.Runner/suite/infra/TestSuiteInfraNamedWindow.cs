@@ -72,7 +72,9 @@ namespace com.espertech.esper.regressionrun.suite.infra
                 typeof(SupportBeanTwo),
                 typeof(SupportCountAccessEvent),
                 typeof(BookDesc),
-                typeof(SupportBean_Container)
+                typeof(SupportBean_Container),
+                typeof(SupportEventWithManyArray),
+                typeof(SupportEventWithIntArray)
             }) {
                 configuration.Common.AddEventType(clazz);
             }
@@ -116,6 +118,8 @@ namespace com.espertech.esper.regressionrun.suite.infra
             var legacy = new ConfigurationCommonEventTypeBean();
             legacy.CopyMethod = "MyCopyMethod";
             configuration.Common.AddEventType("SupportBeanCopyMethod", typeof(SupportBeanCopyMethod), legacy);
+
+            configuration.Common.AddEventType("SimpleEventWithId", new string[]{"id"}, new object[]{ typeof(string) });
 
             configuration.Compiler.AddPlugInSingleRowFunction(
                 "setBeanLongPrimitive999",

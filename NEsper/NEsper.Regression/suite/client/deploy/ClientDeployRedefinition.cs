@@ -42,13 +42,13 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                        "create window MyWindowOne#keepall as select * from MyTypeOne;" +
                        "insert into MyWindowOne select * from MyTypeOne;";
                 env.CompileDeploy(text).UndeployAll();
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 // test on-merge
                 var moduleString =
-                    "@Name('S0') create window MyWindow#unique(IntPrimitive) as SupportBean;\n" +
-                    "@Name('S1') on MyWindow insert into SecondStream select *;\n" +
-                    "@Name('S2') on SecondStream merge MyWindow when matched then insert into ThirdStream select * then delete\n";
+                    "@name('S0') create window MyWindow#unique(IntPrimitive) as SupportBean;\n" +
+                    "@name('S1') on MyWindow insert into SecondStream select *;\n" +
+                    "@name('S2') on SecondStream merge MyWindow when matched then insert into ThirdStream select * then delete\n";
                 var compiled = env.Compile(moduleString);
                 env.Deploy(compiled).UndeployAll().Deploy(compiled).UndeployAll();
 

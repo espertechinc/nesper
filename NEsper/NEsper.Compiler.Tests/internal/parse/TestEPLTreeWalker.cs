@@ -38,7 +38,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.compiler.@internal.parse
 {
 	[TestFixture]
-	public class TestEPLTreeWalker : AbstractRuntimeTest
+	public class TestEPLTreeWalker : AbstractCompilerTest
 	{
 		private static string CLASSNAME = typeof(SupportBean).Name;
 
@@ -62,10 +62,10 @@ namespace com.espertech.esper.compiler.@internal.parse
 			// assert input
 			Assert.AreEqual(2, op.Input.StreamNamesAndAliases.Count);
 			var in1 = op.Input.StreamNamesAndAliases[0];
-			EPAssertionUtil.AssertEqualsExactOrder("s0,s1".Split(","), in1.InputStreamNames);
+			EPAssertionUtil.AssertEqualsExactOrder("s0,s1".SplitCsv(), in1.InputStreamNames);
 			Assert.AreEqual("ST1", in1.OptionalAsName);
 			var in2 = op.Input.StreamNamesAndAliases[1];
-			EPAssertionUtil.AssertEqualsExactOrder("s2".Split(","), in2.InputStreamNames);
+			EPAssertionUtil.AssertEqualsExactOrder("s2".SplitCsv(), in2.InputStreamNames);
 			Assert.IsNull(in2.OptionalAsName);
 
 			// assert output
@@ -123,7 +123,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 			var schema = walker.StatementSpec.CreateSchemaDesc;
 			Assert.AreEqual("MyName", schema.SchemaName);
-			EPAssertionUtil.AssertEqualsExactOrder("com.company.SupportBean".Split(","), schema.Types.ToArray());
+			EPAssertionUtil.AssertEqualsExactOrder("com.company.SupportBean".SplitCsv(), schema.Types.ToArray());
 			Assert.IsTrue(schema.Inherits.IsEmpty());
 			Assert.IsTrue(schema.Columns.IsEmpty());
 			Assert.AreEqual(AssignedType.NONE, schema.AssignedType);
@@ -133,7 +133,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			schema = walker.StatementSpec.CreateSchemaDesc;
 			Assert.AreEqual("MyName", schema.SchemaName);
 			Assert.IsTrue(schema.Types.IsEmpty());
-			EPAssertionUtil.AssertEqualsExactOrder("InheritedType".Split(","), schema.Inherits.ToArray());
+			EPAssertionUtil.AssertEqualsExactOrder("InheritedType".SplitCsv(), schema.Inherits.ToArray());
 			AssertSchema(schema.Columns[0], "col1", "string", false);
 			AssertSchema(schema.Columns[1], "col2", "int", false);
 			AssertSchema(schema.Columns[2], "col3", "Type", true);
@@ -142,7 +142,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 			schema = walker.StatementSpec.CreateSchemaDesc;
 			Assert.AreEqual("MyName", schema.SchemaName);
-			EPAssertionUtil.AssertEqualsExactOrder("MyNameTwo,MyNameThree".Split(","), schema.Types.ToArray());
+			EPAssertionUtil.AssertEqualsExactOrder("MyNameTwo,MyNameThree".SplitCsv(), schema.Types.ToArray());
 			Assert.IsTrue(schema.Inherits.IsEmpty());
 			Assert.IsTrue(schema.Columns.IsEmpty());
 			Assert.AreEqual(AssignedType.VARIANT, schema.AssignedType);

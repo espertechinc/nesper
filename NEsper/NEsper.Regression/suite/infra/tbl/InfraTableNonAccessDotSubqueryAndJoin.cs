@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                             ")";
             env.CompileDeploy(soda, eplCreate, path);
 
-            var eplIntoTable = "@Name('into') into table MyTable select sum(IntPrimitive) as col1, sorted() as col2, " +
+            var eplIntoTable = "@name('into') into table MyTable select sum(IntPrimitive) as col1, sorted() as col2, " +
                                "window(*) as col4 from SupportBean#length(3)";
             env.CompileDeploy(soda, eplIntoTable, path);
             var sentSB = new SupportBean[2];
@@ -47,12 +47,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.UndeployModuleContaining("into");
 
             var eplMerge =
-                "@Name('merge') on SupportBean merge MyTable when matched then update set col3={1,2,4,2}, col0=\"x\"";
+                "@name('merge') on SupportBean merge MyTable when matched then update set col3={1,2,4,2}, col0=\"x\"";
             env.CompileDeploy(soda, eplMerge, path);
             MakeSendSupportBean(env, null, -1);
             env.UndeployModuleContaining("merge");
 
-            var eplSelect = "@Name('s0') select " +
+            var eplSelect = "@name('s0') select " +
                             "col0 as c0_1, mt.col0 as c0_2, " +
                             "col1 as c1_1, mt.col1 as c1_2, " +
                             "col2 as c2_1, mt.col2 as c2_2, " +
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 new object[] {sentSB});
 
             // unnamed column
-            var eplSelectUnnamed = "@Name('s1') select col2.sorted().firstOf(), mt.col2.sorted().firstOf()" +
+            var eplSelectUnnamed = "@name('s1') select col2.sorted().firstOf(), mt.col2.sorted().firstOf()" +
                                    " from SupportBean unidirectional, MyTable mt";
             env.CompileDeploy(eplSelectUnnamed, path);
             object[][] expectedTypeUnnamed = {

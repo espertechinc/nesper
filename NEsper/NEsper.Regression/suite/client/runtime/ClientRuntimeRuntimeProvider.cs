@@ -106,14 +106,16 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 Assert.IsTrue(runtimeOne.IsDestroyed);
                 Assert.IsFalse(runtimeTwo.IsDestroyed);
 
+                var stageTwo = runtimeTwo.StageService;
                 runtimeTwo.Destroy();
                 EPAssertionUtil.AssertNotContains(EPRuntimeProvider.RuntimeURIs, uriOne, uriTwo);
                 Assert.IsNull(EPRuntimeProvider.GetExistingRuntime(uriTwo));
                 Assert.IsTrue(runtimeOne.IsDestroyed);
                 Assert.IsTrue(runtimeTwo.IsDestroyed);
 
-                Assert.That(() => runtimeTwo.EventService, Throws.InstanceOf<EPRuntimeDestroyedException>());
-                Assert.That(() => runtimeTwo.DeploymentService, Throws.InstanceOf<EPRuntimeDestroyedException>());
+                Assert.That(
+                    () => adminOne.Rollout(Collections.SingletonList(new EPDeploymentRolloutCompiled(compiled))),
+                    Throws.InstanceOf<EPDeployException>());
 
                 try {
                     adminOne.Deploy(compiled);
@@ -127,6 +129,17 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 }
 
                 EPAssertionUtil.AssertNotContains(EPRuntimeProvider.RuntimeURIs, uriTwo);
+
+                TryAssertDestroyed(() => DoNothing(runtimeTwo.EventService));
+                TryAssertDestroyed(() => DoNothing(runtimeTwo.DeploymentService));
+                TryAssertDestroyed(() => DoNothing(runtimeTwo.StageService));
+                TryAssertDestroyed(() => stageTwo.GetStage("x"));
+                TryAssertDestroyed(() => stageTwo.GetExistingStage("x"));
+                TryAssertDestroyed(() => DoNothing(stageTwo.StageURIs));
+            }
+
+            public static void DoNothing(object value)
+            {
             }
         }
 
@@ -158,6 +171,11 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                 runtime.Destroy();
             }
+        }
+        
+        private static void TryAssertDestroyed(Runnable r)
+        {
+            Assert.That(() => r.Invoke(), Throws.Exception.InstanceOf<EPRuntimeDestroyedException>());
         }
     }
 } // end of namespace

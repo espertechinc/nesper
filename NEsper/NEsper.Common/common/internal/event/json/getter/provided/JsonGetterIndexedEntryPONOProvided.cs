@@ -24,7 +24,7 @@ using static com.espertech.esper.common.@internal.@event.json.getter.provided.Js
 namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 {
     /// <summary>
-    ///     A getter that works on POJO events residing within a Map as an event property.
+    ///     A getter that works on PONO events residing within a Map as an event property.
     /// </summary>
     public class JsonGetterIndexedEntryPONOProvided : BaseNativePropertyGetter,
         JsonEventPropertyGetter

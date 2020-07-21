@@ -187,7 +187,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             public void Run(RegressionEnvironment env)
             {
                 // incompatible on-input method
-                var epl = "@Name('flow') create dataflow MyGraph " +
+                var epl = "@name('flow') create dataflow MyGraph " +
                           "DefaultSupportSourceOp -> out1<SupportBean_A> {}\n" +
                           "MySBInputOp(out1) {}";
                 TryInvalidInstantiate(

@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             return execs;
         }
 
-        internal class ClientCompileSyntaxMgs : RegressionExecution
+        private class ClientCompileSyntaxMgs : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -101,23 +101,23 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             }
         }
 
-        internal class ClientCompileOptionsValidateOnly : RegressionExecution
+        private class ClientCompileOptionsValidateOnly : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var module = new Module();
                 module.Items.Add(new ModuleItem("select * from NoSuchEvent"));
                 try {
-                    EPCompilerProvider.Compiler.SyntaxValidate(module, null);
+                    env.Compiler.SyntaxValidate(module, null);
                 }
                 catch (EPCompileException e) {
-                    throw new EPException(e);
+                    throw new EPRuntimeException(e);
                 }
 
                 module = new Module();
                 module.Items.Add(new ModuleItem("xxx"));
                 try {
-                    EPCompilerProvider.Compiler.SyntaxValidate(module, null);
+                    env.Compiler.SyntaxValidate(module, null);
                     Assert.Fail();
                 }
                 catch (EPCompileException ex) {
@@ -128,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 var model = new EPStatementObjectModel();
                 module.Items.Add(new ModuleItem(model));
                 try {
-                    EPCompilerProvider.Compiler.SyntaxValidate(module, null);
+                    env.Compiler.SyntaxValidate(module, null);
                     Assert.Fail();
                 }
                 catch (EPCompileException ex) {

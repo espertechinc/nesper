@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream * from SupportBean#sort(3, IntPrimitive desc, LongPrimitive)";
+                var epl = "@name('s0') select irstream * from SupportBean#sort(3, IntPrimitive desc, LongPrimitive)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
                 var fields = new [] { "TheString","IntPrimitive","LongPrimitive" };
 
@@ -154,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 var fields = new [] { "TheString","IntPrimitive" };
 
-                var epl = "@Name('s0') select irstream * from SupportBean#sort(3, TheString)";
+                var epl = "@name('s0') select irstream * from SupportBean#sort(3, TheString)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("s0"), fields, null);
@@ -266,7 +266,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select irstream * from  SupportMarketDataBean#sort(3, Symbol)";
+                var text = "@name('s0') select irstream * from  SupportMarketDataBean#sort(3, Symbol)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(MakeMarketDataEvent("B1"));
@@ -323,7 +323,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select irstream * from SupportBeanWithEnum#sort(1, TheString, SupportEnum)";
+                var text = "@name('s0') select irstream * from SupportBeanWithEnum#sort(1, TheString, SupportEnum)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(new SupportBeanWithEnum("E1", SupportEnum.ENUM_VALUE_1));
@@ -358,7 +358,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select irstream * from SupportMarketDataBean#sort(1, Price)";
+                var text = "@name('s0') select irstream * from SupportMarketDataBean#sort(1, Price)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(MakeMarketDataEvent(10.5));
@@ -388,7 +388,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select irstream Symbol, " +
+                var text = "@name('s0') select irstream Symbol, " +
                            "prev(1, Symbol) as prev1," +
                            "prevtail(Symbol) as prevtail, " +
                            "prevcount(Symbol) as prevCountSym, " +

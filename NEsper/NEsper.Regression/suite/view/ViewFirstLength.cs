@@ -47,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.Milestone(0);
 
                 var fields = new [] { "c0" };
-                var epl = "@Name('s0') select irstream TheString as c0 from SupportBean#firstlength(2)";
+                var epl = "@name('s0') select irstream TheString as c0 from SupportBean#firstlength(2)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(1);
@@ -97,7 +97,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select irstream * from  SupportMarketDataBean#firstlength(3)";
+                var text = "@name('s0') select irstream * from  SupportMarketDataBean#firstlength(3)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(MakeMarketDataEvent("E1"));

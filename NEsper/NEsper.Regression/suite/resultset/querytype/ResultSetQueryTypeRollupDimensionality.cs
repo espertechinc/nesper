@@ -9,10 +9,12 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.runtime.client;
 
@@ -46,6 +48,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             execs.Add(new ResultSetQueryTypeOnSelect());
             execs.Add(new ResultSetQueryTypeNamedWindowCube2Dim());
             execs.Add(new ResultSetQueryTypeNamedWindowDeleteAndRStream2Dim());
+            execs.Add(new ResultSetQueryTypeRollupMultikeyWArray(false, true));
+            execs.Add(new ResultSetQueryTypeRollupMultikeyWArray(false, false));
+            execs.Add(new ResultSetQueryTypeRollupMultikeyWArray(true, false));
+            execs.Add(new ResultSetQueryTypeRollupMultikeyWArrayGroupingSet());
             return execs;
         }
 
@@ -55,8 +61,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             SupportOutputLimitOpt opt,
             AtomicLong milestone)
         {
-            var epl = "@Name('ctx') create context MyContext start SupportBean_S0(Id=1) end SupportBean_S0(Id=0);\n" +
-                      "@Name('s0') context MyContext select TheString as c0, sum(IntPrimitive) as c1 " +
+            var epl = "@name('ctx') create context MyContext start SupportBean_S0(Id=1) end SupportBean_S0(Id=0);\n" +
+                      "@name('s0') context MyContext select TheString as c0, sum(IntPrimitive) as c1 " +
                       "from SupportBean group by rollup(TheString) output " +
                       outputLimit +
                       " when terminated";
@@ -106,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             var fields = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8" };
 
-            var epl = "@Name('s0')" +
+            var epl = "@name('s0')" +
                       "select TheString as c0, " +
                       "IntPrimitive as c1, " +
                       "LongPrimitive as c2, " +
@@ -216,7 +222,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             AtomicLong milestone)
         {
             var fields = new [] { "c0", "c1", "c2", "c3" };
-            var epl = "@Name('s0')" +
+            var epl = "@name('s0')" +
                       "select TheString as c0, IntPrimitive as c1, LongPrimitive as c2, sum(DoublePrimitive) as c3 from SupportBean " +
                       "group by " +
                       groupBy;
@@ -275,7 +281,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             var fields = new [] { "c0", "c1" };
 
-            var epl = "@Name('s0')" +
+            var epl = "@name('s0')" +
                       "select TheString as c0, sum(IntPrimitive) as c1 from SupportBean " +
                       "group by " +
                       rollup;
@@ -320,7 +326,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             var fields = new [] { "c0", "c1", "c2", "c3", "c4" };
 
-            var epl = "@Name('s0')" +
+            var epl = "@name('s0')" +
                       "select TheString as c0, IntPrimitive as c1, LongPrimitive as c2, count(*) as c3, sum(DoublePrimitive) as c4 " +
                       "from SupportBean#keepall " +
                       (isJoin ? ", SupportBean_S0#lastevent " : "") +
@@ -452,6 +458,111 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             Assert.AreEqual(expectedC2, stmtOne.EventType.GetPropertyType("c2"));
         }
 
+        public class ResultSetQueryTypeRollupMultikeyWArrayGroupingSet : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl =
+                    "@Name('s0') select sum(Value) as thesum from SupportThreeArrayEvent group by grouping sets((IntArray), (LongArray), (DoubleArray))";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendAssert(env, "E1", 1, new int[] {1, 2}, new long[] {10, 20}, new double[] {300, 400}, 1, 1, 1);
+
+                env.Milestone(0);
+
+                SendAssert(env, "E2", 2, new int[] {1, 2}, new long[] {10, 20}, new double[] {300, 400}, 3, 3, 3);
+                SendAssert(env, "E3", 3, new int[] {1, 2}, new long[] {11, 21}, new double[] {300, 400}, 6, 3, 6);
+                SendAssert(env, "E4", 4, new int[] {1, 3}, new long[] {10}, new double[] {300, 400}, 4, 4, 10);
+                SendAssert(env, "E5", 5, new int[] {1, 2}, new long[] {10, 21}, new double[] {301, 400}, 11, 5, 5);
+
+                env.Milestone(1);
+
+                SendAssert(env, "E6", 6, new int[] {1, 2}, new long[] {10, 20}, new double[] {300, 400}, 17, 9, 16);
+                SendAssert(env, "E7", 7, new int[] {1, 3}, new long[] {11, 21}, new double[] {300, 400}, 11, 10, 23);
+
+                env.UndeployAll();
+            }
+
+            private void SendAssert(
+                RegressionEnvironment env,
+                string id,
+                int value,
+                int[] ints,
+                long[] longs,
+                double[] doubles,
+                int expectedIntArray,
+                int expectedLongArray,
+                int expectedDoubleArray)
+            {
+                env.SendEventBean(new SupportThreeArrayEvent(id, value, ints, longs, doubles));
+                EventBean[] events = env.Listener("s0").GetAndResetLastNewData();
+                Assert.AreEqual(expectedIntArray, events[0].Get("thesum"));
+                Assert.AreEqual(expectedLongArray, events[1].Get("thesum"));
+                Assert.AreEqual(expectedDoubleArray, events[2].Get("thesum"));
+            }
+        }
+
+        public class ResultSetQueryTypeRollupMultikeyWArray : RegressionExecution
+        {
+            private readonly bool join;
+            private readonly bool unbound;
+
+            public ResultSetQueryTypeRollupMultikeyWArray(
+                bool join,
+                bool unbound)
+            {
+                this.join = join;
+                this.unbound = unbound;
+            }
+
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = join
+                    ? "@Name('s0') select Array, Value, count(*) as cnt from SupportEventWithIntArray#keepall, SupportBean#keepall group by rollup(Array, Value)"
+                    : (unbound
+                        ? "@Name('s0') select Array, Value, count(*) as cnt from SupportEventWithIntArray group by rollup(Array, Value)"
+                        : "@Name('s0') select Array, Value, count(*) as cnt from SupportEventWithIntArray#keepall group by rollup(Array, Value)"
+                    );
+
+                env.CompileDeploy(epl).AddListener("s0");
+                env.SendEventBean(new SupportBean());
+
+                SendAssertIntArray(env, "E1", new int[] {1, 2}, 5, 1, 1, 1);
+
+                env.Milestone(0);
+
+                SendAssertIntArray(env, "E2", new int[] {1, 2}, 5, 2, 2, 2);
+                SendAssertIntArray(env, "E3", new int[] {4, 5}, 5, 3, 1, 1);
+                SendAssertIntArray(env, "E4", new int[] {1, 2}, 6, 4, 3, 1);
+
+                env.Milestone(1);
+
+                SendAssertIntArray(env, "E5", new int[] {1, 2}, 5, 5, 4, 3);
+                SendAssertIntArray(env, "E6", new int[] {4, 5}, 5, 6, 2, 2);
+                SendAssertIntArray(env, "E7", new int[] {1, 2}, 6, 7, 5, 2);
+                SendAssertIntArray(env, "E8", new int[] {1}, 5, 8, 1, 1);
+
+                env.UndeployAll();
+            }
+
+            private void SendAssertIntArray(
+                RegressionEnvironment env,
+                string id,
+                int[] array,
+                int value,
+                long expectedTotal,
+                long expectedByArray,
+                long expectedByArrayAndValue)
+            {
+                string[] fields = new string[] {"array", "value", "cnt"};
+                env.SendEventBean(new SupportEventWithIntArray(id, array, value));
+                EventBean[] @out = env.Listener("s0").GetAndResetLastNewData();
+                EPAssertionUtil.AssertProps(@out[0], fields, new object[] {array, value, expectedByArrayAndValue});
+                EPAssertionUtil.AssertProps(@out[1], fields, new object[] {array, null, expectedByArray});
+                EPAssertionUtil.AssertProps(@out[2], fields, new object[] {null, null, expectedTotal});
+            }
+        }
+
         internal class ResultSetQueryTypeOutputWhenTerminated : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -471,7 +582,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select LongPrimitive as c0, sum(IntPrimitive) as c1 " +
+                var epl = "@name('s0') select LongPrimitive as c0, sum(IntPrimitive) as c1 " +
                           "from SupportBean group by rollup(case when LongPrimitive > 0 then 1 else 0 end)";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -517,7 +628,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl = "create context SegmentedByString partition by TheString from SupportBean;\n" +
-                          "@Name('s0') context SegmentedByString select TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from SupportBean group by rollup(TheString, IntPrimitive)";
+                          "@name('s0') context SegmentedByString select TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from SupportBean group by rollup(TheString, IntPrimitive)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fields = new [] { "c0", "c1", "c2" };
@@ -559,7 +670,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 var epl = "create window MyWindow#keepall as SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
-                          "@Name('s0') on SupportBean_S0 as S0 select mw.TheString as c0, sum(mw.IntPrimitive) as c1, count(*) as c2 from MyWindow mw group by rollup(mw.TheString);\n";
+                          "@name('s0') on SupportBean_S0 as S0 select mw.TheString as c0, sum(mw.IntPrimitive) as c1, count(*) as c2 from MyWindow mw group by rollup(mw.TheString);\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fields = new [] { "c0", "c1", "c2" };
@@ -645,7 +756,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 AtomicLong milestone)
             {
                 var fields = new [] { "c0", "c1", "c2", "c3" };
-                var epl = "@Name('s0')" +
+                var epl = "@name('s0')" +
                           "select TheString as c0, IntPrimitive as c1, LongPrimitive as c2, sum(DoublePrimitive) as c3 from SupportBean " +
                           "group by " +
                           groupBy;
@@ -712,7 +823,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 string groupBy)
             {
                 var fields = new [] { "c0", "c1", "c2", "c3" };
-                var epl = "@Name('s0')" +
+                var epl = "@name('s0')" +
                           "select TheString as c0, IntPrimitive as c1, LongPrimitive as c2, sum(DoublePrimitive) as c3 from SupportBean " +
                           "group by " +
                           groupBy;
@@ -754,7 +865,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "c0", "c1", "c2" };
-                var epl = "@Name('s0')" +
+                var epl = "@name('s0')" +
                           "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from SupportBean#length(4) " +
                           "group by grouping sets(TheString, IntPrimitive)";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -815,7 +926,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "c0", "c1", "c2" };
-                var epl = "@Name('s0')" +
+                var epl = "@name('s0')" +
                           "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from SupportBean#length(4) " +
                           "group by grouping sets((), (TheString, IntPrimitive))";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -861,7 +972,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "c0", "c1", "c2", "c3", "c4" };
-                var epl = "@Name('s0')" +
+                var epl = "@name('s0')" +
                           "select TheString as c0, IntPrimitive as c1, LongPrimitive as c2, DoublePrimitive as c3, sum(IntBoxed) as c4 from SupportBean " +
                           "group by cube(TheString, IntPrimitive, LongPrimitive, DoublePrimitive)";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -991,7 +1102,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 var epl = "create window MyWindow#keepall as SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean(IntBoxed = 0);\n" +
                           "on SupportBean(IntBoxed = 3) delete from MyWindow;\n" +
-                          "@Name('s0')" +
+                          "@name('s0')" +
                           "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from MyWindow " +
                           "group by " +
                           groupBy;
@@ -1102,7 +1213,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                           "on SupportBean(IntBoxed = 2) as sb " +
                           "delete from MyWindow mw where sb.TheString = mw.TheString and sb.IntPrimitive = mw.IntPrimitive and sb.LongPrimitive = mw.LongPrimitive;\n" +
                           "on SupportBean(IntBoxed = 3) delete from MyWindow;\n" +
-                          "@Name('s0')" +
+                          "@name('s0')" +
                           "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from MyWindow " +
                           "group by " +
                           groupBy;
@@ -1353,7 +1464,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 AtomicLong milestone)
             {
                 var fields = new [] { "c0", "c1", "c2" };
-                var epl = "@Name('s0')" +
+                var epl = "@name('s0')" +
                           "select TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
                           "from SupportBean#length(3) " +
                           (join ? ", SupportBean_S0#lastevent " : "") +
@@ -1494,7 +1605,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "c0", "c1", "c2" };
-                var epl = "@Name('s0')" +
+                var epl = "@name('s0')" +
                           "select TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from SupportBean " +
                           "group by rollup(TheString, IntPrimitive)";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -1576,7 +1687,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 var fields = new [] { "c0", "c1", "c2" };
 
-                var epl = "@Name('s0')" +
+                var epl = "@name('s0')" +
                           "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from SupportBean#length_batch(4) " +
                           "group by rollup(TheString, IntPrimitive)";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -1656,7 +1767,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 var fields = new [] { "c0", "c1", "c2" };
 
-                var epl = "@Name('s0') select sum(IntPrimitive) as c0, TheString as c1, window(*) as c2 " +
+                var epl = "@name('s0') select sum(IntPrimitive) as c0, TheString as c1, window(*) as c2 " +
                           "from SupportBean#length(2) sb group by rollup(TheString) order by TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -1739,25 +1850,25 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var stmtOne = env.CompileDeploy(
-                        "@Name('s0') select IntPrimitive as c0, DoublePrimitive as c1, LongPrimitive as c2, sum(ShortPrimitive) " +
+                        "@name('s0') select IntPrimitive as c0, DoublePrimitive as c1, LongPrimitive as c2, sum(ShortPrimitive) " +
                         "from SupportBean group by IntPrimitive, rollup(DoublePrimitive, LongPrimitive)")
                     .Statement("s0");
                 AssertTypesC0C1C2(stmtOne, typeof(int?), typeof(double?), typeof(long?));
 
                 var stmtTwo = env.CompileDeploy(
-                        "@Name('s1') select IntPrimitive as c0, DoublePrimitive as c1, LongPrimitive as c2, sum(ShortPrimitive) " +
+                        "@name('s1') select IntPrimitive as c0, DoublePrimitive as c1, LongPrimitive as c2, sum(ShortPrimitive) " +
                         "from SupportBean group by grouping sets ((IntPrimitive, DoublePrimitive, LongPrimitive))")
                     .Statement("s1");
                 AssertTypesC0C1C2(stmtTwo, typeof(int?), typeof(double?), typeof(long?));
 
                 var stmtThree = env.CompileDeploy(
-                        "@Name('s2') select IntPrimitive as c0, DoublePrimitive as c1, LongPrimitive as c2, sum(ShortPrimitive) " +
+                        "@name('s2') select IntPrimitive as c0, DoublePrimitive as c1, LongPrimitive as c2, sum(ShortPrimitive) " +
                         "from SupportBean group by grouping sets ((IntPrimitive, DoublePrimitive, LongPrimitive), (IntPrimitive, DoublePrimitive))")
                     .Statement("s2");
                 AssertTypesC0C1C2(stmtThree, typeof(int?), typeof(double?), typeof(long?));
 
                 var stmtFour = env.CompileDeploy(
-                        "@Name('s3') select IntPrimitive as c0, DoublePrimitive as c1, LongPrimitive as c2, sum(ShortPrimitive) " +
+                        "@name('s3') select IntPrimitive as c0, DoublePrimitive as c1, LongPrimitive as c2, sum(ShortPrimitive) " +
                         "from SupportBean group by grouping sets ((DoublePrimitive, IntPrimitive), (LongPrimitive, IntPrimitive))")
                     .Statement("s3");
                 AssertTypesC0C1C2(stmtFour, typeof(int?), typeof(double?), typeof(long?));

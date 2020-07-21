@@ -39,8 +39,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var listenerSetTwo = new SupportMTUpdateListener();
 
             var stmtSetOneText =
-                "@Name('setOne') on SupportBean set var1=LongPrimitive, var2=LongPrimitive, var3=var3+1";
-            var stmtSetTwoText = "@Name('setTwo')on SupportMarketDataBean set var1=Volume, var2=Volume, var3=var3+1";
+                "@name('setOne') on SupportBean set var1=LongPrimitive, var2=LongPrimitive, var3=var3+1";
+            var stmtSetTwoText = "@name('setTwo')on SupportMarketDataBean set var1=Volume, var2=Volume, var3=var3+1";
             env.CompileDeploy(stmtSetOneText).Statement("setOne").AddListener(listenerSetOne);
             env.CompileDeploy(stmtSetTwoText).Statement("setTwo").AddListener(listenerSetTwo);
 

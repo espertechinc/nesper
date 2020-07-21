@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             {
                 env.Compile(
                     "create schema MySchema(key string, value int);\n" +
-                    "@Name('flow') create dataflow MyDataFlowOne MyCaptureOutputPortOp -> outstream<EventBean<MySchema>> {}");
+                    "@name('flow') create dataflow MyDataFlowOne MyCaptureOutputPortOp -> outstream<EventBean<MySchema>> {}");
                 Assert.AreEqual("MySchema", MyCaptureOutputPortOpForge.Port.OptionalDeclaredType.EventType.Name);
 
                 env.UndeployAll();
@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 SupportGraphSource.GetAndResetLifecycle();
 
                 var compiled = env.Compile(
-                    "@Name('flow') create dataflow MyDataFlow @Name('Goodie') @Audit SupportGraphSource -> outstream<SupportBean> {propOne:'abc'}");
+                    "@name('flow') create dataflow MyDataFlow @Name('Goodie') @Audit SupportGraphSource -> outstream<SupportBean> {propOne:'abc'}");
                 var events = SupportGraphSourceForge.GetAndResetLifecycle();
                 Assert.AreEqual(3, events.Count);
                 Assert.AreEqual("instantiated", events[0]);
@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 SupportGraphSource.GetAndResetLifecycle();
 
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlow MyLineFeedSource -> outstream {} SupportOperator(outstream) {propOne:'abc'}");
+                    "@name('flow') create dataflow MyDataFlow MyLineFeedSource -> outstream {} SupportOperator(outstream) {propOne:'abc'}");
                 Assert.AreEqual(0, SupportOperator.GetAndResetLifecycle().Count);
 
                 // instantiate

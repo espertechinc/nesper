@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             RegressionEnvironment env,
             bool soda)
         {
-            var epl = "@Name('s0') select * from SupportBean " +
+            var epl = "@name('s0') select * from SupportBean " +
                       "match_recognize (" +
                       " measures A as a, B as b" +
                       " pattern (A B)" +
@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             object value)
         {
             env.AdvanceTime(baseTime);
-            var epl = "@Name('s0') select * from SupportBean  " +
+            var epl = "@name('s0') select * from SupportBean  " +
                       "match_recognize (" +
                       "    measures A as a, A.TheString as Id, " +
                       select +

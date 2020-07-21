@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 var epl =
                     "create context CtxInitToTerm initiated by SupportContextInitEventWLength as miewl terminated after 1 year;\n" +
-                    "@Name('s0') context CtxInitToTerm select context.miewl.Id as Id, count(*) as cnt from SupportBean(TheString=context.miewl.Id)#length(context.miewl.IntSize)";
+                    "@name('s0') context CtxInitToTerm select context.miewl.Id as Id, count(*) as cnt from SupportBean(TheString=context.miewl.Id)#length(context.miewl.IntSize)";
                 env.CompileDeploy(epl).AddListener("s0");
                 var fields = new [] { "Id","cnt" };
 
@@ -142,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 var epl =
                     "create context CtxInitToTerm initiated by SupportContextInitEventWLength as miewl terminated after 1 year;\n" +
-                    "@Name('s0') context CtxInitToTerm select context.miewl.Id as id, count(*) as cnt from SupportBean(TheString=context.miewl.Id)#length(context.miewl.IntSize);\n";
+                    "@name('s0') context CtxInitToTerm select context.miewl.Id as id, count(*) as cnt from SupportBean(TheString=context.miewl.Id)#length(context.miewl.IntSize);\n";
                 env.CompileDeploy(epl).Milestone(0);
 
                 env.SendEventBean(new SupportContextInitEventWLength("P1", 2));

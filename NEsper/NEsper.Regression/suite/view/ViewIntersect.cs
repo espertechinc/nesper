@@ -547,7 +547,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var milestone = new AtomicLong();
 
                 var epl =
-                    "@Name('s0') select irstream TheString, IntPrimitive from SupportBean#firstlength(3)#unique(TheString)";
+                    "@name('s0') select irstream TheString, IntPrimitive from SupportBean#firstlength(3)#unique(TheString)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 TryAssertionUniqueAndFirstLength(env, milestone);
@@ -555,7 +555,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.UndeployAll();
 
                 epl =
-                    "@Name('s0') select irstream TheString, IntPrimitive from SupportBean#unique(TheString)#firstlength(3)";
+                    "@name('s0') select irstream TheString, IntPrimitive from SupportBean#unique(TheString)#firstlength(3)";
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
 
                 TryAssertionUniqueAndFirstLength(env, milestone);
@@ -569,7 +569,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select irstream TheString, IntPrimitive from SupportBean#firstunique(TheString)#firstlength(3)";
+                    "@name('s0') select irstream TheString, IntPrimitive from SupportBean#firstunique(TheString)#firstlength(3)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 TryAssertionFirstUniqueAndLength(env);
@@ -577,7 +577,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.UndeployAll();
 
                 epl =
-                    "@Name('s0') select irstream TheString, IntPrimitive from SupportBean#firstlength(3)#firstunique(TheString)";
+                    "@name('s0') select irstream TheString, IntPrimitive from SupportBean#firstlength(3)#firstunique(TheString)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 TryAssertionFirstUniqueAndLength(env);
@@ -593,7 +593,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var epl = "create window MyWindowOne#firstunique(TheString)#firstlength(3) as SupportBean;\n" +
                           "insert into MyWindowOne select * from SupportBean;\n" +
                           "on SupportBean_S0 delete from MyWindowOne where TheString = P00;\n" +
-                          "@Name('s0') select irstream * from MyWindowOne";
+                          "@name('s0') select irstream * from MyWindowOne";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 string[] fields = {"TheString", "IntPrimitive"};
@@ -682,50 +682,50 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 // test window
                 epl =
-                    "@Name('s0') select irstream TheString from SupportBean#length_batch(3)#unique(IntPrimitive) order by TheString asc";
+                    "@name('s0') select irstream TheString from SupportBean#length_batch(3)#unique(IntPrimitive) order by TheString asc";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
                 TryAssertionUniqueAndBatch(env, milestone);
                 env.UndeployAll();
 
                 epl =
-                    "@Name('s0') select irstream TheString from SupportBean#unique(IntPrimitive)#length_batch(3) order by TheString asc";
+                    "@name('s0') select irstream TheString from SupportBean#unique(IntPrimitive)#length_batch(3) order by TheString asc";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
                 TryAssertionUniqueAndBatch(env, milestone);
                 env.UndeployAll();
 
                 // test aggregation with window
                 epl =
-                    "@Name('s0') select count(*) as c0, sum(IntPrimitive) as c1 from SupportBean#unique(TheString)#length_batch(3)";
+                    "@name('s0') select count(*) as c0, sum(IntPrimitive) as c1 from SupportBean#unique(TheString)#length_batch(3)";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
                 TryAssertionUniqueBatchAggreation(env, milestone);
                 env.UndeployAll();
 
                 epl =
-                    "@Name('s0') select count(*) as c0, sum(IntPrimitive) as c1 from SupportBean#length_batch(3)#unique(TheString)";
+                    "@name('s0') select count(*) as c0, sum(IntPrimitive) as c1 from SupportBean#length_batch(3)#unique(TheString)";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
                 TryAssertionUniqueBatchAggreation(env, milestone);
                 env.UndeployAll();
 
                 // test first-unique
-                epl = "@Name('s0') select irstream * from SupportBean#firstunique(TheString)#length_batch(3)";
+                epl = "@name('s0') select irstream * from SupportBean#firstunique(TheString)#length_batch(3)";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
                 TryAssertionLengthBatchAndFirstUnique(env, milestone);
                 env.UndeployAll();
 
-                epl = "@Name('s0') select irstream * from SupportBean#length_batch(3)#firstunique(TheString)";
+                epl = "@name('s0') select irstream * from SupportBean#length_batch(3)#firstunique(TheString)";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
                 TryAssertionLengthBatchAndFirstUnique(env, milestone);
                 env.UndeployAll();
 
                 // test time-based expiry
                 env.AdvanceTime(0);
-                epl = "@Name('s0') select * from SupportBean#unique(TheString)#time_batch(1)";
+                epl = "@name('s0') select * from SupportBean#unique(TheString)#time_batch(1)";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
                 TryAssertionTimeBatchAndUnique(env, 0, milestone);
                 env.UndeployAll();
 
                 env.AdvanceTime(0);
-                epl = "@Name('s0') select * from SupportBean#time_batch(1)#unique(TheString)";
+                epl = "@name('s0') select * from SupportBean#time_batch(1)#unique(TheString)";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
                 TryAssertionTimeBatchAndUnique(env, 100000, milestone);
                 env.UndeployAll();
@@ -744,7 +744,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string[] fields = {"total"};
 
                 var epl =
-                    "@Name('s0') select * from SupportBean#unique(IntPrimitive)#unique(IntBoxed)#uni(DoublePrimitive)";
+                    "@name('s0') select * from SupportBean#unique(IntPrimitive)#unique(IntBoxed)#uni(DoublePrimitive)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, "E1", 1, 10, 100d);
@@ -779,7 +779,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string[] fields = {"TheString"};
 
                 var text =
-                    "@Name('s0') select irstream TheString from SupportBean#groupwin(IntPrimitive)#length(2)#unique(IntBoxed) retain-intersection";
+                    "@name('s0') select irstream TheString from SupportBean#groupwin(IntPrimitive)#length(2)#unique(IntBoxed) retain-intersection";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 SendEvent(env, "E1", 1, 10);
@@ -902,7 +902,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 // another combination
                 env.CompileDeployAddListenerMile(
-                    "@Name('s0') select * from SupportBean#groupwin(TheString)#time(.0083 sec)#firstevent",
+                    "@name('s0') select * from SupportBean#groupwin(TheString)#time(.0083 sec)#firstevent",
                     "s0",
                     1);
                 env.UndeployAll();
@@ -914,7 +914,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@Name('s0') select * from SupportBean_S0 where P00 in (select TheString from SupportBean#length(2)#unique(IntPrimitive) retain-intersection)";
+                    "@name('s0') select * from SupportBean_S0 where P00 in (select TheString from SupportBean#length(2)#unique(IntPrimitive) retain-intersection)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 SendEvent(env, "E1", 1);
@@ -958,7 +958,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string[] fields = {"TheString"};
 
                 var epl =
-                    "@Name('s0') select irstream TheString from SupportBean#unique(IntPrimitive)#unique(IntBoxed)#unique(DoublePrimitive) retain-intersection";
+                    "@name('s0') select irstream TheString from SupportBean#unique(IntPrimitive)#unique(IntBoxed)#unique(DoublePrimitive) retain-intersection";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "E1", 1, 10, 100d);
@@ -1049,7 +1049,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string[] fields = {"TheString"};
 
                 var text =
-                    "@Name('s0') select irstream a.P00||b.P10 as TheString from pattern [every a=SupportBean_S0 -> b=SupportBean_S1]#unique(a.Id)#unique(b.Id) retain-intersection";
+                    "@name('s0') select irstream a.P00||b.P10 as TheString from pattern [every a=SupportBean_S0 -> b=SupportBean_S1]#unique(a.Id)#unique(b.Id) retain-intersection";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "E1"));
@@ -1101,7 +1101,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string[] fields = {"TheString"};
 
                 var epl =
-                    "@Name('s0') select irstream TheString from SupportBean#unique(IntPrimitive)#unique(IntBoxed) retain-intersection";
+                    "@name('s0') select irstream TheString from SupportBean#unique(IntPrimitive)#unique(IntBoxed) retain-intersection";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, "E1", 1, 10);
@@ -1255,7 +1255,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string[] fields = {"TheString"};
 
                 var epl =
-                    "@Name('s0') select irstream TheString from SupportBean#sort(2, IntPrimitive)#sort(2, IntBoxed) retain-intersection";
+                    "@name('s0') select irstream TheString from SupportBean#sort(2, IntPrimitive)#sort(2, IntBoxed) retain-intersection";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "E1", 1, 10);
@@ -1350,7 +1350,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
                 var epl =
-                    "@Name('s0') select irstream TheString from SupportBean#unique(IntPrimitive)#time(10 sec) retain-intersection";
+                    "@name('s0') select irstream TheString from SupportBean#unique(IntPrimitive)#time(10 sec) retain-intersection";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 TryAssertionTimeWinUnique(env);
@@ -1365,7 +1365,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
                 var epl =
-                    "@Name('s0') select irstream TheString from SupportBean#time(10 sec)#unique(IntPrimitive) retain-intersection";
+                    "@name('s0') select irstream TheString from SupportBean#time(10 sec)#unique(IntPrimitive) retain-intersection";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 TryAssertionTimeWinUnique(env);
@@ -1380,7 +1380,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
                 var epl =
-                    "@Name('s0') select irstream TheString from SupportBean#time(10 seconds)#unique(IntPrimitive) retain-intersection";
+                    "@name('s0') select irstream TheString from SupportBean#time(10 seconds)#unique(IntPrimitive) retain-intersection";
                 env.EplToModelCompileDeploy(epl).AddListener("s0").Milestone(0);
 
                 TryAssertionTimeWinUnique(env);
@@ -1395,7 +1395,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
                 var epl =
-                    "@Name('s0') create window MyWindowTwo#time(10 sec)#unique(IntPrimitive) retain-intersection as select * from SupportBean;\n" +
+                    "@name('s0') create window MyWindowTwo#time(10 sec)#unique(IntPrimitive) retain-intersection as select * from SupportBean;\n" +
                     "insert into MyWindowTwo select * from SupportBean;\n" +
                     "on SupportBean_S0 delete from MyWindowTwo where IntBoxed = Id;\n";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -1412,7 +1412,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
                 var epl =
-                    "@Name('s0') create window MyWindowThree#time(10 sec)#unique(IntPrimitive) retain-intersection as select * from SupportBean;\n" +
+                    "@name('s0') create window MyWindowThree#time(10 sec)#unique(IntPrimitive) retain-intersection as select * from SupportBean;\n" +
                     "insert into MyWindowThree select * from SupportBean\n;" +
                     "on SupportBean_S0 delete from MyWindowThree where IntBoxed = Id;\n";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -1556,7 +1556,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@Name('s0') select irstream Symbol, Price from SupportMarketDataBean#length(1)#unique(Symbol)";
+                    "@name('s0') select irstream Symbol, Price from SupportMarketDataBean#length(1)#unique(Symbol)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
                 env.SendEventBean(MakeMarketDataEvent("S1", 100));
                 env.Listener("s0")
@@ -1589,7 +1589,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var symbolMsft = "MSFT.O";
                 var symbolC = "C.N";
 
-                var epl = "@Name('s0') select * from SupportMarketDataBean#unique(Symbol)#sort(3, Price desc)";
+                var epl = "@name('s0') select * from SupportMarketDataBean#unique(Symbol)#sort(3, Price desc)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 var beans = new object[10];
@@ -1641,7 +1641,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') SELECT irstream * FROM SupportSensorEvent#groupwin(Type)#time(1 hour)#unique(Device)#sort(1, Measurement desc) as high order by Measurement asc";
+                    "@name('s0') SELECT irstream * FROM SupportSensorEvent#groupwin(Type)#time(1 hour)#unique(Device)#sort(1, Measurement desc) as high order by Measurement asc";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 var eventOne = new SupportSensorEvent(1, "Temperature", "Device1", 5.0, 96.5);
@@ -1677,7 +1677,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
 
-                var epl = "@Name('s0') select irstream * from SupportMarketDataBean#time(3.0)#unique(Symbol, Price)";
+                var epl = "@name('s0') select irstream * from SupportMarketDataBean#time(3.0)#unique(Symbol, Price)";
                 env.CompileDeploy(epl).AddListener("s0");
                 string[] fields = {"Symbol", "Price", "Volume"};
 

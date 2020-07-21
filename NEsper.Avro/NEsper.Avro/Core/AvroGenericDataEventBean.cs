@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
@@ -34,7 +36,10 @@ namespace NEsper.Avro.Core
 
         public EventType EventType { get; }
 
-        public object Underlying => Properties;
+        public object Underlying {
+            get => Properties;
+            set => throw new NotSupportedException();
+        }
 
         public object Get(string property)
         {

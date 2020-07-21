@@ -36,6 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             execs.Add(new PatternExpression());
             execs.Add(new PatternPropertyAndSODAAndTimezone());
             execs.Add(new PatternEvery15thMonth());
+            execs.Add(new PatternWMilliseconds());
             return execs;
         }
 
@@ -47,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             SendTime(env, startTime);
 
-            env.CompileDeploy("@Name('s0') " + epl).AddListener("s0");
+            env.CompileDeploy("@name('s0') " + epl).AddListener("s0");
             RunSequence(env, times);
 
             env.UndeployAll();
@@ -65,6 +66,38 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // send right-after time
                 env.AdvanceTime(nextLong + 1000);
+                Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked(), "missing callback at " + next);
+            }
+        }
+
+        private static void RunSequenceIsolatedMilliseconds(
+            RegressionEnvironment env,
+            string startTime,
+            string epl,
+            string[] times)
+        {
+            SendTime(env, startTime);
+
+            env.CompileDeploy("@name('s0') " + epl).AddListener("s0");
+            RunSequenceMilliseconds(env, times);
+
+            env.UndeployAll();
+        }
+
+        private static void RunSequenceMilliseconds(
+            RegressionEnvironment env,
+            string[] times)
+        {
+            foreach (string next in times) {
+                // send right-before time
+                long nextLong = DateTimeParsingFunctions.ParseDefaultMSec(next);
+                env.AdvanceTime(nextLong - 1);
+                // Comment-me-in: System.out.println("Advance to " + DateTime.print(nextLong - 1));
+                Assert.IsFalse("unexpected callback at " + next, env.Listener("s0").IsInvoked());
+
+                // send right-after time
+                env.AdvanceTime(nextLong);
+                // Comment-me-in: System.out.println("Advance to " + DateTime.print(nextLong));
                 Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked(), "missing callback at " + next);
             }
         }
@@ -138,12 +171,75 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             desc.Add("D3");
         }
 
+        internal class PatternWMilliseconds : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunSequenceIsolatedMilliseconds(
+                    env,
+                    "2013-08-23T08:05:00.000",
+                    "select * from pattern [ every timer:at(*, *, *, *, *, *, *, 200) ]",
+                    new string[] {
+                        "2013-08-23T08:05:00.200",
+                        "2013-08-23T08:05:01.200",
+                        "2013-08-23T08:05:02.200",
+                        "2013-08-23T08:05:03.200"
+                    });
+
+                RunSequenceIsolatedMilliseconds(
+                    env,
+                    "2013-08-23T08:05:00.000",
+                    "select * from pattern [ every timer:at(*, *, *, *, *, *, *, [200,201,202,300,500]) ]",
+                    new string[] {
+                        "2013-08-23T08:05:00.200",
+                        "2013-08-23T08:05:00.201",
+                        "2013-08-23T08:05:00.202",
+                        "2013-08-23T08:05:00.300",
+                        "2013-08-23T08:05:00.500",
+                        "2013-08-23T08:05:01.200",
+                        "2013-08-23T08:05:01.201",
+                    });
+
+                RunSequenceIsolatedMilliseconds(
+                    env,
+                    "2013-08-23T08:05:00.373",
+                    "select * from pattern [ every timer:at(*, *, *, *, *, * / 5, *, 0) ]",
+                    new string[] {
+                        "2013-08-23T08:05:05.000",
+                        "2013-08-23T08:05:10.000",
+                        "2013-08-23T08:05:15.000",
+                        "2013-08-23T08:05:20.000"
+                    });
+
+                RunSequenceIsolatedMilliseconds(
+                    env,
+                    "2013-08-23T08:05:00.373",
+                    "select * from pattern [ every timer:at(*, *, *, *, *, * / 5, *, 373) ]",
+                    new string[] {
+                        "2013-08-23T08:05:05.373",
+                        "2013-08-23T08:05:10.373",
+                        "2013-08-23T08:05:15.373",
+                        "2013-08-23T08:05:20.373"
+                    });
+
+                RunSequenceIsolatedMilliseconds(
+                    env,
+                    "2013-08-23T08:05:00.000",
+                    "select * from pattern [ every timer:at(10, 9, *, *, *, 2, *, 373, 0) ]",
+                    new string[] {
+                        "2013-08-23T09:10:02.373",
+                        "2013-08-24T09:10:02.373",
+                        "2013-08-25T09:10:02.373"
+                    });
+            }
+        }
+
         public class PatternTimerAtSimple : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 SendTimeEvent("2002-05-30T9:00:00.000", env);
-                var epl = "@Name('s0') select * from pattern [every timer:at(*,*,*,*,*)]";
+                var epl = "@name('s0') select * from pattern [every timer:at(*,*,*,*,*)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
@@ -338,7 +434,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var expression = "@Name('s0') select * from pattern [every timer:at(0,8,*,*,[1,2,3,4,5])]";
+                var expression = "@name('s0') select * from pattern [every timer:at(0,8,*,*,[1,2,3,4,5])]";
 
                 var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Utc);
                 dateTimeEx.SetMillis(0);
@@ -358,7 +454,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var expression = "@Name('s0') select * from pattern [every timer:at(?::int,?::int,*,*,[1,2,3,4,5])]";
+                var expression = "@name('s0') select * from pattern [every timer:at(?::int,?::int,*,*,[1,2,3,4,5])]";
 
                 var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Utc);
                 dateTimeEx.SetMillis(0);
@@ -385,7 +481,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var expression = "@Name('s0') select * from pattern [every timer:at(VMIN,VHOUR,*,*,[1,2,3,4,5])]";
+                var expression = "@name('s0') select * from pattern [every timer:at(VMIN,VHOUR,*,*,[1,2,3,4,5])]";
 
                 var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Utc);
                 dateTimeEx.SetMillis(0);
@@ -404,7 +500,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var expression = "@Name('s0') select * from pattern [every timer:at(7+1-8,4+4,*,*,[1,2,3,4,5])]";
+                var expression = "@name('s0') select * from pattern [every timer:at(7+1-8,4+4,*,*,[1,2,3,4,5])]";
 
                 var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Utc);
                 dateTimeEx.SetMillis(0);
@@ -424,7 +520,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 SendTimeEvent("2008-08-3T06:00:00.000", env);
                 var expression =
-                    "@Name('s0') select * from pattern [a=SupportBean -> every timer:at(2*a.IntPrimitive,*,*,*,*)]";
+                    "@name('s0') select * from pattern [a=SupportBean -> every timer:at(2*a.IntPrimitive,*,*,*,*)]";
                 env.CompileDeploy(expression);
                 env.AddListener("s0");
 
@@ -448,7 +544,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 if (baseUtcOffset.Equals(expectedUtcOffset)) {
                     // asserting only in EST timezone, see schedule util tests
                     SendTimeEvent("2008-01-4T06:50:00.000", env);
-                    env.CompileDeploy("@Name('s0') select * from pattern [timer:at(0, 5, 4, 1, *, 0, 'PST')]")
+                    env.CompileDeploy("@name('s0') select * from pattern [timer:at(0, 5, 4, 1, *, 0, 'PST')]")
                         .AddListener("s0");
 
                     SendTimeEvent("2008-01-4T07:59:59.999", env);

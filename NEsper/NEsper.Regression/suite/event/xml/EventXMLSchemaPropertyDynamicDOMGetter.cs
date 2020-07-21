@@ -6,11 +6,14 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+using System.Collections.Generic;
 using System.Xml;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
+using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
@@ -18,7 +21,7 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
-    public class EventXMLSchemaPropertyDynamicDOMGetter : RegressionExecution
+    public class EventXMLSchemaPropertyDynamicDOMGetter
     {
         internal const string SCHEMA_XML = "<simpleEvent xmlns=\"samples:schemas:simpleSchema\" \n" +
                                            "  xmlns:ss=\"samples:schemas:simpleSchema\" \n" +
@@ -33,10 +36,49 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                                            "<map id='a'>4</map>\n" +
                                            "</simpleEvent>";
 
-        public void Run(RegressionEnvironment env)
+
+        public static List<RegressionExecution> Executions()
         {
-            var stmtText = "@Name('s0') select type?,dyn[1]?,nested.nes2?,map('a')? from MyEventWithPrefix";
-            env.CompileDeploy(stmtText).AddListener("s0");
+            var execs = new List<RegressionExecution>();
+            execs.Add(new EventXMLSchemaPropertyDynamicDOMGetterPreconfig());
+            execs.Add(new EventXMLSchemaPropertyDynamicDOMGetterCreateSchema());
+            return execs;
+        }
+
+        public class EventXMLSchemaPropertyDynamicDOMGetterPreconfig : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunAssertion(env, "MyEventWithPrefix", new RegressionPath());
+            }
+        }
+
+        public class EventXMLSchemaPropertyDynamicDOMGetterCreateSchema : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var resourceManager = env.Container.ResourceManager();
+                var schemaUriSimpleSchema = resourceManager.GetResourceAsStream("regression/simpleSchema.xsd").ConsumeStream();
+                var epl = "@public @buseventtype " +
+                          "@XMLSchema(rootElementName='simpleEvent', schemaResource='" +
+                          schemaUriSimpleSchema +
+                          "', xpathPropertyExpr=true, eventSenderValidatesRoot=false, defaultNamespace='samples:schemas:simpleSchema')" +
+                          "@XMLSchemaNamespacePrefix(prefix='ss', namespace='samples:schemas:simpleSchema')" +
+                          "create xml schema MyEventCreateSchema()";
+                var path = new RegressionPath();
+                env.CompileDeploy(epl, path);
+                RunAssertion(env, "MyEventCreateSchema", path);
+            }
+        }
+
+        private static void RunAssertion(
+            RegressionEnvironment env,
+            String eventTypeName,
+            RegressionPath path)
+        {
+
+            var stmtText = "@name('s0') select type?,dyn[1]?,nested.nes2?,map('a')? from " + eventTypeName;
+            env.CompileDeploy(stmtText, path).AddListener("s0");
 
             CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {

@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.expr.define;
@@ -22,8 +20,6 @@ namespace com.espertech.esper.regressionrun.suite.expr
     [TestFixture]
     public class TestSuiteExprDefine
     {
-        private RegressionSession session;
-
         [SetUp]
         public void SetUp()
         {
@@ -38,34 +34,57 @@ namespace com.espertech.esper.regressionrun.suite.expr
             session = null;
         }
 
-        [Test, RunInApplicationDomain]
-        public void TestExprDefineBasic()
+        private RegressionSession session;
+
+        private static void Configure(Configuration configuration)
         {
-            RegressionRunner.Run(session, ExprDefineBasic.Executions());
+            foreach (var clazz in new[] {
+                typeof(SupportBean), 
+                typeof(SupportBean_S0),
+                typeof(SupportBean_S1),
+                typeof(SupportBean_ST0),
+                typeof(SupportBean_ST1), 
+                typeof(SupportBean_ST0_Container), 
+                typeof(SupportCollection),
+                typeof(SupportBeanObject), 
+                typeof(LocationReport)
+            }) {
+                configuration.Common.AddEventType(clazz);
+            }
+
+            configuration.Common.AddImportType(typeof(LRUtil));
+            configuration.Common.AddImportType(typeof(ExprDefineValueParameter));
+            configuration.Common.AddImportType(typeof(ExprDefineValueParameter.ExprDefineLocalService));
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestExprDefineAliasFor()
         {
             RegressionRunner.Run(session, ExprDefineAliasFor.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
+        public void TestExprDefineBasic()
+        {
+            RegressionRunner.Run(session, ExprDefineBasic.Executions());
+        }
+
+        [Test]
+        public void TestExprDefineEventParameterNonStream()
+        {
+            RegressionRunner.Run(session, ExprDefineEventParameterNonStream.Executions());
+        }
+
+        [Test]
         public void TestExprDefineLambdaLocReport()
         {
             RegressionRunner.Run(session, new ExprDefineLambdaLocReport());
         }
 
-        private static void Configure(Configuration configuration)
+        [Test]
+        public void TestExprDefineValueParameter()
         {
-            foreach (Type clazz in new Type[]{typeof(SupportBean), typeof(SupportBean_S0), typeof(SupportBean_S1),
-                typeof(SupportBean_ST0), typeof(SupportBean_ST1), typeof(SupportBean_ST0_Container), typeof(SupportCollection),
-                typeof(SupportBeanObject), typeof(LocationReport)})
-            {
-                configuration.Common.AddEventType(clazz);
-            }
-
-            configuration.Common.AddImportType(typeof(LRUtil));
+            RegressionRunner.Run(session, ExprDefineValueParameter.Executions());
         }
     }
 } // end of namespace

@@ -7,20 +7,60 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
+using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
-    public class EventXMLSchemaEventTypes : RegressionExecution
+    public class EventXMLSchemaEventTypes
     {
-        public void Run(RegressionEnvironment env)
+        public static IList<RegressionExecution> Executions()
         {
-            var stmtSelectWild = "@Name('s0') select * from TestTypesEvent";
-            env.CompileDeploy(stmtSelectWild).AddListener("s0");
+            var execs = new List<RegressionExecution>();
+            execs.Add(new EventXMLSchemaEventTypesPreconfigured());
+            execs.Add(new EventXMLSchemaEventTypesCreateSchema());
+            return execs;
+        }
+
+        private class EventXMLSchemaEventTypesPreconfigured : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunAssertion(env, "TestTypesEvent", new RegressionPath());
+            }
+        }
+
+        public class EventXMLSchemaEventTypesCreateSchema : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var resourceManager = env.Container.ResourceManager();
+                var schemaUriTypeTestSchema = resourceManager.GetResourceAsStream("regression/typeTestSchema.xsd").ConsumeStream();
+                var epl = "@public @buseventtype " +
+                          "@XMLSchema(rootElementName='typesEvent', schemaResource='" +
+                          schemaUriTypeTestSchema +
+                          "')" +
+                          "create xml schema MyEventCreateSchema()";
+                var path = new RegressionPath();
+                env.CompileDeploy(epl, path);
+                RunAssertion(env, "MyEventCreateSchema", path);
+            }
+        }
+
+        private static void RunAssertion(
+            RegressionEnvironment env,
+            String eventTypeName,
+            RegressionPath path)
+        {
+            var stmtSelectWild = "@name('s0') select * from " + eventTypeName;
+            env.CompileDeploy(stmtSelectWild, path).AddListener("s0");
+
             var type = env.Statement("s0").EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(type);
 

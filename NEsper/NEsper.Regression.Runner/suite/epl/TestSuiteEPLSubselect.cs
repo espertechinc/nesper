@@ -144,15 +144,38 @@ namespace com.espertech.esper.regressionrun.suite.epl
         {
             RegressionRunner.Run(session, EPLSubselectWithinPattern.Executions());
         }
+        
+        [Test, RunInApplicationDomain]
+        public void TestEPLSubselectWithinFilter()
+        {
+            RegressionRunner.Run(session, EPLSubselectWithinFilter.Executions());
+        }
 
         private static void Configure(Configuration configuration)
         {
-            foreach (Type clazz in new Type[]{typeof(SupportBean), typeof(SupportBean_S0), typeof(SupportBean_S1),
-                typeof(SupportBean_S2), typeof(SupportBean_S3), typeof(SupportBean_S4),
-                typeof(SupportValueEvent), typeof(SupportIdAndValueEvent), typeof(SupportBeanArrayCollMap),
-                typeof(SupportSensorEvent), typeof(SupportBeanRange), typeof(SupportSimpleBeanOne), typeof(SupportSimpleBeanTwo),
-                typeof(SupportBean_ST0), typeof(SupportBean_ST1), typeof(SupportBean_ST2), typeof(SupportTradeEventTwo),
-                typeof(SupportMaxAmountEvent), typeof(SupportMarketDataBean)})
+            foreach (Type clazz in new []{
+                typeof(SupportBean), 
+                typeof(SupportBean_S0),
+                typeof(SupportBean_S1),
+                typeof(SupportBean_S2),
+                typeof(SupportBean_S3), 
+                typeof(SupportBean_S4),
+                typeof(SupportValueEvent),
+                typeof(SupportIdAndValueEvent), 
+                typeof(SupportBeanArrayCollMap),
+                typeof(SupportSensorEvent),
+                typeof(SupportBeanRange),
+                typeof(SupportSimpleBeanOne), 
+                typeof(SupportSimpleBeanTwo),
+                typeof(SupportBean_ST0),
+                typeof(SupportBean_ST1), 
+                typeof(SupportBean_ST2), 
+                typeof(SupportTradeEventTwo),
+                typeof(SupportMaxAmountEvent),
+                typeof(SupportMarketDataBean),
+                typeof(SupportEventWithIntArray),
+                typeof(SupportEventWithManyArray)
+            })
             {
                 configuration.Common.AddEventType(clazz);
             }

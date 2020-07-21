@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             SendCurrentTime(env, "2002-02-01T09:00:00.000");
 
-            var epl = "@Name('s0') select * from pattern [(every SupportBean) where " +
+            var epl = "@name('s0') select * from pattern [(every SupportBean) where " +
                       (hasMax ? "timer:withinmax(1 month, 10)]" : "timer:within(1 month)]");
             env.CompileDeploy(epl).AddListener("s0");
 
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 var text = "select * from pattern [b=SupportBean_B(Id=\"B3\") where timer:within(10.001d)]";
                 var model = new EPStatementObjectModel();
-                model.Select(SelectClause.CreateWildcard());
+                model.SetSelect(SelectClause.CreateWildcard());
                 model = env.CopyMayFail(model);
                 Expression filter = Expressions.Eq("Id", "B3");
                 PatternExpr pattern = Patterns.TimerWithin(
@@ -319,7 +319,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Set up a timer:within
                 env.CompileDeploy(
-                    "@Name('s0') select * from pattern [(every SupportBean) where timer:within(1 days 2 hours 3 minutes 4 seconds 5 milliseconds)]");
+                    "@name('s0') select * from pattern [(every SupportBean) where timer:within(1 days 2 hours 3 minutes 4 seconds 5 milliseconds)]");
                 env.AddListener("s0");
 
                 TryAssertion(env);
@@ -337,7 +337,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Set up a timer:within
                 var stmtText =
-                    "@Name('s0') select * from pattern [(every SupportBean) where timer:within(DD days HH hours MM minutes SS seconds MS milliseconds)]";
+                    "@name('s0') select * from pattern [(every SupportBean) where timer:within(DD days HH hours MM minutes SS seconds MS milliseconds)]";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 TryAssertion(env);
@@ -358,7 +358,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Set up a timer:within
                 var compiled = env.Compile(
-                    "@Name('s0') select * from pattern [(every SupportBean) where timer:within(?::int days ?::int hours ?::int minutes ?::int seconds ?::int milliseconds)]");
+                    "@name('s0') select * from pattern [(every SupportBean) where timer:within(?::int days ?::int hours ?::int minutes ?::int seconds ?::int milliseconds)]");
                 env.Deploy(
                     compiled,
                     new DeploymentOptions().WithStatementSubstitutionParameter(
@@ -386,7 +386,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Set up a timer:within
                 env.CompileDeploy(
-                    "@Name('s0') select b.TheString as Id from pattern[a=SupportBean -> (every b=SupportBean) where timer:within(a.IntPrimitive seconds)]");
+                    "@name('s0') select b.TheString as Id from pattern[a=SupportBean -> (every b=SupportBean) where timer:within(a.IntPrimitive seconds)]");
                 env.AddListener("s0");
 
                 // seed
@@ -414,7 +414,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 SendTimer(0, env);
 
                 var stmtText =
-                    "@Name('s0') select * from pattern [ every(SupportBean -> (SupportMarketDataBean where timer:within(5 sec))) ]";
+                    "@name('s0') select * from pattern [ every(SupportBean -> (SupportMarketDataBean where timer:within(5 sec))) ]";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));

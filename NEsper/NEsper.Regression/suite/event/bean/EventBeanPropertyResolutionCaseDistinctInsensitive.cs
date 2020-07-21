@@ -19,7 +19,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
     {
         public void Run(RegressionEnvironment env)
         {
-            env.CompileDeploy("@Name('s0') select MYPROPERTY, myproperty, myProperty from SupportBeanDupProperty");
+            env.CompileDeploy("@name('s0') select MYPROPERTY, myproperty, myProperty from SupportBeanDupProperty");
             env.AddListener("s0");
 
             env.SendEventBean(new SupportBeanDupProperty("lowercamel", "uppercamel", "upper", "lower"));

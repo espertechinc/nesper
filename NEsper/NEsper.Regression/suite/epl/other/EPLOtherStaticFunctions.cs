@@ -55,6 +55,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             execs.Add(new EPLOtherNestedFunction());
             execs.Add(new EPLOtherPassthru());
             execs.Add(new EPLOtherPrimitiveConversion());
+            execs.Add(new EPLOtherStaticFuncWCurrentTimeStamp());
+            execs.Add(new EPLOtherStaticFuncEnumConstant());
             return execs;
         }
 
@@ -109,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var primitiveConversionLib = typeof(PrimitiveConversionLib).Name;
                 env.CompileDeploy(
-                        "@Name('s0') select " +
+                        "@name('s0') select " +
                         $"{primitiveConversionLib}.PassIntAsObject(IntPrimitive) as c0," +
                         $"{primitiveConversionLib}.PassIntAsNumber(IntPrimitive) as c1," +
                         $"{primitiveConversionLib}.PassIntAsComparable(IntPrimitive) as c2" +
@@ -126,12 +128,46 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             }
         }
 
+        // TBD: New Java Tests
+        internal class EPLOtherStaticFuncEnumConstant : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl =
+                    "create map schema MyEvent(someDate Date, dateFrom string, dateTo string, minutesOfDayFrom int, minutesOfDayTo int, daysOfWeek string);\n" +
+                    "select " +
+                    "java.time.ZonedDateTime.ofInstant(someDate.toInstant(),java.time.ZoneId.of('CET')).isAfter(cast(dateFrom||'T00:00:00Z', zoneddatetime, dateformat:java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(java.time.ZoneId.of('CET')))) as c0,\n" +
+                    "java.time.ZonedDateTime.ofInstant(someDate.toInstant(),java.time.ZoneId.of('CET')).isBefore(cast(dateTo||'T00:00:00Z', zoneddatetime, dateformat:java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(java.time.ZoneId.of('CET')))) as c1,\n" +
+                    "java.time.ZonedDateTime.ofInstant(someDate.toInstant(),java.time.ZoneId.of('CET')).get(java.time.temporal.ChronoField.MINUTE_OF_DAY)>= minutesOfDayFrom as c2,\n" +
+                    "java.time.ZonedDateTime.ofInstant(someDate.toInstant(),java.time.ZoneId.of('CET')).get(java.time.temporal.ChronoField.MINUTE_OF_DAY)<= minutesOfDayTo as c3,\n" +
+                    "daysOfWeek.contains(java.lang.String.valueOf(java.time.ZonedDateTime.ofInstant(someDate.toInstant(),java.time.ZoneId.of('CET')).getDayOfWeek().getValue())) as c4\n" +
+                    "from MyEvent";
+                env.Compile(epl);
+            }
+        }
+
+        internal class EPLOtherStaticFuncWCurrentTimeStamp : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.AdvanceTime(1000);
+                string epl =
+                    "@name('s0') select java.time.format.DateTimeFormatter.ISO_INSTANT.format(java.time.Instant.ofEpochMilli(current_timestamp())) as c0 from SupportBean";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                env.SendEventBean(new SupportBean());
+                Assert.AreEqual("1970-01-01T00:00:01Z", env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+
+                env.UndeployAll();
+            }
+        }
+
         internal class EPLOtherNullPrimitive : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 // test passing null
-                env.CompileDeploy("@Name('s0') select NullPrimitive.GetValue(IntBoxed) from SupportBean")
+                env.CompileDeploy("@name('s0') select NullPrimitive.GetValue(IntBoxed) from SupportBean")
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBean());
@@ -145,7 +181,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                        "@Name('s0') select " +
+                        "@name('s0') select " +
                         "LevelZero.GetLevelOne().GetLevelTwoValue() as val0 " +
                         "from SupportBean")
                     .AddListener("s0");
@@ -173,7 +209,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var subexp = "SupportChainTop.Make().GetChildOne(\"abc\",1).GetChildTwo(\"def\").GetText()";
-                var statementText = "@Name('s0') select " + subexp + " from SupportBean";
+                var statementText = "@name('s0') select " + subexp + " from SupportBean";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 object[][] rows = {
@@ -200,7 +236,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var statementText =
-                    "@Name('s0') select SupportStaticMethodLib.`Join`(abcstream) as value from SupportBean abcstream";
+                    "@name('s0') select SupportStaticMethodLib.`Join`(abcstream) as value from SupportBean abcstream";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 99));
@@ -223,7 +259,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "insert into ABCStream select SupportStaticMethodLib.MyMapFunc() as mymap, SupportStaticMethodLib.MyArrayFunc() as myindex from SupportBean";
                 env.CompileDeploy(statementText, path);
 
-                statementText = "@Name('s0') select mymap('A') as v0, myindex[1] as v1 from ABCStream";
+                statementText = "@name('s0') select mymap('A') as v0, myindex[1] as v1 from ABCStream";
                 env.CompileDeploy(statementText, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean());
@@ -242,7 +278,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var className = typeof(SupportStaticMethodLib).Name;
-                var statementText = "@Name('s0') select * from pattern [Myevent=SupportBean(" +
+                var statementText = "@name('s0') select * from pattern [Myevent=SupportBean(" +
                                     className +
                                     ".DelimitPipe(TheString) = '|a|')]";
                 env.CompileDeploy(statementText).AddListener("s0");
@@ -253,7 +289,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Assert.IsTrue(env.Listener("s0").IsInvoked);
 
                 env.UndeployAll();
-                statementText = "@Name('s0') select * from pattern [Myevent=SupportBean(" +
+                statementText = "@name('s0') select * from pattern [Myevent=SupportBean(" +
                                 className +
                                 ".DelimitPipe(null) = '|<null>|')]";
                 env.CompileDeploy(statementText).AddListener("s0");
@@ -270,7 +306,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var className = typeof(SupportStaticMethodLib).Name;
-                var statementText = "@Name('s0') select Price, " +
+                var statementText = "@name('s0') select Price, " +
                                     className +
                                     ".ThrowException() as value " +
                                     STREAM_MDB_LEN5;
@@ -287,7 +323,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select " +
+                var text = "@name('s0') select " +
                            "SupportStaticMethodLib.ArraySumIntBoxed({1,2,null,3,4}) as v1, " +
                            "SupportStaticMethodLib.ArraySumDouble({1,2,3,4.0}) as v2, " +
                            "SupportStaticMethodLib.ArraySumString({'1','2','3','4'}) as v3, " +
@@ -312,7 +348,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var dateTimeHelper = typeof(DateTimeHelper).FullName;
                 
                 long? startTime = DateTimeHelper.GetCurrentTimeMillis();
-                var statementText = $"@Name('s0') select {dateTimeHelper}.GetCurrentTimeMillis() " + STREAM_MDB_LEN5;
+                var statementText = $"@name('s0') select {dateTimeHelper}.GetCurrentTimeMillis() " + STREAM_MDB_LEN5;
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 env.SendEventBean(new SupportMarketDataBean("IBM", 10d, 4L, ""));
@@ -322,7 +358,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Assert.IsTrue(result <= finishTime);
                 env.UndeployAll();
 
-                //statementText = "@Name('s0') select System.ClassLoader.getSystemClassLoader() " + STREAM_MDB_LEN5;
+                //statementText = "@name('s0') select System.ClassLoader.getSystemClassLoader() " + STREAM_MDB_LEN5;
                 //env.CompileDeploy(statementText).AddListener("s0");
 
                 env.UndeployAll();
@@ -347,7 +383,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
 
                 var bitWriter = typeof(BitWriter).CleanName();
-                var statementText = $"@Name('s0') select {bitWriter}.Write(7) as value" + STREAM_MDB_LEN5;
+                var statementText = $"@name('s0') select {bitWriter}.Write(7) as value" + STREAM_MDB_LEN5;
 
                 Assert.AreEqual(statementText.Trim(), model.ToEPL());
                 env.CompileDeploy(model).AddListener("s0");
@@ -364,7 +400,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var bitWriter = typeof(BitWriter).CleanName();
-                var statementText = $"@Name('s0') select {bitWriter}.Write(7) as value" + STREAM_MDB_LEN5;
+                var statementText = $"@name('s0') select {bitWriter}.Write(7) as value" + STREAM_MDB_LEN5;
                 env.EplToModelCompileDeploy(statementText).AddListener("s0");
 
                 SendEvent(env, "IBM", 10d, 4L);
@@ -379,21 +415,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var bitWriter = typeof(BitWriter).CleanName();
-                var statementText = $"@Name('s0') select {bitWriter}.Write(7) " + STREAM_MDB_LEN5;
+                var statementText = $"@name('s0') select {bitWriter}.Write(7) " + STREAM_MDB_LEN5;
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 var result = AssertStatementAndGetProperty(env, true, $"{bitWriter}.Write(7)");
                 Assert.AreEqual(BitWriter.Write(7), result[0]);
                 env.UndeployAll();
 
-                statementText = "@Name('s0') select Convert.ToInt32(\"6\") " + STREAM_MDB_LEN5;
+                statementText = "@name('s0') select Convert.ToInt32(\"6\") " + STREAM_MDB_LEN5;
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 result = AssertStatementAndGetProperty(env, true, "Convert.ToInt32(\"6\")");
                 Assert.AreEqual(Convert.ToInt32("6"), result[0]);
                 env.UndeployAll();
 
-                statementText = "@Name('s0') select System.Convert.ToString(\'a\') " + STREAM_MDB_LEN5;
+                statementText = "@name('s0') select System.Convert.ToString(\'a\') " + STREAM_MDB_LEN5;
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 result = AssertStatementAndGetProperty(env, true, "System.Convert.ToString(\"a\")");
@@ -406,19 +442,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var statementText = "@Name('s0') select Math.Max(2,3) " + STREAM_MDB_LEN5;
+                var statementText = "@name('s0') select Math.Max(2,3) " + STREAM_MDB_LEN5;
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 Assert.AreEqual(3, AssertStatementAndGetProperty(env, true, "Math.Max(2,3)")[0]);
                 env.UndeployAll();
 
-                statementText = "@Name('s0') select System.Math.Max(2,3d) " + STREAM_MDB_LEN5;
+                statementText = "@name('s0') select System.Math.Max(2,3d) " + STREAM_MDB_LEN5;
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 Assert.AreEqual(3d, AssertStatementAndGetProperty(env, true, "System.Math.Max(2,3.0d)")[0]);
                 env.UndeployAll();
 
-                statementText = "@Name('s0') select Convert.ToInt64(\"123\")" + STREAM_MDB_LEN5;
+                statementText = "@name('s0') select Convert.ToInt64(\"123\")" + STREAM_MDB_LEN5;
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 object expected = Convert.ToInt64("123");
@@ -432,7 +468,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var className = typeof(SupportStaticMethodLib).FullName;
-                var statementText = $"@Name('s0') select {className}.StaticMethod(2){STREAM_MDB_LEN5}";
+                var statementText = $"@name('s0') select {className}.StaticMethod(2){STREAM_MDB_LEN5}";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 Assert.AreEqual(2, AssertStatementAndGetProperty(env, true, $"{className}.StaticMethod(2)")[0]);
@@ -440,7 +476,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 // try context passed
                 SupportStaticMethodLib.MethodInvocationContexts.Clear();
-                statementText = $"@Name('s0') select {className}.StaticMethodWithContext(2){STREAM_MDB_LEN5}";
+                statementText = $"@name('s0') select {className}.StaticMethodWithContext(2){STREAM_MDB_LEN5}";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 Assert.AreEqual(
@@ -459,28 +495,28 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var statementText = "@Name('s0') select Convert.ToString(Price) " + STREAM_MDB_LEN5;
+                var statementText = "@name('s0') select Convert.ToString(Price) " + STREAM_MDB_LEN5;
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 var result = AssertStatementAndGetProperty(env, true, "Convert.ToString(Price)");
                 Assert.AreEqual(Convert.ToString(10d), result[0]);
                 env.UndeployAll();
 
-                statementText = "@Name('s0') select Convert.ToString(2 + 3*5) " + STREAM_MDB_LEN5;
+                statementText = "@name('s0') select Convert.ToString(2 + 3*5) " + STREAM_MDB_LEN5;
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 result = AssertStatementAndGetProperty(env, true, "Convert.ToString(2+3*5)");
                 Assert.AreEqual(Convert.ToString(17), result[0]);
                 env.UndeployAll();
 
-                statementText = "@Name('s0') select Convert.ToString(Price*Volume +Volume) " + STREAM_MDB_LEN5;
+                statementText = "@name('s0') select Convert.ToString(Price*Volume +Volume) " + STREAM_MDB_LEN5;
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 result = AssertStatementAndGetProperty(env, true, "Convert.ToString(Price*Volume+Volume)");
                 Assert.AreEqual(Convert.ToString(44d), result[0]);
                 env.UndeployAll();
 
-                statementText = "@Name('s0') select Convert.ToString(Math.Pow(Price,Convert.ToInt32(\"2\"))) " +
+                statementText = "@name('s0') select Convert.ToString(Math.Pow(Price,Convert.ToInt32(\"2\"))) " +
                                 STREAM_MDB_LEN5;
                 env.CompileDeploy(statementText).AddListener("s0");
 
@@ -498,7 +534,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var statementText = "@Name('s0') select Math.Max(2d,Price), Math.Max(Volume,4d)" + STREAM_MDB_LEN5;
+                var statementText = "@name('s0') select Math.Max(2d,Price), Math.Max(Volume,4d)" + STREAM_MDB_LEN5;
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 var props = AssertStatementAndGetProperty(env, true, "Math.Max(2.0d,Price)", "Math.Max(Volume,4.0d)");
@@ -513,7 +549,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 // where
-                var statementText = "@Name('s0') select *" + STREAM_MDB_LEN5 + "where Math.Pow(Price, .5) > 2";
+                var statementText = "@name('s0') select *" + STREAM_MDB_LEN5 + "where Math.Pow(Price, .5) > 2";
                 env.CompileDeploy(statementText).AddListener("s0");
                 Assert.AreEqual("IBM", AssertStatementAndGetProperty(env, true, "Symbol")[0]);
                 SendEvent(env, "CAT", 4d, 100);
@@ -521,7 +557,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.UndeployAll();
 
                 // group-by
-                statementText = "@Name('s0') select Symbol, sum(Price)" +
+                statementText = "@name('s0') select Symbol, sum(Price)" +
                                 STREAM_MDB_LEN5 +
                                 "group by Convert.ToString(Symbol)";
                 env.CompileDeploy(statementText).AddListener("s0");
@@ -531,7 +567,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.UndeployAll();
 
                 // having
-                statementText = "@Name('s0') select Symbol, sum(Price)" +
+                statementText = "@name('s0') select Symbol, sum(Price)" +
                                 STREAM_MDB_LEN5 +
                                 "having Math.Pow(sum(Price), .5) > 3";
                 env.CompileDeploy(statementText).AddListener("s0");
@@ -541,7 +577,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.UndeployAll();
 
                 // order-by
-                statementText = "@Name('s0') select Symbol, Price" +
+                statementText = "@name('s0') select Symbol, Price" +
                                 STREAM_MDB_LEN5 +
                                 "output every 3 events order by Math.Pow(Price, 2)";
                 env.CompileDeploy(statementText).AddListener("s0");
@@ -562,7 +598,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select " +
+                var text = "@name('s0') select " +
                            "SupportStaticMethodLib.AppendPipe(SupportStaticMethodLib.DelimitPipe('POLYGON ((100.0 100, \", 100 100, 400 400))'),temp.Geom) as val" +
                            " from SupportTemperatureBean as temp";
                 env.CompileDeploy(text).AddListener("s0");
@@ -580,7 +616,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select " +
+                var text = "@name('s0') select " +
                            "SupportStaticMethodLib.Passthru(Id) as val from SupportBean_S0";
                 env.CompileDeploy(text).AddListener("s0");
 

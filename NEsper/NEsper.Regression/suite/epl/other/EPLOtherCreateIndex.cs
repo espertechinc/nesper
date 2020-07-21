@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var epl = "create window MyWindow#keepall as (p0 string, p1 int);\n" +
                           "create unique index MyIndex on MyWindow(p0);\n" +
                           INDEX_CALLBACK_HOOK +
-                          "@Name('s0') on SupportBean_S0 as S0 select p0,p1 from MyWindow as win where win.p0 = S0.P00;\n";
+                          "@name('s0') on SupportBean_S0 as S0 select p0,p1 from MyWindow as win where win.p0 = S0.P00;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 SupportQueryPlanIndexHook.AssertOnExprTableAndReset(
@@ -64,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("create unique index MyIndex on MyWindow(p0);", path);
                 env.CompileDeploy(
                     INDEX_CALLBACK_HOOK +
-                    "@Name('s0') on SupportBean_S0 as S0 select p0, p1 from MyWindow as win where win.p0 = S0.P00;",
+                    "@name('s0') on SupportBean_S0 as S0 select p0, p1 from MyWindow as win where win.p0 = S0.P00;",
                     path);
                 env.AddListener("s0");
 

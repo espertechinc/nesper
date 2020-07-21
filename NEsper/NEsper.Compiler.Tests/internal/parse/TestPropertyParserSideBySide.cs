@@ -23,6 +23,8 @@ using com.espertech.esper.grammar.@internal.util;
 
 using NUnit.Framework;
 
+using static com.espertech.esper.grammar.@internal.generated.EsperEPL2GrammarParser;
+
 namespace com.espertech.esper.compiler.@internal.parse
 {
     [TestFixture]
@@ -64,7 +66,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 	        return Walk(Parse(property));
 	    }
 
-	    public static EsperEPL2GrammarParser.StartEventPropertyRuleContext Parse(string propertyName) {
+	    public static StartEventPropertyRuleContext Parse(string propertyName) {
 	        var input = new CaseInsensitiveInputStream(propertyName);
 	        var lex = ParseHelper.NewLexer(input);
 	        var tokens = new CommonTokenStream(lex);
@@ -78,7 +80,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 	        }
 
 	        var g = ParseHelper.NewParser(tokens);
-	        EsperEPL2GrammarParser.StartEventPropertyRuleContext r;
+	        StartEventPropertyRuleContext r;
 
 	        try {
 	            r = g.startEventPropertyRule();
@@ -95,28 +97,34 @@ namespace com.espertech.esper.compiler.@internal.parse
 	        return r;
 	    }
 
-	    private static EsperEPL2GrammarParser.StartEventPropertyRuleContext HandleRecognitionEx(RecognitionException e, CommonTokenStream tokens, string propertyName, EsperEPL2GrammarParser g) {
-	        // Check for keywords and escape each, parse again
-	        var escapedPropertyName = EscapeKeywords(tokens);
+	    private static StartEventPropertyRuleContext HandleRecognitionEx(
+		    RecognitionException e,
+		    CommonTokenStream tokens,
+		    string propertyName,
+		    EsperEPL2GrammarParser g)
+	    {
+		    // Check for keywords and escape each, parse again
+		    var escapedPropertyName = EscapeKeywords(tokens);
 
-	        var inputEscaped = new CaseInsensitiveInputStream(escapedPropertyName);
-	        var lexEscaped = ParseHelper.NewLexer(inputEscaped);
-	        var tokensEscaped = new CommonTokenStream(lexEscaped);
-	        var gEscaped = ParseHelper.NewParser(tokensEscaped);
+		    var inputEscaped = new CaseInsensitiveInputStream(escapedPropertyName);
+		    var lexEscaped = ParseHelper.NewLexer(inputEscaped);
+		    var tokensEscaped = new CommonTokenStream(lexEscaped);
+		    var gEscaped = ParseHelper.NewParser(tokensEscaped);
 
-	        try {
-	            return gEscaped.startEventPropertyRule();
-	        } catch (Exception eEscaped) {
-	        }
+		    try {
+			    return gEscaped.startEventPropertyRule();
+		    }
+		    catch (Exception eEscaped) {
+		    }
 
-	        throw ExceptionConvertor.ConvertProperty(e, propertyName, true, g);
+		    throw ExceptionConvertor.ConvertProperty(e, propertyName, true, g);
 	    }
 
 	    private static HashSet<string> CreateKeywordCache(ITokenStream tokens)
 	    {
 		    var myKeywordCache = new HashSet<string>();
 		    var myKeywords = ParseHelper.NewParser(tokens).GetKeywords();
-		    
+
 		    foreach (var keyword in myKeywords) {
 			    if (keyword[0] == '\'' && keyword[keyword.Length - 1] == '\'') {
 				    myKeywordCache.Add(keyword.Substring(1, keyword.Length - 1));
@@ -125,7 +133,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 		    return myKeywordCache;
 	    }
-	    
+
 	    private static string EscapeKeywords(CommonTokenStream tokens) {
 		    lock (keywordCacheLock) {
 			    if (keywordCache == null) {
@@ -159,12 +167,12 @@ namespace com.espertech.esper.compiler.@internal.parse
 	    /// </summary>
 	    /// <param name="tree">tree</param>
 	    /// <returns>Property instance for property</returns>
-	    public static Property Walk(EsperEPL2GrammarParser.StartEventPropertyRuleContext tree) {
+	    public static Property Walk(StartEventPropertyRuleContext tree) {
 	        // handle root
 	        var root = tree.chainable().chainableRootWithOpt();
 	        var rootProp = root.chainableWithArgs();
 
-	        IList<EsperEPL2GrammarParser.ChainableAtomicWithOptContext> chained = tree.chainable().chainableElements().chainableAtomicWithOpt();
+	        IList<ChainableAtomicWithOptContext> chained = tree.chainable().chainableElements().chainableAtomicWithOpt();
 	        IList<Property> properties = new List<Property>();
 	        var optionalRoot = root.q != null;
 	        var property = WalkProp(rootProp, chained.IsEmpty() ? null : chained[0], optionalRoot, false);
@@ -187,7 +195,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 	        return new NestedProperty(properties);
 	    }
 
-	    private static Property WalkProp(EsperEPL2GrammarParser.ChainableWithArgsContext ctx, EsperEPL2GrammarParser.ChainableAtomicWithOptContext nextOrNull, bool optional, bool rootedDynamic) {
+	    private static Property WalkProp(ChainableWithArgsContext ctx, ChainableAtomicWithOptContext nextOrNull, bool optional, bool rootedDynamic) {
 	        if (nextOrNull == null) {
 	            return MakeProperty(ctx, optional, rootedDynamic);
 	        }
@@ -205,7 +213,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 	    }
 
 	    private static Property MakeProperty(
-		    EsperEPL2GrammarParser.ChainableWithArgsContext ctx,
+		    ChainableWithArgsContext ctx,
 		    bool optional,
 		    bool rootedDynamic)
 	    {

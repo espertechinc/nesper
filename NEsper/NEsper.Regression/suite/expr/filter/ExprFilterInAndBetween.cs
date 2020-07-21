@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
+using com.espertech.esper.regressionlib.support.filter;
 using com.espertech.esper.regressionlib.support.multistmtassert;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
@@ -46,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             // create all statements
             for (var i = 0; i < statements.Length; i++) {
-                env.CompileDeploy("@Name('s" + i + "')" + statements[i]).AddListener("s" + i);
+                env.CompileDeploy("@name('s" + i + "')" + statements[i]).AddListener("s" + i);
             }
 
             env.Milestone(milestone.GetAndIncrement());
@@ -147,12 +148,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var eplOne = "@Name('s1') select * from SupportBean(IntPrimitive in (0) and TheString like 'X%')";
+                var eplOne = "@name('s1') select * from SupportBean(IntPrimitive in (0) and TheString like 'X%')";
                 env.CompileDeploy(eplOne).AddListener("s1");
 
                 env.Milestone(0);
 
-                var eplTwo = "@Name('s2') select * from SupportBean(IntPrimitive in (0,1) and TheString like 'A%')";
+                var eplTwo = "@name('s2') select * from SupportBean(IntPrimitive in (0,1) and TheString like 'A%')";
                 env.CompileDeploy(eplTwo).AddListener("s2");
 
                 env.Milestone(1);
@@ -170,10 +171,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var eplNotMatching =
-                    "@Name('A') select * from SupportBean(IntPrimitive in (0,0,1) and TheString like 'X%')";
+                    "@name('A') select * from SupportBean(IntPrimitive in (0,0,1) and TheString like 'X%')";
                 env.CompileDeploy(eplNotMatching).AddListener("A");
 
-                var eplMatching = "@Name('B') select * from SupportBean(IntPrimitive in (0,1) and TheString like 'A%')";
+                var eplMatching = "@name('B') select * from SupportBean(IntPrimitive in (0,1) and TheString like 'A%')";
                 env.CompileDeploy(eplMatching).AddListener("B");
 
                 env.Milestone(0);
@@ -191,7 +192,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select * from pattern [a=SupportBeanNumeric -> every b=SupportBean(IntPrimitive in (a.IntOne, a.IntTwo))]";
+                    "@name('s0') select * from pattern [a=SupportBeanNumeric -> every b=SupportBean(IntPrimitive in (a.IntOne, a.IntTwo))]";
                 env.CompileDeployAddListenerMile(epl, "s0", 0);
 
                 SendBeanNumeric(env, 10, 20);
@@ -205,7 +206,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.UndeployAll();
 
                 epl =
-                    "@Name('s0') select * from pattern [a=SupportBean_S0 -> every b=SupportBean(TheString in (a.P00, a.P01, a.P02))]";
+                    "@name('s0') select * from pattern [a=SupportBean_S0 -> every b=SupportBean(TheString in (a.P00, a.P01, a.P02))]";
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
 
                 env.SendEventBean(new SupportBean_S0(1, "a", "b", "c", "d"));
@@ -228,7 +229,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from SupportBean(IntPrimitive in (1, 10))";
+                var epl = "@name('s0') select * from SupportBean(IntPrimitive in (1, 10))";
                 env.CompileDeployAddListenerMile(epl, "s0", 0);
 
                 SendBeanInt(env, 10);
@@ -245,7 +246,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 types.Add(SupportEnum.ENUM_VALUE_2);
                 var collectionType = typeof(ICollection<SupportEnum>).CleanName();
                 var compiled = env.Compile(
-                    "@Name('s0') select * from SupportBean ev " + "where ev.EnumValue in (?::`" + collectionType + "`)");
+                    "@name('s0') select * from SupportBean ev " + "where ev.EnumValue in (?::`" + collectionType + "`)");
                 env.Deploy(
                     compiled,
                     new DeploymentOptions().WithStatementSubstitutionParameter(
@@ -539,14 +540,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                // we do not coerce
-                TryInvalidFilter(env, "select * from SupportBean(IntPrimitive in (1L, 10L))");
-                TryInvalidFilter(env, "select * from SupportBean(IntPrimitive in (1, 10L))");
-                TryInvalidFilter(env, "select * from SupportBean(IntPrimitive in (1, 'x'))");
+                if (SupportFilterOptimizableHelper.HasFilterIndexPlanBasicOrMore(env)) {
+                    // we do not coerce
+                    TryInvalidFilter(env, "select * from SupportBean(IntPrimitive in (1L, 10L))");
+                    TryInvalidFilter(env, "select * from SupportBean(IntPrimitive in (1, 10L))");
+                    TryInvalidFilter(env, "select * from SupportBean(IntPrimitive in (1, 'x'))");
 
-                var expr =
-                    "select * from pattern [a=SupportBean -> b=SupportBean(IntPrimitive in (a.LongPrimitive, a.LongBoxed))]";
-                TryInvalidFilter(env, expr);
+                    var expr =
+                        "select * from pattern [a=SupportBean -> b=SupportBean(IntPrimitive in (a.LongPrimitive, a.LongBoxed))]";
+                    TryInvalidFilter(env, expr);
+                }
             }
         }
 

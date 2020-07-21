@@ -18,7 +18,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.compiler.@internal.rowrecog
 {
 	[TestFixture]
-	public class TestEventRowRegexHelper : AbstractRuntimeTest
+	public class TestEventRowRegexHelper : AbstractCompilerTest
 	{
 		[Test]
 		public void TestVariableAnalysis()

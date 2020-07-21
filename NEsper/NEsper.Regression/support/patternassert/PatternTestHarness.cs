@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
                 var epl = descriptor.ExpressionText;
                 var model = descriptor.ObjectModel;
                 var statementName = NameOfStatement(descriptor);
-                var nameAnnotation = "@Name(\"" + statementName + "\") ";
+                var nameAnnotation = "@name(\"" + statementName + "\") ";
                 EPCompiled compiled;
                 log.Debug(".RunTest Deploying " + epl);
 
@@ -115,7 +115,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
                         model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation(statementName));
                         var module = new Module();
                         module.Items.Add(new ModuleItem(model));
-                        compiled = EPCompilerProvider.Compiler.Compile(
+                        compiled = env.Compiler.Compile(
                             module,
                             new CompilerArguments(env.Configuration));
                     }
@@ -138,17 +138,17 @@ namespace com.espertech.esper.regressionlib.support.patternassert
                         }
                         else if (testStyle == PatternTestStyle.COMPILE_TO_MODEL) {
                             var text = nameAnnotation + "select * from pattern [" + epl + "]";
-                            var mymodel = EPCompilerProvider.Compiler.EplToModel(text, env.Configuration);
+                            var mymodel = env.Compiler.EplToModel(text, env.Configuration);
                             var module = new Module();
                             module.Items.Add(new ModuleItem(mymodel));
-                            compiled = EPCompilerProvider.Compiler.Compile(
+                            compiled = env.Compiler.Compile(
                                 module,
                                 new CompilerArguments(env.Configuration));
                             epl = text;
                         }
                         else if (testStyle == PatternTestStyle.COMPILE_TO_EPL) {
                             var text = "select * from pattern [" + epl + "]";
-                            var mymodel = EPCompilerProvider.Compiler.EplToModel(text, env.Configuration);
+                            var mymodel = env.Compiler.EplToModel(text, env.Configuration);
                             var reverse = nameAnnotation + mymodel.ToEPL();
                             compiled = env.Compile(reverse);
                             epl = reverse;

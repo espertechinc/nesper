@@ -35,6 +35,8 @@ namespace com.espertech.esper.regressionlib.framework
 
         Configuration Configuration { get; }
 
+        EPCompiler Compiler { get; }
+
         bool IsHA { get; }
 
         bool IsHA_Releasing { get; }
@@ -138,6 +140,10 @@ namespace com.espertech.esper.regressionlib.framework
             EPCompiled compiled,
             DeploymentOptions options);
 
+        RegressionEnvironment Rollout(
+            IList<EPDeploymentRolloutCompiled> items,
+            RolloutOptions options);
+
         string DeployGetId(EPCompiled compiled);
 
         RegressionEnvironment UndeployAll();
@@ -164,6 +170,10 @@ namespace com.espertech.esper.regressionlib.framework
             object @event,
             string typeName);
 
+        RegressionEnvironment SendEventBeanStage(
+            string stageUri,
+            object @event);
+
         RegressionEnvironment SendEventMap(
             IDictionary<string, object> values,
             string typeName);
@@ -176,7 +186,15 @@ namespace com.espertech.esper.regressionlib.framework
             GenericRecord theEvent,
             string typeName);
 
+        RegressionEnvironment SendEventJson(
+            string json,
+            string typeName);
+
         RegressionEnvironment AdvanceTime(long msec);
+
+        RegressionEnvironment AdvanceTimeStage(
+            string stageUri,
+            long msec);
 
         RegressionEnvironment AdvanceTimeSpan(long msec);
 
@@ -196,6 +214,10 @@ namespace com.espertech.esper.regressionlib.framework
 
         SupportListener Listener(string statementName);
 
+        SupportListener ListenerStage(
+            string stageUri,
+            string statementName);
+
         string DeploymentId(string statementName);
 
         RegressionEnvironment EplToModelCompileDeploy(string epl);
@@ -207,6 +229,8 @@ namespace com.espertech.esper.regressionlib.framework
         EPStatementObjectModel EplToModel(string epl);
 
         SupportListener ListenerNew();
+
+        EPStageService StageService { get; }
     }
 
     public static class RegressionEnvironmentExtensions

@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             }
 
             object index = exprEvaluator.Evaluate(eventsPerStream, isNewData, context);
-            if (index == null || !index.IsInt()) {
+            if (index == null || !index.IsInt32()) {
                 Log.Warn(forge.GetWarningText("integer", index));
                 return null;
             }

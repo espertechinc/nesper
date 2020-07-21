@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             var path = new RegressionPath();
             env.CompileDeploy("create schema MyBeanWithoutProps as " + typeof(SupportBeanWithoutProps).MaskTypeName(), path);
             env.CompileDeploy("insert into MyBeanWithoutProps select null from SupportBean", path);
-            env.CompileDeploy("@Name('s0') select * from MyBeanWithoutProps", path).AddListener("s0");
+            env.CompileDeploy("@name('s0') select * from MyBeanWithoutProps", path).AddListener("s0");
 
             env.SendEventBean(new SupportBean());
             Assert.IsTrue(env.Listener("s0").AssertOneGetNewAndReset().Underlying is SupportBeanWithoutProps);
@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             var path = new RegressionPath();
             env.CompileDeploy(soda, "create map schema EmptyMapSchema as ()", path);
             env.CompileDeploy("insert into EmptyMapSchema() select null from SupportBean", path);
-            env.CompileDeploy("@Name('s0') select * from EmptyMapSchema", path).AddListener("s0");
+            env.CompileDeploy("@name('s0') select * from EmptyMapSchema", path).AddListener("s0");
 
             env.SendEventBean(new SupportBean());
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.CompileDeploy("insert into EmptyOASchema select null from SupportBean", path);
 
             var supportSubscriber = new SupportSubscriber();
-            env.CompileDeploy("@Name('s0') select * from EmptyOASchema", path).AddListener("s0");
+            env.CompileDeploy("@name('s0') select * from EmptyOASchema", path).AddListener("s0");
             env.Statement("s0").Subscriber = supportSubscriber;
 
             env.SendEventBean(new SupportBean());
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var path = new RegressionPath();
                 env.CompileDeploy("create schema EmptyPropSchema()", path);
-                env.CompileDeploy("@Name('window') create window EmptyPropWin#keepall as EmptyPropSchema", path);
+                env.CompileDeploy("@name('window') create window EmptyPropWin#keepall as EmptyPropSchema", path);
                 env.CompileDeploy("insert into EmptyPropWin() select null from SupportBean", path);
 
                 env.SendEventBean(new SupportBean());

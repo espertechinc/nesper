@@ -23,12 +23,12 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
         {
             SendTimer(env, 0);
 
-            env.CompileDeploy("@Name('GroupOne') select * from SupportBean(IntPrimitive = 1)#keepall");
-            env.CompileDeploy("@Name('GroupTwo') select * from SupportBean(IntPrimitive = 2)#keepall");
+            env.CompileDeploy("@name('GroupOne') select * from SupportBean(IntPrimitive = 1)#keepall");
+            env.CompileDeploy("@name('GroupTwo') select * from SupportBean(IntPrimitive = 2)#keepall");
             env.Statement("GroupTwo").Subscriber = new SupportSubscriber();
-            env.CompileDeploy("@Name('Default') select * from SupportBean(IntPrimitive = 3)#keepall"); // no listener
+            env.CompileDeploy("@name('Default') select * from SupportBean(IntPrimitive = 3)#keepall"); // no listener
 
-            env.CompileDeploy("@Name('StmtMetrics') select * from " + typeof(StatementMetric).FullName)
+            env.CompileDeploy("@name('StmtMetrics') select * from " + typeof(StatementMetric).FullName)
                 .AddListener("StmtMetrics");
 
             SendTimer(env, 6000);

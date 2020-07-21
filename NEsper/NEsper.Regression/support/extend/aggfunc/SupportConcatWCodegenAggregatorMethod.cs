@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionlib.support.extend.aggfunc
 {
     public class SupportConcatWCodegenAggregatorMethod : AggregatorMethod
     {
-        private readonly CodegenExpressionRef builder;
+        private readonly CodegenExpressionMember builder;
 
         public SupportConcatWCodegenAggregatorMethod(AggregatorMethodFactoryContext context)
         {

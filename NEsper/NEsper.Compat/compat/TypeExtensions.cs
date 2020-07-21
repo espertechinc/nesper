@@ -488,7 +488,7 @@ namespace com.espertech.esper.compat
         /// <returns>
         ///   <c>true</c> if the specified value is int; otherwise, <c>false</c>.
         /// </returns>
-        public static bool IsInt(this object value, bool withUpcast = true)
+        public static bool IsInt32(this object value, bool withUpcast = true)
         {
             if (withUpcast) {
                 return (value is short) ||

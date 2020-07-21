@@ -114,7 +114,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(1000);
 
-                var text = "@Name('s0') select irstream * from SupportBeanTimestamp#time_order(Timestamp, 10 sec)";
+                var text = "@name('s0') select irstream * from SupportBeanTimestamp#time_order(Timestamp, 10 sec)";
                 env.CompileDeploy(text).AddListener("s0").Milestone(0);
 
                 // 1st event
@@ -334,7 +334,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var fields = new [] { "TheString","LongPrimitive" };
 
                 env.AdvanceTime(0);
-                var epl = "@Name('s0') select irstream * from SupportBean.ext:time_order(LongPrimitive, 10 sec)";
+                var epl = "@name('s0') select irstream * from SupportBean.ext:time_order(LongPrimitive, 10 sec)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("s0"), fields, null);
@@ -427,7 +427,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AdvanceTime(0);
 
                 var fields = new [] { "Id" };
-                var epl = "@Name('s0') select irstream * from SupportBeanTimestamp#timetolive(Timestamp)";
+                var epl = "@name('s0') select irstream * from SupportBeanTimestamp#timetolive(Timestamp)";
                 env.CompileDeploy(epl).AddListener("s0").Milestone(0);
 
                 SendEvent(env, "E1", 1000);
@@ -552,7 +552,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 SendCurrentTime(env, "2002-02-01T09:00:00.000");
                 env.CompileDeploy(
-                        "@Name('s0') select rstream * from SupportBeanTimestamp#time_order(Timestamp, 1 month)")
+                        "@name('s0') select rstream * from SupportBeanTimestamp#time_order(Timestamp, 1 month)")
                     .AddListener("s0");
 
                 SendEvent(env, "E1", DateTimeParsingFunctions.ParseDefaultMSec("2002-02-01T09:00:00.000"));
@@ -576,7 +576,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, 1000);
                 var epl =
                     "insert rstream into OrderedStream select rstream Id from SupportBeanTimestamp#time_order(Timestamp, 10 sec);\n" +
-                    "@Name('s0') select * from OrderedStream";
+                    "@name('s0') select * from OrderedStream";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 // 1st event at 21 sec
@@ -678,7 +678,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 SendTimer(env, 1000);
 
-                var epl = "@Name('s0') select irstream * from SupportBeanTimestamp#time_order(Timestamp, 10 sec)";
+                var epl = "@name('s0') select irstream * from SupportBeanTimestamp#time_order(Timestamp, 10 sec)";
                 env.CompileDeploy(epl).AddListener("s0");
                 EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), new[] {"Id"}, null);
 
@@ -899,7 +899,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 SendTimer(env, 20000);
                 var epl =
-                    "@Name('s0') select irstream * from SupportBeanTimestamp#groupwin(GroupId)#time_order(Timestamp, 10 sec)";
+                    "@name('s0') select irstream * from SupportBeanTimestamp#groupwin(GroupId)#time_order(Timestamp, 10 sec)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 // 1st event is old
@@ -1013,7 +1013,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 SendTimer(env, 1000);
 
-                var epl = "@Name('s0') select irstream Id, " +
+                var epl = "@name('s0') select irstream Id, " +
                           " prev(0, Id) as prevIdZero, " +
                           " prev(1, Id) as prevIdOne, " +
                           " prior(1, Id) as priorIdOne," +
@@ -1109,7 +1109,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(1000);
 
-                var text = "@Name('s0') select irstream Id, " +
+                var text = "@name('s0') select irstream Id, " +
                            "prev(1, Id) as prevId, " +
                            "prior(1, Id) as priorId, " +
                            "prevtail(0, Id) as prevtail, " +

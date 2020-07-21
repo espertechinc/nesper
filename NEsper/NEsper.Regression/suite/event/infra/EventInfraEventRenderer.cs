@@ -24,103 +24,163 @@ using static com.espertech.esper.regressionlib.support.@event.SupportEventInfra;
 
 namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
-    public class EventInfraEventRenderer : RegressionExecution
-    {
-        public const string XML_TYPENAME = "EventInfraEventRendererXML";
-        public const string MAP_TYPENAME = "EventInfraEventRendererMap";
-        public const string OA_TYPENAME = "EventInfraEventRendererOA";
-        public const string AVRO_TYPENAME = "EventInfraEventRendererAvro";
-        private static readonly Type BEAN_TYPE = typeof(MyEvent);
+	public class EventInfraEventRenderer : RegressionExecution
+	{
+		public const string XML_TYPENAME = "EventInfraEventRendererXML";
+		private static readonly Type BEAN_TYPE = typeof(EventInfraEventRenderer.MyEvent);
+		public const string MAP_TYPENAME = "EventInfraEventRendererMap";
+		public const string OA_TYPENAME = "EventInfraEventRendererOA";
+		public const string AVRO_TYPENAME = "EventInfraEventRendererAvro";
+		public const string JSON_TYPENAME = "EventInfraEventRendererJson";
+		public const string JSONPROVIDED_TYPENAME = "EventInfraEventRendererJsonProvided";
 
-        public void Run(RegressionEnvironment env)
-        {
-            // Bean
-            RunAssertion(env, BEAN_TYPE.Name, FBEAN, new MyEvent(1, "abc", new MyInsideEvent(10)));
+		public void Run(RegressionEnvironment env)
+		{
+			var path = new RegressionPath();
 
-            // Map
-            IDictionary<string, object> mapInner = new Dictionary<string, object>();
-            mapInner.Put("MyInsideInt", 10);
-            IDictionary<string, object> topInner = new Dictionary<string, object>();
-            topInner.Put("MyInt", 1);
-            topInner.Put("MyString", "abc");
-            topInner.Put("Nested", mapInner);
-            RunAssertion(env, MAP_TYPENAME, FMAP, topInner);
+			// Bean
+			RunAssertion(env, BEAN_TYPE.Name, FBEAN, new MyEvent(1, "abc", new MyInsideEvent(10)), path);
 
-            // Object-array
-            object[] oaInner = {10};
-            object[] oaTop = {1, "abc", oaInner};
-            RunAssertion(env, OA_TYPENAME, FOA, oaTop);
+			// Map
+			IDictionary<string, object> mapInner = new Dictionary<string, object>();
+			mapInner.Put("myInsideInt", 10);
+			IDictionary<string, object> topInner = new Dictionary<string, object>();
+			topInner.Put("myInt", 1);
+			topInner.Put("myString", "abc");
+			topInner.Put("nested", mapInner);
+			RunAssertion(env, MAP_TYPENAME, FMAP, topInner, path);
 
-            // XML
-            var xml = "<Myevent MyInt=\"1\" MyString=\"abc\"><Nested MyInsideInt=\"10\"/></Myevent>";
-            RunAssertion(env, XML_TYPENAME, FXML, xml);
+			// Object-array
+			var oaInner = new object[] {10};
+			var oaTop = new object[] {1, "abc", oaInner};
+			RunAssertion(env, OA_TYPENAME, FOA, oaTop, path);
 
-            // Avro
-            var schema = AvroSchemaUtil
-                .ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME))
-                .AsRecordSchema();
-            var innerSchema = schema.GetField("Nested").Schema.AsRecordSchema();
-            var avroInner = new GenericRecord(innerSchema);
-            avroInner.Put("MyInsideInt", 10);
-            var avro = new GenericRecord(schema);
-            avro.Put("MyInt", 1);
-            avro.Put("MyString", "abc");
-            avro.Put("Nested", avroInner);
-            RunAssertion(env, AVRO_TYPENAME, FAVRO, avro);
-        }
+			// XML
+			var xml = "<myevent myInt=\"1\" myString=\"abc\"><nested myInsideInt=\"10\"/></myevent>";
+			RunAssertion(env, XML_TYPENAME, FXML, xml, path);
 
-        private void RunAssertion(
-            RegressionEnvironment env,
-            string typename,
-            FunctionSendEvent send,
-            object @event)
-        {
-            var epl = "@Name('s0') select * from " + typename;
-            env.CompileDeploy(epl).AddListener("s0");
-            send.Invoke(env, @event, typename);
+			// Avro
+			var schema = AvroSchemaUtil.ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME));
+			var innerSchema = schema.GetField("nested").Schema;
+			var avroInner = new GenericRecord(innerSchema.AsRecordSchema());
+			avroInner.Put("myInsideInt", 10);
+			var avro = new GenericRecord(schema.AsRecordSchema());
+			avro.Put("myInt", 1);
+			avro.Put("myString", "abc");
+			avro.Put("nested", avroInner);
+			RunAssertion(env, AVRO_TYPENAME, FAVRO, avro, path);
 
-            var eventBean = env.Listener("s0").AssertOneGetNewAndReset();
+			// Json
+			var schemasJson = "create json schema Nested(myInsideInt int);\n" +
+			                  "@public @buseventtype @name('schema') create json schema " +
+			                  JSON_TYPENAME +
+			                  "(myInt int, myString string, nested Nested)";
+			env.CompileDeploy(schemasJson, path);
+			var json = "{\n" +
+			           "  \"myInt\": 1,\n" +
+			           "  \"myString\": \"abc\",\n" +
+			           "  \"nested\": {\n" +
+			           "    \"myInsideInt\": 10\n" +
+			           "  }\n" +
+			           "}";
+			RunAssertion(env, JSON_TYPENAME, FJSON, json, path);
 
-            var jsonEventRenderer = env.Runtime.RenderEventService.GetJSONRenderer(env.Statement("s0").EventType);
-            var json = jsonEventRenderer.Render(eventBean).RegexReplaceAll("(\\s|\\n|\\t)", "");
-            Assert.AreEqual("{\"MyInt\":1,\"MyString\":\"abc\",\"Nested\":{\"MyInsideInt\":10}}", json);
+			// Json-Class-Provided
+			var schemas = "@JsonSchema(className='" +
+			              nameof(MyLocalJsonProvided) +
+			              "') " +
+			              "@public @buseventtype @name('schema') create json schema " +
+			              JSONPROVIDED_TYPENAME +
+			              "()";
+			env.CompileDeploy(schemas, path);
+			RunAssertion(env, JSONPROVIDED_TYPENAME, FJSON, json, path);
+		}
 
-            var xmlEventRenderer = env.Runtime.RenderEventService.GetXMLRenderer(env.Statement("s0").EventType);
-            var xml = xmlEventRenderer.Render("root", eventBean).RegexReplaceAll("(\\s|\\n|\\t)", "");
-            Assert.AreEqual(
-                "<?xmlversion=\"1.0\"encoding=\"UTF-8\"?><root><MyInt>1</MyInt><MyString>abc</MyString><Nested><MyInsideInt>10</MyInsideInt></Nested></root>",
-                xml);
+		private void RunAssertion(
+			RegressionEnvironment env,
+			string typename,
+			FunctionSendEvent send,
+			object @event,
+			RegressionPath path)
+		{
+			var epl = "@name('s0') select * from " + typename;
+			env.CompileDeploy(epl, path).AddListener("s0");
+			send.Invoke(env, @event, typename);
 
-            env.UndeployAll();
-        }
+			var eventBean = env.Listener("s0").AssertOneGetNewAndReset();
 
-        public class MyInsideEvent
-        {
-            public MyInsideEvent(int myInsideInt)
-            {
-                MyInsideInt = myInsideInt;
-            }
+			var jsonEventRenderer = env.Runtime.RenderEventService.GetJSONRenderer(env.Statement("s0").EventType);
+			var json = jsonEventRenderer.Render(eventBean).RegexReplaceAll("(\\s|\\n|\\t)", "");
+			Assert.AreEqual("{\"myInt\":1,\"myString\":\"abc\",\"nested\":{\"myInsideInt\":10}}", json);
 
-            public int MyInsideInt { get; }
-        }
+			var xmlEventRenderer = env.Runtime.RenderEventService.GetXMLRenderer(env.Statement("s0").EventType);
+			var xml = xmlEventRenderer.Render("root", eventBean).RegexReplaceAll("(\\s|\\n|\\t)", "");
+			Assert.AreEqual(
+				"<?xmlversion=\"1.0\"encoding=\"UTF-8\"?><root><myInt>1</myInt><myString>abc</myString><nested><myInsideInt>10</myInsideInt></nested></root>",
+				xml);
 
-        public class MyEvent
-        {
-            public MyEvent(
-                int myInt,
-                string myString,
-                MyInsideEvent nested)
-            {
-                MyInt = myInt;
-                MyString = myString;
-                Nested = nested;
-            }
+			env.UndeployAll();
+		}
 
-            public int MyInt { get; }
+		public class MyEvent
+		{
+			private int myInt;
+			private string myString;
+			private MyInsideEvent nested;
 
-            public string MyString { get; }
+			public MyEvent(
+				int myInt,
+				string myString,
+				MyInsideEvent nested)
+			{
+				this.myInt = myInt;
+				this.myString = myString;
+				this.nested = nested;
+			}
 
-            public MyInsideEvent Nested { get; }
-        }
-    }
+			public int GetMyInt()
+			{
+				return myInt;
+			}
+
+			public string GetMyString()
+			{
+				return myString;
+			}
+
+			public MyInsideEvent GetNested()
+			{
+				return nested;
+			}
+		}
+
+		public class MyInsideEvent
+		{
+			private int myInsideInt;
+
+			public MyInsideEvent(int myInsideInt)
+			{
+				this.myInsideInt = myInsideInt;
+			}
+
+			public int GetMyInsideInt()
+			{
+				return myInsideInt;
+			}
+		}
+
+		[Serializable]
+		public class MyLocalJsonProvided
+		{
+			public int myInt;
+			public string myString;
+			public MyLocalJsonProvidedNested nested;
+		}
+
+		[Serializable]
+		public class MyLocalJsonProvidedNested
+		{
+			public int myInsideInt;
+		}
+	}
 } // end of namespace

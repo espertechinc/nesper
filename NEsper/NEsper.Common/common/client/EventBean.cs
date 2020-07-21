@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.client
         /// <value>
         ///     underlying data object, usually either a Map or a bean instance.
         /// </value>
-        object Underlying { get; }
+        object Underlying { get; set; }
 
         /// <summary>
         ///     Returns the value of an event property for the given property name or property expression.

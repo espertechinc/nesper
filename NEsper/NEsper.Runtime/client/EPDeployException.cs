@@ -20,6 +20,8 @@ namespace com.espertech.esper.runtime.client
     {
         private readonly int _rolloutItemNumber;
 
+        public int RolloutItemNumber => _rolloutItemNumber;
+
         /// <summary>
         /// Constructor.
         /// </summary>

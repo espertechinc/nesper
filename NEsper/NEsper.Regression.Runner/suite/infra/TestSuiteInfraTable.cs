@@ -60,7 +60,10 @@ namespace com.espertech.esper.regressionrun.suite.infra
                 typeof(SupportCtorSB2WithObjectArray),
                 typeof(Support10ColEvent),
                 typeof(SupportTopGroupSubGroupEvent),
-                typeof(SupportBeanNumeric)
+                typeof(SupportBeanNumeric),
+                typeof(SupportEventWithManyArray),
+                typeof(SupportEventWithManyArray),
+                typeof(SupportEventWithIntArray)
             }) {
                 configuration.Common.AddEventType(clazz);
             }
@@ -73,6 +76,9 @@ namespace com.espertech.esper.regressionrun.suite.infra
                 "pluginServiceEventBean",
                 typeof(InfraTableSelect),
                 "MyServiceEventBean");
+            configuration.Compiler.AddPlugInSingleRowFunction(
+                "toIntArray", typeof(InfraTableOnUpdate),
+                "ToIntArray");
 
             configuration.Compiler.AddPlugInAggregationFunctionForge(
                 "myaggsingle",
@@ -80,7 +86,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             configuration.Compiler.AddPlugInAggregationFunctionForge("csvWords", typeof(SupportSimpleWordCSVForge));
 
             var config = new ConfigurationCompilerPlugInAggregationMultiFunction(
-                new [] { "referenceCountedMap","referenceCountLookup" },
+                new [] { "referenceCountedMap" },
                 typeof(SupportReferenceCountedMapForge));
             configuration.Compiler.AddPlugInAggregationMultiFunction(config);
             var configMultiFuncAgg = new ConfigurationCompilerPlugInAggregationMultiFunction(
@@ -295,7 +301,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
         [Test, RunInApplicationDomain]
         public void TestInfraTableOnUpdate()
         {
-            RegressionRunner.Run(session, new InfraTableOnUpdate());
+            RegressionRunner.Run(session, InfraTableOnUpdate.Executions());
         }
 
         [Test, RunInApplicationDomain]
@@ -338,6 +344,12 @@ namespace com.espertech.esper.regressionrun.suite.infra
         public void TestInfraTableWNamedWindow()
         {
             RegressionRunner.Run(session, new InfraTableWNamedWindow());
+        }
+        
+        [Test, RunInApplicationDomain]
+        public void TestInfraTableResetAggregationState()
+        {
+            RegressionRunner.Run(session, InfraTableResetAggregationState.Executions());
         }
     }
 } // end of namespace

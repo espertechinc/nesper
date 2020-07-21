@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             {
                 SendTimer(0, env);
                 var fields = new [] { "a_string","b_string" };
-                var text = "@Name('s0') select * from SupportRecogBean#time(5) " +
+                var text = "@name('s0') select * from SupportRecogBean#time(5) " +
                            "match_recognize (" +
                            "  measures A.TheString as a_string, B.TheString as b_string" +
                            "  all matches pattern (A B) " +
@@ -147,7 +147,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             {
                 SendTimer(0, env);
                 var fields = new [] { "cat","a_string","b_string" };
-                var text = "@Name('s0') select * from SupportRecogBean#time(5) " +
+                var text = "@name('s0') select * from SupportRecogBean#time(5) " +
                            "match_recognize (" +
                            "  partition by Cat" +
                            "  measures A.Cat as cat, A.TheString as a_string, B.TheString as b_string" +
@@ -252,7 +252,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             {
                 SendTimer(0, env);
                 var fields = new [] { "a_string" };
-                var text = "@Name('s0') select * from SupportRecogBean#time(5 sec) " +
+                var text = "@name('s0') select * from SupportRecogBean#time(5 sec) " +
                            "match_recognize (" +
                            "  partition by Cat " +
                            "  measures A.Cat as cat, A.TheString as a_string" +
@@ -370,7 +370,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "a_string","a_cat","a_value","b_value" };
-                var text = "@Name('s0') select * from SupportRecogBean#keepall " +
+                var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  partition by TheString, Cat" +
                            "  measures A.TheString as a_string, A.Cat as a_cat, A.Value as a_value, B.Value as b_value " +
@@ -459,7 +459,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "a_string" };
-                var text = "@Name('s0') select * from SupportRecogBean#keepall " +
+                var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  measures A.TheString as a_string" +
                            "  all matches pattern (A) " +
@@ -533,7 +533,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
                 env.UndeployModuleContaining("s0");
 
-                text = "@Name('s0') select * from SupportRecogBean#keepall " +
+                text = "@name('s0') select * from SupportRecogBean#keepall " +
                        "match_recognize (" +
                        "  measures A.TheString as a_string" +
                        "  all matches pattern (A) " +

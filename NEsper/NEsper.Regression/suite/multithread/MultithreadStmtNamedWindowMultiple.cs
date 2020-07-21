@@ -37,14 +37,14 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var path = new RegressionPath();
             for (var i = 0; i < numUsers; i++) {
                 env.CompileDeploy(
-                    "@Name('create_" +
+                    "@name('create_" +
                     i +
                     "') create window MyWindow_" +
                     i +
                     "#unique(OrderId) as select * from OrderEvent",
                     path);
                 env.CompileDeploy(
-                    "@Name('insert_" +
+                    "@name('insert_" +
                     i +
                     "') insert into MyWindow_" +
                     i +
@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     "on OrderCancelEvent as d delete from MyWindow_" + i + " w where w.OrderId = d.OrderId",
                     path);
                 env.CompileDeploy(
-                    "@Name('select_" +
+                    "@name('select_" +
                     i +
                     "') on OrderEvent as s select sum(w.Price) from MyWindow_" +
                     i +

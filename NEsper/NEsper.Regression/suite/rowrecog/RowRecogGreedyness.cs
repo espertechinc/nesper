@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "a_string","b_string" };
-                var text = "@Name('s0') select * from SupportRecogBean#keepall " +
+                var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  measures A.TheString as a_string, B.TheString as b_string " +
                            "  pattern (A?? B?) " +
@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "a0","a1","a2","b","c" };
-                var text = "@Name('s0') select * from SupportRecogBean#keepall " +
+                var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  measures A[0].TheString as a0, A[1].TheString as a1, A[2].TheString as a2, B.TheString as b, C.TheString as c" +
                            "  pattern (A*? B? C) " +
@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "a0","a1","a2","b","c" };
-                var text = "@Name('s0') select * from SupportRecogBean#keepall " +
+                var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  measures A[0].TheString as a0, A[1].TheString as a1, A[2].TheString as a2, B.TheString as b, C.TheString as c" +
                            "  pattern (A+? B? C) " +

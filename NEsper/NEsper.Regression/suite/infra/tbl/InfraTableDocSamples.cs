@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "create schema ValueEvent(value long);\n" +
                     "create schema ResetEvent(startThreshold long);\n" +
                     "create table CurrentMaxTable(currentThreshold long);\n" +
-                    "@Name('s0') insert into ThresholdTriggered select * from ValueEvent(value >= CurrentMaxTable.currentThreshold);\n" +
+                    "@name('s0') insert into ThresholdTriggered select * from ValueEvent(value >= CurrentMaxTable.currentThreshold);\n" +
                     "on ResetEvent merge CurrentMaxTable when matched then update set currentThreshold = startThreshold when not matched then insert select startThreshold as currentThreshold;\n" +
                     "on ThresholdTriggered update CurrentMaxTable set currentThreshold = value + 100;\n";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");

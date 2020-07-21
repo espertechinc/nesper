@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             SendCurrentTime(env, "2012-10-01T05:51:07.000GMT-0:00");
 
             var epl =
-                "@Name('s0') select * from pattern[every sb=SupportBean -> timer:schedule(iso: computeISO8601String(sb))]";
+                "@name('s0') select * from pattern[every sb=SupportBean -> timer:schedule(iso: computeISO8601String(sb))]";
             env.CompileDeploy(epl).AddListener("s0");
 
             var b1 = MakeSendEvent(env, "E1", 5);
@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             SendCurrentTime(env, "2012-10-01T05:51:07.000GMT-0:00");
 
             var epl =
-                "@Name('s0') select * from pattern[every sb=SupportBean -> timer:schedule(iso: 'R/1980-01-01T00:00:00Z/PT15S')]";
+                "@name('s0') select * from pattern[every sb=SupportBean -> timer:schedule(iso: 'R/1980-01-01T00:00:00Z/PT15S')]";
             env.CompileDeploy(epl).AddListener("s0");
 
             var b1 = MakeSendEvent(env, "E1");
@@ -129,15 +129,15 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         private static void RunAssertionEquivalent(RegressionEnvironment env)
         {
             var first =
-                "@Name('s0') select * from pattern[every timer:schedule(iso: 'R2/2008-03-01T13:00:00Z/P1Y2M10DT2H30M')]";
+                "@name('s0') select * from pattern[every timer:schedule(iso: 'R2/2008-03-01T13:00:00Z/P1Y2M10DT2H30M')]";
             TryAssertionEquivalent(env, first);
 
-            var second = "@Name('s0') select * from pattern[every " +
+            var second = "@name('s0') select * from pattern[every " +
                          "(timer:schedule(iso: '2008-03-01T13:00:00Z') or" +
                          " timer:schedule(iso: '2009-05-11T15:30:00Z'))]";
             TryAssertionEquivalent(env, second);
 
-            var third = "@Name('s0') select * from pattern[every " +
+            var third = "@name('s0') select * from pattern[every " +
                         "(timer:schedule(iso: '2008-03-01T13:00:00Z') or" +
                         " timer:schedule(iso: '2008-03-01T13:00:00Z/P1Y2M10DT2H30M'))]";
             TryAssertionEquivalent(env, third);
@@ -171,7 +171,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             SendCurrentTime(env, "2012-10-01T05:51:00.000GMT-0:00");
 
             // Repeat 3 times, starting "2012-10-01T05:52:00Z" (UTC), period of 2 seconds
-            var epl = "@Name('s0') select * from pattern[timer:schedule(" + parameters + ")]";
+            var epl = "@name('s0') select * from pattern[timer:schedule(" + parameters + ")]";
 
             env.CompileDeploy(epl).AddListener("s0");
 
@@ -200,7 +200,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
             // Repeat 3 times, starting "2012-10-01T05:52:00Z" (UTC), period of 2 seconds
             var epl = (audit ? "@Audit " : "") +
-                      "@Name('s0') select * from pattern[every timer:schedule(" +
+                      "@name('s0') select * from pattern[every timer:schedule(" +
                       parameters +
                       ")]";
             env.CompileDeploy(epl).AddListener("s0");
@@ -228,7 +228,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             SendCurrentTime(env, "2012-10-01T05:51:00.000GMT-0:00");
 
             // Fire once at "2012-10-01T05:52:00Z" (UTC)
-            var epl = "@Name('s0') select * from pattern[" +
+            var epl = "@name('s0') select * from pattern[" +
                       (hasEvery ? "every " : "") +
                       "timer:schedule(" +
                       parameters +
@@ -254,7 +254,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             SendCurrentTime(env, "2012-10-01T05:51:00.000GMT-0:00");
 
             // Fire once at "2012-10-01T05:52:00Z" (UTC)
-            var epl = "@Name('s0') select * from pattern[" +
+            var epl = "@name('s0') select * from pattern[" +
                       (hasEvery ? "every " : "") +
                       "timer:schedule(iso: '2010-10-01T05:52:00Z')]";
             env.CompileDeploy(epl).AddListener("s0");
@@ -277,7 +277,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             SendCurrentTime(env, "2012-10-01T05:51:00.000GMT-0:00");
 
             // Fire once after 1 day and 2 hours
-            var epl = "@Name('s0') select * from pattern[timer:schedule(" + parameters + ")]";
+            var epl = "@name('s0') select * from pattern[timer:schedule(" + parameters + ")]";
             env.CompileDeploy(epl).AddListener("s0");
 
             AssertReceivedAtTime(env, "2012-10-02T07:51:00.000GMT-0:00");
@@ -298,7 +298,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             // Fire 3 times after 2 seconds from current time
             SendCurrentTime(env, "2012-10-01T05:52:00.000GMT-0:00");
-            var epl = "@Name('s0') select * from pattern[every timer:schedule(" + parameters + ")]";
+            var epl = "@name('s0') select * from pattern[every timer:schedule(" + parameters + ")]";
             env.CompileDeploy(epl).AddListener("s0");
 
             AssertReceivedAtTime(env, "2012-10-01T05:52:02.000GMT-0:00");
@@ -313,7 +313,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             // Fire 3 times after 2 seconds from current time
             SendCurrentTime(env, "2012-10-01T05:52:00.000GMT-0:00");
-            var epl = "@Name('s0') select * from pattern[every timer:schedule(iso:'R/PT1M10S')]";
+            var epl = "@name('s0') select * from pattern[every timer:schedule(iso:'R/PT1M10S')]";
 
             env.CompileDeploy(epl).AddListener("s0");
 
@@ -329,7 +329,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             // Repeat unlimited number of times, reference-dated to "1980-01-01T00:00:00Z" (UTC), period of 1 second
             SendCurrentTime(env, "2012-10-01T05:52:00.000GMT-0:00");
-            var epl = "@Name('s0') select * from pattern[every timer:schedule(iso:'R/1980-01-01T00:00:00Z/PT1S')]";
+            var epl = "@name('s0') select * from pattern[every timer:schedule(iso:'R/1980-01-01T00:00:00Z/PT1S')]";
 
             env.CompileDeploy(epl).AddListener("s0");
 
@@ -356,7 +356,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             // Repeat unlimited number of times, reference-dated to "1980-01-01T00:00:00Z" (UTC), period of 1 second
             SendCurrentTime(env, "2012-10-01T05:52:00.000GMT-0:00");
-            var epl = "@Name('s0') select * from pattern[every timer:schedule(" + parameters + ")]";
+            var epl = "@name('s0') select * from pattern[every timer:schedule(" + parameters + ")]";
             env.CompileDeploy(epl).AddListener("s0");
 
             AssertReceivedAtTime(env, "2012-10-01T05:52:01.000GMT-0:00");
@@ -370,7 +370,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             // Repeat unlimited number of times, reference-dated to "1980-01-01T00:00:00Z" (UTC), period of 1 second
             SendCurrentTime(env, "2012-01-01T00:0:00.000GMT-0:00");
-            var epl = "@Name('s0') select * from pattern[every timer:schedule(iso:'R/1980-01-01T00:00:00Z/PT10S')]";
+            var epl = "@name('s0') select * from pattern[every timer:schedule(iso:'R/1980-01-01T00:00:00Z/PT10S')]";
             env.CompileDeploy(epl).AddListener("s0");
 
             SendCurrentTime(env, "2012-01-01T00:0:15.000GMT-0:00");
@@ -394,7 +394,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             // Repeat unlimited number of times, reference-dated to "1980-01-01T00:00:00Z" (UTC), period of 1 second
             SendCurrentTime(env, "2012-01-01T00:0:00.000GMT-0:00");
 
-            var epl = "@Name('s0') select * from pattern[every timer:schedule(iso: 'R/PT10S')]";
+            var epl = "@name('s0') select * from pattern[every timer:schedule(iso: 'R/PT10S')]";
             env.CompileDeploy(epl).AddListener("s0");
 
             SendCurrentTime(env, "2012-01-01T00:0:15.000GMT-0:00");
@@ -417,7 +417,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             // Repeat unlimited number of times, reference-dated to "1980-01-01T00:00:00Z" (UTC), period of 1 second
             SendCurrentTime(env, "2012-10-01T05:52:00.000GMT-0:00");
-            var epl = "@Name('s0') select * from pattern[every timer:schedule(iso: 'R8/2012-10-01T05:51:00Z/PT10S')]";
+            var epl = "@name('s0') select * from pattern[every timer:schedule(iso: 'R8/2012-10-01T05:51:00Z/PT10S')]";
             env.CompileDeploy(epl).AddListener("s0");
 
             AssertReceivedAtTime(env, "2012-10-01T05:52:10.000GMT-0:00");
@@ -430,7 +430,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             // Repeat unlimited number of times, reference-dated to future date, period of 1 day
             SendCurrentTime(env, "2012-10-01T05:52:00.000GMT-0:00");
-            var epl = "@Name('s0') select * from pattern[every timer:schedule(iso: 'R/2013-01-01T02:00:05Z/P1D')]";
+            var epl = "@name('s0') select * from pattern[every timer:schedule(iso: 'R/2013-01-01T02:00:05Z/P1D')]";
 
             env.CompileDeploy(epl).AddListener("s0");
 
@@ -546,7 +546,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 SendTimeEvent(env, "2002-05-01T9:00:00.000");
-                var epl = "@Name('s0') select * from pattern [every timer:schedule(period:1 day, repetitions: 3)]";
+                var epl = "@name('s0') select * from pattern [every timer:schedule(period:1 day, repetitions: 3)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
@@ -650,7 +650,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Repeat 3 times, starting "2012-10-01T05:52:00Z" (UTC), period of 2 seconds
                 var epl =
-                    "@Name('s0') select * from pattern[every timer:schedule(iso: 'R3/2012-10-01T05:52:00Z/PT2S')]";
+                    "@name('s0') select * from pattern[every timer:schedule(iso: 'R3/2012-10-01T05:52:00Z/PT2S')]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
@@ -699,7 +699,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 SendTimeEventWithZone(env, "2012-10-01T5:51:00.000GMT-0:00");
 
                 // Repeat 3 times, starting "2012-10-01T05:52:00Z" (UTC), period of 2 seconds
-                var epl = "@Name('s0') select * from pattern[every timer:schedule(date: '2012-10-02T00:00:00Z')]";
+                var epl = "@name('s0') select * from pattern[every timer:schedule(date: '2012-10-02T00:00:00Z')]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
@@ -728,7 +728,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 SendTimeEventWithZone(env, "2012-10-01T5:51:00.000GMT-0:00");
 
                 // Repeat 3 times, starting "2012-10-01T05:52:00Z" (UTC), period of 2 seconds
-                var epl = "@Name('s0') select * from pattern[every timer:schedule(period: 1 minute)]";
+                var epl = "@name('s0') select * from pattern[every timer:schedule(period: 1 minute)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
@@ -753,7 +753,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Repeat 3 times, starting "2012-10-01T05:52:00Z" (UTC), period of 2 seconds
                 var epl =
-                    "@Name('s0') select * from pattern[every timer:schedule(period: 1 day, date: '2012-10-02T00:00:00Z')]";
+                    "@name('s0') select * from pattern[every timer:schedule(period: 1 day, date: '2012-10-02T00:00:00Z')]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
@@ -776,7 +776,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 SendTimeEventWithZone(env, "2012-10-01T5:51:00.000GMT-0:00");
 
-                var epl = "@Name('s0') select * from pattern[every timer:schedule(repetitions:-1, period: 1 sec)]";
+                var epl = "@name('s0') select * from pattern[every timer:schedule(repetitions:-1, period: 1 sec)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);

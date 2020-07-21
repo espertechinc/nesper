@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             public void Run(RegressionEnvironment env)
             {
-                var compiled = env.Compile("@Name('a') select * from SupportBean;\n");
+                var compiled = env.Compile("@name('a') select * from SupportBean;\n");
 
                 try {
                     env.Deployment.Deploy(compiled);
@@ -52,8 +52,8 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select IntPrimitive from SupportBean;" +
-                    "@Name('s1') select TheString from SupportBean;";
+                    "@name('s0') select IntPrimitive from SupportBean;" +
+                    "@name('s1') select TheString from SupportBean;";
                 var compiled = env.Compile(epl);
 
                 env.Deploy(compiled).AddListener("s0").AddListener("s1").Milestone(0);

@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             {
                 // test map containing first-level property that is an array of primitive or Class
                 env.CompileDeploy(
-                    "@Name('s0') select P0[0] as a, P0[1] as b, P1[0].IntPrimitive as c, P1[1] as d, P0 as e from MyArrayOA");
+                    "@name('s0') select P0[0] as a, P0[1] as b, P1[0].IntPrimitive as c, P1[1] as d, P0 as e from MyArrayOA");
                 env.AddListener("s0");
 
                 int[] p0 = {1, 2, 3};
@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 
                 // test map at the second level of a nested map that is an array of primitive or Class
                 env.CompileDeploy(
-                    "@Name('s0') select " +
+                    "@name('s0') select " +
                     "outer.P0[0] as a, " +
                     "outer.P0[1] as b, " +
                     "outer.P1[0].IntPrimitive as c, " +
@@ -94,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             public void Run(RegressionEnvironment env)
             {
                 // test map containing first-level property that is an array of primitive or Class
-                env.CompileDeploy("@Name('s0') select P0('k1') as a from MyMappedPropertyMap");
+                env.CompileDeploy("@name('s0') select P0('k1') as a from MyMappedPropertyMap");
                 env.AddListener("s0");
 
                 IDictionary<string, object> eventVal = new Dictionary<string, object>();
@@ -113,7 +113,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 env.UndeployAll();
 
                 // test map at the second level of a nested map that is an array of primitive or Class
-                env.CompileDeploy("@Name('s0') select outer.P0('k1') as a from MyMappedPropertyMapOuter");
+                env.CompileDeploy("@name('s0') select outer.P0('k1') as a from MyMappedPropertyMapOuter");
                 env.AddListener("s0");
 
                 var eventOuter = MakeMap(
@@ -132,7 +132,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 
                 // test map that contains a bean which has a map property
                 env.CompileDeploy(
-                        "@Name('s0') select outerTwo.MapProperty('xOne') as a from MyMappedPropertyMapOuterTwo")
+                        "@name('s0') select outerTwo.MapProperty('xOne') as a from MyMappedPropertyMapOuterTwo")
                     .AddListener("s0");
 
                 var eventOuterTwo = MakeMap(
@@ -157,7 +157,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             {
                 // test named-map at the second level of a nested map
                 env.CompileDeploy(
-                    "@Name('s0') select " +
+                    "@name('s0') select " +
                     "outer.p0.n0 as a, " +
                     "outer.p1[0].n0 as b, " +
                     "outer.p1[1].n0 as c, " +
@@ -199,7 +199,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 
                 env.UndeployAll();
                 env.CompileDeploy(
-                    "@Name('s0') select outer.p0.n0? as a, outer.p1[0].n0? as b, outer.p1[1]?.n0 as c, outer.p0? as d, outer.p1? as e from MyObjectArrayMapOuter");
+                    "@name('s0') select outer.p0.n0? as a, outer.p1[0].n0? as b, outer.p1[1]?.n0 as c, outer.p0? as d, outer.p1? as e from MyObjectArrayMapOuter");
                 env.AddListener("s0");
 
                 env.SendEventObjectArray(new object[] {theEvent}, "MyObjectArrayMapOuter");
@@ -219,7 +219,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                    "@Name('s0') select p0.n0 as a, p1[0].n0 as b, p1[1].n0 as c, p0 as d, p1 as e from MyOAWithAMap");
+                    "@name('s0') select p0.n0 as a, p1[0].n0 as b, p1[1].n0 as c, p0 as d, p1 as e from MyOAWithAMap");
                 env.AddListener("s0");
 
                 var n0Bean1 = MakeMap(
@@ -261,7 +261,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@Name('s0') select * from TypeRoot#lastevent");
+                env.CompileDeploy("@name('s0') select * from TypeRoot#lastevent");
 
                 object[] dataLev1 = {1000};
                 object[] dataLev0 = {100, dataLev1};

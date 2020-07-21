@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 using com.espertech.esper.runtime.@internal.kernel.service;
+using com.espertech.esper.runtime.@internal.kernel.stage;
 using com.espertech.esper.runtime.@internal.kernel.statement;
 
 using NUnit.Framework;
@@ -32,9 +34,29 @@ namespace com.espertech.esper.regressionlib.support.util
 
         public static SupportListener GetRequireStatementListener(
             string statementName,
-            EPRuntime epService)
+            EPRuntime runtime)
         {
-            var statement = GetRequireStatement(statementName, epService);
+            var statement = GetRequireStatement(statementName, runtime);
+            return GetRequireListener(statementName, statement);
+        }
+
+        public static SupportListener GetRequireStatementListener(
+            string statementName,
+            string stageUri,
+            EPRuntime runtime)
+        {
+            if (stageUri == null) {
+                return GetRequireStatementListener(statementName, runtime);
+            }
+
+            var statement = GetRequireStatement(statementName, stageUri, runtime);
+            return GetRequireListener(statementName, statement);
+        }
+
+        public static SupportListener GetRequireListener(
+            string statementName,
+            EPStatement statement)
+        {
             if (statement == null) {
                 Assert.Fail("Statement by name '" + statementName + "' not found");
             }
@@ -64,13 +86,48 @@ namespace com.espertech.esper.regressionlib.support.util
             return found;
         }
 
+        public static EPStatement GetRequireStatement(
+            string statementName,
+            string stageUri,
+            EPRuntime runtime)
+        {
+            var found = GetStatement(statementName, stageUri, runtime);
+            if (found == null) {
+                throw new ArgumentException("Failed to find statements '" + statementName + "' in stage '" + stageUri + "'");
+            }
+
+            return found;
+        }
+
         public static EPStatement GetStatement(
             string statementName,
-            EPRuntime epService)
+            EPRuntime runtime)
         {
-            var spi = (EPDeploymentServiceSPI) epService.DeploymentService;
+            var spi = (EPDeploymentServiceSPI) runtime.DeploymentService;
+            return GetStatement(spi.DeploymentMap, statementName);
+        }
+
+
+        public static EPStatement GetStatement(
+            string statementName,
+            string stageUri,
+            EPRuntime runtime)
+        {
+            var stage = runtime.StageService.GetExistingStage(stageUri);
+            if (stage == null) {
+                Assert.Fail("Stage '" + stageUri + "' not found");
+            }
+
+            var spi = (EPStageDeploymentServiceSPI) stage.DeploymentService;
+            return GetStatement(spi.DeploymentMap, statementName);
+        }
+
+        private static EPStatement GetStatement(
+            IDictionary<string, DeploymentInternal> deployments,
+            string statementName)
+        {
             EPStatement found = null;
-            foreach (var entry in spi.DeploymentMap) {
+            foreach (var entry in deployments) {
                 var statements = entry.Value.Statements;
                 foreach (var stmt in statements) {
                     if (statementName == stmt.Name) {

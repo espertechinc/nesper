@@ -478,7 +478,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var fields = new [] { "S0.Id"," S0.P00"," S0.P01"," S1.Id"," S1.P10"," S1.P11"," S2.Id"," S2.P20"," S2.P21" };
 
-                var epl = eventRepresentationEnum.GetAnnotationText() +
+                var epl = eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvided>() +
                           " @Name('s0') select * from " +
                           "SupportBean_S0#length(1000) as S0 " +
                           " full outer join SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10 and S0.P01 = S1.P11" +
@@ -599,7 +599,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// Query:
                 /// s0
                 /// </summary>
-                var joinStatement = "@Name('s0') select * from " +
+                var joinStatement = "@name('s0') select * from " +
                                     "SupportBean_S0#length(1000) as S0 " +
                                     " full outer join SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10 " +
                                     " full outer join SupportBean_S2#length(1000) as S2 on S0.P00 = S2.P20 ";
@@ -609,6 +609,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 env.UndeployAll();
             }
+        }
+
+        internal class MyLocalJsonProvided
+        {
+            public SupportBean_S0 s0;
+            public SupportBean_S1 s1;
+            public SupportBean_S2 s2;
         }
     }
 } // end of namespace

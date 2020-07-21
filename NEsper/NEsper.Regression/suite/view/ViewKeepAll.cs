@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 var fields = new [] { "c0" };
 
-                var epl = "@Name('s0') select irstream TheString as c0 from SupportBean#keepall()";
+                var epl = "@name('s0') select irstream TheString as c0 from SupportBean#keepall()";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("s0"), fields, new object[0][]);
@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select Symbol, Price from SupportMarketDataBean#keepall";
+                var epl = "@name('s0') select Symbol, Price from SupportMarketDataBean#keepall";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, "ABC", 20);
@@ -154,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select irstream Symbol, count(*) as cnt, sum(Price) as mysum from SupportMarketDataBean#keepall group by Symbol";
+                    "@name('s0') select irstream Symbol, count(*) as cnt, sum(Price) as mysum from SupportMarketDataBean#keepall group by Symbol";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, "S1", 100);

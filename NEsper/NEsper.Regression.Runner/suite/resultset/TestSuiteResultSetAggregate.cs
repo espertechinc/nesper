@@ -53,7 +53,9 @@ namespace com.espertech.esper.regressionrun.suite.resultset
                 typeof(SupportBean_S1),
                 typeof(SupportBean_A),
                 typeof(SupportBean_B),
-                typeof(SupportEventPropertyWithMethod)
+                typeof(SupportEventPropertyWithMethod),
+                typeof(SupportEventPropertyWithMethod),
+                typeof(SupportEventWithManyArray)
             }) {
                 configuration.Common.AddEventType(clazz);
             }
@@ -66,7 +68,7 @@ namespace com.espertech.esper.regressionrun.suite.resultset
                 typeof(SupportConcatWManagedAggregationFunctionForge));
 
             var eventsAsList = new ConfigurationCompilerPlugInAggregationMultiFunction(
-                new [] { "eventsAsList" },
+                new[] {"eventsAsList"},
                 typeof(SupportAggMFEventsAsListForge));
             configuration.Compiler.AddPlugInAggregationMultiFunction(eventsAsList);
         }
@@ -141,6 +143,18 @@ namespace com.espertech.esper.regressionrun.suite.resultset
         public void TestResultSetAggregateSortedMinMaxBy()
         {
             RegressionRunner.Run(session, ResultSetAggregateSortedMinMaxBy.Executions());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestResultSetAggregationMethodSorted()
+        {
+            RegressionRunner.Run(session, ResultSetAggregationMethodSorted.Executions());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestResultSetAggregationMethodWindow()
+        {
+            RegressionRunner.Run(session, ResultSetAggregationMethodWindow.Executions());
         }
     }
 } // end of namespace

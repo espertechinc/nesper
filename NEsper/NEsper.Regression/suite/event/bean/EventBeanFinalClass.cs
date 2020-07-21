@@ -17,7 +17,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
     {
         public void Run(RegressionEnvironment env)
         {
-            var statementText = "@Name('s0') select IntPrimitive from MyFinalEvent#length(5)";
+            var statementText = "@name('s0') select IntPrimitive from MyFinalEvent#length(5)";
             env.CompileDeploy(statementText).AddListener("s0");
 
             var theEvent = new SupportBeanFinal(10);

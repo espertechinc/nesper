@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -14,15 +16,55 @@ using static com.espertech.esper.regressionlib.support.util.SupportXML;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
-    public class EventXMLNoSchemaNamespaceXPathAbsolute : RegressionExecution
+    public class EventXMLNoSchemaNamespaceXPathAbsolute
     {
-        public void Run(RegressionEnvironment env)
+        public static List<RegressionExecution> Executions()
         {
-            var epl = "@Name('s0') select symbol_a, symbol_b, symbol_c, request.symbol as symbol_d, symbol as symbol_e from StockQuote";
+            var execs = new List<RegressionExecution>();
+            execs.Add(new EventXMLNoSchemaNamespaceXPathAbsolutePreconfig());
+            execs.Add(new EventXMLNoSchemaNamespaceXPathAbsoluteCreateSchema());
+            return execs;
+        }
+
+        public class EventXMLNoSchemaNamespaceXPathAbsolutePreconfig : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunAssertion(env, "StockQuote", new RegressionPath());
+            }
+        }
+
+        public class EventXMLNoSchemaNamespaceXPathAbsoluteCreateSchema : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@public @buseventtype " +
+                          "@XMLSchema(rootElementName='getQuote', defaultNamespace='http://services.samples/xsd', rootElementNamespace='http://services.samples/xsd'," +
+                          "  xpathResolvePropertiesAbsolute=true, xpathPropertyExpr=true)" +
+                          "@XMLSchemaNamespacePrefix(prefix='m0', namespace='http://services.samples/xsd')" +
+                          "@XMLSchemaField(name='symbol_a', xpath='//m0:symbol', type='string')" +
+                          "@XMLSchemaField(name='symbol_b', xpath='//*[local-name(.) = \"getQuote\" and namespace-uri(.) = \"http://services.samples/xsd\"]', type='string')" +
+                          "@XMLSchemaField(name='symbol_c', xpath='/m0:getQuote/m0:request/m0:symbol', type='string')" +
+                          "create xml schema MyEventCreateSchema()";
+                var path = new RegressionPath();
+                env.CompileDeploy(epl, path);
+                RunAssertion(env, "MyEventCreateSchema", path);
+            }
+        }
+
+        private static void RunAssertion(
+            RegressionEnvironment env,
+            string eventTypeName,
+            RegressionPath path)
+        {
+            var epl = "@name('s0') select symbol_a, symbol_b, symbol_c, request.symbol as symbol_d, symbol as symbol_e from " + eventTypeName;
+            env.CompileDeploy(epl, path).AddListener("s0");
+
+            var epl = "@name('s0') select symbol_a, symbol_b, symbol_c, request.symbol as symbol_d, symbol as symbol_e from StockQuote";
             env.CompileDeploy(epl).AddListener("s0");
 
             var xml = "<m0:getQuote xmlns:m0=\"http://services.samples/xsd\"><m0:request><m0:symbol>IBM</m0:symbol></m0:request></m0:getQuote>";
-            SendXMLEvent(env, xml, "StockQuote");
+            SendXMLEvent(env, xml, eventTypeName);
 
             // For XPath resolution testing and namespaces...
 

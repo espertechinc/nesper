@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using System.Linq;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.compat.collections;
@@ -60,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var eplFragment =
-                    "@Name('s0') select Contained.where(x => (x.P00 = Contained.min(y -> y.P00))) as val from SupportBean_ST0_Container";
+                    "@name('s0') select Contained.where(x => (x.P00 = Contained.min(y -> y.P00))) as val from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
                 var bean = SupportBean_ST0_Container.Make2Value("E1,2", "E2,1", "E3,2");
@@ -77,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var eplFragment =
-                    "@Name('s0') select Sales.where(x => x.Buyer = Persons.minBy(y -> Age)) as val from PersonSales";
+                    "@name('s0') select Sales.where(x => x.Buyer = Persons.minBy(y -> Age)) as val from PersonSales";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
                 var bean = PersonSales.Make();
@@ -99,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var eplFragment =
-                    "@Name('s0') select Contained.where(x => x = (Contained.firstOf(y -> y.P00 = x.P00 ))) as val from SupportBean_ST0_Container";
+                    "@name('s0') select Contained.where(x => x = (Contained.firstOf(y -> y.P00 = x.P00 ))) as val from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
                 var bean = SupportBean_ST0_Container.Make2Value("E1,2", "E2,1", "E3,3");
@@ -117,14 +116,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 // try "in" with "Set<String> multivalues"
                 env.CompileDeploy(
-                        "@Name('s0') select * from SupportContainerLevelEvent(Level1s.anyOf(x -> x.Level2s.anyOf(y -> 'A' in (y.Multivalues))))")
+                        "@name('s0') select * from SupportContainerLevelEvent(Level1s.anyOf(x -> x.Level2s.anyOf(y -> 'A' in (y.Multivalues))))")
                     .AddListener("s0");
                 TryAssertionAnyOf(env);
                 env.UndeployAll();
 
                 // try "in" with "String singlevalue"
                 env.CompileDeploy(
-                        "@Name('s0') select * from SupportContainerLevelEvent(Level1s.anyOf(x -> x.Level2s.anyOf(y -> y.Singlevalue = 'A')))")
+                        "@name('s0') select * from SupportContainerLevelEvent(Level1s.anyOf(x -> x.Level2s.anyOf(y -> y.Singlevalue = 'A')))")
                     .AddListener("s0");
                 TryAssertionAnyOf(env);
                 env.UndeployAll();

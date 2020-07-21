@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.client.hook.enummethod
 	    ///     </para>
 	    /// </summary>
 	    /// <value>function</value>
-	    public Func<EnumMethodLambdaParameterDescriptor, EnumMethodLambdaParameterType> LambdaParameters { get; } =
+	    public Func<EnumMethodLambdaParameterDescriptor, EnumMethodLambdaParameterType> LambdaParameters { get; set; } =
             enumMethodLambdaParameterDescriptor => EnumMethodLambdaParameterTypeValue.INSTANCE;
     }
 } // end of namespace

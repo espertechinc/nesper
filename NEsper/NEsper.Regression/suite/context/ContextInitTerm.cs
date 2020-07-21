@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,6 +19,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.context;
 using com.espertech.esper.regressionlib.support.filter;
 using com.espertech.esper.regressionlib.support.util;
@@ -59,6 +61,8 @@ namespace com.espertech.esper.regressionlib.suite.context
             execs.Add(new ContextStartEndStartNowCalMonthScoped());
             execs.Add(new ContextInitTermAggregationGrouped());
             execs.Add(new ContextInitTermPrevPrior());
+            execs.Add(new ContextStartEndPatternCorrelated());
+            execs.Add(new ContextInitTermPatternCorrelated());
             return execs;
         }
 
@@ -70,11 +74,11 @@ namespace com.espertech.esper.regressionlib.suite.context
             var path = new RegressionPath();
             env.CompileDeploy(
                 soda,
-                "@Name('ctx') create context SupportBeanInstanceCtx as initiated by SupportBean as sb",
+                "@name('ctx') create context SupportBeanInstanceCtx as initiated by SupportBean as sb",
                 path);
             env.CompileDeploy(
                 soda,
-                "@Name('s0') context SupportBeanInstanceCtx " +
+                "@name('s0') context SupportBeanInstanceCtx " +
                 "select Id as id, context.sb.IntPrimitive as sbint, context.startTime as starttime, context.endTime as endtime from SupportBean_S0(P00=context.sb.TheString)",
                 path);
             env.AddListener("s0");
@@ -119,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             env.CompileDeploy(soda, "create context SupportBeanInstanceCtx as start SupportBean as sb", path);
             env.CompileDeploy(
                 soda,
-                "@Name('s0') context SupportBeanInstanceCtx " +
+                "@name('s0') context SupportBeanInstanceCtx " +
                 "select Id as id, context.sb.IntPrimitive as sbint, context.startTime as starttime, context.endTime as endtime from SupportBean_S0(P00=context.sb.TheString)",
                 path);
             env.AddListener("s0");
@@ -187,6 +191,101 @@ namespace com.espertech.esper.regressionlib.suite.context
             env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(time) - minus);
         }
 
+        internal class ContextStartEndPatternCorrelated : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                String epl = "create context MyContext\n" +
+                             "start pattern [a=SupportBean_S0 or b=SupportBean_S1]\n" +
+                             "end pattern [SupportBean_S2(id=a.id) or SupportBean_S3(id=b.id)];\n" +
+                             "@name('s0') context MyContext select * from SupportBean";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                env.SendEventBean(new SupportBean_S1(100));
+                SendAssertSB(env, true);
+                env.SendEventBean(new SupportBean_S2(100));
+                SendAssertSB(env, true);
+                env.SendEventBean(new SupportBean_S3(101));
+                SendAssertSB(env, true);
+                env.SendEventBean(new SupportBean_S3(100));
+                SendAssertSB(env, false);
+
+                env.SendEventBean(new SupportBean_S0(200));
+                SendAssertSB(env, true);
+                env.SendEventBean(new SupportBean_S2(201));
+                env.SendEventBean(new SupportBean_S3(200));
+                SendAssertSB(env, true);
+                env.SendEventBean(new SupportBean_S2(200));
+                SendAssertSB(env, false);
+
+                env.UndeployAll();
+            }
+
+            private void SendAssertSB(
+                RegressionEnvironment env,
+                bool received)
+            {
+                env.SendEventBean(new SupportBean());
+                Assert.AreEqual(received, env.Listener("s0").IsInvokedAndReset());
+            }
+        }
+
+        internal class ContextInitTermPatternCorrelated : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+
+                // Sample alternative epl without pattern is:
+                //   create context ACtx
+                //   initiated by SupportBean(intPrimitive = 0) as a
+                //   terminated by SupportBean(theString=a.theString, intPrimitive = 1);
+                //   @name('s0') context ACtx select * from SupportBean_S0(p00=context.a.theString);
+
+                String epl = "create context ACtx\n" +
+                             "initiated by pattern[every a=SupportBean(intPrimitive = 0)]\n" +
+                             "terminated by pattern[SupportBean(theString=a.theString, intPrimitive = 1)];\n" +
+                             "@name('s0') context ACtx select * from SupportBean_S0(p00=context.a.theString);\n";
+
+                env.CompileDeploy(epl).AddListener("s0");
+
+                env.SendEventBean(new SupportBean("G1", 0));
+                SendAssertS0(env, "G1", true);
+                SendAssertS0(env, "X", false);
+
+                env.Milestone(0);
+
+                SendAssertS0(env, "G1", true);
+                SendAssertS0(env, "X", false);
+                env.SendEventBean(new SupportBean("G1", 1));
+                SendAssertS0(env, "G1", false);
+
+                env.Milestone(1);
+
+                env.SendEventBean(new SupportBean("G2", 0));
+                SendAssertS0(env, "G1", false);
+                SendAssertS0(env, "G2", true);
+
+                env.Milestone(0);
+
+                SendAssertS0(env, "G2", true);
+                SendAssertS0(env, "X", false);
+                env.SendEventBean(new SupportBean("G2", 1));
+                SendAssertS0(env, "G1", false);
+                SendAssertS0(env, "G2", false);
+
+                env.UndeployAll();
+            }
+
+            private void SendAssertS0(
+                RegressionEnvironment env,
+                String p00,
+                bool received)
+            {
+                env.SendEventBean(new SupportBean_S0(1, p00));
+                Assert.AreEqual(received, env.Listener("s0").IsInvokedAndReset());
+            }
+        }
+
         internal class ContextInitTermNoTerminationCondition : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -221,7 +320,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var contextExpr = "create context CtxPerId start after 0 sec end after 60 sec";
                 env.CompileDeploy(contextExpr, path);
                 env.CompileDeploy(
-                    "@Name('s0') context CtxPerId select TheString as c0, IntPrimitive as c1 from SupportBean",
+                    "@name('s0') context CtxPerId select TheString as c0, IntPrimitive as c1 from SupportBean",
                     path);
                 env.AddListener("s0");
 
@@ -260,7 +359,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.AdvanceTime(120000);
                 var epl =
                     "create context CtxPerId initiated by pattern [timer:interval(0) or every timer:interval(1 min)] terminated after 60 sec;\n" +
-                    "@Name('s0') context CtxPerId select TheString as c0, sum(IntPrimitive) as c1 from SupportBean;\n";
+                    "@name('s0') context CtxPerId select TheString as c0, sum(IntPrimitive) as c1 from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
@@ -286,7 +385,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.UndeployAll();
                 Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env));
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
             }
         }
 
@@ -302,7 +401,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "create context CtxPerId initiated by pattern [every-distinct (a.TheString, 10 sec) a=SupportBean]@Inclusive terminated after 10 sec ";
                 env.CompileDeploy(contextExpr, path);
                 var streamExpr =
-                    "@Name('s0') context CtxPerId select * from SupportBean(TheString = context.a.TheString) output last when terminated";
+                    "@name('s0') context CtxPerId select * from SupportBean(TheString = context.a.TheString) output last when terminated";
                 env.CompileDeploy(streamExpr, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -376,7 +475,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "create context CtxPerId initiated by pattern [every a=SupportBean_S0 -> b=SupportBean_S1]@Inclusive terminated after 10 sec ";
                 env.CompileDeploy(contextExprMulti, path);
                 var streamExprMulti =
-                    "@Name('s0') context CtxPerId select * from pattern [every a=SupportBean_S0 -> b=SupportBean_S1]";
+                    "@name('s0') context CtxPerId select * from pattern [every a=SupportBean_S0 -> b=SupportBean_S1]";
                 env.CompileDeploy(streamExprMulti, path).AddListener("s0");
 
                 env.Milestone(8);
@@ -408,7 +507,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "end SupportBean(IntPrimitive=11)",
                     path);
                 env.CompileDeploy(
-                    "@Name('s0') context MyCtx " +
+                    "@name('s0') context MyCtx " +
                     "select min(IntPrimitive) as c1, max(IntPrimitive) as c2, sum(IntPrimitive) as c3, avg(IntPrimitive) as c4 from SupportBean " +
                     "output snapshot when terminated",
                     path);
@@ -438,7 +537,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 fields = new [] { "c1","c2","c3","c4" };
                 epl = "create schema MyCtxTerminate(TheString string);\n" +
                       "create context MyCtx as start SupportBean end MyCtxTerminate;\n" +
-                      "@Name('s0') context MyCtx " +
+                      "@name('s0') context MyCtx " +
                       "select min(IntPrimitive) as c1, max(IntPrimitive) as c2, sum(IntPrimitive) as c3, avg(IntPrimitive) as c4 from SupportBean " +
                       "output snapshot when terminated;\n" +
                       "insert into MyCtxTerminate select TheString from SupportBean(IntPrimitive=11);\n";
@@ -482,10 +581,10 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var milestone = new AtomicLong();
 
                 env.CompileDeploy(
-                    "@Name('ctx') create context MyCtx as initiated by SupportBean_S0 S0 terminated by SupportBean_S1(Id=S0.Id)",
+                    "@name('ctx') create context MyCtx as initiated by SupportBean_S0 S0 terminated by SupportBean_S1(Id=S0.Id)",
                     path);
                 env.CompileDeploy(
-                    "@Name('s0') context MyCtx select context.id as c0, context.S0.P00 as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString",
+                    "@name('s0') context MyCtx select context.id as c0, context.S0.P00 as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString",
                     path);
 
                 env.AdvanceTime(1000);
@@ -595,7 +694,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var epl = "create context MyContext as " +
                           "initiated by SupportBean_S0 " +
                           "terminated by SupportBean_S1;\n" +
-                          "@Name('s0') context MyContext select sum(IntPrimitive) as c1 from SupportBean;\n";
+                          "@name('s0') context MyContext select sum(IntPrimitive) as c1 from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -661,7 +760,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var fields = new [] { "c1","c2" };
                 env.CompileDeploy(
-                    "@Name('s0') context EveryNowAndThen select context.S0.P00 as c1, sum(IntPrimitive) as c2 " +
+                    "@name('s0') context EveryNowAndThen select context.S0.P00 as c1, sum(IntPrimitive) as c2 " +
                     "from SupportBean#keepall output snapshot when terminated",
                     path);
                 env.AddListener("s0");
@@ -728,11 +827,11 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 SendTimeEvent(env, "2002-05-1T8:00:00.000");
-                var eplContext = "@Name('CTX') create context CtxInitiated " +
+                var eplContext = "@name('CTX') create context CtxInitiated " +
                                  "initiated by SupportBean_S0 as sb0 " +
                                  "terminated after 1 minute;\n";
                 var eplGrouped =
-                    "@Name('S1') context CtxInitiated select TheString as c1, sum(IntPrimitive) as c2, context.sb0.P00 as c3 from SupportBean;\n";
+                    "@name('S1') context CtxInitiated select TheString as c1, sum(IntPrimitive) as c2, context.sb0.P00 as c3 from SupportBean;\n";
                 env.CompileDeploy(eplContext + eplGrouped).AddListener("S1");
                 var fields = new [] { "c1","c2","c3" };
 
@@ -794,10 +893,10 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SendTimeEvent(env, "2002-05-1T8:00:00.000");
                 var fields = new [] { "Id" };
 
-                var eplContext = "@Name('CTX') create context CtxInitiated " +
+                var eplContext = "@name('CTX') create context CtxInitiated " +
                                  "initiated by SupportBean sb " +
                                  "terminated by pattern [SupportBean_S0(P00=sb.TheString) -> SupportBean_S1(P10=sb.TheString)];\n";
-                var eplSelect = "@Name('S1') context CtxInitiated " +
+                var eplSelect = "@name('S1') context CtxInitiated " +
                                 "select Id from SupportBean_S2(P20 = context.sb.TheString)";
                 env.CompileDeploy(eplContext + eplSelect).AddListener("S1");
 
@@ -869,13 +968,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SendTimeEvent(env, "2002-05-1T8:00:00.000");
                 var path = new RegressionPath();
 
-                var eplContext = "@Name('CTX') create context CtxInitiated " +
+                var eplContext = "@name('CTX') create context CtxInitiated " +
                                  "initiated by pattern [every S0=SupportBean_S0 -> S1=SupportBean_S1(Id = S0.Id)]" +
                                  "terminated after 1 minute";
                 env.CompileDeploy(eplContext, path);
 
                 var fields = new [] { "c1","c2","c3","c4" };
-                var eplGrouped = "@Name('S1') context CtxInitiated " +
+                var eplGrouped = "@name('S1') context CtxInitiated " +
                                  "select TheString as c1, sum(IntPrimitive) as c2, context.S0.P00 as c3, context.S1.P10 as c4 from SupportBean";
                 env.CompileDeploy(eplGrouped, path).AddListener("S1");
 
@@ -930,7 +1029,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 // test no-context statement
-                env.CompileDeploy("@Name('s0') select * from SupportBean#time(30)");
+                env.CompileDeploy("@name('s0') select * from SupportBean#time(30)");
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 Assert.AreEqual(1, SupportScheduleHelper.ScheduleCountOverall(env));
@@ -941,36 +1040,36 @@ namespace com.espertech.esper.regressionlib.suite.context
                 // test initiated
                 SendTimeEvent(env, "2002-05-1T08:00:00.000");
                 var path = new RegressionPath();
-                var eplCtx = "@Name('ctx') create context EverySupportBean as " +
+                var eplCtx = "@name('ctx') create context EverySupportBean as " +
                              "initiated by SupportBean as sb " +
                              "terminated after 1 minutes";
                 env.CompileDeploy(eplCtx, path);
 
                 env.CompileDeploy("context EverySupportBean select * from SupportBean_S0#time(2 min) sb0", path);
                 Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env));
-                Assert.AreEqual(1, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(1, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.Milestone(0);
 
                 env.SendEventBean(new SupportBean("E1", 0));
                 Assert.AreEqual(1, SupportScheduleHelper.ScheduleCountOverall(env));
-                Assert.AreEqual(2, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(2, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.Milestone(1);
 
                 env.SendEventBean(new SupportBean_S0(0, "S0_1"));
                 Assert.AreEqual(2, SupportScheduleHelper.ScheduleCountOverall(env));
-                Assert.AreEqual(2, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(2, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.Milestone(2);
 
                 SendTimeEvent(env, "2002-05-1T08:01:00.000");
                 Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env));
-                Assert.AreEqual(1, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(1, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.UndeployAll();
                 Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env));
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
             }
         }
 
@@ -981,14 +1080,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 SendTimeEvent(env, "2002-05-1T08:00:00.000");
 
-                var eplCtx = "@Name('ctx') create context EverySupportBean as " +
+                var eplCtx = "@name('ctx') create context EverySupportBean as " +
                              "initiated by pattern [every (a=SupportBean_S0 or b=SupportBean_S1)] " +
                              "terminated after 1 minutes";
                 env.CompileDeploy(eplCtx, path);
 
                 var fields = new [] { "c1","c2","c3" };
                 env.CompileDeploy(
-                    "@Name('s0') context EverySupportBean " +
+                    "@name('s0') context EverySupportBean " +
                     "select context.a.Id as c1, context.b.Id as c2, TheString as c3 from SupportBean",
                     path);
                 env.AddListener("s0");
@@ -1039,7 +1138,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var fields = new [] { "c1" };
                 env.CompileDeploy(
-                    "@Name('s0') context EverySupportBean select sum(LongPrimitive) as c1 from SupportBean(IntPrimitive = context.sb.IntPrimitive)",
+                    "@name('s0') context EverySupportBean select sum(LongPrimitive) as c1 from SupportBean(IntPrimitive = context.sb.IntPrimitive)",
                     path);
                 env.AddListener("s0");
 
@@ -1347,7 +1446,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 object[][] testdata)
             {
                 env.CompileDeploy(
-                    "@Name('s0') context EverySupportBean " +
+                    "@name('s0') context EverySupportBean " +
                     "select TheString as c0,IntPrimitive as c1,context.sb.P00 as c2 " +
                     "from SupportBean(" +
                     @operator +
@@ -1363,7 +1462,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 for (var i = 0; i < testdata.Length; i++) {
                     var bean = new SupportBean();
                     var testValue = testdata[i][0];
-                    if (testValue is int?) {
+                    if (testValue.IsInt32()) {
                         bean.IntBoxed = (int?) testValue;
                     }
                     else {
@@ -1395,7 +1494,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var fields = new [] { "c0", "c1", "c2" };
                 env.CompileDeploy(
-                    "@Name('s0') context EverySupportBean " +
+                    "@name('s0') context EverySupportBean " +
                     "select TheString as c0,IntPrimitive as c1,context.sb.P00 as c2 " +
                     "from SupportBean(IntPrimitive + context.sb.Id = 5)",
                     path);
@@ -1451,14 +1550,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 SendTimeEvent(env, "2002-05-1T08:00:00.000");
 
-                var eplContext = "@Name('CTX') create context CtxInitiated " +
+                var eplContext = "@name('CTX') create context CtxInitiated " +
                                  "initiated by SupportBean_S0 as sb0 " +
                                  "terminated after 1 minute";
                 env.CompileDeploy(eplContext, path);
 
                 var fields = new [] { "c1","c2","c3" };
                 var eplGrouped =
-                    "@Name('s0') context CtxInitiated select TheString as c1, sum(IntPrimitive) as c2, context.sb0.P00 as c3 from SupportBean";
+                    "@name('s0') context CtxInitiated select TheString as c1, sum(IntPrimitive) as c2, context.sb0.P00 as c3 from SupportBean";
                 env.CompileDeploy(eplGrouped, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("G1", 1));
@@ -1535,7 +1634,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // test when-terminated and snapshot
                 var epl =
-                    "@Name('s0') context EveryMinute select sum(IntPrimitive) as c1 from SupportBean output snapshot when terminated";
+                    "@name('s0') context EveryMinute select sum(IntPrimitive) as c1 from SupportBean output snapshot when terminated";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 SendTimeEvent(env, "2002-05-1T08:01:00.000");
@@ -1580,7 +1679,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // test late-coming statement without "terminated"
                 env.CompileDeploy(
-                    "@Name('s0') context EveryMinute " +
+                    "@name('s0') context EveryMinute " +
                     "select context.id as c0, sum(IntPrimitive) as c1 from SupportBean output snapshot every 2 events",
                     path);
                 env.AddListener("s0");
@@ -1627,7 +1726,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 // test when-terminated and every 2 events output all with group by
                 var fields = new [] { "c1","c2" };
                 env.CompileDeploy(
-                    "@Name('s0') context EveryMinute " +
+                    "@name('s0') context EveryMinute " +
                     "select TheString as c1, sum(IntPrimitive) as c2 from SupportBean group by TheString output all every 2 events and when terminated order by TheString asc",
                     path);
                 env.AddListener("s0");
@@ -1717,7 +1816,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // test when-terminated and every 2 events output all with group by
                 var fields = new [] { "c0" };
-                var epl = "@Name('s0') context EveryMinute " +
+                var epl = "@name('s0') context EveryMinute " +
                           "select TheString as c0 from SupportBean output when count_insert>1 and when terminated and count_insert>0";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
@@ -1782,7 +1881,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // test when-terminated and every 2 events output all with group by
                 var fields = new [] { "c0" };
-                var epl = "@Name('s0') context EveryMinute " +
+                var epl = "@name('s0') context EveryMinute " +
                           "select TheString as c0 from SupportBean output when terminated and count_insert > 0";
                 env.CompileDeploy(epl, path);
                 env.AddListener("s0");
@@ -1826,9 +1925,9 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(eplContext, path);
 
                 // include then-set and both real-time and terminated output
-                var eplVariable = "@Name('var') create variable int myvar = 0";
+                var eplVariable = "@name('var') create variable int myvar = 0";
                 env.CompileDeploy(eplVariable, path);
-                var eplOne = "@Name('s0') context EveryMinute select TheString as c0 from SupportBean " +
+                var eplOne = "@name('s0') context EveryMinute select TheString as c0 from SupportBean " +
                              "output when true " +
                              "then set myvar=1 " +
                              "and when terminated " +
@@ -1863,7 +1962,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SendTimeEvent(env, "2002-05-1T08:00:00.000");
                 var path = new RegressionPath();
 
-                env.CompileDeploy("@Name('var') create variable int myvar = 0", path);
+                env.CompileDeploy("@name('var') create variable int myvar = 0", path);
                 env.CompileDeploy(
                     "create context EverySupportBeanS0 as " +
                     "initiated by SupportBean_S0 as S0 " +
@@ -1872,7 +1971,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // include only-terminated output with set
                 env.Runtime.VariableService.SetVariableValue(env.DeploymentId("var"), "myvar", 0);
-                var eplTwo = "@Name('s0') context EverySupportBeanS0 select TheString as c0 from SupportBean " +
+                var eplTwo = "@name('s0') context EverySupportBeanS0 select TheString as c0 from SupportBean " +
                              "output when terminated " +
                              "then set myvar=10";
                 env.CompileDeploy(eplTwo, path).AddListener("s0");
@@ -1909,7 +2008,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var fields = new [] { "c1","c2" };
                 env.CompileDeploy(
-                    "@Name('s0') @IterableUnbound context EveryMinute select TheString as c1, sum(IntPrimitive) as c2 from SupportBean",
+                    "@name('s0') @IterableUnbound context EveryMinute select TheString as c1, sum(IntPrimitive) as c2 from SupportBean",
                     path);
                 env.AddListener("s0");
 
@@ -1918,7 +2017,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.SendEventBean(new SupportBean("E1", 10));
 
                 Assert.IsFalse(env.Listener("s0").GetAndClearIsInvoked());
-                Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 0);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
@@ -1930,7 +2029,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SendTimeEvent(env, "2002-05-1T08:01:00.000");
                 env.Milestone(1);
 
-                Assert.AreEqual(1, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(1, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 1);
 
                 env.SendEventBean(new SupportBean("E2", 5));
@@ -1947,7 +2046,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.Milestone(2);
 
-                Assert.AreEqual(1, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(1, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 1);
 
                 env.SendEventBean(new SupportBean("E3", 6));
@@ -1967,7 +2066,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.Milestone(4);
 
-                Assert.AreEqual(2, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(2, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 2);
 
                 env.SendEventBean(new SupportBean("E4", 7));
@@ -1983,7 +2082,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.Milestone(5);
 
-                Assert.AreEqual(2, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(2, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 2);
 
                 env.SendEventBean(new SupportBean("E5", 8));
@@ -2000,7 +2099,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.Milestone(6);
 
-                Assert.AreEqual(3, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(3, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 3);
 
                 env.SendEventBean(new SupportBean("E6", 9));
@@ -2017,7 +2116,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.Milestone(7);
 
-                Assert.AreEqual(3, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(3, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 3);
                 env.SendEventBean(new SupportBean("E7", 10));
                 expected = new[] {
@@ -2036,7 +2135,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.Milestone(8);
 
-                Assert.AreEqual(3, SupportFilterHelper.GetFilterCountApprox(env));
+                Assert.AreEqual(3, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 3);
                 env.SendEventBean(new SupportBean("E8", 11));
                 expected = new[] {new object[] {"E8", 30}, new object[] {"E8", 21}, new object[] {"E8", 11}};
@@ -2082,7 +2181,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SendCurrentTime(env, "2002-02-01T09:00:00.000");
                 var path = new RegressionPath();
                 env.CompileDeploy("create context MyCtx start SupportBean_S1 end after 1 month", path);
-                env.CompileDeploy("@Name('s0') context MyCtx select * from SupportBean", path).AddListener("s0");
+                env.CompileDeploy("@name('s0') context MyCtx select * from SupportBean", path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S1(1));
 
@@ -2116,11 +2215,11 @@ namespace com.espertech.esper.regressionlib.suite.context
                           "create schema InitEvent(grp string);\n" +
                           "create schema TermEvent(grp string);\n";
 
-                epl += "@Name('Ctx1') create context MyContext " +
+                epl += "@name('Ctx1') create context MyContext " +
                        "initiated by InitEvent as i " +
                        "terminated by TermEvent(grp = i.grp);\n";
 
-                epl += "@Name('s0') context MyContext " +
+                epl += "@name('s0') context MyContext " +
                        "select key as c0, sum(value) as c1 " +
                        "from SummedEvent(grp = context.i.grp) group by key;\n";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath());
@@ -2247,12 +2346,12 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SendTimeEvent(env, "2002-05-1T8:00:00.000");
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('ctx') create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)",
+                    "@name('ctx') create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)",
                     path);
 
                 var fields = new [] { "col1","col2","col3","col4","col5" };
                 env.CompileDeploy(
-                    "@Name('s0') context NineToFive " +
+                    "@name('s0') context NineToFive " +
                     "select prev(TheString) as col1, prevwindow(sb) as col2, prevtail(TheString) as col3, prior(1, TheString) as col4, sum(IntPrimitive) as col5 " +
                     "from SupportBean#keepall() as sb",
                     path);

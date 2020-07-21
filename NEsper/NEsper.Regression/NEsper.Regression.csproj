@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\NEsper.Avro\NEsper.Avro.csproj" />
+    <ProjectReference Include="..\..\NEsper.Avro\NEsper.Avro\NEsper.Avro.csproj" />
     <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj" />
     <ProjectReference Include="..\NEsper.Compat\NEsper.Compat.csproj" />
     <ProjectReference Include="..\NEsper.Compiler\NEsper.Compiler.csproj" />

@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 // no iterate
                 TryInvalidIterate(
                     env,
-                    "@Name('s0') select * from SupportBean_A unidirectional full outer join SupportBean_B unidirectional",
+                    "@name('s0') select * from SupportBean_A unidirectional full outer join SupportBean_B unidirectional",
                     "Iteration over a unidirectional join is not supported");
             }
         }
@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select a.Id as aId, b.Id as bId from SupportBean_A as a unidirectional " +
+                var epl = "@name('s0') select a.Id as aId, b.Id as bId from SupportBean_A as a unidirectional " +
                           "full outer join SupportBean_B as b unidirectional";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -142,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from SupportBean_A as a unidirectional " +
+                var epl = "@name('s0') select * from SupportBean_A as a unidirectional " +
                           "full outer join SupportBean_B as b unidirectional " +
                           "full outer join SupportBean_C as c unidirectional";
 
@@ -176,7 +176,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var epl = "create window MyCWindow#keepall as SupportBean_C;\n" +
                           "insert into MyCWindow select * from SupportBean_C;\n" +
-                          "@Name('s0') select a.Id as aId, b.Id as bId, MyCWindow.Id as cId, SupportBean_D.Id as dId " +
+                          "@name('s0') select a.Id as aId, b.Id as bId, MyCWindow.Id as cId, SupportBean_D.Id as dId " +
                           "from pattern[every a=SupportBean_A -> b=SupportBean_B] t1 unidirectional " +
                           "full outer join " +
                           "MyCWindow unidirectional " +
@@ -206,7 +206,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from SupportBean_A as a unidirectional " +
+                var epl = "@name('s0') select * from SupportBean_A as a unidirectional " +
                           "full outer join SupportBean_B as b unidirectional " +
                           "full outer join SupportBean_C as c unidirectional " +
                           "full outer join SupportBean_D as d unidirectional " +

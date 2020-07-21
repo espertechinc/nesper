@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@Name('s0') select * from MyRendererEvent");
+                env.CompileDeploy("@name('s0') select * from MyRendererEvent");
                 env.SendEventBean(
                     new MyRendererEvent(
                         "id1",
@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
             public void Run(RegressionEnvironment env)
             {
                 object[] values = {"abc", 1, new SupportBean_S0(1, "P00"), 2L, 3d};
-                env.CompileDeploy("@Name('s0') select * from MyObjectArrayType");
+                env.CompileDeploy("@name('s0') select * from MyObjectArrayType");
                 env.SendEventObjectArray(values, "MyObjectArrayType");
 
                 var enumerator = env.GetEnumerator("s0");
@@ -148,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                 otherMap.Put(null, 1234);
                 beanOne.StringObjectMap = otherMap;
 
-                env.CompileDeploy("@Name('s0') select * from SupportBeanRendererOne");
+                env.CompileDeploy("@name('s0') select * from SupportBeanRendererOne");
                 env.SendEventBean(beanOne);
 
                 var json = env.Runtime.RenderEventService.RenderJSON("MyEvent", env.GetEnumerator("s0").Advance());
@@ -183,7 +183,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                 // try the same Map only undeclared
                 var beanThree = new SupportBeanRendererThree();
                 beanThree.StringObjectMap = otherMap;
-                env.CompileDeploy("@Name('s0') select * from SupportBeanRendererThree");
+                env.CompileDeploy("@name('s0') select * from SupportBeanRendererThree");
                 env.SendEventBean(beanThree);
                 json = env.Runtime.RenderEventService.RenderJSON("MyEvent", env.GetEnumerator("s0").Advance());
                 Assert.AreEqual(RemoveNewline(expectedJson), RemoveNewline(json));

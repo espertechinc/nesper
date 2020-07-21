@@ -136,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 SendCurrentTime(env, "2002-02-01T09:00:00.000");
-                var epl = "@Name('s0') select rstream * from SupportBean#time_accum(1 month)";
+                var epl = "@name('s0') select rstream * from SupportBean#time_accum(1 month)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -163,7 +163,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, startTime);
                 var events = Get100Events();
 
-                var epl = "@Name('s0') select irstream * from SupportMarketDataBean#time_accum(10 sec)";
+                var epl = "@name('s0') select irstream * from SupportMarketDataBean#time_accum(10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendTimer(env, startTime + 10000);
@@ -253,7 +253,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, 1000);
                 var fields = new [] { "TheString" };
 
-                var text = "@Name('s0') select irstream * from SupportMarketDataBean#time_accum(10 sec)";
+                var text = "@name('s0') select irstream * from SupportMarketDataBean#time_accum(10 sec)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
                 EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("s0"), fields, null);
 
@@ -354,7 +354,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 var fields = new [] { "TheString" };
                 SendTimer(env, 1000);
-                var epl = "@Name('s0') select irstream * from SupportBean#time_accum(10 sec)";
+                var epl = "@name('s0') select irstream * from SupportBean#time_accum(10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("s0"), fields, null);
@@ -452,7 +452,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, startTime);
                 var events = Get100Events();
 
-                var epl = "@Name('s0') select rstream * from SupportMarketDataBean#time_accum(10 sec)";
+                var epl = "@name('s0') select rstream * from SupportMarketDataBean#time_accum(10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendTimer(env, startTime + 10000);
@@ -485,7 +485,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var events = Get100Events();
 
                 var epl =
-                    "@Name('s0') select irstream Price, prev(1, Price) as prevPrice, prior(1, Price) as priorPrice " +
+                    "@name('s0') select irstream Price, prev(1, Price) as prevPrice, prior(1, Price) as priorPrice " +
                     "from SupportMarketDataBean#time_accum(10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -526,7 +526,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 SendTimer(env, 1000);
 
-                var text = "@Name('s0') select irstream Price, " +
+                var text = "@name('s0') select irstream Price, " +
                            "prev(1, Price) as prevPrice, " +
                            "prior(1, Price) as priorPrice, " +
                            "prevtail(Price) as prevtailPrice, " +
@@ -601,7 +601,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var events = Get100Events();
 
                 var epl =
-                    "@Name('s0') select irstream sum(Price) as sumPrice from SupportMarketDataBean#time_accum(10 sec)";
+                    "@name('s0') select irstream sum(Price) as sumPrice from SupportMarketDataBean#time_accum(10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 // 1st event
@@ -639,7 +639,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var events = Get100Events();
 
                 var epl =
-                    "@Name('s0') select irstream * from SupportMarketDataBean#groupwin(Symbol)#time_accum(10 sec)";
+                    "@name('s0') select irstream * from SupportMarketDataBean#groupwin(Symbol)#time_accum(10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 // 1st S1 event

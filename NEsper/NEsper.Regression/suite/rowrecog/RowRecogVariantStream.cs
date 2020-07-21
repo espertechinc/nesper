@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.CompileDeploy("create variant schema MyVariantType as SupportBean_S0, SupportBean_S1", path);
 
             var fields = new [] { "a","b" };
-            var text = "@Name('s0') select * from MyVariantType#keepall " +
+            var text = "@name('s0') select * from MyVariantType#keepall " +
                        "match_recognize (" +
                        "  measures A.Id? as a, B.Id? as b" +
                        "  pattern (A B) " +

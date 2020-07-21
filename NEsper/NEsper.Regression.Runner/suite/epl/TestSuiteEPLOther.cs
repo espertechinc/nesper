@@ -72,7 +72,9 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 typeof(SupportBeanStaticOuter),
                 typeof(SupportMarketDataBean),
                 typeof(SupportBeanComplexProps),
-                typeof(SupportBeanCombinedProps)
+                typeof(SupportBeanCombinedProps),
+                typeof(SupportEventWithIntArray),
+                typeof(SupportEventWithManyArray)
             }) {
                 configuration.Common.AddEventType(clazz);
             }
@@ -324,6 +326,12 @@ namespace com.espertech.esper.regressionrun.suite.epl
         public void TestEPLOtherUpdateIStream()
         {
             RegressionRunner.Run(session, EPLOtherUpdateIStream.Executions());
+        }
+        
+        [Test, RunInApplicationDomain]
+        public void TestEPLOtherNestedClass()
+        {
+            RegressionRunner.Run(session, EPLOtherNestedClass.Executions());
         }
     }
 } // end of namespace

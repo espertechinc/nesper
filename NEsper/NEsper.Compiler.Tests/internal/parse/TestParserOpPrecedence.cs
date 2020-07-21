@@ -35,7 +35,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 	/// </summary>
 	/// 
 	[TestFixture]
-	public class TestParserOpPrecedence : AbstractRuntimeTest
+	public class TestParserOpPrecedence : AbstractCompilerTest
 	{
 		[Test]
 		public void TestEquivalency()

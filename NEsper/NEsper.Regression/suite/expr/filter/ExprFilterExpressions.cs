@@ -213,7 +213,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             Assert.AreEqual(intBoxedB.Length, doubleBoxedC.Length);
 
             for (var i = 0; i < intBoxedA.Length; i++) {
-                env.CompileDeployAddListenerMile("@Name('s0')" + text, "s0", milestone.GetAndIncrement());
+                env.CompileDeployAddListenerMile("@name('s0')" + text, "s0", milestone.GetAndIncrement());
 
                 SendBeanIntDouble(env, intBoxedA[i], doubleBoxedA[i]);
                 SendBeanIntDouble(env, intBoxedB[i], doubleBoxedB[i]);
@@ -233,7 +233,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             double?[] doubleBoxed,
             bool[] expected)
         {
-            env.CompileDeployAddListenerMile("@Name('s0')" + text, "s0", milestone.IncrementAndGet());
+            env.CompileDeployAddListenerMile("@name('s0')" + text, "s0", milestone.IncrementAndGet());
 
             Assert.AreEqual(intPrimitive.Length, doubleBoxed.Length);
             Assert.AreEqual(intBoxed.Length, doubleBoxed.Length);
@@ -265,7 +265,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             Assert.AreEqual(intBoxedA.Length, doubleBoxedB.Length);
 
             for (var i = 0; i < intBoxedA.Length; i++) {
-                env.CompileDeploy("@Name('s0') " + text).AddListener("s0");
+                env.CompileDeploy("@name('s0') " + text).AddListener("s0");
 
                 SendBeanIntDouble(env, intBoxedA[i], doubleBoxedA[i]);
 
@@ -435,7 +435,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select * from SupportBean(2*IntBoxed=DoubleBoxed)";
+                var text = "@name('s0') select * from SupportBean(2*IntBoxed=DoubleBoxed)";
                 env.CompileDeployAddListenerMile(text, "s0", 0);
 
                 SendBeanIntDouble(env, 20, 50d);
@@ -443,7 +443,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 SendBeanIntDouble(env, 25, 50d);
                 Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
 
-                text = "@Name('s1') select * from SupportBean(2*IntBoxed=DoubleBoxed, TheString='s')";
+                text = "@name('s1') select * from SupportBean(2*IntBoxed=DoubleBoxed, TheString='s')";
                 env.CompileDeployAddListenerMile(text, "s1", 1);
 
                 SendBeanIntDoubleString(env, 25, 50d, "s");
@@ -454,10 +454,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.UndeployAll();
 
                 // test priority of equals and boolean
-                env.CompileDeploy("@Name('s0') select * from SupportBean(IntPrimitive = 1 or IntPrimitive = 2)")
+                env.CompileDeploy("@name('s0') select * from SupportBean(IntPrimitive = 1 or IntPrimitive = 2)")
                     .AddListener("s0");
                 env.CompileDeploy(
-                        "@Name('s1') select * from SupportBean(IntPrimitive = 3, SupportStaticMethodLib.AlwaysTrue())")
+                        "@name('s1') select * from SupportBean(IntPrimitive = 3, SupportStaticMethodLib.AlwaysTrue())")
                     .AddListener("s1");
 
                 SupportStaticMethodLib.Invocations.Clear();
@@ -568,11 +568,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 string epl;
 
                 // test equals&where-clause (can be optimized into filter)
-                env.CompileDeploy("@Name('s0') select * from SupportBean where TheString != 'A'").AddListener("s0");
-                env.CompileDeploy("@Name('s1') select * from SupportBean where TheString != 'A' or IntPrimitive != 0")
+                env.CompileDeploy("@name('s0') select * from SupportBean where TheString != 'A'").AddListener("s0");
+                env.CompileDeploy("@name('s1') select * from SupportBean where TheString != 'A' or IntPrimitive != 0")
                     .AddListener("s1");
-                env.CompileDeploy("@Name('s2') select * from SupportBean where TheString = 'A'").AddListener("s2");
-                env.CompileDeploy("@Name('s3') select * from SupportBean where TheString = 'A' or IntPrimitive != 0")
+                env.CompileDeploy("@name('s2') select * from SupportBean where TheString = 'A'").AddListener("s2");
+                env.CompileDeploy("@name('s3') select * from SupportBean where TheString = 'A' or IntPrimitive != 0")
                     .AddListener("s3");
                 env.MilestoneInc(milestone);
                 stmts = new [] { "s0","s1","s2","s3" };
@@ -599,7 +599,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 // test equals&selection
                 var fields = new [] { "val0","val1","val2","val3","val4","val5" };
-                epl = "@Name('s0') select " +
+                epl = "@name('s0') select " +
                       "TheString != 'A' as val0, " +
                       "TheString != 'A' or IntPrimitive != 0 as val1, " +
                       "TheString != 'A' and IntPrimitive != 0 as val2, " +
@@ -651,13 +651,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.UndeployAll().MilestoneInc(milestone);
 
                 // test is-and-isnot&where-clause
-                env.CompileDeploy("@Name('s0') select * from SupportBean where TheString is null").AddListener("s0");
-                env.CompileDeploy("@Name('s1') select * from SupportBean where TheString is null or IntPrimitive != 0")
+                env.CompileDeploy("@name('s0') select * from SupportBean where TheString is null").AddListener("s0");
+                env.CompileDeploy("@name('s1') select * from SupportBean where TheString is null or IntPrimitive != 0")
                     .AddListener("s1");
-                env.CompileDeploy("@Name('s2') select * from SupportBean where TheString is not null")
+                env.CompileDeploy("@name('s2') select * from SupportBean where TheString is not null")
                     .AddListener("s2");
                 env.CompileDeploy(
-                        "@Name('s3') select * from SupportBean where TheString is not null or IntPrimitive != 0")
+                        "@name('s3') select * from SupportBean where TheString is not null or IntPrimitive != 0")
                     .AddListener("s3");
                 env.MilestoneInc(milestone);
                 stmts = new [] { "s0","s1","s2","s3" };
@@ -677,7 +677,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.UndeployAll();
 
                 // test is-and-isnot&selection
-                epl = "@Name('s0') select " +
+                epl = "@name('s0') select " +
                       "TheString is null as val0, " +
                       "TheString is null or IntPrimitive != 0 as val1, " +
                       "TheString is null and IntPrimitive != 0 as val2, " +
@@ -714,12 +714,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.UndeployAll();
 
                 // filter expression
-                env.CompileDeploy("@Name('s0') select * from SupportBean(TheString is null)").AddListener("s0");
-                env.CompileDeploy("@Name('s1') select * from SupportBean where TheString = null").AddListener("s1");
-                env.CompileDeploy("@Name('s2') select * from SupportBean(TheString = null)").AddListener("s2");
-                env.CompileDeploy("@Name('s3') select * from SupportBean(TheString is not null)").AddListener("s3");
-                env.CompileDeploy("@Name('s4') select * from SupportBean where TheString != null").AddListener("s4");
-                env.CompileDeploy("@Name('s5') select * from SupportBean(TheString != null)").AddListener("s5");
+                env.CompileDeploy("@name('s0') select * from SupportBean(TheString is null)").AddListener("s0");
+                env.CompileDeploy("@name('s1') select * from SupportBean where TheString = null").AddListener("s1");
+                env.CompileDeploy("@name('s2') select * from SupportBean(TheString = null)").AddListener("s2");
+                env.CompileDeploy("@name('s3') select * from SupportBean(TheString is not null)").AddListener("s3");
+                env.CompileDeploy("@name('s4') select * from SupportBean where TheString != null").AddListener("s4");
+                env.CompileDeploy("@name('s5') select * from SupportBean(TheString != null)").AddListener("s5");
                 env.MilestoneInc(milestone);
                 stmts = new [] { "s0","s1","s2","s3","s4","s5" };
 
@@ -734,7 +734,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 // select constants
                 fields = new [] { "val0","val1","val2","val3" };
                 env.CompileDeploy(
-                        "@Name('s0') select " +
+                        "@name('s0') select " +
                         "2 != null as val0," +
                         "null = null as val1," +
                         "2 != null or 1 = 2 as val2," +
@@ -753,7 +753,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 // test SODA
                 epl =
-                    "@Name('s0') select IntBoxed is null, IntBoxed is not null, IntBoxed=1, IntBoxed!=1 from SupportBean";
+                    "@name('s0') select IntBoxed is null, IntBoxed is not null, IntBoxed=1, IntBoxed!=1 from SupportBean";
                 env.EplToModelCompileDeploy(epl);
                 EPAssertionUtil.AssertEqualsExactOrder(
                     new[] {
@@ -769,7 +769,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from \n" +
+                var epl = "@name('s0') select * from \n" +
                           "pattern [ \n" +
                           " every start_load=SupportBeanArrayCollMap \n" +
                           " -> \n" +
@@ -794,14 +794,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select * from pattern[every event1=SupportTradeEvent(UserId in ('100','101'),Amount>=1000)]";
+                    "@name('s0') select * from pattern[every event1=SupportTradeEvent(UserId in ('100','101'),Amount>=1000)]";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportTradeEvent(1, "100", 1001));
                 Assert.AreEqual(1, env.Listener("s0").AssertOneGetNewAndReset().Get("event1.Id"));
 
                 var eplTwo =
-                    "@Name('s1') select * from pattern [every event1=SupportTradeEvent(UserId in ('100','101'))]";
+                    "@name('s1') select * from pattern [every event1=SupportTradeEvent(UserId in ('100','101'))]";
                 env.CompileDeployAddListenerMileZero(eplTwo, "s1");
 
                 env.SendEventBean(new SupportTradeEvent(2, "100", 1001));
@@ -852,9 +852,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var eplOne =
-                    "@Name('s0') select * from SupportBean(TheString != 'x' and TheString != 'y' and DoubleBoxed is not null)";
+                    "@name('s0') select * from SupportBean(TheString != 'x' and TheString != 'y' and DoubleBoxed is not null)";
                 var eplTwo =
-                    "@Name('s1') select * from SupportBean(TheString != 'x' and TheString != 'y' and LongBoxed is not null)";
+                    "@name('s1') select * from SupportBean(TheString != 'x' and TheString != 'y' and LongBoxed is not null)";
 
                 env.CompileDeploy(eplOne).AddListener("s0");
                 env.CompileDeploy(eplTwo).AddListener("s1");
@@ -877,7 +877,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select * from SupportRuntimeExBean(SupportRuntimeExBean.Property2 = '4' and SupportRuntimeExBean.Property1 = '1')";
+                    "@name('s0') select * from SupportRuntimeExBean(SupportRuntimeExBean.Property2 = '4' and SupportRuntimeExBean.Property1 = '1')";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportRuntimeExBean());
@@ -885,7 +885,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 env.UndeployAll();
 
-                epl = "@Name('s0') select * from SupportBean(TheString='A' and TheString='B')";
+                epl = "@name('s0') select * from SupportBean(TheString='A' and TheString='B')";
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
 
                 SendSupportBean(env, new SupportBean("A", 0));
@@ -932,7 +932,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from pattern [every event1=SupportTradeEvent(UserId like '123%')]";
+                var epl = "@name('s0') select * from pattern [every event1=SupportTradeEvent(UserId like '123%')]";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportTradeEvent(1, null, 1001));
@@ -949,7 +949,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from pattern [SupportBean(IntPrimitive=" +
+                var epl = "@name('s0') select * from pattern [SupportBean(IntPrimitive=" +
                           typeof(ISupportAConstants).FullName +
                           ".VALUE_1)]";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -970,7 +970,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from pattern [SupportBeanWithEnum(SupportEnum=" +
+                var epl = "@name('s0') select * from pattern [SupportBeanWithEnum(SupportEnum=" +
                           typeof(SupportEnumHelper).FullName +
                           ".GetEnumFor('ENUM_VALUE_1'))]";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -991,7 +991,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from pattern [SupportBeanWithEnum(SupportEnum=" +
+                var epl = "@name('s0') select * from pattern [SupportBeanWithEnum(SupportEnum=" +
                           typeof(SupportEnum).FullName +
                           ".ENUM_VALUE_2)]";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -1007,7 +1007,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.UndeployAll();
 
                 // test where clause
-                epl = "@Name('s0') select * from SupportBeanWithEnum where SupportEnum=" +
+                epl = "@name('s0') select * from SupportBeanWithEnum where SupportEnum=" +
                       typeof(SupportEnum).FullName +
                       ".ENUM_VALUE_2";
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
@@ -1610,7 +1610,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from SupportBeanComplexProps(Nested=Nested)";
+                var epl = "@name('s0') select * from SupportBeanComplexProps(Nested=Nested)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 var eventOne = SupportBeanComplexProps.MakeDefaultBean();
@@ -1629,11 +1629,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var milestone = new AtomicLong();
 
-                var text = "@Name('s0') select * from pattern [every a=SupportBean -> " +
+                var text = "@name('s0') select * from pattern [every a=SupportBean -> " +
                            "b=SupportMarketDataBean(a.LongBoxed=Volume*2)]";
                 TryPatternWithExpr(env, text, milestone);
 
-                text = "@Name('s0') select * from pattern [every a=SupportBean -> " +
+                text = "@name('s0') select * from pattern [every a=SupportBean -> " +
                        "b=SupportMarketDataBean(Volume*2=a.LongBoxed)]";
                 TryPatternWithExpr(env, text, milestone);
             }
@@ -1643,7 +1643,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var expr = "@Name('s0') select * from SupportBean(5 = IntBoxed)";
+                var expr = "@name('s0') select * from SupportBean(5 = IntBoxed)";
                 env.CompileDeployAddListenerMileZero(expr, "s0");
 
                 SendBean(env, "IntBoxed", 5);
@@ -1668,7 +1668,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from SupportBean(TheString != 'a')";
+                var epl = "@name('s0') select * from SupportBean(TheString != 'a')";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "a");
@@ -1693,7 +1693,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from SupportBean(TheString != 'a', IntPrimitive=0)";
+                var epl = "@name('s0') select * from SupportBean(TheString != 'a', IntPrimitive=0)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "b", 1);
@@ -1791,7 +1791,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 string epl,
                 bool[] expected)
             {
-                env.CompileDeploy("@Name('s0') " + epl).AddListener("s0");
+                env.CompileDeploy("@name('s0') " + epl).AddListener("s0");
                 for (var i = 0; i < 3; i++) {
                     env.SendEventBean(new SupportInstanceMethodBean(i));
                     Assert.AreEqual(expected[i], env.Listener("s0").GetAndClearIsInvoked());
@@ -1805,7 +1805,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select * from SupportBeanComplexProps(SimpleProperty='1')#keepall as S0" +
+                var text = "@name('s0') select * from SupportBeanComplexProps(SimpleProperty='1')#keepall as S0" +
                            ", SupportBeanComplexProps(SimpleProperty='2')#keepall as S1" +
                            " where S0.Nested = S1.Nested";
                 env.CompileDeploy(text).AddListener("s0");

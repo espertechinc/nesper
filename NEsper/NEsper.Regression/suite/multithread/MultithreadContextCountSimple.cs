@@ -33,9 +33,9 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             var path = new RegressionPath();
             env.CompileDeploy(
-                "@Name('ctx') create context HashByUserCtx as coalesce by consistent_hash_crc32(P00) from SupportBean_S0 granularity 10000000",
+                "@name('ctx') create context HashByUserCtx as coalesce by consistent_hash_crc32(P00) from SupportBean_S0 granularity 10000000",
                 path);
-            env.CompileDeploy("@Name('select') context HashByUserCtx select P01 from SupportBean_S0", path);
+            env.CompileDeploy("@name('select') context HashByUserCtx select P01 from SupportBean_S0", path);
 
             TrySendContextCountSimple(env, 4, 5);
 

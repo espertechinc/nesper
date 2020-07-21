@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select irstream es0a.Id as es0aId, " +
+                var stmtText = "@name('s0') select irstream es0a.Id as es0aId, " +
                                "es0a.P00 as es0aP00, " +
                                "es0b.Id as es0bId, " +
                                "es0b.P00 as es0bP00, " +
@@ -187,7 +187,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select irstream S0.es0.Id as s0es0Id," +
+                var stmtText = "@name('s0') select irstream S0.es0.Id as s0es0Id," +
                                "S0.es1.Id as s0es1Id, " +
                                "S1.es2.Id as s1es2Id, " +
                                "S1.es3.Id as s1es3Id, " +
@@ -266,7 +266,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select * " +
+                var stmtText = "@name('s0') select * " +
                                " from " +
                                " pattern [every (es0=SupportBean_S0" +
                                " and es1=SupportBean_S1)]#length(5) as S0," +

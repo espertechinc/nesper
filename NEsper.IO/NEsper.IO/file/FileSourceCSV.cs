@@ -150,7 +150,7 @@ namespace com.espertech.esperio.file
 			StatementContext statementContext,
 			string dateFormat)
 		{
-			var writeables = EventTypeUtility.GetWriteableProperties(outputEventType, false);
+			var writeables = EventTypeUtility.GetWriteableProperties(outputEventType, false, false);
 
 			IList<int> indexesList = new List<int>();
 			IList<SimpleTypeParser> parserList = new List<SimpleTypeParser>();

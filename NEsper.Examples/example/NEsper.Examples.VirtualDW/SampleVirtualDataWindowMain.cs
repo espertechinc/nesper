@@ -50,7 +50,7 @@ namespace NEsper.Examples.VirtualDW
     
             var runtime = EPRuntimeProvider.GetRuntime("LargeExternalDataExample", config);
     
-            // First: Create an event type for rows of the external data - here the example use a Map-based event and any of the other types (POJO, XML) can be used as well.
+            // First: Create an event type for rows of the external data - here the example use a Map-based event and any of the other types (PONO, XML) can be used as well.
             // Populate event property names and types.
             // Note: the type must match the data returned by virtual data window indexes.
             CompileDeploy(runtime, "create schema SampleEvent as (key1 string, key2 string, value1 int, value2 double)");

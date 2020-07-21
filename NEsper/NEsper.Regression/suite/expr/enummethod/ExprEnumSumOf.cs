@@ -6,233 +6,201 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionlib.support.util;
+using com.espertech.esper.regressionlib.support.expreval;
 
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
+using static com.espertech.esper.regressionlib.support.util.LambdaAssertionUtil;
 
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
-    public class ExprEnumSumOf
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            var execs = new List<RegressionExecution>();
-            execs.Add(new ExprEnumSumEvents());
-            execs.Add(new ExprEnumSumOfScalar());
-            execs.Add(new ExprEnumInvalid());
-            execs.Add(new ExprEnumSumOfArray());
-            return execs;
-        }
+	public class ExprEnumSumOf
+	{
 
-        private static SupportBean Make(
-            int? intBoxed,
-            double? doubleBoxed,
-            long? longBoxed,
-            int decimalBoxed,
-            int bigInteger)
-        {
-            var bean = new SupportBean();
-            bean.IntBoxed = intBoxed;
-            bean.DoubleBoxed = doubleBoxed;
-            bean.LongBoxed = longBoxed;
-            bean.DecimalBoxed = decimalBoxed;
-            bean.BigInteger = new BigInteger(bigInteger);
-            return bean;
-        }
+		public static ICollection<RegressionExecution> Executions()
+		{
+			List<RegressionExecution> execs = new List<RegressionExecution>();
+			execs.Add(new ExprEnumSumEvents());
+			execs.Add(new ExprEnumSumEventsPlus());
+			execs.Add(new ExprEnumSumScalar());
+			execs.Add(new ExprEnumSumScalarStringValue());
+			execs.Add(new ExprEnumInvalid());
+			execs.Add(new ExprEnumSumArray());
+			return execs;
+		}
 
-        internal class ExprEnumSumOfArray : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var bigIntegerHelper = typeof(BigIntegerHelper).FullName;
-                var epl = "@Name('s0') select " +
-                          "{1d, 2d}.sumOf() as c0," +
-                          "{" + bigIntegerHelper + ".ValueOf(1), " + bigIntegerHelper + ".ValueOf(2)}.sumOf() as c1, " +
-                          "{1L, 2L}.sumOf() as c2, " +
-                          "{1L, 2L, null}.sumOf() as c3 " +
-                          " from SupportBean";
-                env.CompileDeploy(epl).AddListener("s0");
+		internal class ExprEnumSumArray : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0,c1,c2,c3".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean");
+				builder.WithExpression(fields[0], "{1d, 2d}.sumOf()");
+				builder.WithExpression(fields[1], "{BigInteger.valueOf(1), BigInteger.valueOf(2)}.sumOf()");
+				builder.WithExpression(fields[2], "{1L, 2L}.sumOf()");
+				builder.WithExpression(fields[3], "{1L, 2L, null}.sumOf()");
 
-                env.SendEventBean(new SupportBean());
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "c0", "c1", "c2", "c3" },
-                    new object[] {3d, new BigInteger(3), 3L, 3L});
+				builder.WithAssertion(new SupportBean()).Expect(fields, 3d, new BigInteger(3), 3L, 3L);
 
-                env.UndeployAll();
-            }
-        }
+				builder.Run(env);
+			}
+		}
 
-        internal class ExprEnumSumEvents : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new [] { "val0", "val1", "val2", "val3", "val4" };
-                var eplFragment = "@Name('s0') select " +
-                                  "Beans.sumOf(x -> IntBoxed) as val0," +
-                                  "Beans.sumOf(x -> DoubleBoxed) as val1," +
-                                  "Beans.sumOf(x -> LongBoxed) as val2," +
-                                  "Beans.sumOf(x -> DecimalBoxed) as val3, " +
-                                  "Beans.sumOf(x -> BigInteger) as val4 " +
-                                  "from SupportBean_Container";
-                env.CompileDeploy(eplFragment).AddListener("s0");
+		internal class ExprEnumSumEvents : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0,c1,c2,c3,c4".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_Container");
+				builder.WithExpression(fields[0], "beans.sumOf(x => intBoxed)");
+				builder.WithExpression(fields[1], "beans.sumOf(x => doubleBoxed)");
+				builder.WithExpression(fields[2], "beans.sumOf(x => longBoxed)");
+				builder.WithExpression(fields[3], "beans.sumOf(x => bigDecimal)");
+				builder.WithExpression(fields[4], "beans.sumOf(x => bigInteger)");
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fields,
-                    new[] {
-                        typeof(int?), typeof(double?), typeof(long?), typeof(decimal?), typeof(BigInteger?)
-                    });
+				builder.WithStatementConsumer(
+					stmt => AssertTypes(
+						stmt.EventType,
+						fields,
+						new[] {typeof(int?), typeof(double?), typeof(long?), typeof(decimal?), typeof(BigInteger)}));
 
-                env.SendEventBean(new SupportBean_Container(null));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {
-                        null, null, null, null, null
-                    });
+				builder.WithAssertion(new SupportBean_Container(null)).Expect(fields, null, null, null, null, null);
 
-                env.SendEventBean(new SupportBean_Container(Collections.GetEmptyList<SupportBean>()));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {
-                        null, null, null, null, null
-                    });
+				builder.WithAssertion(new SupportBean_Container(EmptyList<SupportBean>.Instance)).Expect(fields, null, null, null, null, null);
 
-                IList<SupportBean> list = new List<SupportBean>();
-                list.Add(Make(2, 3d, 4L, 5, 6));
-                env.SendEventBean(new SupportBean_Container(list));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {
-                        2, 3d, 4L, 5.0m, new BigInteger(6)
-                    });
+				IList<SupportBean> listOne = new List<SupportBean>() {Make(2, 3d, 4L, 5, 6)};
+				builder.WithAssertion(new SupportBean_Container(listOne)).Expect(fields, 2, 3d, 4L, 5m, new BigInteger(6));
 
-                list.Add(Make(4, 6d, 8L, 10, 12));
-                env.SendEventBean(new SupportBean_Container(list));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {
-                        2 + 4, 3d + 6d, 4L + 8L, 5.0m + 10m, new BigInteger(18)
-                    });
+				IList<SupportBean> listTwo = new List<SupportBean>() {Make(2, 3d, 4L, 5, 6), Make(4, 6d, 8L, 10, 12)};
+				builder.WithAssertion(new SupportBean_Container(listTwo)).Expect(fields, 2 + 4, 3d + 6d, 4L + 8L, 5 + 10, new BigInteger(18));
 
-                env.UndeployAll();
-            }
-        }
+				builder.Run(env);
+			}
+		}
 
-        internal class ExprEnumSumOfScalar : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new [] { "val0", "val1" };
-                var eplFragment = "@Name('s0') select " +
-                                  "Intvals.sumOf() as val0, " +
-                                  "Bdvals.sumOf() as val1 " +
-                                  "from SupportCollection";
-                env.CompileDeploy(eplFragment).AddListener("s0");
+		internal class ExprEnumSumEventsPlus : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0,c1,c2".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_Container");
+				builder.WithExpression(fields[0], "beans.sumOf(x => intBoxed)");
+				builder.WithExpression(fields[1], "beans.sumOf( (x, i) => intBoxed + i*10)");
+				builder.WithExpression(fields[2], "beans.sumOf( (x, i, s) => intBoxed + i*10 + s*100)");
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fields,
-                    new[] {typeof(int?), typeof(decimal?)});
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
 
-                env.SendEventBean(SupportCollection.MakeNumeric("1,4,5"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {1 + 4 + 5, (decimal) (1 + 4 + 5)});
+				builder.WithAssertion(new SupportBean_Container(null)).Expect(fields, null, null, null);
 
-                env.SendEventBean(SupportCollection.MakeNumeric("3,4"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {3 + 4, (decimal) (3 + 4)});
+				builder.WithAssertion(new SupportBean_Container(EmptyList<SupportBean>.Instance)).Expect(fields, null, null, null);
 
-                env.SendEventBean(SupportCollection.MakeNumeric("3"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {3, (decimal) 3});
+				IList<SupportBean> listOne = new List<SupportBean>() { MakeSB("E1", 10) };
+				builder.WithAssertion(new SupportBean_Container(listOne)).Expect(fields, 10, 10, 110);
 
-                env.SendEventBean(SupportCollection.MakeNumeric(""));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {null, null});
+				IList<SupportBean> listTwo = new List<SupportBean>() {MakeSB("E1", 10), MakeSB("E2", 11)};
+				builder.WithAssertion(new SupportBean_Container(listTwo)).Expect(fields, 21, 31, 431);
 
-                env.SendEventBean(SupportCollection.MakeNumeric(null));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {null, null});
+				builder.Run(env);
+			}
 
-                env.UndeployAll();
+			private SupportBean MakeSB(
+				string theString,
+				int intBoxed)
+			{
+				SupportBean bean = new SupportBean(theString, intBoxed);
+				bean.IntBoxed = intBoxed;
+				return bean;
+			}
+		}
 
-                // test average with lambda
-                // lambda with string-array input
-                var fieldsLambda = new [] { "val0", "val1" };
-                var eplLambda = "@Name('s0') select " +
-                                "Strvals.sumOf(v -> extractNum(v)) as val0, " +
-                                "Strvals.sumOf(v -> extractDecimal(v)) as val1 " +
-                                "from SupportCollection";
-                env.CompileDeploy(eplLambda).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fieldsLambda,
-                    new[] {typeof(int?), typeof(decimal?)});
+		internal class ExprEnumSumScalar : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0,c1".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
+				builder.WithExpression(fields[0], "intvals.sumOf()");
+				builder.WithExpression(fields[1], "bdvals.sumOf()");
 
-                env.SendEventBean(SupportCollection.MakeString("E2,E1,E5,E4"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fieldsLambda,
-                    new object[] {2 + 1 + 5 + 4, (decimal) (2 + 1 + 5 + 4)});
+				builder.WithStatementConsumer(stmt => AssertTypes(stmt.EventType, fields, new[] {typeof(int?), typeof(decimal?)}));
 
-                env.SendEventBean(SupportCollection.MakeString("E1"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fieldsLambda,
-                    new object[] {1, (decimal) 1});
+				builder.WithAssertion(SupportCollection.MakeNumeric("1,4,5")).Expect(fields, 1 + 4 + 5, 1 + 4 + 5);
 
-                env.SendEventBean(SupportCollection.MakeString(null));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fieldsLambda,
-                    new object[] {null, null});
+				builder.WithAssertion(SupportCollection.MakeNumeric("3,4")).Expect(fields, 3 + 4, 3 + 4);
 
-                env.SendEventBean(SupportCollection.MakeString(""));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fieldsLambda,
-                    new object[] {null, null});
+				builder.WithAssertion(SupportCollection.MakeNumeric("3")).Expect(fields, 3, 3m);
 
-                env.UndeployAll();
-            }
-        }
+				builder.WithAssertion(SupportCollection.MakeNumeric("")).Expect(fields, null, null);
 
-        internal class ExprEnumInvalid : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                string epl;
+				builder.WithAssertion(SupportCollection.MakeNumeric(null)).Expect(fields, null, null);
 
-                epl = "select Beans.sumof() from SupportBean_Container";
-                TryInvalidCompile(
-                    env,
-                    epl,
-                    "Failed to validate select-clause expression 'Beans.sumof()': Invalid input for built-in enumeration method 'sumof' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '");
-            }
-        }
-    }
+				builder.Run(env);
+			}
+		}
+
+		internal class ExprEnumSumScalarStringValue : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0,c1,c2,c3".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
+				builder.WithExpression(fields[0], "strvals.sumOf(v => extractNum(v))");
+				builder.WithExpression(fields[1], "strvals.sumOf(v => extractDecimal(v))");
+				builder.WithExpression(fields[2], "strvals.sumOf( (v, i) => extractNum(v) + i*10)");
+				builder.WithExpression(fields[3], "strvals.sumOf( (v, i, s) => extractNum(v) + i*10 + s*100)");
+
+				builder.WithStatementConsumer(
+					stmt => AssertTypes(env.Statement("s0").EventType, fields, new[] {typeof(int?), typeof(decimal?), typeof(int?), typeof(int?)}));
+
+				builder.WithAssertion(SupportCollection.MakeString("E2,E1,E5,E4"))
+					.Expect(fields, 2 + 1 + 5 + 4, 2 + 1 + 5 + 4, 2 + 11 + 25 + 34, 402 + 411 + 425 + 434);
+
+				builder.WithAssertion(SupportCollection.MakeString("E1")).Expect(fields, 1, 1m, 1, 101);
+
+				builder.WithAssertion(SupportCollection.MakeString(null)).Expect(fields, null, null, null, null);
+
+				builder.WithAssertion(SupportCollection.MakeString("")).Expect(fields, null, null, null, null);
+
+				builder.Run(env);
+			}
+		}
+
+		internal class ExprEnumInvalid : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string epl;
+
+				epl = "select beans.sumof() from SupportBean_Container";
+				TryInvalidCompile(
+					env,
+					epl,
+					"Failed to validate select-clause expression 'beans.sumof()': Invalid input for built-in enumeration method 'sumof' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '");
+			}
+		}
+
+		private static SupportBean Make(
+			int? intBoxed,
+			Double doubleBoxed,
+			long? longBoxed,
+			decimal? decimalBoxed,
+			int bigInteger)
+		{
+			SupportBean bean = new SupportBean();
+			bean.IntBoxed = intBoxed;
+			bean.DoubleBoxed = doubleBoxed;
+			bean.LongBoxed = longBoxed;
+			bean.DecimalBoxed = decimalBoxed;
+			bean.BigInteger = new BigInteger(bigInteger);
+			return bean;
+		}
+	}
 } // end of namespace

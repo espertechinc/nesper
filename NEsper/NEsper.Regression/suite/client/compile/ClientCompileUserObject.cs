@@ -8,7 +8,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 
+using com.espertech.esper.common.client;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.compiler.client.option;
 using com.espertech.esper.regressionlib.framework;
@@ -17,119 +21,126 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.client.compile
 {
-    public class ClientCompileUserObject
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new ClientCompileUserObjectDifferentTypes());
-            execs.Add(new ClientCompileUserObjectResolveContextInfo());
-            return execs;
-        }
+	public class ClientCompileUserObject
+	{
+		public static IList<RegressionExecution> Executions()
+		{
+			IList<RegressionExecution> execs = new List<RegressionExecution>();
+			execs.Add(new ClientCompileUserObjectDifferentTypes());
+			execs.Add(new ClientCompileUserObjectResolveContextInfo());
+			return execs;
+		}
 
-        private static void AssertUserObject(
-            RegressionEnvironment env,
-            object userObject)
-        {
-            var args = new CompilerArguments(env.Configuration);
-            args.Options.StatementUserObject = _ => userObject;
-            var compiled = env.Compile("@Name('s0') select * from SupportBean", args);
-            env.Deploy(compiled);
-            var received = env.Statement("s0").UserObjectCompileTime;
-            if (received == null) {
-                Assert.IsNull(userObject);
-            }
-            else if (received.GetType() == typeof(int[])) {
-                CollectionAssert.AreEquivalent(
-                    (int[]) received,
-                    (int[]) userObject);
-            }
-            else {
-                Assert.AreEqual(userObject, env.Statement("s0").UserObjectCompileTime);
-            }
+		private class ClientCompileUserObjectResolveContextInfo : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				MyUserObjectResolver.Contexts.Clear();
+				var args = new CompilerArguments(env.Configuration);
+				args.Options.StatementUserObject = (new MyUserObjectResolver()).GetValue;
+				var epl = "@name('s0') select * from SupportBean";
+				env.Compile(epl, args);
 
-            env.UndeployAll();
-        }
+				var ctx = MyUserObjectResolver.Contexts[0];
+				Assert.AreEqual(epl, ctx.EplSupplier.Invoke());
+				Assert.AreEqual("s0", ctx.StatementName);
+				Assert.AreEqual(null, ctx.ModuleName);
+				Assert.AreEqual(1, ctx.Annotations.Length);
+				Assert.AreEqual(0, ctx.StatementNumber);
+			}
+		}
 
-        internal class ClientCompileUserObjectResolveContextInfo : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                MyUserObjectResolver.Contexts.Clear();
-                var args = new CompilerArguments(env.Configuration);
-                args.Options.StatementUserObject = new MyUserObjectResolver().GetValue;
-                var epl = "@Name('s0') select * from SupportBean";
-                env.Compile(epl, args);
+		private class ClientCompileUserObjectDifferentTypes : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				AssertUserObject(env, "ABC");
+				AssertUserObject(env, new int[] {1, 2, 3});
+				AssertUserObject(env, null);
+				AssertUserObject(env, new MyUserObject("hello"));
+			}
+		}
 
-                var ctx = MyUserObjectResolver.Contexts[0];
-                Assert.AreEqual(epl, ctx.EplSupplier.Invoke());
-                Assert.AreEqual("s0", ctx.StatementName);
-                Assert.AreEqual(null, ctx.ModuleName);
-                Assert.AreEqual(1, ctx.Annotations.Length);
-                Assert.AreEqual(0, ctx.StatementNumber);
-            }
-        }
+		private static void AssertUserObject(
+			RegressionEnvironment env,
+			object userObject)
+		{
+			var args = new CompilerArguments(env.Configuration);
+			args.Options.SetStatementUserObject(_ => userObject);
+			var compiled = env.Compile("@name('s0') select * from SupportBean", args);
+			env.Deploy(compiled);
+			var received = env.Statement("s0").UserObjectCompileTime;
+			if (received == null) {
+				Assert.IsNull(userObject);
+			}
+			else if (received.GetType() == typeof(int[])) {
+				Assert.IsTrue(Arrays.Equals((int[]) received, (int[]) userObject));
+			}
+			else {
+				Assert.AreEqual(userObject, env.Statement("s0").UserObjectCompileTime);
+			}
 
-        internal class ClientCompileUserObjectDifferentTypes : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                AssertUserObject(env, "ABC");
-                AssertUserObject(env, new[] {1, 2, 3});
-                AssertUserObject(env, null);
-                AssertUserObject(env, new MyUserObject("hello"));
-            }
-        }
+			env.UndeployAll();
+		}
 
-        [Serializable]
-        internal class MyUserObject
-        {
-            private string id;
+		[Serializable]
+		private class MyUserObject
+		{
+			private string id;
 
-            public MyUserObject(string id)
-            {
-                this.id = id;
-            }
+			public MyUserObject(string id)
+			{
+				this.id = id;
+			}
 
-            public MyUserObject()
-            {
-            }
+			public MyUserObject()
+			{
+			}
 
-            public string Id {
-                get => id;
-                set => id = value;
-            }
+			public string Id {
+				get => id;
+				set => id = value;
+			}
 
-            public override bool Equals(object o)
-            {
-                if (this == o) {
-                    return true;
-                }
+			protected bool Equals(MyUserObject other)
+			{
+				return id == other.id;
+			}
 
-                if (o == null || GetType() != o.GetType()) {
-                    return false;
-                }
+			public override bool Equals(object obj)
+			{
+				if (ReferenceEquals(null, obj)) {
+					return false;
+				}
 
-                var that = (MyUserObject) o;
+				if (ReferenceEquals(this, obj)) {
+					return true;
+				}
 
-                return id.Equals(that.id);
-            }
+				if (obj.GetType() != this.GetType()) {
+					return false;
+				}
 
-            public override int GetHashCode()
-            {
-                return id.GetHashCode();
-            }
-        }
+				return Equals((MyUserObject) obj);
+			}
 
-        internal class MyUserObjectResolver
-        {
-            public static IList<StatementUserObjectContext> Contexts { get; } = new List<StatementUserObjectContext>();
+			public override int GetHashCode()
+			{
+				return (id != null ? id.GetHashCode() : 0);
+			}
+		}
 
-            public object GetValue(StatementUserObjectContext env)
-            {
-                Contexts.Add(env);
-                return null;
-            }
-        }
-    }
+		private class MyUserObjectResolver
+		{
+			private static IList<StatementUserObjectContext> contexts = new List<StatementUserObjectContext>();
+
+			public static IList<StatementUserObjectContext> Contexts => contexts;
+
+			public object GetValue(StatementUserObjectContext env)
+			{
+				contexts.Add(env);
+				return null;
+			}
+		}
+	}
 } // end of namespace

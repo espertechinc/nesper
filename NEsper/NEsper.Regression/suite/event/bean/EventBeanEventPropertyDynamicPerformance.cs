@@ -18,7 +18,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
     {
         public void Run(RegressionEnvironment env)
         {
-            var stmtText = "@Name('s0') select SimpleProperty?, " +
+            var stmtText = "@name('s0') select SimpleProperty?, " +
                            "Indexed[1]? as Indexed, " +
                            "Mapped('keyOne')? as Mapped " +
                            "from SupportBeanComplexProps";

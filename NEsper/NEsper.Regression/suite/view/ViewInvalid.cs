@@ -37,20 +37,20 @@ namespace com.espertech.esper.regressionlib.suite.view
 
         private void RunAssertionInvalidPropertyExpression(RegressionEnvironment env)
         {
-            var epl = "@Name('s0') @IterableUnbound select * from SupportBean";
+            var epl = "@name('s0') @IterableUnbound select * from SupportBean";
             env.CompileDeploy(epl);
             env.SendEventBean(new SupportBean());
             var theEvent = env.Statement("s0").First();
 
             var exceptionText = GetSyntaxExceptionProperty("", theEvent);
-            Assert.IsTrue(exceptionText.StartsWith("Failed to parse property '': Empty property name"));
+            Assert.IsTrue(exceptionText.StartsWith("Property named '' is not a valid property name for this type"));
 
             exceptionText = GetSyntaxExceptionProperty("-", theEvent);
-            Assert.IsTrue(exceptionText.StartsWith("Failed to parse property '-'"));
+            Assert.IsTrue(exceptionText.StartsWith("Property named '-' is not a valid property name for this type"));
 
             exceptionText = GetSyntaxExceptionProperty("a[]", theEvent);
-            Assert.IsTrue(exceptionText.StartsWith("Failed to parse property 'a[]'"));
-
+            Assert.IsTrue(exceptionText.StartsWith("Property named 'a[]' is not a valid property name for this type"));
+            
             env.UndeployAll();
         }
 

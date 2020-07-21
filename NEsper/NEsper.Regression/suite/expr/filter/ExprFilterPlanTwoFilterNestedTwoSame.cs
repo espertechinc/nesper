@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
     [TestFixture]
     public class ExprFilterPlanTwoFilterNestedTwoSame
     {
-        public static IList<FilterTestMultiStmtExecution> Executions()
+        public static IList<FilterTestMultiStmtExecution> Executions(bool withStats)
         {
             IList<FilterTestMultiStmtPermutable> cases = new List<FilterTestMultiStmtPermutable>();
 
@@ -95,7 +95,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             return FilterTestMultiStmtRunner.ComputePermutations(
                 typeof(ExprFilterPlanTwoFilterNestedTwoSame),
                 new PermutationSpec(0, 1),
-                cases);
+                cases,
+                withStats);
         }
     }
 } // end of namespace

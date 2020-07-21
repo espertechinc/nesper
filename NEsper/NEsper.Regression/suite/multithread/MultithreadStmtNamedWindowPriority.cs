@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("@Name('window') create window MyWindow#keepall as (c0 string, c1 string)", path);
+            env.CompileDeploy("@name('window') create window MyWindow#keepall as (c0 string, c1 string)", path);
             env.CompileDeploy("insert into MyWindow select P00 as c0, P01 as c1 from SupportBean_S0", path);
             env.CompileDeploy(
                 "@Priority(1) on SupportBean_S1 S1 merge MyWindow S0 where S1.P10 = c0 " +

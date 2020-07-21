@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.support;
@@ -21,12 +22,44 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
     {
         public void Run(RegressionEnvironment env)
         {
-            /*
             RunAssertionOA(env);
             RunAssertionMap(env);
             RunAssertionWrapper(env);
-            */
             RunAssertionBean(env);
+            RunAssertionJson(env);
+            RunAssertionJsonClassProvided(env);
+        }
+
+        private void RunAssertionJsonClassProvided(RegressionEnvironment env)
+        {
+            env.CompileDeploy(
+                    "@JsonSchema(className='" +
+                    typeof(MyLocalJsonProvided).MaskTypeName() +
+                    "') @public @buseventtype create json schema JsonSchema();\n" +
+                    "@name('s0') select * from JsonSchema;\n")
+                .AddListener("s0");
+            env.SendEventJson("{ \"indexed\": [1, 2], \"mapped\" : { \"keyOne\": 20 }}", "JsonSchema");
+            var @event = env.Listener("s0").AssertOneGetNewAndReset();
+
+            Assert.AreEqual(2, @event.EventType.GetGetterIndexed("indexed").Get(@event, 1));
+            Assert.AreEqual(20, @event.EventType.GetGetterMapped("mapped").Get(@event, "keyOne"));
+
+            env.UndeployAll();
+        }
+
+        private void RunAssertionJson(RegressionEnvironment env)
+        {
+            env.CompileDeploy(
+                    "@public @buseventtype create json schema JsonSchema(indexed int[], mapped System.Collections.Generic.IDictionary<string, object>);\n" +
+                    "@name('s0') select * from JsonSchema;\n")
+                .AddListener("s0");
+            env.SendEventJson("{ \"indexed\": [1, 2], \"mapped\" : { \"keyOne\": 20 }}", "JsonSchema");
+            var @event = env.Listener("s0").AssertOneGetNewAndReset();
+
+            Assert.AreEqual(2, @event.EventType.GetGetterIndexed("indexed").Get(@event, 1));
+            Assert.AreEqual(20, @event.EventType.GetGetterMapped("mapped").Get(@event, "keyOne"));
+
+            env.UndeployAll();
         }
 
         private void RunAssertionBean(RegressionEnvironment env)
@@ -36,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 "create schema MyIndexMappedSamplerBean as " + typeof(MyIndexMappedSamplerBean).MaskTypeName(),
                 path);
 
-            env.CompileDeploy("@Name('s0') select * from MyIndexMappedSamplerBean", path).AddListener("s0");
+            env.CompileDeploy("@name('s0') select * from MyIndexMappedSamplerBean", path).AddListener("s0");
 
             env.SendEventBean(new MyIndexMappedSamplerBean());
 
@@ -52,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             var collections = typeof(Collections).FullName;
             env.CompileDeploy(
-                $"@Name('s0') select {{1, 2}} as Arr, *, {collections}.SingletonDataMap('A', 2) as Mapped from SupportBean");
+                $"@name('s0') select {{1, 2}} as Arr, *, {collections}.SingletonDataMap('A', 2) as Mapped from SupportBean");
             env.AddListener("s0");
 
             env.SendEventBean(new SupportBean());
@@ -68,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             var epl = "create schema MapEventInner(P0 string);\n" +
                       "create schema MapEvent(intarray int[], mapinner MapEventInner[]);\n" +
-                      "@Name('s0') select * from MapEvent;\n";
+                      "@name('s0') select * from MapEvent;\n";
             env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
             IDictionary<string, object>[] mapinner = {
@@ -92,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             var epl = "create objectarray schema OAEventInner(p0 string);\n" +
                       "create objectarray schema OAEvent(intarray int[], oainner OAEventInner[]);\n" +
-                      "@Name('s0') select * from OAEvent;\n";
+                      "@name('s0') select * from OAEvent;\n";
             env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
             object[] oainner = {
@@ -114,6 +147,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public IList<int> ListOfInt { get; } = Arrays.AsList(1, 2);
 
             public IEnumerable<int> IterableOfInt => ListOfInt;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvided
+        {
+            public int[] indexed;
+            public IDictionary<string, object> mapped;
         }
     }
 } // end of namespace

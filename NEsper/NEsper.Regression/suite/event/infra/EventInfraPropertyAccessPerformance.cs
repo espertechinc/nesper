@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             var methodName = ".testPerfPropertyAccess";
 
-            var joinStatement = "@Name('s0') select * from " +
+            var joinStatement = "@name('s0') select * from " +
                                 "SupportBeanCombinedProps#length(1)" +
                                 " where Indexed[0].Mapped('a').Value = 'dummy'";
             env.CompileDeploy(joinStatement).AddListener("s0");

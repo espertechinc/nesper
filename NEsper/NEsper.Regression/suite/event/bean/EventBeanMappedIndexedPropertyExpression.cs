@@ -68,7 +68,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             RunAssertionMap(env, eplMapPrefixed);
 
             // test insert-int
-            env.CompileDeploy("@Name('s0') select name,value,properties(name) = value as ok from InputEvent")
+            env.CompileDeploy("@name('s0') select name,value,properties(name) = value as ok from InputEvent")
                 .AddListener("s0");
 
             env.SendEventMap(
@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             RegressionEnvironment env,
             string epl)
         {
-            env.CompileDeploy("@Name('s0') " + epl).AddListener("s0");
+            env.CompileDeploy("@name('s0') " + epl).AddListener("s0");
 
             env.SendEventMap(MakeMapEvent(), "MapEvent");
             env.SendEventBean(new SupportBean("keyOne", 1));
@@ -116,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             RegressionEnvironment env,
             string epl)
         {
-            env.CompileDeploy("@Name('s0') " + epl).AddListener("s0");
+            env.CompileDeploy("@name('s0') " + epl).AddListener("s0");
 
             env.SendEventObjectArray(
                 new object[] {Collections.SingletonMap("keyOne", "valueOne"), new[] {1, 2}},
@@ -134,7 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             RegressionPath path,
             string epl)
         {
-            env.CompileDeploy("@Name('s0') " + epl, path).AddListener("s0");
+            env.CompileDeploy("@name('s0') " + epl, path).AddListener("s0");
 
             env.SendEventBean(SupportBeanComplexProps.MakeDefaultBean());
             env.SendEventBean(new SupportBean("keyOne", 1));

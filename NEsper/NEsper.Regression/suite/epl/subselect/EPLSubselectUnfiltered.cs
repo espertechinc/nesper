@@ -139,7 +139,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var epl = "insert into MyCount select count(*) as cnt from SupportBean_S0;\n" +
-                          "@Name('s0') select (select cnt from MyCount#lastevent) as value from SupportBean_S0";
+                          "@name('s0') select (select cnt from MyCount#lastevent) as value from SupportBean_S0";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportBean_S0(1));
@@ -157,7 +157,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select Id from SupportBean_S0 where (select true from SupportBean_S1#length(1000))";
+                    "@name('s0') select Id from SupportBean_S0 where (select true from SupportBean_S1#length(1000))";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 env.SendEventBean(new SupportBean_S0(2));
@@ -189,7 +189,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select Id from SupportBean_S0 where (select true from SupportBean_S1#length(1000))";
+                    "@name('s0') select Id from SupportBean_S0 where (select true from SupportBean_S1#length(1000))";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -206,7 +206,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select Id from SupportBean_S0 where (select P10='X' from SupportBean_S1#length(1000))";
+                    "@name('s0') select Id from SupportBean_S0 where (select P10='X' from SupportBean_S1#length(1000))";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -226,7 +226,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select" +
+                    "@name('s0') select" +
                     " (select Id from SupportBean_S3#length(1000)) as idS3," +
                     " (select Id from SupportBean_S4#length(1000)) as idS4 from " +
                     " SupportBean_S0#keepall as S0," +
@@ -370,7 +370,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select (select prior(0,Id) from SupportBean_S1#length(1000)) as IdS1 from SupportBean_S0";
+                    "@name('s0') select (select prior(0,Id) from SupportBean_S1#length(1000)) as IdS1 from SupportBean_S0";
                 env.EplToModelCompileDeploy(stmtText).AddListener("s0");
                 RunUnfilteredStreamPrior(env);
                 env.UndeployAll();
@@ -381,7 +381,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select (select " +
+                var stmtText = "@name('s0') select (select " +
                                typeof(SupportStaticMethodLib).FullName +
                                ".MinusOne(Id) from SupportBean_S1#length(1000)) as IdS1 from SupportBean_S0";
 
@@ -412,7 +412,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select 100*(select Id from SupportBean_S1#length(1000)) as IdS1 from SupportBean_S0";
+                    "@name('s0') select 100*(select Id from SupportBean_S1#length(1000)) as IdS1 from SupportBean_S0";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -441,7 +441,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select (select Id from SupportBean_S1(P10='A')#length(1000)) as IdS1 from SupportBean_S0";
+                    "@name('s0') select (select Id from SupportBean_S1(P10='A')#length(1000)) as IdS1 from SupportBean_S0";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -462,7 +462,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select (select Id from SupportBean_S1#length(1000)) as IdS1 from SupportBean_S0";
+                    "@name('s0') select (select Id from SupportBean_S1#length(1000)) as IdS1 from SupportBean_S0";
                 TryAssertMultiRowUnfiltered(env, stmtText, "IdS1");
             }
         }
@@ -472,7 +472,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select (select Id from SupportBean_S1#length(2)) as IdS1 from SupportBean_S0";
+                    "@name('s0') select (select Id from SupportBean_S1#length(2)) as IdS1 from SupportBean_S0";
                 TryAssertMultiRowUnfiltered(env, stmtText, "IdS1");
             }
         }
@@ -482,7 +482,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select (select Id from SupportBean_S1#lastevent) as IdS1 from SupportBean_S0";
+                    "@name('s0') select (select Id from SupportBean_S1#lastevent) as IdS1 from SupportBean_S0";
                 TryAssertSingleRowUnfiltered(env, stmtText, "IdS1");
             }
         }
@@ -492,7 +492,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select (select Id as myId from SupportBean_S1#lastevent) from SupportBean_S0";
+                    "@name('s0') select (select Id as myId from SupportBean_S1#lastevent) from SupportBean_S0";
                 TryAssertSingleRowUnfiltered(env, stmtText, "myId");
             }
         }
@@ -501,7 +501,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select (select Id from SupportBean_S1#lastevent) from SupportBean_S0";
+                var stmtText = "@name('s0') select (select Id from SupportBean_S1#lastevent) from SupportBean_S0";
                 TryAssertSingleRowUnfiltered(env, stmtText, "Id");
             }
         }
@@ -512,7 +512,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var fields = new [] { "TheString","col" };
                 var epl =
-                    "@Name('s0') select TheString, (select P00 from SupportBean_S0#lastevent()) as col from SupportBean";
+                    "@name('s0') select TheString, (select P00 from SupportBean_S0#lastevent()) as col from SupportBean";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -556,7 +556,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select (select P10 || P11 from SupportBean_S1#lastevent) as value from SupportBean_S0";
+                    "@name('s0') select (select P10 || P11 from SupportBean_S1#lastevent) as value from SupportBean_S0";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -582,7 +582,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select (select Id+1 as myId from SupportBean_S1#lastevent) as idS1_0, " +
+                var stmtText = "@name('s0') select (select Id+1 as myId from SupportBean_S1#lastevent) as idS1_0, " +
                                "(select Id+2 as myId from SupportBean_S1#lastevent) as idS1_1 from SupportBean_S0";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");

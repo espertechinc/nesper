@@ -1,0 +1,840 @@
+///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.util;
+using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.regressionlib.framework;
+
+using NUnit.Framework;
+
+using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
+
+namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
+{
+	public partial class ResultSetAggregationMethodSorted
+	{
+
+		public static ICollection<RegressionExecution> Executions()
+		{
+			var execs = new List<RegressionExecution>();
+			execs.Add(new ResultSetAggregateSortedNonTable());
+			execs.Add(new ResultSetAggregateSortedTableAccess());
+			execs.Add(new ResultSetAggregateSortedTableIdent());
+			execs.Add(new ResultSetAggregateSortedCFHL());
+			execs.Add(new ResultSetAggregateSortedCFHLEnumerationAndDot());
+			execs.Add(new ResultSetAggregateSortedFirstLast());
+			execs.Add(new ResultSetAggregateSortedFirstLastEnumerationAndDot());
+			execs.Add(new ResultSetAggregateSortedGetContainsCounts());
+			execs.Add(new ResultSetAggregateSortedSubmapEventsBetween());
+			execs.Add(new ResultSetAggregateSortedNavigableMapReference());
+			execs.Add(new ResultSetAggregateSortedMultiCriteria());
+			execs.Add(new ResultSetAggregateSortedGrouped());
+			execs.Add(new ResultSetAggregateSortedInvalid());
+			execs.Add(new ResultSetAggregateSortedDocSample());
+			return execs;
+		}
+
+		private class ResultSetAggregateSortedDocSample : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var epl =
+					"@buseventtype @public create schema OrderEvent(orderId string, price double);\n" +
+					"@name('a') select sorted(price).lowerKey(price) as lowerPrice from OrderEvent#time(10 minutes);\n" +
+					"@name('b') select sorted(price).lowerEvent(price).orderId as lowerPriceOrderId from OrderEvent#time(10 minutes);\n" +
+					"create table OrderPrices(prices sorted(price) @type('OrderEvent'));\n" +
+					"into table OrderPrices select sorted(*) as prices from OrderEvent#time(10 minutes);\n" +
+					"@name('c') select OrderPrices.prices.firstKey() as lowestPrice, OrderPrices.prices.lastKey() as highestPrice from OrderEvent;\n" +
+					"@name('d') select (select prices.firstKey() from OrderPrices) as lowestPrice, * from OrderEvent;\n";
+				env.CompileDeploy(epl).AddListener("a").AddListener("b").AddListener("c").AddListener("d");
+
+				env.SendEventMap(CollectionUtil.BuildMap("orderId", "A", "price", 10d), "OrderEvent");
+				EPAssertionUtil.AssertProps(env.Listener("a").AssertOneGetNewAndReset(), "lowerPrice".SplitCsv(), new object[] {null});
+				EPAssertionUtil.AssertProps(env.Listener("b").AssertOneGetNewAndReset(), "lowerPriceOrderId".SplitCsv(), new object[] {null});
+				EPAssertionUtil.AssertProps(env.Listener("c").AssertOneGetNewAndReset(), "lowestPrice,highestPrice".SplitCsv(), new object[] {10d, 10d});
+				EPAssertionUtil.AssertProps(env.Listener("d").AssertOneGetNewAndReset(), "lowestPrice".SplitCsv(), new object[] {10d});
+
+				env.Milestone(0);
+
+				env.SendEventMap(CollectionUtil.BuildMap("orderId", "B", "price", 20d), "OrderEvent");
+				EPAssertionUtil.AssertProps(env.Listener("a").AssertOneGetNewAndReset(), "lowerPrice".SplitCsv(), new object[] {10d});
+				EPAssertionUtil.AssertProps(env.Listener("b").AssertOneGetNewAndReset(), "lowerPriceOrderId".SplitCsv(), new object[] {"A"});
+				EPAssertionUtil.AssertProps(env.Listener("c").AssertOneGetNewAndReset(), "lowestPrice,highestPrice".SplitCsv(), new object[] {10d, 20d});
+				EPAssertionUtil.AssertProps(env.Listener("d").AssertOneGetNewAndReset(), "lowestPrice".SplitCsv(), new object[] {10d});
+
+				env.UndeployAll();
+			}
+
+		}
+
+		private class ResultSetAggregateSortedInvalid : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var path = new RegressionPath();
+				env.CompileDeploy("create table MyTable(sortcol sorted(intPrimitive) @type('SupportBean'));\n", path);
+
+				TryInvalidCompile(
+					env,
+					path,
+					"select MyTable.sortcol.notAnAggMethod() from SupportBean_S0",
+					"Failed to validate select-clause expression 'MyTable.sortcol.notAnAggMethod()': Could not find event property or method named 'notAnAggMethod' in collection of events of type ");
+
+				TryInvalidCompile(
+					env,
+					path,
+					"select MyTable.sortcol.floorKey() from SupportBean_S0",
+					"Failed to validate select-clause expression 'MyTable.sortcol.floorKey()': Parameters mismatch for aggregation method 'floorKey', the method requires an expression providing the key value");
+				TryInvalidCompile(
+					env,
+					path,
+					"select MyTable.sortcol.floorKey('a') from SupportBean_S0",
+					"Failed to validate select-clause expression 'MyTable.sortcol.floorKey(\"a\")': Method 'floorKey' for parameter 0 requires a key of type 'java.lang.Integer' but receives 'java.lang.String'");
+
+				TryInvalidCompile(
+					env,
+					path,
+					"select MyTable.sortcol.firstKey(id) from SupportBean_S0",
+					"Failed to validate select-clause expression 'MyTable.sortcol.firstKey(id)': Parameters mismatch for aggregation method 'firstKey', the method requires no parameters");
+
+				TryInvalidCompile(
+					env,
+					path,
+					"select MyTable.sortcol.submap(1, 2, 3, true) from SupportBean_S0",
+					"Failed to validate select-clause expression 'MyTable.sortcol.submap(1,2,3,true)': Failed to validate aggregation method 'submap', expected a boolean-type result for expression parameter 1 but received int");
+				TryInvalidCompile(
+					env,
+					path,
+					"select MyTable.sortcol.submap('a', true, 3, true) from SupportBean_S0",
+					"Failed to validate select-clause expression 'MyTable.sortcol.submap(\"a\",true,3,true)': Method 'submap' for parameter 0 requires a key of type 'java.lang.Integer' but receives 'java.lang.String'");
+
+				TryInvalidCompile(
+					env,
+					path,
+					"select MyTable.sortcol.submap(1, true, 'a', true) from SupportBean_S0",
+					"Failed to validate select-clause expression 'MyTable.sortcol.submap(1,true,\"a\",true)': Method 'submap' for parameter 2 requires a key of type 'java.lang.Integer' but receives 'java.lang.String'");
+
+				env.UndeployAll();
+			}
+		}
+
+		private class ResultSetAggregateSortedGrouped : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var epl = "create table MyTable(k0 string primary key, sortcol sorted(intPrimitive) @type('SupportBean'));\n" +
+				          "into table MyTable select sorted(*) as sortcol from SupportBean group by theString;\n" +
+				          "@name('s0') select " +
+				          "MyTable[p00].sortcol.sorted() as sortcol," +
+				          "MyTable[p00].sortcol.firstKey() as firstkey," +
+				          "MyTable[p00].sortcol.lastKey() as lastkey" +
+				          " from SupportBean_S0";
+				env.CompileDeploy(epl).AddListener("s0");
+
+				SendAssertGrouped(env, "A", null, null);
+
+				env.SendEventBean(new SupportBean("A", 10));
+				env.SendEventBean(new SupportBean("A", 20));
+				SendAssertGrouped(env, "A", 10, 20);
+
+				env.SendEventBean(new SupportBean("A", 10));
+				env.SendEventBean(new SupportBean("A", 21));
+				SendAssertGrouped(env, "A", 10, 21);
+
+				env.SendEventBean(new SupportBean("B", 100));
+				SendAssertGrouped(env, "A", 10, 21);
+				SendAssertGrouped(env, "B", 100, 100);
+
+				env.UndeployAll();
+			}
+
+			private static void SendAssertGrouped(
+				RegressionEnvironment env,
+				string p00,
+				int? firstKey,
+				int? lastKey)
+			{
+				var fields = "firstkey,lastkey".SplitCsv();
+				env.SendEventBean(new SupportBean_S0(-1, p00));
+				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {firstKey, lastKey});
+			}
+		}
+
+		private class ResultSetAggregateSortedMultiCriteria : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var epl = "create table MyTable(sortcol sorted(theString, intPrimitive) @type('SupportBean'));\n" +
+				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
+				          "@name('s0') select " +
+				          "MyTable.sortcol.firstKey() as firstkey," +
+				          "MyTable.sortcol.lastKey() as lastkey," +
+				          "MyTable.sortcol.lowerKey(new HashableMultiKey('E4', 1)) as lowerkey," +
+				          "MyTable.sortcol.higherKey(new HashableMultiKey('E4b', -1)) as higherkey" +
+				          " from SupportBean_S0";
+				env.CompileDeploy(epl).AddListener("s0");
+
+				AssertType(env, typeof(HashableMultiKey), "firstkey,lastkey,lowerkey");
+
+				PrepareTestData(env, new SortedDictionary<int, IList<SupportBean>>()); // 1, 1, 4, 6, 6, 8, 9
+
+				env.SendEventBean(new SupportBean_S0(-1));
+				var @event = env.Listener("s0").AssertOneGetNewAndReset();
+				CompareKeys(@event.Get("firstkey"), "E1a", 1);
+				CompareKeys(@event.Get("lastkey"), "E9", 9);
+				CompareKeys(@event.Get("lowerkey"), "E1b", 1);
+				CompareKeys(@event.Get("higherkey"), "E4b", 4);
+
+				env.UndeployAll();
+			}
+		}
+
+		private class ResultSetAggregateSortedSubmapEventsBetween : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var epl = "@public @buseventtype create schema MySubmapEvent as " +
+				          typeof(MySubmapEvent).Name +
+				          ";\n" +
+				          "create table MyTable(sortcol sorted(intPrimitive) @type('SupportBean'));\n" +
+				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
+				          "@name('s0') select " +
+				          "MyTable.sortcol.eventsBetween(fromKey, fromInclusive, toKey, toInclusive) as eb," +
+				          "MyTable.sortcol.eventsBetween(fromKey, fromInclusive, toKey, toInclusive).lastOf() as eblastof," +
+				          "MyTable.sortcol.subMap(fromKey, fromInclusive, toKey, toInclusive) as sm" +
+				          " from MySubmapEvent";
+				env.CompileDeploy(epl).AddListener("s0");
+
+				AssertType(env, typeof(SupportBean[]), "eb");
+				AssertType(env, typeof(NavigableMap), "sm");
+				AssertType(env, typeof(SupportBean), "eblastof");
+
+				var treemap = new SortedDictionary<int, IList<SupportBean>>();
+				PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
+
+				for (var start = 0; start < 12; start++) {
+					for (var end = 0; end < 12; end++) {
+						if (start > end) {
+							continue;
+						}
+
+						foreach (var includeStart in new bool[] {false, true}) {
+							foreach (var includeEnd in new bool[] {false, true}) {
+								var sme = new MySubmapEvent(start, includeStart, end, includeEnd);
+								env.SendEventBean(sme);
+								var @event = env.Listener("s0").AssertOneGetNewAndReset();
+								AssertEventsBetween(treemap, sme, (SupportBean[]) @event.Get("eb"), (SupportBean) @event.Get("eblastof"));
+								AssertSubmap(treemap, sme, (NavigableMap<object, SupportBean[]>) @event.Get("sm"));
+							}
+						}
+					}
+				}
+
+				env.UndeployAll();
+			}
+		}
+
+		private class ResultSetAggregateSortedNavigableMapReference : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var epl = "create table MyTable(sortcol sorted(intPrimitive) @type('SupportBean'));\n" +
+				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
+				          "@name('s0') select " +
+				          "MyTable.sortcol.navigableMapReference() as nmr" +
+				          " from SupportBean_S0";
+				env.CompileDeploy(epl).AddListener("s0");
+
+				AssertType(env, typeof(NavigableMap), "nmr");
+
+				var treemap = new SortedDictionary<int, IList<SupportBean>>();
+				PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
+
+				env.SendEventBean(new SupportBean_S0(-1));
+				var @event = env.Listener("s0").AssertOneGetNewAndReset();
+				AssertNavigableMap(treemap, (NavigableMap<object, ICollection<EventBean>>) @event.Get("nmr"));
+
+				env.UndeployAll();
+			}
+		}
+
+		private class ResultSetAggregateSortedGetContainsCounts : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var epl = "create table MyTable(sortcol sorted(intPrimitive) @type('SupportBean'));\n" +
+				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
+				          "@name('s0') select " +
+				          "MyTable.sortcol.getEvent(id) as ge," +
+				          "MyTable.sortcol.getEvents(id) as ges," +
+				          "MyTable.sortcol.containsKey(id) as ck," +
+				          "MyTable.sortcol.countEvents() as cnte," +
+				          "MyTable.sortcol.countKeys() as cntk," +
+				          "MyTable.sortcol.getEvent(id).theString as geid," +
+				          "MyTable.sortcol.getEvent(id).firstOf() as gefo," +
+				          "MyTable.sortcol.getEvents(id).lastOf() as geslo " +
+				          " from SupportBean_S0";
+				env.CompileDeploy(epl).AddListener("s0");
+
+				AssertType(env, typeof(SupportBean), "ge,gefo,geslo");
+				AssertType(env, typeof(SupportBean[]), "ges");
+				AssertType(env, typeof(int?), "cnte,cntk");
+				AssertType(env, typeof(bool?), "ck");
+				AssertType(env, typeof(string), "geid");
+
+				SortedDictionary<int, IList<SupportBean>> treemap = new SortedDictionary<int, IList<SupportBean>>();
+				PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
+
+				for (var i = 0; i < 12; i++) {
+					env.SendEventBean(new SupportBean_S0(i));
+					var @event = env.Listener("s0").AssertOneGetNewAndReset();
+					var message = "failed at " + i;
+					Assert.AreEqual(FirstEvent(treemap.Get(i)), @event.Get("ge"), message);
+					EPAssertionUtil.AssertEqualsExactOrder(AllEvents(treemap.Get(i)), (SupportBean[]) @event.Get("ges"));
+					Assert.AreEqual(treemap.ContainsKey(i), @event.Get("ck"), message);
+					Assert.AreEqual(7, @event.Get("cnte"), message);
+					Assert.AreEqual(5, @event.Get("cntk"), message);
+					Assert.AreEqual(FirstEventString(treemap.Get(i)), @event.Get("geid"), message);
+					Assert.AreEqual(FirstEvent(treemap.Get(i)), @event.Get("gefo"), message);
+					Assert.AreEqual(LastEvent(treemap.Get(i)), @event.Get("geslo"), message);
+				}
+
+				env.UndeployAll();
+			}
+		}
+
+		private class ResultSetAggregateSortedFirstLastEnumerationAndDot : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var epl = "create table MyTable(sortcol sorted(intPrimitive) @type('SupportBean'));\n" +
+				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
+				          "@name('s0') select " +
+				          "MyTable.sortcol.firstEvent().theString as feid," +
+				          "MyTable.sortcol.firstEvent().firstOf() as fefo," +
+				          "MyTable.sortcol.firstEvents().lastOf() as feslo," +
+				          "MyTable.sortcol.lastEvent().theString() as leid," +
+				          "MyTable.sortcol.lastEvent().firstOf() as lefo," +
+				          "MyTable.sortcol.lastEvents().lastOf as leslo" +
+				          " from SupportBean_S0";
+				env.CompileDeploy(epl).AddListener("s0");
+
+				AssertType(env, typeof(string), "feid,leid");
+				AssertType(env, typeof(SupportBean), "fefo,feslo,lefo,leslo");
+
+				var treemap = new SortedDictionary<int, IList<SupportBean>>();
+				PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
+
+				env.SendEventBean(new SupportBean_S0(-1));
+				var @event = env.Listener("s0").AssertOneGetNewAndReset();
+				Assert.AreEqual(FirstEventString(treemap.First()), @event.Get("feid"));
+				Assert.AreEqual(FirstEvent(treemap.First()), @event.Get("fefo"));
+				Assert.AreEqual(LastEvent(treemap.First()), @event.Get("feslo"));
+				Assert.AreEqual(FirstEventString(treemap.Last()), @event.Get("leid"));
+				Assert.AreEqual(FirstEvent(treemap.Last()), @event.Get("lefo"));
+				Assert.AreEqual(LastEvent(treemap.Last()), @event.Get("leslo"));
+
+				env.UndeployAll();
+			}
+		}
+
+		private class ResultSetAggregateSortedFirstLast : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var epl = "create table MyTable(sortcol sorted(intPrimitive) @type('SupportBean'));\n" +
+				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
+				          "@name('s0') select " +
+				          "MyTable.sortcol.firstEvent() as fe," +
+				          "MyTable.sortcol.minBy() as minb," +
+				          "MyTable.sortcol.firstEvents() as fes," +
+				          "MyTable.sortcol.firstKey() as fk," +
+				          "MyTable.sortcol.lastEvent() as le," +
+				          "MyTable.sortcol.maxBy() as maxb," +
+				          "MyTable.sortcol.lastEvents() as les," +
+				          "MyTable.sortcol.lastKey() as lk" +
+				          " from SupportBean_S0";
+				env.CompileDeploy(epl).AddListener("s0");
+
+				AssertType(env, typeof(SupportBean), "fe,le,minb,maxb");
+				AssertType(env, typeof(SupportBean[]), "fes,les");
+				AssertType(env, typeof(int?), "fk,lk");
+
+				var treemap = new SortedDictionary<int, IList<SupportBean>>();
+				PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
+
+				env.SendEventBean(new SupportBean_S0(-1));
+				var @event = env.Listener("s0").AssertOneGetNewAndReset();
+				Assert.AreEqual(FirstEvent(treemap.First()), @event.Get("fe"));
+				Assert.AreEqual(FirstEvent(treemap.First()), @event.Get("minb"));
+				EPAssertionUtil.AssertEqualsExactOrder(AllEvents(treemap.First()), (SupportBean[]) @event.Get("fes"));
+				Assert.AreEqual(treemap.Keys.First(), @event.Get("fk"));
+				Assert.AreEqual(FirstEvent(treemap.Last()), @event.Get("le"));
+				Assert.AreEqual(FirstEvent(treemap.Last()), @event.Get("maxb"));
+				EPAssertionUtil.AssertEqualsExactOrder(AllEvents(treemap.Last()), (SupportBean[]) @event.Get("les"));
+				Assert.AreEqual(treemap.Keys.First(), @event.Get("lk"));
+
+				env.UndeployAll();
+			}
+		}
+
+		private class ResultSetAggregateSortedCFHLEnumerationAndDot : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var epl = "create table MyTable(sortcol sorted(intPrimitive) @type('SupportBean'));\n" +
+				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
+				          "@name('s0') select " +
+				          "MyTable.sortcol.ceilingEvent(id).theString as ceid," +
+				          "MyTable.sortcol.ceilingEvent(id).firstOf() as cefo," +
+				          "MyTable.sortcol.ceilingEvents(id).lastOf() as ceslo," +
+				          "MyTable.sortcol.floorEvent(id).theString as feid," +
+				          "MyTable.sortcol.floorEvent(id).firstOf() as fefo," +
+				          "MyTable.sortcol.floorEvents(id).lastOf() as feslo," +
+				          "MyTable.sortcol.higherEvent(id).theString as heid," +
+				          "MyTable.sortcol.higherEvent(id).firstOf() as hefo," +
+				          "MyTable.sortcol.higherEvents(id).lastOf() as heslo," +
+				          "MyTable.sortcol.lowerEvent(id).theString as leid," +
+				          "MyTable.sortcol.lowerEvent(id).firstOf() as lefo," +
+				          "MyTable.sortcol.lowerEvents(id).lastOf() as leslo " +
+				          " from SupportBean_S0";
+				env.CompileDeploy(epl).AddListener("s0");
+
+				AssertType(env, typeof(string), "ceid,feid,heid,leid");
+				AssertType(env, typeof(SupportBean), "cefo,fefo,hefo,lefo,ceslo,feslo,heslo,leslo");
+
+				var treemap = new SortedDictionary<int, IList<SupportBean>>();
+				PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
+
+				for (var i = 0; i < 12; i++) {
+					env.SendEventBean(new SupportBean_S0(i));
+					var @event = env.Listener("s0").AssertOneGetNewAndReset();
+					var message = "failed at " + i;
+					Assert.AreEqual(message, FirstEventString(treemap.CeilingEntry(i)), @event.Get("ceid"));
+					Assert.AreEqual(message, FirstEvent(treemap.CeilingEntry(i)), @event.Get("cefo"));
+					Assert.AreEqual(message, LastEvent(treemap.CeilingEntry(i)), @event.Get("ceslo"));
+					Assert.AreEqual(message, FirstEventString(treemap.FloorEntry(i)), @event.Get("feid"));
+					Assert.AreEqual(message, FirstEvent(treemap.FloorEntry(i)), @event.Get("fefo"));
+					Assert.AreEqual(message, LastEvent(treemap.FloorEntry(i)), @event.Get("feslo"));
+					Assert.AreEqual(message, FirstEventString(treemap.HigherEntry(i)), @event.Get("heid"));
+					Assert.AreEqual(message, FirstEvent(treemap.HigherEntry(i)), @event.Get("hefo"));
+					Assert.AreEqual(message, LastEvent(treemap.HigherEntry(i)), @event.Get("heslo"));
+					Assert.AreEqual(message, FirstEventString(treemap.LowerEntry(i)), @event.Get("leid"));
+					Assert.AreEqual(message, FirstEvent(treemap.LowerEntry(i)), @event.Get("lefo"));
+					Assert.AreEqual(message, LastEvent(treemap.LowerEntry(i)), @event.Get("leslo"));
+				}
+
+				env.UndeployAll();
+			}
+		}
+
+		private class ResultSetAggregateSortedCFHL : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var path = new RegressionPath();
+				var epl = "create table MyTable(sortcol sorted(intPrimitive) @type('SupportBean'));\n" +
+				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n";
+				env.CompileDeploy(epl, path);
+
+				var select = "@name('s0') select " +
+				             "MyTable.sortcol as sortedItself, " +
+				             "MyTable.sortcol.ceilingEvent(id) as ce, " +
+				             "MyTable.sortcol.ceilingEvents(id) as ces, " +
+				             "MyTable.sortcol.ceilingKey(id) as ck, " +
+				             "MyTable.sortcol.floorEvent(id) as fe, " +
+				             "MyTable.sortcol.floorEvents(id) as fes, " +
+				             "MyTable.sortcol.floorKey(id) as fk, " +
+				             "MyTable.sortcol.higherEvent(id) as he, " +
+				             "MyTable.sortcol.higherEvents(id) as hes, " +
+				             "MyTable.sortcol.higherKey(id) as hk, " +
+				             "MyTable.sortcol.lowerEvent(id) as le, " +
+				             "MyTable.sortcol.lowerEvents(id) as les, " +
+				             "MyTable.sortcol.lowerKey(id) as lk" +
+				             " from SupportBean_S0";
+				env.EplToModelCompileDeploy(select, path).AddListener("s0");
+
+				AssertType(env, typeof(SupportBean), "ce,fe,he,le");
+				AssertType(env, typeof(SupportBean[]), "ces,fes,hes,les");
+				AssertType(env, typeof(int?), "ck,fk,hk,lk");
+
+				var treemap = new SortedDictionary<int, IList<SupportBean>>();
+				PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
+
+				for (var i = 0; i < 12; i++) {
+					env.SendEventBean(new SupportBean_S0(i));
+					var @event = env.Listener("s0").AssertOneGetNewAndReset();
+					Assert.AreEqual(FirstEvent(treemap.CeilingEntry(i)), @event.Get("ce"));
+					EPAssertionUtil.AssertEqualsExactOrder(AllEvents(treemap.CeilingEntry(i)), (SupportBean[]) @event.Get("ces"));
+					Assert.AreEqual(treemap.CeilingKey(i), @event.Get("ck"));
+					Assert.AreEqual(FirstEvent(treemap.FloorEntry(i)), @event.Get("fe"));
+					EPAssertionUtil.AssertEqualsExactOrder(AllEvents(treemap.FloorEntry(i)), (SupportBean[]) @event.Get("fes"));
+					Assert.AreEqual(treemap.FloorKey(i), @event.Get("fk"));
+					Assert.AreEqual(FirstEvent(treemap.HigherEntry(i)), @event.Get("he"));
+					EPAssertionUtil.AssertEqualsExactOrder(AllEvents(treemap.HigherEntry(i)), (SupportBean[]) @event.Get("hes"));
+					Assert.AreEqual(treemap.HigherKey(i), @event.Get("hk"));
+					Assert.AreEqual(FirstEvent(treemap.LowerEntry(i)), @event.Get("le"));
+					EPAssertionUtil.AssertEqualsExactOrder(AllEvents(treemap.LowerEntry(i)), (SupportBean[]) @event.Get("les"));
+					Assert.AreEqual(treemap.LowerKey(i), @event.Get("lk"));
+				}
+
+				env.UndeployAll();
+			}
+		}
+
+		private class ResultSetAggregateSortedNonTable : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var fields = "c0".SplitCsv();
+				var treemap = new SortedDictionary<int, IList<SupportBean>>();
+
+				var epl = "@name('s0') select sorted(intPrimitive).floorEvent(intPrimitive-1) as c0 from SupportBean#length(3) as sb";
+				env.EplToModelCompileDeploy(epl).AddListener("s0");
+
+				MakeSendBean(env, treemap, "E1", 10);
+				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {FloorEntryFirstEvent(treemap, 10 - 1)});
+
+				MakeSendBean(env, treemap, "E2", 20);
+				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {FloorEntryFirstEvent(treemap, 20 - 1)});
+
+				env.Milestone(0);
+
+				MakeSendBean(env, treemap, "E3", 15);
+				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {FloorEntryFirstEvent(treemap, 15 - 1)});
+
+				MakeSendBean(env, treemap, "E3", 17);
+				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {FloorEntryFirstEvent(treemap, 17 - 1)});
+
+				env.UndeployAll();
+			}
+		}
+
+		private class ResultSetAggregateSortedTableAccess : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var epl = "create table MyTable(sortcol sorted(intPrimitive) @type('SupportBean'));\n" +
+				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
+				          "@name('s0') select MyTable.sortcol.floorEvent(id) as c0 from SupportBean_S0";
+				env.CompileDeploy(epl).AddListener("s0");
+
+				var treemap = new SortedDictionary<int, IList<SupportBean>>();
+				MakeSendBean(env, treemap, "E1", 10);
+				MakeSendBean(env, treemap, "E2", 20);
+				MakeSendBean(env, treemap, "E3", 30);
+
+				env.SendEventBean(new SupportBean_S0(15));
+				Assert.AreEqual(FloorEntryFirstEvent(treemap, 15), env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+
+				env.Milestone(0);
+
+				for (var i = 0; i < 40; i++) {
+					env.SendEventBean(new SupportBean_S0(i));
+					Assert.AreEqual(FloorEntryFirstEvent(treemap, i), env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+				}
+
+				env.UndeployAll();
+			}
+		}
+
+		private class ResultSetAggregateSortedTableIdent : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var path = new RegressionPath();
+				var epl = "create table MyTable(sortcol sorted(intPrimitive) @type('SupportBean'));\n" +
+				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n";
+				env.CompileDeploy(epl, path);
+
+				env.EplToModelCompileDeploy("@name('s0') select sortcol.floorEvent(id) as c0 from SupportBean_S0, MyTable", path).AddListener("s0");
+
+				var treemap = new SortedDictionary<int, IList<SupportBean>>();
+				MakeSendBean(env, treemap, "E1", 10);
+				MakeSendBean(env, treemap, "E2", 20);
+				MakeSendBean(env, treemap, "E3", 30);
+
+				env.Milestone(0);
+
+				for (var i = 0; i < 40; i++) {
+					env.SendEventBean(new SupportBean_S0(i));
+					Assert.AreEqual(FloorEntryFirstEvent(treemap, i), env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+				}
+
+				env.UndeployAll();
+			}
+		}
+
+		private static SupportBean FirstEvent(KeyValuePair<int, IList<SupportBean>>? entry)
+		{
+			return entry == null ? null : entry.Value.Value[0];
+		}
+
+		private static string FirstEventString(KeyValuePair<int, IList<SupportBean>>? entry)
+		{
+			return entry == null ? null : entry.Value.Value[0].TheString;
+		}
+
+		private static string FirstEventString(IList<SupportBean> list)
+		{
+			return list == null ? null : list[0].TheString;
+		}
+
+		private static SupportBean[] AllEvents(KeyValuePair<int, IList<SupportBean>>? entry)
+		{
+			return entry == null ? null : entry.Value.Value.ToArray();
+		}
+
+		private static SupportBean[] AllEvents(IList<SupportBean> list)
+		{
+			return list == null ? null : list.ToArray();
+		}
+
+		private static SupportBean LastEvent(KeyValuePair<int, IList<SupportBean>>? entry)
+		{
+			return entry == null ? null : entry.Value.Value[entry.Value.Value.Count - 1];
+		}
+
+		private static SupportBean LastEvent(IList<SupportBean> list)
+		{
+			return list == null ? null : list[list.Count - 1];
+		}
+
+		private static SupportBean FirstEvent(IList<SupportBean> list)
+		{
+			return list == null ? null : list[0];
+		}
+
+		private static void MakeSendBean(
+			RegressionEnvironment env,
+			SortedDictionary<int, IList<SupportBean>> treemap,
+			string theString,
+			int intPrimitive)
+		{
+			var bean = new SupportBean(theString, intPrimitive);
+			env.SendEventBean(bean);
+			var existing = treemap.Get(intPrimitive);
+			if (existing == null) {
+				existing = new List<SupportBean>();
+				treemap.Put(intPrimitive, existing);
+			}
+
+			existing.Add(bean);
+			treemap.Put(bean.IntPrimitive, existing);
+		}
+
+		private static SupportBean FloorEntryFirstEvent(
+			SortedDictionary<int, IList<SupportBean>> treemap,
+			int key)
+		{
+			return treemap.FloorEntry(key) == null ? null : treemap.FloorEntry(key).Value[0];
+		}
+
+		private static void PrepareTestData(
+			RegressionEnvironment env,
+			SortedDictionary<int, IList<SupportBean>> treemap)
+		{
+			MakeSendBean(env, treemap, "E1a", 1);
+			MakeSendBean(env, treemap, "E1b", 1);
+			MakeSendBean(env, treemap, "E4b", 4);
+			MakeSendBean(env, treemap, "E6a", 6);
+			MakeSendBean(env, treemap, "E6b", 6);
+			MakeSendBean(env, treemap, "E8", 8);
+			MakeSendBean(env, treemap, "E9", 9);
+		}
+
+		internal static void AssertType(
+			RegressionEnvironment env,
+			Type expected,
+			string csvProps)
+		{
+			var props = csvProps.SplitCsv();
+			var eventType = env.Statement("s0").EventType;
+			foreach (var prop in props) {
+				Assert.AreEqual(expected, eventType.GetPropertyType(prop), "failed for prop '" + prop + "'");
+			}
+		}
+
+		private static void AssertEventsBetween(
+			OrderedDictionary<int, IList<SupportBean>> treemap,
+			MySubmapEvent sme,
+			SupportBean[] events,
+			SupportBean lastOf)
+		{
+			var submap = treemap.Between(sme.FromKey, sme.IsFromInclusive, sme.ToKey, sme.IsToInclusive);
+			var all = new List<SupportBean>();
+			foreach (KeyValuePair<int, IList<SupportBean>> entry in submap) {
+				all.AddAll(entry.Value);
+			}
+
+			EPAssertionUtil.AssertEqualsExactOrder(all.ToArray(), events);
+			if (all.IsEmpty()) {
+				Assert.IsNull(lastOf);
+			}
+			else {
+				Assert.AreEqual(all[all.Count - 1], lastOf);
+			}
+		}
+
+		private static void AssertSubmap(
+			SortedDictionary<int, IList<SupportBean>> treemap,
+			MySubmapEvent sme,
+			NavigableMap<object, SupportBean[]> actual)
+		{
+			NavigableMap<int, IList<SupportBean>> expected = treemap.SubMap(sme.fromKey, sme.fromInclusive, sme.toKey, sme.toInclusive);
+			Assert.AreEqual(expected.Count, actual.Count);
+			foreach (int? key in expected.KeySet()) {
+				SupportBean[] expectedEvents = expected.Get(key).ToArray();
+				SupportBean[] actualEvents = actual.Get(key);
+				EPAssertionUtil.AssertEqualsExactOrder(expectedEvents, actualEvents);
+			}
+		}
+
+		private static void AssertNavigableMap(
+			SortedDictionary<int, IList<SupportBean>> treemap,
+			NavigableMap<object, ICollection<EventBean>> actual)
+		{
+			Assert.AreEqual(treemap.Count, actual.Count);
+			foreach (var key in treemap.Keys) {
+				var expectedEvents = treemap.Get(key).ToArray();
+				EPAssertionUtil.AssertEqualsExactOrder(expectedEvents, ToArrayOfUnderlying(actual.Get(key)));
+			}
+
+			CompareEntry(treemap.First(), actual.FirstEntry());
+			CompareEntry(treemap.Last(), actual.LastEntry());
+			CompareEntry(treemap.FloorEntry(5), actual.FloorEntry(5));
+			CompareEntry(treemap.CeilingEntry(5), actual.CeilingEntry(5));
+			CompareEntry(treemap.LowerEntry(5), actual.LowerEntry(5));
+			CompareEntry(treemap.HigherEntry(5), actual.HigherEntry(5));
+
+			Assert.AreEqual(treemap.Keys.First(), actual.FirstKey());
+			Assert.AreEqual(treemap.Keys.Last(), actual.LastKey());
+			Assert.AreEqual(treemap.FloorKey(5), actual.FloorKey(5));
+			Assert.AreEqual(treemap.CeilingKey(5), actual.CeilingKey(5));
+			Assert.AreEqual(treemap.LowerKey(5), actual.LowerKey(5));
+			Assert.AreEqual(treemap.HigherKey(5), actual.HigherKey(5));
+
+			Assert.AreEqual(treemap.ContainsKey(5), actual.ContainsKey(5));
+			Assert.AreEqual(treemap.IsEmpty(), actual.IsEmpty());
+
+			EPAssertionUtil.AssertEqualsExactOrder(new object[] {1, 4, 6, 8, 9}, actual.KeySet().ToArray());
+			EPAssertionUtil.AssertEqualsExactOrder(new object[] {1, 4, 6, 8, 9}, actual.NavigableKeySet().ToArray());
+
+			EPAssertionUtil.AssertEqualsExactOrder(new object[] {9, 8, 6, 4, 1}, actual.DescendingMap().KeySet().ToArray());
+			EPAssertionUtil.AssertEqualsExactOrder(new object[] {9, 8, 6, 4, 1}, actual.DescendingKeySet().ToArray());
+
+			Assert.AreEqual(1, actual.SubMap(9, 10).Count);
+			Assert.AreEqual(1, actual.SubMap(9, true, 9, true).Count);
+			Assert.AreEqual(1, actual.TailMap(9).Count);
+			Assert.AreEqual(1, actual.TailMap(9, true).Count);
+			Assert.AreEqual(1, actual.HeadMap(2).Count);
+			Assert.AreEqual(1, actual.HeadMap(2, false).Count);
+
+			Assert.AreEqual(5, actual.EntrySet().Count);
+			Assert.AreEqual(5, actual.Values().Count);
+
+			// collection tests
+			ICollection<ICollection<EventBean>> coll = actual.Values();
+			Assert.AreEqual(5, coll.Count);
+			Assert.IsFalse(coll.IsEmpty());
+			IEnumerator<ICollection<EventBean>> enumerator = coll.GetEnumerator();
+			EPAssertionUtil.AssertEqualsExactOrder(treemap.Get(1).ToArray(), ToArrayOfUnderlying(enumerator.Next()));
+			Assert.IsTrue(enumerator.MoveNext());
+			Assert.AreEqual(5, coll.ToArray().Length);
+			EPAssertionUtil.AssertEqualsExactOrder(treemap.Get(1).ToArray(), ToArrayOfUnderlying((ICollection<EventBean>) coll.ToArray()[0]));
+			Assert.IsNotNull(coll.Spliterator());
+			Assert.IsNotNull(coll.Stream());
+			Assert.IsNotNull(coll.ParallelStream());
+			coll.ForEach(c => { });
+
+			// navigable set tests
+			NavigableSet<object> nks = actual.NavigableKeySet();
+			IEnumerator<object> nksit = nks.Iterator();
+			Assert.AreEqual(1, nksit.Next());
+			Assert.IsTrue(nksit.MoveNext());
+			Assert.IsNotNull(nks.Comparator());
+			Assert.AreEqual(1, nks.First());
+			Assert.AreEqual(9, nks.Last());
+			Assert.AreEqual(5, nks.Count);
+			Assert.IsFalse(nks.IsEmpty());
+			Assert.IsTrue(nks.Contains(6));
+			Assert.IsNotNull(nks.ToArray());
+			Assert.IsNotNull(nks.ToArray());
+			Assert.IsNotNull(nks.Spliterator());
+			Assert.IsNotNull(nks.Stream());
+			Assert.IsNotNull(nks.ParallelStream());
+			Assert.AreEqual(4, nks.Lower(5));
+			Assert.AreEqual(6, nks.Higher(5));
+			Assert.AreEqual(4, nks.Floor(5));
+			Assert.AreEqual(6, nks.Ceiling(5));
+			Assert.IsNotNull(nks.DescendingSet());
+			Assert.IsNotNull(nks.DescendingIterator());
+			nks.ForEach(a => { });
+			Assert.IsNotNull(nks.SubSet(1, true, 100, true));
+			Assert.IsNotNull(nks.HeadSet(100, true));
+			Assert.IsNotNull(nks.TailSet(1, true));
+			Assert.IsNotNull(nks.SubSet(1, 100));
+			Assert.IsNotNull(nks.HeadSet(100));
+			Assert.IsNotNull(nks.TailSet(1));
+
+			// entry set
+			ISet<KeyValuePair<object, ICollection<EventBean>>> set = actual.EntrySet();
+			Assert.IsFalse(set.IsEmpty());
+			IEnumerator<KeyValuePair<object, ICollection<EventBean>>> setit = set.GetEnumerator();
+			KeyValuePair<object, ICollection<EventBean>> entry = setit.Advance();
+			Assert.AreEqual(1, entry.Key);
+			Assert.IsTrue(setit.MoveNext());
+			EPAssertionUtil.AssertEqualsExactOrder(treemap.Get(1).ToArray(), ToArrayOfUnderlying(entry.Value));
+			var array = set.ToArray();
+			Assert.AreEqual(5, array.Length);
+			Assert.AreEqual(1, array[0].Key);
+			EPAssertionUtil.AssertEqualsExactOrder(treemap.Get(1).ToArray(), ToArrayOfUnderlying(array[0].Value));
+			Assert.IsNotNull(set.ToArray());
+			set.ForEach(a => { });
+
+			// sorted map
+			SortedMap<object, ICollection<EventBean>> events = actual.HeadMap(100);
+			Assert.AreEqual(5, events.Count);
+		}
+
+		private static void CompareEntry(
+			KeyValuePair<int, IList<SupportBean>> expected,
+			KeyValuePair<object, ICollection<EventBean>> actual)
+		{
+			Assert.AreEqual(expected.Key, actual.Key);
+			EPAssertionUtil.AssertEqualsExactOrder(expected.Value.ToArray(), ToArrayOfUnderlying(actual.Value));
+		}
+
+		private static SupportBean[] ToArrayOfUnderlying(ICollection<EventBean> eventBeans)
+		{
+			var events = new SupportBean[eventBeans.Count];
+			var index = 0;
+			foreach (var @event in eventBeans) {
+				events[index++] = (SupportBean) @event.Underlying;
+			}
+
+			return events;
+		}
+
+		private static void CompareKeys(
+			object key,
+			params object[] keys)
+		{
+			EPAssertionUtil.AssertEqualsExactOrder(((HashableMultiKey) key).Keys, keys);
+		}
+	}
+} // end of namespace

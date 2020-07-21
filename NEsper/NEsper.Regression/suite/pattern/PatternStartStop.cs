@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select * from pattern [every(a=SupportBean or b=SupportBeanComplexProps)]";
+                var stmtText = "@name('s0') select * from pattern [every(a=SupportBean or b=SupportBeanComplexProps)]";
                 var compiled = env.Compile(stmtText);
                 env.Deploy(compiled).AddListener("s0");
 
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') @IterableUnbound select * from pattern[every tag=SupportBean]";
+                var epl = "@name('s0') @IterableUnbound select * from pattern[every tag=SupportBean]";
                 var compiled = env.Compile(epl);
                 env.Deploy(compiled).AddListener("s0");
                 Assert.AreEqual(StatementType.SELECT, env.Statement("s0").GetProperty(StatementProperty.STATEMENTTYPE));
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') @IterableUnbound select * from pattern[every tag=SupportBean]";
+                var epl = "@name('s0') @IterableUnbound select * from pattern[every tag=SupportBean]";
                 env.CompileDeploy(epl);
 
                 // Pattern started when created

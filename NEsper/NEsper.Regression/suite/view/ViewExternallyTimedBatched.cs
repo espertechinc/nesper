@@ -131,7 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var fields = new [] { "c0" };
 
                 var epl =
-                    "@Name('s0') select irstream TheString as c0 from SupportBean#ext_timed_batch(LongPrimitive, 10 sec)";
+                    "@name('s0') select irstream TheString as c0 from SupportBean#ext_timed_batch(LongPrimitive, 10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("s0"), fields, new object[0][]);
@@ -212,7 +212,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 var fields = new [] { "Id" };
                 var epl =
-                    "@Name('s0') select irstream * from SupportEventIdWithTimestamp#ext_timed_batch(Mytimestamp, 1 minute)";
+                    "@name('s0') select irstream * from SupportEventIdWithTimestamp#ext_timed_batch(Mytimestamp, 1 minute)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(SupportEventIdWithTimestamp.MakeTime("E1", "8:00:00.000"));
@@ -301,11 +301,11 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var milestone = new AtomicLong();
 
                 var epl =
-                    "@Name('s0') select irstream * from SupportEventIdWithTimestamp#ext_timed_batch(Mytimestamp, 1 minute, 5000)";
+                    "@name('s0') select irstream * from SupportEventIdWithTimestamp#ext_timed_batch(Mytimestamp, 1 minute, 5000)";
                 TryAssertionWithRefTime(env, epl, milestone);
 
                 epl =
-                    "@Name('s0') select irstream * from SupportEventIdWithTimestamp#ext_timed_batch(Mytimestamp, 1 minute, 65000)";
+                    "@name('s0') select irstream * from SupportEventIdWithTimestamp#ext_timed_batch(Mytimestamp, 1 minute, 65000)";
                 TryAssertionWithRefTime(env, epl, milestone);
             }
         }
@@ -317,7 +317,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var fields =
                     "currSymbol,prev0Symbol,prev0Price,prev1Symbol,prev1Price,prev2Symbol,prev2Price,prevTail0Symbol,prevTail0Price,prevTail1Symbol,prevTail1Price,prevCountPrice,prevWindowPrice"
                         .SplitCsv();
-                var epl = "@Name('s0') select irstream Symbol as currSymbol, " +
+                var epl = "@name('s0') select irstream Symbol as currSymbol, " +
                           "prev(0, Symbol) as prev0Symbol, " +
                           "prev(0, Price) as prev0Price, " +
                           "prev(1, Symbol) as prev1Symbol, " +
@@ -382,7 +382,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from SupportBean#ext_timed_batch(LongPrimitive, 1 month)";
+                var epl = "@name('s0') select * from SupportBean#ext_timed_batch(LongPrimitive, 1 month)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendExtTimeEvent(env, DateTimeParsingFunctions.ParseDefaultMSec("2002-02-01T09:00:00.000"), "E1");

@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         /// </summary>
         public void Run(RegressionEnvironment env)
         {
-            var patternExpr = "@Name('s0') select * from pattern [not SupportBean]";
+            var patternExpr = "@name('s0') select * from pattern [not SupportBean]";
             env.CompileDeploy(patternExpr);
             env.Statement("s0").AddListener(new PatternUpdateListener(env));
             env.UndeployAll();
@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 if (Count < 10) {
                     Count++;
-                    var patternExpr = "@Name('ST" + Count + "') select * from pattern[not SupportBean]";
+                    var patternExpr = "@name('ST" + Count + "') select * from pattern[not SupportBean]";
                     env.CompileDeploy(patternExpr).AddListener("ST" + Count);
                     env.UndeployModuleContaining("ST" + Count);
                     env.CompileDeploy(patternExpr).AddListener("ST" + Count);

@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 "getYear"             // c9
                 );
             var epl = new StringBuilder();
-            epl.Append("@Name('s0') select ");
+            epl.Append("@name('s0') select ");
             var count = 0;
             var delimiter = "";
             foreach (var method in methods) {
@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "min(LongPrimitive).before(max(LongBoxed), 1 second) as c0," +
                           "min(LongPrimitive, LongBoxed).before(20000L, 1 second) as c1" +
                           " from SupportBean#length(2)";
@@ -161,7 +161,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "val2",
                     "val3");
 
-                var eplFragment = "@Name('s0') select " +
+                var eplFragment = "@name('s0') select " +
                                   "current_timestamp.getMinuteOfHour() as valmoh," +
                                   "current_timestamp.getMonthOfYear() as valmoy," +
                                   "current_timestamp.getDayOfMonth() as valdom," +
@@ -219,7 +219,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "create schema ChildType as (foo string) inherits ParentType;\n";
                 env.CompileDeployWBusPublicType(eplMap, path);
 
-                env.CompileDeploy("@Name('s0') select * from ChildType dt where dt.before(current_timestamp())", path);
+                env.CompileDeploy("@name('s0') select * from ChildType dt where dt.before(current_timestamp())", path);
                 Assert.AreEqual("startTS", env.Statement("s0").EventType.StartTimestampPropertyName);
                 Assert.AreEqual("endTS", env.Statement("s0").EventType.EndTimestampPropertyName);
 
@@ -232,7 +232,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "create objectarray schema ChildType as (foo string) inherits ParentType;\n";
                 env.CompileDeployWBusPublicType(eplObjectArray, path);
 
-                env.CompileDeploy("@Name('s0') select * from ChildType dt where dt.before(current_timestamp())", path);
+                env.CompileDeploy("@name('s0') select * from ChildType dt where dt.before(current_timestamp())", path);
                 Assert.AreEqual("startTS", env.Statement("s0").EventType.StartTimestampPropertyName);
                 Assert.AreEqual("endTS", env.Statement("s0").EventType.EndTimestampPropertyName);
 
@@ -249,8 +249,24 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.CompileDeployWBusPublicType(eplPONO, path);
 
                 var compiled = env.Compile(
-                    "@Name('s2') select * from DerivedType dt where dt.before(current_timestamp())",
+                    "@name('s2') select * from DerivedType dt where dt.before(current_timestamp())",
                     path);
+                env.Deploy(compiled);
+                Assert.AreEqual("startTS", env.Statement("s2").EventType.StartTimestampPropertyName);
+                Assert.AreEqual("endTS", env.Statement("s2").EventType.EndTimestampPropertyName);
+
+                env.UndeployAll();
+
+                // test PONO inheritance via create-schema
+                path.Clear();
+                String eplXML = "@XMLSchema(rootElementName='root', schemaText='') " +
+                                "@XMLSchemaField(name='startTS', xpath='/abc', type='string', castToType='long')" +
+                                "@XMLSchemaField(name='endTS', xpath='/def', type='string', castToType='long')" +
+                                "create xml schema MyXMLEvent() starttimestamp startTS endtimestamp endTS;\n";
+                env.CompileDeployWBusPublicType(eplXML, path);
+
+                compiled = env.Compile("@name('s2') select * from MyXMLEvent dt where dt.before(current_timestamp())", path);
+
                 env.Deploy(compiled);
                 Assert.AreEqual("StartTS", env.Statement("s2").EventType.StartTimestampPropertyName);
                 Assert.AreEqual("EndTS", env.Statement("s2").EventType.EndTimestampPropertyName);

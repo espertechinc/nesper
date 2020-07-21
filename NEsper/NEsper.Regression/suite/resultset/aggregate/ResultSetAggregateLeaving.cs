@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             var milestone = new AtomicLong();
 
-            var epl = "@Name('s0') select leaving() as val from SupportBean#length(3)";
+            var epl = "@name('s0') select leaving() as val from SupportBean#length(3)";
             env.CompileDeploy(epl).AddListener("s0");
             RunAssertion(env, milestone);
 

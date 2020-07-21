@@ -14,6 +14,7 @@ using Avro.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.expr;
+using com.espertech.esper.common.client.json.util;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
@@ -25,6 +26,8 @@ using com.espertech.esper.regressionlib.support.bean;
 using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
 using NEsper.Avro.Util.Support;
+
+using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
 
@@ -48,19 +51,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             EventRepresentationChoice eventRepresentationEnum)
         {
             var path = new RegressionPath();
-            var types = eventRepresentationEnum.GetAnnotationText() +
-                        " create schema MySentenceEvent(sentence String);\n" +
-                        eventRepresentationEnum.GetAnnotationText() +
-                        " create schema WordEvent(word String);\n" +
-                        eventRepresentationEnum.GetAnnotationText() +
-                        " create schema CharacterEvent(char String);\n";
+            var types = 
+                eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonSentence>() + " create schema MySentenceEvent(sentence String);\n" +
+                eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonWord>() + " create schema WordEvent(word String);\n" +
+                eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonCharacter>() + " create schema CharacterEvent(character String);\n";
             env.CompileDeployWBusPublicType(types, path);
 
             string stmtText;
-            var fields = new [] { "word" };
+            var fields = new[] {"word"};
 
             // test single-row method
-            stmtText = "@Name('s0') select * from MySentenceEvent[splitSentence" +
+            stmtText = "@name('s0') select * from MySentenceEvent[splitSentence" +
                        "_" +
                        eventRepresentationEnum.GetName() +
                        "(sentence)@type(WordEvent)]";
@@ -107,7 +108,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
 
             // test script
             if (eventRepresentationEnum.IsMapEvent()) {
-                stmtText = "@Name('s0') expression System.Collection js:splitSentenceJS(sentence) [" +
+                stmtText = "@name('s0') expression System.Collection js:splitSentenceJS(sentence) [" +
                            "  debug.Debug('test');" +
                            "  var listType = host.type('System.Collections.ArrayList');" +
                            "  var words = host.newObj(listType);" +
@@ -134,7 +135,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             }
 
             // test multiple splitters
-            stmtText = "@Name('s0') select * from MySentenceEvent[splitSentence_" +
+            stmtText = "@name('s0') select * from " +
+                       "MySentenceEvent[splitSentence_" +
                        eventRepresentationEnum.GetName() +
                        "(sentence)@type(WordEvent)][splitWord_" +
                        eventRepresentationEnum.GetName() +
@@ -145,7 +147,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             SendMySentenceEvent(env, eventRepresentationEnum, "I am");
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
                 env.Listener("s0").GetAndResetLastNewData(),
-                new [] { "char" },
+                new[] {"character"},
                 new[] {
                     new object[] {"I"},
                     new object[] {"a"},
@@ -155,7 +157,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             env.UndeployModuleContaining("s0");
 
             // test wildcard parameter
-            stmtText = "@Name('s0') select * from MySentenceEvent[splitSentenceBean_" +
+            stmtText = "@name('s0') select * from MySentenceEvent[splitSentenceBean_" +
                        eventRepresentationEnum.GetName() +
                        "(*)@type(WordEvent)]";
             env.CompileDeploy(stmtText, path).AddListener("s0");
@@ -219,14 +221,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 env.UndeployAll();
             }
             else if (eventRepresentationEnum.IsAvroEvent()) {
-                stmtText = "@Name('s0') " +
-                           eventRepresentationEnum.GetAnnotationText() +
+                stmtText = "@name('s0') " +
+                           eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonWord>() +
                            " select * from SupportAvroArrayEvent[someAvroArray@type(WordEvent)]";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
                 Assert.AreEqual("WordEvent", env.Statement("s0").EventType.Name);
 
                 var rows = new GenericRecord[3];
-                var words = new [] { "this","is","avro" };
+                var words = new[] {"this", "is", "avro"};
                 for (var i = 0; i < words.Length; i++) {
                     rows[i] = new GenericRecord(
                         ((AvroEventType) env.Statement("s0").EventType).SchemaAvro.AsRecordSchema());
@@ -241,6 +243,28 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                         new object[] {"this"},
                         new object[] {"is"},
                         new object[] {"avro"}
+                    });
+                env.UndeployAll();
+            } else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
+                stmtText = "@name('s0') " +
+                           eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonWord>() +
+                           " select * from SupportJsonArrayEvent[someJsonArray@type(WordEvent)]";
+                env.CompileDeploy(stmtText, path).AddListener("s0");
+                Assert.AreEqual("WordEvent", env.Statement("s0").EventType.Name);
+
+                var rows = new String[3];
+                var words = "this,is,avro".SplitCsv();
+                for (var i = 0; i < words.Length; i++) {
+                    rows[i] = "{ \"word\": \"" + words[i] + "\"}";
+                }
+
+                env.SendEventBean(new SupportJsonArrayEvent(rows));
+                EPAssertionUtil.AssertPropsPerRow(
+                    env.Listener("s0").GetAndResetLastNewData(),
+                    fields,
+                    new Object[][] {
+                        new[] {"this"}, new[] {"is"},
+                        new[] {"avro"}
                     });
                 env.UndeployAll();
             }
@@ -290,6 +314,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                     TypeHelper.AVRO_GENERIC_RECORD_CLASSNAME +
                     " cannot be assigned a value of type");
             }
+            else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
+                TryInvalidCompile(
+                    env,
+                    path,
+                    "select * from MySentenceEvent[invalidSentence(sentence)@type(WordEvent)]",
+                    "Event type 'WordEvent' requires string-type array and cannot be assigned from value of type " + typeof(SupportBean[]).CleanName());
+
+            }
             else {
                 Assert.Fail();
             }
@@ -320,6 +352,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 var record = new GenericRecord(schema);
                 record.Put("sentence", sentence);
                 env.SendEventAvro(record, "MySentenceEvent");
+            }
+            else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
+                var @object = new JObject();
+                @object.Add("sentence", sentence);
+                env.SendEventJson(@object.ToString(), "MySentenceEvent");
             }
             else {
                 throw new IllegalStateException("Unrecognized enum " + eventRepresentationEnum);
@@ -412,7 +449,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         {
             IList<IDictionary<string, object>> maps = new List<IDictionary<string, object>>();
             for (var i = 0; i < word.Length; i++) {
-                maps.Add(Collections.SingletonDataMap("char", Convert.ToString(word[i])));
+                maps.Add(Collections.SingletonDataMap("character", Convert.ToString(word[i])));
             }
 
             return maps.ToArray();
@@ -425,11 +462,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
 
         public static GenericRecord[] SplitWordMethodReturnAvro(string word)
         {
-            var schema = SchemaBuilder.Record("chars", TypeBuilder.RequiredString("char"));
+            var schema = SchemaBuilder.Record("chars", TypeBuilder.RequiredString("character"));
             var records = new GenericRecord[word.Length];
             for (var i = 0; i < word.Length; i++) {
                 records[i] = new GenericRecord(schema);
-                records[i].Put("char", Convert.ToString(word[i]));
+                records[i].Put("character", Convert.ToString(word[i]));
             }
 
             return records;
@@ -458,7 +495,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var script = "@Name('mystmt') create expression Object js:myGetScriptContext() [\n" +
+                var script = "@name('mystmt') create expression Object js:myGetScriptContext() [\n" +
                              "function myGetScriptContext() {" +
                              "  return epl;\n" +
                              "}" +
@@ -466,7 +503,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                              "]";
                 env.CompileDeploy(script, path);
 
-                env.CompileDeploy("@Name('s0') select myGetScriptContext() as c0 from SupportBean", path)
+                env.CompileDeploy("@name('s0') select myGetScriptContext() as c0 from SupportBean", path)
                     .AddListener("s0");
                 env.SendEventBean(new SupportBean());
                 var context = (EPLScriptContext) env.Listener("s0").AssertOneGetNewAndReset().Get("c0");
@@ -523,7 +560,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 RegressionPath path,
                 string functionOrScript)
             {
-                var epl = "@Name('s0') select * from SplitEvent[" + functionOrScript + "(value) @type(BaseEvent)]";
+                var epl = "@name('s0') select * from SplitEvent[" + functionOrScript + "(value) @type(BaseEvent)]";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 env.SendEventMap(Collections.SingletonDataMap("value", "AE1,BE2,AE3"), "SplitEvent");
@@ -534,6 +571,36 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
 
                 env.UndeployModuleContaining("s0");
             }
+        }
+
+        public static String[] SplitWordMethodReturnJson(String word) {
+            var strings = new List<String>();
+            for (var i = 0; i < word.Length; i++) {
+                var c = word[i].ToString();
+                strings.Add("{ \"character\": \"" + c + "\"}");
+            }
+            return strings.ToArray();
+
+        }
+
+        public static String[] SplitSentenceMethodReturnJson(String sentence)
+        {
+            var words = sentence.Split(' ');
+            var events = new String[words.Length];
+            for (var i = 0; i < words.Length; i++) {
+                events[i] = "{ \"word\": \"" + words[i] + "\"}";
+            }
+            return events;
+        }
+
+        public static String[] SplitSentenceBeanMethodReturnJson(Object sentenceEvent) {
+            String sentence;
+            if (sentenceEvent is JsonEventObject) {
+                sentence = ((JsonEventObject) sentenceEvent).Get("sentence").ToString();
+            } else {
+                sentence = ((MyLocalJsonSentence) sentenceEvent).sentence;
+            }
+            return SplitSentenceMethodReturnJson(sentence);
         }
 
         internal class EPLContainedSingleRowSplitAndType : RegressionExecution
@@ -554,6 +621,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             }
 
             public GenericRecord[] SomeAvroArray { get; }
+        }
+
+
+        public class MyLocalJsonSentence
+        {
+            public String sentence;
+        }
+
+        public class MyLocalJsonWord
+        {
+            public String word;
+        }
+
+        public class MyLocalJsonCharacter
+        {
+            public String character;
         }
     }
 } // end of namespace

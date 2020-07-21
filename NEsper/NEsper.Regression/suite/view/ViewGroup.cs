@@ -51,6 +51,8 @@ namespace com.espertech.esper.regressionlib.suite.view
             execs.Add(new ViewGroupTimeWin());
             execs.Add(new ViewGroupExpressionGrouped());
             execs.Add(new ViewGroupExpressionBatch());
+            execs.Add(new ViewGroupEscapedPropertyText());
+
             return execs;
         }
 
@@ -161,6 +163,24 @@ namespace com.espertech.esper.regressionlib.suite.view
             return new SupportMarketDataBean(symbol, price, 0L, null);
         }
 
+
+        internal class ViewGroupEscapedPropertyText : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl = "create schema event as " +
+                             typeof(EventWithTags).FullName +
+                             ";\n" +
+                             "\n" +
+                             "insert into stream1\n" +
+                             "select name, tags from event;\n" +
+                             "\n" +
+                             "select name, tags('a\\.b') from stream1.std:groupwin(name, tags('a\\.b')).win:length(10)\n" +
+                             "having count(1) >= 5;\n";
+                env.CompileDeploy(epl).UndeployAll();
+            }
+        }
+
         internal class ViewGroupInvalid : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -203,7 +223,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var feedReu = "REU";
 
                 // Listen to all ticks
-                var epl = "@Name('s0') select irstream datapoints as size, Symbol, Feed, Volume " +
+                var epl = "@name('s0') select irstream datapoints as size, Symbol, Feed, Volume " +
                           "from SupportMarketDataBean#groupwin(Symbol, Feed, Volume)#uni(Price) order by Symbol, Feed, Volume";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -264,9 +284,9 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 env.AdvanceTime(0);
-                var epl = "@Name('create_var') create variable long ENGINE_TIME;\n" +
-                          "@Name('runtime_time_update') on pattern[every timer:interval(10 seconds)] set ENGINE_TIME = current_timestamp();\n" +
-                          "@Name('out_null') select window(*) from SupportBean#groupwin(TheString)#expr_batch(oldest_timestamp.plus(9 seconds) < ENGINE_TIME);";
+                var epl = "@name('create_var') create variable long ENGINE_TIME;\n" +
+                          "@name('runtime_time_update') on pattern[every timer:interval(10 seconds)] set ENGINE_TIME = current_timestamp();\n" +
+                          "@name('out_null') select window(*) from SupportBean#groupwin(TheString)#expr_batch(oldest_timestamp.plus(9 seconds) < ENGINE_TIME);";
                 env.CompileDeploy(epl).AddListener("out_null");
 
                 env.AdvanceTime(5000);
@@ -283,8 +303,8 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "P1","sp2" };
-                var epl = "@Name('s0') select P1,sum(P2) as sp2 from OAEventStringInt#groupwin(P1)#length(2)";
+                var fields = new[] {"P1", "sp2"};
+                var epl = "@name('s0') select P1,sum(P2) as sp2 from OAEventStringInt#groupwin(P1)#length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventObjectArray(new object[] {"A", 10}, "OAEventStringInt");
@@ -323,7 +343,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
 
-                var epl = "@Name('s0') @Hint('reclaim_group_aged=30,reclaim_group_freq=5') " +
+                var epl = "@name('s0') @Hint('reclaim_group_aged=30,reclaim_group_freq=5') " +
                           "select LongPrimitive, count(*) from SupportBean#groupwin(TheString)#time(3000000)";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -352,7 +372,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 env.AdvanceTime(0);
-                var epl = "@Name('s0') @Hint('reclaim_group_aged=5,reclaim_group_freq=1') " +
+                var epl = "@name('s0') @Hint('reclaim_group_aged=5,reclaim_group_freq=1') " +
                           "select * from SupportBean#groupwin(TheString)#keepall";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -388,20 +408,20 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string epl;
                 var filter = "select * from SupportMarketDataBean";
 
-                epl = "@Name('PriceLast3Stats')" +
+                epl = "@name('PriceLast3Stats')" +
                       filter +
                       "#groupwin(Symbol)#length(3)#uni(Price) order by Symbol asc";
                 env.CompileDeploy(epl).AddListener("PriceLast3Stats");
 
-                epl = "@Name('VolumeLast3Stats')" +
+                epl = "@name('VolumeLast3Stats')" +
                       filter +
                       "#groupwin(Symbol)#length(3)#uni(Volume) order by Symbol asc";
                 env.CompileDeploy(epl).AddListener("VolumeLast3Stats");
 
-                epl = "@Name('PriceAllStats')" + filter + "#groupwin(Symbol)#uni(Price) order by Symbol asc";
+                epl = "@name('PriceAllStats')" + filter + "#groupwin(Symbol)#uni(Price) order by Symbol asc";
                 env.CompileDeploy(epl).AddListener("PriceAllStats");
 
-                epl = "@Name('VolumeAllStats')" + filter + "#groupwin(Symbol)#uni(Volume) order by Symbol asc";
+                epl = "@name('VolumeAllStats')" + filter + "#groupwin(Symbol)#uni(Volume) order by Symbol asc";
                 env.CompileDeploy(epl).AddListener("VolumeAllStats");
 
                 IList<IDictionary<string, object>> expectedList = new List<IDictionary<string, object>>();
@@ -500,7 +520,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select irstream * from SupportBeanTimestamp#groupwin(Timestamp.getDayOfWeek())#length(2)";
+                    "@name('s0') select irstream * from SupportBeanTimestamp#groupwin(Timestamp.getDayOfWeek())#length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(
@@ -527,7 +547,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 // further math tests can be found in the view unit test
                 var epl =
-                    "@Name('s0') select * from SupportMarketDataBean#groupwin(Symbol)#length(1000000)#correl(Price, Volume, Feed)";
+                    "@name('s0') select * from SupportMarketDataBean#groupwin(Symbol)#length(1000000)#correl(Price, Volume, Feed)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("correlation"));
@@ -570,7 +590,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 // further math tests can be found in the view unit test
                 var epl =
-                    "@Name('s0') select * from SupportMarketDataBean#groupwin(Symbol)#length(1000000)#linest(Price, Volume, Feed)";
+                    "@name('s0') select * from SupportMarketDataBean#groupwin(Symbol)#length(1000000)#linest(Price, Volume, Feed)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var statement = env.Statement("s0");
@@ -653,7 +673,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 if (useGroup) {
                     // 0.69 sec for 100k
                     var stmtString =
-                        "@Name('s0') select * from SupportSensorEvent#groupwin(Type)#length(10000000)#weighted_avg(Measurement, Confidence)";
+                        "@name('s0') select * from SupportSensorEvent#groupwin(Type)#length(10000000)#weighted_avg(Measurement, Confidence)";
                     env.CompileDeploy(stmtString).AddListener("s0");
                 }
                 else {
@@ -713,7 +733,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AdvanceTime(0);
 
                 var epl =
-                    "@Name('s0') @Hint('reclaim_group_aged=1,reclaim_group_freq=5') select * from SupportBean#groupwin(TheString)#keepall";
+                    "@name('s0') @Hint('reclaim_group_aged=1,reclaim_group_freq=5') select * from SupportBean#groupwin(TheString)#keepall";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 0));
@@ -740,7 +760,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AdvanceTime(1000);
 
                 var text =
-                    "@Name('s0') select irstream * from  SupportMarketDataBean#groupwin(Symbol)#time_accum(10 sec)";
+                    "@name('s0') select irstream * from  SupportMarketDataBean#groupwin(Symbol)#time_accum(10 sec)";
                 env.CompileDeploy(text).AddListener("s0");
 
                 // 1st event S1 group
@@ -792,7 +812,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AdvanceTime(1000);
 
                 var text =
-                    "@Name('s0') select irstream * from  SupportMarketDataBean#groupwin(Symbol)#time_batch(10 sec)";
+                    "@name('s0') select irstream * from  SupportMarketDataBean#groupwin(Symbol)#time_batch(10 sec)";
                 env.CompileDeploy(text).AddListener("s0");
 
                 // 1st event S1 group
@@ -861,7 +881,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AdvanceTime(1000);
 
                 var text =
-                    "@Name('s0') select irstream * from SupportBeanTimestamp#groupwin(GroupId)#time_order(Timestamp, 10 sec)";
+                    "@name('s0') select irstream * from SupportBeanTimestamp#groupwin(GroupId)#time_order(Timestamp, 10 sec)";
                 env.CompileDeploy(text).AddListener("s0").Milestone(0);
 
                 // 1st event
@@ -931,7 +951,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AdvanceTime(1000);
 
                 var text =
-                    "@Name('s0') select irstream * from  SupportMarketDataBean#groupwin(Symbol)#time_length_batch(10 sec, 100)";
+                    "@name('s0') select irstream * from  SupportMarketDataBean#groupwin(Symbol)#time_length_batch(10 sec, 100)";
                 env.CompileDeploy(text).AddListener("s0").Milestone(0);
 
                 // 1st event S1 group
@@ -998,7 +1018,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@Name('s0') select irstream * from  SupportMarketDataBean#groupwin(Symbol)#length_batch(3) order by Symbol asc";
+                    "@name('s0') select irstream * from  SupportMarketDataBean#groupwin(Symbol)#length_batch(3) order by Symbol asc";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(MakeMarketDataEvent("S1", 1));
@@ -1028,11 +1048,11 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(MakeMarketDataEvent("S2", 22));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
-                    new [] { "Price" },
+                    new[] {"Price"},
                     new[] {new object[] {20.0}, new object[] {21.0}, new object[] {22.0}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
-                    new [] { "Symbol" },
+                    new[] {"Symbol"},
                     new[] {new object[] {"S2"}, new object[] {"S2"}, new object[] {"S2"}});
                 Assert.IsNull(env.Listener("s0").LastOldData);
                 env.Listener("s0").Reset();
@@ -1047,11 +1067,11 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(MakeMarketDataEvent("S1", 3));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
-                    new [] { "Price" },
+                    new[] {"Price"},
                     new[] {new object[] {1.0}, new object[] {2.0}, new object[] {3.0}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
-                    new [] { "Symbol" },
+                    new[] {"Symbol"},
                     new[] {new object[] {"S1"}, new object[] {"S1"}, new object[] {"S1"}});
                 Assert.IsNull(env.Listener("s0").LastOldData);
                 env.Listener("s0").Reset();
@@ -1066,19 +1086,19 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(MakeMarketDataEvent("S2", 25));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
-                    new [] { "Price" },
+                    new[] {"Price"},
                     new[] {new object[] {23.0}, new object[] {24.0}, new object[] {25.0}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
-                    new [] { "Symbol" },
+                    new[] {"Symbol"},
                     new[] {new object[] {"S2"}, new object[] {"S2"}, new object[] {"S2"}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").OldDataListFlattened,
-                    new [] { "Price" },
+                    new[] {"Price"},
                     new[] {new object[] {20.0}, new object[] {21.0}, new object[] {22.0}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").OldDataListFlattened,
-                    new [] { "Symbol" },
+                    new[] {"Symbol"},
                     new[] {new object[] {"S2"}, new object[] {"S2"}, new object[] {"S2"}});
                 env.Listener("s0").Reset();
 
@@ -1093,19 +1113,19 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(MakeMarketDataEvent("S1", 6));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
-                    new [] { "Price" },
+                    new[] {"Price"},
                     new[] {new object[] {4.0}, new object[] {5.0}, new object[] {6.0}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
-                    new [] { "Symbol" },
+                    new[] {"Symbol"},
                     new[] {new object[] {"S1"}, new object[] {"S1"}, new object[] {"S1"}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").OldDataListFlattened,
-                    new [] { "Price" },
+                    new[] {"Price"},
                     new[] {new object[] {1.0}, new object[] {2.0}, new object[] {3.0}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").OldDataListFlattened,
-                    new [] { "Symbol" },
+                    new[] {"Symbol"},
                     new[] {new object[] {"S1"}, new object[] {"S1"}, new object[] {"S1"}});
                 env.Listener("s0").Reset();
 
@@ -1121,7 +1141,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(1000);
 
-                var text = "@Name('s0') select irstream * from  SupportMarketDataBean#groupwin(Symbol)#time(10 sec)";
+                var text = "@name('s0') select irstream * from  SupportMarketDataBean#groupwin(Symbol)#time(10 sec)";
                 env.CompileDeploy(text).AddListener("s0");
 
                 // 1st event S1 group
@@ -1187,12 +1207,12 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] {"c0", "c1"};
 
                 env.Milestone(0);
 
                 var epl =
-                    "@Name('s0') select irstream TheString as c0,IntPrimitive as c1 from SupportBean#groupwin(TheString)#length(3)";
+                    "@name('s0') select irstream TheString as c0,IntPrimitive as c1 from SupportBean#groupwin(TheString)#length(3)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(1);
@@ -1266,6 +1286,22 @@ namespace com.espertech.esper.regressionlib.suite.view
                     new object[] {"E1", 1});
 
                 env.UndeployAll();
+            }
+        }
+
+        public class EventWithTags
+        {
+            private string name;
+            private IDictionary<string, string> tags;
+
+            public string Name {
+                get => name;
+                set => name = value;
+            }
+
+            public IDictionary<string, string> Tags {
+                get => tags;
+                set => tags = value;
             }
         }
     }

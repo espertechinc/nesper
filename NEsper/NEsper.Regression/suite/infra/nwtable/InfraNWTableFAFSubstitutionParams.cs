@@ -47,12 +47,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         {
             var path = new RegressionPath();
             var eplCreate = namedWindow
-                ? "@Name('TheInfra') create window MyInfra#keepall as select * from SupportBean"
-                : "@Name('TheInfra') create table MyInfra as (TheString string primary key, IntPrimitive int primary key, LongPrimitive long)";
+                ? "@name('TheInfra') create window MyInfra#keepall as select * from SupportBean"
+                : "@name('TheInfra') create table MyInfra as (TheString string primary key, IntPrimitive int primary key, LongPrimitive long)";
             env.CompileDeploy(eplCreate, path);
             var eplInsert = namedWindow
-                ? "@Name('Insert') insert into MyInfra select * from SupportBean"
-                : "@Name('Insert') on SupportBean sb merge MyInfra mi where mi.TheString = sb.TheString and mi.IntPrimitive=sb.IntPrimitive" +
+                ? "@name('Insert') insert into MyInfra select * from SupportBean"
+                : "@name('Insert') on SupportBean sb merge MyInfra mi where mi.TheString = sb.TheString and mi.IntPrimitive=sb.IntPrimitive" +
                   " when not matched then insert select TheString, IntPrimitive, LongPrimitive";
             env.CompileDeploy(eplInsert, path);
 
@@ -149,7 +149,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             try {
                 var args = new CompilerArguments(env.Configuration);
                 args.Path.AddAll(path.Compileds);
-                EPCompilerProvider.Compiler.CompileQuery(faf, args);
+                env.Compiler.CompileQuery(faf, args);
                 Assert.Fail();
             }
             catch (EPCompileException ex) {

@@ -109,7 +109,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(soda, eplInto, path);
 
                 var key = grouped ? "[\"E1\"]" : "";
-                var eplSelect = "@Name('s0') select " +
+                var eplSelect = "@name('s0') select " +
                                 "varagg" +
                                 key +
                                 ".windowSupportBean.last(*) as c0, " +
@@ -190,13 +190,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy("create table varagg (mywin window(*) @type(SupportBean))", path);
 
                 env.CompileDeploy(
-                        "@Name('into') into table varagg " +
+                        "@name('into') into table varagg " +
                         "select window(sb.*) as mywin from SupportBean#time(10 sec) as sb",
                         path)
                     .AddListener("into");
                 Assert.AreEqual(typeof(SupportBean[]), env.Statement("into").EventType.GetPropertyType("mywin"));
 
-                env.CompileDeploy("@Name('s0') select varagg.mywin as c0 from SupportBean_S0", path).AddListener("s0");
+                env.CompileDeploy("@name('s0') select varagg.mywin as c0 from SupportBean_S0", path).AddListener("s0");
                 Assert.AreEqual(typeof(SupportBean[]), env.Statement("s0").EventType.GetPropertyType("c0"));
 
                 var b1 = MakeSendBean(env, "E1", 10);
@@ -249,7 +249,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 var fields = new [] { "c0", "c1" };
                 var eplUse =
-                    "@Name('s0') select varTotal[P00, Id, 100L].total as c0, varTotal[P00, Id, 100L].cnt as c1 from SupportBean_S0";
+                    "@name('s0') select varTotal[P00, Id, 100L].total as c0, varTotal[P00, Id, 100L].cnt as c1 from SupportBean_S0";
                 env.CompileDeploy(eplUse, path).AddListener("s0");
 
                 MakeSendBean(env, "E1", 10, 100, 1000);
@@ -307,7 +307,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.Milestone(1);
 
                 // create query for state
-                var eplSelect = "@Name('s0') select " +
+                var eplSelect = "@name('s0') select " +
                                 "varMyAgg[P00].c0 as c0, " +
                                 "varMyAgg[P00].c1 as c1, " +
                                 "varMyAgg[P00].c2 as c2, " +

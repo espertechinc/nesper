@@ -174,6 +174,12 @@ namespace com.espertech.esper.regressionrun.suite.rowrecog
             RegressionRunner.Run(session, RowRecogDataSet.Executions());
         }
 
+        [Test, RunInApplicationDomain]
+        public void TestRowRecogMultikeyWArray()
+        {
+            RegressionRunner.Run(session, RowRecogMultikeyWArray.Executions());
+        }
+        
         private void Configure(Configuration configuration)
         {
             foreach (Type clazz in new Type[]{
@@ -182,7 +188,9 @@ namespace com.espertech.esper.regressionrun.suite.rowrecog
                 typeof(SupportBean_S1),
                 typeof(SupportRecogBean),
                 typeof(SupportBean_A),
-                typeof(SupportBean_B)})
+                typeof(SupportBean_B),
+                typeof(SupportEventWithIntArray)
+            })
             {
                 configuration.Common.AddEventType(clazz);
             }

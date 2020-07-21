@@ -90,7 +90,7 @@ namespace com.espertech.esperio.file
 					throw new EPException("Invalid property type for property '" + propertyNameLineToUse + "', expected a property of type String");
 				}
 
-				var writeables = EventTypeUtility.GetWriteableProperties(outputEventType, false);
+				var writeables = EventTypeUtility.GetWriteableProperties(outputEventType, false, false);
 				IList<WriteablePropertyDescriptor> writeableList = new List<WriteablePropertyDescriptor>();
 
 				var writeableLine = EventTypeUtility.FindWritable(propertyNameLineToUse, writeables);
@@ -204,7 +204,7 @@ namespace com.espertech.esperio.file
 			int outputPort)
 		{
 			var portEventType = _factory.OutputPortTypes[outputPort];
-			var writeables = EventTypeUtility.GetWriteableProperties(portEventType, false);
+			var writeables = EventTypeUtility.GetWriteableProperties(portEventType, false, false);
 			var writeableList = new List<WriteablePropertyDescriptor>();
 			EventBeanManufacturer manufacturer;
 			if (_propertyNameFile != null) {

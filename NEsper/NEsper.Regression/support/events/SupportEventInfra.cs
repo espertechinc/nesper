@@ -65,6 +65,13 @@ namespace com.espertech.esper.regressionlib.support.@event
             env.SendEventAvro(record, name);
         };
 
+        public static readonly FunctionSendEvent FJSON = (
+            env,
+            @event,
+            name) => {
+            env.SendEventJson((string) @event, name);
+        };
+
         public static readonly FunctionSendEventWType FMAPWTYPE = (
             env,
             @event,
@@ -93,6 +100,13 @@ namespace com.espertech.esper.regressionlib.support.@event
             var record = (GenericRecord) @event;
             //GenericData.Get().Validate(record.Schema, record);
             env.SendEventAvro(record, typeName);
+        };
+        
+        public static readonly FunctionSendEventWType FJSONWTYPE = (
+            env,
+            @event,
+            typeName) => {
+            env.SendEventJson((string) @event, typeName);
         };
 
         public static readonly FunctionSendEvent FXML = (

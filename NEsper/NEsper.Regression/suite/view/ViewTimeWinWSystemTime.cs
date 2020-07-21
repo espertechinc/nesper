@@ -27,7 +27,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@Name('s0') select * from SupportMarketDataBean(Symbol='" +
+            var epl = "@name('s0') select * from SupportMarketDataBean(Symbol='" +
                       SYMBOL +
                       "')#time(3.0)#weighted_avg(Price, Volume, Symbol, Feed)";
             env.CompileDeployAddListenerMileZero(epl, "s0");

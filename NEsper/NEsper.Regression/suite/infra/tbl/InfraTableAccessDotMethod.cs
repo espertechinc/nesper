@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             var key = grouped ? "[\"E1\"]" : "";
             var eplSelect = string.Format(
-                "@Name('s0') select " +
+                "@name('s0') select " +
                 "varaggNDM{0}.windowSupportBean.last(*).IntPrimitive as c0, " + 
                 "varaggNDM{0}.windowSupportBean.window(*).countOf() as c1, " + 
                 "varaggNDM{0}.windowSupportBean.window(IntPrimitive).take(1) as c2" + 
@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                              "a1 lastever(long), a2 window(*) @type('SupportBean'))";
             env.CompileDeploy(soda, eplDeclare, path);
 
-            var eplInto = "@Name('into') into table varaggWDE " +
+            var eplInto = "@name('into') into table varaggWDE " +
                           "select lastever(LongPrimitive) as a1, window(*) as a2 from SupportBean#time(10 seconds)" +
                           (grouped ? " group by TheString" : "");
             env.CompileDeploy(soda, eplInto, path);
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 SupportEventTypeAssertionEnum.TYPE);
 
             var key = grouped ? "[\"E1\"]" : "";
-            var eplGet = "@Name('s0') select varaggWDE" +
+            var eplGet = "@name('s0') select varaggWDE" +
                          key +
                          ".a1.after(150L) as c0, " +
                          "varaggWDE" +
@@ -243,7 +243,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 var key = grouped ? "[\"E1\"]" : "";
                 var eplSelect =
-                    $"@Name('s0') select " +
+                    $"@name('s0') select " +
                     $"varaggPWD{key}.ts.getMinuteOfHour() as c0, " + 
                     $"varaggPWD{key}.mb.GetMyProperty() as c1, " +
                     $"varaggPWD{key}.mbarr.takeLast(1) as c2, " +

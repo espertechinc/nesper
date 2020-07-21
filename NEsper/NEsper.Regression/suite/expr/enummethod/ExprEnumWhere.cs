@@ -8,122 +8,130 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionlib.support.util;
+using com.espertech.esper.regressionlib.support.expreval;
+
+using NUnit.Framework;
+
+using static com.espertech.esper.regressionlib.support.util.LambdaAssertionUtil;
 
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
-    public class ExprEnumWhere
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            var execs = new List<RegressionExecution>();
-            execs.Add(new ExprEnumWhereEvents());
-            execs.Add(new ExprEnumWhereString());
-            return execs;
-        }
+	public class ExprEnumWhere
+	{
+		public static IList<RegressionExecution> Executions()
+		{
+			var execs = new List<RegressionExecution>();
+			execs.Add(new ExprEnumWhereEvents());
+			execs.Add(new ExprEnumWhereScalar());
+			execs.Add(new ExprEnumWhereScalarBoolean());
+			return execs;
+		}
 
-        internal class ExprEnumWhereEvents : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select " +
-                          "Contained.where(x -> P00 = 9) as val0," +
-                          "Contained.where((x, i) -> x.P00 = 9 and i >= 1) as val1 from SupportBean_ST0_Container";
-                env.CompileDeploy(epl).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    new [] { "val0", "val1" },
-                    new[] {
-                        typeof(ICollection<object>), 
-                        typeof(ICollection<object>)
-                    });
+		internal class ExprEnumWhereEvents : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var fields = "c0,c1,c2".SplitCsv();
+				var builder = new SupportEvalBuilder("SupportBean_ST0_Container");
+				builder.WithExpression(fields[0], "contained.where(x => p00 = 9)");
+				builder.WithExpression(fields[1], "contained.where((x, i) => x.p00 = 9 and i >= 1)");
+				builder.WithExpression(fields[2], "contained.where((x, i, s) => x.p00 = 9 and i >= 1 and s > 2)");
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E2,9", "E3,1"));
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val0", "E2");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val1", "E2");
-                env.Listener("s0").Reset();
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,9", "E2,1", "E3,1"));
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val0", "E1");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val1", "");
-                env.Listener("s0").Reset();
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E2,9", "E3,1"))
+					.Verify("c0", val => AssertST0Id(val, "E2"))
+					.Verify("c1", val => AssertST0Id(val, "E2"))
+					.Verify("c2", val => AssertST0Id(val, "E2"));
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E2,1", "E3,9"));
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val0", "E3");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val1", "E3");
-                env.Listener("s0").Reset();
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,9", "E2,1", "E3,1"))
+					.Verify("c0", val => AssertST0Id(val, "E1"))
+					.Verify("c1", val => AssertST0Id(val, ""))
+					.Verify("c2", val => AssertST0Id(val, ""));
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value(null));
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val0", null);
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val1", null);
-                env.Listener("s0").Reset();
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E2,1", "E3,9"))
+					.Verify("c0", val => AssertST0Id(val, "E3"))
+					.Verify("c1", val => AssertST0Id(val, "E3"))
+					.Verify("c2", val => AssertST0Id(val, "E3"));
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value());
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val0", "");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val1", "");
-                env.Listener("s0").Reset();
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,9", "E3,9"))
+					.Verify("c0", val => AssertST0Id(val, "E1,E3"))
+					.Verify("c1", val => AssertST0Id(val, "E3"))
+					.Verify("c2", val => AssertST0Id(val, ""));
 
-                env.UndeployAll();
-            }
-        }
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E2,9", "E3,1", "E4,9"))
+					.Verify("c0", val => AssertST0Id(val, "E2,E4"))
+					.Verify("c1", val => AssertST0Id(val, "E2,E4"))
+					.Verify("c2", val => AssertST0Id(val, "E2,E4"));
 
-        internal class ExprEnumWhereString : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new [] { "val0", "val1" };
-                var eplFragment = "@Name('s0') select " +
-                                  "Strvals.where(x -> x not like '%1%') as val0, " +
-                                  "Strvals.where((x, i) -> x not like '%1%' and i > 1) as val1 " +
-                                  "from SupportCollection";
-                env.CompileDeploy(eplFragment).AddListener("s0");
+				builder.WithAssertion(SupportBean_ST0_Container.Make2ValueNull())
+					.Verify("c0", Assert.IsNull)
+					.Verify("c1", Assert.IsNull)
+					.Verify("c2", Assert.IsNull);
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fields,
-                    new[] {
-                        typeof(ICollection<object>), 
-                        typeof(ICollection<object>)
-                    });
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value())
+					.Verify("c0", val => AssertST0Id(val, ""))
+					.Verify("c1", val => AssertST0Id(val, ""))
+					.Verify("c2", val => AssertST0Id(val, ""));
 
-                env.SendEventBean(SupportCollection.MakeString("E1,E2,E3"));
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val0", "E2", "E3");
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val1", "E3");
-                env.Listener("s0").Reset();
+				builder.Run(env);
+			}
+		}
 
-                env.SendEventBean(SupportCollection.MakeString("E4,E2,E1"));
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val0", "E4", "E2");
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val1");
-                env.Listener("s0").Reset();
+		internal class ExprEnumWhereScalar : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var fields = "c0,c1,c2".SplitCsv();
+				var builder = new SupportEvalBuilder("SupportCollection");
+				builder.WithExpression(fields[0], "strvals.where(x => x not like '%1%')");
+				builder.WithExpression(fields[1], "strvals.where((x, i) => x not like '%1%' and i >= 1)");
+				builder.WithExpression(fields[2], "strvals.where((x, i, s) => x not like '%1%' and i >= 1 and s >= 3)");
 
-                env.SendEventBean(SupportCollection.MakeString(""));
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val0");
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val1");
-                env.Listener("s0").Reset();
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
 
-                env.UndeployAll();
+				builder.WithAssertion(SupportCollection.MakeString("E1,E2,E3"))
+					.Verify("c0", val => AssertValuesArrayScalar(val, "E2", "E3"))
+					.Verify("c1", val => AssertValuesArrayScalar(val, "E2", "E3"))
+					.Verify("c2", val => AssertValuesArrayScalar(val, "E2", "E3"));
 
-                // test boolean
-                eplFragment = "@Name('s0') select " +
-                              "Boolvals.where(x -> x) as val0 " +
-                              "from SupportCollection";
-                env.CompileDeploy(eplFragment).AddListener("s0");
+				builder.WithAssertion(SupportCollection.MakeString("E4,E2,E1"))
+					.Verify("c0", val => AssertValuesArrayScalar(val, "E4", "E2"))
+					.Verify("c1", val => AssertValuesArrayScalar(val, "E2"))
+					.Verify("c2", val => AssertValuesArrayScalar(val, "E2"));
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    new [] { "val0" },
-                    new[] {typeof(ICollection<object>)});
+				builder.WithAssertion(SupportCollection.MakeString(""))
+					.Verify("c0", val => AssertValuesArrayScalar(val))
+					.Verify("c1", val => AssertValuesArrayScalar(val))
+					.Verify("c2", val => AssertValuesArrayScalar(val));
 
-                env.SendEventBean(SupportCollection.MakeBoolean("true,true,false"));
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val0", true, true);
-                env.Listener("s0").Reset();
+				builder.WithAssertion(SupportCollection.MakeString("E4,E2"))
+					.Verify("c0", val => AssertValuesArrayScalar(val, "E4", "E2"))
+					.Verify("c1", val => AssertValuesArrayScalar(val, "E2"))
+					.Verify("c2", val => AssertValuesArrayScalar(val));
 
-                env.UndeployAll();
-            }
-        }
-    }
+				builder.Run(env);
+			}
+		}
+
+		internal class ExprEnumWhereScalarBoolean : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var fields = "c0".SplitCsv();
+				var builder = new SupportEvalBuilder("SupportCollection");
+				builder.WithExpression(fields[0], "boolvals.where(x => x)");
+
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
+
+				builder.WithAssertion(SupportCollection.MakeBoolean("true,true,false"))
+					.Verify("c0", val => AssertValuesArrayScalar(val, true, true));
+
+				builder.Run(env);
+			}
+		}
+	}
 } // end of namespace

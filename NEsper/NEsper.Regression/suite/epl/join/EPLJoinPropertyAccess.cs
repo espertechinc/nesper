@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var complex = SupportBeanComplexProps.MakeDefaultBean();
                 Assert.AreEqual("0ma0", combined.GetIndexed(0).GetMapped("0ma").Value);
 
-                var epl = "@Name('s0') select Nested.Nested, S1.Indexed[0], Nested.Indexed[1] from " +
+                var epl = "@name('s0') select Nested.Nested, S1.Indexed[0], Nested.Indexed[1] from " +
                           "SupportBeanComplexProps#length(3) Nested, " +
                           "SupportBeanCombinedProps#length(3) S1" +
                           " where Mapped('keyOne') = Indexed[2].Mapped('2ma').Value and" +
@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           "SupportBeanComplexProps#length(3) S0" +
                           " left outer join " +
                           "SupportBeanCombinedProps#length(3) S1" +

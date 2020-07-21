@@ -19,7 +19,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             SendCurrentTime(env, "2012-10-01T08:59:00.000GMT-04:00");
 
-            var epl = "@Name('s0') select * from pattern[timer:schedule(date: current_timestamp.withTime(9, 0, 0, 0))]";
+            var epl = "@name('s0') select * from pattern[timer:schedule(date: current_timestamp.withTime(9, 0, 0, 0))]";
             env.CompileDeploy(epl).AddListener("s0");
 
             SendCurrentTime(env, "2012-10-01T08:59:59.999GMT-4:00");

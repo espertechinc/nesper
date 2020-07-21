@@ -29,6 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+            execs.Add(new ClientVisibilityDeployDepClass());
             execs.Add(new ClientVisibilityDeployDepScript());
             execs.Add(new ClientVisibilityDeployDepVariablePublic());
             execs.Add(new ClientVisibilityDeployDepVariablePath());
@@ -64,6 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 Assert.Fail();
             }
             catch (EPDeployPreconditionException ex) {
+                Assert.AreEqual(-1, ex.RolloutItemNumber);
                 if (!message.Equals("skip")) {
                     SupportMessageAssertUtil.AssertMessage(ex.Message, message);
                 }
@@ -74,16 +76,31 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             }
         }
 
+        public class ClientVisibilityDeployDepClass : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                env.Compile(
+                    "@name('infra') create inlined_class \"\"\" public class MyClass { public static String doIt() { return \"def\"; } }\"\"\";\n",
+                    path); // Note: not deploying, just adding to path
+
+                var text = "dependency application-inlined class 'MyClass'";
+                TryInvalidDeploy(env, path, "select MyClass.doIt() from SupportBean", text);
+            }
+        }
+
+
         public class ClientVisibilityDeployDepEventTypePublic : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var configuration = new Configuration();
+                var configuration = env.Runtime.ConfigurationDeepCopy;
                 configuration.Common.AddEventType(typeof(SomeEvent));
 
                 EPCompiled compiled;
                 try {
-                    compiled = EPCompilerProvider.Compiler.Compile(
+                    compiled = env.Compiler.Compile(
                         "select * from SomeEvent",
                         new CompilerArguments(configuration));
                 }
@@ -99,13 +116,13 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
         {
             public void Run(RegressionEnvironment env)
             {
-                var configuration = new Configuration();
+                var configuration = env.Runtime.ConfigurationDeepCopy;
                 configuration.Common.AddVariable("mypublicvariable", typeof(string), null, true);
                 configuration.Common.AddEventType(typeof(SupportBean));
 
                 EPCompiled compiled;
                 try {
-                    compiled = EPCompilerProvider.Compiler.Compile(
+                    compiled = env.Compiler.Compile(
                         "select mypublicvariable from SupportBean",
                         new CompilerArguments(configuration));
                 }
@@ -123,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             {
                 var path = new RegressionPath();
                 env.Compile(
-                    "@Name('infra') create variable string somevariable = 'a'",
+                    "@name('infra') create variable string somevariable = 'a'",
                     path); // Note: not deploying, just adding to path
 
                 var text = "dependency variable 'somevariable'";
@@ -137,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             {
                 var path = new RegressionPath();
                 env.Compile(
-                    "@Name('infra') create window SimpleWindow#keepall as SupportBean",
+                    "@name('infra') create window SimpleWindow#keepall as SupportBean",
                     path); // Note: not deploying, just adding to path
 
                 var text = "dependency named window 'SimpleWindow'";
@@ -151,7 +168,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             {
                 var path = new RegressionPath();
                 env.Compile(
-                    "@Name('infra') create table SimpleTable(col1 string)",
+                    "@name('infra') create table SimpleTable(col1 string)",
                     path); // Note: not deploying, just adding to path
 
                 var text = "dependency table 'SimpleTable'";
@@ -165,7 +182,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             {
                 var path = new RegressionPath();
                 env.Compile(
-                    "@Name('infra') create expression someexpression { 0 }",
+                    "@name('infra') create expression someexpression { 0 }",
                     path); // Note: not deploying, just adding to path
 
                 var text = "dependency declared-expression 'someexpression'";
@@ -179,7 +196,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             {
                 var path = new RegressionPath();
                 env.Compile(
-                    "@Name('infra') create expression double myscript(stringvalue) [0]",
+                    "@name('infra') create expression double myscript(stringvalue) [0]",
                     path); // Note: not deploying, just adding to path
 
                 var text = "dependency script 'myscript'";
@@ -193,7 +210,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             {
                 var path = new RegressionPath();
                 env.Compile(
-                    "@Name('infra') create context MyContext partition by TheString from SupportBean",
+                    "@name('infra') create context MyContext partition by TheString from SupportBean",
                     path); // Note: not deploying, just adding to path
 
                 var text = "dependency context 'MyContext'";
@@ -209,9 +226,9 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 string text;
 
                 // Table
-                env.CompileDeploy("@Name('infra') create table MyTable(col1 string primary key, col2 string)", path);
+                env.CompileDeploy("@name('infra') create table MyTable(col1 string primary key, col2 string)", path);
                 env.Compile(
-                    "@Name('infra') create index MyIndexForTable on MyTable(col2)",
+                    "@name('infra') create index MyIndexForTable on MyTable(col2)",
                     path); // Note: not deploying, just adding to path
 
                 text = "dependency index 'MyIndexForTable'";
@@ -227,9 +244,9 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     text);
 
                 // Named Window
-                env.CompileDeploy("@Name('infra') create window MyWindow#keepall as SupportBean", path);
+                env.CompileDeploy("@name('infra') create window MyWindow#keepall as SupportBean", path);
                 env.Compile(
-                    "@Name('infra') create index MyIndexForNW on MyWindow(IntPrimitive)",
+                    "@name('infra') create index MyIndexForNW on MyWindow(IntPrimitive)",
                     path); // Note: not deploying, just adding to path
 
                 text = "dependency index 'MyIndexForNW'";
@@ -249,7 +266,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             {
                 var path = new RegressionPath();
                 env.Compile(
-                    "@Name('infra') create schema MySchema(col1 string)",
+                    "@name('infra') create schema MySchema(col1 string)",
                     path); // Note: not deploying, just adding to path
 
                 var text = "dependency event type 'MySchema'";

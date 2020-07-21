@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             env.SendEventBean(SupportTimeStartEndA.Make("ALater", "2002-05-30T10:00:00.000", 100), "A");
 
             var epl =
-                "@Name('s0') select a.Key as c0 from SupportDateTime unidirectional, AWindow as a where LongDate.between(LongdateStart, LongdateEnd, false, true)";
+                "@name('s0') select a.Key as c0 from SupportDateTime unidirectional, AWindow as a where LongDate.between(LongdateStart, LongdateEnd, false, true)";
             env.CompileDeploy(epl, path).AddListener("s0");
 
             // query

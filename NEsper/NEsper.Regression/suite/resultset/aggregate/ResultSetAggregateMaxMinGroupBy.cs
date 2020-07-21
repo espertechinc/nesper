@@ -245,7 +245,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@Name('s0') select irstream Symbol, " +
+                var epl = "@name('s0') select irstream Symbol, " +
                           "min(all Volume) as minVol," +
                           "max(all Volume) as maxVol," +
                           "min(distinct Volume) as minDistVol," +
@@ -306,7 +306,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream Symbol, " +
+                var epl = "@name('s0') select irstream Symbol, " +
                           "min(Volume) as minVol, " +
                           "max(Volume) as maxVol, " +
                           "min(distinct Volume) as minDistVol, " +
@@ -326,7 +326,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream Symbol, " +
+                var epl = "@name('s0') select irstream Symbol, " +
                           "min(Volume) as minVol," +
                           "max(Volume) as maxVol," +
                           "min(distinct Volume) as minDistVol," +
@@ -351,7 +351,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select Symbol from SupportMarketDataBean#time(5 sec) " +
+                var stmtText = "@name('s0') select Symbol from SupportMarketDataBean#time(5 sec) " +
                                "having Volume > min(Volume) * 1.3";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -379,7 +379,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select Symbol, min(Volume) as mymin from SupportMarketDataBean#length(5) " +
+                var stmtText = "@name('s0') select Symbol, min(Volume) as mymin from SupportMarketDataBean#length(5) " +
                                "having Volume > min(Volume) * 1.3";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 

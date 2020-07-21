@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     {
         public void Run(RegressionEnvironment env)
         {
-            env.CompileDeploy("@Name('s0') select TheString from SupportBean");
+            env.CompileDeploy("@name('s0') select TheString from SupportBean");
 
             IList<string> strings = new List<string>().AsSyncList();
             env.Statement("s0").Events += (
@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             int numThreads,
             int numRepeats)
         {
-            var compiled = env.Compile("@Name('upd') update istream SupportBean set TheString='a'");
+            var compiled = env.Compile("@name('upd') update istream SupportBean set TheString='a'");
 
             var threadPool = Executors.NewFixedThreadPool(
                 numThreads,

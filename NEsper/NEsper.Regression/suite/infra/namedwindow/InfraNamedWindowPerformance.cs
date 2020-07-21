@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             Assert.AreEqual(0, GetIndexCount(env));
 
-            env.CompileDeploy("@Name('s0')" + epl, path).AddListener("s0");
+            env.CompileDeploy("@name('s0')" + epl, path).AddListener("s0");
             Assert.AreEqual(numIndexes, GetIndexCount(env));
 
             var start = PerformanceObserver.MilliTime;
@@ -117,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('create') create window MyWindow#keepall as SupportBean_S0;\n" +
+                    "@name('create') create window MyWindow#keepall as SupportBean_S0;\n" +
                     "insert into MyWindow select * from SupportBean_S0;\n",
                     path);
 
@@ -144,7 +144,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('create') create window MyWindow#keepall as SupportBean;\n" +
+                    "@name('create') create window MyWindow#keepall as SupportBean;\n" +
                     "insert into MyWindow select * from SupportBean",
                     path);
 
@@ -208,7 +208,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('create') create window MyWindow#keepall as select TheString as a, IntPrimitive as b from SupportBean;\n" +
+                    "@name('create') create window MyWindow#keepall as select TheString as a, IntPrimitive as b from SupportBean;\n" +
                     "on SupportBean_A delete from MyWindow where Id = a;\n" +
                     "insert into MyWindow select TheString as a, IntPrimitive as b from SupportBean;\n";
                 env.CompileDeploy(epl);
@@ -242,7 +242,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('create') create window MyWindow#keepall as select TheString as a, LongPrimitive as b from SupportBean;\n" +
+                    "@name('create') create window MyWindow#keepall as select TheString as a, LongPrimitive as b from SupportBean;\n" +
                     "on SupportMarketDataBean delete from MyWindow where b = Price;\n" +
                     "insert into MyWindow select TheString as a, LongPrimitive as b from SupportBean;\n";
                 env.CompileDeploy(epl);
@@ -276,7 +276,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('create') create window MyWindow#keepall as select TheString as a, LongPrimitive as b from SupportBean;\n" +
+                    "@name('create') create window MyWindow#keepall as select TheString as a, LongPrimitive as b from SupportBean;\n" +
                     "on SupportMarketDataBean delete from MyWindow where b = Price;\n" +
                     "on SupportBean_A delete from MyWindow where Id = a;\n" +
                     "insert into MyWindow select TheString as a, LongPrimitive as b from SupportBean;\n";
@@ -315,7 +315,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create window
                 var stmtTextCreate =
-                    "@Name('create') create window MyWindow#keepall as select TheString as a, LongPrimitive as b from SupportBean";
+                    "@name('create') create window MyWindow#keepall as select TheString as a, LongPrimitive as b from SupportBean";
                 env.CompileDeploy(stmtTextCreate, path);
 
                 // create delete stmt
@@ -323,7 +323,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 for (var i = 0; i < statements.Length; i++) {
                     var name = "s" + i;
                     var stmtTextDelete =
-                        "@Name('" + name + "') on SupportMarketDataBean delete from MyWindow where b = Price";
+                        "@name('" + name + "') on SupportMarketDataBean delete from MyWindow where b = Price";
                     env.CompileDeploy(stmtTextDelete, path);
                     statements[i] = name;
                 }

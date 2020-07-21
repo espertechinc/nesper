@@ -18,7 +18,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         public void Run(RegressionEnvironment env)
         {
             env.CompileDeploy(
-                "@Name('s0') select MYPROPERTY, myproperty, myProperty, MyProperty from SupportBeanDupProperty");
+                "@name('s0') select MYPROPERTY, myproperty, myProperty, MyProperty from SupportBeanDupProperty");
             env.AddListener("s0");
 
             env.SendEventBean(new SupportBeanDupProperty("lowercamel", "uppercamel", "upper", "lower"));
@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             env.UndeployAll();
 
             env.CompileDeploy(
-                    "@Name('s0') select " +
+                    "@name('s0') select " +
                     "NESTED.NESTEDVALUE as val1, " +
                     "ARRAYPROPERTY[0] as val2, " +
                     "MAPPED('keyOne') as val3, " +

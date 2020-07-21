@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             string filter,
             string message)
         {
-            var graph = "@Name('flow') create dataflow MySelect\n" +
+            var graph = "@name('flow') create dataflow MySelect\n" +
                         "DefaultSupportSourceOp -> instream<SupportBean>{}\n" +
                         "filter(instream as ME) -> outstream {filter: " +
                         filter +
@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             string typeName,
             object[] events)
         {
-            var graph = "@Name('flow') create dataflow MySelect\n" +
+            var graph = "@name('flow') create dataflow MySelect\n" +
                         "DefaultSupportSourceOp -> instream.with.dot<" +
                         typeName +
                         ">{}\n" +
@@ -138,7 +138,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     DefaultSupportGraphEventUtil.GetMapEvents());
 
                 // test doc sample
-                var epl = "@Name('flow') create dataflow MyDataFlow\n" +
+                var epl = "@name('flow') create dataflow MyDataFlow\n" +
                           "  create schema SampleSchema(tagId string, locX double),\t// sample type\n" +
                           "  BeaconSource -> samplestream<SampleSchema> {}\n" +
                           "  \n" +
@@ -157,7 +157,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 // test two streams
                 DefaultSupportCaptureOpStatic<object>.GetInstances().Clear();
-                var graph = "@Name('flow') create dataflow MyFilter\n" +
+                var graph = "@name('flow') create dataflow MyFilter\n" +
                             "Emitter -> sb<SupportBean> {name : 'e1'}\n" +
                             "filter(sb) -> out.ok, out.fail {filter: TheString = 'x'}\n" +
                             "DefaultSupportCaptureOpStatic(out.ok) {}" +

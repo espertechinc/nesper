@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var subexpr = "top.GetChildOne(\"abc\",10).GetChildTwo(\"append\")";
-                var epl = "@Name('s0') select " + subexpr + " from SupportChainTop as top";
+                var epl = "@name('s0') select " + subexpr + " from SupportChainTop as top";
                 env.CompileDeploy(epl).AddListener("s0");
                 TryAssertionChainedParam(env, subexpr);
                 env.UndeployAll();
@@ -59,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 // test property hosts a method
                 env.CompileDeploy(
-                        "@Name('s0') select " +
+                        "@name('s0') select " +
                         "Inside.GetMyString() as val," +
                         "Inside.InsideTwo.GetMyOtherString() as val2 " +
                         "from SupportBeanStaticOuter")
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var prefix = "@Name('s0') select * from SupportMarketDataBean as S0 where " +
+                var prefix = "@name('s0') select * from SupportMarketDataBean as S0 where " +
                              typeof(SupportStaticMethodLib).Name;
                 TryAssertionStreamFunction(env, prefix + ".VolumeGreaterZero(S0)");
                 TryAssertionStreamFunction(env, prefix + ".VolumeGreaterZero(*)");
@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var textOne = "@Name('s0') select Symbol, S1.GetTheString() as TheString from " +
+                var textOne = "@name('s0') select Symbol, S1.GetTheString() as TheString from " +
                               "SupportMarketDataBean#keepall as S0 " +
                               "left outer join " +
                               "SupportBean#keepall as S1 on S0.Symbol=S1.TheString";
@@ -144,7 +144,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var textOne =
-                    "@Name('s0') select Symbol, S1.GetSimpleProperty() as Simpleprop, S1.MakeDefaultBean() as def from " +
+                    "@name('s0') select Symbol, S1.GetSimpleProperty() as Simpleprop, S1.MakeDefaultBean() as def from " +
                     "SupportMarketDataBean#keepall as S0 " +
                     "left outer join " +
                     "SupportBeanComplexProps#keepall as S1 on S0.Symbol=S1.SimpleProperty";
@@ -178,7 +178,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var textOne =
-                    "@Name('s0') select S0.GetVolume() as Volume, S0.GetSymbol() as Symbol, S0.GetPriceTimesVolume(2) as pvf from " +
+                    "@name('s0') select S0.GetVolume() as Volume, S0.GetSymbol() as Symbol, S0.GetPriceTimesVolume(2) as pvf from " +
                     "SupportMarketDataBean as S0 ";
                 env.CompileDeploy(textOne).AddListener("s0");
 
@@ -203,7 +203,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var textOne = "@Name('s0') select S0.GetVolume(), S0.GetPriceTimesVolume(3) from " +
+                var textOne = "@name('s0') select S0.GetVolume(), S0.GetPriceTimesVolume(3) from " +
                               "SupportMarketDataBean as S0 ";
                 env.CompileDeploy(textOne).AddListener("s0");
 
@@ -224,7 +224,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var epl = "create schema MyTestEvent as " +
                           typeof(MyTestEvent).MaskTypeName() +
                           ";\n" +
-                          "@Name('s0') select " +
+                          "@name('s0') select " +
                           "S0.GetValueAsInt(S0, 'Id') as c0," +
                           "S0.GetValueAsInt(*, 'Id') as c1" +
                           " from MyTestEvent as S0";
@@ -245,7 +245,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 // try with alias
-                var textOne = "@Name('s0') select S0 as S0stream, S1 as S1stream from " +
+                var textOne = "@name('s0') select S0 as S0stream, S1 as S1stream from " +
                               "SupportMarketDataBean#keepall as S0, " +
                               "SupportBean#keepall as S1";
 
@@ -272,7 +272,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.UndeployAll();
 
                 // try no alias
-                textOne = "@Name('s0') select S0, S1 from " +
+                textOne = "@name('s0') select S0, S1 from " +
                           "SupportMarketDataBean#keepall as S0, " +
                           "SupportBean#keepall as S1";
                 env.CompileDeploy(textOne).AddListener("s0");
@@ -298,7 +298,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 // try with alias
-                var textOne = "@Name('s0') select * from pattern [every e1=SupportMarketDataBean -> e2=" +
+                var textOne = "@name('s0') select * from pattern [every e1=SupportMarketDataBean -> e2=" +
                               "SupportBean(" +
                               typeof(SupportStaticMethodLib).MaskTypeName() +
                               ".CompareEvents(e1, e2))]";

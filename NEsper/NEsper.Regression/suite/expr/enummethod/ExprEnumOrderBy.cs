@@ -8,150 +8,184 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
+using com.espertech.esper.regressionlib.support.expreval;
 using com.espertech.esper.regressionlib.support.util;
 
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
+using static com.espertech.esper.regressionlib.support.util.LambdaAssertionUtil;
 
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
-    public class ExprEnumOrderBy
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            var execs = new List<RegressionExecution>();
-            execs.Add(new ExprEnumOrderByEvents());
-            execs.Add(new ExprEnumOrderByScalar());
-            execs.Add(new ExprEnumInvalid());
-            return execs;
-        }
+	public class ExprEnumOrderBy
+	{
 
-        internal class ExprEnumOrderByEvents : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new [] { "val0","val1","val2","val3","val4","val5" };
-                var eplFragment = "@Name('s0') select " +
-                                  "Contained.orderBy(x -> P00) as val0," +
-                                  "Contained.orderBy(x -> 10 - P00) as val1," +
-                                  "Contained.orderBy(x -> 0) as val2," +
-                                  "Contained.orderByDesc(x -> P00) as val3," +
-                                  "Contained.orderByDesc(x -> 10 - P00) as val4," +
-                                  "Contained.orderByDesc(x -> 0) as val5" +
-                                  " from SupportBean_ST0_Container";
-                env.CompileDeploy(eplFragment).AddListener("s0");
+		public static ICollection<RegressionExecution> Executions()
+		{
+			List<RegressionExecution> execs = new List<RegressionExecution>();
+			execs.Add(new ExprEnumOrderByEvents());
+			execs.Add(new ExprEnumOrderByEventsPlus());
+			execs.Add(new ExprEnumOrderByScalar());
+			execs.Add(new ExprEnumOrderByScalarWithParam());
+			execs.Add(new ExprEnumInvalid());
+			return execs;
+		}
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fields,
-                    new[] {
-                        typeof(ICollection<object>), 
-                        typeof(ICollection<object>),
-                        typeof(ICollection<object>),
-                        typeof(ICollection<object>),
-                        typeof(ICollection<object>),
-                        typeof(ICollection<object>)
-                    });
+		internal class ExprEnumOrderByEventsPlus : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0,c1,c2,c3".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
+				builder.WithExpression(fields[0], "contained.orderBy( (x, i) => case when i <= 2 then p00 else i-10 end)");
+				builder.WithExpression(fields[1], "contained.orderByDesc( (x, i) => case when i <= 2 then p00 else i-10 end)");
+				builder.WithExpression(fields[2], "contained.orderBy( (x, i, s) => case when s <= 2 then p00 else i-10 end)");
+				builder.WithExpression(fields[3], "contained.orderByDesc( (x, i, s) => case when s <= 2 then p00 else i-10 end)");
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E2,2"));
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val0", "E1,E2");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val1", "E2,E1");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val2", "E1,E2");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val3", "E2,E1");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val4", "E1,E2");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val5", "E1,E2");
-                env.Listener("s0").Reset();
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value("E3,1", "E2,2", "E4,1", "E1,2"));
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val0", "E3,E4,E2,E1");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val1", "E2,E1,E3,E4");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val2", "E3,E2,E4,E1");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val3", "E2,E1,E3,E4");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val4", "E3,E4,E2,E1");
-                LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), "val5", "E3,E2,E4,E1");
-                env.Listener("s0").Reset();
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E2,2"))
+					.Verify("c0", val => AssertST0Id(val, "E1,E2"))
+					.Verify("c1", val => AssertST0Id(val, "E2,E1"))
+					.Verify("c2", val => AssertST0Id(val, "E1,E2"))
+					.Verify("c3", val => AssertST0Id(val, "E2,E1"));
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value(null));
-                foreach (var field in fields) {
-                    LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), field, null);
-                }
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E2,2", "E3,3", "E4,4"))
+					.Verify("c0", val => AssertST0Id(val, "E4,E1,E2,E3"))
+					.Verify("c1", val => AssertST0Id(val, "E3,E2,E1,E4"))
+					.Verify("c2", val => AssertST0Id(val, "E1,E2,E3,E4"))
+					.Verify("c3", val => AssertST0Id(val, "E4,E3,E2,E1"));
 
-                env.Listener("s0").Reset();
+				builder.WithAssertion(SupportBean_ST0_Container.Make2ValueNull()).Expect(fields, null, null, null, null);
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value());
-                foreach (var field in fields) {
-                    LambdaAssertionUtil.AssertST0Id(env.Listener("s0"), field, "");
-                }
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value())
+					.Verify("c0", val => AssertST0Id(val, ""))
+					.Verify("c1", val => AssertST0Id(val, ""))
+					.Verify("c2", val => AssertST0Id(val, ""))
+					.Verify("c3", val => AssertST0Id(val, ""));
 
-                env.Listener("s0").Reset();
+				builder.Run(env);
+			}
+		}
 
-                env.UndeployAll();
-            }
-        }
+		internal class ExprEnumOrderByEvents : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
+				builder.WithExpression(fields[0], "contained.orderBy(x => p00)");
+				builder.WithExpression(fields[1], "contained.orderBy(x => 10 - p00)");
+				builder.WithExpression(fields[2], "contained.orderBy(x => 0)");
+				builder.WithExpression(fields[3], "contained.orderByDesc(x => p00)");
+				builder.WithExpression(fields[4], "contained.orderByDesc(x => 10 - p00)");
+				builder.WithExpression(fields[5], "contained.orderByDesc(x => 0)");
 
-        internal class ExprEnumOrderByScalar : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new [] { "val0", "val1" };
-                var eplFragment = "@Name('s0') select " +
-                                  "Strvals.orderBy() as val0, " +
-                                  "Strvals.orderByDesc() as val1 " +
-                                  "from SupportCollection";
-                env.CompileDeploy(eplFragment).AddListener("s0");
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fields,
-                    new[] {typeof(ICollection<object>), typeof(ICollection<object>)});
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E2,2"))
+					.Verify("c0", val => AssertST0Id(val, "E1,E2"))
+					.Verify("c1", val => AssertST0Id(val, "E2,E1"))
+					.Verify("c2", val => AssertST0Id(val, "E1,E2"))
+					.Verify("c3", val => AssertST0Id(val, "E2,E1"))
+					.Verify("c4", val => AssertST0Id(val, "E1,E2"))
+					.Verify("c5", val => AssertST0Id(val, "E1,E2"));
 
-                env.SendEventBean(SupportCollection.MakeString("E2,E1,E5,E4"));
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val0", "E1", "E2", "E4", "E5");
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val1", "E5", "E4", "E2", "E1");
-                env.Listener("s0").Reset();
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E3,1", "E2,2", "E4,1", "E1,2"))
+					.Verify("c0", val => AssertST0Id(val, "E3,E4,E2,E1"))
+					.Verify("c1", val => AssertST0Id(val, "E2,E1,E3,E4"))
+					.Verify("c2", val => AssertST0Id(val, "E3,E2,E4,E1"))
+					.Verify("c3", val => AssertST0Id(val, "E2,E1,E3,E4"))
+					.Verify("c4", val => AssertST0Id(val, "E3,E4,E2,E1"))
+					.Verify("c5", val => AssertST0Id(val, "E3,E2,E4,E1"));
 
-                LambdaAssertionUtil.AssertSingleAndEmptySupportColl(env, fields);
-                env.UndeployAll();
+				builder.WithAssertion(SupportBean_ST0_Container.Make2ValueNull()).Expect(fields, null, null, null, null, null, null);
 
-                // test scalar-coll with lambda
-                var eplLambda = "@Name('s0') select " +
-                                "Strvals.orderBy(v -> extractNum(v)) as val0, " +
-                                "Strvals.orderByDesc(v -> extractNum(v)) as val1 " +
-                                "from SupportCollection";
-                env.CompileDeploy(eplLambda).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fields,
-                    new[] {typeof(ICollection<object>), typeof(ICollection<object>)});
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value())
+					.Verify("c0", val => AssertST0Id(val, ""))
+					.Verify("c1", val => AssertST0Id(val, ""))
+					.Verify("c2", val => AssertST0Id(val, ""))
+					.Verify("c3", val => AssertST0Id(val, ""))
+					.Verify("c4", val => AssertST0Id(val, ""))
+					.Verify("c5", val => AssertST0Id(val, ""));
 
-                env.SendEventBean(SupportCollection.MakeString("E2,E1,E5,E4"));
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val0", "E1", "E2", "E4", "E5");
-                LambdaAssertionUtil.AssertValuesArrayScalar(env.Listener("s0"), "val1", "E5", "E4", "E2", "E1");
-                env.Listener("s0").Reset();
+				builder.Run(env);
+			}
+		}
 
-                LambdaAssertionUtil.AssertSingleAndEmptySupportColl(env, fields);
+		internal class ExprEnumOrderByScalar : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0,c1".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
+				builder.WithExpression(fields[0], "strvals.orderBy()");
+				builder.WithExpression(fields[1], "strvals.orderByDesc()");
 
-                env.UndeployAll();
-            }
-        }
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
 
-        internal class ExprEnumInvalid : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                string epl;
+				builder.WithAssertion(SupportCollection.MakeString("E2,E1,E5,E4"))
+					.Verify("c0", val => AssertValuesArrayScalar(val, "E1", "E2", "E4", "E5"))
+					.Verify("c1", val => AssertValuesArrayScalar(val, "E5", "E4", "E2", "E1"));
 
-                epl = "select Contained.orderBy() from SupportBean_ST0_Container";
-                TryInvalidCompile(
-                    env,
-                    epl,
-                    "Failed to validate select-clause expression 'Contained.orderBy()': Invalid input for built-in enumeration method 'orderBy' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" +
-                    typeof(SupportBean_ST0).Name +
-                    "'");
-            }
-        }
-    }
+				LambdaAssertionUtil.AssertSingleAndEmptySupportColl(builder, fields);
+				builder.Run(env);
+			}
+		}
+
+		internal class ExprEnumOrderByScalarWithParam : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
+				builder.WithExpression(fields[0], "strvals.orderBy(v => extractNum(v))");
+				builder.WithExpression(fields[1], "strvals.orderByDesc(v => extractNum(v))");
+				builder.WithExpression(fields[2], "strvals.orderBy( (v, i) => case when i <= 2 then extractNum(v) else i-10 end)");
+				builder.WithExpression(fields[3], "strvals.orderByDesc( (v, i) => case when i <= 2 then extractNum(v) else i-10 end)");
+				builder.WithExpression(fields[4], "strvals.orderBy( (v, i, s) => case when s <= 2 then extractNum(v) else i-10 end)");
+				builder.WithExpression(fields[5], "strvals.orderByDesc( (v, i, s) => case when s <= 2 then extractNum(v) else i-10 end)");
+
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<object>)));
+
+				builder.WithAssertion(SupportCollection.MakeString("E2,E1,E5,E4"))
+					.Verify("c0", val => AssertValuesArrayScalar(val, "E1", "E2", "E4", "E5"))
+					.Verify("c1", val => AssertValuesArrayScalar(val, "E5", "E4", "E2", "E1"))
+					.Verify("c2", val => AssertValuesArrayScalar(val, "E4", "E1", "E2", "E5"))
+					.Verify("c3", val => AssertValuesArrayScalar(val, "E5", "E2", "E1", "E4"))
+					.Verify("c4", val => AssertValuesArrayScalar(val, "E2", "E1", "E5", "E4"))
+					.Verify("c5", val => AssertValuesArrayScalar(val, "E4", "E5", "E1", "E2"));
+
+				builder.WithAssertion(SupportCollection.MakeString("E2,E1"))
+					.Verify("c0", val => AssertValuesArrayScalar(val, "E1", "E2"))
+					.Verify("c1", val => AssertValuesArrayScalar(val, "E2", "E1"))
+					.Verify("c2", val => AssertValuesArrayScalar(val, "E1", "E2"))
+					.Verify("c3", val => AssertValuesArrayScalar(val, "E2", "E1"))
+					.Verify("c4", val => AssertValuesArrayScalar(val, "E1", "E2"))
+					.Verify("c5", val => AssertValuesArrayScalar(val, "E2", "E1"));
+
+				LambdaAssertionUtil.AssertSingleAndEmptySupportColl(builder, fields);
+
+				builder.Run(env);
+			}
+		}
+
+		internal class ExprEnumInvalid : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string epl;
+
+				epl = "select contained.orderBy() from SupportBean_ST0_Container";
+				TryInvalidCompile(
+					env,
+					epl,
+					"Failed to validate select-clause expression 'contained.orderBy()': Invalid input for built-in enumeration method 'orderBy' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" +
+					typeof(SupportBean_ST0).Name +
+					"'");
+			}
+		}
+	}
 } // end of namespace

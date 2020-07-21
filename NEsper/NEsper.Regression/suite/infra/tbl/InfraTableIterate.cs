@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             RegressionPath path,
             bool useTable)
         {
-            var epl = "@Name('s0') select * from " + (useTable ? "MyTable" : METHOD_NAME);
+            var epl = "@name('s0') select * from " + (useTable ? "MyTable" : METHOD_NAME);
             env.CompileDeploy(epl, path);
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
                 env.GetEnumerator("s0"),
@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             RegressionPath path,
             bool useTable)
         {
-            var epl = "@Name('s0') select count(*) as thecnt from " + (useTable ? "MyTable" : METHOD_NAME);
+            var epl = "@name('s0') select count(*) as thecnt from " + (useTable ? "MyTable" : METHOD_NAME);
             env.CompileDeploy(epl, path);
             for (var i = 0; i < 2; i++) {
                 var @event = env.GetEnumerator("s0").Advance();
@@ -87,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             RegressionPath path,
             bool useTable)
         {
-            var epl = "@Name('s0') select pKey0, count(*) as thecnt from " + (useTable ? "MyTable" : METHOD_NAME);
+            var epl = "@name('s0') select pKey0, count(*) as thecnt from " + (useTable ? "MyTable" : METHOD_NAME);
             env.CompileDeploy(epl, path);
             for (var i = 0; i < 2; i++) {
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
@@ -104,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             RegressionPath path,
             bool useTable)
         {
-            var epl = "@Name('s0') select pKey0, count(*) as thecnt from " +
+            var epl = "@name('s0') select pKey0, count(*) as thecnt from " +
                       (useTable ? "MyTable" : METHOD_NAME) +
                       " group by pKey0";
             env.CompileDeploy(epl, path);
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             RegressionPath path,
             bool useTable)
         {
-            var epl = "@Name('s0') select pKey0, pkey1, count(*) as thecnt from " +
+            var epl = "@name('s0') select pKey0, pkey1, count(*) as thecnt from " +
                       (useTable ? "MyTable" : METHOD_NAME) +
                       " group by pKey0";
             env.CompileDeploy(epl, path);
@@ -142,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             RegressionPath path,
             bool useTable)
         {
-            var epl = "@Name('s0') select pKey0, pkey1, count(*) as thecnt from " +
+            var epl = "@name('s0') select pKey0, pkey1, count(*) as thecnt from " +
                       (useTable ? "MyTable" : METHOD_NAME) +
                       " group by rollup (pKey0, pkey1)";
             env.CompileDeploy(epl, path);

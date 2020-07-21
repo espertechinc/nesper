@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
             // test join
             env.CompileDeploy(
-                "@Name('s0') select * from SupportBean_S0 S0 unidirectional, MyWindow sb where TheString = MYCONST",
+                "@name('s0') select * from SupportBean_S0 S0 unidirectional, MyWindow sb where TheString = MYCONST",
                 path);
             env.AddListener("s0");
 
@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
             // test subquery
             env.CompileDeploy(
-                "@Name('s0') select * from SupportBean_S0 where exists (select * from MyWindow where TheString = MYCONST)",
+                "@name('s0') select * from SupportBean_S0 where exists (select * from MyWindow where TheString = MYCONST)",
                 path);
             env.AddListener("s0");
             listener = env.Listener("s0");

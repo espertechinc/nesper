@@ -8,11 +8,13 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
 
@@ -34,6 +36,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             execs.Add(new InfraSubquerySelf(true));
             execs.Add(new InfraSubquerySelf(false));
+            
+            execs.Add(new InfraSubqueryMultikeyWArray(true));
+            execs.Add(new InfraSubqueryMultikeyWArray(false));
 
             return execs;
         }
@@ -46,6 +51,57 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             var sb = new SupportBean(theString, intPrimitive);
             sb.DoublePrimitive = doublePrimitive;
             return sb;
+        }
+
+        internal class InfraSubqueryMultikeyWArray : RegressionExecution
+        {
+
+            private bool namedWindow;
+
+            public InfraSubqueryMultikeyWArray(bool namedWindow)
+            {
+                this.namedWindow = namedWindow;
+            }
+
+            public void Run(RegressionEnvironment env)
+            {
+                RegressionPath path = new RegressionPath();
+                string stmtTextCreate = namedWindow
+                    ? "@name('create') create window MyInfra#keepall() as (value int)"
+                    : "@name('create') create table MyInfra(value int)";
+                env.CompileDeploy(stmtTextCreate, path).AddListener("create");
+                env.CompileExecuteFAF("insert into MyInfra select 0 as value", path);
+
+                string epl = "on SupportBean update MyInfra set value = (select sum(value) as c0 from SupportEventWithIntArray#keepall group by array)";
+                env.CompileDeploy(epl, path);
+
+                env.SendEventBean(new SupportEventWithIntArray("E1", new int[] {1, 2}, 10));
+                env.SendEventBean(new SupportEventWithIntArray("E2", new int[] {1, 2}, 11));
+
+                env.Milestone(0);
+                AssertUpdate(env, 21);
+
+                env.SendEventBean(new SupportEventWithIntArray("E3", new int[] {1, 2}, 12));
+                AssertUpdate(env, 33);
+
+                env.Milestone(1);
+
+                env.SendEventBean(new SupportEventWithIntArray("E4", new int[] {1}, 13));
+                AssertUpdate(env, null);
+
+                env.UndeployAll();
+            }
+
+            private void AssertUpdate(
+                RegressionEnvironment env,
+                int? expected)
+            {
+                env.SendEventBean(new SupportBean());
+                var enumerator = env.GetEnumerator("create");
+                Assert.That(enumerator.MoveNext(), Is.True);
+                Assert.That(enumerator.Current, Is.Not.Null);
+                Assert.That(enumerator.Current.Get("value"), Is.EqualTo(expected));
+            }
         }
 
         public class InfraNWTableOnUpdateSceneOne : RegressionExecution
@@ -64,13 +120,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create window
                 var stmtTextCreate = namedWindow
-                    ? "@Name('create') create window MyInfra.win:keepall() as SupportBean"
-                    : "@Name('create') create table MyInfra(TheString string, IntPrimitive int primary key)";
+                    ? "@name('create') create window MyInfra.win:keepall() as SupportBean"
+                    : "@name('create') create table MyInfra(TheString string, IntPrimitive int primary key)";
                 env.CompileDeploy(stmtTextCreate, path).AddListener("create");
 
                 // create insert into
                 var stmtTextInsert =
-                    "@Name('insert') insert into MyInfra select TheString, IntPrimitive from SupportBean";
+                    "@name('insert') insert into MyInfra select TheString, IntPrimitive from SupportBean";
                 env.CompileDeploy(stmtTextInsert, path);
 
                 env.Milestone(0);
@@ -81,7 +137,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create onUpdate
                 var stmtTextOnUpdate =
-                    "@Name('update') on SupportBean_S0 update MyInfra set TheString = P00 where IntPrimitive = Id";
+                    "@name('update') on SupportBean_S0 update MyInfra set TheString = P00 where IntPrimitive = Id";
                 env.CompileDeploy(stmtTextOnUpdate, path).AddListener("update");
                 Assert.AreEqual(
                     StatementType.ON_UPDATE,
@@ -162,7 +218,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     : "create table MyInfra(TheString string primary key, IntPrimitive int, IntBoxed int, DoublePrimitive double);\n";
                 epl +=
                     "insert into MyInfra select TheString, IntPrimitive, IntBoxed, DoublePrimitive from SupportBean;\n";
-                epl += "@Name('update') on SupportBean_S0 as sb " +
+                epl += "@name('update') on SupportBean_S0 as sb " +
                        "update MyInfra as mywin" +
                        " set IntPrimitive=Id, IntBoxed=mywin.IntPrimitive, DoublePrimitive=initial.IntPrimitive" +
                        " where mywin.TheString = sb.P00;\n";
@@ -211,13 +267,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // ESPER-507
                 var path = new RegressionPath();
                 var eplCreate = namedWindow
-                    ? "@Name('create') create window MyInfraSS#keepall as SupportBean"
-                    : "@Name('create') create table MyInfraSS(TheString string primary key, IntPrimitive int)";
+                    ? "@name('create') create window MyInfraSS#keepall as SupportBean"
+                    : "@name('create') create table MyInfraSS(TheString string primary key, IntPrimitive int)";
                 env.CompileDeploy(eplCreate, path);
                 env.CompileDeploy("insert into MyInfraSS select TheString, IntPrimitive from SupportBean", path);
 
                 // This is better done with "set IntPrimitive = IntPrimitive + 1"
-                var epl = "@Name(\"Self Update\")\n" +
+                var epl = "@name(\"Self Update\")\n" +
                           "on SupportBean_A c\n" +
                           "update MyInfraSS s\n" +
                           "set IntPrimitive = (select IntPrimitive from MyInfraSS t where t.TheString = c.Id) + 1\n" +

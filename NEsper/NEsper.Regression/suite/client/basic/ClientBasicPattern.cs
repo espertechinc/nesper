@@ -16,7 +16,7 @@ namespace com.espertech.esper.regressionlib.suite.client.basic
     {
         public void Run(RegressionEnvironment env)
         {
-            var compiled = env.Compile("@Name('s0') select * from pattern[timer:interval(10)]");
+            var compiled = env.Compile("@name('s0') select * from pattern[timer:interval(10)]");
 
             env.AdvanceTime(0);
 

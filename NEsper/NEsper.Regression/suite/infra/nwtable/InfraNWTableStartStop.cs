@@ -54,18 +54,18 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // create window
                 var path = new RegressionPath();
                 var stmtTextCreate = namedWindow
-                    ? "@Name('create') create window MyInfra#keepall as select TheString as a, IntPrimitive as b from SupportBean"
-                    : "@Name('create') create table MyInfra(a string primary key, b int primary key)";
+                    ? "@name('create') create window MyInfra#keepall as select TheString as a, IntPrimitive as b from SupportBean"
+                    : "@name('create') create table MyInfra(a string primary key, b int primary key)";
                 env.CompileDeploy(stmtTextCreate, path).AddListener("create");
 
                 // create insert into
                 var stmtTextInsertOne =
-                    "@Name('insert') insert into MyInfra select TheString as a, IntPrimitive as b from SupportBean";
+                    "@name('insert') insert into MyInfra select TheString as a, IntPrimitive as b from SupportBean";
                 env.CompileDeploy(stmtTextInsertOne, path);
 
                 // create consumer
                 string[] fields = {"a", "b"};
-                var stmtTextSelect = "@Name('select') select a, b from MyInfra as S1";
+                var stmtTextSelect = "@name('select') select a, b from MyInfra as S1";
                 env.CompileDeploy(stmtTextSelect, path).AddListener("select");
 
                 // send 1 event
@@ -143,8 +143,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
                 // create window
                 var stmtTextCreate = namedWindow
-                    ? "@Name('create') create window MyInfra#keepall as select TheString as a, IntPrimitive as b from SupportBean"
-                    : "@Name('create') create table MyInfra(a string primary key, b int primary key)";
+                    ? "@name('create') create window MyInfra#keepall as select TheString as a, IntPrimitive as b from SupportBean"
+                    : "@name('create') create table MyInfra(a string primary key, b int primary key)";
                 env.CompileDeploy(stmtTextCreate, path).AddListener("create");
 
                 // create insert into
@@ -153,7 +153,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create consumer
                 string[] fields = {"a", "b"};
-                var stmtTextSelect = "@Name('select') select a, b from MyInfra as S1";
+                var stmtTextSelect = "@name('select') select a, b from MyInfra as S1";
                 env.CompileDeploy(stmtTextSelect, path).AddListener("select");
 
                 // send 1 event

@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select S1.IntBoxed as value from " +
+                var stmtText = "@name('s0') select S1.IntBoxed as value from " +
                                "SupportBean(TheString='A')#length(1000000) S1," +
                                "SupportBean(TheString='B')#length(1000000) S2," +
                                "SupportBean(TheString='C')#length(1000000) S3" +
@@ -78,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select S1.IntBoxed as value from " +
+                var stmtText = "@name('s0') select S1.IntBoxed as value from " +
                                "SupportBean(TheString='A')#length(1000000) S1," +
                                "SupportBean(TheString='B')#length(1000000) S2," +
                                "SupportBean(TheString='C')#length(1000000) S3" +
@@ -110,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select S1.IntBoxed as value from " +
+                var stmtText = "@name('s0') select S1.IntBoxed as value from " +
                                "SupportBean(TheString='A')#length(1000000) S1," +
                                "SupportBean(TheString='B')#length(1000000) S2," +
                                "SupportBean(TheString='C')#length(1000000) S3" +

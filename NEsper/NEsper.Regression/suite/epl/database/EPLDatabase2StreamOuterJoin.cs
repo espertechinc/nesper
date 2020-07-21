@@ -121,7 +121,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select S0.IntPrimitive as MyInt, " +
+                var stmtText = "@name('s0') select S0.IntPrimitive as MyInt, " +
                                ALL_FIELDS +
                                " from " +
                                "SupportBean as S0 left outer join " +
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select S0.IntPrimitive as MyInt, " +
+                var stmtText = "@name('s0') select S0.IntPrimitive as MyInt, " +
                                ALL_FIELDS +
                                " from " +
                                " sql:MyDBWithRetain ['select " +
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select S0.IntPrimitive as MyInt, " +
+                var stmtText = "@name('s0') select S0.IntPrimitive as MyInt, " +
                                ALL_FIELDS +
                                " from " +
                                " sql:MyDBWithRetain ['select " +
@@ -166,7 +166,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select S0.IntPrimitive as MyInt, " +
+                var stmtText = "@name('s0') select S0.IntPrimitive as MyInt, " +
                                ALL_FIELDS +
                                " from " +
                                "SupportBean as S0 full outer join " +
@@ -181,7 +181,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select S0.IntPrimitive as MyInt, " +
+                var stmtText = "@name('s0') select S0.IntPrimitive as MyInt, " +
                                ALL_FIELDS +
                                " from " +
                                "SupportBean as S0 right outer join " +
@@ -196,7 +196,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select S0.IntPrimitive as MyInt, " +
+                var stmtText = "@name('s0') select S0.IntPrimitive as MyInt, " +
                                ALL_FIELDS +
                                " from " +
                                " sql:MyDBWithRetain ['select " +
@@ -212,7 +212,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "MyInt","myint" };
-                var stmtText = "@Name('s0') @IterableUnbound select S0.IntPrimitive as MyInt, " +
+                var stmtText = "@name('s0') @IterableUnbound select S0.IntPrimitive as MyInt, " +
                                ALL_FIELDS +
                                " from " +
                                "SupportBean as S0 " +
@@ -263,7 +263,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "MyInt","myint" };
-                var stmtText = "@Name('s0') @IterableUnbound select S0.IntPrimitive as MyInt, " +
+                var stmtText = "@name('s0') @IterableUnbound select S0.IntPrimitive as MyInt, " +
                                ALL_FIELDS +
                                " from " +
                                " sql:MyDBWithRetain ['select " +
@@ -312,7 +312,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "MyInt","MyVarChar" };
-                var stmtText = "@Name('s0') select S0.IntPrimitive as MyInt, MyVarChar from " +
+                var stmtText = "@name('s0') select S0.IntPrimitive as MyInt, MyVarChar from " +
                                "SupportBean#keepall as S0 " +
                                " right outer join " +
                                " sql:MyDBWithRetain ['select myvarchar MyVarChar from mytesttable'] as S1 " +

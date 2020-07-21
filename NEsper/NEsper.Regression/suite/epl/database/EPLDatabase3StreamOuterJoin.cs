@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select * from SupportBean#lastevent sb" +
+                var stmtText = "@name('s0') select * from SupportBean#lastevent sb" +
                                " inner join " +
                                " SupportBeanTwo#lastevent sbt" +
                                " on sb.TheString = sbt.stringTwo " +
@@ -64,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select * from SupportBean#lastevent sb" +
+                var stmtText = "@name('s0') select * from SupportBean#lastevent sb" +
                                " left outer join " +
                                " SupportBeanTwo#lastevent sbt" +
                                " on sb.TheString = sbt.stringTwo " +

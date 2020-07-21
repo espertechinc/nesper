@@ -193,10 +193,8 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 
             AddModuleProperty(moduleProperties, ModuleProperty.USEROBJECT, module.UserObjectCompileTime);
-            AddModuleProperty(
-                moduleProperties,
-                ModuleProperty.USES,
-                module.Uses == null || module.Uses.IsEmpty() ? null : module.Uses.ToArray());
+            AddModuleProperty(moduleProperties, ModuleProperty.USES, module.Uses.ToArrayOrNull());
+            AddModuleProperty(moduleProperties, ModuleProperty.IMPORTS, module.Imports.ToArrayOrNull());
 
             // compile
             return CompilerHelperModuleProvider.Compile(

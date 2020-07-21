@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             RegressionEnvironment env,
             string selectCriteria)
         {
-            var stmtText = "@Name('s0') select " + selectCriteria + " from pattern [a=SupportBean]";
+            var stmtText = "@name('s0') select " + selectCriteria + " from pattern [a=SupportBean]";
             env.CompileDeploy(stmtText).AddListener("s0");
         }
 
@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             RegressionEnvironment env,
             string selectCriteria)
         {
-            var stmtText = "@Name('s0') select " +
+            var stmtText = "@name('s0') select " +
                            selectCriteria +
                            " from pattern [every(a=SupportBean" +
                            " or b=SupportBeanComplexProps)]";

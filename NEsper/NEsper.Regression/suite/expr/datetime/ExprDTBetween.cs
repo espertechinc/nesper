@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             AtomicLong milestone)
         {
             var fieldsCurrentTs = new [] { "val0","val1","val2","val3","val4","val5","val6","val7" };
-            var eplCurrentTS = "@Name('s0') select " +
+            var eplCurrentTS = "@name('s0') select " +
                                "current_timestamp.between(" + fields + ", true, true) as val0, " +
                                "current_timestamp.between(" + fields + ", true, false) as val1, " +
                                "current_timestamp.between(" + fields + ", false, true) as val2, " + 
@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
             // test calendar field and constants
             var fieldsConstants = new [] { "val0","val1","val2","val3" };
-            var eplConstants = "@Name('s0') select " +
+            var eplConstants = "@name('s0') select " +
                                "LongdateStart.between(DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:00:00.000'), DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:01:00.000'), true, true) as val0, " +
                                "LongdateStart.between(DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:00:00.000'), DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:01:00.000'), true, false) as val1, " +
                                "LongdateStart.between(DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:00:00.000'), DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:01:00.000'), false, true) as val2, " +
@@ -134,7 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "c0", "c1", "c2", "c3" };
-                var eplCurrentTS = "@Name('s0') select " +
+                var eplCurrentTS = "@name('s0') select " +
                                    "LongDate.between(LongPrimitive, LongBoxed) as c0, " +
                                    "DateTimeOffset.between(LongPrimitive, LongBoxed) as c1, " +
                                    "DateTimeEx.between(LongPrimitive, LongBoxed) as c2," +
@@ -176,7 +176,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(startTime));
 
                 var fieldsCurrentTs = new [] { "val0","val1","val2","val3","val4","val5","val6","val7" };
-                var eplCurrentTS = "@Name('s0') select " +
+                var eplCurrentTS = "@name('s0') select " +
                                    "current_timestamp.after(LongdateStart) as val0, " +
                                    "current_timestamp.between(LongdateStart, LongdateEnd) as val1, " +
                                    "current_timestamp.between(DateTimeStart, DateTimeExEnd) as val2, " +
@@ -282,7 +282,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
                 // test calendar field and constants
                 var fieldsConstants = new [] { "val0","val1","val2","val3","val4" };
-                var eplConstants = "@Name('s0') select " +
+                var eplConstants = "@name('s0') select " +
                                    "LongdateStart.between(DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:00:00.000'), DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:01:00.000')) as val0, " +
                                    "DateTimeStart.between(DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:00:00.000'), DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:01:00.000')) as val1, " +
                                    "DateTimeExStart.between(DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:00:00.000'), DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:01:00.000')) as val2, " +

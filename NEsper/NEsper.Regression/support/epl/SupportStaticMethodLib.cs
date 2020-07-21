@@ -15,6 +15,7 @@ using Avro.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.expr;
+using com.espertech.esper.common.client.json.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -23,6 +24,8 @@ using com.espertech.esper.compat.magic;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NEsper.Avro.Extensions;
+
+using Newtonsoft.Json.Linq;
 
 namespace com.espertech.esper.regressionlib.support.epl
 {
@@ -374,6 +377,16 @@ namespace com.espertech.esper.regressionlib.support.epl
             upd.Put("one", val1);
             upd.Put("two", "|" + val2 + "|");
             return upd;
+        }
+
+        public static String ConvertEventJson(JsonEventObject row)
+        {
+            var val1 = row.Get("one").ToString();
+            var val2 = row.Get("two").ToString();
+            var json = new JObject();
+            json.Add("one", val1);
+            json.Add("two", "|" + val2 + "|");
+            return json.ToString();
         }
 
         public static SupportBean ConvertEvent(SupportMarketDataBean bean)

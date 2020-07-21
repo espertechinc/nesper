@@ -8,185 +8,104 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionlib.support.util;
+using com.espertech.esper.regressionlib.support.expreval;
+
 
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
+using static com.espertech.esper.regressionlib.support.util.LambdaAssertionUtil;
 
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
-    public class ExprEnumSequenceEqual
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            var execs = new List<RegressionExecution>();
-            execs.Add(new ExprEnumSelectFrom());
-            execs.Add(new ExprEnumTwoProperties());
-            execs.Add(new ExprEnumInvalid());
-            return execs;
-        }
+	public class ExprEnumSequenceEqual
+	{
+		public static ICollection<RegressionExecution> Executions()
+		{
+			List<RegressionExecution> execs = new List<RegressionExecution>();
+			execs.Add(new ExprEnumSequenceEqualWSelectFrom());
+			execs.Add(new ExprEnumSequenceEqualTwoProperties());
+			execs.Add(new ExprEnumSequenceEqualInvalid());
+			return execs;
+		}
 
-        internal class ExprEnumSelectFrom : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new [] { "val0" };
-                var eplFragment =
-                    "@Name('s0') select Contained.selectFrom(x -> Key0).sequenceEqual(Contained.selectFrom(y -> Id)) as val0 " +
-                    "from SupportBean_ST0_Container";
-                env.CompileDeploy(eplFragment).AddListener("s0");
+		internal class ExprEnumSequenceEqualWSelectFrom : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
+				builder.WithExpression(fields[0], "contained.selectFrom(x => key0).sequenceEqual(contained.selectFrom(y => id))");
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    new [] { "val0" },
-                    new[] {typeof(bool?)});
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(bool?)));
 
-                env.SendEventBean(SupportBean_ST0_Container.Make3Value("I1,E1,0", "I2,E2,0"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {false});
+				builder.WithAssertion(SupportBean_ST0_Container.Make3Value("I1,E1,0", "I2,E2,0")).Expect(fields, false);
 
-                env.SendEventBean(SupportBean_ST0_Container.Make3Value("I3,I3,0", "X4,X4,0"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {true});
+				builder.WithAssertion(SupportBean_ST0_Container.Make3Value("I3,I3,0", "X4,X4,0")).Expect(fields, true);
 
-                env.SendEventBean(SupportBean_ST0_Container.Make3Value("I3,I3,0", "X4,Y4,0"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {false});
+				builder.WithAssertion(SupportBean_ST0_Container.Make3Value("I3,I3,0", "X4,Y4,0")).Expect(fields, false);
 
-                env.SendEventBean(SupportBean_ST0_Container.Make3Value("I3,I3,0", "Y4,X4,0"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {false});
+				builder.WithAssertion(SupportBean_ST0_Container.Make3Value("I3,I3,0", "Y4,X4,0")).Expect(fields, false);
 
-                env.UndeployAll();
-            }
-        }
+				builder.Run(env);
+			}
+		}
 
-        internal class ExprEnumTwoProperties : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new [] { "val0" };
-                var eplFragment = "@Name('s0') select " +
-                                  "Strvals.sequenceEqual(Strvalstwo) as val0 " +
-                                  "from SupportCollection";
-                env.CompileDeploy(eplFragment).AddListener("s0");
+		internal class ExprEnumSequenceEqualTwoProperties : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
+				builder.WithExpression(fields[0], "strvals.sequenceEqual(strvalstwo)");
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    new [] { "val0" },
-                    new[] {typeof(bool?)});
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(bool?)));
 
-                env.SendEventBean(SupportCollection.MakeString("E1,E2,E3", "E1,E2,E3"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {true});
+				builder.WithAssertion(SupportCollection.MakeString("E1,E2,E3", "E1,E2,E3")).Expect(fields, true);
 
-                env.SendEventBean(SupportCollection.MakeString("E1,E3", "E1,E2,E3"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {false});
+				builder.WithAssertion(SupportCollection.MakeString("E1,E3", "E1,E2,E3")).Expect(fields, false);
 
-                env.SendEventBean(SupportCollection.MakeString("E1,E3", "E1,E3"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {true});
+				builder.WithAssertion(SupportCollection.MakeString("E1,E3", "E1,E3")).Expect(fields, true);
 
-                env.SendEventBean(SupportCollection.MakeString("E1,E2,E3", "E1,E3"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {false});
+				builder.WithAssertion(SupportCollection.MakeString("E1,E2,E3", "E1,E3")).Expect(fields, false);
 
-                env.SendEventBean(SupportCollection.MakeString("E1,E2,null,E3", "E1,E2,null,E3"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {true});
+				builder.WithAssertion(SupportCollection.MakeString("E1,E2,null,E3", "E1,E2,null,E3")).Expect(fields, true);
 
-                env.SendEventBean(SupportCollection.MakeString("E1,E2,E3", "E1,E2,null"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {false});
+				builder.WithAssertion(SupportCollection.MakeString("E1,E2,E3", "E1,E2,null")).Expect(fields, false);
 
-                env.SendEventBean(SupportCollection.MakeString("E1,E2,null", "E1,E2,E3"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {false});
+				builder.WithAssertion(SupportCollection.MakeString("E1,E2,null", "E1,E2,E3")).Expect(fields, false);
 
-                env.SendEventBean(SupportCollection.MakeString("E1", ""));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {false});
+				builder.WithAssertion(SupportCollection.MakeString("E1", "")).Expect(fields, false);
 
-                env.SendEventBean(SupportCollection.MakeString("", "E1"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {false});
+				builder.WithAssertion(SupportCollection.MakeString("", "E1")).Expect(fields, false);
 
-                env.SendEventBean(SupportCollection.MakeString("E1", "E1"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {true});
+				builder.WithAssertion(SupportCollection.MakeString("E1", "E1")).Expect(fields, true);
 
-                env.SendEventBean(SupportCollection.MakeString("", ""));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {true});
+				builder.WithAssertion(SupportCollection.MakeString("", "")).Expect(fields, true);
 
-                env.SendEventBean(SupportCollection.MakeString(null, ""));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {null});
+				builder.WithAssertion(SupportCollection.MakeString(null, "")).Expect(fields, new object[] {null});
 
-                env.SendEventBean(SupportCollection.MakeString("", null));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {false});
+				builder.WithAssertion(SupportCollection.MakeString("", null)).Expect(fields, false);
 
-                env.SendEventBean(SupportCollection.MakeString(null, null));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {null});
+				builder.WithAssertion(SupportCollection.MakeString(null, null)).Expect(fields, new object[] {null});
 
-                env.UndeployAll();
-            }
-        }
+				builder.Run(env);
+			}
+		}
 
-        internal class ExprEnumInvalid : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                string epl;
+		internal class ExprEnumSequenceEqualInvalid : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string epl;
 
-                epl = "select window(*).sequenceEqual(Strvals) from SupportCollection#lastevent";
-                TryInvalidCompile(
-                    env,
-                    epl,
-                    "Failed to validate select-clause expression 'window(*).sequenceEqual(Strvals)': Invalid input for built-in enumeration method 'sequenceEqual' and 1-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type 'SupportCollection'");
-            }
-        }
-    }
+				epl = "select window(*).sequenceEqual(strvals) from SupportCollection#lastevent";
+				TryInvalidCompile(
+					env,
+					epl,
+					"Failed to validate select-clause expression 'window(*).sequenceEqual(strvals)': Invalid input for built-in enumeration method 'sequenceEqual' and 1-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type 'SupportCollection'");
+			}
+		}
+	}
 } // end of namespace

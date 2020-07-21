@@ -107,6 +107,8 @@ namespace com.espertech.esper.regressionlib.support.bean
         public ISet<string> SetOfString { get; }
 
         public IDictionary<string, object> OtherMap { get; set; }
+        
+        public string Id { get; set; }
 
         private static IDictionary<long?, string> ConvertMap(long?[] longArr)
         {

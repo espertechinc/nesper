@@ -8,103 +8,80 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionlib.support.util;
+using com.espertech.esper.regressionlib.support.expreval;
+
+using static com.espertech.esper.regressionlib.support.util.LambdaAssertionUtil;
 
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
-    public class ExprEnumCountOf
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            var execs = new List<RegressionExecution>();
-            execs.Add(new ExprEnumCountOfEvents());
-            execs.Add(new ExprEnumCountOfScalar());
-            return execs;
-        }
+	public class ExprEnumCountOf
+	{
 
-        internal class ExprEnumCountOfEvents : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                string[] fields = {"val0", "val1"};
-                var eplFragment = "@Name('s0') select " +
-                                  "Contained.countof(x-> x.P00 = 9) as val0, " +
-                                  "Contained.countof() as val1 " +
-                                  " from SupportBean_ST0_Container";
-                env.CompileDeploy(eplFragment).AddListener("s0");
+		public static ICollection<RegressionExecution> Executions()
+		{
+			List<RegressionExecution> execs = new List<RegressionExecution>();
+			execs.Add(new ExprEnumCountOfEvents());
+			execs.Add(new ExprEnumCountOfScalar());
+			return execs;
+		}
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fields,
-                    new[] {typeof(int?), typeof(int?)});
+		internal class ExprEnumCountOfEvents : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0,c1,c2,c3".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
+				builder.WithExpression(fields[0], "contained.countof()");
+				builder.WithExpression(fields[1], "contained.countof(x => x.p00 = 9)");
+				builder.WithExpression(fields[2], "contained.countof((x, i) => x.p00 + i = 10)");
+				builder.WithExpression(fields[3], "contained.countof((x, i, s) => x.p00 + i + s = 100)");
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E2,9", "E2,9"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {2, 3});
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value(null));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {null, null});
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E2,9", "E2,9")).Expect(fields, 3, 2, 1, 0);
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value());
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {0, 0});
+				builder.WithAssertion(SupportBean_ST0_Container.Make2ValueNull()).Expect(fields, null, null, null, null);
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,9"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {1, 1});
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value()).Expect(fields, 0, 0, 0, 0);
 
-                env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {0, 1});
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,9")).Expect(fields, 1, 1, 0, 0);
 
-                env.UndeployAll();
-            }
-        }
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1")).Expect(fields, 1, 0, 0, 0);
 
-        internal class ExprEnumCountOfScalar : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                string[] fields = {"val0", "val1"};
-                var eplFragment = "@Name('s0') select " +
-                                  "Strvals.countof() as val0, " +
-                                  "Strvals.countof(x -> x = 'E1') as val1 " +
-                                  " from SupportCollection";
-                env.CompileDeploy(eplFragment).AddListener("s0");
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,10", "E2,9")).Expect(fields, 2, 1, 2, 0);
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fields,
-                    new[] {typeof(int?), typeof(int?)});
+				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,98", "E2,97")).Expect(fields, 2, 0, 0, 2);
 
-                env.SendEventBean(SupportCollection.MakeString("E1,E2"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {2, 1});
+				builder.Run(env);
+			}
+		}
 
-                env.SendEventBean(SupportCollection.MakeString("E1,E2,E1,E3"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {4, 2});
+		internal class ExprEnumCountOfScalar : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				string[] fields = "c0,c1,c2,c3".SplitCsv();
+				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
+				builder.WithExpression(fields[0], "strvals.countof()");
+				builder.WithExpression(fields[1], "strvals.countof(x => x = 'E1')");
+				builder.WithExpression(fields[2], "strvals.countof((x, i) => x = 'E1' and i >= 1)");
+				builder.WithExpression(fields[3], "strvals.countof((x, i, s) => x = 'E1' and i >= 1 and s > 2)");
 
-                env.UndeployAll();
-            }
-        }
-    }
+				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
+
+				builder.WithAssertion(SupportCollection.MakeString("E1,E2")).Expect(fields, 2, 1, 0, 0);
+
+				builder.WithAssertion(SupportCollection.MakeString("E1,E2,E1,E3")).Expect(fields, 4, 2, 1, 1);
+
+				builder.WithAssertion(SupportCollection.MakeString("E1")).Expect(fields, 1, 1, 0, 0);
+
+				builder.WithAssertion(SupportCollection.MakeString("E1,E1")).Expect(fields, 2, 2, 1, 0);
+
+				builder.Run(env);
+			}
+		}
+	}
 } // end of namespace

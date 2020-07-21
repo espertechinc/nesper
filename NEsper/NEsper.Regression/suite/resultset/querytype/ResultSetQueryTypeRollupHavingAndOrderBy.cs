@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "c0", "c1" };
-                var epl = "@Name('s0')" +
+                var epl = "@name('s0')" +
                           "select TheString as c0, sum(IntPrimitive) as c1 " +
                           "from SupportBean#length(3) " +
                           (join ? ", SupportBean_S0#keepall " : "") +
@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 var fields = new [] { "c0", "c1", "c2" };
 
-                var epl = "@Name('s0')" +
+                var epl = "@name('s0')" +
                           "select TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
                           "from SupportBean_S0 unidirectional, SupportBean#keepall " +
                           "group by cube(TheString, IntPrimitive)";
@@ -165,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 // test having on the aggregation alone
                 var fields = new [] { "c0", "c1", "c2" };
 
-                var epl = "@Name('s0')" +
+                var epl = "@name('s0')" +
                           "select TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
                           "from SupportBean#keepall " +
                           (join ? ", SupportBean_S0#lastevent " : "") +
@@ -198,7 +198,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 // test having on the aggregation alone
                 var fieldsC0C1 = new [] { "c0", "c1" };
-                epl = "@Name('s0')" +
+                epl = "@name('s0')" +
                       "select TheString as c0, sum(IntPrimitive) as c1 " +
                       "from SupportBean#keepall " +
                       (join ? ", SupportBean_S0#lastevent " : "") +
@@ -254,7 +254,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AdvanceTime(0);
                 var fields = new [] { "c0", "c1", "c2" };
 
-                var epl = "@Name('s0')" +
+                var epl = "@name('s0')" +
                           "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
                           "from SupportBean#time_batch(1 sec) " +
                           (join ? ", SupportBean_S0#lastevent " : "") +
@@ -337,7 +337,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AdvanceTime(0);
                 var fields = new [] { "c0", "c1", "c2" };
 
-                var epl = "@Name('s0')" +
+                var epl = "@name('s0')" +
                           "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from SupportBean#time_batch(1 sec) " +
                           "group by rollup(TheString, IntPrimitive) " +
                           "order by TheString desc;";

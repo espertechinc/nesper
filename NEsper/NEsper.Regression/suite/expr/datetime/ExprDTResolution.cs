@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             env.AdvanceTime(startTime);
 
-            var epl = "@Name('s0') select " + select + " from SupportDateTime";
+            var epl = "@name('s0') select " + select + " from SupportDateTime";
             env.CompileDeploy(epl).AddListener("s0");
 
             env.SendEventBean(@event);
@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             env.AdvanceTime(0);
             var epl =
-                "@Name('s0') select * from " +
+                "@name('s0') select * from " +
                 "MyEvent(Id='A') as a unidirectional, " +
                 "MyEvent(Id='B')#lastevent as b" +
                 " where a.withDate(2002, 5, 30).before(b)";

@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                                " or es1=SupportBean_S1)]";
                 env.CompileDeploy(stmtText, path);
 
-                var stmtTwoText = "@Name('s0') select * from MyThirdStream";
+                var stmtTwoText = "@name('s0') select * from MyThirdStream";
                 env.CompileDeploy(stmtTwoText, path).AddListener("s0");
 
                 SendEventsAndAssert(env);
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                                " or es1=SupportBean_S1)]";
                 env.CompileDeploy(stmtText, path);
 
-                var stmtTwoText = "@Name('s0') select s0.Id as es0Id, s1.Id as es1Id from MySecondStream";
+                var stmtTwoText = "@name('s0') select s0.Id as es0Id, s1.Id as es1Id from MySecondStream";
                 env.CompileDeploy(stmtTwoText, path).AddListener("s0");
 
                 SendEventsAndAssert(env);
@@ -114,7 +114,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                                " or es1=SupportBean_S1)]";
                 env.CompileDeploy(stmtText, path);
 
-                var stmtTwoText = "@Name('s0') select es0.Id as es0Id, es1.Id as es1Id from MyStream#length(10)";
+                var stmtTwoText = "@name('s0') select es0.Id as es0Id, es1.Id as es1Id from MyStream#length(10)";
                 env.CompileDeploy(stmtTwoText, path).AddListener("s0");
 
                 SendEventsAndAssert(env);
@@ -133,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     path);
                 env.CompileDeploy("insert into PositionW select * from SupportBean", path);
                 env.CompileDeploy(
-                    "@Name('s1') insert into Foo select * from pattern[every a = PositionW -> every b = PositionW]",
+                    "@name('s1') insert into Foo select * from pattern[every a = PositionW -> every b = PositionW]",
                     path);
                 env.AddListener("s1").Milestone(0);
 

@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var text = "@Name('s0') select * from SupportRecogBean#keepall " +
+                var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            " measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1" +
                            " after match skip to current row" +
@@ -90,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "a","b0","b1" };
-                var text = "@Name('s0') select * from SupportRecogBean#keepall " +
+                var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1" +
                            "  AFTER MATCH SKIP TO NEXT ROW " +
@@ -131,7 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "a_string","b_string" };
-                var text = "@Name('s0') select * from SupportRecogBean#keepall " +
+                var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  measures A.TheString as a_string, B.TheString as b_string " +
                            "  all matches " +
@@ -218,7 +218,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "a0","b","a1" };
-                var text = "@Name('s0') select * from SupportRecogBean#keepall " +
+                var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  measures A[0].TheString as a0, B.TheString as b, A[1].TheString as a1 " +
                            "  all matches " +
@@ -270,7 +270,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "a_string","a_value","b_value" };
-                var text = "@Name('s0') select * from SupportRecogBean#keepall " +
+                var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  partition by TheString" +
                            "  measures A.TheString as a_string, A.Value as a_value, B.Value as b_value " +
@@ -404,7 +404,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "a_string","b_string" };
-                var text = "@Name('s0') select * from SupportRecogBean#keepall " +
+                var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  measures A.TheString as a_string, B.TheString as b_string " +
                            "  all matches " +

@@ -81,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('vars') create variable int[primitive] int_prim = null;\n" +
+                    "@name('vars') create variable int[primitive] int_prim = null;\n" +
                     "create variable int[] int_boxed = null;\n" +
                     "create variable System.Object[] objectarray = null;\n" +
                     "create variable System.Object[][] objectarray_2dim = null;\n";
@@ -157,7 +157,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.CompileDeploy(model, path);
                 Assert.AreEqual("create variable string var2OMCreate = \"abc\"", model.ToEPL());
 
-                var stmtTextSelect = "@Name('s0') select var1OMCreate, var2OMCreate from SupportBean";
+                var stmtTextSelect = "@name('s0') select var1OMCreate, var2OMCreate from SupportBean";
                 env.CompileDeploy(stmtTextSelect, path).AddListener("s0");
 
                 string[] fieldsVar = {"var1OMCreate", "var2OMCreate"};
@@ -185,7 +185,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 text = "create variable string var2CSS = \"abc\"";
                 env.EplToModelCompileDeploy(text, path);
 
-                var stmtTextSelect = "@Name('s0') select var1CSS, var2CSS from SupportBean";
+                var stmtTextSelect = "@name('s0') select var1CSS, var2CSS from SupportBean";
                 env.CompileDeploy(stmtTextSelect, path).AddListener("s0");
 
                 string[] fieldsVar = {"var1CSS", "var2CSS"};
@@ -196,7 +196,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     new object[] {null, "abc"});
 
                 // ESPER-545
-                var createText = "@Name('create') create variable int FOO = 0";
+                var createText = "@name('create') create variable int FOO = 0";
                 env.CompileDeploy(createText, path);
                 env.CompileDeploy("on pattern [every SupportBean] set FOO = FOO + 1", path);
                 env.SendEventBean(new SupportBean());
@@ -221,7 +221,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var stmtCreateTextOne = "@Name('create-one') create variable long var1SAI = null";
+                var stmtCreateTextOne = "@name('create-one') create variable long var1SAI = null";
                 env.CompileDeploy(stmtCreateTextOne, path);
                 Assert.AreEqual(
                     StatementType.CREATE_VARIABLE,
@@ -240,7 +240,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 Assert.AreEqual(typeof(IDictionary<string, object>), typeCreateOne.UnderlyingType);
                 CollectionAssert.AreEquivalent(new[] {"var1SAI"}, typeCreateOne.PropertyNames);
 
-                var stmtCreateTextTwo = "@Name('create-two') create variable long var2SAI = 20";
+                var stmtCreateTextTwo = "@name('create-two') create variable long var2SAI = 20";
                 env.CompileDeploy(stmtCreateTextTwo, path).AddListener("create-two");
                 string[] fieldsVar2 = {"var2SAI"};
                 EPAssertionUtil.AssertPropsPerRow(
@@ -249,7 +249,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     new[] {new object[] {20L}});
                 Assert.IsFalse(env.Listener("create-two").IsInvoked);
 
-                var stmtTextSet = "@Name('set') on SupportBean set var1SAI = IntPrimitive * 2, var2SAI = var1SAI + 1";
+                var stmtTextSet = "@name('set') on SupportBean set var1SAI = IntPrimitive * 2, var2SAI = var1SAI + 1";
                 env.CompileDeploy(stmtTextSet, path);
 
                 SendSupportBean(env, "E1", 100);
@@ -377,7 +377,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 // select all variables
                 var buf = new StringBuilder();
                 var delimiter = "";
-                buf.Append("@Name('s0') select ");
+                buf.Append("@name('s0') select ");
                 for (var i = 0; i < variables.Length; i++) {
                     buf.Append(delimiter);
                     buf.Append(variables[i][0]);

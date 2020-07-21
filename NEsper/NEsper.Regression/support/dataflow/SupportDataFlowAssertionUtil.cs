@@ -26,7 +26,7 @@ namespace com.espertech.esper.regressionlib.support.dataflow
             string name,
             string message)
         {
-            env.CompileDeploy("@Name('flow') " + epl);
+            env.CompileDeploy("@name('flow') " + epl);
             var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), name);
 
             try {
@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.support.dataflow
             string epl,
             string message)
         {
-            env.CompileDeploy("@Name('flow') " + epl);
+            env.CompileDeploy("@name('flow') " + epl);
 
             try {
                 env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), name);

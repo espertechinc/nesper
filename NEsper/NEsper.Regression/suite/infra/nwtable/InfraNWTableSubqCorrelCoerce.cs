@@ -117,12 +117,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 if (_createExplicitIndex)
                 {
-                    env.CompileDeploy("@Name('index') create index MyIndex on MyInfra (col2, col1)", path);
+                    env.CompileDeploy("@name('index') create index MyIndex on MyInfra (col2, col1)", path);
                 }
 
                 var fields = new[] { "e0", "val" };
                 var consumeEpl =
-                    "@Name('s0') select e0, (select col0 from MyInfra where col2 = es.e2 and col1 = es.e1) as val from EventSchema es";
+                    "@name('s0') select e0, (select col0 from MyInfra where col2 = es.e2 and col1 = es.e1) as val from EventSchema es";
                 if (_disableIndexShareConsumer)
                 {
                     consumeEpl = "@Hint('disable_window_subquery_indexshare') " + consumeEpl;

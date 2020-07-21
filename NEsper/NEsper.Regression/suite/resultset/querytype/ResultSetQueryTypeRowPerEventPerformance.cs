@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 var percent = 0.25 + i;
                 var id = i % 5;
 
-                var text = "@Name('s" +
+                var text = "@name('s" +
                            i +
                            "') select Symbol, min(Price) " +
                            "from SupportMarketDataBean(Id='${Id}')#time(${secondsWindowSpan})\n" +

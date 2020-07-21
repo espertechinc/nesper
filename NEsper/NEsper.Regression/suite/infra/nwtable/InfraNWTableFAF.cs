@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -26,6 +27,8 @@ using com.espertech.esper.runtime.client;
 
 using NEsper.Avro.Extensions;
 using NEsper.Avro.Util.Support;
+
+using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
 
@@ -165,12 +168,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         {
             var path = new RegressionPath();
             var eplCreate = namedWindow
-                ? "@Name('TheInfra') create window MyInfra#keepall as select * from SupportBean"
-                : "@Name('TheInfra') create table MyInfra as (TheString string primary key, IntPrimitive int primary key, LongPrimitive long)";
+                ? "@name('TheInfra') create window MyInfra#keepall as select * from SupportBean"
+                : "@name('TheInfra') create table MyInfra as (TheString string primary key, IntPrimitive int primary key, LongPrimitive long)";
             env.CompileDeploy(eplCreate, path);
             var eplInsert = namedWindow
-                ? "@Name('Insert') insert into MyInfra select * from SupportBean"
-                : "@Name('Insert') on SupportBean sb merge MyInfra mi where mi.TheString = sb.TheString and mi.IntPrimitive=sb.IntPrimitive" +
+                ? "@name('Insert') insert into MyInfra select * from SupportBean"
+                : "@name('Insert') on SupportBean sb merge MyInfra mi where mi.TheString = sb.TheString and mi.IntPrimitive=sb.IntPrimitive" +
                   " when not matched then insert select TheString, IntPrimitive, LongPrimitive";
             env.CompileDeploy(eplInsert, path);
             return path;
@@ -238,6 +241,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 }
 
                 env.EventService.SendEventAvro(record, eventName);
+            } else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
+                var @event = new JObject();
+                foreach (var attribute in attributes) {
+                    var key = attribute.Split('=')[0];
+                    var value = attribute.Split('=')[1];
+                    @event.Add(key, value);
+                }
+                env.EventService.SendEventJson(@event.ToString(), eventName);
             }
             else {
                 Assert.Fail();
@@ -479,13 +490,6 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 epl = "selectoo man";
                 TryInvalidFAFCompile(env, path, epl, "Incorrect syntax near 'selectoo' [selectoo man]");
 
-                epl = "select (select * from MyInfra) from MyInfra";
-                TryInvalidFAFCompile(
-                    env,
-                    path,
-                    epl,
-                    "Subqueries are not a supported feature of on-demand queries [select (select * from MyInfra) from MyInfra]");
-
                 epl = "select * from MyInfra output every 10 seconds";
                 TryInvalidFAFCompile(
                     env,
@@ -579,21 +583,17 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public void Run(RegressionEnvironment env)
             {
-                var eplEvents = eventRepresentationEnum.GetAnnotationText() +
-                                " create schema Product (ProductId string, CategoryId string);" +
-                                eventRepresentationEnum.GetAnnotationText() +
-                                " create schema Category (CategoryId string, Owner string);" +
-                                eventRepresentationEnum.GetAnnotationText() +
-                                " create schema ProductOwnerDetails (ProductId string, Owner string);";
+                var eplEvents =
+                    eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedProduct>() + " create schema Product (ProductId string, CategoryId string);" +
+                    eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedCategory>() + " create schema Category (CategoryId string, Owner string);" +
+                    eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedProductOwnerDetails>() + " create schema ProductOwnerDetails (ProductId string, Owner string);";
+
                 string epl;
                 if (namedWindow) {
                     epl = eplEvents +
-                          eventRepresentationEnum.GetAnnotationText() +
-                          " create window WinProduct#keepall as select * from Product;" +
-                          eventRepresentationEnum.GetAnnotationText() +
-                          " create window WinCategory#keepall as select * from Category;" +
-                          eventRepresentationEnum.GetAnnotationText() +
-                          " create window WinProductOwnerDetails#keepall as select * from ProductOwnerDetails;" +
+                          "create window WinProduct#keepall as select * from Product;" +
+                          "create window WinCategory#keepall as select * from Category;" +
+                          "create window WinProductOwnerDetails#keepall as select * from ProductOwnerDetails;" +
                           "insert into WinProduct select * from Product;" +
                           "insert into WinCategory select * from Category;" +
                           "insert into WinProductOwnerDetails select * from ProductOwnerDetails;";
@@ -955,17 +955,17 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 RunAssertionIn(env, path);
 
                 // try suitable index
-                env.CompileDeploy("@Name('stmtIdx1') create index Idx1 on MyInfra(TheString, IntPrimitive)", path);
+                env.CompileDeploy("@name('stmtIdx1') create index Idx1 on MyInfra(TheString, IntPrimitive)", path);
                 RunAssertionIn(env, path);
                 env.UndeployModuleContaining("stmtIdx1");
 
                 // backwards index
-                env.CompileDeploy("@Name('stmtIdx2') create index Idx2 on MyInfra(IntPrimitive, TheString)", path);
+                env.CompileDeploy("@name('stmtIdx2') create index Idx2 on MyInfra(IntPrimitive, TheString)", path);
                 RunAssertionIn(env, path);
                 env.UndeployModuleContaining("stmtIdx2");
 
                 // partial index
-                env.CompileDeploy("@Name('stmtIdx3') create index Idx3 on MyInfra(IntPrimitive)", path);
+                env.CompileDeploy("@name('stmtIdx3') create index Idx3 on MyInfra(IntPrimitive)", path);
                 RunAssertionIn(env, path);
                 env.UndeployModuleContaining("stmtIdx3");
 
@@ -1155,8 +1155,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create window
                 var stmtTextCreate = namedWindow
-                    ? "@Name('create') create window MyInfra.win:keepall() as select TheString as key, IntBoxed as value from SupportBean"
-                    : "@Name('create') create table MyInfra (key string primary key, value int)";
+                    ? "@name('create') create window MyInfra.win:keepall() as select TheString as key, IntBoxed as value from SupportBean"
+                    : "@name('create') create table MyInfra (key string primary key, value int)";
                 env.CompileDeploy(stmtTextCreate, path).AddListener("create");
 
                 var stmtTextInsert =
@@ -1436,7 +1436,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     namedWindow ? BACKING_SINGLE_UNIQUE : null);
 
                 // test consumption
-                env.CompileDeploy("@Name('s0') select rstream * from MyInfra", path).AddListener("s0");
+                env.CompileDeploy("@name('s0') select rstream * from MyInfra", path).AddListener("s0");
                 env.CompileExecuteFAF("delete from MyInfra", path);
                 string[] fields = {"TheString", "IntPrimitive"};
                 if (namedWindow) {
@@ -1613,7 +1613,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     namedWindow ? BACKING_SINGLE_UNIQUE : null);
 
                 // test consumption
-                env.CompileDeploy("@Name('s0') select irstream * from MyInfra", path).AddListener("s0");
+                env.CompileDeploy("@name('s0') select irstream * from MyInfra", path).AddListener("s0");
                 env.CompileExecuteFAF("update MyInfra set IntPrimitive=1000 where TheString = 'E0'", path);
                 if (namedWindow) {
                     EPAssertionUtil.AssertProps(
@@ -1635,6 +1635,22 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                             new object[] {"XYZ", 20}
                         });
                 }
+
+                env.UndeployAll();
+                
+                path.Clear();
+
+                // test update using array-assignment; this is mostly tested via on-merge otherwise
+                String eplInfra = namedWindow ?
+                    "@Name('TheInfra') create window MyInfra#keepall as (mydoubles double[primitive]);\n" :
+                    "@Name('TheInfra') create table MyInfra as (mydoubles double[primitive])";
+                env.CompileDeploy(eplInfra, path);
+                env.CompileExecuteFAF("insert into MyInfra select new double[] {1, 2, 3} as mydoubles", path);
+                env.CompileExecuteFAF("update MyInfra set mydoubles[3-2] = 4", path);
+                EPFireAndForgetQueryResult resultDoubles = env.CompileExecuteFAF("select * from MyInfra", path);
+                CollectionAssert.AreEquivalent(
+                    new double[] {1, 4, 3},
+                    resultDoubles.Array[0].Get("mydoubles").UnwrapIntoArray<double>());
 
                 env.UndeployAll();
             }
@@ -1705,8 +1721,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // try second no-column-provided version
                 var eplMyInfraThree = namedWindow
-                    ? "@Name('InfraThree') create window MyInfraThree#keepall as (p0 string, p1 int)"
-                    : "@Name('InfraThree') create table MyInfraThree as (p0 string, p1 int)";
+                    ? "@name('InfraThree') create window MyInfraThree#keepall as (p0 string, p1 int)"
+                    : "@name('InfraThree') create table MyInfraThree as (p0 string, p1 int)";
                 env.CompileDeploy(eplMyInfraThree, path);
                 env.CompileExecuteFAF("insert into MyInfraThree select 'a' as p0, 1 as p1", path);
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
@@ -1717,8 +1733,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // try enum-value insert
                 var epl = "create schema MyMode (Mode " + typeof(SupportEnum).Name + ");\n" +
                           (namedWindow
-                              ? "@Name('enumwin') create window MyInfraTwo#unique(Mode) as MyMode"
-                              : "@Name('enumwin') create table MyInfraTwo as (Mode " + typeof(SupportEnum).Name + ");\n");
+                              ? "@name('enumwin') create window MyInfraTwo#unique(Mode) as MyMode"
+                              : "@name('enumwin') create table MyInfraTwo as (Mode " + typeof(SupportEnum).Name + ");\n");
                 env.CompileDeploy(epl, path);
                 env.CompileExecuteFAF(
                     "insert into MyInfraTwo select " +
@@ -1768,6 +1784,24 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 env.UndeployAll();
             }
+        }
+        
+        [Serializable]
+        public class MyLocalJsonProvidedProduct {
+            public String productId;
+            public String categoryId;
+        }
+
+        [Serializable]
+        public  class MyLocalJsonProvidedCategory {
+            public String categoryId;
+            public String owner;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedProductOwnerDetails  {
+            public String productId;
+            public String owner;
         }
     }
 } // end of namespace

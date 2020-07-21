@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.@event.avro
     /// <summary>
     ///     Event sender for avro-backed events.
     ///     <para />
-    ///     Allows sending only event objects of type GenericData.Record, does not check contents. Any other event object
+    ///     Allows sending only event objects of type GenericRecord, does not check contents. Any other event object
     ///     generates an error.
     /// </summary>
     public class EventSenderAvro : EventSender
