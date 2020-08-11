@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.type
 {
     public class NameAndModule
     {
-        public readonly static NameAndModule[] EMPTY_ARRAY = new NameAndModule[0];
+        public static readonly NameAndModule[] EMPTY_ARRAY = new NameAndModule[0];
 
         private readonly string name;
         private readonly string moduleName;

@@ -36,6 +36,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 		}
 
 		public CodegenExpression Make(
+			CodegenBlock codegenBlock,
 			CodegenMethodScope codegenMethodScope,
 			CodegenClassScope codegenClassScope)
 		{
@@ -46,21 +47,25 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 				typeof(EventType),
 				EventTypeUtility.ResolveTypeCodegen(_jsonEventType, EPStatementInitServicesConstants.REF));
 
-			CodegenExpressionNewAnonymousClass manufacturer = NewAnonymousClass(init.Block, typeof(EventBeanManufacturer));
+			var makeUndFunc = new CodegenExpressionLambda(codegenBlock)
+				.WithParam<object[]>("properties")
+				.WithBody(block => MakeUnderlyingCodegen(block, codegenClassScope));
 
-			CodegenMethod makeUndMethod = CodegenMethod
-				.MakeParentNode(typeof(object), this.GetType(), codegenClassScope)
-				.AddParam(typeof(object[]), "properties");
-			manufacturer.AddMethod("MakeUnderlying", makeUndMethod);
-			MakeUnderlyingCodegen(makeUndMethod, codegenClassScope);
+			var manufacturer = NewInstance<ProxyJsonEventBeanManufacturer>(eventType, factory, makeUndFunc);
 
-			CodegenMethod makeMethod = CodegenMethod
-				.MakeParentNode(typeof(EventBean), this.GetType(), codegenClassScope)
-				.AddParam(typeof(object[]), "properties");
-			manufacturer.AddMethod("make", makeMethod);
-			makeMethod.Block
-				.DeclareVar(typeof(object), "und", LocalMethod(makeUndMethod, Ref("properties")))
-				.MethodReturn(ExprDotMethod(factory, "AdapterForTypedJson", Ref("und"), eventType));
+			// CodegenMethod makeUndMethod = CodegenMethod
+			// 	.MakeParentNode(typeof(object), this.GetType(), codegenClassScope)
+			// 	.AddParam(typeof(object[]), "properties");
+			// manufacturer.AddMethod("MakeUnderlying", makeUndMethod);
+			// MakeUnderlyingCodegen(makeUndMethod, codegenClassScope);
+			//
+			// CodegenMethod makeMethod = CodegenMethod
+			// 	.MakeParentNode(typeof(EventBean), this.GetType(), codegenClassScope)
+			// 	.AddParam(typeof(object[]), "properties");
+			// manufacturer.AddMethod("make", makeMethod);
+			// makeMethod.Block
+			// 	.DeclareVar(typeof(object), "und", LocalMethod(makeUndMethod, Ref("properties")))
+			// 	.MethodReturn(ExprDotMethod(factory, "AdapterForTypedJson", Ref("und"), eventType));
 
 			return codegenClassScope.AddDefaultFieldUnshared(true, typeof(EventBeanManufacturer), manufacturer);
 		}
@@ -72,25 +77,25 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 		}
 
 		private void MakeUnderlyingCodegen(
-			CodegenMethod method,
+			CodegenBlock block,
 			CodegenClassScope codegenClassScope)
 		{
-			method.Block.DeclareVar(_jsonEventType.UnderlyingType, "und", NewInstance(_jsonEventType.UnderlyingType));
+			block.DeclareVar(_jsonEventType.UnderlyingType, "und", NewInstance(_jsonEventType.UnderlyingType));
 			for (int i = 0; i < _writables.Length; i++) {
 				var field = _jsonEventType.Detail.FieldDescriptors.Get(_writables[i].PropertyName);
 				var rhs = ArrayAtIndex(Ref("properties"), Constant(i));
 				var fieldTypeBoxed = field.PropertyType.GetBoxedType();
 				if (field.PropertyType.IsPrimitive) {
-					method.Block
+					block
 						.IfCondition(NotEqualsNull(rhs))
 						.AssignRef(Ref("und." + field.FieldName), Cast(fieldTypeBoxed, rhs));
 				}
 				else {
-					method.Block.AssignRef(Ref("und." + field.FieldName), Cast(fieldTypeBoxed, rhs));
+					block.AssignRef(Ref("und." + field.FieldName), Cast(fieldTypeBoxed, rhs));
 				}
 			}
 
-			method.Block.MethodReturn(Ref("und"));
+			block.MethodReturn(Ref("und"));
 		}
 	}
 } // end of namespace

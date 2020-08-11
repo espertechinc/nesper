@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 bool expected)
             {
                 env.SendEventBean(new SupportBean(theString, 0));
-                Assert.AreEqual(expected, env.Listener("s0").IsInvokedAndReset);
+                Assert.AreEqual(expected, env.Listener("s0").IsInvokedAndReset());
             }
         }
 

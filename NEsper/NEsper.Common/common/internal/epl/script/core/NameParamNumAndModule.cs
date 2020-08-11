@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 {
     public class NameParamNumAndModule
     {
-        public readonly static NameParamNumAndModule[] EMPTY_ARRAY = new NameParamNumAndModule[0];
+        public static readonly NameParamNumAndModule[] EMPTY_ARRAY = new NameParamNumAndModule[0];
 
         private readonly string name;
         private readonly int paramNum;

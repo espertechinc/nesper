@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             }
 
             var lookup = (RangeIndexLookupValueRange) _lookupValue;
-            var treeMap = (OrderedDictionary<object, CompositeIndexEntry>) parent;
+            var treeMap = (IOrderedDictionary<object, CompositeIndexEntry>) parent;
             var rangeValue = lookup.Value;
             if (lookup.Operator == QueryGraphRangeEnum.RANGE_CLOSED) {
                 var range = (Range) rangeValue;
@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
 
         public void LookupRange(
             ISet<EventBean> result,
-            OrderedDictionary<object, CompositeIndexEntry> propertyIndex,
+            IOrderedDictionary<object, CompositeIndexEntry> propertyIndex,
             object keyStart,
             bool includeStart,
             object keyEnd,
@@ -143,7 +143,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
 
         public void LookupRangeInverted(
             ISet<EventBean> result,
-            OrderedDictionary<object, CompositeIndexEntry> propertyIndex,
+            IOrderedDictionary<object, CompositeIndexEntry> propertyIndex,
             object keyStart,
             bool includeStart,
             object keyEnd,
@@ -163,7 +163,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
 
         public void LookupLess(
             ISet<EventBean> result,
-            OrderedDictionary<object, CompositeIndexEntry> propertyIndex,
+            IOrderedDictionary<object, CompositeIndexEntry> propertyIndex,
             object keyStart,
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
@@ -177,7 +177,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
 
         public void LookupLessEqual(
             ISet<EventBean> result,
-            OrderedDictionary<object, CompositeIndexEntry> propertyIndex,
+            IOrderedDictionary<object, CompositeIndexEntry> propertyIndex,
             object keyStart,
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
@@ -191,7 +191,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
 
         public void LookupGreaterEqual(
             ISet<EventBean> result,
-            OrderedDictionary<object, CompositeIndexEntry> propertyIndex,
+            IOrderedDictionary<object, CompositeIndexEntry> propertyIndex,
             object keyStart,
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
@@ -205,7 +205,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
 
         public void LookupGreater(
             ISet<EventBean> result,
-            OrderedDictionary<object, CompositeIndexEntry> propertyIndex,
+            IOrderedDictionary<object, CompositeIndexEntry> propertyIndex,
             object keyStart,
             CompositeIndexQueryResultPostProcessor postProcessor)
         {

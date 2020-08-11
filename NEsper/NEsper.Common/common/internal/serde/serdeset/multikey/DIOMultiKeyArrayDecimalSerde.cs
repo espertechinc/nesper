@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.multikey
 {
 	public class DIOMultiKeyArrayDecimalSerde : DataInputOutputSerdeBase<MultiKeyArrayDecimal>
 	{
-		public readonly static DIOMultiKeyArrayDecimalSerde INSTANCE = new DIOMultiKeyArrayDecimalSerde();
+		public static readonly DIOMultiKeyArrayDecimalSerde INSTANCE = new DIOMultiKeyArrayDecimalSerde();
 
 		public override void Write(
 			MultiKeyArrayDecimal mk,

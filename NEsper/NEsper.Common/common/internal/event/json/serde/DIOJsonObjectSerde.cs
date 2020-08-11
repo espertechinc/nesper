@@ -6,35 +6,40 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
-using System.IO;
 
 using com.espertech.esper.common.client.serde;
-using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.io;
 
-using static com.espertech.esper.common.@internal.@event.json.serde.DIOJsonSerdeHelper; // readValue
-using static com.espertech.esper.common.@internal.@event.json.serde.DIOJsonSerdeHelper; // writeValue
+using static com.espertech.esper.common.@internal.@event.json.serde.DIOJsonSerdeHelper;
 
 namespace com.espertech.esper.common.@internal.@event.json.serde
 {
 	public class DIOJsonObjectSerde : DataInputOutputSerde<IDictionary<string, object>>
 	{
-		private readonly static byte NULL_TYPE = 0;
-		private readonly static byte INT_TYPE = 1;
-		private readonly static byte DOUBLE_TYPE = 2;
-		private readonly static byte STRING_TYPE = 3;
-		private readonly static byte BOOLEAN_TYPE = 4;
-		private readonly static byte OBJECT_TYPE = 5;
-		private readonly static byte ARRAY_TYPE = 6;
+		private static readonly byte NULL_TYPE = 0;
+		private static readonly byte INT_TYPE = 1;
+		private static readonly byte DOUBLE_TYPE = 2;
+		private static readonly byte STRING_TYPE = 3;
+		private static readonly byte BOOLEAN_TYPE = 4;
+		private static readonly byte OBJECT_TYPE = 5;
+		private static readonly byte ARRAY_TYPE = 6;
 
-		public readonly static DIOJsonObjectSerde INSTANCE = new DIOJsonObjectSerde();
+		public static readonly DIOJsonObjectSerde INSTANCE = new DIOJsonObjectSerde();
 
 		private DIOJsonObjectSerde()
 		{
+		}
+
+		
+		public void Write(
+			object @object,
+			DataOutput output,
+			byte[] unitKey,
+			EventBeanCollatedWriter writer)
+		{
+			Write((IDictionary<string, object>) @object, output, unitKey, writer);
 		}
 
 		public void Write(
@@ -50,6 +55,13 @@ namespace com.espertech.esper.common.@internal.@event.json.serde
 
 			output.WriteBoolean(true);
 			Write(@object, output);
+		}
+
+		public object ReadAny(
+			DataInput input,
+			byte[] unitKey)
+		{
+			return Read(input, unitKey);
 		}
 
 		public IDictionary<string, object> Read(

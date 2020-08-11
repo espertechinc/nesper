@@ -13,7 +13,7 @@ namespace com.espertech.esper.common.@internal.util
     /// </summary>
     public class StopCallbackNoAction : StopCallback
     {
-        public readonly static StopCallbackNoAction INSTANCE = new StopCallbackNoAction();
+        public static readonly StopCallbackNoAction INSTANCE = new StopCallbackNoAction();
 
         /// <summary>
         /// Stops this instance.

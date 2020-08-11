@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 {
     public class ResultSetProcessorHelperFactoryField : CodegenFieldSharable
     {
-        public readonly static ResultSetProcessorHelperFactoryField INSTANCE =
+        public static readonly ResultSetProcessorHelperFactoryField INSTANCE =
             new ResultSetProcessorHelperFactoryField();
 
         private ResultSetProcessorHelperFactoryField()

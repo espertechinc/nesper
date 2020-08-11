@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			while (enumerator.MoveNext()) {
 				yield return new KeyValuePair<object, ICollection<EventBean>>(
 					enumerator.Current.Key,
-					AggregatorAccessSortedImpl.CheckedPayloadGetCollEvents(next.Value));
+					AggregatorAccessSortedImpl.CheckedPayloadGetCollEvents(enumerator.Current.Value));
 			}
 		}
 	}

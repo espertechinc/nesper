@@ -8,8 +8,5 @@
 
 namespace com.espertech.esper.common.@internal.epl.historical.common
 {
-    public interface HistoricalEventViewableLookupValueToMultiKey
-    {
-        object Transform(object lv);
-    }
+    public delegate object HistoricalEventViewableLookupValueToMultiKey(object lv);
 } // end of namespace

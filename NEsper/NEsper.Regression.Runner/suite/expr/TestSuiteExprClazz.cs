@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.regressionlib.suite.expr.clazz;
 using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;

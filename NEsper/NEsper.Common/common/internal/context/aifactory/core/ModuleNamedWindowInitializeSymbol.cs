@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
 {
     public class ModuleNamedWindowInitializeSymbol : CodegenSymbolProvider
     {
-        public readonly static CodegenExpressionRef REF_INITSVC = Ref("moduleNWInitSvc");
+        public static readonly CodegenExpressionRef REF_INITSVC = Ref("moduleNWInitSvc");
 
         private CodegenExpressionRef optionalInitServicesRef;
 

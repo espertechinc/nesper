@@ -49,10 +49,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         ///     Returns the list of plug-in aggregation multi-functions.
         /// </summary>
         /// <value>plug-in aggregation multi-functions</value>
-        public IList<ConfigurationCompilerPlugInAggregationMultiFunction> PlugInAggregationMultiFunctions {
-            get;
-            private set;
-        }
+        public IList<ConfigurationCompilerPlugInAggregationMultiFunction> PlugInAggregationMultiFunctions { get; private set; }
 
         /// <summary>
         ///     Returns the list of plug-in single-row functions.
@@ -68,17 +65,17 @@ namespace com.espertech.esper.common.client.configuration.compiler
 
 
         /// <summary>
-        /// Returns the list of configured plug-in date-time-methods.
+        ///     Returns the list of configured plug-in date-time-methods.
         /// </summary>
         public IList<ConfigurationCompilerPlugInDateTimeMethod> PlugInDateTimeMethods { get; private set; }
 
         /// <summary>
-        /// Returns the list of configured plug-in enum-methods.
+        ///     Returns the list of configured plug-in enum-methods.
         /// </summary>
         public IList<ConfigurationCompilerPlugInEnumMethod> PlugInEnumMethods { get; private set; }
-        
+
         /// <summary>
-        /// Returns the compiler serializer-deserializer configuration.
+        ///     Returns the compiler serializer-deserializer configuration.
         /// </summary>
         public ConfigurationCompilerSerde Serde { get; private set; }
 
@@ -204,7 +201,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
             string methodName)
         {
             AddPlugInSingleRowFunction(
-                functionName, clazz.FullName, methodName,
+                functionName,
+                clazz.FullName,
+                methodName,
                 ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.DISABLED);
         }
 
@@ -245,7 +244,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
                 valueCache,
                 ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.ENABLED);
         }
-        
+
         /// <summary>
         ///     Adds a plug-in single-row function given a EPL function name, a class name, method name and setting for value-cache
         ///     behavior.
@@ -351,7 +350,6 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// <param name="valueCache">value cache settings</param>
         /// <param name="filterOptimizable">settings whether subject to optimizations</param>
         /// <param name="rethrowExceptions">whether to rethrow exceptions</param>
-
         public void AddPlugInSingleRowFunction(
             string functionName,
             Type clazz,
@@ -449,12 +447,12 @@ namespace com.espertech.esper.common.client.configuration.compiler
 
 
         /// <summary>
-            ///     Add a pattern event observer for plug-in.
-            /// </summary>
-            /// <param name="namespace">is the namespace the observer should be available under</param>
-            /// <param name="name">is the name of the observer</param>
-            /// <param name="observerForgeClass">is the observer forge class to use</param>
-            public void AddPlugInPatternObserver(
+        ///     Add a pattern event observer for plug-in.
+        /// </summary>
+        /// <param name="namespace">is the namespace the observer should be available under</param>
+        /// <param name="name">is the name of the observer</param>
+        /// <param name="observerForgeClass">is the observer forge class to use</param>
+        public void AddPlugInPatternObserver(
             string @namespace,
             string name,
             string observerForgeClass)
@@ -493,23 +491,62 @@ namespace com.espertech.esper.common.client.configuration.compiler
         {
             AddPlugInPatternGuard(@namespace, name, guardForgeClass.FullName);
         }
-        
+
         /// <summary>
-        /// Add a plug-in date-time method
+        ///     Add a plug-in date-time method
         /// </summary>
         /// <param name="dateTimeMethodName">method name</param>
         /// <param name="dateTimeMethodForgeFactoryClassName">fully-qualified forge class name</param>
-        public void AddPlugInDateTimeMethod(String dateTimeMethodName, String dateTimeMethodForgeFactoryClassName) {
-            PlugInDateTimeMethods.Add(new ConfigurationCompilerPlugInDateTimeMethod(dateTimeMethodName, dateTimeMethodForgeFactoryClassName));
+        public void AddPlugInDateTimeMethod(
+            string dateTimeMethodName,
+            string dateTimeMethodForgeFactoryClassName)
+        {
+            PlugInDateTimeMethods.Add(
+                new ConfigurationCompilerPlugInDateTimeMethod(
+                    dateTimeMethodName,
+                    dateTimeMethodForgeFactoryClassName));
         }
 
         /// <summary>
-        /// Add a plug-in enum method
+        ///     Add a plug-in date-time method
+        /// </summary>
+        /// <param name="dateTimeMethodName">method name</param>
+        /// <param name="dateTimeMethodForgeFactoryClass">class</param>
+        public void AddPlugInDateTimeMethod(
+            string dateTimeMethodName,
+            Type dateTimeMethodForgeFactoryClass)
+        {
+            PlugInDateTimeMethods.Add(
+                new ConfigurationCompilerPlugInDateTimeMethod(
+                    dateTimeMethodName,
+                    dateTimeMethodForgeFactoryClass.FullName));
+        }
+
+        /// <summary>
+        ///     Add a plug-in enum method
         /// </summary>
         /// <param name="enumMethodName">method name</param>
-        /// <param name=enumMethodForgeFactoryClassName">fully-qualified forge class name</param>
-        public void AddPlugInEnumMethod(String enumMethodName, String enumMethodForgeFactoryClassName) {
-            PlugInEnumMethods.Add(new ConfigurationCompilerPlugInEnumMethod(enumMethodName, enumMethodForgeFactoryClassName));
+        /// <param name="enumMethodForgeFactoryClassName">fully-qualified forge class name</param>
+        public void AddPlugInEnumMethod(
+            string enumMethodName,
+            string enumMethodForgeFactoryClassName)
+        {
+            PlugInEnumMethods.Add(
+                new ConfigurationCompilerPlugInEnumMethod(
+                    enumMethodName,
+                    enumMethodForgeFactoryClassName));
+        }
+
+        /// <summary>
+        ///     Add a plug-in enum method
+        /// </summary>
+        /// <param name="enumMethodName">method name</param>
+        /// <param name="enumMethodForgeFactoryClass">class</param>
+        public void AddPlugInEnumMethod(
+            string enumMethodName,
+            Type enumMethodForgeFactoryClass)
+        {
+            PlugInEnumMethods.Add(new ConfigurationCompilerPlugInEnumMethod(enumMethodName, enumMethodForgeFactoryClass.FullName));
         }
 
         /// <summary>

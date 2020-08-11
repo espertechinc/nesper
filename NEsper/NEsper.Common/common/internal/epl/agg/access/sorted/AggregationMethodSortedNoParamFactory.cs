@@ -9,8 +9,6 @@
 using System;
 
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 
 using static com.espertech.esper.common.@internal.epl.agg.access.sorted.AggregationMethodSortedKeyedFactory;
 
@@ -27,42 +25,42 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 	        }
 	        if (method == AggregationMethodSortedEnum.FIRSTEVENT) {
 	            return new AggregationMethodSortedNoParamEval(
-	                sorted => FirstUnd(sorted.Sorted.FirstEntry()),
-	                sorted => FirstBean(sorted.Sorted.FirstEntry()),
-	                sorted => FirstColl(sorted.Sorted.FirstEntry())
+	                sorted => FirstUnd(sorted.Sorted.FirstEntry),
+	                sorted => FirstBean(sorted.Sorted.FirstEntry),
+	                sorted => FirstColl(sorted.Sorted.FirstEntry)
 	            );
 	        }
 	        if (method == AggregationMethodSortedEnum.FIRSTEVENTS) {
 	            return new AggregationMethodSortedNoParamEval(
-	                sorted => EventsArrayUnd(sorted.Sorted.FirstEntry(), underlyingClass),
+	                sorted => EventsArrayUnd(sorted.Sorted.FirstEntry, underlyingClass),
 	                sorted => null,
-	                sorted => EventsColl(sorted.Sorted.FirstEntry())
+	                sorted => EventsColl(sorted.Sorted.FirstEntry)
 	            );
 	        }
 	        if (method == AggregationMethodSortedEnum.FIRSTKEY) {
 	            return new AggregationMethodSortedNoParamEval(
-	                sorted => sorted.Sorted.FirstEntry().Key,
+	                sorted => sorted.Sorted.FirstEntry.Key,
 	                sorted => null,
 	                sorted => null
 	            );
 	        }
 	        if (method == AggregationMethodSortedEnum.LASTEVENT) {
 	            return new AggregationMethodSortedNoParamEval(
-	                sorted => FirstUnd(sorted.Sorted.LastEntry()),
-	                sorted => FirstBean(sorted.Sorted.LastEntry()),
-	                sorted => FirstColl(sorted.Sorted.LastEntry())
+	                sorted => FirstUnd(sorted.Sorted.LastEntry),
+	                sorted => FirstBean(sorted.Sorted.LastEntry),
+	                sorted => FirstColl(sorted.Sorted.LastEntry)
 	            );
 	        }
 	        if (method == AggregationMethodSortedEnum.LASTEVENTS) {
 	            return new AggregationMethodSortedNoParamEval(
-	                sorted => EventsArrayUnd(sorted.Sorted.LastEntry(), underlyingClass),
+	                sorted => EventsArrayUnd(sorted.Sorted.LastEntry, underlyingClass),
 	                sorted => null,
-	                sorted => EventsColl(sorted.Sorted.LastEntry())
+	                sorted => EventsColl(sorted.Sorted.LastEntry)
 	            );
 	        }
 	        if (method == AggregationMethodSortedEnum.LASTKEY) {
 	            return new AggregationMethodSortedNoParamEval(
-	                sorted => sorted.Sorted.LastEntry().Key,
+	                sorted => sorted.Sorted.LastEntry.Key,
 	                sorted => null,
 	                sorted => null
 	            );
@@ -83,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 	        }
 	        if (method == AggregationMethodSortedEnum.NAVIGABLEMAPREFERENCE) {
 	            return new AggregationMethodSortedNoParamEval(
-	                sorted => new AggregationMethodSortedWrapperNavigableMap(sorted.Sorted),
+	                sorted => new AggregationMethodSortedWrapperDictionary(sorted.Sorted),
 	                sorted => null,
 	                sorted => null
 	            );

@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.context.airegistry
 {
     public class AIRegistryFactorySingle : AIRegistryFactory
     {
-        public readonly static AIRegistryFactorySingle INSTANCE = new AIRegistryFactorySingle();
+        public static readonly AIRegistryFactorySingle INSTANCE = new AIRegistryFactorySingle();
 
         private AIRegistryFactorySingle()
         {

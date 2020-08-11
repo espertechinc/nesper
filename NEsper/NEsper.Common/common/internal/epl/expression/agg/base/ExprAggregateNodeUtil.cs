@@ -110,7 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
         {
             // Map to hold per level of the node (1 to N depth) of expression node a list of aggregation expr nodes, if any
             // exist at that level
-            var aggregateExprPerLevel = new OrderedDictionary<int, IList<ExprAggregateNode>>();
+            var aggregateExprPerLevel = new OrderedListDictionary<int, IList<ExprAggregateNode>>();
 
             RecursiveAggregate(topNode, aggregateExprPerLevel, 1);
 

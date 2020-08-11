@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 {
     public class TableCompileTimeResolverEmpty : TableCompileTimeResolver
     {
-        public readonly static TableCompileTimeResolverEmpty INSTANCE = new TableCompileTimeResolverEmpty();
+        public static readonly TableCompileTimeResolverEmpty INSTANCE = new TableCompileTimeResolverEmpty();
 
         private TableCompileTimeResolverEmpty()
         {

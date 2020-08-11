@@ -10,12 +10,25 @@ using System.Text.Json;
 
 namespace com.espertech.esper.common.@internal.@event.json.parser.core
 {
-	public interface JsonDelegateFactory {
-	    JsonDelegateBase Make(JsonHandlerDelegator handler, JsonDelegateBase optionalParent);
-	    void Write(Utf8JsonWriter writer, object und) ;
-	    object NewUnderlying();
-	    void SetValue(int num, object value, object und);
-	    object GetValue(int num, object und);
-	    object Copy(object und);
+	public interface JsonDelegateFactory
+	{
+		JsonDeserializerBase Make(JsonDeserializerBase optionalParent);
+
+		void Write(
+			Utf8JsonWriter writer,
+			object und);
+
+		object NewUnderlying();
+
+		void SetValue(
+			int num,
+			object value,
+			object und);
+
+		object GetValue(
+			int num,
+			object und);
+
+		object Copy(object und);
 	}
 } // end of namespace

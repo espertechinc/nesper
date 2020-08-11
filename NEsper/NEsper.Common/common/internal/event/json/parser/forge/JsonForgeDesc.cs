@@ -35,6 +35,8 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 
         public JsonEndValueForge EndValueForge { get; }
 
+        public JsonEndValueForge DeserializeForge { get; }
+
         public JsonDelegateForge OptionalStartArrayForge { get; }
 
         public JsonWriteForge WriteForge { get; }

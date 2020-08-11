@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
 {
     public class ContextConditionDescriptorNever : ContextConditionDescriptor
     {
-        public readonly static ContextConditionDescriptorNever INSTANCE = new ContextConditionDescriptorNever();
+        public static readonly ContextConditionDescriptorNever INSTANCE = new ContextConditionDescriptorNever();
 
         private ContextConditionDescriptorNever()
         {

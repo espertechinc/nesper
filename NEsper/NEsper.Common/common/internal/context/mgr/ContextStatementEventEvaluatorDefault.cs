@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
 {
     public class ContextStatementEventEvaluatorDefault : ContextStatementEventEvaluator
     {
-        public readonly static ContextStatementEventEvaluatorDefault INSTANCE =
+        public static readonly ContextStatementEventEvaluatorDefault INSTANCE =
             new ContextStatementEventEvaluatorDefault();
 
         private ContextStatementEventEvaluatorDefault()
@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
                 stmtCallbacks = new Dictionary<AgentInstance, object>();
             }
             else {
-                stmtCallbacks = new OrderedDictionary<AgentInstance, object>(AgentInstanceComparator.INSTANCE);
+                stmtCallbacks = new OrderedListDictionary<AgentInstance, object>(AgentInstanceComparator.INSTANCE);
             }
 
             // process all callbacks

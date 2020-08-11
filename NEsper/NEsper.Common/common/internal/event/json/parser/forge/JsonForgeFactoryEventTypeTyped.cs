@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.json.parser.delegates.endvalue;
 using com.espertech.esper.common.@internal.@event.json.write;
@@ -21,7 +19,7 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
     public class JsonForgeFactoryEventTypeTyped
     {
         public static JsonForgeDesc ForgeNonArray(
-            String fieldName,
+            string fieldName,
             JsonEventType other)
         {
             JsonDelegateForge startObject = new JsonDelegateForgeWithDelegateFactory(other.Detail.DelegateFactoryClassName);
@@ -47,7 +45,7 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
         }
 
         public static JsonForgeDesc ForgeArray(
-            String fieldName,
+            string fieldName,
             JsonEventType other)
         {
             JsonDelegateForge startArray = new JsonDelegateForgeWithDelegateFactoryArray(

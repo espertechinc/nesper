@@ -21,15 +21,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 	{
 
 		private readonly ExprEvaluator keyEval;
-		private readonly Func<OrderedDictionary<object, object>, object, object> value;
-		private readonly Func<OrderedDictionary<object, object>, object, EventBean> @event;
-		private readonly Func<OrderedDictionary<object, object>, object, ICollection<EventBean>> events;
+		private readonly Func<IOrderedDictionary<object, object>, object, object> value;
+		private readonly Func<IOrderedDictionary<object, object>, object, EventBean> @event;
+		private readonly Func<IOrderedDictionary<object, object>, object, ICollection<EventBean>> events;
 
 		public AggregationMethodSortedKeyedEval(
 			ExprEvaluator keyEval,
-			Func<OrderedDictionary<object, object>, object, object> value,
-			Func<OrderedDictionary<object, object>, object, EventBean> @event,
-			Func<OrderedDictionary<object, object>, object, ICollection<EventBean>> events)
+			Func<IOrderedDictionary<object, object>, object, object> value,
+			Func<IOrderedDictionary<object, object>, object, EventBean> @event,
+			Func<IOrderedDictionary<object, object>, object, ICollection<EventBean>> events)
 		{
 			this.keyEval = keyEval;
 			this.value = value;

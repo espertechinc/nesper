@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             }
 
             // mapping of stream to variable
-            var streamVariables = new OrderedDictionary<int, string>();
+            var streamVariables = new OrderedListDictionary<int, string>();
             foreach (var entry in variableStreams) {
                 streamVariables.Put(entry.Value.First, entry.Key);
             }
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             ISet<string> definedVariables = new HashSet<string>();
             IList<ExprAggregateNode> aggregateNodes = new List<ExprAggregateNode>();
             var isExprRequiresMultimatchState = new bool[variableStreams.Count];
-            var previousNodes = new OrderedDictionary<int, IList<ExprPreviousMatchRecognizeNode>>();
+            var previousNodes = new OrderedListDictionary<int, IList<ExprPreviousMatchRecognizeNode>>();
 
             for (var defineIndex = 0; defineIndex < matchRecognizeSpec.Defines.Count; defineIndex++) {
                 MatchRecognizeDefineItem defineItem = matchRecognizeSpec.Defines[defineIndex];
@@ -469,7 +469,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             StreamTypeService compositeTypeServiceMeasure,
             string[] allStreamNames,
             EventType[] allTypes,
-            OrderedDictionary<int, string> streamVariables,
+            IOrderedDictionary<int, string> streamVariables,
             ISet<string> variablesMultiple,
             StatementBaseInfo @base,
             StatementCompileTimeServices services)
@@ -672,7 +672,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
         private static ExprNode HandlePreviousFunctions(
             ExprNode defineItemExpression,
-            OrderedDictionary<int, IList<ExprPreviousMatchRecognizeNode>> previousNodes)
+            IOrderedDictionary<int, IList<ExprPreviousMatchRecognizeNode>> previousNodes)
         {
             var previousVisitor = new ExprNodePreviousVisitorWParent();
             defineItemExpression.Accept(previousVisitor);

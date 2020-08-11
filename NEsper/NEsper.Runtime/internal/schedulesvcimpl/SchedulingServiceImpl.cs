@@ -30,7 +30,7 @@ namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
         private readonly int _stageId;
 
         // Map of time and handle
-        private readonly OrderedDictionary<long, IDictionary<long, ScheduleHandle>> _timeHandleMap;
+        private readonly IOrderedDictionary<long, IDictionary<long, ScheduleHandle>> _timeHandleMap;
 
         // Map of handle and handle list for faster removal
         private readonly IDictionary<ScheduleHandle, IDictionary<long, ScheduleHandle>> _handleSetMap;
@@ -46,7 +46,7 @@ namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
         public SchedulingServiceImpl(int stageId, TimeSourceService timeSourceService)
         {
             _stageId = stageId;
-            _timeHandleMap = new OrderedDictionary<long, IDictionary<long, ScheduleHandle>>();
+            _timeHandleMap = new OrderedListDictionary<long, IDictionary<long, ScheduleHandle>>();
             _handleSetMap = new Dictionary<ScheduleHandle, IDictionary<long, ScheduleHandle>>();
             // initialize time to just before now as there is a check for duplicate external time events
             _currentTime = timeSourceService.TimeMillis - 1;

@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.view.previous
     public interface IStreamSortRankRandomAccess : RandomAccessByIndex
     {
         void Refresh(
-            OrderedDictionary<object, object> sortedEvents,
+            IOrderedDictionary<object, object> sortedEvents,
             int currentSize,
             int maxSize);
     }

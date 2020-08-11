@@ -49,12 +49,12 @@ namespace com.espertech.esper.common.@internal.epl.util
             }
 
             // determine 'prior' indexes
-            var priorPerStream = new OrderedDictionary<int, IList<ExprPriorNode>>[numStreams];
-            foreach (ExprPriorNode priorNode in @delegate.PriorRequests) {
+            var priorPerStream = new IOrderedDictionary<int, IList<ExprPriorNode>>[numStreams];
+            foreach (var priorNode in @delegate.PriorRequests) {
                 var stream = priorNode.StreamNumber;
 
                 if (priorPerStream[stream] == null) {
-                    priorPerStream[stream] = new OrderedDictionary<int, IList<ExprPriorNode>>();
+                    priorPerStream[stream] = new OrderedListDictionary<int, IList<ExprPriorNode>>();
                 }
 
                 var treemap = priorPerStream[stream];
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.util
             // build per-stream info
             for (var i = 0; i < numStreams; i++) {
                 if (priorPerStream[i] == null) {
-                    priorPerStream[i] = new OrderedDictionary<int, IList<ExprPriorNode>>();
+                    priorPerStream[i] = new OrderedListDictionary<int, IList<ExprPriorNode>>();
                 }
 
                 perStream[i] = new ViewResourceDelegateDesc(

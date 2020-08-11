@@ -92,35 +92,41 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            CodegenExpressionNewAnonymousClass transformer = NewAnonymousClass(method.Block, typeof(HistoricalEventViewableLookupValueToMultiKey));
-            CodegenMethod transform = CodegenMethod
-                .MakeParentNode(typeof(object), this.GetType(), classScope)
-                .AddParam(typeof(object), "lv");
-            transformer.AddMethod("transform", transform);
+            // CodegenExpressionNewAnonymousClass transformer = NewAnonymousClass(method.Block, typeof(HistoricalEventViewableLookupValueToMultiKey));
+            // CodegenMethod transform = CodegenMethod
+            //     .MakeParentNode(typeof(object), this.GetType(), classScope)
+            //     .AddParam(typeof(object), "lv");
+            // transformer.AddMethod("transform", transform);
 
-            if (InputParamEvaluators.Length == 0) {
-                transform.Block.MethodReturn(ConstantNull());
-            }
-            else if (InputParamEvaluators.Length == 1) {
-                var paramType = InputParamEvaluators[0].EvaluationType;
-                if (paramType == null || !paramType.IsArray) {
-                    transform.Block.MethodReturn(Ref ("lv"));
-                }
-                else {
-                    var mktype = MultiKeyPlanner.GetMKClassForComponentType(paramType.GetElementType());
-                    transform.Block.MethodReturn(NewInstance(mktype, Cast(paramType, Ref("lv"))));
-                }
-            }
-            else {
-                transform.Block.DeclareVar(typeof(object[]), "values", Cast(typeof(object[]), Ref("lv")));
-                CodegenExpression[] expressions = new CodegenExpression[MultiKeyClassRef.MKTypes.Length];
-                for (int i = 0; i < expressions.Length; i++) {
-                    expressions[i] = Cast(MultiKeyClassRef.MKTypes[i], ArrayAtIndex(Ref("values"), Constant(i)));
-                }
+            var transformer = new CodegenExpressionLambda(method.Block)
+                .WithParam<object>("lv")
+                .WithBody(
+                    block => {
 
-                transform.Block.MethodReturn(NewInstance(MultiKeyClassRef.ClassNameMK, expressions));
-            }
+                        if (InputParamEvaluators.Length == 0) {
+                            block.BlockReturn(ConstantNull());
+                        }
+                        else if (InputParamEvaluators.Length == 1) {
+                            var paramType = InputParamEvaluators[0].EvaluationType;
+                            if (paramType == null || !paramType.IsArray) {
+                                block.BlockReturn(Ref("lv"));
+                            }
+                            else {
+                                var mktype = MultiKeyPlanner.GetMKClassForComponentType(paramType.GetElementType());
+                                block.BlockReturn(NewInstance(mktype, Cast(paramType, Ref("lv"))));
+                            }
+                        }
+                        else {
+                            block.DeclareVar(typeof(object[]), "values", Cast(typeof(object[]), Ref("lv")));
+                            CodegenExpression[] expressions = new CodegenExpression[MultiKeyClassRef.MKTypes.Length];
+                            for (int i = 0; i < expressions.Length; i++) {
+                                expressions[i] = Cast(MultiKeyClassRef.MKTypes[i], ArrayAtIndex(Ref("values"), Constant(i)));
+                            }
 
+                            block.BlockReturn(NewInstance(MultiKeyClassRef.ClassNameMK, expressions));
+                        }
+                    });
+            
             return transformer;
         }
 

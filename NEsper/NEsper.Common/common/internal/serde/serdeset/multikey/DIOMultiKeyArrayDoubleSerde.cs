@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.multikey
 {
 	public class DIOMultiKeyArrayDoubleSerde : DataInputOutputSerdeBase<MultiKeyArrayDouble>
 	{
-		public readonly static DIOMultiKeyArrayDoubleSerde INSTANCE = new DIOMultiKeyArrayDoubleSerde();
+		public static readonly DIOMultiKeyArrayDoubleSerde INSTANCE = new DIOMultiKeyArrayDoubleSerde();
 
 		public override void Write(
 			MultiKeyArrayDouble mk,

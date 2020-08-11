@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 {
 	public class DataInputOutputSerdeForgeNotApplicable : DataInputOutputSerdeForge
 	{
-		public readonly static DataInputOutputSerdeForgeNotApplicable INSTANCE = new DataInputOutputSerdeForgeNotApplicable();
+		public static readonly DataInputOutputSerdeForgeNotApplicable INSTANCE = new DataInputOutputSerdeForgeNotApplicable();
 
 		private DataInputOutputSerdeForgeNotApplicable()
 		{

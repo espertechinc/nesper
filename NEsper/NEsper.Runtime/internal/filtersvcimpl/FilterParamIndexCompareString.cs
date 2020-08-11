@@ -27,7 +27,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
     /// </summary>
     public class FilterParamIndexCompareString : FilterParamIndexLookupableBase
     {
-        private readonly OrderedDictionary<object, EventEvaluator> constantsMap;
+        private readonly IOrderedDictionary<object, EventEvaluator> constantsMap;
         private readonly IReaderWriterLock constantsMapRWLock;
 
         public FilterParamIndexCompareString(
@@ -37,7 +37,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             : base(filterOperator, lookupable)
         {
 
-            constantsMap = new OrderedDictionary<object, EventEvaluator>();
+            constantsMap = new OrderedListDictionary<object, EventEvaluator>();
             constantsMapRWLock = readWriteLock;
 
             if ((filterOperator != FilterOperator.GREATER) &&

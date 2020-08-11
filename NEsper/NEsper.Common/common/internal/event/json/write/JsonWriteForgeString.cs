@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.@event.json.write
 {
 	public class JsonWriteForgeString : JsonWriteForge {
 
-	    public readonly static JsonWriteForgeString INSTANCE = new JsonWriteForgeString();
+	    public static readonly JsonWriteForgeString INSTANCE = new JsonWriteForgeString();
 
 	    private JsonWriteForgeString() {
 	    }

@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.view.previous
 
         private IEnumerator<object> _iterator;
 
-        private OrderedDictionary<object, object> _sortedEvents;
+        private IOrderedDictionary<object, object> _sortedEvents;
 
         /// <summary>
         ///     Ctor.
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.view.previous
         /// <param name="currentSize">is the current size of the window</param>
         /// <param name="maxSize">is the maximum size of the window</param>
         public void Refresh(
-            OrderedDictionary<object, object> sortedEvents,
+            IOrderedDictionary<object, object> sortedEvents,
             int currentSize,
             int maxSize)
         {

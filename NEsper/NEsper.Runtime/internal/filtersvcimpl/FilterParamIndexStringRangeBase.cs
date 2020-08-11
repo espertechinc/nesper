@@ -18,7 +18,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
     public abstract class FilterParamIndexStringRangeBase : FilterParamIndexLookupableBase
     {
         protected EventEvaluator RangesNullEndpoints;
-        protected readonly OrderedDictionary<StringRange, EventEvaluator> Ranges;
+        protected readonly IOrderedDictionary<StringRange, EventEvaluator> Ranges;
 
         protected FilterParamIndexStringRangeBase(
             ExprFilterSpecLookupable lookupable,
@@ -26,7 +26,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             FilterOperator filterOperator)
             : base(filterOperator, lookupable)
         {
-            Ranges = new OrderedDictionary<StringRange, EventEvaluator>(new StringRangeComparator());
+            Ranges = new OrderedListDictionary<StringRange, EventEvaluator>(new StringRangeComparator());
             ReadWriteLock = readWriteLock;
         }
 

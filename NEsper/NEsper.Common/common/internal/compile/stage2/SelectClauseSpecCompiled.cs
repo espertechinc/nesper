@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
     /// </summary>
     public class SelectClauseSpecCompiled
     {
-        private readonly static SelectClauseElementCompiled[] EMPTY = new SelectClauseElementCompiled[0];
+        private static readonly SelectClauseElementCompiled[] EMPTY = new SelectClauseElementCompiled[0];
 
         private readonly bool _isDistinct;
         private SelectClauseElementCompiled[] _selectClauseElements;

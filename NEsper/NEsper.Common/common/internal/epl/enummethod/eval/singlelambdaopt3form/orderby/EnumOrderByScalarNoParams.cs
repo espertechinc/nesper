@@ -47,11 +47,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			}
 
 			var list = new List<object>(enumcoll);
+			list.Sort();
 			if (_descending) {
-				Collections.Sort(list, Collections.ReverseOrder());
-			}
-			else {
-				Collections.Sort(list);
+				list.Reverse();
 			}
 
 			return list;

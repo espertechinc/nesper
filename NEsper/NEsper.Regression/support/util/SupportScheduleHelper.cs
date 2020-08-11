@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.support.util
         {
             var spi = (EPRuntimeSPI) env.Runtime;
             var visitor = new ScheduleVisitorAll();
-            spi.ServicesContext.SchedulingService.VisitSchedules(visitor);
+            spi.ServicesContext.SchedulingServiceSPI.VisitSchedules(visitor);
             return visitor.Count;
         }
 

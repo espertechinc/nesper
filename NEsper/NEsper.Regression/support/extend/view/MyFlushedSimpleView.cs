@@ -34,11 +34,16 @@ namespace com.espertech.esper.regressionlib.support.extend.view
             events = new List<EventBean>();
         }
 
-        public void SetParent(Viewable parent)
+        public void Transfer(AgentInstanceTransferServices services)
         {
-            base.Parent = parent;
-            if (parent != null) {
-                eventType = parent.EventType;
+        }
+
+        public override Viewable Parent {
+            set {
+                base.Parent = value;
+                if (value != null) {
+                    eventType = value.EventType;
+                }
             }
         }
 

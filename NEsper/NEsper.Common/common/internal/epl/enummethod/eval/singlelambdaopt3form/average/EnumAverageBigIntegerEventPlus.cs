@@ -20,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.type;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -113,8 +114,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 				block.IfRefNull("num").BlockContinue();
 			}
 
+			var lhs = Ref("sum");
+			var rhs = SimpleNumberCoercerFactory.CoercerBigInt.CodegenBigInt(Ref("num"), innerType);
+			
 			block.IncrementRef("rowcount")
-				.AssignRef("sum", Op(Ref("sum"), "+", CoercerFactory.SimpleNumberCoercerBigInteger.CodegenDecimal(Ref("num"), innerType)))
+				.AssignRef("sum", Op(lhs, "+", rhs))
 				.BlockEnd();
 		}
 

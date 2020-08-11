@@ -35,10 +35,10 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
             CodegenMethod parent,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(typeof(JsonDelegateEventObjectArray2Dim), typeof(JsonForgeFactoryEventTypeTyped), classScope);
+            var method = parent.MakeChild(typeof(JsonDeserializerEventObjectArray2Dim), typeof(JsonForgeFactoryEventTypeTyped), classScope);
             method.Block
                 .DeclareVar(typeof(JsonDelegateFactory), "factory", NewInstance(delegateFactoryClassName))
-                .MethodReturn(NewInstance(typeof(JsonDelegateEventObjectArray2Dim), fields.BaseHandler, fields.This, Ref("factory"), Constant(componentType)));
+                .MethodReturn(NewInstance(typeof(JsonDeserializerEventObjectArray2Dim), fields.BaseHandler, fields.This, Ref("factory"), Constant(componentType)));
             return LocalMethod(method);
         }
     }

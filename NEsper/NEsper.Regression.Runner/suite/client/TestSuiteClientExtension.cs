@@ -144,7 +144,8 @@ namespace com.espertech.esper.regressionrun.suite.client
             AddEventTypeUDF(
                 "MyItemProducerEventBeanArray",
                 "MyItem",
-                "MyItemProducerEventBeanArray", configuration);
+                "MyItemProducerEventBeanArray",
+                configuration);
             AddEventTypeUDF(
                 "MyItemProducerEventBeanCollection",
                 "MyItem",
@@ -178,15 +179,15 @@ namespace com.espertech.esper.regressionrun.suite.client
                 typeof(SupportConcatWCodegenAggregationFunctionForge));
             configurationCompiler.AddPlugInAggregationFunctionForge("invalidAggFuncForge", typeof(TimeSpan));
             configurationCompiler.AddPlugInAggregationFunctionForge("nonExistAggFuncForge", "com.NoSuchClass");
-            
+
             var configGeneral = new ConfigurationCompilerPlugInAggregationMultiFunction(
-                new [] { "ss","sa","sc","se1","se2","ee" },
+                new[] {"ss", "sa", "sc", "se1", "se2", "ee"},
                 typeof(SupportAggMFMultiRTForge));
             configGeneral.AdditionalConfiguredProperties = Collections.SingletonDataMap("someinfokey", "someinfovalue");
 
             configurationCompiler.AddPlugInAggregationMultiFunction(configGeneral);
             var codegenTestAccum = new ConfigurationCompilerPlugInAggregationMultiFunction(
-                new [] { "collectEvents" },
+                new[] {"collectEvents"},
                 typeof(SupportAggMFEventsAsListForge));
             configurationCompiler.AddPlugInAggregationMultiFunction(codegenTestAccum);
             // For use with the inlined-class example when disabled, comment-in when needed:
@@ -220,24 +221,28 @@ namespace com.espertech.esper.regressionrun.suite.client
                 typeof(MyCountToPatternGuardForge));
             configurationCompiler.AddPlugInPatternGuard("namespace", "name", typeof(string));
 
-        configurationCompiler.AddPlugInDateTimeMethod("roll", typeof(ClientExtendDateTimeMethod.MyLocalDTMForgeFactoryRoll));
-        configurationCompiler.AddPlugInDateTimeMethod("asArrayOfString", typeof(ClientExtendDateTimeMethod.MyLocalDTMForgeFactoryArrayOfString));
-        configurationCompiler.AddPlugInDateTimeMethod("dtmInvalidMethodNotExists", typeof(ClientExtendDateTimeMethod.MyLocalDTMForgeFactoryInvalidMethodNotExists));
-        configurationCompiler.AddPlugInDateTimeMethod("dtmInvalidNotProvided", typeof(ClientExtendDateTimeMethod.MyLocalDTMForgeFactoryInvalidNotProvided));
-        configurationCompiler.AddPlugInDateTimeMethod("someDTMInvalidReformat", typeof(ClientExtendDateTimeMethod.MyLocalDTMForgeFactoryInvalidReformat));
-        configurationCompiler.AddPlugInDateTimeMethod("someDTMInvalidNoOp", typeof(ClientExtendDateTimeMethod.MyLocalDTMForgeFactoryInvalidNoOp));
+            configurationCompiler.AddPlugInDateTimeMethod("roll", typeof(ClientExtendDateTimeMethod.MyLocalDTMForgeFactoryRoll));
+            configurationCompiler.AddPlugInDateTimeMethod("asArrayOfString", typeof(ClientExtendDateTimeMethod.MyLocalDTMForgeFactoryArrayOfString));
+            configurationCompiler.AddPlugInDateTimeMethod(
+                "dtmInvalidMethodNotExists",
+                typeof(ClientExtendDateTimeMethod.MyLocalDTMForgeFactoryInvalidMethodNotExists));
+            configurationCompiler.AddPlugInDateTimeMethod("dtmInvalidNotProvided", typeof(ClientExtendDateTimeMethod.MyLocalDTMForgeFactoryInvalidNotProvided));
+            configurationCompiler.AddPlugInDateTimeMethod("someDTMInvalidReformat", typeof(ClientExtendDateTimeMethod.MyLocalDTMForgeFactoryInvalidReformat));
+            configurationCompiler.AddPlugInDateTimeMethod("someDTMInvalidNoOp", typeof(ClientExtendDateTimeMethod.MyLocalDTMForgeFactoryInvalidNoOp));
 
-        configurationCompiler.AddPlugInEnumMethod("enumPlugInMedian", typeof(ClientExtendEnumMethod.MyLocalEnumMethodForgeMedian));
-        configurationCompiler.AddPlugInEnumMethod("enumPlugInOne", typeof(ClientExtendEnumMethod.MyLocalEnumMethodForgeOne));
-        configurationCompiler.AddPlugInEnumMethod("enumPlugInEarlyExit", typeof(ClientExtendEnumMethod.MyLocalEnumMethodForgeEarlyExit));
-        configurationCompiler.AddPlugInEnumMethod("enumPlugInReturnEvents", typeof(ClientExtendEnumMethod.MyLocalEnumMethodForgePredicateReturnEvents));
-        configurationCompiler.AddPlugInEnumMethod("enumPlugInReturnSingleEvent", typeof(ClientExtendEnumMethod.MyLocalEnumMethodForgePredicateReturnSingleEvent));
-        configurationCompiler.AddPlugInEnumMethod("enumPlugInTwoLambda", typeof(ClientExtendEnumMethod.MyLocalEnumMethodForgeTwoLambda));
-        configurationCompiler.AddPlugInEnumMethod("enumPlugInLambdaEventWPredicateAndIndex", typeof(ClientExtendEnumMethod.MyLocalEnumMethodForgeThree));
-        configurationCompiler.AddPlugInEnumMethod("enumPlugInLambdaScalarWPredicateAndIndex", typeof(ClientExtendEnumMethod.MyLocalEnumMethodForgeThree));
-        configurationCompiler.AddPlugInEnumMethod("enumPlugInLambdaScalarWStateAndValue", typeof(ClientExtendEnumMethod.MyLocalEnumMethodForgeStateWValue));
+            configurationCompiler.AddPlugInEnumMethod("enumPlugInMedian", typeof(ClientExtendEnumMethod.MyLocalEnumMethodForgeMedian));
+            configurationCompiler.AddPlugInEnumMethod("enumPlugInOne", typeof(ClientExtendEnumMethod.MyLocalEnumMethodForgeOne));
+            configurationCompiler.AddPlugInEnumMethod("enumPlugInEarlyExit", typeof(ClientExtendEnumMethod.MyLocalEnumMethodForgeEarlyExit));
+            configurationCompiler.AddPlugInEnumMethod("enumPlugInReturnEvents", typeof(ClientExtendEnumMethod.MyLocalEnumMethodForgePredicateReturnEvents));
+            configurationCompiler.AddPlugInEnumMethod(
+                "enumPlugInReturnSingleEvent",
+                typeof(ClientExtendEnumMethod.MyLocalEnumMethodForgePredicateReturnSingleEvent));
+            configurationCompiler.AddPlugInEnumMethod("enumPlugInTwoLambda", typeof(ClientExtendEnumMethod.MyLocalEnumMethodForgeTwoLambda));
+            configurationCompiler.AddPlugInEnumMethod("enumPlugInLambdaEventWPredicateAndIndex", typeof(ClientExtendEnumMethod.MyLocalEnumMethodForgeThree));
+            configurationCompiler.AddPlugInEnumMethod("enumPlugInLambdaScalarWPredicateAndIndex", typeof(ClientExtendEnumMethod.MyLocalEnumMethodForgeThree));
+            configurationCompiler.AddPlugInEnumMethod("enumPlugInLambdaScalarWStateAndValue", typeof(ClientExtendEnumMethod.MyLocalEnumMethodForgeStateWValue));
 
-            
+
             configuration.Common.AddImportType(typeof(ClientExtendSingleRowFunction));
 
             configuration.Runtime.Threading.IsRuntimeFairlock = true;
@@ -259,33 +264,58 @@ namespace com.espertech.esper.regressionrun.suite.client
         }
 
         [Test, RunInApplicationDomain]
-        public void TestClientExtendAdapterLoaderLoad()
+
+        public void TestClientExtendUDFReturnTypeIsEvents()
         {
-            var session = RegressionRunner.Session();
+            RegressionRunner.Run(_session, new ClientExtendUDFReturnTypeIsEvents());
+        }
 
-            var props = new Properties();
-            props.Put("name", "val");
-            session.Configuration.Runtime.AddPluginLoader("MyLoader", typeof(SupportPluginLoader), props);
+        [Test, RunInApplicationDomain]
+        public void TestClientExtendUDFVarargs()
+        {
+            RegressionRunner.Run(_session, new ClientExtendUDFVarargs());
+        }
 
-            props = new Properties();
-            props.Put("name2", "val2");
-            session.Configuration.Runtime.AddPluginLoader("MyLoader2", typeof(SupportPluginLoader), props);
-
-            RegressionRunner.Run(session, new ClientExtendAdapterLoader());
-
-            session.Destroy();
+        [Test, RunInApplicationDomain]
+        public void TestClientExtendUDFInlinedClass()
+        {
+            RegressionRunner.Run(_session, ClientExtendUDFInlinedClass.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestClientExtendAggregationFunction()
         {
-            RegressionRunner.Run(_session, new ClientExtendAggregationFunction());
+            RegressionRunner.Run(_session, ClientExtendAggregationFunction.Executions());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestClientExtendAggregationInlinedClass()
+        {
+            RegressionRunner.Run(_session, ClientExtendAggregationInlinedClass.Executions());
         }
 
         [Test, RunInApplicationDomain]
         public void TestClientExtendAggregationMultiFunction()
         {
-            RegressionRunner.Run(_session, new ClientExtendAggregationMultiFunction());
+            RegressionRunner.Run(_session, ClientExtendAggregationMultiFunction.Executions());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestClientExtendAggregationMultiFunctionInlinedClass()
+        {
+            RegressionRunner.Run(_session, ClientExtendAggregationMultiFunctionInlinedClass.Executions());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestClientExtendView()
+        {
+            RegressionRunner.Run(_session, new ClientExtendView());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestClientExtendVirtualDataWindow()
+        {
+            RegressionRunner.Run(_session, new ClientExtendVirtualDataWindow());
         }
 
         [Test, RunInApplicationDomain]
@@ -301,55 +331,32 @@ namespace com.espertech.esper.regressionrun.suite.client
         }
 
         [Test, RunInApplicationDomain]
-        public void TestClientExtendUDFReturnTypeIsEvents()
+        public void TestClientExtendAdapterLoaderLoad()
         {
-            RegressionRunner.Run(_session, new ClientExtendUDFReturnTypeIsEvents());
+            RegressionSession session = RegressionRunner.Session();
+
+            Properties props = new Properties();
+            props.Put("name", "val");
+            session.Configuration.Runtime.AddPluginLoader("MyLoader", typeof(SupportPluginLoader), props);
+
+            props = new Properties();
+            props.Put("name2", "val2");
+            session.Configuration.Runtime.AddPluginLoader("MyLoader2", typeof(SupportPluginLoader), props);
+
+            RegressionRunner.Run(_session, new ClientExtendAdapterLoader());
+
+            session.Destroy();
         }
 
         [Test, RunInApplicationDomain]
-        public void TestClientExtendUDFVarargs()
-        {
-            RegressionRunner.Run(_session, new ClientExtendUDFVarargs());
-        }
 
-        [Test, RunInApplicationDomain]
-        public void TestClientExtendView()
-        {
-            RegressionRunner.Run(_session, new ClientExtendView());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestClientExtendVirtualDataWindow()
-        {
-            RegressionRunner.Run(_session, new ClientExtendVirtualDataWindow());
-        }
-        
-        [Test, RunInApplicationDomain]
-        public void TestClientExtendUDFInlinedClass()
-        {
-            RegressionRunner.Run(_session, ClientExtendUDFInlinedClass.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestClientExtendAggregationInlinedClass()
-        {
-            RegressionRunner.Run(_session, ClientExtendAggregationInlinedClass.Executions());
-        }
-
-
-        [Test, RunInApplicationDomain]
-        public void TestClientExtendAggregationMultiFunctionInlinedClass()
-        {
-            RegressionRunner.Run(_session, ClientExtendAggregationMultiFunctionInlinedClass.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
         public void TestClientExtendDateTimeMethod()
         {
             RegressionRunner.Run(_session, ClientExtendDateTimeMethod.Executions());
         }
 
         [Test, RunInApplicationDomain]
+
         public void TestClientExtendEnumMethod()
         {
             RegressionRunner.Run(_session, ClientExtendEnumMethod.Executions());

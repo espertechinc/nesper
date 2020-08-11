@@ -13,7 +13,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
-using static com.espertech.esper.common.@internal.epl.agg.access.sorted.AggregationMethodSortedWrapperNavigableMap;
+using static com.espertech.esper.common.@internal.epl.agg.access.sorted.AggregationMethodSortedWrapperDictionary;
 using static com.espertech.esper.common.@internal.epl.agg.access.sorted.AggregatorAccessSortedImpl;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.sorted

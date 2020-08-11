@@ -37,12 +37,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 	public class AggregatorAccessSortedMinMaxByEver : AggregatorAccessWFilterBase,
 		AggregatorAccessSorted
 	{
-		private readonly AggregationStateMinMaxByEverForge forge;
-		private readonly CodegenExpressionMember currentMinMaxBean;
-		private readonly CodegenExpressionField currentMinMaxBeanSerde;
-		private readonly CodegenExpressionMember currentMinMax;
-		private readonly CodegenExpressionInstanceField currentMinMaxSerde;
-		private readonly CodegenExpressionInstanceField comparator;
+		private readonly AggregationStateMinMaxByEverForge _forge;
+		private readonly CodegenExpressionMember _currentMinMaxBean;
+		private readonly CodegenExpressionInstanceField _currentMinMaxBeanSerde;
+		private readonly CodegenExpressionMember _currentMinMax;
+		private readonly CodegenExpressionInstanceField _currentMinMaxSerde;
+		private readonly CodegenExpressionInstanceField _comparator;
 
 		public AggregatorAccessSortedMinMaxByEver(
 			AggregationStateMinMaxByEverForge forge,
@@ -53,21 +53,23 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			ExprNode optionalFilter)
 			: base(optionalFilter)
 		{
-			this.forge = forge;
-			currentMinMaxBean = membersColumnized.AddMember(col, typeof(EventBean), "currentMinMaxBean");
-			currentMinMaxBeanSerde = classScope.AddOrGetDefaultFieldSharable(
-				new CodegenSharableSerdeEventTyped(NULLABLEEVENTMAYCOLLATE, forge.Spec.StreamEventType));
-			currentMinMax = membersColumnized.AddMember(col, typeof(object), "currentMinMax");
+			this._forge = forge;
+			_currentMinMaxBean = membersColumnized.AddMember(col, typeof(EventBean), "currentMinMaxBean");
+			_currentMinMaxBeanSerde = classScope.AddOrGetDefaultFieldSharable(
+				new CodegenSharableSerdeEventTyped(
+					CodegenSharableSerdeEventTyped.CodegenSharableSerdeName.NULLABLEEVENTMAYCOLLATE,
+					forge.Spec.StreamEventType));
+			_currentMinMax = membersColumnized.AddMember(col, typeof(object), "currentMinMax");
 			if (forge.Spec.Criteria.Length == 1) {
-				currentMinMaxSerde = classScope.AddOrGetDefaultFieldSharable(
+				_currentMinMaxSerde = classScope.AddOrGetDefaultFieldSharable(
 					new CodegenSharableSerdeClassTyped(VALUE_NULLABLE, forge.Spec.CriteriaTypes[0], forge.Spec.CriteriaSerdes[0], classScope));
 			}
 			else {
-				currentMinMaxSerde = classScope.AddOrGetDefaultFieldSharable(
+				_currentMinMaxSerde = classScope.AddOrGetDefaultFieldSharable(
 					new CodegenSharableSerdeClassArrayTyped(OBJECTARRAYMAYNULLNULL, forge.Spec.CriteriaTypes, forge.Spec.CriteriaSerdes, classScope));
 			}
 
-			comparator = classScope.AddOrGetDefaultFieldSharable(
+			_comparator = classScope.AddOrGetDefaultFieldSharable(
 				new CodegenFieldSharableComparator(
 					COMPARATOROBJECTARRAYNONHASHABLE,
 					forge.Spec.CriteriaTypes,
@@ -83,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 		{
 			CodegenExpression eps = symbols.GetAddEPS(method);
 			CodegenExpression ctx = symbols.GetAddExprEvalCtx(method);
-			method.Block.DeclareVar(typeof(EventBean), "theEvent", ArrayAtIndex(eps, Constant(forge.Spec.StreamNum)))
+			method.Block.DeclareVar(typeof(EventBean), "theEvent", ArrayAtIndex(eps, Constant(_forge.Spec.StreamNum)))
 				.IfCondition(EqualsNull(Ref("theEvent")))
 				.BlockReturnNoValue()
 				.InstanceMethod(AddEventCodegen(method, namedMethods, classScope), Ref("theEvent"), eps, ctx);
@@ -102,8 +104,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			CodegenMethod method,
 			CodegenClassScope classScope)
 		{
-			method.Block.AssignRef(currentMinMaxBean, ConstantNull())
-				.AssignRef(currentMinMax, ConstantNull());
+			method.Block.AssignRef(_currentMinMaxBean, ConstantNull())
+				.AssignRef(_currentMinMax, ConstantNull());
 		}
 
 		public override void WriteCodegen(
@@ -116,8 +118,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			CodegenClassScope classScope)
 		{
 			method.Block
-				.ExprDotMethod(currentMinMaxSerde, "Write", RowDotMember(row, currentMinMax), output, unitKey, writer)
-				.ExprDotMethod(currentMinMaxBeanSerde, "Write", RowDotMember(row, currentMinMaxBean), output, unitKey, writer);
+				.ExprDotMethod(_currentMinMaxSerde, "Write", RowDotMember(row, _currentMinMax), output, unitKey, writer)
+				.ExprDotMethod(_currentMinMaxBeanSerde, "Write", RowDotMember(row, _currentMinMaxBean), output, unitKey, writer);
 		}
 
 		public override void ReadCodegen(
@@ -129,30 +131,30 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			CodegenClassScope classScope)
 		{
 			method.Block
-				.AssignRef(RowDotMember(row, currentMinMax), Cast(typeof(object), ExprDotMethod(currentMinMaxSerde, "Read", input, unitKey)))
-				.AssignRef(RowDotMember(row, currentMinMaxBean), Cast(typeof(EventBean), ExprDotMethod(currentMinMaxBeanSerde, "Read", input, unitKey)));
+				.AssignRef(RowDotMember(row, _currentMinMax), Cast(typeof(object), ExprDotMethod(_currentMinMaxSerde, "Read", input, unitKey)))
+				.AssignRef(RowDotMember(row, _currentMinMaxBean), Cast(typeof(EventBean), ExprDotMethod(_currentMinMaxBeanSerde, "Read", input, unitKey)));
 		}
 
 		public CodegenExpression GetFirstValueCodegen(
 			CodegenClassScope classScope,
 			CodegenMethod method)
 		{
-			if (forge.Spec.IsMax) {
+			if (_forge.Spec.IsMax) {
 				method.Block.MethodThrowUnsupported();
 			}
 
-			return currentMinMaxBean;
+			return _currentMinMaxBean;
 		}
 
 		public CodegenExpression GetLastValueCodegen(
 			CodegenClassScope classScope,
 			CodegenMethod method)
 		{
-			if (!forge.Spec.IsMax) {
+			if (!_forge.Spec.IsMax) {
 				method.Block.MethodThrowUnsupported();
 			}
 
-			return currentMinMaxBean;
+			return _currentMinMaxBean;
 		}
 
 		public CodegenExpression SizeCodegen()
@@ -180,7 +182,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			CodegenNamedMethods namedMethods,
 			CodegenClassScope classScope)
 		{
-			var comparable = GetComparableWObjectArrayKeyCodegen(forge.Spec.Criteria, currentMinMaxBean, namedMethods, classScope);
+			var comparable = GetComparableWObjectArrayKeyCodegen(_forge.Spec.Criteria, _currentMinMaxBean, namedMethods, classScope);
 
 			var methodNode = parent
 				.MakeChild(typeof(void), this.GetType(), classScope)
@@ -188,14 +190,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 				.AddParam(typeof(EventBean[]), NAME_EPS)
 				.AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
 			methodNode.Block.DeclareVar(typeof(object), "comparable", LocalMethod(comparable, REF_EPS, ConstantTrue(), REF_EXPREVALCONTEXT))
-				.IfCondition(EqualsNull(currentMinMax))
-				.AssignRef(currentMinMax, Ref("comparable"))
-				.AssignRef(currentMinMaxBean, Ref("theEvent"))
+				.IfCondition(EqualsNull(_currentMinMax))
+				.AssignRef(_currentMinMax, Ref("comparable"))
+				.AssignRef(_currentMinMaxBean, Ref("theEvent"))
 				.IfElse()
-				.DeclareVar(typeof(int), "compareResult", ExprDotMethod(comparator, "Compare", currentMinMax, Ref("comparable")))
-				.IfCondition(Relational(Ref("compareResult"), forge.Spec.IsMax ? LT : GT, Constant(0)))
-				.AssignRef(currentMinMax, Ref("comparable"))
-				.AssignRef(currentMinMaxBean, Ref("theEvent"));
+				.DeclareVar(typeof(int), "compareResult", ExprDotMethod(_comparator, "Compare", _currentMinMax, Ref("comparable")))
+				.IfCondition(Relational(Ref("compareResult"), _forge.Spec.IsMax ? LT : GT, Constant(0)))
+				.AssignRef(_currentMinMax, Ref("comparable"))
+				.AssignRef(_currentMinMaxBean, Ref("theEvent"));
 			return methodNode;
 		}
 

@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 				return null;
 			}
 
-			var mapOfArrays = new OrderedDictionary<object, object>(sorted.Sorted.KeyComparer);
+			var mapOfArrays = new OrderedListDictionary<object, object>(sorted.Sorted.KeyComparer);
 			var submap = sorted.Sorted.Between(fromKey, fromInclusive.Value, toKey, toInclusive.Value);
 			foreach (KeyValuePair<object, object> entry in submap) {
 				mapOfArrays.Put(entry.Key, AggregatorAccessSortedImpl.CheckedPayloadGetUnderlyingArray(entry.Value, _underlyingClass));

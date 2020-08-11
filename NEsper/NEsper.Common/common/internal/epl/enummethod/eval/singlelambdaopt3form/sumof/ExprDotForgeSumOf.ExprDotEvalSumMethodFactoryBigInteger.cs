@@ -12,7 +12,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
     {
         private class ExprDotEvalSumMethodFactoryBigInteger : ExprDotEvalSumMethodFactory
         {
-            internal readonly static ExprDotEvalSumMethodFactoryBigInteger INSTANCE = new ExprDotEvalSumMethodFactoryBigInteger();
+            internal static readonly ExprDotEvalSumMethodFactoryBigInteger INSTANCE = new ExprDotEvalSumMethodFactoryBigInteger();
 
             private ExprDotEvalSumMethodFactoryBigInteger()
             {

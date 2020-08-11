@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
     public class RowRecogPartitionStateRepoScheduleStateImpl : RowRecogPartitionStateRepoScheduleState
     {
         private readonly RowRecogPartitionTerminationStateComparator terminationStateCompare;
-        private readonly OrderedDictionary<long, object> schedule = new OrderedDictionary<long, object>();
+        private readonly IOrderedDictionary<long, object> schedule = new OrderedListDictionary<long, object>();
 
         public RowRecogPartitionStateRepoScheduleStateImpl(
             RowRecogPartitionTerminationStateComparator terminationStateCompare)

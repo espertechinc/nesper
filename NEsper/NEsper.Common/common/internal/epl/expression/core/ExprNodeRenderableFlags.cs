@@ -10,7 +10,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     public class ExprNodeRenderableFlags
     {
-        public readonly static ExprNodeRenderableFlags DEFAULTFLAGS = new ExprNodeRenderableFlags(true);
+        public static readonly ExprNodeRenderableFlags DEFAULTFLAGS = new ExprNodeRenderableFlags(true);
 
         private bool _withStreamPrefix;
 

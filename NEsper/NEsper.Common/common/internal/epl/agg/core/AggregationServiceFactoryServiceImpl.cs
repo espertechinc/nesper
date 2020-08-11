@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 {
     public class AggregationServiceFactoryServiceImpl : AggregationServiceFactoryService
     {
-        public readonly static AggregationServiceFactoryServiceImpl INSTANCE =
+        public static readonly AggregationServiceFactoryServiceImpl INSTANCE =
             new AggregationServiceFactoryServiceImpl();
 
         private AggregationServiceFactoryServiceImpl()

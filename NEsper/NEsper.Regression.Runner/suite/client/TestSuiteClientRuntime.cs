@@ -179,7 +179,7 @@ namespace com.espertech.esper.regressionrun.suite.client
         [Test, RunInApplicationDomain]
         public void TestClientRuntimeSubscriber()
         {
-            RegressionRunner.Run(_session, new ClientRuntimeSubscriber());
+            RegressionRunner.Run(_session, ClientRuntimeSubscriber.Executions());
         }
 
         [Test, RunInApplicationDomain]

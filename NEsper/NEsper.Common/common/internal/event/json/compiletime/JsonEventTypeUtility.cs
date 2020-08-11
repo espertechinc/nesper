@@ -424,33 +424,55 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			Attribute[] annotations,
 			StatementCompileTimeServices services)
 		{
-			IDictionary<string, JsonForgeDesc> valueForges = new Dictionary<string, JsonForgeDesc>();
+			var valueForges = new Dictionary<string, JsonForgeDesc>();
 			foreach (var entry in compiledTyping) {
 				var type = entry.Value;
 				var optionalField = fields.Get(entry.Key);
+				
 				JsonForgeDesc forgeDesc;
+				
 				if (type == null) {
-					forgeDesc = new JsonForgeDesc(entry.Key, null, null, JsonEndValueForgeNull.INSTANCE, JsonWriteForgeNull.INSTANCE);
+					forgeDesc = new JsonForgeDesc(
+						entry.Key,
+						null,
+						null,
+						JsonEndValueForgeNull.INSTANCE,
+						JsonWriteForgeNull.INSTANCE);
 				}
-				else if (type is Type) {
-					var clazz = (Type) type;
-					forgeDesc = JsonForgeFactoryBuiltinClassTyped.Forge(clazz, entry.Key, optionalField, deepClasses, annotations, services);
+				else if (type is Type clazz) {
+					forgeDesc = JsonForgeFactoryBuiltinClassTyped.Forge(
+						clazz,
+						entry.Key,
+						optionalField,
+						deepClasses,
+						annotations,
+						services);
 				}
 				else if (type is TypeBeanOrUnderlying) {
 					var eventType = ((TypeBeanOrUnderlying) type).EventType;
 					ValidateJsonOrMapType(eventType);
-					if (eventType is JsonEventType) {
-						forgeDesc = JsonForgeFactoryEventTypeTyped.ForgeNonArray(entry.Key, (JsonEventType) eventType);
+					if (eventType is JsonEventType jsonEventType) {
+						forgeDesc = JsonForgeFactoryEventTypeTyped.ForgeNonArray(
+							entry.Key,
+							jsonEventType);
 					}
 					else {
-						forgeDesc = JsonForgeFactoryBuiltinClassTyped.Forge(typeof(IDictionary<string, object>), entry.Key, optionalField, deepClasses, annotations, services);
+						forgeDesc = JsonForgeFactoryBuiltinClassTyped.Forge(
+							typeof(IDictionary<string, object>),
+							entry.Key,
+							optionalField,
+							deepClasses,
+							annotations,
+							services);
 					}
 				}
 				else if (type is TypeBeanOrUnderlying[]) {
 					var eventType = ((TypeBeanOrUnderlying[]) type)[0].EventType;
 					ValidateJsonOrMapType(eventType);
-					if (eventType is JsonEventType) {
-						forgeDesc = JsonForgeFactoryEventTypeTyped.ForgeArray(entry.Key, (JsonEventType) eventType);
+					if (eventType is JsonEventType jsonEventType) {
+						forgeDesc = JsonForgeFactoryEventTypeTyped.ForgeArray(
+							entry.Key,
+							jsonEventType);
 					}
 					else {
 						forgeDesc = JsonForgeFactoryBuiltinClassTyped.Forge(

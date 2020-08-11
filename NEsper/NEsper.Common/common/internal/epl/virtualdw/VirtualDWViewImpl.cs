@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly static EventTableOrganization TABLE_ORGANIZATION =
+        private static readonly EventTableOrganization TABLE_ORGANIZATION =
             new EventTableOrganization(null, false, false, 0, null, EventTableOrganizationType.VDW);
 
         private readonly VirtualDWViewFactory _factory;

@@ -11,7 +11,6 @@ using System;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.multikey;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -72,40 +71,53 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 }
             }
 
-            CodegenExpressionNewAnonymousClass clazz = NewAnonymousClass(
-                method.Block,
-                typeof(AggregationGroupByRollupLevel),
-                Arrays.AsList(Constant(_levelNumber), Constant(_levelOffset), Constant(RollupKeys), serde));
+            // CodegenExpressionNewAnonymousClass clazz = NewAnonymousClass(
+            //     method.Block,
+            //     typeof(AggregationGroupByRollupLevel),
+            //     Arrays.AsList(Constant(_levelNumber), Constant(_levelOffset), Constant(RollupKeys), serde));
 
-            var computeSubkey = CodegenMethod
-                .MakeParentNode(typeof(object), GetType(), classScope)
-                .AddParam(typeof(object), "groupKey");
-            clazz.AddMethod("computeSubkey", computeSubkey);
+            // var computeSubkey = CodegenMethod
+            //     .MakeParentNode(typeof(object), GetType(), classScope)
+            //     .AddParam(typeof(object), "groupKey");
+            // clazz.AddMethod("computeSubkey", computeSubkey);
 
-            if (IsAggregationTop) {
-                computeSubkey.Block.MethodReturn(ConstantNull());
-            }
-            else if (_allKeysMultikey == null || _allGroupKeyTypes.Length == RollupKeys.Length) {
-                computeSubkey.Block.MethodReturn(Ref("groupKey"));
-            }
-            else {
-                computeSubkey.Block
-                    .DeclareVar(_allKeysMultikey.ClassNameMK, "mk", Cast(_allKeysMultikey.ClassNameMK, Ref("groupKey")));
-                if (RollupKeys.Length == 1 && (_subKeyMultikey == null || _subKeyMultikey.ClassNameMK == null)) {
-                    computeSubkey.Block.MethodReturn(ExprDotMethod(Ref("mk"), "getKey", Constant(RollupKeys[0])));
-                }
-                else {
-                    var expressions = new CodegenExpression[RollupKeys.Length];
-                    for (var i = 0; i < RollupKeys.Length; i++) {
-                        var index = RollupKeys[i];
-                        var keyExpr = ExprDotMethod(Ref("mk"), "getKey", Constant(index));
-                        expressions[i] = Cast(_allGroupKeyTypes[index], keyExpr);
-                    }
+            var computeSubkey = new CodegenExpressionLambda(method.Block)
+                .WithParam(typeof(object), "groupKey")
+                .WithBody(
+                    block => {
+           
+                        if (IsAggregationTop) {
+                            block.BlockReturn(ConstantNull());
+                        }
+                        else if (_allKeysMultikey == null || _allGroupKeyTypes.Length == RollupKeys.Length) {
+                            block.BlockReturn(Ref("groupKey"));
+                        }
+                        else {
+                            block
+                                .DeclareVar(_allKeysMultikey.ClassNameMK, "mk", Cast(_allKeysMultikey.ClassNameMK, Ref("groupKey")));
+                            if (RollupKeys.Length == 1 && (_subKeyMultikey == null || _subKeyMultikey.ClassNameMK == null)) {
+                                block.BlockReturn(ExprDotMethod(Ref("mk"), "getKey", Constant(RollupKeys[0])));
+                            }
+                            else {
+                                var expressions = new CodegenExpression[RollupKeys.Length];
+                                for (var i = 0; i < RollupKeys.Length; i++) {
+                                    var index = RollupKeys[i];
+                                    var keyExpr = ExprDotMethod(Ref("mk"), "getKey", Constant(index));
+                                    expressions[i] = Cast(_allGroupKeyTypes[index], keyExpr);
+                                }
 
-                    computeSubkey.Block.MethodReturn(NewInstance(_subKeyMultikey.ClassNameMK, expressions));
-                }
-            }
+                                block.BlockReturn(NewInstance(_subKeyMultikey.ClassNameMK, expressions));
+                            }
+                        }
+                    });
 
+            var clazz = NewInstance<ProxyAggregationGroupByRollupLevel>(
+                Constant(_levelNumber),
+                Constant(_levelOffset),
+                Constant(RollupKeys),
+                serde,
+                computeSubkey);                
+ 
             method.Block.MethodReturn(clazz);
             return LocalMethod(method);
         }

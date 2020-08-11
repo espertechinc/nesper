@@ -124,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             if (hasTopk) {
                 var topkMax = input.ReadInt();
 
-                var topMap = new OrderedDictionary<long, object>(
+                var topMap = new OrderedListDictionary<long, object>(
                     Comparers.Default<long>().Inverse());
                 var refMap = new Dictionary<ByteBuffer, long>();
                 var numRows = input.ReadInt();

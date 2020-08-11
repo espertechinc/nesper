@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 					ProcInitCtorScoped = () => {
 						CodegenExpression type = EventTypeUtility
 							.ResolveTypeCodegen(forge.Spec.StreamEventType, EPStatementInitServicesConstants.REF);
-						CodegenExpression criteriaSerdes = DataInputOutputSerdeForge
+						CodegenExpression criteriaSerdes = DataInputOutputSerdeForgeExtensions
 							.CodegenArray(forge.Spec.CriteriaSerdes, classScope.NamespaceScope.InitMethod, classScope, null);
 						return ExprDotMethodChain(EPStatementInitServicesConstants.REF)
 							.Add(EPStatementInitServicesConstants.EVENTTYPERESOLVER)
@@ -235,7 +235,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 		{
 			method.Block
 				.Apply(ReadInt(row, size, input))
-				.AssignRef(RowDotMember(row, sorted), NewInstance(typeof(OrderedDictionary<object, object>), comparator))
+				.AssignRef(RowDotMember(row, sorted), NewInstance(typeof(OrderedListDictionary<object, object>), comparator))
 				.ExprDotMethod(sortedSerde, "Read", RowDotMember(row, sorted), input, unitKey);
 			if (joinRefs != null) {
 				method.Block.AssignRef(

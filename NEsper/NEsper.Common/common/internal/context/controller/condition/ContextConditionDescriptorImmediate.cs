@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
 {
     public class ContextConditionDescriptorImmediate : ContextConditionDescriptor
     {
-        public readonly static ContextConditionDescriptorImmediate INSTANCE = new ContextConditionDescriptorImmediate();
+        public static readonly ContextConditionDescriptorImmediate INSTANCE = new ContextConditionDescriptorImmediate();
 
         private ContextConditionDescriptorImmediate()
         {

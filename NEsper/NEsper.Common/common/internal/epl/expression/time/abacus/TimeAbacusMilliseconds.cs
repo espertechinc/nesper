@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
 {
     public class TimeAbacusMilliseconds : TimeAbacus
     {
-        public readonly static TimeAbacusMilliseconds INSTANCE = new TimeAbacusMilliseconds();
+        public static readonly TimeAbacusMilliseconds INSTANCE = new TimeAbacusMilliseconds();
 
         private TimeAbacusMilliseconds()
         {

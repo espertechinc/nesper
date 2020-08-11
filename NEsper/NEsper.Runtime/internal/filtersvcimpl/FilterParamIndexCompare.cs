@@ -31,7 +31,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
     {
         private static readonly ILog Log = LogManager.GetLogger(typeof(FilterParamIndexCompare));
 
-        private readonly OrderedDictionary<object, EventEvaluator> constantsMap;
+        private readonly IOrderedDictionary<object, EventEvaluator> constantsMap;
         private readonly IReaderWriterLock constantsMapRWLock;
 
         private double? lowerBounds;
@@ -43,7 +43,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             FilterOperator filterOperator)
             : base(filterOperator, lookupable)
         {
-            constantsMap = new OrderedDictionary<object, EventEvaluator>();
+            constantsMap = new OrderedListDictionary<object, EventEvaluator>();
             constantsMapRWLock = readWriteLock;
 
             if (filterOperator != FilterOperator.GREATER &&

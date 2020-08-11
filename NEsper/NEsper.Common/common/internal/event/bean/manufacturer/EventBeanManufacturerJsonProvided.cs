@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 	/// </summary>
 	public class EventBeanManufacturerJsonProvided : EventBeanManufacturer
 	{
-		private readonly static ILog Log = LogManager.GetLogger(typeof(EventBeanManufacturerJsonProvided));
+		private static readonly ILog Log = LogManager.GetLogger(typeof(EventBeanManufacturerJsonProvided));
 
 		private readonly BeanInstantiator _beanInstantiator;
 		private readonly JsonEventType _jsonEventType;

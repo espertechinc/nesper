@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serde
 			DataOutput output)
 		{
 			output.WriteInt(@object.Count);
-			foreach (KeyValuePair<string, object> entry in @object) {
+			foreach (var entry in @object) {
 				output.WriteUTF(entry.Key);
 				WriteValue(entry.Value, output);
 			}
@@ -41,11 +41,11 @@ namespace com.espertech.esper.common.@internal.@event.json.serde
 
 		public static IDictionary<string, object> Read(DataInput input)
 		{
-			int size = input.ReadInt();
+			var size = input.ReadInt();
 			var map = new LinkedHashMap<string, object>();
-			for (int i = 0; i < size; i++) {
-				string key = input.ReadUTF();
-				object value = ReadValue(input);
+			for (var i = 0; i < size; i++) {
+				var key = input.ReadUTF();
+				var value = ReadValue(input);
 				map.Put(key, value);
 			}
 
@@ -57,30 +57,30 @@ namespace com.espertech.esper.common.@internal.@event.json.serde
 			DataOutput output)
 		{
 			if (value == null) {
-				output.Write(NULL_TYPE);
+				output.WriteByte(NULL_TYPE);
 			}
 			else if (value is int intValue) {
-				output.Write(INT_TYPE);
+				output.WriteByte(INT_TYPE);
 				output.WriteInt(intValue);
 			}
 			else if (value is double doubleValue) {
-				output.Write(DOUBLE_TYPE);
+				output.WriteByte(DOUBLE_TYPE);
 				output.WriteDouble(doubleValue);
 			}
 			else if (value is string stringValue) {
-				output.Write(STRING_TYPE);
+				output.WriteByte(STRING_TYPE);
 				output.WriteUTF(stringValue);
 			}
 			else if (value is bool boolValue) {
-				output.Write(BOOLEAN_TYPE);
+				output.WriteByte(BOOLEAN_TYPE);
 				output.WriteBoolean(boolValue);
 			}
 			else if (value is IDictionary<string, object> dictionary) {
-				output.Write(OBJECT_TYPE);
+				output.WriteByte(OBJECT_TYPE);
 				Write(dictionary, output);
 			}
 			else if (value is object[] objectArray) {
-				output.Write(ARRAY_TYPE);
+				output.WriteByte(ARRAY_TYPE);
 				WriteArray(objectArray, output);
 			}
 			else {
@@ -122,16 +122,16 @@ namespace com.espertech.esper.common.@internal.@event.json.serde
 			DataOutput output)
 		{
 			output.WriteInt(value.Length);
-			foreach (object o in value) {
+			foreach (var o in value) {
 				WriteValue(o, output);
 			}
 		}
 
 		public static object[] ReadArray(DataInput input)
 		{
-			int size = input.ReadInt();
-			object[] result = new object[size];
-			for (int i = 0; i < result.Length; i++) {
+			var size = input.ReadInt();
+			var result = new object[size];
+			for (var i = 0; i < result.Length; i++) {
 				result[i] = ReadValue(input);
 			}
 

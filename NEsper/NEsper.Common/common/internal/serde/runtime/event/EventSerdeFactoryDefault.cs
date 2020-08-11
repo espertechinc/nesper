@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.serde.runtime.@event
 	public class EventSerdeFactoryDefault : EventSerdeFactory
 	{
 
-		public readonly static EventSerdeFactoryDefault INSTANCE = new EventSerdeFactoryDefault();
+		public static readonly EventSerdeFactoryDefault INSTANCE = new EventSerdeFactoryDefault();
 
 		private EventSerdeFactoryDefault()
 		{

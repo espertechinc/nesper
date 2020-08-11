@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@base;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -96,8 +97,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 				block.IfRefNull("num").BlockContinue();
 			}
 
+			var lhs = Ref("sum");
+			var rhs = SimpleNumberCoercerFactory.CoercerDecimal.CodegenDecimal(Ref("num"), innerType);
+
 			block.IncrementRef("rowcount")
-				.AssignRef("sum", Op(Ref("sum"), "+", CoercerFactory.SimpleNumberCoercerDecimal.CodegenDecimal(Ref("num"), innerType)))
+				.AssignRef("sum", Op(lhs, "+", rhs))
 				.BlockEnd();
 		}
 

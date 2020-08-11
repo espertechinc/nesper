@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
 
             State = EPDataFlowState.INSTANTIATED;
 
-            _operators = new OrderedDictionary<int, Pair<object, bool>>();
+            _operators = new OrderedListDictionary<int, Pair<object, bool>>();
             foreach (var entry in operators) {
                 _operators.Put(entry.Key, new Pair<object, bool>(entry.Value, false));
             }

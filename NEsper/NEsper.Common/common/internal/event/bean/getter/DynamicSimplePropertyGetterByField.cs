@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			return StaticMethod(GetType(), "DynamicSimplePropertyCall", desc, @object);
 		}
 
-		public CodegenExpression UnderlyingExistsCodegen(
+		public override CodegenExpression UnderlyingExistsCodegen(
 			CodegenExpression underlyingExpression,
 			CodegenMethodScope codegenMethodScope,
 			CodegenClassScope codegenClassScope)
@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			return CacheAndExistsCodegen(underlyingExpression, codegenMethodScope, codegenClassScope);
 		}
 
-		public bool IsExistsProperty(EventBean eventBean)
+		public override bool IsExistsProperty(EventBean eventBean)
 		{
 			return CacheAndExists(Cache, this, eventBean.Underlying, EventBeanTypedEventFactory);
 		}

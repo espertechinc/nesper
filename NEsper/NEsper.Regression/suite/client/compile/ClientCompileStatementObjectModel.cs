@@ -12,6 +12,7 @@ using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
@@ -43,6 +44,30 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 model.SelectClause = SelectClause.CreateWildcard();
                 model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).Name));
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
+                SerializableObjectCopier.CopyMayFail(env.Container, model);
+            }
+        }
+
+        private class ClientCompileSODACreateFromOMComplete : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                EPStatementObjectModel model = new EPStatementObjectModel();
+                model.SetInsertInto(InsertIntoClause.Create("ReadyStreamAvg", "line", "avgAge"));
+                model.SetSelect(SelectClause.Create().Add("line").Add(Expressions.Avg("age"), "avgAge"));
+                Filter filter = Filter.Create(typeof(SupportBean).FullName, Expressions.In("line", 1, 8, 10));
+                model.SetFrom(FromClause.Create(FilterStream.Create(filter, "RS").AddView("time", Expressions.Constant(10))));
+                model.SetWhere(Expressions.IsNotNull("waverId"));
+                model.SetGroupBy(GroupByClause.Create("line"));
+                model.SetHaving(Expressions.Lt(Expressions.Avg("age"), Expressions.Constant(0)));
+                model.SetOutputLimit(OutputLimitClause.Create(Expressions.TimePeriod(null, null, null, 10, null)));
+                model.SetOrderBy(OrderByClause.Create("line"));
+
+                Assert.AreEqual(
+                    "insert into ReadyStreamAvg(line, avgAge) select line, avg(age) as avgAge from " +
+                    typeof(SupportBean).CleanName() +
+                    "(line in (1,8,10))#time(10) as RS where waverId is not null group by line having avg(age)<0 output every 10 seconds order by line",
+                    model.ToEPL());
                 SerializableObjectCopier.CopyMayFail(env.Container, model);
             }
         }

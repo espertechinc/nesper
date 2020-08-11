@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.multikey
 {
 	public class DIOMultiKeyArrayObjectSerde : DataInputOutputSerdeBase<MultiKeyArrayObject>
 	{
-		public readonly static DIOMultiKeyArrayObjectSerde INSTANCE = new DIOMultiKeyArrayObjectSerde();
+		public static readonly DIOMultiKeyArrayObjectSerde INSTANCE = new DIOMultiKeyArrayObjectSerde();
 
 		public override void Write(
 			MultiKeyArrayObject mk,
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.multikey
 			output.WriteInt(@object.Length);
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			ObjectOutputStream oos = new ObjectOutputStream(baos);
-			foreach (object i in @object) {
+			foreach (var i in @object) {
 				oos.WriteObject(i);
 			}
 
@@ -64,33 +64,20 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.multikey
 
 		private object[] ReadInternal(DataInput input)
 		{
-			int len = input.ReadInt();
+			var len = input.ReadInt();
 			if (len == -1) {
 				return null;
 			}
 
-			object[] array = new object[len];
-			int size = input.ReadInt();
-			byte[] buf = new byte[size];
+			var array = new object[len];
+			var size = input.ReadInt();
+			var buf = new byte[size];
 			input.ReadFully(buf);
 
 			ByteArrayInputStream bais = new ByteArrayInputStream(buf);
-			try {
-				ObjectInputStream ois = new ObjectInputStreamWithTCCL(bais);
-				for (int i = 0; i < array.Length; i++) {
-					array[i] = ois.ReadObject();
-				}
-			}
-			catch (IOException e) {
-				if (e.Message != null) {
-					throw new RuntimeException("IO error de-serializing object: " + e.Message, e);
-				}
-				else {
-					throw new RuntimeException("IO error de-serializing object", e);
-				}
-			}
-			catch (TypeLoadException e) {
-				throw new RuntimeException("Class not found de-serializing object: " + e.Message, e);
+			ObjectInputStream ois = new ObjectInputStreamWithTCCL(bais);
+			for (var i = 0; i < array.Length; i++) {
+				array[i] = ois.ReadObject();
 			}
 
 			return array;

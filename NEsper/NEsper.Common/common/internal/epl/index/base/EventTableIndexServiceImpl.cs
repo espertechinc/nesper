@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
 {
     public class EventTableIndexServiceImpl : EventTableIndexService
     {
-        public readonly static EventTableIndexServiceImpl INSTANCE = new EventTableIndexServiceImpl();
+        public static readonly EventTableIndexServiceImpl INSTANCE = new EventTableIndexServiceImpl();
 
         public bool AllowInitIndex(bool isRecoveringResilient)
         {

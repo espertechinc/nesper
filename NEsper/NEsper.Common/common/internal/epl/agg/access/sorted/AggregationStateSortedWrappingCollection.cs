@@ -18,10 +18,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 {
     public class AggregationStateSortedWrappingCollection : ICollection<EventBean>
     {
-        private readonly OrderedDictionary<object, object> _sorted;
+        private readonly IOrderedDictionary<object, object> _sorted;
 
         public AggregationStateSortedWrappingCollection(
-            OrderedDictionary<object, object> sorted,
+            IOrderedDictionary<object, object> sorted,
             int count)
         {
             _sorted = sorted;

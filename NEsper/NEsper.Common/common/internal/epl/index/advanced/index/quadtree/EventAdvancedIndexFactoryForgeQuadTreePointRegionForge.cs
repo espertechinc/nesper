@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 {
     public class EventAdvancedIndexFactoryForgeQuadTreePointRegionForge : EventAdvancedIndexFactoryForgeQuadTreeForge
     {
-        public readonly static EventAdvancedIndexFactoryForgeQuadTreePointRegionForge INSTANCE =
+        public static readonly EventAdvancedIndexFactoryForgeQuadTreePointRegionForge INSTANCE =
             new EventAdvancedIndexFactoryForgeQuadTreePointRegionForge();
 
         private EventAdvancedIndexFactoryForgeQuadTreePointRegionForge()

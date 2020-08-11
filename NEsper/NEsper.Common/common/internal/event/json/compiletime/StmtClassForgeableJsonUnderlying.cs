@@ -6,11 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 
-using com.espertech.esper.common.client.json.minimaljson;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -21,7 +20,6 @@ using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.json.parser.forge;
 using com.espertech.esper.common.@internal.@event.json.write;
 using com.espertech.esper.compat.collections;
-
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational; // GT, LT
@@ -52,7 +50,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			bool includeDebugSymbols,
 			bool fireAndForget)
 		{
-			CodegenCtor ctor = new CodegenCtor(typeof(StmtClassForgeableJsonUnderlying), includeDebugSymbols, EmptyList<CodegenTypedParam>.Instance);
+			var ctor = new CodegenCtor(typeof(StmtClassForgeableJsonUnderlying), includeDebugSymbols, EmptyList<CodegenTypedParam>.Instance);
 			if (NeedDynamic()) {
 				ctor.Block.AssignRef(DYNAMIC_PROP_FIELD, NewInstance(typeof(LinkedHashMap<string, object>)));
 			}
@@ -110,7 +108,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 
 			// nativeWrite
 			CodegenMethod nativeWriteMethod = CodegenMethod.MakeParentNode(typeof(void), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-				.AddParam(typeof(JsonWriter), "writer")
+				.AddParam(typeof(Utf8JsonWriter), "writer")
 				.AddThrown(typeof(IOException));
 			MakeNativeWrite(nativeWriteMethod, classScope);
 			CodegenStackGenerator.RecursiveBuildStack(nativeWriteMethod, "NativeWrite", methods, properties);

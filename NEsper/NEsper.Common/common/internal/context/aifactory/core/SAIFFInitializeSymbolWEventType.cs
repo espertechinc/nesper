@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
 {
     public class SAIFFInitializeSymbolWEventType : SAIFFInitializeSymbol
     {
-        public readonly static CodegenExpressionRef REF_EVENTTYPE = Ref("eventType");
+        public static readonly CodegenExpressionRef REF_EVENTTYPE = Ref("eventType");
 
         private CodegenExpressionRef optionalEventTypeRef;
 

@@ -18,7 +18,7 @@ using com.espertech.esper.compat.io;
 namespace com.espertech.esper.common.@internal.serde.serdeset.multikey
 {
 	public class DIOMultiKeyArrayShortSerde : DataInputOutputSerdeBase<MultiKeyArrayShort> {
-	    public readonly static DIOMultiKeyArrayShortSerde INSTANCE = new DIOMultiKeyArrayShortSerde();
+	    public static readonly DIOMultiKeyArrayShortSerde INSTANCE = new DIOMultiKeyArrayShortSerde();
 
 	    public override void Write(MultiKeyArrayShort mk, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
 	        WriteInternal(mk.Keys, output);

@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
     {
         public int Count { get; set; }
 
-        public OrderedDictionary<object, object> Sorted { get; set; }
+        public IOrderedDictionary<object, object> Sorted { get; set; }
 
         public EventBean FirstValue {
             get {

@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.view.rank
         private readonly IStreamSortRankRandomAccess _optionalRankedRandomAccess;
         private readonly RankWindowViewFactory _rankWindowViewFactory;
 
-        private readonly OrderedDictionary<object, object>
+        private readonly IOrderedDictionary<object, object>
             _sortedEvents; // key is computed sort-key, value is either List<EventBean> or EventBean
 
         private readonly int _sortWindowSize;
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.view.rank
             _optionalRankedRandomAccess = optionalRankedRandomAccess;
             _agentInstanceContext = agentInstanceContext.AgentInstanceContext;
 
-            _sortedEvents = new OrderedDictionary<object, object>(rankWindowViewFactory.Comparer);
+            _sortedEvents = new OrderedListDictionary<object, object>(rankWindowViewFactory.Comparer);
             _uniqueKeySortKeys = new Dictionary<object, object>();
         }
 

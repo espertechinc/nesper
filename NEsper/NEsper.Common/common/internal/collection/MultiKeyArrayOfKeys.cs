@@ -57,6 +57,11 @@ namespace com.espertech.esper.common.@internal.collection
             return Array[index];
         }
 
+        public T this[int index] {
+            get { return Array[index]; }
+            set { Array[index] = value; }
+        }
+
         public override bool Equals(object other)
         {
             if (other == this) {

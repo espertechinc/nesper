@@ -363,12 +363,8 @@ namespace com.espertech.esper.common.@internal.@event.core
             Type generator,
             CodegenClassScope classScope)
         {
-            getterType = Boxing.GetBoxedType(getterType);
+            getterType = getterType.GetBoxedType();
             
-            
-            
-            CodegenExpressionNewAnonymousClass anonymous = newAnonymousClass(method.Block, interfaceClass);
-
             IList<CodegenNamedParam> parameters;
             if (interfaceClass == typeof(EventPropertyValueGetter)) {
                 parameters = CodegenNamedParam.From(typeof(EventBean), "bean");
@@ -377,15 +373,18 @@ namespace com.espertech.esper.common.@internal.@event.core
             } else {
                 throw new IllegalStateException("Unrecognized interface class " + interfaceClass.Name);
             }
+
+            //CodegenExpressionNewAnonymousClass anonymous = newAnonymousClass(method.Block, interfaceClass);
+
             var getOrEval = CodegenMethod
                 .MakeParentNode(typeof(Object), generator, classScope)
                 .AddParam(parameters);
             anonymous.AddMethod(interfaceClass == typeof(EventPropertyValueGetter) ? "get" : "eval", getOrEval);
 
             var result = getter.EventBeanGetCodegen(Ref("bean"), method, classScope);
-            if (optionalCoercionType != null && getterType != optionalCoercionType && TypeHelper.IsNumeric(getterType)) {
+            if (optionalCoercionType != null && getterType != optionalCoercionType && getterType.IsNumeric()) {
                 var coercer = SimpleNumberCoercerFactory.GetCoercer(
-                    getterType, Boxing.GetBoxedType(optionalCoercionType));
+                    getterType, optionalCoercionType.GetBoxedType());
                 getOrEval.Block.DeclareVar(getterType, "prop", Cast(getterType, result));
                 result = coercer.CoerceCodegen(Ref("prop"), getterType);
             }
@@ -1007,7 +1006,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
                     var isMapped = asType.IsGenericStringDictionary();
                     if (isMapped) {
-                        componentType = GenericExtensions.GetDictionaryValueType(asType);
+                        componentType = asType.GetDictionaryValueType();
 #if NOT_IN_JAVA
                         componentType = typeof(object); // Cannot determine the type at runtime
 #endif
@@ -1930,10 +1929,11 @@ namespace com.espertech.esper.common.@internal.@event.core
             ISet<EventType> superTypes,
             EventType child)
         {
-            if (child.SuperTypes != null) {
-                for (var i = 0; i < child.SuperTypes.Length; i++) {
-                    superTypes.Add(child.SuperTypes[i]);
-                    AddRecursiveSupertypes(superTypes, child.SuperTypes[i]);
+            var childSuperTypes = child.SuperTypes;
+            if (childSuperTypes != null) {
+                for (var i = 0; i < childSuperTypes.Count; i++) {
+                    superTypes.Add(childSuperTypes[i]);
+                    AddRecursiveSupertypes(superTypes, childSuperTypes[i]);
                 }
             }
         }

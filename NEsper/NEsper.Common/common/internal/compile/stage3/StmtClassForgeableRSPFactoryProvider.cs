@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 	    private const string MEMBERNAME_RESULTEVENTTYPE = "resultEventType";
 	    public const string MEMBERNAME_STATEMENT_FIELDS = "statementFields";
     
-	    private readonly static CodegenExpressionMember MEMBER_EVENTBEANFACTORY = Member("ebfactory");
+	    private static readonly CodegenExpressionMember MEMBER_EVENTBEANFACTORY = Member("ebfactory");
 
 	    private readonly string _className;
 	    private readonly ResultSetProcessorDesc _spec;

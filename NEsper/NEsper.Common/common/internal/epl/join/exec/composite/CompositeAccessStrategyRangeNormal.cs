@@ -57,8 +57,8 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
                 return null;
             }
 
-            OrderedDictionary<object, CompositeIndexEntry> index =
-                (OrderedDictionary<object, CompositeIndexEntry>) parent;
+            IOrderedDictionary<object, CompositeIndexEntry> index =
+                (IOrderedDictionary<object, CompositeIndexEntry>) parent;
 
             IDictionary<object, CompositeIndexEntry> submap;
             try {
@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
                 return null;
             }
 
-            var index = (OrderedDictionary<object, CompositeIndexEntry>) parent;
+            var index = (IOrderedDictionary<object, CompositeIndexEntry>) parent;
             IDictionary<object, CompositeIndexEntry> submap;
             try {
                 submap = index.Between(comparableStart, includeStart, comparableEnd, includeEnd);

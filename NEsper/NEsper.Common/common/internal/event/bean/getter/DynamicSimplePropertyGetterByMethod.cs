@@ -67,12 +67,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			return StaticMethod(GetType(), "DynamicSimplePropertyDetermineMethod", Constant(_getterMethodName), Constant(_isMethodName), clazz);
 		}
 
-		public bool IsExistsProperty(EventBean eventBean)
+		public override bool IsExistsProperty(EventBean eventBean)
 		{
 			return CacheAndExists(Cache, this, eventBean.Underlying, EventBeanTypedEventFactory);
 		}
 
-		public CodegenExpression UnderlyingExistsCodegen(
+		public override CodegenExpression UnderlyingExistsCodegen(
 			CodegenExpression underlyingExpression,
 			CodegenMethodScope codegenMethodScope,
 			CodegenClassScope codegenClassScope)

@@ -15,7 +15,7 @@ using com.espertech.esper.compat.collections;
 namespace com.espertech.esper.common.@internal.compile.stage2
 {
 	public class FilterSpecPlanPath {
-	    public readonly static FilterSpecPlanPath[] EMPTY_ARRAY = new FilterSpecPlanPath[0];
+	    public static readonly FilterSpecPlanPath[] EMPTY_ARRAY = new FilterSpecPlanPath[0];
 
 	    private FilterSpecPlanPathTriplet[] triplets;
 	    private ExprEvaluator pathNegate;

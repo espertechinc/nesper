@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly OrderedDictionary<long, IList<MetricExec>> _timeHandleMap;
+        private readonly IOrderedDictionary<long, IList<MetricExec>> _timeHandleMap;
 
         // Current time - used for evaluation as well as for adding new handles
         private long? _currentTime;
@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <summary>Constructor. </summary>
         public MetricScheduleService()
         {
-            _timeHandleMap = new OrderedDictionary<long, IList<MetricExec>>();
+            _timeHandleMap = new OrderedListDictionary<long, IList<MetricExec>>();
         }
 
         /// <summary>Returns nearest scheduled time. </summary>

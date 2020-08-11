@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.context.airegistry
 {
     public class AIRegistryFactoryMultiPerm : AIRegistryFactory
     {
-        public readonly static AIRegistryFactoryMultiPerm INSTANCE = new AIRegistryFactoryMultiPerm();
+        public static readonly AIRegistryFactoryMultiPerm INSTANCE = new AIRegistryFactoryMultiPerm();
 
         private AIRegistryFactoryMultiPerm()
         {

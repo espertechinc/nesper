@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             ByteArrayProvidingClassLoader cl = new ByteArrayProvidingClassLoader(allBytes, compileTimeServices.Services.ParentClassLoader);
 
             foreach (var classText in classTexts) {
-                if (classText.Trim().IsEmpty()) {
+                if (string.IsNullOrEmpty(classText)) {
                     continue;
                 }
 

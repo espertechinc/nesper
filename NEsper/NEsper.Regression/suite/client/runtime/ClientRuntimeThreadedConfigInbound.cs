@@ -113,7 +113,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 			var senderOA = env.EventService.GetEventSender("MyOA");
 			var senderJson = env.EventService.GetEventSender("JsonEvent");
 
-			long start = System.NanoTime();
+			long start = PerformanceObserver.MicroTime;
 			for (var i = 0; i < 2; i++) {
 				env.SendEventMap(new Dictionary<string, object>(), "MyMap");
 				senderMap.SendEvent(new Dictionary<string, object>());
@@ -127,8 +127,8 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 				senderJson.SendEvent("{}");
 			}
 
-			long end = System.NanoTime();
-			var delta = (end - start) / 1000000;
+			long end = PerformanceObserver.MicroTime;
+			var delta = (end - start) / 1000;
 			Assert.IsTrue(delta < 500);
 
 			Thread.Sleep(1000);

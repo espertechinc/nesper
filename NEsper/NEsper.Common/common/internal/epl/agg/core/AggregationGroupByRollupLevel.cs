@@ -88,4 +88,24 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             return keys;
         }
     }
+
+    public class ProxyAggregationGroupByRollupLevel : AggregationGroupByRollupLevel
+    {
+        private Func<object, object> ProcComputeSubkey { get; set; }
+        public ProxyAggregationGroupByRollupLevel(
+            int levelNumber,
+            int levelOffset,
+            int[] rollupKeys,
+            DataInputOutputSerde subkeySerde,
+            Func<object, object> procComputeSubkey)
+            : base(levelNumber, levelOffset, rollupKeys, subkeySerde)
+        {
+            ProcComputeSubkey = procComputeSubkey;
+        }
+
+        public override object ComputeSubkey(object groupKey)
+        {
+            return ProcComputeSubkey?.Invoke(groupKey);
+        }
+    }
 } // end of namespace

@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.view.core
 {
     public class ViewFactoryServiceImpl : ViewFactoryService
     {
-        public readonly static ViewFactoryServiceImpl INSTANCE = new ViewFactoryServiceImpl();
+        public static readonly ViewFactoryServiceImpl INSTANCE = new ViewFactoryServiceImpl();
 
         private ViewFactoryServiceImpl()
         {

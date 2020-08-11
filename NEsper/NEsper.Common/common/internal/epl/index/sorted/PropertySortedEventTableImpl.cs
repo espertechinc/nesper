@@ -32,12 +32,12 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
         /// <summary>
         ///     Index table.
         /// </summary>
-        internal readonly OrderedDictionary<object, ISet<EventBean>> propertyIndex;
+        internal readonly IOrderedDictionary<object, ISet<EventBean>> propertyIndex;
 
         public PropertySortedEventTableImpl(PropertySortedEventTableFactory factory)
             : base(factory)
         {
-            propertyIndex = new OrderedDictionary<object, ISet<EventBean>>();
+            propertyIndex = new OrderedListDictionary<object, ISet<EventBean>>();
             nullKeyedValues = new LinkedHashSet<EventBean>();
         }
 

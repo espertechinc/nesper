@@ -45,8 +45,8 @@ namespace com.espertech.esper.common.@internal.util
         public static readonly IEnumerator<EventBean> NULL_EVENT_ITERATOR = NullEnumerator<EventBean>.Singleton;
         public static readonly IEnumerable<EventBean> NULL_EVENT_ITERABLE = NullEnumerable<EventBean>.Singleton;
 
-        public static readonly OrderedDictionary<object, object> EMPTY_SORTED_MAP =
-            new OrderedDictionary<object, object>();
+        public static readonly IOrderedDictionary<object, object> EMPTY_SORTED_MAP =
+            new OrderedListDictionary<object, object>();
 
         public static readonly EventBean[] EVENTBEANARRAY_EMPTY = new EventBean[0];
         public static readonly EventBean[][] EVENTBEANARRAYARRAY_EMPTY = new EventBean[0][];

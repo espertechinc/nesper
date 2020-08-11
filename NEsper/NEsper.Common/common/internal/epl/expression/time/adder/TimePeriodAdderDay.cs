@@ -13,7 +13,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.adder
 {
     public class TimePeriodAdderDay : TimePeriodAdder
     {
-        public readonly static TimePeriodAdderDay INSTANCE = new TimePeriodAdderDay();
+        public static readonly TimePeriodAdderDay INSTANCE = new TimePeriodAdderDay();
 
         private const double MULTIPLIER = 24 * 60 * 60;
 

@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 			protected Type FindClass(string name)
 			{
 				names.Add(name);
-				return super.FindClass(name);
+				return base.FindClass(name);
 			}
 		}
 	}

@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 {
 	public class SerdeCompileTimeResolverNonHA : SerdeCompileTimeResolver
 	{
-		public readonly static SerdeCompileTimeResolverNonHA INSTANCE = new SerdeCompileTimeResolverNonHA();
+		public static readonly SerdeCompileTimeResolverNonHA INSTANCE = new SerdeCompileTimeResolverNonHA();
 
 		private SerdeCompileTimeResolverNonHA()
 		{

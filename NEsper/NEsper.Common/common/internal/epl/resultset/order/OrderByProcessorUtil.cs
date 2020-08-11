@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             object[] orderKeys,
             IComparer<object> comparator)
         {
-            OrderedDictionary<object, object> sort = new OrderedDictionary<object, object>(comparator);
+            var sort = new OrderedListDictionary<object, object>(comparator);
 
             if (outgoingEvents == null || outgoingEvents.Length < 2) {
                 return outgoingEvents;

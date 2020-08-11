@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.serde.runtime.eventtype
 	public class EventTypeSerdeRepositoryDefault : EventTypeSerdeRepository
 	{
 
-		public readonly static EventTypeSerdeRepositoryDefault INSTANCE = new EventTypeSerdeRepositoryDefault();
+		public static readonly EventTypeSerdeRepositoryDefault INSTANCE = new EventTypeSerdeRepositoryDefault();
 
 		private EventTypeSerdeRepositoryDefault()
 		{

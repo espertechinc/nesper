@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 {
     public class InstrumentationField : CodegenFieldSharable
     {
-        public readonly static InstrumentationField INSTANCE = new InstrumentationField();
+        public static readonly InstrumentationField INSTANCE = new InstrumentationField();
 
         private InstrumentationField()
         {

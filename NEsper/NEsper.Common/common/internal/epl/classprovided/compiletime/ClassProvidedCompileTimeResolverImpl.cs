@@ -30,12 +30,12 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 {
 	public class ClassProvidedCompileTimeResolverImpl : ClassProvidedCompileTimeResolver
 	{
-		private readonly string moduleName;
-		private readonly ICollection<string> moduleUses;
-		private readonly ClassProvidedCompileTimeRegistry locals;
-		private readonly PathRegistry<string, ClassProvided> path;
-		private readonly ModuleDependenciesCompileTime moduleDependencies;
-		private readonly bool isFireAndForget;
+		private readonly string _moduleName;
+		private readonly ICollection<string> _moduleUses;
+		private readonly ClassProvidedCompileTimeRegistry _locals;
+		private readonly PathRegistry<string, ClassProvided> _path;
+		private readonly ModuleDependenciesCompileTime _moduleDependencies;
+		private readonly bool _isFireAndForget;
 
 		public ClassProvidedCompileTimeResolverImpl(
 			string moduleName,
@@ -45,35 +45,35 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 			ModuleDependenciesCompileTime moduleDependencies,
 			bool isFireAndForget)
 		{
-			this.moduleName = moduleName;
-			this.moduleUses = moduleUses;
-			this.locals = locals;
-			this.path = path;
-			this.moduleDependencies = moduleDependencies;
-			this.isFireAndForget = isFireAndForget;
+			this._moduleName = moduleName;
+			this._moduleUses = moduleUses;
+			this._locals = locals;
+			this._path = path;
+			this._moduleDependencies = moduleDependencies;
+			this._isFireAndForget = isFireAndForget;
 		}
 
 		public ClassProvided ResolveClass(string name)
 		{
 			// try self-originated protected types first
-			var localExpr = locals.Classes.Get(name);
+			var localExpr = _locals.Classes.Get(name);
 			if (localExpr != null) {
 				return localExpr;
 			}
 
 			try {
-				var expression = path.GetAnyModuleExpectSingle(name, moduleUses);
+				var expression = _path.GetAnyModuleExpectSingle(name, _moduleUses);
 				if (expression != null) {
-					if (!isFireAndForget && !NameAccessModifierExtensions.Visible(expression.First.Visibility, expression.First.ModuleName, moduleName)) {
+					if (!_isFireAndForget && !NameAccessModifierExtensions.Visible(expression.First.Visibility, expression.First.ModuleName, _moduleName)) {
 						return null;
 					}
 
-					moduleDependencies.AddPathClass(name, expression.Second);
+					_moduleDependencies.AddPathClass(name, expression.Second);
 					return expression.First;
 				}
 			}
 			catch (PathException e) {
-				throw CompileTimeResolver.MakePathAmbiguous(PathRegistryObjectType.CLASSPROVIDED, name, e);
+				throw CompileTimeResolverUtil.MakePathAmbiguous(PathRegistryObjectType.CLASSPROVIDED, name, e);
 			}
 
 			return null;
@@ -83,11 +83,11 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 		{
 			Pair<Type, ExtensionSingleRowFunctionAttribute> pair = ResolveFromLocalAndPath<ExtensionSingleRowFunctionAttribute>(
 				name,
-				locals,
-				path,
+				_locals,
+				_path,
 				"single-row function",
-				moduleUses,
-				moduleDependencies,
+				_moduleUses,
+				_moduleDependencies,
 				anno => Collections.SingletonSet(anno.Name));
 			return pair == null ? null : new Pair<Type, ImportSingleRowDesc>(
 				pair.First, new ImportSingleRowDesc(pair.First, pair.Second));
@@ -97,11 +97,11 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 		{
 			Pair<Type, ExtensionAggregationFunctionAttribute> pair = ResolveFromLocalAndPath<ExtensionAggregationFunctionAttribute>(
 				name,
-				locals,
-				path,
+				_locals,
+				_path,
 				"aggregation function",
-				moduleUses,
-				moduleDependencies,
+				_moduleUses,
+				_moduleDependencies,
 				anno => Collections.SingletonSet(anno.GetName()));
 			return pair == null ? null : pair.First;
 		}
@@ -119,23 +119,23 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 			};
 			var pair = ResolveFromLocalAndPath(
 				name,
-				locals,
-				path,
+				_locals,
+				_path,
 				"aggregation multi-function",
-				moduleUses,
-				moduleDependencies,
+				_moduleUses,
+				_moduleDependencies,
 				nameProvision);
 			return pair == null ? null : new Pair<Type, string[]>(pair.First, pair.Second.Names.SplitCsv());
 		}
 
 		public bool IsEmpty()
 		{
-			return path.IsEmpty() && locals.Classes.IsEmpty();
+			return _path.IsEmpty() && _locals.Classes.IsEmpty();
 		}
 
 		public void AddTo(IDictionary<string, byte[]> additionalClasses)
 		{
-			path.Traverse(cp => additionalClasses.PutAll(cp.Bytes));
+			_path.Traverse(cp => additionalClasses.PutAll(cp.Bytes));
 		}
 
 		public void RemoveFrom(IDictionary<string, byte[]> moduleBytes)
@@ -145,7 +145,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 					moduleBytes.Remove(entry.Key);
 				}
 			};
-			path.Traverse(classProvidedByteCodeRemover);
+			_path.Traverse(classProvidedByteCodeRemover);
 		}
 
 		internal static Pair<Type, T> ResolveFromLocalAndPath<T>(

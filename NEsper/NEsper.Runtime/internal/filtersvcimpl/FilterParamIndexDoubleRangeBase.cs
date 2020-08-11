@@ -24,7 +24,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
     public abstract class FilterParamIndexDoubleRangeBase : FilterParamIndexLookupableBase
     {
         protected EventEvaluator RangesNullEndpoints;
-        protected readonly OrderedDictionary<DoubleRange, EventEvaluator> Ranges;
+        protected readonly IOrderedDictionary<DoubleRange, EventEvaluator> Ranges;
         protected double LargestRangeValueDouble = double.MinValue;
 
         protected FilterParamIndexDoubleRangeBase(
@@ -33,7 +33,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             FilterOperator filterOperator)
             : base(filterOperator, lookupable)
         {
-            Ranges = new OrderedDictionary<DoubleRange, EventEvaluator>(DoubleRangeComparator.INSTANCE);
+            Ranges = new OrderedListDictionary<DoubleRange, EventEvaluator>(DoubleRangeComparator.INSTANCE);
             ReadWriteLock = readWriteLock;
         }
 

@@ -74,6 +74,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			CodegenMethodScope parent,
 			CodegenClassScope codegenClassScope);
 
+		public abstract bool IsExistsProperty(EventBean eventBean);
+
+		public abstract CodegenExpression UnderlyingExistsCodegen(
+			CodegenExpression underlyingExpression,
+			CodegenMethodScope codegenMethodScope,
+			CodegenClassScope codegenClassScope);
+
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
@@ -311,7 +318,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			MemberInfo field,
 			CopyOnWriteList<DynamicPropertyDescriptorByField> cache)
 		{
-			
 			var propertyDescriptor = new DynamicPropertyDescriptorByField(clazz, field);
 			cache.Add(propertyDescriptor);
 			return propertyDescriptor;

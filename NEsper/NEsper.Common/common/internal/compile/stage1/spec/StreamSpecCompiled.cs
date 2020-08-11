@@ -17,6 +17,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
     public class StreamSpecCompiledConstants
     {
-        public readonly static StreamSpecCompiled[] EMPTY_STREAM_ARRAY = new StreamSpecCompiled[0];
+        public static readonly StreamSpecCompiled[] EMPTY_STREAM_ARRAY = new StreamSpecCompiled[0];
     }
 }

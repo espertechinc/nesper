@@ -103,9 +103,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 				block.IfRefNull("num").BlockContinue();
 			}
 
-			block
-				.IncrementRef("rowcount")
-				.AssignRef("sum", Op(Ref("sum"), "+", SimpleNumberCoercerFactory.CodegenBigInteger(Ref("num"), innerType)))
+			var lhs = Ref("sum");
+			var rhs = SimpleNumberCoercerFactory.CoercerBigInt.CodegenBigInt(Ref("num"), innerType);
+			
+			block.IncrementRef("rowcount")
+				.AssignRef("sum", Op(lhs, "+", rhs))
 				.BlockEnd();
 
 			block.Expression(ExprDotMethod(Ref("agg"), "Enter", Ref("num")));

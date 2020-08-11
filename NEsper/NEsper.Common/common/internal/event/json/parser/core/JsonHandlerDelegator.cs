@@ -8,14 +8,14 @@
 
 namespace com.espertech.esper.common.@internal.@event.json.parser.core
 {
-    public class JsonHandlerDelegator : JsonHandler<object, object>
+    public class JsonHandlerDelegator
     {
-        private JsonDelegateBase currentDelegate;
+        private JsonDeserializerBase _currentDeserializer;
         private string currentName;
 
-        public JsonDelegateBase Delegate {
-            get => currentDelegate;
-            set => currentDelegate = value;
+        public JsonDeserializerBase Deserializer {
+            get => _currentDeserializer;
+            set => _currentDeserializer = value;
         }
 
         public void StartObjectValue(
@@ -28,13 +28,13 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.core
         public object StartObject()
         {
             if (currentName != null) {
-                currentDelegate.ValueType = JsonValueType.OBJECT;
-                var next = currentDelegate.StartObject(currentName);
+                _currentDeserializer.ValueType = JsonValueType.OBJECT;
+                var next = _currentDeserializer.StartObject(currentName);
                 if (next == null) { // assign unknown delegate
-                    next = new JsonDelegateUnknown(this, currentDelegate);
+                    next = new JsonDeserializerUnknown(_currentDeserializer);
                 }
 
-                currentDelegate = next;
+                _currentDeserializer = next;
             }
 
             return null;
@@ -43,13 +43,13 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.core
         public object StartArray()
         {
             if (currentName != null) {
-                currentDelegate.ValueType = JsonValueType.ARRAY;
-                var next = currentDelegate.StartArray(currentName);
+                _currentDeserializer.ValueType = JsonValueType.ARRAY;
+                var next = _currentDeserializer.StartArray(currentName);
                 if (next == null) { // assign unknown delegate
-                    next = new JsonDelegateUnknown(this, currentDelegate);
+                    next = new JsonDeserializerUnknown(_currentDeserializer);
                 }
 
-                currentDelegate = next;
+                _currentDeserializer = next;
             }
 
             return null;
@@ -57,51 +57,51 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.core
 
         public void EndString(string @string)
         {
-            currentDelegate.EndString(@string);
+            _currentDeserializer.EndString(@string);
         }
 
         public void EndNumber(string @string)
         {
-            currentDelegate.EndNumber(@string);
+            _currentDeserializer.EndNumber(@string);
         }
 
         public void EndNull()
         {
-            currentDelegate.EndNull();
+            _currentDeserializer.EndNull();
         }
 
         public void EndBoolean(bool value)
         {
-            currentDelegate.EndBoolean(value);
+            _currentDeserializer.EndBoolean(value);
         }
 
         public void EndObjectValue(
             object @object,
             string name)
         {
-            currentDelegate.EndObjectValue(name);
+            _currentDeserializer.EndObjectValue(name);
         }
 
         public void EndArrayValue(object array)
         {
-            currentDelegate.EndArrayValue(currentName);
+            _currentDeserializer.EndArrayValue(currentName);
         }
 
         public void EndArray(object array)
         {
-            var result = currentDelegate.GetResult();
-            currentDelegate = currentDelegate.Parent;
-            if (currentDelegate != null) {
-                currentDelegate.ObjectValue = result;
+            var result = _currentDeserializer.GetResult();
+            _currentDeserializer = _currentDeserializer.Parent;
+            if (_currentDeserializer != null) {
+                _currentDeserializer.ObjectValue = result;
             }
         }
 
         public void EndObject(object @object)
         {
-            var result = currentDelegate.GetResult();
-            currentDelegate = currentDelegate.Parent;
-            if (currentDelegate != null) {
-                currentDelegate.ObjectValue = result;
+            var result = _currentDeserializer.GetResult();
+            _currentDeserializer = _currentDeserializer.Parent;
+            if (_currentDeserializer != null) {
+                _currentDeserializer.ObjectValue = result;
             }
         }
     }

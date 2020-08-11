@@ -18,7 +18,7 @@ using com.espertech.esper.compat.collections;
 namespace com.espertech.esper.common.@internal.compile.stage2
 {
 	public class FilterSpecPlan {
-	    public readonly static FilterSpecPlan EMPTY_PLAN;
+	    public static readonly FilterSpecPlan EMPTY_PLAN;
 
 	    static FilterSpecPlan() {
 	        EMPTY_PLAN = new FilterSpecPlan(FilterSpecPlanPath.EMPTY_ARRAY, null, null);

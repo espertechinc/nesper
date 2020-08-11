@@ -105,19 +105,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
 
                 try {
-                    CompilableItem compilableItem = CompileItem(
-                        compilable,
-                        optionalModuleName,
-                        moduleIdentPostfix,
-                        statementNumber,
-                        statementNames,
-                        compileTimeServices,
-                        compilerOptions);
-                    className = compilableItem.ProviderClassName;
-                    
-                    var statementCompileTimeServices =
-                        new StatementCompileTimeServices(statementNumber, compileTimeServices);
-                    className = CompilerHelperStatementProvider.CompileItem(
+                    CompilableItem compilableItem = CompilerHelperStatementProvider.CompileItem(
                         compilable,
                         optionalModuleName,
                         moduleIdentPostfix,
@@ -126,6 +114,7 @@ namespace com.espertech.esper.compiler.@internal.util
                         compileTimeServices,
                         compilerOptions,
                         out assembly);
+                    className = compilableItem.ProviderClassName;
                 }
                 catch (StatementSpecCompileException ex) {
                     EPCompileExceptionItem first;

@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
                 _index = new Dictionary<object, CompositeIndexEntry>().WithNullKeySupport();
             }
             else {
-                _index = new OrderedDictionary<object, CompositeIndexEntry>();
+                _index = new OrderedListDictionary<object, CompositeIndexEntry>();
             }
         }
 

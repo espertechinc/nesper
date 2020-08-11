@@ -508,11 +508,11 @@ namespace com.espertech.esper.regressionlib.suite.context
                     });
 
                 Assert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env));
-                Assert.AreEqual(3, SupportFilterServiceHelper.GetFilterSvcCountApprox((env));
+                Assert.AreEqual(3, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
 
                 env.UndeployModuleContaining("s0");
 
-                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox((env));
+                Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                 Assert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env));
             }
         }

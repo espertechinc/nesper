@@ -18,6 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Memory" Version="4.5.4" />
     <PackageReference Include="System.Text.Json" Version="4.7.2" />
     <PackageReference Include="Antlr4.Runtime.Standard" Version="4.7.2" />
     <PackageReference Include="Castle.Core" Version="4.2.1" />
@@ -49,6 +50,10 @@
     <Compile Remove="common\internal\epl\expression\table\ExprTableAccessNodeSubpropAccessor.cs" />
     <Compile Remove="common\internal\epl\expression\core\ExprChainedSpec.cs" />
     <Compile Remove="common\client\json\minimaljson\**" />
+    <Compile Remove="common\internal\epl\agg\access\sorted\AggregationMethodSortedWrapperNavigableSet.cs" />
+    <Compile Remove="common\internal\epl\agg\access\sorted\AggregationMethodSortedWrapperSet.cs" />
+    <Compile Remove="common\internal\epl\agg\access\sorted\AggregationMethodSortedWrapperSortedMap.cs" />
+    <Compile Remove="common\internal\epl\agg\access\sorted\AggregationMethodSortedWrapperSortedSet.cs" />
   </ItemGroup>
 
   <ItemGroup>

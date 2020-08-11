@@ -57,21 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
 
             var sumTypeBoxed = sumType.GetBoxedType();
             if (sumTypeBoxed == typeof(decimal?)) {
-                var mathContext = _factoryMethodAvg.OptionalMathContext;
-                if (mathContext == null) {
-                    method.Block.MethodReturn(Op(sum, "/", Cast<decimal>(cnt)));
-                }
-                else {
-                    var mathContextField = classScope.AddOrGetDefaultFieldSharable(
-                        new MathContextCodegenField(_factoryMethodAvg.OptionalMathContext));
-                    method.Block.MethodReturn(
-                        StaticMethod(
-                            typeof(MathContextExtensions),
-                            "GetValueDivide",
-                            mathContextField,
-                            sum,
-                            cnt));
-                }
+                method.Block.MethodReturn(Op(sum, "/", cnt));
             }
             else if (sumTypeBoxed == typeof(double?)) {
                 method.Block.MethodReturn(Op(sum, "/", cnt));

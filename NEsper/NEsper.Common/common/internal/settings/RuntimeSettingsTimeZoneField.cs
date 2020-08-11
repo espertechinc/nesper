@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.settings
 {
     public class RuntimeSettingsTimeZoneField : CodegenFieldSharable
     {
-        public readonly static RuntimeSettingsTimeZoneField INSTANCE = new RuntimeSettingsTimeZoneField();
+        public static readonly RuntimeSettingsTimeZoneField INSTANCE = new RuntimeSettingsTimeZoneField();
 
         private RuntimeSettingsTimeZoneField()
         {

@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
 {
     public class VariableCompileTimeResolverEmpty : VariableCompileTimeResolver
     {
-        public readonly static VariableCompileTimeResolverEmpty INSTANCE = new VariableCompileTimeResolverEmpty();
+        public static readonly VariableCompileTimeResolverEmpty INSTANCE = new VariableCompileTimeResolverEmpty();
 
         private VariableCompileTimeResolverEmpty()
         {

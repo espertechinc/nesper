@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			return StaticMethod(typeof(DynamicIndexedPropertyGetterByMethod), "DynamicIndexedPropertyGet", desc, @object, @params, Constant(_index));
 		}
 
-		public bool IsExistsProperty(EventBean eventBean)
+		public override bool IsExistsProperty(EventBean eventBean)
 		{
 			var desc = GetPopulateCache(Cache, this, eventBean.Underlying, EventBeanTypedEventFactory);
 			if (desc.Method == null) {
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			return DynamicIndexedPropertyExists(desc, eventBean.Underlying, _index);
 		}
 
-		public CodegenExpression UnderlyingExistsCodegen(
+		public override CodegenExpression UnderlyingExistsCodegen(
 			CodegenExpression underlyingExpression,
 			CodegenMethodScope parent,
 			CodegenClassScope codegenClassScope)

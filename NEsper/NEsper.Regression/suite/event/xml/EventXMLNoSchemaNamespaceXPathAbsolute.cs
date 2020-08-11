@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             var epl = "@name('s0') select symbol_a, symbol_b, symbol_c, request.symbol as symbol_d, symbol as symbol_e from " + eventTypeName;
             env.CompileDeploy(epl, path).AddListener("s0");
 
-            var epl = "@name('s0') select symbol_a, symbol_b, symbol_c, request.symbol as symbol_d, symbol as symbol_e from StockQuote";
+            epl = "@name('s0') select symbol_a, symbol_b, symbol_c, request.symbol as symbol_d, symbol as symbol_e from StockQuote";
             env.CompileDeploy(epl).AddListener("s0");
 
             var xml = "<m0:getQuote xmlns:m0=\"http://services.samples/xsd\"><m0:request><m0:symbol>IBM</m0:symbol></m0:request></m0:getQuote>";

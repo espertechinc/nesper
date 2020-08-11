@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
 {
     public class ExprDeclaredCompileTimeResolverEmpty : ExprDeclaredCompileTimeResolver
     {
-        public readonly static ExprDeclaredCompileTimeResolverEmpty INSTANCE =
+        public static readonly ExprDeclaredCompileTimeResolverEmpty INSTANCE =
             new ExprDeclaredCompileTimeResolverEmpty();
 
         private ExprDeclaredCompileTimeResolverEmpty()

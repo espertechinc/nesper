@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.multikey
 {
 	public class DIOMultiKeyArrayBooleanSerde : DataInputOutputSerdeBase<MultiKeyArrayBoolean>
 	{
-		public readonly static DIOMultiKeyArrayBooleanSerde INSTANCE = new DIOMultiKeyArrayBooleanSerde();
+		public static readonly DIOMultiKeyArrayBooleanSerde INSTANCE = new DIOMultiKeyArrayBooleanSerde();
 
 		public override void Write(
 			MultiKeyArrayBoolean mk,

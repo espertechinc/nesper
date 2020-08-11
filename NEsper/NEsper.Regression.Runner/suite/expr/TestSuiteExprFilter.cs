@@ -12,6 +12,7 @@ using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.compiler;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.suite.expr.filter;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.epl;
@@ -125,150 +126,281 @@ namespace com.espertech.esper.regressionrun.suite.expr
                 "GetLocalValue");
         }
 
-        [Test]
-        [RunInApplicationDomain]
-        public void TestExprFilterExpressions()
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterOptimizableConditionNegateConfirmNone()
         {
-            RegressionRunner.Run(session, ExprFilterExpressions.Executions());
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterOptimizableConditionNegateConfirm.Executions());
         }
 
-        [Test]
-        [RunInApplicationDomain]
-        public void TestExprFilterInAndBetween()
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterOptimizableConditionNegateConfirmBasic()
         {
-            RegressionRunner.Run(session, ExprFilterInAndBetween.Executions());
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterOptimizableConditionNegateConfirm.Executions());
         }
 
-        [Test]
-        public void TestExprFilterOptimizable()
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterOptimizableConditionNegateConfirmAdvanced()
         {
-            RegressionRunner.Run(session, ExprFilterOptimizable.Executions());
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterOptimizableConditionNegateConfirm.Executions());
         }
 
-        [Test]
-        [RunInApplicationDomain]
-        public void TestExprFilterPlanInRangeAndBetween()
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterOptimizableLookupableLimitedExprNone()
         {
-            RegressionRunner.Run(session, ExprFilterPlanInRangeAndBetween.Executions());
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterOptimizableLookupableLimitedExpr.Executions());
         }
 
-        [Test]
-        [RunInApplicationDomain]
-        public void TestExprFilterPlanNoFilter()
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterOptimizableLookupableLimitedExprBasic()
         {
-            RegressionRunner.Run(session, ExprFilterPlanNoFilter.Executions(TODO));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterOptimizableLookupableLimitedExpr.Executions());
         }
 
-        [Test]
-        [RunInApplicationDomain]
-        public void TestExprFilterPlanOneFilterNestedFourLvl()
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterOptimizableLookupableLimitedExprAdvanced()
         {
-            RegressionRunner.Run(session, ExprFilterPlanOneFilterNestedFourLvl.Executions(TODO));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterOptimizableLookupableLimitedExpr.Executions());
         }
 
-        [Test]
-        [RunInApplicationDomain]
-        public void TestExprFilterPlanOneFilterNestedThreeLvl()
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterOptimizableBooleanLimitedExprNone()
         {
-            RegressionRunner.Run(session, ExprFilterPlanOneFilterNestedThreeLvl.Executions(TODO));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterOptimizableBooleanLimitedExpr.Executions());
         }
 
-        [Test]
-        [RunInApplicationDomain]
-        public void TestExprFilterPlanOneFilterNestedTwoLvl()
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterOptimizableBooleanLimitedExprBasic()
         {
-            RegressionRunner.Run(session, ExprFilterPlanOneFilterNestedTwoLvl.Executions(TODO));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterOptimizableBooleanLimitedExpr.Executions());
         }
 
-        [Test]
-        [RunInApplicationDomain]
-        public void TestExprFilterPlanOneFilterNonNested()
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterOptimizableBooleanLimitedExprAdvanced()
         {
-            RegressionRunner.Run(session, ExprFilterPlanOneFilterNonNested.Executions());
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterOptimizableBooleanLimitedExpr.Executions());
         }
 
-        [Test]
-        [RunInApplicationDomain]
-        public void TestExprFilterPlanOneFilterTwoPathNested()
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterOptimizableValueLimitedExprNone()
         {
-            RegressionRunner.Run(session, ExprFilterPlanOneFilterTwoPathNested.Executions());
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterOptimizableValueLimitedExpr.Executions());
         }
 
-        [Test]
-        [RunInApplicationDomain]
-        public void TestExprFilterPlanOneFilterTwoPathNonNested()
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterOptimizableValueLimitedExprBasic()
         {
-            RegressionRunner.Run(session, ExprFilterPlanOneFilterTwoPathNonNested.Executions(TODO));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterOptimizableValueLimitedExpr.Executions());
         }
 
-        [Test]
-        [RunInApplicationDomain]
-        public void TestExprFilterPlanThreeFilterIndexReuse()
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterOptimizableValueLimitedExprAdvanced()
         {
-            RegressionRunner.Run(session, ExprFilterPlanThreeFilterIndexReuse.Executions(TODO));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterOptimizableValueLimitedExpr.Executions());
         }
 
-        [Test]
-        [RunInApplicationDomain]
-        public void TestExprFilterPlanTwoFilterDifferent()
-        {
-            RegressionRunner.Run(session, ExprFilterPlanTwoFilterDifferent.Executions(TODO));
-        }
-
-        [Test]
-        [RunInApplicationDomain]
-        public void TestExprFilterPlanTwoFilterIndexReuse()
-        {
-            RegressionRunner.Run(session, ExprFilterPlanTwoFilterIndexReuse.Executions(TODO));
-        }
-
-        [Test]
-        [RunInApplicationDomain]
-        public void TestExprFilterPlanTwoFilterIndexWFilterForValueReuse()
-        {
-            RegressionRunner.Run(session, ExprFilterPlanTwoFilterIndexWFilterForValueReuse.Executions(TODO));
-        }
-
-        [Test]
-        [RunInApplicationDomain]
-        public void TestExprFilterPlanTwoFilterNestedTwoDiff()
-        {
-            RegressionRunner.Run(session, ExprFilterPlanTwoFilterNestedTwoDiff.Executions(TODO));
-        }
-
-        [Test]
-        [RunInApplicationDomain]
-        public void TestExprFilterPlanTwoFilterNestedTwoSame()
-        {
-            RegressionRunner.Run(session, ExprFilterPlanTwoFilterNestedTwoSame.Executions());
-        }
-
-        [Test]
-        [RunInApplicationDomain]
-        public void TestExprFilterPlanTwoFilterSame()
-        {
-            RegressionRunner.Run(session, ExprFilterPlanTwoFilterSame.Executions());
-        }
-
-        [Test]
-        [RunInApplicationDomain]
-        public void TestExprFilterPlanTwoFilterTwoPathNestedSame()
-        {
-            RegressionRunner.Run(session, ExprFilterPlanTwoFilterTwoPathNestedSame.Executions());
-        }
-
-        [Test]
-        [RunInApplicationDomain]
-        public void TestExprFilterWhereClause()
-        {
-            RegressionRunner.Run(session, ExprFilterWhereClause.Executions());
-        }
-
-        [Test]
-        [RunInApplicationDomain]
+        [Test, RunInApplicationDomain]
         public void TestExprFilterWhereClauseNoDataWindowPerformance()
         {
-            RegressionRunner.Run(session, new ExprFilterWhereClauseNoDataWindowPerformance());
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterWhereClauseNoDataWindowPerformance.Executions());
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterWhereClauseNoDataWindowPerformance.Executions());
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterWhereClauseNoDataWindowPerformance.Executions());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterOptimizable()
+        {
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterOptimizable.Executions());
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterOptimizable.Executions());
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterOptimizable.Executions());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterOptimizablePerf()
+        {
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterOptimizablePerf.Executions());
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterOptimizablePerf.Executions());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterOptimizableOrRewrite()
+        {
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterOptimizableOrRewrite.Executions());
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterOptimizableOrRewrite.Executions());
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterOptimizableOrRewrite.Executions());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterOptimizableValueLimitedExpr()
+        {
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterOptimizableValueLimitedExpr.Executions());
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterOptimizableValueLimitedExpr.Executions());
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterOptimizableValueLimitedExpr.Executions());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterExpressions()
+        {
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterExpressions.Executions());
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterExpressions.Executions());
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterExpressions.Executions());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterInAndBetween()
+        {
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterInAndBetween.Executions());
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterInAndBetween.Executions());
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterInAndBetween.Executions());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterPlanInRangeAndBetween()
+        {
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterPlanInRangeAndBetween.Executions());
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterPlanInRangeAndBetween.Executions());
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterPlanInRangeAndBetween.Executions());
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterPlanNoFilter()
+        {
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterPlanNoFilter.Executions(false));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterPlanNoFilter.Executions(true));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterPlanNoFilter.Executions(false));
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterPlanOneFilterNonNested()
+        {
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterPlanOneFilterNonNested.Executions(false));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterPlanOneFilterNonNested.Executions(true));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterPlanOneFilterNonNested.Executions(false));
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterPlanOneFilterNestedTwoLvl()
+        {
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterPlanOneFilterNestedTwoLvl.Executions(false));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterPlanOneFilterNestedTwoLvl.Executions(true));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterPlanOneFilterNestedTwoLvl.Executions(false));
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterPlanOneFilterTwoPathNested()
+        {
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterPlanOneFilterTwoPathNested.Executions(false));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterPlanOneFilterTwoPathNested.Executions(true));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterPlanOneFilterTwoPathNested.Executions(false));
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterPlanOneFilterNestedThreeLvl()
+        {
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterPlanOneFilterNestedThreeLvl.Executions(false));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterPlanOneFilterNestedThreeLvl.Executions(true));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterPlanOneFilterNestedThreeLvl.Executions(false));
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterPlanOneFilterNestedFourLvl()
+        {
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterPlanOneFilterNestedFourLvl.Executions(false));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterPlanOneFilterNestedFourLvl.Executions(true));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterPlanOneFilterNestedFourLvl.Executions(false));
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterPlanOneFilterTwoPathNonNested()
+        {
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterPlanOneFilterTwoPathNonNested.Executions(false));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterPlanOneFilterTwoPathNonNested.Executions(true));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterPlanOneFilterTwoPathNonNested.Executions(false));
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterPlanTwoFilterNestedTwoDiff()
+        {
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterPlanTwoFilterNestedTwoDiff.Executions(false));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterPlanTwoFilterNestedTwoDiff.Executions(true));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterPlanTwoFilterNestedTwoDiff.Executions(false));
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterPlanTwoFilterSame()
+        {
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterPlanTwoFilterSame.Executions(false));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterPlanTwoFilterSame.Executions(true));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterPlanTwoFilterSame.Executions(false));
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterPlanTwoFilterIndexWFilterForValueReuse()
+        {
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterPlanTwoFilterIndexWFilterForValueReuse.Executions(false));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterPlanTwoFilterIndexWFilterForValueReuse.Executions(true));
+            RunAssertionFilter(
+                ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED,
+                ExprFilterPlanTwoFilterIndexWFilterForValueReuse.Executions(false));
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterPlanTwoFilterIndexReuse()
+        {
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterPlanTwoFilterIndexReuse.Executions(false));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterPlanTwoFilterIndexReuse.Executions(true));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterPlanTwoFilterIndexReuse.Executions(false));
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterPlanTwoFilterDifferent()
+        {
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterPlanTwoFilterDifferent.Executions(false));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterPlanTwoFilterDifferent.Executions(true));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterPlanTwoFilterDifferent.Executions(false));
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterPlanTwoFilterTwoPathNestedSame()
+        {
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterPlanTwoFilterTwoPathNestedSame.Executions(false));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterPlanTwoFilterTwoPathNestedSame.Executions(true));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterPlanTwoFilterTwoPathNestedSame.Executions(false));
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterPlanTwoFilterNestedTwoSame()
+        {
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterPlanTwoFilterNestedTwoSame.Executions(false));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterPlanTwoFilterNestedTwoSame.Executions(true));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterPlanTwoFilterNestedTwoSame.Executions(false));
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterPlanThreeFilterIndexReuse()
+        {
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterPlanThreeFilterIndexReuse.Executions(false));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterPlanThreeFilterIndexReuse.Executions(true));
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterPlanThreeFilterIndexReuse.Executions(false));
+        }
+
+        [Test, RunInApplicationDomain]
+        public void TestExprFilterWhereClause()
+        {
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, ExprFilterWhereClause.Executions());
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.BASIC, ExprFilterWhereClause.Executions());
+            RunAssertionFilter(ConfigurationCompilerExecution.FilterIndexPlanningEnum.ADVANCED, ExprFilterWhereClause.Executions());
+        }
+
+        private void RunAssertionFilter<T>(
+            ConfigurationCompilerExecution.FilterIndexPlanningEnum config,
+            ICollection<T> executions)
+            where T : RegressionExecution
+        {
+            RegressionSession session = RegressionRunner.Session();
+            Configure(session.Configuration);
+            session.Configuration.Compiler.Execution.FilterIndexPlanning = config;
+            RegressionRunner.Run(session, executions);
+            session.Destroy();
         }
     }
 } // end of namespace

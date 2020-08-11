@@ -160,7 +160,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             common.AddVariable("varsobj2", typeof(object), "ABC", true);
             common.AddVariable("var_output_limit", typeof(long), "3");
             common.AddVariable("myNonSerializable", typeof(EPLVariablesEventTyped.NonSerializable), EPLVariablesEventTyped.NON_SERIALIZABLE);
-            common.AddVariable("my_variable_custom_typed", typeof(EPLVariablesUse.MyVariableCustomType), EPLVariablesUse.MyVariableCustomType.of("abc"), true);
+            common.AddVariable("my_variable_custom_typed", typeof(EPLVariablesUse.MyVariableCustomType), EPLVariablesUse.MyVariableCustomType.Of("abc"), true);
             common.AddVariable("varargsTestClient", typeof(EPLVariablesUse.SupportVarargsClient), new EPLVariablesUse.SupportVarargsClientImpl());
 
             common.AddVariable("my_variable_custom_typed", typeof(EPLVariablesUse.MyVariableCustomType), EPLVariablesUse.MyVariableCustomType.Of("abc"), true);

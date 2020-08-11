@@ -37,7 +37,21 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
                 }
             }
         }
-        
+   
+        public void AssignBaseType(string baseTypeName)
+        {
+            if (!string.IsNullOrWhiteSpace(baseTypeName)) {
+                BaseType = new CodegenTypeReference(baseTypeName);
+            }
+        }
+
+        public void AddInterface(string interfaceName)
+        {
+            if (!string.IsNullOrWhiteSpace(interfaceName)) {
+                Interfaces.Add(new CodegenTypeReference(interfaceName));
+            }
+        }
+
         public void AddReferenced(ISet<Type> classes)
         {
             BaseType?.AddReferenced(classes);

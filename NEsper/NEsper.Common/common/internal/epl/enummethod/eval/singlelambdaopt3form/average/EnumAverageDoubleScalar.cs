@@ -107,8 +107,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 				block.IfRefNull("num").BlockContinue();
 			}
 
+			var lhs = Ref("sum");
+			var rhs = SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(Ref("num"), innerType);
+
 			block.IncrementRef("rowcount")
-				.AssignRef("sum", Op(Ref("sum"), "+", SimpleNumberCoercerFactory.CodegenDouble(Ref("num"), innerType)))
+				.AssignRef("sum", Op(lhs, "+", rhs))
 				.BlockEnd();
 		}
 

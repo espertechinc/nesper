@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     AggregationServiceNullFactory.INSTANCE,
                     EmptyList<AggregationServiceAggExpressionDesc>.Instance,
                     EmptyList<ExprAggregateNodeGroupKey>.Instance,
-                    EmptyList.Instance);
+                    EmptyList<StmtClassForgeableFactory>.Instance);
             }
 
             // Validate the absence of "prev" function in where-clause:
@@ -189,9 +189,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     bindingMatchResult.MethodPairs,
                     bindingMatchResult.TargetStates,
                     bindingMatchResult.Agents,
-                    groupByRollupDesc,
-                    EmptyList.Instance);
-                return new AggregationServiceForgeDesc(serviceForgeX, aggregations, groupKeyExpressions);
+                    groupByRollupDesc);
+                return new AggregationServiceForgeDesc(serviceForgeX, aggregations, groupKeyExpressions, EmptyList<StmtClassForgeableFactory>.Instance);
             }
 
             // Assign a column number to each aggregation node. The regular aggregation goes first followed by access-aggregation.

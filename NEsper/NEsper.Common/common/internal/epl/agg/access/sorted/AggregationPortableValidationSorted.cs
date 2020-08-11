@@ -144,7 +144,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 				DotMethodTypeEnum.AGGMETHOD,
 				aggMethodName,
 				footprintProvided,
-				DotMethodInputTypeMatcher.DEFAULT_ALL);
+				DotMethodInputTypeMatcherImpl.DEFAULT_ALL);
 
 			var keyType = optionalCriteriaTypes == null
 				? typeof(IComparable)

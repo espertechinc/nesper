@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             var mk = _hashGetter.Get(theEvent);
             var innerIndex = parent.Get(mk);
             if (innerIndex == null) {
-                innerIndex = new CompositeIndexEntry(new OrderedDictionary<object, CompositeIndexEntry>());
+                innerIndex = new CompositeIndexEntry(new OrderedListDictionary<object, CompositeIndexEntry>());
                 parent.Put(mk, innerIndex);
             }
 

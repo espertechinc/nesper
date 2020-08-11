@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.pool
 {
     public class PatternSubexpressionPoolRuntimeSvcNoOp : PatternSubexpressionPoolRuntimeSvc
     {
-        public readonly static PatternSubexpressionPoolRuntimeSvcNoOp INSTANCE =
+        public static readonly PatternSubexpressionPoolRuntimeSvcNoOp INSTANCE =
             new PatternSubexpressionPoolRuntimeSvcNoOp();
 
         private PatternSubexpressionPoolRuntimeSvcNoOp()

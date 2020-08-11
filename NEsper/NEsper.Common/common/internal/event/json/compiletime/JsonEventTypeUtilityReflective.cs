@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				if (entry.Value is Type) {
 					var clazz = (Type) entry.Value;
 					if (IsDeepClassEligibleType(clazz, entry.Key, null, annotations, services)) {
-						ComputeClassesDeep(clazz, deepClassesWFields, new ArrayDeque<>(), annotations, services);
+						ComputeClassesDeep(clazz, deepClassesWFields, new ArrayDeque<Type>(), annotations, services);
 					}
 				}
 			}

@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
             CodegenMethod parent,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(typeof(JsonDelegateBase), typeof(JsonForgeFactoryEventTypeTyped), classScope);
+            var method = parent.MakeChild(typeof(JsonDeserializerBase), typeof(JsonForgeFactoryEventTypeTyped), classScope);
             method.Block
                 .DeclareVar(typeof(JsonDelegateFactory), "factory", NewInstance(delegateFactoryClassName))
                 .MethodReturn(ExprDotMethod(Ref("factory"), "make", fields.BaseHandler, fields.This));

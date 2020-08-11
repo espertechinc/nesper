@@ -73,6 +73,16 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			CodegenMethodScope parent,
 			CodegenClassScope codegenClassScope);
 
+		public abstract bool IsExistsProperty(EventBean eventBean);
+
+		public abstract CodegenExpression UnderlyingExistsCodegen(
+			CodegenExpression underlyingExpression,
+			CodegenMethodScope codegenMethodScope,
+			CodegenClassScope codegenClassScope);
+
+		public abstract Type BeanPropType { get; }
+		public abstract Type TargetType { get; }
+
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
@@ -323,7 +333,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 				propertyDescriptor = new DynamicPropertyDescriptorByMethod(clazz, null, false);
 			}
 			else {
-				propertyDescriptor = new DynamicPropertyDescriptorByMethod(clazz, method, method.ParameterTypes.Length > 0);
+				propertyDescriptor = new DynamicPropertyDescriptorByMethod(clazz, method, method.GetParameters().Length > 0);
 			}
 
 			cache.Add(propertyDescriptor);

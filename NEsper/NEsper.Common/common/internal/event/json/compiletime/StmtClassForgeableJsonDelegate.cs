@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -28,7 +29,6 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 {
 	public class StmtClassForgeableJsonDelegate : StmtClassForgeable
 	{
-
 		private readonly CodegenClassType classType;
 		private readonly string className;
 		private readonly CodegenNamespaceScope namespaceScope;
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 
 			// make ctor
 			CodegenTypedParam delegatorParam = new CodegenTypedParam(typeof(JsonHandlerDelegator), "delegator", false, false);
-			CodegenTypedParam parentParam = new CodegenTypedParam(typeof(JsonDelegateBase), "parent", false, false);
+			CodegenTypedParam parentParam = new CodegenTypedParam(typeof(JsonDeserializerBase), "parent", false, false);
 			CodegenTypedParam beanParam = new CodegenTypedParam(underlyingClassName, "bean", false, false);
 			IList<CodegenTypedParam> ctorParams = Arrays.AsList(delegatorParam, parentParam, beanParam);
 			CodegenCtor ctor = new CodegenCtor(typeof(StmtClassForgeableRSPFactoryProvider), classScope, ctorParams);
@@ -76,11 +76,11 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 
 			// startObject
 			CodegenMethod startObjectMethod = CodegenMethod
-				.MakeParentNode(typeof(JsonDelegateBase), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.MakeParentNode(typeof(JsonDeserializerBase), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(typeof(string), "name");
 			if (desc.OptionalSupertype != null) {
 				startObjectMethod.Block
-					.DeclareVar(typeof(JsonDelegateBase), "delegate", ExprDotMethod(Ref("super"), "startObject", Ref("name")))
+					.DeclareVar(typeof(JsonDeserializerBase), "delegate", ExprDotMethod(Ref("super"), "startObject", Ref("name")))
 					.IfCondition(NotEqualsNull(Ref("delegate")))
 					.BlockReturn(Ref("delegate"));
 			}
@@ -95,17 +95,17 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			}
 
 			CodegenExpression resultStartObject = desc.IsDynamic
-				? NewInstance(typeof(JsonDelegateJsonGenericObject), JsonDelegateRefs.INSTANCE.BaseHandler, JsonDelegateRefs.INSTANCE.This)
+				? NewInstance(typeof(JsonDeserializerGenericObject), JsonDelegateRefs.INSTANCE.BaseHandler, JsonDelegateRefs.INSTANCE.This)
 				: ConstantNull();
 			startObjectMethod.Block.MethodReturn(resultStartObject);
 
 			// startArray
 			CodegenMethod startArrayMethod = CodegenMethod
-				.MakeParentNode(typeof(JsonDelegateBase), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.MakeParentNode(typeof(JsonDeserializerBase), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(typeof(string), "name");
 			if (desc.OptionalSupertype != null) {
 				startArrayMethod.Block
-					.DeclareVar(typeof(JsonDelegateBase), "delegate", ExprDotMethod(Ref("super"), "startArray", Ref("name")))
+					.DeclareVar(typeof(JsonDeserializerBase), "delegate", ExprDotMethod(Ref("super"), "startArray", Ref("name")))
 					.IfCondition(NotEqualsNull(Ref("delegate")))
 					.BlockReturn(Ref("delegate"));
 			}
@@ -120,7 +120,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			}
 
 			CodegenExpression resultStartArray = desc.IsDynamic
-				? NewInstance(typeof(JsonDelegateJsonGenericArray), JsonDelegateRefs.INSTANCE.BaseHandler, JsonDelegateRefs.INSTANCE.This)
+				? NewInstance(typeof(JsonDeserializerGenericArray), JsonDelegateRefs.INSTANCE.BaseHandler, JsonDelegateRefs.INSTANCE.This)
 				: ConstantNull();
 			startArrayMethod.Block.MethodReturn(resultStartArray);
 
@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 					continue;
 				}
 
-				string fieldName = desc.FieldDescriptorsInclSupertype.Get(propertyPair.Key).FieldName;
+				var fieldName = desc.FieldDescriptorsInclSupertype.Get(propertyPair.Key).FieldName;
 				JsonForgeDesc forge = desc.Forges.Get(propertyPair.Key);
 				CodegenExpression value = forge.EndValueForge.CaptureValue(JsonEndValueRefs.INSTANCE, endObjectValueMethod, classScope);
 				endObjectValueMethod.Block
@@ -155,17 +155,21 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			endObjectValueMethod.Block.MethodReturn(ConstantFalse());
 
 			// make get-bean method
-			CodegenMethod getResultMethod = CodegenMethod.MakeParentNode(underlyingClassName, this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
+			var getResultMethod = CodegenMethod.MakeParentNode(underlyingClassName, this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
 			getResultMethod.Block.MethodReturn(Ref("bean"));
+
+			// Make Deserialize(JsonElement) method
+			var deserializeMethod = CodegenMethod
+				.MakeParentNode(underlyingClassName, this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.AddParam(typeof(JsonElement), "element");
+			deserializeMethod.Block.MethodReturn(Ref("bean"));
 
 			CodegenClassProperties properties = new CodegenClassProperties();
 
 			// walk methods
 			CodegenClassMethods methods = new CodegenClassMethods();
-			CodegenStackGenerator.RecursiveBuildStack(startObjectMethod, "StartObject", methods, properties);
-			CodegenStackGenerator.RecursiveBuildStack(startArrayMethod, "StartArray", methods, properties);
-			CodegenStackGenerator.RecursiveBuildStack(endObjectValueMethod, "EndObjectValue", methods, properties);
 			CodegenStackGenerator.RecursiveBuildStack(getResultMethod, "GetResult", methods, properties);
+			CodegenStackGenerator.RecursiveBuildStack(deserializeMethod, "Deserialize", methods, properties);
 
 			CodegenClass clazz = new CodegenClass(
 				classType,
@@ -178,10 +182,10 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				EmptyList<CodegenInnerClass>.Instance);
 			
 			if (desc.OptionalSupertype == null) {
-				clazz.BaseList.BaseType = typeof(JsonDelegateBase);
+				clazz.BaseList.AssignType(typeof(JsonDeserializerBase));
 			}
 			else {
-				clazz.BaseList.BaseType = desc.OptionalSupertype.Detail.DelegateClassName;
+				clazz.BaseList.AssignBaseType(desc.OptionalSupertype.Detail.DelegateClassName);
 			}
 
 			return clazz;

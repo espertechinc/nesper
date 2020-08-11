@@ -178,7 +178,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 return parameters;
             }
 
-            var map = new OrderedDictionary<FilterOperator, IList<FilterSpecPlanPathTripletForge>>(COMPARATOR_PARAMETERS);
+            var map = new OrderedListDictionary<FilterOperator, IList<FilterSpecPlanPathTripletForge>>(COMPARATOR_PARAMETERS);
 
             foreach (FilterSpecPlanPathTripletForge parameter in parameters.Triplets) {
                 if (!map.TryGetValue(parameter.Param.FilterOperator, out var list)) {

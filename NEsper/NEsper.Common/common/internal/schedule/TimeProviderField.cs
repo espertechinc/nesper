@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.schedule
 {
     public class TimeProviderField : CodegenFieldSharable
     {
-        public readonly static TimeProviderField INSTANCE = new TimeProviderField();
+        public static readonly TimeProviderField INSTANCE = new TimeProviderField();
 
         private TimeProviderField()
         {

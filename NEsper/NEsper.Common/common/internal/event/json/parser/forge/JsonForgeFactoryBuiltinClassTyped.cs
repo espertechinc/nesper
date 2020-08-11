@@ -79,59 +79,59 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 			WRITE_FORGES.Put(typeof(DateTime), JsonWriteForgeStringWithToString.INSTANCE);
 			WRITE_FORGES.Put(typeof(Uri), JsonWriteForgeStringWithToString.INSTANCE);
 
-			START_ARRAY_FORGES.Put(typeof(string[]), typeof(JsonDelegateArrayString));
-			START_ARRAY_FORGES.Put(typeof(char?[]), typeof(JsonDelegateArrayCharacter));
-			START_ARRAY_FORGES.Put(typeof(bool?[]), typeof(JsonDelegateArrayBoolean));
-			START_ARRAY_FORGES.Put(typeof(byte?[]), typeof(JsonDelegateArrayByte));
-			START_ARRAY_FORGES.Put(typeof(short?[]), typeof(JsonDelegateArrayShort));
-			START_ARRAY_FORGES.Put(typeof(int?[]), typeof(JsonDelegateArrayInteger));
-			START_ARRAY_FORGES.Put(typeof(long?[]), typeof(JsonDelegateArrayLong));
-			START_ARRAY_FORGES.Put(typeof(decimal?[]), typeof(JsonDelegateArrayDecimal));
-			START_ARRAY_FORGES.Put(typeof(double?[]), typeof(JsonDelegateArrayDouble));
-			START_ARRAY_FORGES.Put(typeof(float?[]), typeof(JsonDelegateArrayFloat));
-			START_ARRAY_FORGES.Put(typeof(char[]), typeof(JsonDelegateArrayCharacterPrimitive));
-			START_ARRAY_FORGES.Put(typeof(bool[]), typeof(JsonDelegateArrayBooleanPrimitive));
-			START_ARRAY_FORGES.Put(typeof(byte[]), typeof(JsonDelegateArrayBytePrimitive));
-			START_ARRAY_FORGES.Put(typeof(short[]), typeof(JsonDelegateArrayShortPrimitive));
-			START_ARRAY_FORGES.Put(typeof(int[]), typeof(JsonDelegateArrayIntegerPrimitive));
-			START_ARRAY_FORGES.Put(typeof(long[]), typeof(JsonDelegateArrayLongPrimitive));
-			START_ARRAY_FORGES.Put(typeof(decimal[]), typeof(JsonDelegateArrayDecimalPrimitive));
-			START_ARRAY_FORGES.Put(typeof(double[]), typeof(JsonDelegateArrayDoublePrimitive));
-			START_ARRAY_FORGES.Put(typeof(float[]), typeof(JsonDelegateArrayFloatPrimitive));
+			START_ARRAY_FORGES.Put(typeof(string[]), typeof(JsonDeserializerArrayString));
+			START_ARRAY_FORGES.Put(typeof(char?[]), typeof(JsonDeserializerArrayCharacter));
+			START_ARRAY_FORGES.Put(typeof(bool?[]), typeof(JsonDeserializerArrayBoolean));
+			START_ARRAY_FORGES.Put(typeof(byte?[]), typeof(JsonDeserializerArrayByte));
+			START_ARRAY_FORGES.Put(typeof(short?[]), typeof(JsonDeserializerArrayShort));
+			START_ARRAY_FORGES.Put(typeof(int?[]), typeof(JsonDeserializerArrayInteger));
+			START_ARRAY_FORGES.Put(typeof(long?[]), typeof(JsonDeserializerArrayLong));
+			START_ARRAY_FORGES.Put(typeof(decimal?[]), typeof(JsonDeserializerArrayDecimal));
+			START_ARRAY_FORGES.Put(typeof(double?[]), typeof(JsonDeserializerArrayDouble));
+			START_ARRAY_FORGES.Put(typeof(float?[]), typeof(JsonDeserializerArrayFloat));
+			START_ARRAY_FORGES.Put(typeof(char[]), typeof(JsonDeserializerArrayCharacterPrimitive));
+			START_ARRAY_FORGES.Put(typeof(bool[]), typeof(JsonDeserializerArrayBooleanPrimitive));
+			START_ARRAY_FORGES.Put(typeof(byte[]), typeof(JsonDeserializerArrayBytePrimitive));
+			START_ARRAY_FORGES.Put(typeof(short[]), typeof(JsonDeserializerArrayShortPrimitive));
+			START_ARRAY_FORGES.Put(typeof(int[]), typeof(JsonDeserializerArrayIntegerPrimitive));
+			START_ARRAY_FORGES.Put(typeof(long[]), typeof(JsonDeserializerArrayLongPrimitive));
+			START_ARRAY_FORGES.Put(typeof(decimal[]), typeof(JsonDeserializerArrayDecimalPrimitive));
+			START_ARRAY_FORGES.Put(typeof(double[]), typeof(JsonDeserializerArrayDoublePrimitive));
+			START_ARRAY_FORGES.Put(typeof(float[]), typeof(JsonDeserializerArrayFloatPrimitive));
 			
-			START_ARRAY_FORGES.Put(typeof(BigInteger[]), typeof(JsonDelegateArrayBigInteger));
-			START_ARRAY_FORGES.Put(typeof(Guid[]), typeof(JsonDelegateArrayUUID));
-			START_ARRAY_FORGES.Put(typeof(DateTimeEx[]), typeof(JsonDelegateArrayDateTimeEx));
-			START_ARRAY_FORGES.Put(typeof(DateTimeOffset[]), typeof(JsonDelegateArrayDateTimeOffset));
-			START_ARRAY_FORGES.Put(typeof(DateTime[]), typeof(JsonDelegateArrayDateTime));
-			START_ARRAY_FORGES.Put(typeof(Uri[]), typeof(JsonDelegateArrayURI));
+			START_ARRAY_FORGES.Put(typeof(BigInteger[]), typeof(JsonDeserializerArrayBigInteger));
+			START_ARRAY_FORGES.Put(typeof(Guid[]), typeof(JsonDeserializerArrayUuid));
+			START_ARRAY_FORGES.Put(typeof(DateTimeEx[]), typeof(JsonDeserializerArrayDateTimeEx));
+			START_ARRAY_FORGES.Put(typeof(DateTimeOffset[]), typeof(JsonDeserializerArrayDateTimeOffset));
+			START_ARRAY_FORGES.Put(typeof(DateTime[]), typeof(JsonDeserializerArrayDateTime));
+			START_ARRAY_FORGES.Put(typeof(Uri[]), typeof(JsonDeserializerArrayUri));
 
-			START_ARRAY_FORGES.Put(typeof(string[][]), typeof(JsonDelegateArray2DimString));
-			START_ARRAY_FORGES.Put(typeof(char?[][]), typeof(JsonDelegateArray2DimCharacter));
-			START_ARRAY_FORGES.Put(typeof(bool?[][]), typeof(JsonDelegateArray2DimBoolean));
-			START_ARRAY_FORGES.Put(typeof(byte?[][]), typeof(JsonDelegateArray2DimByte));
-			START_ARRAY_FORGES.Put(typeof(short?[][]), typeof(JsonDelegateArray2DimShort));
-			START_ARRAY_FORGES.Put(typeof(int?[][]), typeof(JsonDelegateArray2DimInteger));
-			START_ARRAY_FORGES.Put(typeof(long?[][]), typeof(JsonDelegateArray2DimLong));
-			START_ARRAY_FORGES.Put(typeof(float?[][]), typeof(JsonDelegateArray2DimFloat));
-			START_ARRAY_FORGES.Put(typeof(double?[][]), typeof(JsonDelegateArray2DimDouble));
-			START_ARRAY_FORGES.Put(typeof(decimal?[][]), typeof(JsonDelegateArray2DimDecimal));
-			START_ARRAY_FORGES.Put(typeof(char[][]), typeof(JsonDelegateArray2DimCharacterPrimitive));
-			START_ARRAY_FORGES.Put(typeof(bool[][]), typeof(JsonDelegateArray2DimBooleanPrimitive));
-			START_ARRAY_FORGES.Put(typeof(byte[][]), typeof(JsonDelegateArray2DimBytePrimitive));
-			START_ARRAY_FORGES.Put(typeof(short[][]), typeof(JsonDelegateArray2DimShortPrimitive));
-			START_ARRAY_FORGES.Put(typeof(int[][]), typeof(JsonDelegateArray2DimIntegerPrimitive));
-			START_ARRAY_FORGES.Put(typeof(long[][]), typeof(JsonDelegateArray2DimLongPrimitive));
-			START_ARRAY_FORGES.Put(typeof(float[][]), typeof(JsonDelegateArray2DimFloatPrimitive));
-			START_ARRAY_FORGES.Put(typeof(double[][]), typeof(JsonDelegateArray2DimDoublePrimitive));
-			START_ARRAY_FORGES.Put(typeof(decimal[][]), typeof(JsonDelegateArray2DimDecimalPrimitive));
+			START_ARRAY_FORGES.Put(typeof(string[][]), typeof(JsonDeserializerArray2DimString));
+			START_ARRAY_FORGES.Put(typeof(char?[][]), typeof(JsonDeserializerArray2DimCharacter));
+			START_ARRAY_FORGES.Put(typeof(bool?[][]), typeof(JsonDeserializerArray2DimBoolean));
+			START_ARRAY_FORGES.Put(typeof(byte?[][]), typeof(JsonDeserializerArray2DimByte));
+			START_ARRAY_FORGES.Put(typeof(short?[][]), typeof(JsonDeserializerArray2DimShort));
+			START_ARRAY_FORGES.Put(typeof(int?[][]), typeof(JsonDeserializerArray2DimInteger));
+			START_ARRAY_FORGES.Put(typeof(long?[][]), typeof(JsonDeserializerArray2DimLong));
+			START_ARRAY_FORGES.Put(typeof(float?[][]), typeof(JsonDeserializerArray2DimFloat));
+			START_ARRAY_FORGES.Put(typeof(double?[][]), typeof(JsonDeserializerArray2DimDouble));
+			START_ARRAY_FORGES.Put(typeof(decimal?[][]), typeof(JsonDeserializerArray2DimDecimal));
+			START_ARRAY_FORGES.Put(typeof(char[][]), typeof(JsonDeserializerArray2DimCharacterPrimitive));
+			START_ARRAY_FORGES.Put(typeof(bool[][]), typeof(JsonDeserializerArray2DimBooleanPrimitive));
+			START_ARRAY_FORGES.Put(typeof(byte[][]), typeof(JsonDeserializerArray2DimBytePrimitive));
+			START_ARRAY_FORGES.Put(typeof(short[][]), typeof(JsonDeserializerArray2DimShortPrimitive));
+			START_ARRAY_FORGES.Put(typeof(int[][]), typeof(JsonDeserializerArray2DimIntegerPrimitive));
+			START_ARRAY_FORGES.Put(typeof(long[][]), typeof(JsonDeserializerArray2DimLongPrimitive));
+			START_ARRAY_FORGES.Put(typeof(float[][]), typeof(JsonDeserializerArray2DimFloatPrimitive));
+			START_ARRAY_FORGES.Put(typeof(double[][]), typeof(JsonDeserializerArray2DimDoublePrimitive));
+			START_ARRAY_FORGES.Put(typeof(decimal[][]), typeof(JsonDeserializerArray2DimDecimalPrimitive));
 			
-			START_ARRAY_FORGES.Put(typeof(BigInteger[][]), typeof(JsonDelegateArray2DimBigInteger));
-			START_ARRAY_FORGES.Put(typeof(Guid[][]), typeof(JsonDelegateArray2DimUUID));
-			START_ARRAY_FORGES.Put(typeof(DateTimeEx[][]), typeof(JsonDelegateArray2DimDateTimeEx));
-			START_ARRAY_FORGES.Put(typeof(DateTimeOffset[][]), typeof(JsonDelegateArray2DimDateTimeOffset));
-			START_ARRAY_FORGES.Put(typeof(DateTime[][]), typeof(JsonDelegateArray2DimDateTime));
-			START_ARRAY_FORGES.Put(typeof(Uri[][]), typeof(JsonDelegateArray2DimURI));
+			START_ARRAY_FORGES.Put(typeof(BigInteger[][]), typeof(JsonDeserializerArray2DimBigInteger));
+			START_ARRAY_FORGES.Put(typeof(Guid[][]), typeof(JsonDeserializerArray2DimUuid));
+			START_ARRAY_FORGES.Put(typeof(DateTimeEx[][]), typeof(JsonDeserializerArray2DimDateTimeEx));
+			START_ARRAY_FORGES.Put(typeof(DateTimeOffset[][]), typeof(JsonDeserializerArray2DimDateTimeOffset));
+			START_ARRAY_FORGES.Put(typeof(DateTime[][]), typeof(JsonDeserializerArray2DimDateTime));
+			START_ARRAY_FORGES.Put(typeof(Uri[][]), typeof(JsonDeserializerArray2DimUri));
 
 			WRITE_ARRAY_FORGES.Put(typeof(string[]), new JsonWriteForgeByMethod("WriteArrayString"));
 			WRITE_ARRAY_FORGES.Put(typeof(char?[]), new JsonWriteForgeByMethod("WriteArrayCharacter"));
@@ -187,23 +187,23 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 			WRITE_ARRAY_FORGES.Put(typeof(DateTime[][]), new JsonWriteForgeByMethod("WriteArray2DimObjectToString"));
 			WRITE_ARRAY_FORGES.Put(typeof(Uri[][]), new JsonWriteForgeByMethod("WriteArray2DimObjectToString"));
 
-			START_COLLECTION_FORGES.Put(typeof(string), typeof(JsonDelegateCollectionString));
-			START_COLLECTION_FORGES.Put(typeof(char?), typeof(JsonDelegateCollectionCharacter));
-			START_COLLECTION_FORGES.Put(typeof(bool?), typeof(JsonDelegateCollectionBoolean));
-			START_COLLECTION_FORGES.Put(typeof(byte?), typeof(JsonDelegateCollectionByte));
-			START_COLLECTION_FORGES.Put(typeof(short?), typeof(JsonDelegateCollectionShort));
-			START_COLLECTION_FORGES.Put(typeof(int?), typeof(JsonDelegateCollectionInteger));
-			START_COLLECTION_FORGES.Put(typeof(long?), typeof(JsonDelegateCollectionLong));
-			START_COLLECTION_FORGES.Put(typeof(decimal?), typeof(JsonDelegateCollectionDecimal));
-			START_COLLECTION_FORGES.Put(typeof(double?), typeof(JsonDelegateCollectionDouble));
-			START_COLLECTION_FORGES.Put(typeof(float?), typeof(JsonDelegateCollectionFloat));
-			START_COLLECTION_FORGES.Put(typeof(BigInteger), typeof(JsonDelegateCollectionBigInteger));
+			START_COLLECTION_FORGES.Put(typeof(string), typeof(JsonDeserializerCollectionString));
+			START_COLLECTION_FORGES.Put(typeof(char?), typeof(JsonDeserializerCollectionCharacter));
+			START_COLLECTION_FORGES.Put(typeof(bool?), typeof(JsonDeserializerCollectionBoolean));
+			START_COLLECTION_FORGES.Put(typeof(byte?), typeof(JsonDeserializerCollectionByte));
+			START_COLLECTION_FORGES.Put(typeof(short?), typeof(JsonDeserializerCollectionShort));
+			START_COLLECTION_FORGES.Put(typeof(int?), typeof(JsonDeserializerCollectionInteger));
+			START_COLLECTION_FORGES.Put(typeof(long?), typeof(JsonDeserializerCollectionLong));
+			START_COLLECTION_FORGES.Put(typeof(decimal?), typeof(JsonDeserializerCollectionDecimal));
+			START_COLLECTION_FORGES.Put(typeof(double?), typeof(JsonDeserializerCollectionDouble));
+			START_COLLECTION_FORGES.Put(typeof(float?), typeof(JsonDeserializerCollectionFloat));
+			START_COLLECTION_FORGES.Put(typeof(BigInteger), typeof(JsonDeserializerCollectionBigInteger));
 			
-			START_COLLECTION_FORGES.Put(typeof(Guid), typeof(JsonDelegateCollectionUUID));
-			START_COLLECTION_FORGES.Put(typeof(DateTimeEx), typeof(JsonDelegateCollectionDateTimeEx));
-			START_COLLECTION_FORGES.Put(typeof(DateTimeOffset), typeof(JsonDelegateCollectionDateTimeOffset));
-			START_COLLECTION_FORGES.Put(typeof(DateTime), typeof(JsonDelegateCollectionDateTime));
-			START_COLLECTION_FORGES.Put(typeof(Uri), typeof(JsonDelegateCollectionURI));
+			START_COLLECTION_FORGES.Put(typeof(Guid), typeof(JsonDeserializerCollectionUuid));
+			START_COLLECTION_FORGES.Put(typeof(DateTimeEx), typeof(JsonDeserializerCollectionDateTimeEx));
+			START_COLLECTION_FORGES.Put(typeof(DateTimeOffset), typeof(JsonDeserializerCollectionDateTimeOffset));
+			START_COLLECTION_FORGES.Put(typeof(DateTime), typeof(JsonDeserializerCollectionDateTime));
+			START_COLLECTION_FORGES.Put(typeof(Uri), typeof(JsonDeserializerCollectionUri));
 
 			WRITE_COLLECTION_FORGES.Put(typeof(string), new JsonWriteForgeByMethod("WriteCollectionString"));
 			WRITE_COLLECTION_FORGES.Put(typeof(char?), new JsonWriteForgeByMethod("WriteCollectionWToString"));
@@ -243,7 +243,7 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 			if (fieldAnnotation != null && type != null) {
 				Type clazz;
 				try {
-					clazz = services.ImportServiceCompileTime.ResolveClass(fieldAnnotation.Adapter(), true, ExtensionClassEmpty.INSTANCE);
+					clazz = services.ImportServiceCompileTime.ResolveClass(fieldAnnotation.Adapter, true, ExtensionClassEmpty.INSTANCE);
 				}
 				catch (ImportException e) {
 					throw new ExprValidationException("Failed to resolve Json schema field adapter class: " + e.Message, e);
@@ -280,18 +280,18 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 				write = new JsonWriteForgeProvidedStringAdapter(clazz);
 			}
 			else if (type == typeof(object)) {
-				startObject = new JsonDelegateForgeByClass(typeof(JsonDelegateJsonGenericObject));
-				startArray = new JsonDelegateForgeByClass(typeof(JsonDelegateJsonGenericArray));
+				startObject = new JsonDelegateForgeByClass(typeof(JsonDeserializerGenericObject));
+				startArray = new JsonDelegateForgeByClass(typeof(JsonDeserializerGenericArray));
 				end = JsonEndValueForgeJsonValue.INSTANCE;
 				write = new JsonWriteForgeByMethod("WriteJsonValue");
 			}
 			else if (type == typeof(object[])) {
-				startArray = new JsonDelegateForgeByClass(typeof(JsonDelegateJsonGenericArray));
+				startArray = new JsonDelegateForgeByClass(typeof(JsonDeserializerGenericArray));
 				end = new JsonEndValueForgeCast(type);
 				write = new JsonWriteForgeByMethod("WriteJsonArray");
 			}
 			else if (type == typeof(IDictionary<string, object>)) {
-				startObject = new JsonDelegateForgeByClass(typeof(JsonDelegateJsonGenericObject));
+				startObject = new JsonDelegateForgeByClass(typeof(JsonDeserializerGenericObject));
 				end = new JsonEndValueForgeCast(type);
 				write = new JsonWriteForgeByMethod("WriteJsonMap");
 			}
@@ -302,11 +302,11 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 			else if (type.IsArray) {
 				var componentType = type.GetElementType();
 				if (componentType.IsEnum) {
-					startArray = new JsonDelegateForgeByClass(typeof(JsonDelegateArrayEnum), Constant(componentType));
+					startArray = new JsonDelegateForgeByClass(typeof(JsonDeserializerArrayEnum), Constant(componentType));
 					write = new JsonWriteForgeByMethod("WriteEnumArray");
 				}
 				else if (componentType.IsArray && componentType.GetElementType().IsEnum) {
-					startArray = new JsonDelegateForgeByClass(typeof(JsonDelegateArray2DimEnum), Constant(componentType.GetElementType()));
+					startArray = new JsonDelegateForgeByClass(typeof(JsonDeserializerArray2DimEnum), Constant(componentType.GetElementType()));
 					write = new JsonWriteForgeByMethod("WriteEnumArray2Dim");
 				}
 				else {
@@ -351,7 +351,7 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 					}
 					else {
 						if (genericType.IsEnum) {
-							startArray = new JsonDelegateForgeByClass(typeof(JsonDelegateCollectionEnum), Constant(genericType));
+							startArray = new JsonDelegateForgeByClass(typeof(JsonDeserializerCollectionEnum), Constant(genericType));
 							write = new JsonWriteForgeByMethod("WriteEnumCollection");
 						}
 						else {

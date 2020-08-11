@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.view.timetolive
 
         private readonly EventBean[] eventsPerStream = new EventBean[1];
         private bool isCallbackScheduled;
-        private readonly OrderedDictionary<object, object> sortedEvents;
+        private readonly IOrderedDictionary<object, object> sortedEvents;
 
         public TimeOrderView(
             AgentInstanceViewFactoryChainContext agentInstanceContext,
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.view.timetolive
             scheduleSlot = agentInstanceContext.StatementContext.ScheduleBucket.AllocateSlot();
             this.timePeriodProvide = timePeriodProvide;
 
-            sortedEvents = new OrderedDictionary<object, object>();
+            sortedEvents = new OrderedListDictionary<object, object>();
 
             ScheduleHandleCallback callback = new ProxyScheduleHandleCallback {
                 ProcScheduledTrigger = () => {

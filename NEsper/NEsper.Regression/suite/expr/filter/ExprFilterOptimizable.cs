@@ -721,7 +721,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 		}
 
 		[Serializable]
-		internal class MyCheckServiceProvider
+		public class MyCheckServiceProvider
 		{
 			public bool Check()
 			{

@@ -9,9 +9,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.json.minimaljson;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -27,24 +27,21 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational; // LT
-using static com.espertech.esper.common.@internal.@event.json.compiletime.StmtClassForgeableJsonUtil; // getCasesNumberNtoM
-using static com.espertech.esper.common.@internal.@event.json.compiletime.StmtClassForgeableJsonUtil; // makeNoSuchElementDefault
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
+using static com.espertech.esper.common.@internal.@event.json.compiletime.StmtClassForgeableJsonUtil;
 
 namespace com.espertech.esper.common.@internal.@event.json.compiletime
 {
 	public class StmtClassForgeableJsonDelegateFactory : StmtClassForgeable
 	{
-
-		private readonly CodegenClassType classType;
-		private readonly string className;
-		private readonly bool makeWriteMethod;
-		private readonly CodegenNamespaceScope namespaceScope;
-		private readonly string delegateClassName;
-		private readonly string underlyingClassName;
-		private readonly StmtClassForgeableJsonDesc desc;
+		private readonly CodegenClassType _classType;
+		private readonly string _className;
+		private readonly bool _makeWriteMethod;
+		private readonly CodegenNamespaceScope _namespaceScope;
+		private readonly string _delegateClassName;
+		private readonly string _underlyingClassName;
+		private readonly StmtClassForgeableJsonDesc _desc;
 
 		public StmtClassForgeableJsonDelegateFactory(
 			CodegenClassType classType,
@@ -55,13 +52,13 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			string underlyingClassName,
 			StmtClassForgeableJsonDesc desc)
 		{
-			this.classType = classType;
-			this.className = className;
-			this.makeWriteMethod = makeWriteMethod;
-			this.namespaceScope = namespaceScope;
-			this.delegateClassName = delegateClassName;
-			this.underlyingClassName = underlyingClassName;
-			this.desc = desc;
+			this._classType = classType;
+			this._className = className;
+			this._makeWriteMethod = makeWriteMethod;
+			this._namespaceScope = namespaceScope;
+			this._delegateClassName = delegateClassName;
+			this._underlyingClassName = underlyingClassName;
+			this._desc = desc;
 		}
 
 		public CodegenClass Forge(
@@ -70,33 +67,33 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 		{
 			CodegenClassProperties properties = new CodegenClassProperties();
 			CodegenClassMethods methods = new CodegenClassMethods();
-			CodegenClassScope classScope = new CodegenClassScope(includeDebugSymbols, namespaceScope, className);
+			CodegenClassScope classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, _className);
 
 			CodegenMethod makeMethod = CodegenMethod.MakeParentNode(
-					typeof(JsonDelegateBase),
+					typeof(JsonDeserializerBase),
 					typeof(StmtClassForgeableJsonDelegateFactory),
 					CodegenSymbolProviderEmpty.INSTANCE,
 					classScope)
 				.AddParam(typeof(JsonHandlerDelegator), "delegator")
-				.AddParam(typeof(JsonDelegateBase), "parent");
-			makeMethod.Block.MethodReturn(NewInstance(delegateClassName, Ref("delegator"), Ref("parent"), NewInstance(underlyingClassName)));
+				.AddParam(typeof(JsonDeserializerBase), "parent");
+			makeMethod.Block.MethodReturn(NewInstance(_delegateClassName, Ref("delegator"), Ref("parent"), NewInstance(_underlyingClassName)));
 			CodegenStackGenerator.RecursiveBuildStack(makeMethod, "Make", methods, properties);
 
 			// write-method (applicable for nested classes)
 			CodegenMethod writeMethod = CodegenMethod.MakeParentNode(typeof(void), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-				.AddParam(typeof(JsonWriter), "writer")
+				.AddParam(typeof(Utf8JsonWriter), "writer")
 				.AddParam(typeof(object), "underlying")
 				.AddThrown(typeof(IOException));
-			writeMethod.Block.StaticMethod(className, "WriteStatic", Ref("writer"), Ref("underlying"));
+			writeMethod.Block.StaticMethod(_className, "WriteStatic", Ref("writer"), Ref("underlying"));
 			CodegenStackGenerator.RecursiveBuildStack(writeMethod, "Write", methods, properties);
 
 			// write-static-method (applicable for nested classes)
 			CodegenMethod writeStaticMethod = CodegenMethod.MakeParentNode(typeof(void), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-				.AddParam(typeof(JsonWriter), "writer")
+				.AddParam(typeof(Utf8JsonWriter), "writer")
 				.AddParam(typeof(object), "underlying")
 				.AddThrown(typeof(IOException));
 			writeStaticMethod.IsStatic = true;
-			if (makeWriteMethod) {
+			if (_makeWriteMethod) {
 				MakeNativeWrite(writeStaticMethod, classScope);
 			}
 			else {
@@ -132,8 +129,8 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			CodegenStackGenerator.RecursiveBuildStack(newUnderlyingMethod, "NewUnderlying", methods, properties);
 
 			CodegenClass clazz = new CodegenClass(
-				classType,
-				className,
+				_classType,
+				_className,
 				classScope,
 				EmptyList<CodegenTypedParam>.Instance,
 				null,
@@ -141,34 +138,34 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				properties,
 				EmptyList<CodegenInnerClass>.Instance);
 
-			clazz.BaseList.AddInterfaceImplemented(typeof(JsonDelegateFactory));
+			clazz.BaseList.AssignType(typeof(JsonDelegateFactory));
 			return clazz;
 		}
 
 		private void MakeNewUnderlyingMethod(CodegenMethod method)
 		{
 			// we know this underlying class has a default constructor otherwise it is not json and deep-class eligible
-			method.Block.MethodReturn(NewInstance(underlyingClassName));
+			method.Block.MethodReturn(NewInstance(_underlyingClassName));
 		}
 
 		private void MakeGetValue(
 			CodegenMethod method,
 			CodegenClassScope classScope)
 		{
-			if (desc.NumFieldsSupertype > 0) {
+			if (_desc.NumFieldsSupertype > 0) {
 				method.Block
-					.IfCondition(Relational(Ref("num"), LT, Constant(desc.NumFieldsSupertype)))
+					.IfCondition(Relational(Ref("num"), LT, Constant(_desc.NumFieldsSupertype)))
 					.BlockReturn(ExprDotMethod(Cast(typeof(JsonEventObjectBase), Ref("und")), "getNativeValue", Ref("num")));
 			}
 
 			method.Block
-				.DeclareVar(underlyingClassName, "src", Cast(underlyingClassName, Ref("und")));
-			CodegenExpression[] cases = GetCasesNumberNtoM(desc);
+				.DeclareVar(_underlyingClassName, "src", Cast(_underlyingClassName, Ref("und")));
+			CodegenExpression[] cases = GetCasesNumberNtoM(_desc);
 			CodegenStatementSwitch switchStmt = method.Block.SwitchBlockExpressions(Ref("num"), cases, true, false);
 			MakeNoSuchElementDefault(switchStmt, Ref("num"));
 			int index = 0;
-			foreach (KeyValuePair<string, object> property in desc.PropertiesThisType) {
-				JsonUnderlyingField field = desc.FieldDescriptorsInclSupertype.Get(property.Key);
+			foreach (KeyValuePair<string, object> property in _desc.PropertiesThisType) {
+				JsonUnderlyingField field = _desc.FieldDescriptorsInclSupertype.Get(property.Key);
 				switchStmt.Blocks[index].BlockReturn(Ref("src." + field.FieldName));
 				index++;
 			}
@@ -179,9 +176,9 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			CodegenClassScope classScope)
 		{
 			method.Block
-				.DeclareVar(underlyingClassName, "copy", NewInstance(underlyingClassName))
-				.DeclareVar(underlyingClassName, "src", Cast(underlyingClassName, Ref("und")));
-			foreach (KeyValuePair<string, JsonUnderlyingField> field in desc.FieldDescriptorsInclSupertype) {
+				.DeclareVar(_underlyingClassName, "copy", NewInstance(_underlyingClassName))
+				.DeclareVar(_underlyingClassName, "src", Cast(_underlyingClassName, Ref("und")));
+			foreach (KeyValuePair<string, JsonUnderlyingField> field in _desc.FieldDescriptorsInclSupertype) {
 				string fieldName = field.Value.FieldName;
 				Type fieldType = field.Value.PropertyType;
 				CodegenExpression sourceField = Ref("src." + fieldName);
@@ -215,7 +212,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 		}
 
 		public string ClassName {
-			get { return className; }
+			get { return _className; }
 		}
 
 		public StmtClassForgeableType ForgeableType {
@@ -227,15 +224,15 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			CodegenClassScope classScope)
 		{
 			method.Block
-				.DeclareVar(underlyingClassName, "und", Cast(underlyingClassName, Ref("underlying")))
+				.DeclareVar(_underlyingClassName, "und", Cast(_underlyingClassName, Ref("underlying")))
 				.IfRefNull("und")
 				.ExprDotMethod(Ref("writer"), "writeLiteral", Constant("null"))
 				.BlockReturnNoValue()
 				.ExprDotMethod(Ref("writer"), "writeObjectOpen");
 			bool first = true;
-			foreach (KeyValuePair<string, object> property in desc.PropertiesThisType) {
-				JsonUnderlyingField field = desc.FieldDescriptorsInclSupertype.Get(property.Key);
-				JsonForgeDesc forge = desc.Forges.Get(property.Key);
+			foreach (KeyValuePair<string, object> property in _desc.PropertiesThisType) {
+				JsonUnderlyingField field = _desc.FieldDescriptorsInclSupertype.Get(property.Key);
+				JsonForgeDesc forge = _desc.Forges.Get(property.Key);
 				string fieldName = field.FieldName;
 				if (!first) {
 					method.Block.ExprDotMethod(Ref("writer"), "writeObjectSeparator");
@@ -261,19 +258,19 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			CodegenClassScope classScope)
 		{
 			method.Block
-				.DeclareVar(underlyingClassName, "bean", Cast(underlyingClassName, Ref("und")));
+				.DeclareVar(_underlyingClassName, "bean", Cast(_underlyingClassName, Ref("und")));
 
-			CodegenExpression[] cases = GetCasesNumberNtoM(desc);
+			CodegenExpression[] cases = GetCasesNumberNtoM(_desc);
 			CodegenStatementSwitch switchStmt = method.Block.SwitchBlockExpressions(Ref("num"), cases, false, false);
 			MakeNoSuchElementDefault(switchStmt, Ref("num"));
 			CodegenBlock[] blocks = switchStmt.Blocks;
 
 			int index = 0;
-			foreach (KeyValuePair<string, object> property in desc.PropertiesThisType) {
-				JsonUnderlyingField field = desc.FieldDescriptorsInclSupertype.Get(property.Key);
+			foreach (KeyValuePair<string, object> property in _desc.PropertiesThisType) {
+				JsonUnderlyingField field = _desc.FieldDescriptorsInclSupertype.Get(property.Key);
 				string fieldName = "bean." + field.FieldName;
 
-				object type = desc.PropertiesThisType.Get(property.Key);
+				object type = _desc.PropertiesThisType.Get(property.Key);
 				if (type == null) {
 					// no action
 				}

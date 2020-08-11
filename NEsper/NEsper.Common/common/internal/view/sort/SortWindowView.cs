@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.view.sort
         private readonly IStreamSortRankRandomAccess optionalSortedRandomAccess;
         private readonly int sortWindowSize;
         protected internal int eventCount;
-        protected internal OrderedDictionary<object, object> sortedEvents;
+        protected internal IOrderedDictionary<object, object> sortedEvents;
 
         public SortWindowView(
             SortWindowViewFactory factory,
@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.view.sort
             this.optionalSortedRandomAccess = optionalSortedRandomAccess;
             agentInstanceContext = agentInstanceViewFactoryContext.AgentInstanceContext;
 
-            sortedEvents = new OrderedDictionary<object, object>(factory.IComparer);
+            sortedEvents = new OrderedListDictionary<object, object>(factory.IComparer);
         }
 
         public ViewFactory ViewFactory => factory;

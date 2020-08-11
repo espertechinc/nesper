@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
 {
     public class ExcludePlanHintExprUtil
     {
-        internal readonly static ObjectArrayEventType OAEXPRESSIONTYPE;
+        internal static readonly ObjectArrayEventType OAEXPRESSIONTYPE;
 
         static ExcludePlanHintExprUtil()
         {

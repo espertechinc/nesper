@@ -7,7 +7,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Buffers;
 using System.Collections.Generic;
+using System.Text.Json;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
@@ -211,19 +213,101 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 		public object Parse(string json)
 		{
 			try {
-				var handler = new JsonHandlerDelegator();
-				var @delegate = delegateFactory.Make(handler, null);
-				handler.Delegate = @delegate;
+				var deserializer = delegateFactory.Make(null);
+
+				var jsonDocumentOptions = new JsonDocumentOptions();
+				var jsonDocument = JsonDocument.Parse(json, jsonDocumentOptions);
 				
-				JsonParser parser = new JsonParser(handler);
-				parser.Parse(json);
-				return @delegate.GetResult();
+				deserializer.Deserialize(jsonDocument.RootElement);
+				
+				return deserializer.GetResult();
 			}
 			catch (EPException) {
 				throw;
 			}
 			catch (Exception ex) {
 				throw new EPException("Failed to parse Json: " + ex.Message, ex);
+			}
+		}
+
+		public void ParseProperties(
+			Utf8JsonReader jsonReader,
+			JsonHandlerDelegator handler,
+			object currentObject)
+		{
+			while (jsonReader.Read()) {
+				switch (jsonReader.TokenType) {
+					case JsonTokenType.None:
+						break;
+					case JsonTokenType.EndObject:
+						handler.EndObject(currentObject);
+						break;
+					case JsonTokenType.PropertyName:
+						handler.StartObjectValue(currentObject, jsonReader.GetString());
+						break;
+
+					case JsonTokenType.StartObject:
+						ParseProperties(jsonReader, handler, handler.StartObject());
+						break;
+
+					case JsonTokenType.String:
+						handler.EndString(jsonReader.GetString());
+						break;
+					case JsonTokenType.Number:
+						ReadOnlySpan<byte> span = jsonReader.HasValueSequence 
+							? jsonReader.ValueSequence.ToArray()
+							: jsonReader.ValueSpan;
+						handler.EndNumber(span);
+						break;
+					case JsonTokenType.True:
+						handler.EndBoolean(true);
+						break;
+					case JsonTokenType.False:
+						handler.EndBoolean(false);
+						break;
+					case JsonTokenType.Null:
+						handler.EndNull();
+						break;
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
+			}
+		}
+
+		public void ParseValue(
+			Utf8JsonReader jsonReader,
+			JsonHandlerDelegator handler)
+		{
+			while (jsonReader.Read()) {
+				switch (jsonReader.TokenType) {
+					case JsonTokenType.None:
+						break;
+					case JsonTokenType.StartObject:
+						ParseProperties(jsonReader, handler, handler.StartObject());
+						break;
+					case JsonTokenType.StartArray:
+						ParseArray(jsonReader, handler, handler.StartArray());
+						break;
+					case JsonTokenType.Comment:
+						break;
+					case JsonTokenType.String:
+						handler.EndString(jsonReader.GetString());
+						break;
+					case JsonTokenType.Number:
+						jsonReader.GetDouble();
+						break;
+					case JsonTokenType.True:
+						handler.EndBoolean(true);
+						break;
+					case JsonTokenType.False:
+						handler.EndBoolean(false);
+						break;
+					case JsonTokenType.Null:
+						handler.EndNull();
+						break;
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
 			}
 		}
 

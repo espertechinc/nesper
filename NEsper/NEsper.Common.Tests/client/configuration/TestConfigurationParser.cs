@@ -524,7 +524,7 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual(StreamSelector.RSTREAM_ISTREAM_BOTH, compiler.StreamSelection.DefaultStreamSelector);
 
             Assert.AreEqual(100, compiler.Execution.FilterServiceMaxFilterWidth);
-            Assert.AreEqual(ConfigurationCompilerExecution.FilterIndexPlanning.NONE, compiler.Execution.FilterIndexPlanning);
+            Assert.AreEqual(ConfigurationCompilerExecution.FilterIndexPlanningEnum.NONE, compiler.Execution.FilterIndexPlanning);
             Assert.IsFalse(compiler.Execution.IsEnabledDeclaredExprValueCache);
 
             Assert.IsTrue(compiler.Language.IsSortUsingCollator);
