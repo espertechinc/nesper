@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -59,7 +61,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public object GetJsonProp(object @object)
         {
-            return ((JsonEventObjectBase) @object).GetNativeValue(Field.PropertyNumber);
+            var und = (JsonEventObjectBase) @object;
+            return und.GetNativeValue(Field.FieldName);
         }
 
         public CodegenExpression EventBeanGetCodegen(

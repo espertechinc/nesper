@@ -20,18 +20,18 @@ namespace com.espertech.esper.compiler.@internal.util
 		private readonly CompilableItem _compilableItem;
 		private readonly ModuleCompileTimeServices _compileTimeServices;
 		private readonly Semaphore _semaphore;
-		private readonly IDictionary<string, byte[]> _statementBytes;
+		private readonly IDictionary<string, Type> _statementTypes;
 
 		CompileCallable(
 			CompilableItem compilableItem,
 			ModuleCompileTimeServices compileTimeServices,
 			Semaphore semaphore,
-			IDictionary<string, byte[]> statementBytes)
+			IDictionary<string, Type> statementTypes)
 		{
 			_compilableItem = compilableItem;
 			_compileTimeServices = compileTimeServices;
 			_semaphore = semaphore;
-			_statementBytes = statementBytes;
+			_statementTypes = statementTypes;
 		}
 
 		public CompilableItemResult Call()
@@ -49,7 +49,7 @@ namespace com.espertech.esper.compiler.@internal.util
 			}
 			finally {
 				_semaphore.Release();
-				_compilableItem.PostCompileLatch.Completed(_statementBytes);
+				_compilableItem.PostCompileLatch.Completed(_statementTypes);
 			}
 
 			return new CompilableItemResult();

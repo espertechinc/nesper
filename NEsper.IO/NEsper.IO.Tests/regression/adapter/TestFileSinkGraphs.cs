@@ -106,17 +106,16 @@ namespace com.espertech.esperio.regression.adapter
 		{
 			// test classpath file
 			var tempPath = Path.GetTempPath();
-			var tempFile = Path.Join(tempPath, "out_1.csv");
+			var tempFile = Path.Combine(tempPath, "out_1.csv");
 
 			try {
 				var graph = "create dataflow WriteCSV " +
 				            "DefaultSupportSourceOp -> instream<" +
 				            typeName +
 				            ">{}" +
-				            "FileSink(instream) { file: '" +
-				            tempFile +
-				            "', classpathFile: true, append: " +
-				            append +
+				            "FileSink(instream) { " + 
+				            "file: '" + tempFile + "', " +
+				            "append: " + append +
 				            "}";
 				var stmtGraph = CompileDeploy(runtime, graph).Statements[0];
 
@@ -126,8 +125,13 @@ namespace com.espertech.esperio.regression.adapter
 				var instance = runtime.DataFlowService.Instantiate(stmtGraph.DeploymentId, "WriteCSV", options);
 				instance.Run();
 
-				var contents = FileUtil.ReadTextFile(tempFile).Split(Environment.NewLine);
-				var expected = "1.1,1,\"one\";2.2,2,\"two\"".Split(";");
+				var contents = FileUtil
+					.ReadTextFile(tempFile)
+					.Split(new[] {Environment.NewLine}, StringSplitOptions.None);
+				var expected = new string[] {
+					"1.1,1,\"one\"",
+					"2.2,2,\"two\""
+				};
 
 				EPAssertionUtil.AssertEqualsExactOrder(expected, contents);
 			}

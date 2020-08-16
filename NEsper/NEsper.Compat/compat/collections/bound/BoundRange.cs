@@ -46,8 +46,8 @@ namespace com.espertech.esper.compat.collections.bound
         public BoundRange<TK> Merge(BoundRange<TK> otherRange)
         {
             return new BoundRange<TK>(
-                BoundExtensions.MergeLower(_lower, otherRange.Lower, _comparer),
-                BoundExtensions.MergeUpper(_upper, otherRange.Upper, _comparer),
+                _lower.MergeLower(otherRange.Lower, _comparer),
+                _upper.MergeUpper(otherRange.Upper, _comparer),
                 _comparer);
         }
         

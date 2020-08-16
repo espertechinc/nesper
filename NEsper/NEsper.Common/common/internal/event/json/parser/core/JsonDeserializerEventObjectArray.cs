@@ -8,45 +8,33 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
+
+using com.espertech.esper.common.@internal.@event.json.serde;
 
 namespace com.espertech.esper.common.@internal.@event.json.parser.core
 {
     public class JsonDeserializerEventObjectArray : JsonDeserializerBase
     {
-        private readonly Type componentType;
-        private readonly List<object> events = new List<object>();
-        private readonly JsonDelegateFactory factory;
+        private readonly Type _componentType;
+        private readonly List<object> _events = new List<object>();
+        private readonly JsonSerializationContext _factory;
 
         public JsonDeserializerEventObjectArray(
-            JsonDeserializerBase parent,
-            JsonDelegateFactory factory,
-            Type componentType) : base(parent)
+            JsonSerializationContext factory,
+            Type componentType)
         {
-            this.factory = factory;
-            this.componentType = componentType;
+            _factory = factory;
+            _componentType = componentType;
         }
 
-        public override object GetResult() => CollectionToTypedArray(events, componentType);
-
-        public override JsonDeserializerBase StartObject(string name)
+        public override object Deserialize(JsonElement element)
         {
-            return factory.Make(this);
+            throw new NotImplementedException();
         }
 
-        public override JsonDeserializerBase StartArray(string name)
-        {
-            return null;
-        }
-
-        public override bool EndObjectValue(string name)
-        {
-            return false;
-        }
-
-        public override void EndArrayValue(string name)
-        {
-            events.Add(ObjectValue);
-        }
+        public override object GetResult() => 
+            throw new NotImplementedException();
 
         public static object CollectionToTypedArray(
             ICollection<object> events,

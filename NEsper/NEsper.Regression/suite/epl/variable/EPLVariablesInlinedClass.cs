@@ -35,10 +35,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 			{
 				RegressionPath path = new RegressionPath();
 				string eplClass = "@public @name('clazz') create inlined_class \"\"\"\n" +
-				                  "public class MyStateful implements java.io.Serializable {\n" +
-				                  "    private String value = \"X\";\n" +
-				                  "    public String getValue() {return value;}\n" +
-				                  "    public void setValue(String value) {this.value = value;}\n" +
+				                  "[Serializable]\n" +
+				                  "public class MyStateful {\n" +
+				                  "    private string _value = \"X\";\n" +
+				                  "    public string Value {\n" +
+				                  "        get => _value;\n" +
+				                  "        set => _value = value;\n" +
+				                  "    }\n" +
 				                  "}\n" +
 				                  "\"\"\"\n";
 				env.CompileDeploy(eplClass, path);
@@ -77,17 +80,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 			public void Run(RegressionEnvironment env)
 			{
 				string epl = "inlined_class \"\"\"\n" +
-				             "public class MyStateful implements java.io.Serializable {\n" +
-				             "    private final int a;\n" +
-				             "    private final int b;\n" +
+				             "[Serializable]\n" +
+				             "public class MyStateful {\n" +
+				             "    private readonly int a;\n" +
+				             "    private readonly int b;\n" +
 				             "    public MyStateful(int a, int b) {\n" +
 				             "        this.a = a;\n" +
 				             "        this.b = b;\n" +
 				             "    }\n" +
-				             "    public int getA() {return a;}\n" +
-				             "    public int getB() {return b;}\n" +
-				             "    public void setA(int a) {this.a = a;}\n" +
-				             "    public void setB(int b) {this.b = b;}\n" +
+				             "    public int A {\n" +
+				             "        get => a;\n" +
+				             "        set => a = value;\n" +
+				             "    }\n" +
+				             "    public int B {\n" +
+				             "        get => b;\n" +
+				             "        set => b = value;\n" +
+				             "    }\n" +
 				             "}\n" +
 				             "\"\"\"\n" +
 				             "create variable MyStateful msf = new MyStateful(2, 3);\n" +

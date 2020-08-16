@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
     /// </summary>
     public sealed class JsonGetterMappedSchema : JsonGetterMappedBase
     {
-        private readonly JsonUnderlyingField field;
+        private readonly JsonUnderlyingField _field;
 
         public JsonGetterMappedSchema(
             string key,
@@ -24,19 +24,19 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             JsonUnderlyingField field)
             : base(key, underlyingClassName)
         {
-            this.field = field;
+            this._field = field;
         }
 
-        public override string FieldName => field.FieldName;
+        public override string FieldName => _field.FieldName;
 
         public override object GetJsonProp(object @object)
         {
-            return JsonFieldGetterHelperSchema.GetJsonMappedProp(@object, field.PropertyNumber, Key);
+            return JsonFieldGetterHelperSchema.GetJsonMappedProp(@object, _field.FieldName, Key);
         }
 
         public override bool GetJsonExists(object @object)
         {
-            return JsonFieldGetterHelperSchema.GetJsonMappedExists(@object, field.PropertyNumber, Key);
+            return JsonFieldGetterHelperSchema.GetJsonMappedExists(@object, _field.FieldName, Key);
         }
     }
 } // end of namespace

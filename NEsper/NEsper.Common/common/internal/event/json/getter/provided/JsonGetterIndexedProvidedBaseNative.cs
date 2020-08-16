@@ -28,8 +28,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 	public sealed class JsonGetterIndexedProvidedBaseNative : BaseNativePropertyGetter,
         JsonEventPropertyGetter
     {
-        private readonly FieldInfo field;
-        private readonly int index;
+        private readonly FieldInfo _field;
+        private readonly int _index;
 
         public JsonGetterIndexedProvidedBaseNative(
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
@@ -38,11 +38,11 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             FieldInfo field,
             int index) : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType, null)
         {
-            this.field = field;
-            this.index = index;
+            _field = field;
+            _index = index;
         }
 
-        public override Type TargetType => field.DeclaringType;
+        public override Type TargetType => _field.DeclaringType;
 
         public override Type BeanPropType => typeof(object);
 
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CastUnderlying(field.DeclaringType, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(CastUnderlying(_field.DeclaringType, beanExpression), codegenMethodScope, codegenClassScope);
         }
 
         public override CodegenExpression UnderlyingGetCodegen(
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(typeof(CollectionUtil), "arrayValueAtIndex", ExprDotName(underlyingExpression, field.Name), Constant(index));
+            return StaticMethod(typeof(CollectionUtil), "ArrayValueAtIndex", ExprDotName(underlyingExpression, _field.Name), Constant(_index));
         }
 
         public override CodegenExpression EventBeanExistsCodegen(
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingExistsCodegen(CastUnderlying(field.DeclaringType, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingExistsCodegen(CastUnderlying(_field.DeclaringType, beanExpression), codegenMethodScope, codegenClassScope);
         }
 
         public override CodegenExpression UnderlyingExistsCodegen(
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(typeof(CollectionUtil), "arrayExistsAtIndex", ExprDotName(underlyingExpression, field.Name), Constant(index));
+            return StaticMethod(typeof(CollectionUtil), "ArrayExistsAtIndex", ExprDotName(underlyingExpression, _field.Name), Constant(_index));
         }
 
         public override bool IsExistsProperty(EventBean eventBean)
@@ -90,22 +90,22 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 
         public object GetJsonProp(object @object)
         {
-            var value = JsonFieldGetterHelperProvided.GetJsonProvidedSimpleProp(@object, field);
-            return CollectionUtil.ArrayValueAtIndex(value, index);
+            var value = JsonFieldGetterHelperProvided.GetJsonProvidedSimpleProp(@object, _field);
+            return CollectionUtil.ArrayValueAtIndex((Array) value, _index);
         }
 
         public bool GetJsonExists(object @object)
         {
-            return JsonFieldGetterHelperProvided.GetJsonProvidedIndexedPropExists(@object, field, index);
+            return JsonFieldGetterHelperProvided.GetJsonProvidedIndexedPropExists(@object, _field, _index);
         }
 
         public object GetJsonFragment(object @object)
         {
-            if (!isFragmentable) {
+            if (!IsFragmentable) {
                 return null;
             }
 
-            var value = JsonFieldGetterHelperProvided.GetJsonProvidedIndexedProp(@object, field, index);
+            var value = JsonFieldGetterHelperProvided.GetJsonProvidedIndexedProp(@object, _field, _index);
             if (value == null) {
                 return null;
             }

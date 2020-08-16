@@ -15,8 +15,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; //cast;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; //exprDotMethod;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.filter
 {
@@ -71,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.filter
 			return Cast(
 				requiredType,
 				CodegenLegoCast.CastSafeFromObjectType(requiredType,
-					ExprDotMethod(symbols.GetAddExprEvalCtx(parent), "getFilterReboolConstant")));
+					ExprDotName(symbols.GetAddExprEvalCtx(parent), "FilterReboolConstant")));
 		}
 
 		public Type EvaluationType {

@@ -280,6 +280,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 Script.Expression,
                 Script.ParameterNames,
                 Parameters.ToArray(),
+                returnType,
                 _defaultDialect);
             return null;
         }

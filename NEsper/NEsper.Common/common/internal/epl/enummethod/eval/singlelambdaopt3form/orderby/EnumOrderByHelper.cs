@@ -29,13 +29,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 		/// <param name="descending">true for descending</param>
 		/// <returns>collection</returns>
 		public static ICollection<object> EnumOrderBySortEval(
-			SortedDictionary<object, object> sort,
+			IOrderedDictionary<object, object> sort,
 			bool hasColl,
 			bool descending)
 		{
 			IDictionary<object, object> sorted;
 			if (descending) {
-				sorted = sort.DescendingMap();
+				sorted = sort.Invert();
 			}
 			else {
 				sorted = sort;

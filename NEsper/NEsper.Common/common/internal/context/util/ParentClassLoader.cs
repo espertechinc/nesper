@@ -36,12 +36,6 @@ namespace com.espertech.esper.common.@internal.context.util
         }
 
         /// <inheritdoc />
-        public Stream GetResourceAsStream(string resourceName)
-        {
-            return _parent.GetResourceAsStream(resourceName);
-        }
-
-        /// <inheritdoc />
         public Type GetClass(string typeName)
         {
             // See if the type exists in the list of injected types.

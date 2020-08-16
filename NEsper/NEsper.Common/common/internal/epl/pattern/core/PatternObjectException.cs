@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         {
         }
 
-        protected PatternObjectException(
+        internal PatternObjectException(
             SerializationInfo info,
             StreamingContext context) : base(info, context)
         {

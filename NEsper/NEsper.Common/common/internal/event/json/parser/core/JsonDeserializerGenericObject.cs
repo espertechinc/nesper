@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.core
     {
         private IDictionary<string, object> _result;
 
-        public JsonDeserializerGenericObject(JsonDeserializerBase parent) : base(parent)
+        public JsonDeserializerGenericObject() : base()
         {
         }
 

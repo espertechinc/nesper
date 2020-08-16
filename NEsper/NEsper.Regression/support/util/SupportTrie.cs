@@ -24,6 +24,6 @@ namespace com.espertech.esper.regressionlib.support.util
 
 		void Remove(K key);
 		void Clear();
-		SortedDictionary<K, V> PrefixMap(K key);
+		IOrderedDictionary<string, V> PrefixMap(K key);
 	}
 } // end of namespace

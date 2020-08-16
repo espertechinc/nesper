@@ -777,7 +777,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 .Block
                 .IfRefNullReturnFalse("value")
                 .IfConditionReturnConst(
-                    Not(ExprDotMethodChain(Ref("value")).Add("getClass").Add("isArray")),
+                    Not(ExprDotMethodChain(Ref("value")).Add("GetType").Add("IsArray")),
                     false)
                 .IfConditionReturnConst(
                     Relational(

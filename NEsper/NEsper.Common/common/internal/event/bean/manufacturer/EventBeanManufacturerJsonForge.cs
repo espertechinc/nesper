@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -72,8 +74,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 
 		public EventBeanManufacturer GetManufacturer(EventBeanTypedEventFactory eventBeanTypedEventFactory)
 		{
-			int[] nativeNums = EventBeanManufacturerJson.FindPropertyIndexes(_jsonEventType, _writables);
-			return new EventBeanManufacturerJson(_jsonEventType, eventBeanTypedEventFactory, nativeNums);
+			var nativeKeys = _writables.Select(_ => _.PropertyName).ToArray();
+			//var nativeKeys = EventBeanManufacturerJson.FindPropertyIndexes(_jsonEventType, _writables);
+			return new EventBeanManufacturerJson(_jsonEventType, eventBeanTypedEventFactory, nativeKeys);
 		}
 
 		private void MakeUnderlyingCodegen(

@@ -868,7 +868,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 mode.LambdaParameters =
                     descriptor => {
                         if (descriptor.LambdaParameterNumber == 0) {
-                            return new EnumMethodLambdaParameterTypeStateGetter(typeof(string), "getResult");
+                            return new EnumMethodLambdaParameterTypeStateGetter(typeof(string), "Result");
                         }
 
                         return EnumMethodLambdaParameterTypeValue.INSTANCE;

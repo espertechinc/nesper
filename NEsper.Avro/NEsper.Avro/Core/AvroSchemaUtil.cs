@@ -157,7 +157,7 @@ namespace NEsper.Avro.Core
             return found;
         }
 
-        internal static void AssembleField(
+        public static void AssembleField(
             string propertyName,
             object propertyType,
             JArray assembler,

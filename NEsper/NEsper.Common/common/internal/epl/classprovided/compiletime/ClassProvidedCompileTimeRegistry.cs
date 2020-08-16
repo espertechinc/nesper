@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.util;
@@ -35,10 +36,10 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             Classes[key] = detail;
         }
 
-        public void AddTo(IDictionary<string, byte[]> additionalClasses)
+        public void AddTo(ICollection<Type> additionalClasses)
         {
             foreach (var entry in Classes) {
-                additionalClasses.PutAll(entry.Value.Bytes);
+                additionalClasses.AddAll(entry.Value.Types);
             }
         }
     }

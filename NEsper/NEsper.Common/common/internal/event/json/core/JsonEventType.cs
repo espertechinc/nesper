@@ -16,6 +16,7 @@ using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.json.parser.core;
+using com.espertech.esper.common.@internal.@event.json.serde;
 using com.espertech.esper.common.@internal.@event.json.writer;
 using com.espertech.esper.common.@internal.@event.property;
 using com.espertech.esper.common.@internal.util;
@@ -29,13 +30,12 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 	/// </summary>
 	public class JsonEventType : BaseNestableEventType
 	{
-		private readonly JsonEventTypeDetail detail;
-
-		private Type delegateType;
-		private JsonDelegateFactory delegateFactory;
-		private Type underlyingType;
-		private EventPropertyDescriptor[] writablePropertyDescriptors;
-		private IDictionary<string, Pair<EventPropertyDescriptor, JsonEventBeanPropertyWriter>> propertyWriters;
+		private readonly JsonEventTypeDetail _detail;
+		private Type _deserializerType;
+		private JsonSerializationContext _serializationContext;
+		private Type _underlyingType;
+		private EventPropertyDescriptor[] _writablePropertyDescriptors;
+		private IDictionary<string, Pair<EventPropertyDescriptor, JsonEventBeanPropertyWriter>> _propertyWriters;
 
 		public JsonEventType(
 			EventTypeMetadata metadata,
@@ -59,8 +59,8 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 				beanEventTypeFactory,
 				true)
 		{
-			this.detail = detail;
-			this.underlyingType = underlyingStandInClass;
+			_detail = detail;
+			_underlyingType = underlyingStandInClass;
 		}
 
 		public override EventPropertyWriterSPI GetWriter(string propertyName)
@@ -70,11 +70,11 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 		
 		public JsonEventBeanPropertyWriter GetInternalWriter(string propertyName)
 		{
-			if (writablePropertyDescriptors == null) {
+			if (_writablePropertyDescriptors == null) {
 				InitializeWriters();
 			}
 
-			var pair = propertyWriters.Get(propertyName);
+			var pair = _propertyWriters.Get(propertyName);
 			if (pair != null) {
 				return pair.Second;
 			}
@@ -82,22 +82,22 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
 			if (property is MappedProperty) {
 				var mapProp = (MappedProperty) property;
-				var field = detail.FieldDescriptors.Get(mapProp.PropertyNameAtomic);
+				var field = _detail.FieldDescriptors.Get(mapProp.PropertyNameAtomic);
 				if (field == null) {
 					return null;
 				}
 
-				return new JsonEventBeanPropertyWriterMapProp(this.delegateFactory, field, mapProp.Key);
+				return new JsonEventBeanPropertyWriterMapProp(this._serializationContext, field, mapProp.Key);
 			}
 
 			if (property is IndexedProperty) {
 				var indexedProp = (IndexedProperty) property;
-				var field = detail.FieldDescriptors.Get(indexedProp.PropertyNameAtomic);
+				var field = _detail.FieldDescriptors.Get(indexedProp.PropertyNameAtomic);
 				if (field == null) {
 					return null;
 				}
 
-				return new JsonEventBeanPropertyWriterIndexedProp(this.delegateFactory, field, indexedProp.Index);
+				return new JsonEventBeanPropertyWriterIndexedProp(this._serializationContext, field, indexedProp.Index);
 			}
 
 			return null;
@@ -105,21 +105,21 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 
 		public override EventPropertyDescriptor[] WriteableProperties {
 			get {
-				if (writablePropertyDescriptors == null) {
+				if (_writablePropertyDescriptors == null) {
 					InitializeWriters();
 				}
 
-				return writablePropertyDescriptors;
+				return _writablePropertyDescriptors;
 			}
 		}
 
 		public override EventPropertyDescriptor GetWritableProperty(string propertyName)
 		{
-			if (writablePropertyDescriptors == null) {
+			if (_writablePropertyDescriptors == null) {
 				InitializeWriters();
 			}
 
-			var pair = propertyWriters.Get(propertyName);
+			var pair = _propertyWriters.Get(propertyName);
 			if (pair != null) {
 				return pair.First;
 			}
@@ -155,7 +155,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 
 		public override EventBeanWriter GetWriter(string[] properties)
 		{
-			if (writablePropertyDescriptors == null) {
+			if (_writablePropertyDescriptors == null) {
 				InitializeWriters();
 			}
 
@@ -172,11 +172,11 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 
 		public override Type UnderlyingType {
 			get {
-				if (underlyingType == null) {
+				if (_underlyingType == null) {
 					throw new EPException("Underlying type has not been set");
 				}
 
-				return underlyingType;
+				return _underlyingType;
 			}
 		}
 
@@ -184,7 +184,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 		{
 			// resolve underlying type
 			try {
-				underlyingType = classLoader.GetClass(detail.UnderlyingClassName);
+				_underlyingType = classLoader.GetClass(_detail.UnderlyingClassName);
 			}
 			catch (TypeLoadException ex) {
 				throw new EPException("Failed to load Json underlying class: " + ex.Message, ex);
@@ -192,35 +192,33 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 
 			// resolve delegate
 			try {
-				delegateType = classLoader.GetClass(detail.DelegateClassName);
+				_deserializerType = classLoader.GetClass(_detail.DeserializerClassName);
 			}
 			catch (TypeLoadException e) {
 				throw new EPException("Failed to find class: " + e.Message, e);
 			}
 
 			// resolve handler factory
-			Type delegateFactory;
+			Type deserializerFactoryType;
 			try {
-				delegateFactory = classLoader.GetClass(detail.DelegateFactoryClassName);
+				deserializerFactoryType = classLoader.GetClass(_detail.DeserializerFactoryClassName);
 			}
 			catch (TypeLoadException e) {
 				throw new EPException("Failed to find class: " + e.Message, e);
 			}
 
-			this.delegateFactory = TypeHelper.Instantiate<JsonDelegateFactory>(delegateFactory);
+			_serializationContext = TypeHelper.Instantiate<JsonSerializationContext>(deserializerFactoryType);
 		}
 
 		public object Parse(string json)
 		{
 			try {
-				var deserializer = delegateFactory.Make(null);
+				var deserializer = _serializationContext.Deserializer;
 
 				var jsonDocumentOptions = new JsonDocumentOptions();
 				var jsonDocument = JsonDocument.Parse(json, jsonDocumentOptions);
 				
-				deserializer.Deserialize(jsonDocument.RootElement);
-				
-				return deserializer.GetResult();
+				return deserializer.Invoke(jsonDocument.RootElement);
 			}
 			catch (EPException) {
 				throw;
@@ -230,102 +228,11 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			}
 		}
 
-		public void ParseProperties(
-			Utf8JsonReader jsonReader,
-			JsonHandlerDelegator handler,
-			object currentObject)
-		{
-			while (jsonReader.Read()) {
-				switch (jsonReader.TokenType) {
-					case JsonTokenType.None:
-						break;
-					case JsonTokenType.EndObject:
-						handler.EndObject(currentObject);
-						break;
-					case JsonTokenType.PropertyName:
-						handler.StartObjectValue(currentObject, jsonReader.GetString());
-						break;
+		public JsonEventTypeDetail Detail => _detail;
 
-					case JsonTokenType.StartObject:
-						ParseProperties(jsonReader, handler, handler.StartObject());
-						break;
+		public Type DeserializerType => _deserializerType;
 
-					case JsonTokenType.String:
-						handler.EndString(jsonReader.GetString());
-						break;
-					case JsonTokenType.Number:
-						ReadOnlySpan<byte> span = jsonReader.HasValueSequence 
-							? jsonReader.ValueSequence.ToArray()
-							: jsonReader.ValueSpan;
-						handler.EndNumber(span);
-						break;
-					case JsonTokenType.True:
-						handler.EndBoolean(true);
-						break;
-					case JsonTokenType.False:
-						handler.EndBoolean(false);
-						break;
-					case JsonTokenType.Null:
-						handler.EndNull();
-						break;
-					default:
-						throw new ArgumentOutOfRangeException();
-				}
-			}
-		}
-
-		public void ParseValue(
-			Utf8JsonReader jsonReader,
-			JsonHandlerDelegator handler)
-		{
-			while (jsonReader.Read()) {
-				switch (jsonReader.TokenType) {
-					case JsonTokenType.None:
-						break;
-					case JsonTokenType.StartObject:
-						ParseProperties(jsonReader, handler, handler.StartObject());
-						break;
-					case JsonTokenType.StartArray:
-						ParseArray(jsonReader, handler, handler.StartArray());
-						break;
-					case JsonTokenType.Comment:
-						break;
-					case JsonTokenType.String:
-						handler.EndString(jsonReader.GetString());
-						break;
-					case JsonTokenType.Number:
-						jsonReader.GetDouble();
-						break;
-					case JsonTokenType.True:
-						handler.EndBoolean(true);
-						break;
-					case JsonTokenType.False:
-						handler.EndBoolean(false);
-						break;
-					case JsonTokenType.Null:
-						handler.EndNull();
-						break;
-					default:
-						throw new ArgumentOutOfRangeException();
-				}
-			}
-		}
-
-		public JsonEventTypeDetail Detail => detail;
-
-		public Type DelegateType => delegateType;
-
-		public JsonDelegateFactory DelegateFactory => delegateFactory;
-
-		public int GetColumnNumber(string columnName)
-		{
-			var field = detail.FieldDescriptors.Get(columnName);
-			if (field != null) {
-				return field.PropertyNumber;
-			}
-
-			throw new IllegalStateException("Unrecognized json-type column name '" + columnName + "'");
-		}
+		public JsonSerializationContext SerializationContext => _serializationContext;
 
 		public bool IsDeepEqualsConsiderOrder(JsonEventType other)
 		{
@@ -334,9 +241,9 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			}
 
 			foreach (var propMeEntry in NestableTypes) {
-				var fieldMe = detail.FieldDescriptors.Get(propMeEntry.Key);
-				var fieldOther = other.detail.FieldDescriptors.Get(propMeEntry.Key);
-				if (fieldOther == null || fieldMe.PropertyNumber != fieldOther.PropertyNumber) {
+				var fieldMe = _detail.FieldDescriptors.Get(propMeEntry.Key);
+				var fieldOther = other._detail.FieldDescriptors.Get(propMeEntry.Key);
+				if (fieldOther == null || fieldMe.FieldName != fieldOther.FieldName) {
 					return false;
 				}
 
@@ -345,7 +252,13 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 				var setTwoType = other.NestableTypes.Get(propName);
 				var setTwoTypeFound = other.NestableTypes.ContainsKey(propName);
 
-				var comparedMessage = BaseNestableEventUtil.ComparePropType(propName, setOneType, setTwoType, setTwoTypeFound, other.Name);
+				var comparedMessage = BaseNestableEventUtil.ComparePropType(
+					propName,
+					setOneType,
+					setTwoType,
+					setTwoTypeFound,
+					other.Name);
+
 				if (comparedMessage != null) {
 					return false;
 				}
@@ -359,20 +272,20 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			var writeableProps = new List<EventPropertyDescriptor>();
 			var propertWritersMap = new Dictionary<string, Pair<EventPropertyDescriptor, JsonEventBeanPropertyWriter>>();
 			foreach (var prop in PropertyDescriptors) {
-				var field = detail.FieldDescriptors.Get(prop.PropertyName);
+				var field = _detail.FieldDescriptors.Get(prop.PropertyName);
 				if (field == null) {
 					continue;
 				}
 
 				writeableProps.Add(prop);
-				var eventPropertyWriter = new JsonEventBeanPropertyWriter(this.delegateFactory, field);
+				var eventPropertyWriter = new JsonEventBeanPropertyWriter(this._serializationContext, field);
 				propertWritersMap.Put(
 					prop.PropertyName,
 					new Pair<EventPropertyDescriptor, JsonEventBeanPropertyWriter>(prop, eventPropertyWriter));
 			}
 
-			propertyWriters = propertWritersMap;
-			writablePropertyDescriptors = writeableProps.ToArray();
+			_propertyWriters = propertWritersMap;
+			_writablePropertyDescriptors = writeableProps.ToArray();
 		}
 	}
 } // end of namespace

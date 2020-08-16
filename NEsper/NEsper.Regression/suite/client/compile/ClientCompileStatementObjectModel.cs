@@ -115,7 +115,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 };
 
                 foreach (var aTestdata in testdata) {
-                    var epl = "select * from java.lang.Object where " + aTestdata[0];
+                    var epl = "select * from System.Object where " + aTestdata[0];
                     var expected = aTestdata[1];
                     var expressionLowestPrecedenceClass = aTestdata[2];
 
@@ -126,7 +126,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                         Assert.AreEqual(epl, eplAfter);
                     }
                     else {
-                        var expectedEPL = "select * from java.lang.Object where " + expected;
+                        var expectedEPL = "select * from System.Object where " + expected;
                         Assert.AreEqual(expectedEPL, eplAfter);
                     }
 

@@ -96,13 +96,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                             block
                                 .DeclareVar(_allKeysMultikey.ClassNameMK, "mk", Cast(_allKeysMultikey.ClassNameMK, Ref("groupKey")));
                             if (RollupKeys.Length == 1 && (_subKeyMultikey == null || _subKeyMultikey.ClassNameMK == null)) {
-                                block.BlockReturn(ExprDotMethod(Ref("mk"), "getKey", Constant(RollupKeys[0])));
+                                block.BlockReturn(ExprDotMethod(Ref("mk"), "GetKey", Constant(RollupKeys[0])));
                             }
                             else {
                                 var expressions = new CodegenExpression[RollupKeys.Length];
                                 for (var i = 0; i < RollupKeys.Length; i++) {
                                     var index = RollupKeys[i];
-                                    var keyExpr = ExprDotMethod(Ref("mk"), "getKey", Constant(index));
+                                    var keyExpr = ExprDotMethod(Ref("mk"), "GetKey", Constant(index));
                                     expressions[i] = Cast(_allGroupKeyTypes[index], keyExpr);
                                 }
 

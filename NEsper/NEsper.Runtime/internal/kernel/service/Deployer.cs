@@ -103,7 +103,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 					deploymentClassLoaderOption,
 					epRuntime);
 			}
-			catch (EPDeployException ex) {
+			catch (EPDeployException) {
 				throw;
 			}
 			catch (Exception ex) {

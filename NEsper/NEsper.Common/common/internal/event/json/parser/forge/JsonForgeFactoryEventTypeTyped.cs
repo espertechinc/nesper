@@ -7,69 +7,71 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.@internal.@event.json.core;
-using com.espertech.esper.common.@internal.@event.json.parser.delegates.endvalue;
-using com.espertech.esper.common.@internal.@event.json.write;
+using com.espertech.esper.common.@internal.@event.json.parser.deserializers.forge;
+using com.espertech.esper.common.@internal.@event.json.serializers;
 using com.espertech.esper.common.@internal.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 {
-
     public class JsonForgeFactoryEventTypeTyped
     {
         public static JsonForgeDesc ForgeNonArray(
             string fieldName,
             JsonEventType other)
         {
-            JsonDelegateForge startObject = new JsonDelegateForgeWithDelegateFactory(other.Detail.DelegateFactoryClassName);
-            JsonEndValueForge end = new JsonEndValueForgeCast(other.Detail.UnderlyingClassName);
-            JsonWriteForge writeForge;
+            JsonDeserializerForge deserializerForge = null;
+            
+            JsonSerializerForge serializerForge;
             if (other.Detail.OptionalUnderlyingProvided == null) {
-                writeForge = new JsonWriteForgeByMethod("WriteNested");
+                serializerForge = new JsonSerializerForgeByMethod("WriteNested");
             }
             else {
-                writeForge = new ProxyJsonWriteForge((
+                serializerForge = new ProxyJsonSerializerForge((
                         refs,
                         method,
                         classScope) =>
                     StaticMethod(
-                        typeof(JsonWriteUtil),
+                        typeof(JsonSerializerUtil),
                         "WriteNested",
                         refs.Writer,
                         refs.Field,
-                        NewInstance(other.Detail.DelegateFactoryClassName)));
+                        NewInstance(other.Detail.DeserializerFactoryClassName)));
             }
 
-            return new JsonForgeDesc(fieldName, startObject, null, end, writeForge);
+            return new JsonForgeDesc(fieldName, deserializerForge, serializerForge);
         }
 
         public static JsonForgeDesc ForgeArray(
             string fieldName,
             JsonEventType other)
         {
-            JsonDelegateForge startArray = new JsonDelegateForgeWithDelegateFactoryArray(
-                other.Detail.DelegateFactoryClassName,
-                other.UnderlyingType);
-            JsonEndValueForge end = new JsonEndValueForgeCast(TypeHelper.GetArrayType(other.UnderlyingType));
-            JsonWriteForge writeForge;
+            JsonDeserializerForge deserializerForge = null;
+
+            // JsonAllocatorForge startArray = new JsonAllocatorForgeWithAllocatorFactoryArray(
+            //     other.Detail.DeserializerFactoryClassName,
+            //     other.UnderlyingType);
+            // JsonEndValueForge end = new JsonEndValueForgeCast(TypeHelper.GetArrayType(other.UnderlyingType));
+            
+            JsonSerializerForge serializerForge;
             if (other.Detail.OptionalUnderlyingProvided == null) {
-                writeForge = new JsonWriteForgeByMethod("WriteNestedArray");
+                serializerForge = new JsonSerializerForgeByMethod("WriteNestedArray");
             }
             else {
-                writeForge = new ProxyJsonWriteForge((
+                serializerForge = new ProxyJsonSerializerForge((
                         refs,
                         method,
                         classScope) =>
                     StaticMethod(
-                        typeof(JsonWriteUtil),
+                        typeof(JsonSerializerUtil),
                         "WriteNestedArray",
                         refs.Writer,
                         refs.Field,
-                        NewInstance(other.Detail.DelegateFactoryClassName)));
+                        NewInstance(other.Detail.DeserializerFactoryClassName)));
             }
 
-            return new JsonForgeDesc(fieldName, null, startArray, end, writeForge);
+            return new JsonForgeDesc(fieldName, deserializerForge, serializerForge);
         }
     }
 }

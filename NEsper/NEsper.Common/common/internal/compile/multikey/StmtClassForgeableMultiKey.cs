@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 				CodegenSymbolProviderEmpty.INSTANCE,
 				classScope);
 			getNumKeysMethod.Block.MethodReturn(Constant(types.Length));
-			CodegenStackGenerator.RecursiveBuildStack(getNumKeysMethod, "getNumKeys", methods, properties);
+			CodegenStackGenerator.RecursiveBuildStack(getNumKeysMethod, "GetNumKeys", methods, properties);
 
 			CodegenMethod getKeyMethod = CodegenMethod.MakeParentNode(
 					typeof(object),
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 					classScope)
 				.AddParam(typeof(int), "num");
 			MakeGetKeyMethod(types.Length, getKeyMethod);
-			CodegenStackGenerator.RecursiveBuildStack(getKeyMethod, "getKey", methods, properties);
+			CodegenStackGenerator.RecursiveBuildStack(getKeyMethod, "GetKey", methods, properties);
 
 			CodegenMethod toStringMethod = CodegenMethod.MakeParentNode(
 				typeof(string),
@@ -139,7 +139,13 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 
 			if (!lenientEquals) {
 				equalsMethod.Block
-					.IfCondition(Or(EqualsNull(Ref("o")), Not(EqualsIdentity(ExprDotMethod(Ref("this"), "getClass"), ExprDotMethod(Ref("o"), "getClass")))))
+					.IfCondition(
+						Or(
+							EqualsNull(Ref("o")),
+							Not(
+								EqualsIdentity(
+									ExprDotMethod(Ref("this"), "GetType"),
+									ExprDotMethod(Ref("o"), "GetType")))))
 					.BlockReturn(Constant(false))
 					.DeclareVar(className, "k", Cast(className, Ref("o")));
 

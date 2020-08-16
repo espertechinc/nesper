@@ -469,7 +469,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 				EventRepresentationChoice eventRepresentationEnum)
 			{
 				var expectedOne = !eventRepresentationEnum.IsAvroEvent()
-					? "Nestable type configuration encountered an unexpected property type name 'xxxx' for property 'col1', expected java.lang.Class or java.util.Map or the name of a previously-declared event type ["
+					? "Nestable type configuration encountered an unexpected property type name 'xxxx' for property 'col1', expected System.Type or java.util.Map or the name of a previously-declared event type ["
 					: "Type definition encountered an unexpected property type name 'xxxx' for property 'col1', expected the name of a previously-declared Avro type";
 				var prefix = eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedDummy>();
 				TryInvalidCompile(env, $"{prefix} create schema MyEventType as (col1 xxxx)", expectedOne);

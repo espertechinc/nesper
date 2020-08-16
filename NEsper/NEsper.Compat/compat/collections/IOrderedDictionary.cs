@@ -22,6 +22,11 @@ namespace com.espertech.esper.compat.collections
         KeyValuePair<TK, TV> LastEntry { get; }
 
         /// <summary>
+        /// Returns the keys as an ordered collection.
+        /// </summary>
+        IOrderedCollection<TK> OrderedKeys { get; }
+        
+        /// <summary>
         /// Returns a readonly ordered dictionary that includes everything before the value.
         /// Whether the value is included in the range depends on whether the isInclusive
         /// flag is set.
@@ -123,5 +128,11 @@ namespace com.espertech.esper.compat.collections
         /// <param name="valuePair"></param>
         /// <returns></returns>
         bool TryLessThan(TK key, out KeyValuePair<TK, TV> valuePair);
+
+        /// <summary>
+        /// Returns an ordered dictionary in inverted order.
+        /// </summary>
+        /// <returns></returns>
+        IOrderedDictionary<TK, TV> Invert();
     }
 }

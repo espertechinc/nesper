@@ -17,22 +17,22 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
 	/// </summary>
 	public class JsonEventBeanCopyMethod : EventBeanCopyMethod
     {
-        private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
-        private readonly JsonEventType eventType;
+        private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
+        private readonly JsonEventType _eventType;
 
         public JsonEventBeanCopyMethod(
             JsonEventType eventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            this.eventType = eventType;
-            this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            _eventType = eventType;
+            _eventBeanTypedEventFactory = eventBeanTypedEventFactory;
         }
 
         public EventBean Copy(EventBean theEvent)
         {
             var source = theEvent.Underlying;
-            var copy = eventType.DelegateFactory.Copy(source);
-            return eventBeanTypedEventFactory.AdapterForTypedJson(copy, eventType);
+            var copy = _eventType.SerializationContext.Copy(source);
+            return _eventBeanTypedEventFactory.AdapterForTypedJson(copy, _eventType);
         }
     }
 } // end of namespace

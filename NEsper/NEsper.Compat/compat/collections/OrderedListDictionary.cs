@@ -39,6 +39,9 @@ namespace com.espertech.esper.compat.collections
         /// <value>The key comparer.</value>
         public IComparer<TK> KeyComparer => _itemComparer.KeyComparer;
 
+        private readonly OrderedListDictionaryKeys<TK, TV> _keys;
+        private readonly OrderedListDictionaryValues<TK, TV> _values;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="OrderedListDictionary{TK,TV}" /> class.
         /// </summary>
@@ -50,6 +53,10 @@ namespace com.espertech.esper.compat.collections
         {
             _itemList = itemList;
             _itemComparer = comparer;
+
+            var range = new BoundRange<TK>(null, null, comparer.KeyComparer);
+            _keys = new OrderedListDictionaryKeys<TK, TV>(this, range);
+            _values = new OrderedListDictionaryValues<TK, TV>(this, range);
         }
 
         /// <summary>
@@ -60,6 +67,10 @@ namespace com.espertech.esper.compat.collections
         {
             _itemList = new List<KeyValuePair<TK, TV>>();
             _itemComparer = new KeyValuePairComparer(keyComparer, false);
+
+            var range = new BoundRange<TK>(null, null, keyComparer);
+            _keys = new OrderedListDictionaryKeys<TK, TV>(this, range);
+            _values = new OrderedListDictionaryValues<TK, TV>(this, range);
         }
 
         /// <summary>
@@ -67,8 +78,13 @@ namespace com.espertech.esper.compat.collections
         /// </summary>
         public OrderedListDictionary()
         {
+            var comparer = Comparer<TK>.Default;
             _itemList = new List<KeyValuePair<TK, TV>>();
-            _itemComparer = new KeyValuePairComparer(Comparers.Default<TK>(), false);
+            _itemComparer = new KeyValuePairComparer(comparer, false);
+
+            var range = new BoundRange<TK>(null, null, comparer);
+            _keys = new OrderedListDictionaryKeys<TK, TV>(this, range);
+            _values = new OrderedListDictionaryValues<TK, TV>(this, range);
         }
 
         /// <summary>
@@ -366,13 +382,18 @@ namespace com.espertech.esper.compat.collections
         /// Gets the keys.
         /// </summary>
         /// <value>The keys.</value>
-        public ICollection<TK> Keys => _itemList.Select(item => item.Key).ToArray();
+        public ICollection<TK> Keys => _keys;
+
+        /// <summary>
+        /// Returns the keys as an ordered collection.
+        /// </summary>
+        public IOrderedCollection<TK> OrderedKeys => _keys;
 
         /// <summary>
         /// Gets the values.
         /// </summary>
         /// <value>The values.</value>
-        public ICollection<TV> Values => _itemList.Select(item => item.Value).ToArray();
+        public ICollection<TV> Values => _values;
 
         /// <summary>
         /// Returns a readonly ordered dictionary that includes everything before the value.
@@ -799,7 +820,7 @@ namespace com.espertech.esper.compat.collections
         /// Returns an inverted version of the dictionary.
         /// </summary>
         /// <returns></returns>
-        public OrderedListDictionary<TK, TV> Invert()
+        public IOrderedDictionary<TK, TV> Invert()
         {
             var inverted = _itemComparer.Invert();
             var invertedList = new List<KeyValuePair<TK, TV>>(_itemList);

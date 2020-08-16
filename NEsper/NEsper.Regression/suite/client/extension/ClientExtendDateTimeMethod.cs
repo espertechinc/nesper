@@ -47,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				TryInvalidCompile(
 					env,
 					"select DateTimeEx.dtmInvalidMethodNotExists('x') from SupportDateTime",
-					"Failed to validate select-clause expression 'DateTimeEx.dtmInvalidMethodNotExists('x')': Failed to resolve enumeration method, date-time method or mapped property 'DateTimeEx.dtmInvalidMethodNotExists('x')': Failed to validate date-time method 'dtmInvalidMethodNotExists', expected a Integer-type result for expression parameter 0 but received java.lang.String");
+					"Failed to validate select-clause expression 'DateTimeEx.dtmInvalidMethodNotExists('x')': Failed to resolve enumeration method, date-time method or mapped property 'DateTimeEx.dtmInvalidMethodNotExists('x')': Failed to validate date-time method 'dtmInvalidMethodNotExists', expected a Integer-type result for expression parameter 0 but received System.String");
 
 				// validate static method not matching
 				TryInvalidCompile(
@@ -59,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				TryInvalidCompile(
 					env,
 					"select DateTimeEx.dtmInvalidNotProvided() from SupportDateTime",
-					"Failed to validate select-clause expression 'DateTimeEx.dtmInvalidNotProvided()': Plugin datetime method does not provide a forge for input type java.util.Calendar");
+					"Failed to validate select-clause expression 'DateTimeEx.dtmInvalidNotProvided()': Plugin datetime method does not provide a forge for input type " + typeof(DateTimeEx).FullName + "");
 			}
 		}
 

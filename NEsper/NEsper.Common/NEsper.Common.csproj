@@ -32,7 +32,6 @@
   <ItemGroup>
     <ProjectReference Include="..\NEsper.Compat\NEsper.Compat.csproj" />
     <ProjectReference Include="..\NEsper.Grammar\NEsper.Grammar.csproj" />
-    <ProjectReference Include="NEsper.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(NetFramework)'!='true'">
@@ -66,5 +65,9 @@
 
   <ItemGroup>
     <None Remove="common\client\json\minimaljson\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="common\internal\event\json\context" />
   </ItemGroup>
 </Project>

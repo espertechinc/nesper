@@ -142,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             public void Run(RegressionEnvironment env)
             {
                 var startTime =
-                    "2002-05-30T09:01:02.003"; // use 2-digit hour, see https://bugs.openjdk.java.net/browse/JDK-8066806
+                    "2002-05-30T09:01:02.003";
                 env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(startTime));
 
                 var fields = Collections.Array(

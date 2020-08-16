@@ -22,15 +22,15 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
     /// </summary>
     public sealed class JsonGetterDynamicNestedChain : JsonEventPropertyGetter
     {
-        private readonly JsonEventPropertyGetter[] getters;
-        private readonly string underlyingClassName;
+        private readonly JsonEventPropertyGetter[] _getters;
+        private readonly string _underlyingClassName;
 
         public JsonGetterDynamicNestedChain(
             string underlyingClassName,
             JsonEventPropertyGetter[] getters)
         {
-            this.underlyingClassName = underlyingClassName;
-            this.getters = getters;
+            this._underlyingClassName = underlyingClassName;
+            this._getters = getters;
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CastUnderlying(underlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(CastUnderlying(_underlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
         }
 
         public CodegenExpression UnderlyingGetCodegen(
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var resultExpression = getters[0].UnderlyingGetCodegen(underlyingExpression, codegenMethodScope, codegenClassScope);
+            var resultExpression = _getters[0].UnderlyingGetCodegen(underlyingExpression, codegenMethodScope, codegenClassScope);
             return LocalMethod(HandleGetterTrailingChainCodegen(codegenMethodScope, codegenClassScope), resultExpression);
         }
 
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingExistsCodegen(CastUnderlying(underlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingExistsCodegen(CastUnderlying(_underlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var resultExpression = getters[0].UnderlyingGetCodegen(underlyingExpression, codegenMethodScope, codegenClassScope);
+            var resultExpression = _getters[0].UnderlyingGetCodegen(underlyingExpression, codegenMethodScope, codegenClassScope);
             return LocalMethod(HandleGetterTrailingExistsCodegen(codegenMethodScope, codegenClassScope), resultExpression);
         }
 
@@ -105,13 +105,13 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public object GetJsonProp(object @object)
         {
-            var result = getters[0].GetJsonProp(@object);
-            for (var i = 1; i < getters.Length; i++) {
+            var result = _getters[0].GetJsonProp(@object);
+            for (var i = 1; i < _getters.Length; i++) {
                 if (!(result is IDictionary<string, object>)) {
                     return null;
                 }
 
-                var getter = getters[i];
+                var getter = _getters[i];
                 result = getter.GetJsonProp(result);
             }
 
@@ -120,13 +120,13 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public bool GetJsonExists(object @object)
         {
-            var result = getters[0].GetJsonProp(@object);
-            for (var i = 1; i < getters.Length - 1; i++) {
+            var result = _getters[0].GetJsonProp(@object);
+            for (var i = 1; i < _getters.Length - 1; i++) {
                 if (!(result is IDictionary<string, object>)) {
                     return false;
                 }
 
-                var getter = getters[i];
+                var getter = _getters[i];
                 result = getter.GetJsonProp(result);
             }
 
@@ -134,7 +134,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
                 return false;
             }
 
-            return getters[getters.Length - 1].GetJsonExists(result);
+            return _getters[_getters.Length - 1].GetJsonExists(result);
         }
 
         private CodegenMethod HandleGetterTrailingChainCodegen(
@@ -145,8 +145,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
                 .MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(object), "result");
 
-            for (var i = 1; i < getters.Length; i++) {
-                var getter = getters[i];
+            for (var i = 1; i < _getters.Length; i++) {
+                var getter = _getters[i];
                 method.Block
                     .IfRefNullReturnNull("result")
                     .IfNotInstanceOf("result", typeof(IDictionary<string, object>))
@@ -171,8 +171,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
                 .MakeChild(typeof(bool), GetType(), codegenClassScope)
                 .AddParam(typeof(object), "result");
 
-            for (var i = 1; i < getters.Length - 1; i++) {
-                var getter = getters[i];
+            for (var i = 1; i < _getters.Length - 1; i++) {
+                var getter = _getters[i];
                 method.Block
                     .IfRefNull("result")
                     .BlockReturn(ConstantFalse())
@@ -192,7 +192,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
                 .IfNotInstanceOf("result", typeof(IDictionary<string, object>))
                 .BlockReturn(ConstantFalse())
                 .MethodReturn(
-                    getters[getters.Length - 1]
+                    _getters[_getters.Length - 1]
                         .UnderlyingExistsCodegen(
                             CastRef(typeof(IDictionary<string, object>), "result"),
                             codegenMethodScope,

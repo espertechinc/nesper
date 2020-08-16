@@ -64,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				          "new String[][] {{},{},{\"x\"},{}} as c6, " +
 				          "new String[][] {{\"x\",\"y\"},{\"z\"}} as c7, " +
 				          "new Integer[][] {{IntPrimitive,IntPrimitive+1},{IntPrimitive+2,IntPrimitive+3}} as c8, " +
-				          "new java.util.Calendar[][] {} as c9, " +
+				          "new " + typeof(DateTimeEx).FullName + "[][] {} as c9, " +
 				          "new Object[][] {{}} as c10, " +
 				          "new Object[][] {{1}} as c11, " +
 				          "new Object[][] {{\"x\"},{1},{10L}} as c12 " +
@@ -161,7 +161,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					.WithExpression(fields[6], "new String[] {\"x\"}")
 					.WithExpression(fields[7], "new String[] {\"x\",\"y\"}")
 					.WithExpression(fields[8], "new Integer[] {IntPrimitive,IntPrimitive+1,IntPrimitive+2,IntPrimitive+3}")
-					.WithExpression(fields[9], "new java.util.Calendar[] {}")
+					.WithExpression(fields[9], "new " + typeof(DateTimeEx).FullName + "[] {}")
 					.WithExpression(fields[10], "new Object[] {}")
 					.WithExpression(fields[11], "new Object[] {1}")
 					.WithExpression(fields[12], "new Object[] {\"x\",1,10L}");
@@ -221,9 +221,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				var builder = new SupportEvalBuilder("SupportBean")
 					.WithExpression(fields[0], "new double[1]")
 					.WithExpression(fields[1], "new Integer[2*2]")
-					.WithExpression(fields[2], "new java.util.Calendar[IntPrimitive]")
+					.WithExpression(fields[2], "new " + typeof(DateTimeEx).FullName + "[IntPrimitive]")
 					.WithExpression(fields[3], "new double[1][2]")
-					.WithExpression(fields[4], "new java.util.Calendar[IntPrimitive][IntPrimitive]");
+					.WithExpression(fields[4], "new " + typeof(DateTimeEx).FullName + "[IntPrimitive][IntPrimitive]");
 
 				builder.WithStatementConsumer(
 					stmt => {

@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         }
 
         /// <summary>
-        ///     Returns indicator whether the runtime considers the <seealso cref="java.io.Serializable" /> interface for serializing types that implement Serializable
+        ///     Returns indicator whether the runtime considers the Serializable attribute for serializing types
         /// </summary>
         /// <value>indicator</value>
         public bool IsEnableSerializable {
@@ -42,8 +42,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         }
 
         /// <summary>
-        ///     Returns indicator whether the runtime considers the <seealso cref="java.io.Externalizable" /> interface for serializing types that implement
-        ///     Externalizable.
+        /// This exists for API compatibility and has no meaning in .NET.  To be removed.
         /// </summary>
         /// <value>indicator</value>
         public bool IsEnableExternalizable {

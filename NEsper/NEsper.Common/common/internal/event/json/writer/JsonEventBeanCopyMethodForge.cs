@@ -23,11 +23,11 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
 	/// </summary>
 	public class JsonEventBeanCopyMethodForge : EventBeanCopyMethodForge
     {
-        private readonly JsonEventType eventType;
+        private readonly JsonEventType _eventType;
 
         public JsonEventBeanCopyMethodForge(JsonEventType eventType)
         {
-            this.eventType = eventType;
+            _eventType = eventType;
         }
 
         public CodegenExpression MakeCopyMethodClassScoped(CodegenClassScope classScope)
@@ -35,13 +35,13 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
             var factory = classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             return NewInstance(
                 typeof(JsonEventBeanCopyMethod),
-                Cast(typeof(JsonEventType), EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF)),
+                Cast(typeof(JsonEventType), EventTypeUtility.ResolveTypeCodegen(_eventType, EPStatementInitServicesConstants.REF)),
                 factory);
         }
 
         public EventBeanCopyMethod GetCopyMethod(EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            return new JsonEventBeanCopyMethod(eventType, eventBeanTypedEventFactory);
+            return new JsonEventBeanCopyMethod(_eventType, eventBeanTypedEventFactory);
         }
     }
 } // end of namespace

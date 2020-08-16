@@ -18,9 +18,9 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
     {
         public static void MakeNoSuchElementDefault(
             CodegenStatementSwitch switchStmt,
-            CodegenExpressionRef num)
+            CodegenExpressionRef name)
         {
-            switchStmt.DefaultBlock.BlockThrow(NewInstance(typeof(NoSuchElementException), Concat(Constant("Field at number "), num)));
+            switchStmt.DefaultBlock.BlockThrow(NewInstance(typeof(NoSuchElementException), Concat(Constant("Field named "), name)));
         }
 
         public static CodegenExpression[] GetCasesNumberNtoM(StmtClassForgeableJsonDesc desc)
@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
             var index = 0;
             foreach (var property in desc.PropertiesThisType) {
                 var field = desc.FieldDescriptorsInclSupertype.Get(property.Key);
-                cases[index] = Constant(field.PropertyNumber);
+                cases[index] = Constant(field.FieldName);
                 index++;
             }
 

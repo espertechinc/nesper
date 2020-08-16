@@ -18,6 +18,8 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.collections.btree;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.orderby
@@ -33,8 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			int numParameters,
 			bool descending) : base(lambda, indexEventType, numParameters)
 		{
-			this._descending = descending;
-			this._innerBoxedType = Boxing.GetBoxedType(InnerExpression.EvaluationType);
+			_descending = descending;
+			_innerBoxedType = InnerExpression.EvaluationType.GetBoxedType();
 		}
 
 		public override EnumEval EnumEvaluator {
@@ -46,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 						enumcoll,
 						isNewData,
 						context) => {
-						var sort = new SortedDictionary<object, object>();
+						var sort = new BTreeDictionary<object, object>();
 						var hasColl = false;
 						var indexEvent = new ObjectArrayEventBean(new object[2], FieldEventType);
 						var props = indexEvent.Properties;
@@ -68,8 +70,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 								continue;
 							}
 
-							if (entry is ICollection<object>) {
-								((ICollection<object>) entry).Add(next);
+							if (entry is ICollection<EventBean>) {
+								((ICollection<EventBean>) entry).Add(next);
 								continue;
 							}
 

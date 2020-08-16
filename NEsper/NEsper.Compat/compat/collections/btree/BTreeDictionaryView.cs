@@ -10,6 +10,8 @@ namespace com.espertech.esper.compat.collections.btree
     {
         private readonly BTreeDictionary<TK, TV> _parent;
         private readonly BoundRange<TK> _range;
+        private readonly BTreeDictionaryKeys<TK, TV> _keys;
+        private readonly BTreeDictionaryValues<TK, TV> _values;
 
         /// <summary>
         ///     Constructor.
@@ -20,9 +22,8 @@ namespace com.espertech.esper.compat.collections.btree
         {
             _parent = parent;
             _range = range;
-            
-            Keys = new BTreeDictionaryKeys<TK, TV>(_parent.Underlying, _range);
-            Values = new BTreeDictionaryValues<TK, TV>(_parent.Underlying, _range);
+            _keys = new BTreeDictionaryKeys<TK, TV>(_parent.Underlying, _range);
+            _values = new BTreeDictionaryValues<TK, TV>(_parent.Underlying, _range);
         }
 
         /// <summary>
@@ -427,7 +428,12 @@ namespace com.espertech.esper.compat.collections.btree
         ///     An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the object that implements
         ///     <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </returns>
-        public ICollection<TK> Keys { get; }
+        public ICollection<TK> Keys => _keys;
+
+        /// <summary>
+        /// Returns the keys as an ordered collection.
+        /// </summary>
+        public IOrderedCollection<TK> OrderedKeys => _keys;
 
         /// <summary>
         ///     Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the
@@ -437,7 +443,7 @@ namespace com.espertech.esper.compat.collections.btree
         ///     An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the object that implements
         ///     <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </returns>
-        public ICollection<TV> Values { get; }
+        public ICollection<TV> Values => _values;
 
         /// <summary>
         ///     Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />,
@@ -479,6 +485,16 @@ namespace com.espertech.esper.compat.collections.btree
             return BTreeDictionaryExtensions
                 .Enumerate(_parent.Underlying, _range)
                 .GetEnumerator();
+        }
+        
+        /// <summary>
+        /// Returns an inverted version of the dictionary.
+        /// </summary>
+        /// <returns></returns>
+        public IOrderedDictionary<TK, TV> Invert()
+        {
+            var inverted = (BTreeDictionary<TK, TV>) _parent.Invert();
+            return new BTreeDictionaryView<TK, TV>(inverted, _range);
         }
     }
 }

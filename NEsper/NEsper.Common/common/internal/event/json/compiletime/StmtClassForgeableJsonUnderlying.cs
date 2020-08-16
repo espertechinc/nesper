@@ -18,7 +18,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.@event.json.parser.forge;
-using com.espertech.esper.common.@internal.@event.json.write;
+using com.espertech.esper.common.@internal.@event.json.serializers;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -29,7 +29,6 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 {
 	public class StmtClassForgeableJsonUnderlying : StmtClassForgeable
 	{
-
 		public const string DYNAMIC_PROP_FIELD = "__dyn";
 
 		private readonly string className;
@@ -177,8 +176,8 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				}
 
 				first = false;
-				CodegenExpression write = forge.WriteForge.CodegenWrite(
-					new JsonWriteForgeRefs(Ref("writer"), Ref(fieldName), Constant(property.Key)),
+				CodegenExpression write = forge.SerializerForge.CodegenSerialize(
+					new JsonSerializerForgeRefs(Ref("writer"), Ref(fieldName), Constant(property.Key)),
 					method,
 					classScope);
 				method.Block
@@ -199,13 +198,13 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 					.BlockReturn(Ref("parent"));
 			}
 
-			CodegenExpression[] expressions = new CodegenExpression[desc.PropertiesThisType.Count];
+			List<CodegenExpression> expressions = new List<CodegenExpression>();
 			foreach (KeyValuePair<string, object> property in desc.PropertiesThisType) {
 				JsonUnderlyingField field = desc.FieldDescriptorsInclSupertype.Get(property.Key);
-				expressions[field.PropertyNumber - desc.NumFieldsSupertype] = Constant(property.Key);
+				expressions.Add(Constant(property.Key));
 			}
 
-			CodegenStatementSwitch switchStmt = method.Block.SwitchBlockExpressions(Ref("name"), expressions, true, false);
+			var switchStmt = method.Block.SwitchBlockExpressions(Ref("name"), expressions, true, false);
 			for (int i = 0; i < switchStmt.Blocks.Length; i++) {
 				switchStmt.Blocks[i].BlockReturn(Constant(desc.NumFieldsSupertype + i));
 			}
@@ -220,7 +219,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			if (desc.NumFieldsSupertype > 0) {
 				method.Block
 					.IfCondition(Relational(Ref("num"), LT, Constant(desc.NumFieldsSupertype)))
-					.BlockReturn(ExprDotMethod(Ref("super"), "getNativeValue", Ref("num")));
+					.BlockReturn(ExprDotMethod(Ref("super"), "GetNativeValue", Ref("num")));
 			}
 
 			CodegenExpression[] cases = GetCasesNumberNtoM(desc);
@@ -238,7 +237,8 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			CodegenMethod method,
 			CodegenClassScope classScope)
 		{
-			CodegenMethod toEntry = method.MakeChild(typeof(KeyValuePair<object, object>), this.GetType(), classScope)
+			CodegenMethod toEntry = method
+				.MakeChild(typeof(KeyValuePair<object, object>), this.GetType(), classScope)
 				.AddParam(typeof(string), "name")
 				.AddParam(typeof(object), "value");
 			toEntry.Block.MethodReturn(NewInstance(typeof(KeyValuePair<object, object>), Ref("name"), Ref("value")));
@@ -246,7 +246,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			if (desc.NumFieldsSupertype > 0) {
 				method.Block
 					.IfCondition(Relational(Ref("num"), LT, Constant(desc.NumFieldsSupertype)))
-					.BlockReturn(ExprDotMethod(Ref("super"), "getNativeEntry", Ref("num")));
+					.BlockReturn(ExprDotMethod(Ref("super"), "GetNativeEntry", Ref("num")));
 			}
 
 			CodegenExpression[] cases = GetCasesNumberNtoM(desc);
@@ -266,7 +266,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			if (desc.NumFieldsSupertype > 0) {
 				method.Block
 					.IfCondition(Relational(Ref("num"), LT, Constant(desc.NumFieldsSupertype)))
-					.BlockReturn(ExprDotMethod(Ref("super"), "getNativeKey", Ref("num")));
+					.BlockReturn(ExprDotMethod(Ref("super"), "GetNativeKey", Ref("num")));
 			}
 
 			CodegenExpression[] cases = GetCasesNumberNtoM(desc);

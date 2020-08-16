@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             try {
                 @in.ValidateWithoutContext();
             }
-            catch (ExprValidationException ex) {
+            catch (ExprValidationException) {
                 return constituent;
             }
 

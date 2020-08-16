@@ -577,7 +577,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "Contained-event expressions are not supported with tables");
                 // join invalid
                 TryInvalidCompile(env, path, "select aggvar_grouped_int[1].total.countMinSketchFrequency(TheString) from SupportBean",
-                    "Failed to validate select-clause expression 'aggvar_grouped_int[1].total.countMi...(62 chars)': Failed to resolve method 'countMinSketchFrequency': Could not find enumeration method, date-time method, instance method or property named 'countMinSketchFrequency' in class 'java.lang.Long' with matching parameter number and expected parameter type(s) 'String' ");
+                    "Failed to validate select-clause expression 'aggvar_grouped_int[1].total.countMi...(62 chars)': Failed to resolve method 'countMinSketchFrequency': Could not find enumeration method, date-time method, instance method or property named 'countMinSketchFrequency' in class 'System.Int64' with matching parameter number and expected parameter type(s) 'String' ");
                 TryInvalidCompile(env, path, "select total.countMinSketchFrequency(TheString) from aggvar_grouped_int, SupportBean unidirectional",
                     "Failed to validate select-clause expression 'total.countMinSketchFrequency(TheString)': Failed to resolve method 'countMinSketchFrequency': Could not find");
                 // cannot be marked undirectional

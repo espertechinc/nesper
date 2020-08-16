@@ -40,7 +40,7 @@ namespace NEsper.Avro.Writer
 
         public override CodegenExpression WriteCodegen(
             CodegenExpression assigned,
-            CodegenExpression und,
+            CodegenExpression underlying,
             CodegenExpression target,
             CodegenMethodScope parent,
             CodegenClassScope classScope)
@@ -49,7 +49,7 @@ namespace NEsper.Avro.Writer
                 typeof(AvroEventBeanPropertyWriterMapProp),
                 "AvroWriteMapProp",
                 assigned,
-                und,
+                underlying,
                 CodegenExpressionBuilder.Constant(_key),
                 CodegenExpressionBuilder.Constant(index.Name));
         }

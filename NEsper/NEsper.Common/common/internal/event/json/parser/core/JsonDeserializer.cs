@@ -14,5 +14,5 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.core
     /// Called to deserialize a JsonElement.
     /// </summary>
     /// <param name="element"></param>
-    public delegate object JsonDeserializer(JsonElement element);
+    public delegate T JsonDeserializer<out T>(JsonElement element);
 }

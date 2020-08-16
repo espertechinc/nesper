@@ -16,11 +16,10 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.core
     public class ClassProvidedImportClassLoaderFactory
     {
         public static ClassLoader GetClassLoader(
-            IDictionary<string, byte[]> classes,
             ClassLoader parentClassLoader,
             PathRegistry<string, ClassProvided> classProvidedPathRegistry)
         {
-            return new ClassProvidedImportClassLoader(classes, parentClassLoader, classProvidedPathRegistry);
+            return new ClassProvidedImportClassLoader(parentClassLoader, classProvidedPathRegistry);
         }
     }
 } // end of namespace

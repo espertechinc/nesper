@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.core
     {
         private IList<object> _result = null;
 
-        public JsonDeserializerGenericArray(JsonDeserializerBase parent) : base(parent)
+        public JsonDeserializerGenericArray() : base()
         {
         }
 

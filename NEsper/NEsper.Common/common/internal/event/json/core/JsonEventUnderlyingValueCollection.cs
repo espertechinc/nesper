@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 	    {
 		    var arrayLength = array.Length;
 
-		    using(var enumerator = _underlyingBase.NativeEnumerable().GetEnumerator()) {
+		    using(var enumerator = _underlyingBase.NativeEnumerable.GetEnumerator()) {
 			    while ((arrayIndex < arrayLength) && enumerator.MoveNext()) {
 				    array[arrayIndex] = enumerator.Current.Value;
 				    arrayIndex++;

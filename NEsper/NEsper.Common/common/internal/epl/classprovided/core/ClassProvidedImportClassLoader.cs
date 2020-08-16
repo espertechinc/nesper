@@ -20,25 +20,21 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.core
 {
 	public class ClassProvidedImportClassLoader : ClassLoader
 	{
-		private readonly PathRegistry<string, ClassProvided> pathRegistry;
-		private NameAndModule[] imported;
+		private readonly ClassLoader _parent;
+		private readonly PathRegistry<string, ClassProvided> _pathRegistry;
+		private NameAndModule[] _imported;
 
 		public ClassProvidedImportClassLoader(
-			IDictionary<string, byte[]> classes,
 			ClassLoader parent,
 			PathRegistry<string, ClassProvided> pathRegistry)
 		{
-			this.pathRegistry = pathRegistry;
+			_parent = parent;
+			_pathRegistry = pathRegistry;
 		}
 
 		public NameAndModule[] Imported {
-			get => this.imported;
-			set => this.imported = value;
-		}
-
-		public Stream GetResourceAsStream(string resourceName)
-		{
-			throw new NotImplementedException();
+			get => _imported;
+			set => _imported = value;
 		}
 
 		public Type GetClass(string typeName)
@@ -47,20 +43,18 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.core
 				throw new ArgumentNullException(nameof(typeName));
 			}
 
-			if (imported == null || imported.Length == 0) {
-				return base.FindClass(typeName);
-			}
-
-			foreach (NameAndModule nameAndModule in imported) {
-				PathDeploymentEntry<ClassProvided> entry = pathRegistry.GetEntryWithModule(nameAndModule.Name, nameAndModule.ModuleName);
-				foreach (Type clazz in entry.Entity.ClassesMayNull) {
-					if (clazz.FullName == typeName) {
-						return clazz;
+			if (_imported != null && _imported.Length != 0) {
+				foreach (var nameAndModule in _imported) {
+					var entry = _pathRegistry.GetEntryWithModule(nameAndModule.Name, nameAndModule.ModuleName);
+					foreach (var clazz in entry.Entity.ClassesMayNull) {
+						if (clazz.FullName == typeName) {
+							return clazz;
+						}
 					}
 				}
 			}
 
-			return base.FindClass(typeName);
+			return _parent.GetClass(typeName);
 		}
 	}
 } // end of namespace

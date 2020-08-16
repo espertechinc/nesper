@@ -172,6 +172,7 @@ namespace com.espertech.esper.common.@internal.rettype
         ///     Indicate that the expression return type is a collection of a given component type.
         /// </summary>
         /// <param name="collectionComponentType">collection component type</param>
+        /// <param name="collectionType"></param>
         /// <returns>collection of single value expression result type</returns>
         public static EPType CollectionOfSingleValue(
             Type collectionComponentType,

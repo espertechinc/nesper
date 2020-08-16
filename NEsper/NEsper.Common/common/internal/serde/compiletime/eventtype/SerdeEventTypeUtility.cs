@@ -27,10 +27,8 @@ using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
-using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationIDGenerator; // generateClassNameUUID;
-using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationIDGenerator; // generateClassNameWithUUID;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; // newInstance;
-using static com.espertech.esper.common.@internal.serde.compiletime.eventtype.SerdeEventPropertyUtility; // forgeForEventProperty;
+using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationIDGenerator;
+using static com.espertech.esper.common.@internal.serde.compiletime.eventtype.SerdeEventPropertyUtility;
 
 namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 {

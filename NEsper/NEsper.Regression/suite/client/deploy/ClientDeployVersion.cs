@@ -6,21 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
-using System.IO;
 
-using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-using com.espertech.esper.compiler.client.util;
 using com.espertech.esper.regressionlib.framework;
-using com.espertech.esper.runtime.client;
-
-using NUnit.Framework;
-
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
 
 namespace com.espertech.esper.regressionlib.suite.client.deploy
 {
@@ -37,10 +25,13 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var filename = "regression/epcompiled_version_8.0.0.epl_jar_for_deployment";
-				string file = FileUtil.FindClasspathFile(filename);
+#if false
+				var resourceManager = env.Container.ResourceManager();
+				var resourceName = "regression/epcompiled_version_8.0.0.epl_dll_for_deployment";
+				
+				string file = FileUtil.FindClasspathFile(resourceName);
 				if (file == null) {
-					throw new RuntimeException("Failed to find file " + filename);
+					throw new EPRuntimeException("Failed to find file " + resourceName);
 				}
 
 				EPCompiled compiled = EPCompiledIOUtil.Read(new File(file));
@@ -61,6 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 					Assert.Throws<EPException>(
 						() => env.Runtime.FireAndForgetService.ExecuteQuery(compiled)),
 					"Major or minor version of compiler and runtime mismatch; The runtime version is 8.5.0 and the compiler version of the compiled unit is 8.0.0");
+#endif
 			}
 		}
 	}

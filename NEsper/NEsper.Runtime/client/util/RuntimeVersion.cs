@@ -88,7 +88,7 @@ namespace com.espertech.esper.runtime.client.util
                     Int32.Parse(split[1]),
                     Int32.Parse(split[2]));
             }
-            catch (Exception ex) {
+            catch (Exception) {
                 throw new FormatException("Invalid semantic version '" + version + "'");
             }
         }

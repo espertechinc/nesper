@@ -9,10 +9,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml;
 
-using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.collection;
@@ -23,12 +21,10 @@ using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.module;
-using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.avro;
@@ -47,6 +43,7 @@ using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.container;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -364,38 +361,41 @@ namespace com.espertech.esper.common.@internal.@event.core
             CodegenClassScope classScope)
         {
             getterType = getterType.GetBoxedType();
+
+            Type proxyType;
             
             IList<CodegenNamedParam> parameters;
             if (interfaceClass == typeof(EventPropertyValueGetter)) {
                 parameters = CodegenNamedParam.From(typeof(EventBean), "bean");
+                proxyType = typeof(ProxyEventPropertyValueGetter);
             } else if (interfaceClass == typeof(ExprEventEvaluator)) {
                 parameters = CodegenNamedParam.From(typeof(EventBean), "bean", typeof(ExprEvaluatorContext), "ctx");
+                proxyType = typeof(ProxyExprEventEvaluator);
             } else {
                 throw new IllegalStateException("Unrecognized interface class " + interfaceClass.Name);
             }
 
-            //CodegenExpressionNewAnonymousClass anonymous = newAnonymousClass(method.Block, interfaceClass);
+            var getOrEvalLambda = new CodegenExpressionLambda(method.Block)
+                .WithParams(parameters)
+                .WithBody(
+                    block => {
+                        var result = getter.EventBeanGetCodegen(Ref("bean"), method, classScope);
+                        if (optionalCoercionType != null && getterType != optionalCoercionType && getterType.IsNumeric()) {
+                            var coercer = SimpleNumberCoercerFactory.GetCoercer(
+                                getterType, optionalCoercionType.GetBoxedType());
+                            block.DeclareVar(getterType, "prop", Cast(getterType, result));
+                            result = coercer.CoerceCodegen(Ref("prop"), getterType);
+                        }
 
-            var getOrEval = CodegenMethod
-                .MakeParentNode(typeof(Object), generator, classScope)
-                .AddParam(parameters);
-            anonymous.AddMethod(interfaceClass == typeof(EventPropertyValueGetter) ? "get" : "eval", getOrEval);
+                        if (getterType.IsArray) {
+                            var mkType = MultiKeyPlanner.GetMKClassForComponentType(getterType.GetElementType());
+                            result = NewInstance(mkType, Cast(getterType, result));
+                        }
 
-            var result = getter.EventBeanGetCodegen(Ref("bean"), method, classScope);
-            if (optionalCoercionType != null && getterType != optionalCoercionType && getterType.IsNumeric()) {
-                var coercer = SimpleNumberCoercerFactory.GetCoercer(
-                    getterType, optionalCoercionType.GetBoxedType());
-                getOrEval.Block.DeclareVar(getterType, "prop", Cast(getterType, result));
-                result = coercer.CoerceCodegen(Ref("prop"), getterType);
-            }
+                        block.BlockReturn(result);
+                    });
 
-            if (getterType.IsArray) {
-                var mkType = MultiKeyPlanner.GetMKClassForComponentType(getterType.GetElementType());
-                result = NewInstance(mkType, Cast(getterType, result));
-            }
-
-            getOrEval.Block.MethodReturn(result);
-            return anonymous;
+            return NewInstance(proxyType, getOrEvalLambda);
         }
 
         public static CodegenExpression CodegenWriter(
@@ -835,7 +835,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             EventType candidate,
             EventType superType)
         {
-            if (candidate == superType) {
+            if (Equals(candidate, superType)) {
                 return true;
             }
 
@@ -2180,9 +2180,10 @@ namespace com.espertech.esper.common.@internal.@event.core
             EventBean theEvent,
             JsonEventType targetType)
         {
-            var target = targetType.DelegateFactory.NewUnderlying();
             var source = theEvent.Underlying;
             var sourceType = (JsonEventType) theEvent.EventType;
+            var target = targetType.SerializationContext.NewUnderlying();
+            
             foreach (var entry in targetType.Detail.FieldDescriptors) {
                 var sourceField = entry.Value;
                 var targetField = sourceType.Detail.FieldDescriptors.Get(entry.Key);
@@ -2190,8 +2191,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                     continue;
                 }
 
-                var value = sourceType.DelegateFactory.GetValue(sourceField.PropertyNumber, source);
-                targetType.DelegateFactory.SetValue(targetField.PropertyNumber, value, target);
+                var value = sourceType.SerializationContext.GetValue(sourceField.FieldName, source);
+                targetType.SerializationContext.SetValue(targetField.FieldName, value, target);
             }
 
             return target;
@@ -2361,7 +2362,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                         schemaModel = XSDSchemaMapper.LoadAndMap(
                             config.SchemaResource,
                             config.SchemaText,
-                            services.ImportServiceCompileTime);
+                            services.Container.ResourceManager()); //services.ImportServiceCompileTime
                     } catch (Exception ex) {
                         throw new ExprValidationException(ex.Message, ex);
                     }
@@ -2578,117 +2579,117 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public class EventBeanAdapterFactoryBean : EventBeanAdapterFactory
         {
-            private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
-            private readonly EventType eventType;
+            private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
+            private readonly EventType _eventType;
 
             public EventBeanAdapterFactoryBean(
                 EventType eventType,
                 EventBeanTypedEventFactory eventBeanTypedEventFactory)
             {
-                this.eventType = eventType;
-                this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+                this._eventType = eventType;
+                this._eventBeanTypedEventFactory = eventBeanTypedEventFactory;
             }
 
             public EventBean MakeAdapter(object underlying)
             {
-                return eventBeanTypedEventFactory.AdapterForTypedObject(underlying, eventType);
+                return _eventBeanTypedEventFactory.AdapterForTypedObject(underlying, _eventType);
             }
         }
 
         public class EventBeanAdapterFactoryMap : EventBeanAdapterFactory
         {
-            private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
-            private readonly EventType eventType;
+            private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
+            private readonly EventType _eventType;
 
             public EventBeanAdapterFactoryMap(
                 EventType eventType,
                 EventBeanTypedEventFactory eventBeanTypedEventFactory)
             {
-                this.eventType = eventType;
-                this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+                this._eventType = eventType;
+                this._eventBeanTypedEventFactory = eventBeanTypedEventFactory;
             }
 
             public EventBean MakeAdapter(object underlying)
             {
-                return eventBeanTypedEventFactory.AdapterForTypedMap(
+                return _eventBeanTypedEventFactory.AdapterForTypedMap(
                     (IDictionary<string, object>) underlying,
-                    eventType);
+                    _eventType);
             }
         }
 
         public class EventBeanAdapterFactoryObjectArray : EventBeanAdapterFactory
         {
-            private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
-            private readonly EventType eventType;
+            private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
+            private readonly EventType _eventType;
 
             public EventBeanAdapterFactoryObjectArray(
                 EventType eventType,
                 EventBeanTypedEventFactory eventBeanTypedEventFactory)
             {
-                this.eventType = eventType;
-                this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+                this._eventType = eventType;
+                this._eventBeanTypedEventFactory = eventBeanTypedEventFactory;
             }
 
             public EventBean MakeAdapter(object underlying)
             {
-                return eventBeanTypedEventFactory.AdapterForTypedObjectArray((object[]) underlying, eventType);
+                return _eventBeanTypedEventFactory.AdapterForTypedObjectArray((object[]) underlying, _eventType);
             }
         }
 
         public class EventBeanAdapterFactoryXml : EventBeanAdapterFactory
         {
-            private readonly EventType eventType;
-            private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
+            private readonly EventType _eventType;
+            private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
 
             public EventBeanAdapterFactoryXml(
                 EventType eventType,
                 EventBeanTypedEventFactory eventBeanTypedEventFactory)
             {
-                this.eventType = eventType;
-                this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+                this._eventType = eventType;
+                this._eventBeanTypedEventFactory = eventBeanTypedEventFactory;
             }
 
             public EventBean MakeAdapter(object underlying)
             {
-                return eventBeanTypedEventFactory.AdapterForTypedDOM((XmlNode) underlying, eventType);
+                return _eventBeanTypedEventFactory.AdapterForTypedDOM((XmlNode) underlying, _eventType);
             }
         }
 
         public class EventBeanAdapterFactoryAvro : EventBeanAdapterFactory
         {
-            private readonly EventType eventType;
-            private readonly EventTypeAvroHandler eventTypeAvroHandler;
+            private readonly EventType _eventType;
+            private readonly EventTypeAvroHandler _eventTypeAvroHandler;
 
             public EventBeanAdapterFactoryAvro(
                 EventType eventType,
                 EventTypeAvroHandler eventTypeAvroHandler)
             {
-                this.eventType = eventType;
-                this.eventTypeAvroHandler = eventTypeAvroHandler;
+                this._eventType = eventType;
+                this._eventTypeAvroHandler = eventTypeAvroHandler;
             }
 
             public EventBean MakeAdapter(object underlying)
             {
-                return eventTypeAvroHandler.AdapterForTypeAvro(underlying, eventType);
+                return _eventTypeAvroHandler.AdapterForTypeAvro(underlying, _eventType);
             }
         }
 
         public class EventBeanAdapterFactoryJson : EventBeanAdapterFactory
         {
-            private readonly EventType eventType;
-            private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
+            private readonly EventType _eventType;
+            private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
 
             public EventBeanAdapterFactoryJson(
                 EventType eventType,
                 EventBeanTypedEventFactory eventBeanTypedEventFactory)
             {
-                this.eventType = eventType;
-                this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+                this._eventType = eventType;
+                this._eventBeanTypedEventFactory = eventBeanTypedEventFactory;
             }
 
             public EventBean MakeAdapter(Object underlying)
             {
-                return eventBeanTypedEventFactory.AdapterForTypedJson(underlying, eventType);
+                return _eventBeanTypedEventFactory.AdapterForTypedJson(underlying, _eventType);
             }
         }
     }

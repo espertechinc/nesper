@@ -37,12 +37,12 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public virtual CodegenExpression WriteCodegen(
             CodegenExpression assigned,
-            CodegenExpression und,
+            CodegenExpression underlying,
             CodegenExpression target,
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            return ExprDotMethod(und, "Put", Constant(propertyName), assigned);
+            return ExprDotMethod(underlying, "Put", Constant(propertyName), assigned);
         }
 
         public virtual void Write(

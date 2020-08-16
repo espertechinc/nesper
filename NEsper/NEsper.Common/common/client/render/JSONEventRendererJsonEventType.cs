@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.client.render
 			using var stream = new MemoryStream();
 			using var writer = new Utf8JsonWriter(stream);
 
-			eventType.DelegateFactory.Write(writer, underlying);
+			eventType.SerializationContext.Serializer.Invoke(writer, underlying);
 			writer.Flush();
 
 			return Encoding.UTF8.GetString(stream.ToArray());

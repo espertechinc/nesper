@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
                 // try the threadlocal iteration cache, if set
                 object cacheMultiKey = null;
                 if (localDataCache != null || DataCache.IsActive) {
-                    cacheMultiKey = _factory.LookupValueToMultiKey.Transform(lookupValue);
+                    cacheMultiKey = _factory.LookupValueToMultiKey.Invoke(lookupValue);
                 }
                 
                 if (localDataCache != null) {

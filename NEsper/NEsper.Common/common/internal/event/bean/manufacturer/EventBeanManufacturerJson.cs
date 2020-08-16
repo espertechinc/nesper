@@ -20,22 +20,22 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
     {
         private readonly EventBeanTypedEventFactory _eventAdapterService;
         private readonly JsonEventType _jsonEventType;
-        private readonly int[] _nativeNums;
+        private readonly string[] _nativeKeys;
 
         /// <summary>
         ///     Ctor.
         /// </summary>
         /// <param name="jsonEventType">type to create</param>
         /// <param name="eventAdapterService">event factory</param>
-        /// <param name="nativeNums">native field numbers</param>
+        /// <param name="nativeKeys">native keys</param>
         public EventBeanManufacturerJson(
             JsonEventType jsonEventType,
             EventBeanTypedEventFactory eventAdapterService,
-            int[] nativeNums)
+            string[] nativeKeys)
         {
-            this._eventAdapterService = eventAdapterService;
-            this._jsonEventType = jsonEventType;
-            this._nativeNums = nativeNums;
+            _eventAdapterService = eventAdapterService;
+            _jsonEventType = jsonEventType;
+            _nativeKeys = nativeKeys;
         }
 
         public EventBean Make(object[] properties)
@@ -46,9 +46,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 
         public object MakeUnderlying(object[] properties)
         {
-            var underlying = _jsonEventType.DelegateFactory.NewUnderlying();
+            var underlying = _jsonEventType.SerializationContext.NewUnderlying();
             for (var i = 0; i < properties.Length; i++) {
-                _jsonEventType.DelegateFactory.SetValue(_nativeNums[i], properties[i], underlying);
+                _jsonEventType.SerializationContext.SetValue(_nativeKeys[i], properties[i], underlying);
             }
 
             return underlying;

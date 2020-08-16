@@ -80,9 +80,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			CodegenMethodScope codegenMethodScope,
 			CodegenClassScope codegenClassScope);
 
-		public abstract Type BeanPropType { get; }
-		public abstract Type TargetType { get; }
-
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
@@ -176,10 +173,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			return CacheAndCall(_cache, this, @object, _eventBeanTypedEventFactory, _beanEventTypeFactory);
 		}
 
-		public Type GetTargetType()
-		{
-			return typeof(object);
-		}
+		public Type TargetType => typeof(object);
 
 		public bool IsBeanExistsProperty(object @object)
 		{
@@ -191,10 +185,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			return CacheAndCall(_cache, this, @event.Underlying, _eventBeanTypedEventFactory, _beanEventTypeFactory);
 		}
 
-		public Type GetBeanPropType()
-		{
-			return typeof(object);
-		}
+		public Type BeanPropType => typeof(object);
 
 		public CodegenExpression EventBeanGetCodegen(
 			CodegenExpression beanExpression,

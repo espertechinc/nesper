@@ -28,8 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 
 	    bool IsEmpty();
 
-	    void AddTo(IDictionary<string, byte[]> additionalClasses);
+	    void AddTo(ICollection<Type> types);
 
-	    void RemoveFrom(IDictionary<string, byte[]> moduleBytes);
+	    void RemoveFrom(ICollection<Type> types);
 	}
 } // end of namespace

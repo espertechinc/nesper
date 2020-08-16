@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
@@ -17,7 +16,6 @@ using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -117,24 +115,17 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			Type clazz,
 			string getterMethodName)
 		{
-			try {
-				return clazz.GetMethod(getterMethodName, typeof(string));
-			}
-			catch (NoSuchMethodException ex1) {
-				MethodInfo method;
-				try {
-					method = clazz.GetMethod(getterMethodName);
-				}
-				catch (NoSuchMethodException e) {
+			var method = clazz.GetMethod(
+				getterMethodName,
+				new Type[] {typeof(string)});
+			if (method == null) {
+				method = clazz.GetMethod(getterMethodName, new Type[0]);
+				if (method == null) {
 					return null;
 				}
-
-				if (method.ReturnType != typeof(IDictionary<string, object>)) {
-					return null;
-				}
-
-				return method;
 			}
+
+			return method.ReturnType.IsGenericStringDictionary() ? method : null;
 		}
 
 		/// <summary>

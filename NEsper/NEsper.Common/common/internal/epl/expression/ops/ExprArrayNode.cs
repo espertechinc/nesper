@@ -158,7 +158,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         try {
                             constantResult.SetValue(results[i], i);
                         }
-                        catch (ArgumentException e) {
+                        catch (ArgumentException) {
                             throw new ExprValidationException(
                                 "Array element type mismatch: Expecting type " + arrayReturnType.CleanName() +
                                 " but received type " + results[i].GetType().CleanName());

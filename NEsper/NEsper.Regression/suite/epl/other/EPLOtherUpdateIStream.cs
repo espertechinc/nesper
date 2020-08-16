@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 					env,
 					path,
 					"update istream MySchema set intarray[notAnArray]='x'",
-					"Failed to validate assignment expression 'intarray[notAnArray]=\"x\"': Invalid assignment of column '\"x\"' of type 'java.lang.String' to event property 'intarray' typed as 'int', column and parameter types mismatch");
+					"Failed to validate assignment expression 'intarray[notAnArray]=\"x\"': Invalid assignment of column '\"x\"' of type 'System.String' to event property 'intarray' typed as 'int', column and parameter types mismatch");
 
 				// not-an-array
 				TryInvalidCompile(
@@ -184,7 +184,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@public @buseventtype create schema Arriving(position int, intarray int[], objectarray java.lang.Object[]);\n" +
+				var epl = "@public @buseventtype create schema Arriving(position int, intarray int[], objectarray System.Object[]);\n" +
 				          "update istream Arriving set intarray[position] = 1, objectarray[position] = 1;\n" +
 				          "@name('s0') select * from Arriving;\n";
 				env.CompileDeploy(epl).AddListener("s0");
@@ -317,7 +317,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 					env,
 					path,
 					"update istream SupportBeanStream set intPrimitive=longPrimitive",
-					"Failed to validate assignment expression 'intPrimitive=longPrimitive': Invalid assignment of column 'longPrimitive' of type 'java.lang.Long' to event property 'intPrimitive' typed as 'int', column and parameter types mismatch [update istream SupportBeanStream set intPrimitive=longPrimitive]");
+					"Failed to validate assignment expression 'intPrimitive=longPrimitive': Invalid assignment of column 'longPrimitive' of type 'System.Int64' to event property 'intPrimitive' typed as 'int', column and parameter types mismatch [update istream SupportBeanStream set intPrimitive=longPrimitive]");
 				TryInvalidCompile(
 					env,
 					path,

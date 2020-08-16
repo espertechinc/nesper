@@ -3540,6 +3540,15 @@ namespace com.espertech.esper.common.@internal.util
             return targetBoxed == providedBoxed || IsSubclassOrImplementsInterface(providedBoxed, targetBoxed);
         }
 
+        public static Type GetArrayComponentTypeInnermost(Type clazz)
+        {
+            if (clazz.IsArray) {
+                return GetArrayComponentTypeInnermost(clazz.GetElementType());
+            }
+
+            return clazz;
+        }
+
         /// <summary>
         ///     Returns the esper name for a type.  These names should be used when
         ///     referring to a type in a stream.  Normally, this is just the standard

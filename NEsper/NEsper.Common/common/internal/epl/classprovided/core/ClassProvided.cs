@@ -8,14 +8,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -28,35 +26,35 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.core
         }
 
         public ClassProvided(
-            IDictionary<string, byte[]> bytes,
+            Assembly assembly,
             string className)
         {
-            Bytes = bytes;
+            Assembly = assembly;
             ClassName = className;
         }
+        
+        public Assembly Assembly { get; set; }
 
-        public IDictionary<string, byte[]> Bytes { get; set; }
-
+        public IEnumerable<Type> Types => Assembly.GetExportedTypes();
+        
         public string ModuleName { get; set; }
 
         public NameAccessModifier Visibility { get; set; } = NameAccessModifier.TRANSIENT;
 
         public IList<Type> ClassesMayNull { get; private set; }
 
-        public string ClassName { get; set; }
+        public string ClassName { get; }
 
         public void LoadClasses(ClassLoader parentClassLoader)
         {
             ClassesMayNull = new List<Type>();
+            
+            // The assembly is the container for all the types, there is no need to explicitly
+            // load them as is done in Java.  In Esper, the class is loaded as a byte array which
+            // the ByteArrayProvidingClassProvider must initialize.
 
-            foreach (var entry in Bytes) {
-                try {
-                    Type clazz = Type.GetType(entry.Key, false);
-                    ClassesMayNull.Add(clazz);
-                }
-                catch (TypeLoadException e) {
-                    throw new EPException("Unexpected exception loading class " + entry.Key + ": " + e.Message, e);
-                }
+            foreach (var clazz in Assembly.GetExportedTypes()) {
+                ClassesMayNull.Add(clazz);
             }
         }
 
@@ -65,29 +63,26 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.core
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(ClassProvided), GetType(), classScope);
-            if (Bytes.IsEmpty()) {
-                method.Block.DeclareVar(
-                    typeof(IDictionary<string, object>),
-                    "bytes",
-                    EnumValue(typeof(EmptyDictionary<string, object>), "Instance"));
+            if (Assembly == null) {
+                method.Block.DeclareVar<Assembly>(
+                    "assembly",
+                    ConstantNull());
             }
             else {
-                method.Block.DeclareVar<IDictionary<string, object>>("bytes", NewInstance(typeof(Dictionary<string, object>)));
-                foreach (var entry in Bytes) {
-                    method.Block.ExprDotMethod(
-                        Ref("bytes"),
-                        "Put",
-                        Constant(entry.Key),
-                        Constant(entry.Value));
-                }
+                method.Block.DeclareVar<Assembly>(
+                    "assembly",
+                    ExprDotMethod(
+                        EnumValue(typeof(AppDomain), "CurrentDomain"),
+                        "Load",
+                        Constant(Assembly.FullName)));
             }
 
             method.Block
                 .DeclareVar(typeof(ClassProvided), "cp", NewInstance(typeof(ClassProvided)))
-                .ExprDotMethod(Ref("cp"), "setBytes", Ref("bytes"))
-                .ExprDotMethod(Ref("cp"), "setClassName", Constant(ClassName))
-                .ExprDotMethod(Ref("cp"), "setModuleName", Constant(ModuleName))
-                .ExprDotMethod(Ref("cp"), "setVisibility", Constant(Visibility))
+                .ExprDotMethod(Ref("cp"), "Assembly", Ref("assembly"))
+                .ExprDotMethod(Ref("cp"), "ClassName", Constant(ClassName))
+                .ExprDotMethod(Ref("cp"), "ModuleName", Constant(ModuleName))
+                .ExprDotMethod(Ref("cp"), "Visibility", Constant(Visibility))
                 .MethodReturn(Ref("cp"));
             return LocalMethod(method);
         }

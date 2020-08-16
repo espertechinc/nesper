@@ -34,12 +34,12 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public virtual CodegenExpression WriteCodegen(
             CodegenExpression assigned,
-            CodegenExpression und,
+            CodegenExpression underlying,
             CodegenExpression target,
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            return Assign(ArrayAtIndex(und, Constant(index)), assigned);
+            return Assign(ArrayAtIndex(underlying, Constant(index)), assigned);
         }
 
         public virtual void Write(

@@ -81,6 +81,7 @@ namespace com.espertech.esper.runtime.client
         /// Use the route method for sending events into the runtime from within UpdateListener code,
         /// to avoid the possibility of a stack overflow due to nested calls to sendEvent
         /// (except with the outbound-threading configuration), see {@link EPEventServiceRouteEvent#routeEventJson(String, String)}}).
+        /// </para>
         /// </summary>
         /// <param name="json">is the event to sent to the runtime</param>
         /// <param name="jsonEventTypeName">event type name</param>

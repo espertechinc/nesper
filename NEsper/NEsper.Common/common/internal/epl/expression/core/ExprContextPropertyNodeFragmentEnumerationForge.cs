@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 		{
 			CodegenMethod method = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
 			method.Block
-				.DeclareVar(typeof(EventBean), "event", ExprDotMethod(exprSymbol.GetAddExprEvalCtx(method), "getContextProperties"))
+				.DeclareVar(typeof(EventBean), "event", ExprDotName(exprSymbol.GetAddExprEvalCtx(method), "ContextProperties"))
 				.IfRefNullReturnNull("event")
 				.MethodReturn(Cast(typeof(EventBean), _getterSpi.EventBeanFragmentCodegen(Ref("event"), method, codegenClassScope)));
 			return LocalMethod(method);

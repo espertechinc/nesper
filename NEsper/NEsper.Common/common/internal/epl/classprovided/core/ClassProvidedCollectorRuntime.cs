@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.core
 
         public ClassProvidedCollectorRuntime(IDictionary<string, ClassProvided> classProvidedList)
         {
-            this._classProvidedList = classProvidedList;
+            _classProvidedList = classProvidedList;
         }
 
         public void RegisterClass(

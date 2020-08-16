@@ -85,11 +85,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 					typeof(ObjectArrayEventBean),
 					"indexEvent",
 					NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(numParameters - 1)), indexTypeMember))
-				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda + 1), @Ref("indexEvent"))
-				.DeclareVar<object[]>("props", ExprDotMethod(@Ref("indexEvent"), "getProperties"));
+				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda + 1), Ref("indexEvent"))
+				.DeclareVar<object[]>("props", ExprDotName(Ref("indexEvent"), "Properties"));
 			block.DeclareVar<int>("count", Constant(-1));
 			if (numParameters == 3) {
-				block.AssignArrayElement(@Ref("props"), Constant(1), ExprDotName(REF_ENUMCOLL, "Count"));
+				block.AssignArrayElement(Ref("props"), Constant(1), ExprDotName(REF_ENUMCOLL, "Count"));
 			}
 
 			InitBlock(block, methodNode, scope, codegenClassScope);
@@ -97,8 +97,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			if (HasForEachLoop()) {
 				CodegenBlock forEach = block.ForEach(typeof(EventBean), "next", REF_ENUMCOLL)
 					.IncrementRef("count")
-					.AssignArrayElement("props", Constant(0), @Ref("count"))
-					.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), @Ref("next"));
+					.AssignArrayElement("props", Constant(0), Ref("count"))
+					.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("next"));
 				ForEachBlock(forEach, methodNode, scope, codegenClassScope);
 			}
 

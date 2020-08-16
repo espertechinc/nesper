@@ -24,7 +24,6 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 {
     public class ClassProvidedExtensionImpl : ClassProvidedExtension
     {
-        private readonly IDictionary<string, byte[]> bytes = new LinkedHashMap<string, byte[]>();
         private readonly IList<Type> classes = new List<Type>();
         private readonly ClassProvidedCompileTimeResolver resolver;
 
@@ -42,12 +41,9 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             this.resolver = resolver;
         }
 
-        public void Add(
-            IList<Type> classes,
-            IDictionary<string, byte[]> bytes)
+        public void Add(IList<Type> classes)
         {
             this.classes.AddAll(classes);
-            this.bytes.PutAll(bytes); // duplicate class names checked at compile-time
 
             try {
                 EPTypeHelper.TraverseAnnotations<ExtensionSingleRowFunctionAttribute>(
@@ -172,11 +168,6 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 
             // check same-module (create inlined_class) or path classes
             return resolver.ResolveAggregationMultiFunction(name);
-        }
-
-        public IDictionary<string, byte[]> GetBytes()
-        {
-            return bytes;
         }
 
         public bool IsLocalInlinedClass(Type declaringClass)

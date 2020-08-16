@@ -408,7 +408,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 string epl =
                     "create table MyTable(dbls double[]);\n" +
-                    "@priority(2) on SupportBean merge MyTable when not matched then insert select new java.lang.Double[3] as dbls;\n" +
+                    "@priority(2) on SupportBean merge MyTable when not matched then insert select new System.Double[3] as dbls;\n" +
                     "@priority(1) on SupportBean merge MyTable when matched then update set dbls[intPrimitive] = 1;\n" +
                     "@name('s0') select MyTable.dbls as c0 from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");

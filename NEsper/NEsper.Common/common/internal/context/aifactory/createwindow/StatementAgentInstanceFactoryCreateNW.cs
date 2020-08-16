@@ -287,7 +287,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                     _virtualDwView.Destroy();
                     stopServices.AgentInstanceContext.RuntimeEnvContext.Unbind(_objectName);
                 }
-                catch (NamingException e) {
+                catch (NamingException) {
                 }
             }
 

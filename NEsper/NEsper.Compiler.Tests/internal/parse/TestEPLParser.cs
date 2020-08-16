@@ -558,14 +558,14 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsValid(preFill + " where exists(a.b.c?.d.e)");
 			AssertIsValid(preFill + "(boolean = instanceof(a + 2, a))");
 			AssertIsValid(preFill + "(boolean = instanceof(b, a))");
-			AssertIsValid(preFill + "(boolean = instanceof('agc', string, String, java.lang.String))");
+			AssertIsValid(preFill + "(boolean = instanceof('agc', string, String, System.String))");
 			AssertIsValid(preFill + "(boolean = instanceof(b, com.espertech.esper.support.AClass))");
-			AssertIsValid(preFill + "(boolean = instanceof(b, com.espertech.esper.support.AClass, int, long, java.lang.Long))");
+			AssertIsValid(preFill + "(boolean = instanceof(b, com.espertech.esper.support.AClass, int, long, System.Int64))");
 			AssertIsValid(preFill + "(cast(b as boolean))");
 			AssertIsValid(preFill + "(cast(b? as Boolean))");
 			AssertIsValid(preFill + "(cast(b, boolean))");
 			AssertIsValid(preFill + "(cast(b?, Boolean))");
-			AssertIsValid(preFill + "(cast(b?, java.lang.String))");
+			AssertIsValid(preFill + "(cast(b?, System.String))");
 			AssertIsValid(preFill + "(cast(b?, long))");
 			AssertIsValid(preFill + "(cast(a + 5, long))");
 			AssertIsValid(preFill + "(isnumeric(b?))");

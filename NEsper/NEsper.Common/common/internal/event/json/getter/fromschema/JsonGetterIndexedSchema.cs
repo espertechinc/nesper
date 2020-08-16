@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 {
     public sealed class JsonGetterIndexedSchema : JsonGetterIndexedBase
     {
-        private readonly JsonUnderlyingField field;
+        private readonly JsonUnderlyingField _field;
 
         public JsonGetterIndexedSchema(
             int index,
@@ -30,10 +30,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             JsonUnderlyingField field)
             : base(index, underlyingClassName, optionalInnerType, eventBeanTypedEventFactory)
         {
-            this.field = field;
+            this._field = field;
         }
 
-        public override string FieldName => field.FieldName;
+        public override string FieldName => _field.FieldName;
 
         public override CodegenExpression UnderlyingFragmentCodegen(
             CodegenExpression underlyingExpression,
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
                 typeof(JsonFieldGetterHelperSchema),
                 "handleJsonCreateFragmentIndexed",
                 underlyingExpression,
-                Constant(field.PropertyNumber),
+                Constant(_field.FieldName),
                 Constant(Index),
                 eventType,
                 factory);
@@ -61,12 +61,12 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public override object GetJsonProp(object @object)
         {
-            return JsonFieldGetterHelperSchema.GetJsonIndexedProp(@object, field.PropertyNumber, Index);
+            return JsonFieldGetterHelperSchema.GetJsonIndexedProp(@object, _field.FieldName, Index);
         }
 
         public override bool GetJsonExists(object @object)
         {
-            return JsonFieldGetterHelperSchema.GetJsonIndexedPropExists(@object, field, Index);
+            return JsonFieldGetterHelperSchema.GetJsonIndexedPropExists(@object, _field, Index);
         }
 
         public override object GetJsonFragment(object @object)
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
                 return null;
             }
 
-            var value = JsonFieldGetterHelperSchema.GetJsonIndexedProp(@object, field.PropertyNumber, Index);
+            var value = JsonFieldGetterHelperSchema.GetJsonIndexedProp(@object, _field.FieldName, Index);
             if (value == null) {
                 return null;
             }

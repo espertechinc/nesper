@@ -41,21 +41,14 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.core
         
         public static IList<object> ElementToArray(this JsonElement element)
         {
-            var result = new List<object>();
-            var enumerator = element.EnumerateArray();
-            for (int ii = 0 ; enumerator.MoveNext() ; ii++) {
-                var subElement = enumerator.Current;
-                result.Add(ElementToValue(subElement));
-            }
-
-            return result;
+            return ElementToArray(element, ElementToValue);
         }
 
-        public static IList<object> ElementToArray(
+        public static IList<T> ElementToArray<T>(
             this JsonElement element,
-            JsonDeserializer deserializer)
+            JsonDeserializer<T> deserializer)
         {
-            var result = new List<object>();
+            var result = new List<T>();
             var enumerator = element.EnumerateArray();
             for (int ii = 0; enumerator.MoveNext(); ii++) {
                 var itemElement = enumerator.Current;

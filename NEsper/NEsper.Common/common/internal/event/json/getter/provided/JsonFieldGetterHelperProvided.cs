@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             int index)
         {
             var result = GetJsonProvidedSimpleProp(underlying, field);
-            return CollectionUtil.ArrayValueAtIndex(result, index);
+            return CollectionUtil.ArrayValueAtIndex((Array) result, index);
         }
 
         public static object HandleJsonProvidedCreateFragmentSimple(
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
                 return factory.AdapterForTypedJson(prop, fragmentType);
             }
 
-            return factory.AdapterForTypedBean(prop, fragmentType);
+            return factory.AdapterForTypedObject(prop, fragmentType);
         }
 
         public static object GetJsonProvidedSimpleProp(
@@ -62,7 +62,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
                 return field.GetValue(@object);
             }
             catch (MemberAccessException ex) {
-                throw new PropertyAccessException("Failed to access field '" + field.Name + "' of class '" + field.DeclaringType.Name + "': " + ex.Message, ex);
+                throw new PropertyAccessException(
+                    "Failed to access field '" + field.Name + "' of class '" + field.DeclaringType.Name + "': " + ex.Message, ex);
             }
         }
 
@@ -75,18 +76,19 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
                 return null;
             }
 
-            var len = Array.GetLength(value);
+            var array = value as Array;
+            var len = array.Length;
             var events = new EventBean[len];
             if (fragmentType is JsonEventType) {
                 for (var i = 0; i < len; i++) {
-                    object item = Array.Get(value, i);
+                    object item = array.GetValue(i);
                     events[i] = factory.AdapterForTypedJson(item, fragmentType);
                 }
             }
             else {
                 for (var i = 0; i < len; i++) {
-                    object item = Array.Get(value, i);
-                    events[i] = factory.AdapterForTypedBean(item, fragmentType);
+                    object item = array.GetValue(i);
+                    events[i] = factory.AdapterForTypedObject(item, fragmentType);
                 }
             }
 
@@ -108,7 +110,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             int index)
         {
             var array = GetJsonProvidedSimpleProp(@object, field);
-            return CollectionUtil.ArrayExistsAtIndex(array, index);
+            return CollectionUtil.ArrayExistsAtIndex((Array) array, index);
         }
 
         /// <summary>
@@ -125,7 +127,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             EventType fragmentType,
             EventBeanTypedEventFactory factory)
         {
-            prop = CollectionUtil.ArrayValueAtIndex(prop, index);
+            prop = CollectionUtil.ArrayValueAtIndex((Array) prop, index);
             if (prop == null) {
                 return null;
             }

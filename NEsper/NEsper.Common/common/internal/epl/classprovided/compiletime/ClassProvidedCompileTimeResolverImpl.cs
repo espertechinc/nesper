@@ -21,7 +21,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.common.@internal.settings;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
@@ -133,16 +132,16 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 			return _path.IsEmpty() && _locals.Classes.IsEmpty();
 		}
 
-		public void AddTo(IDictionary<string, byte[]> additionalClasses)
+		public void AddTo(ICollection<Type> types)
 		{
-			_path.Traverse(cp => additionalClasses.PutAll(cp.Bytes));
+			_path.Traverse(cp => types.AddAll(cp.Types));
 		}
 
-		public void RemoveFrom(IDictionary<string, byte[]> moduleBytes)
+		public void RemoveFrom(ICollection<Type> types)
 		{
 			Consumer<ClassProvided> classProvidedByteCodeRemover = item => {
-				foreach (var entry in item.Bytes) {
-					moduleBytes.Remove(entry.Key);
+				foreach (var itemType in item.Types) {
+					types.Remove(itemType);
 				}
 			};
 			_path.Traverse(classProvidedByteCodeRemover);

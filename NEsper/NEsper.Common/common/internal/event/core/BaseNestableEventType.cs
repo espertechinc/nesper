@@ -61,6 +61,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <param name="beanEventTypeFactory">bean factory</param>
         /// <param name="endTimestampPropertyName">end timestamp</param>
         /// <param name="startTimestampPropertyName">start timestamp</param>
+        /// <param name="publicFields"></param>
         protected BaseNestableEventType(
             EventTypeMetadata metadata,
             IDictionary<string, object> propertyTypes,

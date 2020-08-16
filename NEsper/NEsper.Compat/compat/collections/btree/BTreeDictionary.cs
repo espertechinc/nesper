@@ -8,14 +8,17 @@ namespace com.espertech.esper.compat.collections.btree
 {
     public class BTreeDictionary<TK, TV> : IOrderedDictionary<TK, TV>
     {
+        private readonly BTreeDictionaryKeys<TK, TV> _keys;
+        private readonly BTreeDictionaryValues<TK, TV> _values;
+        
         /// <summary>
         ///     Constructor.
         /// </summary>
         public BTreeDictionary()
         {
             Underlying = new BTree<TK, KeyValuePair<TK, TV>>(_ => _.Key, Comparer<TK>.Default);
-            Keys = new BTreeDictionaryKeys<TK, TV>(Underlying);
-            Values = new BTreeDictionaryValues<TK, TV>(Underlying);
+            _keys = new BTreeDictionaryKeys<TK, TV>(Underlying);
+            _values = new BTreeDictionaryValues<TK, TV>(Underlying);
         }
 
         /// <summary>
@@ -25,8 +28,8 @@ namespace com.espertech.esper.compat.collections.btree
         public BTreeDictionary(IComparer<TK> comparer)
         {
             Underlying = new BTree<TK, KeyValuePair<TK, TV>>(_ => _.Key, comparer);
-            Keys = new BTreeDictionaryKeys<TK, TV>(Underlying);
-            Values = new BTreeDictionaryValues<TK, TV>(Underlying);
+            _keys = new BTreeDictionaryKeys<TK, TV>(Underlying);
+            _values = new BTreeDictionaryValues<TK, TV>(Underlying);
         }
 
         /// <summary>
@@ -486,7 +489,12 @@ namespace com.espertech.esper.compat.collections.btree
         ///     An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the object that implements
         ///     <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </returns>
-        public ICollection<TK> Keys { get; }
+        public ICollection<TK> Keys => _keys;
+
+        /// <summary>
+        /// Returns the keys as an ordered collection.
+        /// </summary>
+        public IOrderedCollection<TK> OrderedKeys => _keys;
 
         /// <summary>
         ///     Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the
@@ -496,7 +504,7 @@ namespace com.espertech.esper.compat.collections.btree
         ///     An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the object that implements
         ///     <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </returns>
-        public ICollection<TV> Values { get; }
+        public ICollection<TV> Values => _values;
 
         /// <summary>
         ///     Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />,
@@ -617,6 +625,24 @@ namespace com.espertech.esper.compat.collections.btree
             return Underlying
                 .LessThan(key, Underlying.RootCursor)
                 .ToEnumerable();
+        }
+        
+        /// <summary>
+        /// Returns an inverted version of the dictionary.
+        /// </summary>
+        /// <returns></returns>
+        public IOrderedDictionary<TK, TV> Invert()
+        {
+            // This should not require cloning the entire tree.  Unfortunately, currently we do not
+            // have an efficient way to simply preserve the tree and invert the key interactions.  So,
+            // for now, this will clone.
+            
+            var inverse = new BTreeDictionary<TK, TV>(KeyComparer.Inverse());
+            foreach (var entry in Underlying.Begin().ToEnumerable()) {
+                inverse.Add(entry);
+            }
+
+            return inverse;
         }
     }
 }

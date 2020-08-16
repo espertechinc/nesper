@@ -30,9 +30,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			DeploymentClassLoaderOption deploymentClassLoaderOption,
 			EPServicesContext servicesContext)
 		{
-			var deploymentClassLoader = servicesContext.ClassLoaderParent;
+			ClassLoader deploymentClassLoader = servicesContext.ClassLoaderParent;
 			if (deploymentClassLoaderOption != null) {
-				deploymentClassLoader = deploymentClassLoaderOption.GetClassLoader(
+				deploymentClassLoader = deploymentClassLoaderOption(
 					new DeploymentClassLoaderContext(
 						servicesContext.ClassLoaderParent,
 						servicesContext.ConfigSnapshot));

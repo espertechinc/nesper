@@ -45,7 +45,7 @@ namespace com.espertech.esper.compiler.@internal.util
             // forge with statement-fields last
             var classes = new List<CodegenClass>(forgeables.Count);
             foreach (var forgeable in forgeables) {
-                var clazz = forgeable.Forge(true);
+                var clazz = forgeable.Forge(true, true);
                 classes.Add(clazz);
             }
 
@@ -56,11 +56,12 @@ namespace com.espertech.esper.compiler.@internal.util
             classes = classes
                 .OrderBy(c => c.ClassType.GetSortCode())
                 .ToList();
-            
+
             var compiler = new RoslynCompiler()
                 .WithCodeLogging(compileTimeServices.Configuration.Compiler.Logging.IsEnableCode)
                 .WithCodeAuditDirectory(compileTimeServices.Configuration.Compiler.Logging.AuditDirectory)
                 .WithCodegenClasses(classes);
+
             assembly = compiler.Compile();
 
             return queryMethodProviderClassName;

@@ -138,7 +138,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 			public void Run(RegressionEnvironment env)
 			{
 				string epl =
-					"create variable java.lang.Double[] dbls = new java.lang.Double[3];\n" +
+					"create variable System.Double[] dbls = new System.Double[3];\n" +
 					"@priority(1) on SupportBean set dbls[intPrimitive] = 1;\n" +
 					"@name('s0') select dbls as c0 from SupportBean;\n";
 				env.CompileDeploy(epl).AddListener("s0");
@@ -179,7 +179,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 					env,
 					path,
 					"on SupportBean set intarray[intPrimitive]='x'",
-					"Failed to validate assignment expression 'intarray[intPrimitive]=\"x\"': Invalid assignment of column '\"x\"' of type 'java.lang.String' to event property 'intarray' typed as 'int', column and parameter types mismatch");
+					"Failed to validate assignment expression 'intarray[intPrimitive]=\"x\"': Invalid assignment of column '\"x\"' of type 'System.String' to event property 'intarray' typed as 'int', column and parameter types mismatch");
 
 				// not-an-array
 				TryInvalidCompile(
@@ -945,17 +945,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 				TryInvalidCompile(
 					env,
 					"on SupportBean set var1IS = 1",
-					"Failed to validate assignment expression 'var1IS=1': Variable 'var1IS' of declared type java.lang.String cannot be assigned a value of type int");
+					"Failed to validate assignment expression 'var1IS=1': Variable 'var1IS' of declared type System.String cannot be assigned a value of type int");
 
 				TryInvalidCompile(
 					env,
 					"on SupportBean set var3IS = 'abc'",
-					"Failed to validate assignment expression 'var3IS=\"abc\"': Variable 'var3IS' of declared type java.lang.Integer cannot be assigned a value of type java.lang.String");
+					"Failed to validate assignment expression 'var3IS=\"abc\"': Variable 'var3IS' of declared type System.Int32 cannot be assigned a value of type System.String");
 
 				TryInvalidCompile(
 					env,
 					"on SupportBean set var3IS = doublePrimitive",
-					"Failed to validate assignment expression 'var3IS=doublePrimitive': Variable 'var3IS' of declared type java.lang.Integer cannot be assigned a value of type java.lang.Double");
+					"Failed to validate assignment expression 'var3IS=doublePrimitive': Variable 'var3IS' of declared type System.Int32 cannot be assigned a value of type System.Double");
 
 				TryInvalidCompile(env, "on SupportBean set var2IS = 'false'", "skip");
 				TryInvalidCompile(env, "on SupportBean set var3IS = 1.1", "skip");

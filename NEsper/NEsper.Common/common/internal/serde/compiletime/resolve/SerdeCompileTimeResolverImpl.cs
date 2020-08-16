@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 			StatementRawInfo raw,
 			Type underlyingType,
 			string eventTypeName,
-			EventType[] eventTypeSupertypes)
+			IList<EventType> eventTypeSupertypes)
 		{
 			return SerdeForClass(underlyingType, new SerdeProviderAdditionalInfoEventType(raw, eventTypeName, eventTypeSupertypes));
 		}

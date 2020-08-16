@@ -104,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 	                env.SendEventBean(new SupportBean("E1", 1));
 	                Assert.Fail();
 	            } catch (EPException ex) {
-	                AssertMessage(ex, "java.lang.RuntimeException: Unexpected exception in statement 's0'");
+	                AssertMessage(ex, "EPRuntimeException: Unexpected exception in statement 's0'");
 	            }
 
 	            env.UndeployAll();
@@ -117,13 +117,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 	            var eplCreateClass =
 	                "create inlined_class \"\"\"\n" +
 	                    "  public class MyFromClauseMethod {\n" +
-	                    "    public static MyBean[] getBeans() {\n" +
-	                    "       return new MyBean[] {new MyBean(1), new MyBean(2)};\n" +
+	                    "    public static MyBean[] Beans() {\n" +
+	                    "       get => new MyBean[] {new MyBean(1), new MyBean(2)};\n" +
 	                    "    }\n" +
-	                    "    public static class MyBean {\n" +
-	                    "      private final int id;" +
-	                    "      public MyBean(int id) {this.id = id;}\n" +
-	                    "      public int getId() {return id;}\n" +
+	                    "    public class MyBean {\n" +
+	                    "      public MyBean(int id) {this.Id = Id;}\n" +
+	                    "      public int Id { get; set; };\n" +
 	                    "    }\n" +
 	                    "  }\n" +
 	                    "\"\"\" \n";
@@ -133,8 +132,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 	                      "@name('s0') select s.id as c0 from SupportBean as e,\n" +
 	                      "method:MyFromClauseMethod.getBeans() as s";
 	            var compiled = env.Compile(epl, path);
-	            foreach (KeyValuePair<string, byte[]> classEntry in compiled.Classes.EntrySet()) {
-	                if (classEntry.Key.Contains("MyFromClauseMethod")) {
+	            var assembly = compiled.Assembly;
+	            var assemblyTypes = assembly.GetExportedTypes();
+	            foreach (var assemblyType in assemblyTypes) {
+	                if (assemblyType.Name.Contains("MyFromClauseMethod")) {
 	                    Assert.Fail("EPCompiled should not contain create-class class");
 	                }
 	            }

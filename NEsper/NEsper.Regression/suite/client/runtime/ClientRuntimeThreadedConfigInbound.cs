@@ -28,6 +28,9 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
 	public class ClientRuntimeThreadedConfigInbound : RegressionExecutionWithConfigure
 	{
+		public bool EnableHATest => true;
+		public bool HAWithCOnly => false;
+		
 		public void Configure(Configuration configuration)
 		{
 			SupportExceptionHandlerFactory.FactoryContexts.Clear();

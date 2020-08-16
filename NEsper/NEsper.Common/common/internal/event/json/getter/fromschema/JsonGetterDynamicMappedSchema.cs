@@ -19,15 +19,15 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 {
     public class JsonGetterDynamicMappedSchema : JsonEventPropertyGetter
     {
-        private readonly string key;
-        private readonly string propertyName;
+        private readonly string _key;
+        private readonly string _propertyName;
 
         public JsonGetterDynamicMappedSchema(
             string propertyName,
             string key)
         {
-            this.propertyName = propertyName;
-            this.key = key;
+            this._propertyName = propertyName;
+            this._key = key;
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -45,9 +45,9 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
         {
             return StaticMethod(
                 typeof(JsonGetterDynamicHelperSchema),
-                "getJsonPropertyMappedValue",
-                Constant(propertyName),
-                Constant(key),
+                "GetJsonPropertyMappedValue",
+                Constant(_propertyName),
+                Constant(_key),
                 underlyingExpression);
         }
 
@@ -66,9 +66,9 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
         {
             return StaticMethod(
                 typeof(JsonGetterDynamicHelperSchema),
-                "getJsonPropertyMappedExists",
-                Constant(propertyName),
-                Constant(key),
+                "GetJsonPropertyMappedExists",
+                Constant(_propertyName),
+                Constant(_key),
                 underlyingExpression);
         }
 
@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public object GetJsonProp(object @object)
         {
-            return JsonGetterDynamicHelperSchema.GetJsonPropertyMappedValue(propertyName, key, (IDictionary<string, object>) @object);
+            return JsonGetterDynamicHelperSchema.GetJsonPropertyMappedValue(_propertyName, _key, (IDictionary<string, object>) @object);
         }
 
         public object GetJsonFragment(object @object)
@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public bool GetJsonExists(object @object)
         {
-            return JsonGetterDynamicHelperSchema.GetJsonPropertyMappedExists(propertyName, key, (IDictionary<string, object>) @object);
+            return JsonGetterDynamicHelperSchema.GetJsonPropertyMappedExists(_propertyName, _key, (IDictionary<string, object>) @object);
         }
     }
 } // end of namespace

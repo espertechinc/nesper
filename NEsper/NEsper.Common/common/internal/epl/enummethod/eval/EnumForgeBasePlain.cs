@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
         public int StreamNumLambda { get; }
 
-        public int StreamNumSize => StreamNumLambda + 1;
+        public virtual int StreamNumSize => StreamNumLambda + 1;
 
         public abstract EnumEval EnumEvaluator { get; }
 

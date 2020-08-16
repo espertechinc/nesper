@@ -17,6 +17,8 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.collections.btree;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.orderby
@@ -33,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			bool descending) : base(lambda, fieldEventType, numParameters)
 		{
 			this.descending = descending;
-			this.innerBoxedType = Boxing.GetBoxedType(InnerExpression.EvaluationType);
+			innerBoxedType = InnerExpression.EvaluationType.GetBoxedType();
 		}
 
 		public override EnumEval EnumEvaluator {
@@ -45,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 						enumcoll,
 						isNewData,
 						context) => {
-						var sort = new SortedDictionary<object, object>();
+						var sort = new BTreeDictionary<object, object>();
 						var hasColl = false;
 
 						var resultEvent = new ObjectArrayEventBean(new object[3], fieldEventType);

@@ -71,7 +71,7 @@ namespace com.espertech.esper.compiler.@internal.util
 	            string result = null;
 	            try {
 	                result = SQLLexer.LexSampleSQL(testcases[i][0]).Trim();
-	            } catch (Exception ex) {
+	            } catch (Exception) {
 	                Assert.Fail("failed case with exception:" + testcases[i][0]);
 	            }
 	            string expected = testcases[i][1].Trim();

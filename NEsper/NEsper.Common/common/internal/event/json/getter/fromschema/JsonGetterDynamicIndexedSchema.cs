@@ -19,15 +19,15 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 {
     public class JsonGetterDynamicIndexedSchema : JsonEventPropertyGetter
     {
-        private readonly int index;
-        private readonly string propertyName;
+        private readonly int _index;
+        private readonly string _propertyName;
 
         public JsonGetterDynamicIndexedSchema(
             string propertyName,
             int index)
         {
-            this.propertyName = propertyName;
-            this.index = index;
+            this._propertyName = propertyName;
+            this._index = index;
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -46,8 +46,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             return StaticMethod(
                 typeof(JsonGetterDynamicHelperSchema),
                 "GetJsonPropertyIndexedValue",
-                Constant(propertyName),
-                Constant(index),
+                Constant(_propertyName),
+                Constant(_index),
                 underlyingExpression);
         }
 
@@ -67,8 +67,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             return StaticMethod(
                 typeof(JsonGetterDynamicHelperSchema),
                 "GetJsonPropertyIndexedExists",
-                Constant(propertyName),
-                Constant(index),
+                Constant(_propertyName),
+                Constant(_index),
                 underlyingExpression);
         }
 
@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public object GetJsonProp(object @object)
         {
-            return JsonGetterDynamicHelperSchema.GetJsonPropertyIndexedValue(propertyName, index, (IDictionary<string, object>) @object);
+            return JsonGetterDynamicHelperSchema.GetJsonPropertyIndexedValue(_propertyName, _index, (IDictionary<string, object>) @object);
         }
 
         public object GetJsonFragment(object @object)
@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public bool GetJsonExists(object @object)
         {
-            return JsonGetterDynamicHelperSchema.GetJsonPropertyIndexedExists(propertyName, index, (IDictionary<string, object>) @object);
+            return JsonGetterDynamicHelperSchema.GetJsonPropertyIndexedExists(_propertyName, _index, (IDictionary<string, object>) @object);
         }
     }
 } // end of namespace

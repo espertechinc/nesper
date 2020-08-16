@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.serde;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.additional
@@ -16,13 +17,13 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.additional
     internal interface DIOSerdeTreeMapEventsMayDeque
     {
         void Write(
-            SortedDictionary<object, object> @object,
+            IDictionary<object, object> @object,
             DataOutput output,
             byte[] unitKey,
             EventBeanCollatedWriter writer);
 
         void Read(
-            SortedDictionary<object, object> @object,
+            IDictionary<object, object> @object,
             DataInput input,
             byte[] unitKey);
     }

@@ -8,12 +8,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.compile.stage1;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
@@ -34,60 +34,48 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             }
 
             var index = -1;
-            var allBytes = new Dictionary<string, byte[]>();
-            var allClasses = new List<Type>();
-            if (optionalPrior != null) {
-                allBytes.PutAll(optionalPrior.Bytes);
-            }
+            var existingTypes = new List<Type>(optionalPrior.Classes);
+            var existingTypesSet = new HashSet<string>(existingTypes.Select(_ => _.FullName));
 
-            ByteArrayProvidingClassLoader cl = new ByteArrayProvidingClassLoader(allBytes, compileTimeServices.Services.ParentClassLoader);
+            // In .NET our classes must be part of an assembly.  This is different from Java, where each class 
+            // can be compiled into its own .class file.  Technically, we can create netmodules, but even then
+            // its a container for classes.
 
-            foreach (var classText in classTexts) {
-                if (string.IsNullOrEmpty(classText)) {
-                    continue;
-                }
+            var compilables = new List<CompilableClass>();
 
+            foreach (var classText in classTexts.Where(_ => !string.IsNullOrWhiteSpace(_))) {
                 index++;
-                var className = "provided_" + index + "_" + CodeGenerationIDGenerator.GenerateClassNameUUID();
-                IDictionary<string, byte[]> output = new Dictionary<string, byte[]>();
 
-                try {
-                    compileTimeServices.CompilerServices.CompileClass(classText, className, allBytes, output, compileTimeServices.Services);
-                }
-                catch (CompilerServicesCompileException ex) {
-                    throw HandleException(ex, "Failed to compile class", classText);
-                }
-
-                foreach (var entry in output) {
-                    if (allBytes.ContainsKey(entry.Key)) {
-                        throw new ExprValidationException("Duplicate class by name '" + entry.Key + "'");
-                    }
-                }
-
-                allBytes.PutAll(output);
-                IList<Type> classes = new List<Type>(2);
-                foreach (var entry in output) {
-                    try {
-                        Type clazz = TypeHelper.GetClassForName(entry.Key, cl);
-                        classes.Add(clazz);
-                    }
-                    catch (TypeLoadException e) {
-                        throw HandleException(e, "Failed to load class '" + entry.Key + "'", classText);
-                    }
-                }
-
-                allClasses.AddAll(classes);
+                var classNameId = CodeGenerationIDGenerator.GenerateClassNameUUID();
+                var className = $"provided_{index}_{classNameId}";
+                compilables.Add(new CompilableClass(classText, className));
             }
 
-            return new ClassProvidedPrecompileResult(allBytes, allClasses);
+            CompileResponse response;
+            try {
+                response = compileTimeServices.CompilerServices.Compile(
+                    new CompileRequest(compilables, compileTimeServices.Services));
+            } 
+            catch(CompilerServicesCompileException ex) {
+                throw HandleException(ex, "Failed to compile class");
+            }
+
+            foreach (var exportedType in response.Assembly.ExportedTypes) {
+                if (existingTypesSet.Contains(exportedType.FullName)) {
+                    throw new ExprValidationException("Duplicate class by name '" + exportedType.FullName + "'");
+                }
+
+                existingTypes.Add(exportedType);
+            }
+
+            return new ClassProvidedPrecompileResult(response.Assembly, existingTypes);
         }
 
         private static ExprValidationException HandleException(
             Exception ex,
-            string action,
-            string classText)
+            string action)
         {
-            return new ExprValidationException(action + ": " + ex.Message + " for class [\"\"\"" + classText + "\"\"\"]", ex);
+            return new ExprValidationException(action + ": " + ex.Message, ex);
         }
     }
 } // end of namespace

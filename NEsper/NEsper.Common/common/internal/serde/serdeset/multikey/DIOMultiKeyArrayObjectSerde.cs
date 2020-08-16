@@ -6,14 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.IO;
-
 using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.collection;
-using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+using com.espertech.esper.common.@internal.serde.serdeset.builtin;
 using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.multikey
@@ -48,18 +43,12 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.multikey
 			}
 
 			output.WriteInt(@object.Length);
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(baos);
-			foreach (var i in @object) {
-				oos.WriteObject(i);
+			
+			foreach (var obj in @object) {
+				byte[] data = DIOSerializableObjectSerde.ObjectToByteArr(obj); 
+				output.WriteInt(data.Length);
+				output.Write(data);
 			}
-
-			oos.Close();
-
-			byte[] result = baos.ToByteArray();
-			output.WriteInt(result.Length);
-			output.Write(result);
-			baos.Close();
 		}
 
 		private object[] ReadInternal(DataInput input)
@@ -70,14 +59,12 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.multikey
 			}
 
 			var array = new object[len];
-			var size = input.ReadInt();
-			var buf = new byte[size];
-			input.ReadFully(buf);
 
-			ByteArrayInputStream bais = new ByteArrayInputStream(buf);
-			ObjectInputStream ois = new ObjectInputStreamWithTCCL(bais);
 			for (var i = 0; i < array.Length; i++) {
-				array[i] = ois.ReadObject();
+				var itemLength = input.ReadInt();
+				var itemData = new byte[itemLength];
+				input.ReadFully(itemData);
+				array[i] = DIOSerializableObjectSerde.ByteArrToObject(itemData);
 			}
 
 			return array;

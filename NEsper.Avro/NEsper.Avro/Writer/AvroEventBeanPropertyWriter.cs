@@ -47,7 +47,7 @@ namespace NEsper.Avro.Writer
 
         public virtual CodegenExpression WriteCodegen(
             CodegenExpression assigned,
-            CodegenExpression und,
+            CodegenExpression underlying,
             CodegenExpression target,
             CodegenMethodScope parent,
             CodegenClassScope classScope)
@@ -55,7 +55,7 @@ namespace NEsper.Avro.Writer
             return StaticMethod(
                 typeof(GenericRecordExtensions),
                 "Put",
-                und,
+                underlying,
                 Constant(index.Name),
                 assigned);
         }

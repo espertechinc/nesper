@@ -80,9 +80,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
             builder.Append("class ");
             builder.Append(classname);
-
-            baseList.RenderAny(builder);
-
+            baseList.Render(builder);
             builder.Append(" {\n");
         }
 

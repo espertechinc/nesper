@@ -25,19 +25,33 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 	/// <summary>
 	/// Property getter for Json underlying fields.
 	/// </summary>
-	public sealed class JsonGetterMapRuntimeKeyedProvided : EventPropertyGetterMappedSPI {
-	    private readonly FieldInfo field;
+	public sealed class JsonGetterMapRuntimeKeyedProvided : EventPropertyGetterMappedSPI
+	{
+		private readonly FieldInfo field;
 
-	    public JsonGetterMapRuntimeKeyedProvided(FieldInfo field) {
-	        this.field = field;
-	    }
+		public JsonGetterMapRuntimeKeyedProvided(FieldInfo field)
+		{
+			this.field = field;
+		}
 
-	    public CodegenExpression EventBeanGetMappedCodegen(CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope, CodegenExpression beanExpression, CodegenExpression key) {
-	        return StaticMethod(typeof(CollectionUtil), "getMapValueChecked", ExprDotName(CastUnderlying(field.DeclaringType, beanExpression), field.Name), key);
-	    }
+		public CodegenExpression EventBeanGetMappedCodegen(
+			CodegenMethodScope codegenMethodScope,
+			CodegenClassScope codegenClassScope,
+			CodegenExpression beanExpression,
+			CodegenExpression key)
+		{
+			return StaticMethod(
+				typeof(CollectionUtil),
+				"GetMapValueChecked",
+				ExprDotName(CastUnderlying(field.DeclaringType, beanExpression), field.Name),
+				key);
+		}
 
-	    public object Get(EventBean eventBean, string mapKey) {
-	        return JsonFieldGetterHelperProvided.GetJsonProvidedMappedProp(eventBean.Underlying, field, mapKey);
-	    }
+		public object Get(
+			EventBean eventBean,
+			string mapKey)
+		{
+			return JsonFieldGetterHelperProvided.GetJsonProvidedMappedProp(eventBean.Underlying, field, mapKey);
+		}
 	}
 } // end of namespace

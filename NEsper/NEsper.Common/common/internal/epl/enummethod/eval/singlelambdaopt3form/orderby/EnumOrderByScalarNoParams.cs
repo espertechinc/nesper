@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			int streamCountIncoming,
 			bool descending) : base(streamCountIncoming)
 		{
-			this._descending = descending;
+			_descending = descending;
 		}
 
 		public override EnumEval EnumEvaluator {

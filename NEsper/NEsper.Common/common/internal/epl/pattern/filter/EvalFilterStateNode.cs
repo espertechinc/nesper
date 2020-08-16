@@ -225,7 +225,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
                 .StmtFilterVersion = filtersVersion;
         }
         
-        public void Transfer(AgentInstanceTransferServices services) {
+        public override void Transfer(AgentInstanceTransferServices services) {
             if (_handle == null) {
                 return;
             }

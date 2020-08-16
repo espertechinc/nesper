@@ -12,6 +12,7 @@ using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.grammar.@internal.generated;
 
@@ -22,7 +23,6 @@ namespace com.espertech.esper.compiler.@internal.parse
 	[TestFixture]
 	public class TestJsonParser
 	{
-
 		[Test]
 		public void TestParse()
 		{

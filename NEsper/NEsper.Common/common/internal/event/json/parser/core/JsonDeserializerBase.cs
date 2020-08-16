@@ -13,14 +13,16 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.json.parser.core
 {
+    /// <summary>
+    /// A base class for general-purpose opaque deserialization.  All type specific behavior
+    /// should be encapsulated within the deserializer implementation.  What is exposed through
+    /// the API is an object deserializer.
+    /// </summary>
     public abstract class JsonDeserializerBase
     {
-        public JsonDeserializerBase(JsonDeserializerBase parent)
+        public JsonDeserializerBase()
         {
-            Parent = parent;
         }
-
-        public JsonDeserializerBase Parent { get; }
 
         public JsonElement JsonValue { get; set; }
 

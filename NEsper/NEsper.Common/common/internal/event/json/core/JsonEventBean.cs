@@ -13,14 +13,13 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
-
 namespace com.espertech.esper.common.@internal.@event.json.core
 {
 	public class JsonEventBean : EventBeanSPI,
 		JsonBackedEventBean
 	{
-		private EventType eventType;
-		private object theEvent;
+		private readonly EventType _eventType;
+		private object _theEvent;
 
 		/// <summary>
 		/// Constructor.
@@ -31,25 +30,25 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 			object theEvent,
 			EventType eventType)
 		{
-			this.eventType = eventType;
-			this.theEvent = theEvent;
+			_eventType = eventType;
+			_theEvent = theEvent;
 		}
 
 		public virtual object Underlying {
-			get => theEvent;
-			set => theEvent = value;
+			get => _theEvent;
+			set => _theEvent = value;
 		}
 
 		public object UnderlyingSpi {
-			get => theEvent;
-			set => theEvent = value;
+			get => _theEvent;
+			set => _theEvent = value;
 		}
 
-		public virtual EventType EventType => eventType;
+		public virtual EventType EventType => _eventType;
 
 		public object Get(string property)
 		{
-			EventPropertyGetter getter = eventType.GetGetter(property);
+			var getter = _eventType.GetGetter(property);
 			if (getter == null) {
 				throw new PropertyAccessException("Property named '" + property + "' is not a valid property name for this type");
 			}
@@ -63,14 +62,14 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 		{
 			return "JsonEventBean" +
 			       " eventType=" +
-			       eventType +
+			       _eventType +
 			       " bean=" +
-			       theEvent;
+			       _theEvent;
 		}
 
 		public object GetFragment(string propertyExpression)
 		{
-			EventPropertyGetter getter = eventType.GetGetter(propertyExpression);
+			EventPropertyGetter getter = _eventType.GetGetter(propertyExpression);
 			if (getter == null) {
 				throw PropertyAccessException.NotAValidProperty(propertyExpression);
 			}

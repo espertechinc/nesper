@@ -7,12 +7,15 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.json.compiletime;
 using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.util;
+
+using static com.espertech.esper.common.@internal.@event.json.getter.fromschema.JsonExceptionMessages;
 
 namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 {
@@ -23,25 +26,36 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             object @object)
         {
             var und = (JsonEventObjectBase) @object;
-            return und.GetNativeValue(field.PropertyNumber);
+            if (und.TryGetNativeValue(field.FieldName, out var value)) {
+                return value;
+            }
+
+            throw new KeyNotFoundException(field.FieldName);
         }
 
         /// <summary>
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
         /// <param name="object">object</param>
-        /// <param name="propertyNumber">field number</param>
+        /// <param name="propertyName">property name</param>
         /// <param name="index">index</param>
         /// <returns>value</returns>
         /// <throws>PropertyAccessException property access exceptions</throws>
         public static object GetJsonIndexedProp(
             object @object,
-            int propertyNumber,
+            string propertyName,
             int index)
         {
             var und = (JsonEventObjectBase) @object;
-            var array = und.GetNativeValue(propertyNumber);
-            return ArrayValueAtIndex(array, index);
+            if (und.TryGetNativeValue(propertyName, out var value)) {
+                if (value is Array array) {
+                    return CollectionUtil.ArrayValueAtIndex(array, index);
+                }
+
+                throw new InvalidOperationException(MESSAGE_VALUE_NOT_AN_ARRAY);
+            }
+
+            throw new KeyNotFoundException(propertyName);
         }
 
         public static bool GetJsonIndexedPropExists(
@@ -50,113 +64,138 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             int index)
         {
             var und = (JsonEventObjectBase) @object;
-            var array = und.GetNativeValue(field.PropertyNumber);
-            return CollectionUtil.ArrayExistsAtIndex(array, index);
+            if (und.TryGetNativeValue(field.FieldName, out var value)) {
+                if (value is Array array) {
+                    return CollectionUtil.ArrayExistsAtIndex(array, index);
+                }
+                throw new InvalidOperationException(MESSAGE_VALUE_NOT_AN_ARRAY);
+            }
+
+            throw new KeyNotFoundException(field.FieldName);
         }
 
         /// <summary>
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
         /// <param name="object">object</param>
-        /// <param name="propertyNumber">field number</param>
+        /// <param name="propertyName">property name</param>
         /// <param name="key">key</param>
         /// <returns>value</returns>
         /// <throws>PropertyAccessException property access exceptions</throws>
         public static object GetJsonMappedProp(
             object @object,
-            int propertyNumber,
+            string propertyName,
             string key)
         {
             var und = (JsonEventObjectBase) @object;
-            var result = und.GetNativeValue(propertyNumber);
-            return GetMapValueChecked(result, key);
+            if (und.TryGetNativeValue(propertyName, out var result)) {
+                return CollectionUtil.GetMapValueChecked(result, key);
+            }
+
+            throw new KeyNotFoundException(propertyName);
         }
 
         public static bool GetJsonMappedExists(
             object @object,
-            int propertyNumber,
+            string propertyName,
             string key)
         {
             var und = (JsonEventObjectBase) @object;
-            var result = und.GetNativeValue(propertyNumber);
-            return GetMapKeyExistsChecked(result, key);
+            if (und.TryGetNativeValue(propertyName, out var result)) {
+                return CollectionUtil.GetMapKeyExistsChecked(result, key);
+            }
+            
+            throw new KeyNotFoundException(propertyName);
         }
 
         /// <summary>
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
         /// <param name="und">underlying</param>
-        /// <param name="propNumber">property number</param>
+        /// <param name="propertyName">property name</param>
         /// <param name="fragmentType">event type</param>
         /// <param name="factory">factory</param>
         /// <returns>event bean or null</returns>
         public static EventBean HandleJsonCreateFragmentSimple(
             JsonEventObjectBase und,
-            int propNumber,
+            string propertyName,
             EventType fragmentType,
             EventBeanTypedEventFactory factory)
         {
-            var prop = und.GetNativeValue(propNumber);
-            if (prop == null) {
-                return null;
+            if (und.TryGetNativeValue(propertyName, out var prop)) {
+                if (prop == null) {
+                    return null;
+                }
+
+                return factory.AdapterForTypedJson(prop, fragmentType);
             }
 
-            return factory.AdapterForTypedJson(prop, fragmentType);
+            throw new KeyNotFoundException(propertyName);
         }
 
         /// <summary>
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
         /// <param name="und">underlying</param>
-        /// <param name="propNumber">property number</param>
+        /// <param name="propertyName">property name</param>
         /// <param name="fragmentType">event type</param>
         /// <param name="factory">factory</param>
         /// <param name="index">index</param>
         /// <returns>event bean or null</returns>
         public static EventBean HandleJsonCreateFragmentIndexed(
             JsonEventObjectBase und,
-            int propNumber,
+            string propertyName,
             int index,
             EventType fragmentType,
             EventBeanTypedEventFactory factory)
         {
-            var prop = und.GetNativeValue(propNumber);
-            prop = CollectionUtil.ArrayValueAtIndex(prop, index);
-            if (prop == null) {
-                return null;
+            if (und.TryGetNativeValue(propertyName, out var prop)) {
+                if (prop is Array array) {
+                    prop = CollectionUtil.ArrayValueAtIndex(array, index);
+                    if (prop == null) {
+                        return null;
+                    }
+
+                    return factory.AdapterForTypedJson(prop, fragmentType);
+                }
+
+                throw new InvalidOperationException(MESSAGE_VALUE_NOT_AN_ARRAY);
             }
 
-            return factory.AdapterForTypedJson(prop, fragmentType);
+            throw new KeyNotFoundException(propertyName);
         }
 
         /// <summary>
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
         /// <param name="und">underlying</param>
-        /// <param name="propNumber">property number</param>
+        /// <param name="propertyName">property name</param>
         /// <param name="fragmentType">event type</param>
         /// <param name="factory">factory</param>
         /// <returns>event bean or null</returns>
         public static EventBean[] HandleJsonCreateFragmentArray(
             JsonEventObjectBase und,
-            int propNumber,
+            string propertyName,
             EventType fragmentType,
             EventBeanTypedEventFactory factory)
         {
-            var value = und.GetNativeValue(propNumber);
-            if (value == null) {
-                return null;
-            }
+            if (und.TryGetNativeValue(propertyName, out var value)) {
+                if (value == null) {
+                    return null;
+                }
 
-            var asArray = (Array) value;
-            var len = asArray.Length;
-            var events = new EventBean[len];
-            for (var i = 0; i < len; i++) {
-                object item = asArray.GetValue(i);
-                events[i] = factory.AdapterForTypedJson(item, fragmentType);
-            }
+                var asArray = (Array) value;
+                var len = asArray.Length;
+                var events = new EventBean[len];
+                for (var i = 0; i < len; i++) {
+                    object item = asArray.GetValue(i);
+                    events[i] = factory.AdapterForTypedJson(item, fragmentType);
+                }
 
-            return events;
+                return events;
+            }
+            
+            throw new KeyNotFoundException(propertyName);
         }
     }
 } // end of namespace

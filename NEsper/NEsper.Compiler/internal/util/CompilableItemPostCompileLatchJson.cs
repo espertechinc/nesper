@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Threading;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading;
@@ -22,14 +23,14 @@ namespace com.espertech.esper.compiler.@internal.util
 		private readonly CountDownLatch _latch = new CountDownLatch(1);
 		private readonly ICollection<EventType> _eventTypes;
 		private readonly ClassLoader _parentClassLoader;
-		private IDictionary<string, byte[]> _moduleBytes;
+		private IDictionary<string, Type> _moduleTypes;
 
 		public CompilableItemPostCompileLatchJson(
 			ICollection<EventType> eventTypes,
 			ClassLoader parentClassLoader)
 		{
-			this._eventTypes = eventTypes;
-			this._parentClassLoader = parentClassLoader;
+			_eventTypes = eventTypes;
+			_parentClassLoader = parentClassLoader;
 		}
 
 		public void AwaitAndRun()
@@ -43,20 +44,20 @@ namespace com.espertech.esper.compiler.@internal.util
 			}
 
 			// load underlying class of Json types
-			foreach (EventType eventType in _eventTypes) {
+			foreach (var eventType in _eventTypes) {
 				if (!(eventType is JsonEventType)) {
 					continue;
 				}
 
-				JsonEventType jsonEventType = (JsonEventType) eventType;
-				ByteArrayProvidingClassLoader classLoader = new ByteArrayProvidingClassLoader(_moduleBytes, _parentClassLoader);
+				var jsonEventType = (JsonEventType) eventType;
+				var classLoader = new PriorityClassLoader(_parentClassLoader, _moduleTypes);
 				jsonEventType.Initialize(classLoader);
 			}
 		}
 
-		public void Completed(IDictionary<string, byte[]> moduleBytes)
+		public void Completed(IDictionary<string, Type> moduleTypes)
 		{
-			this._moduleBytes = moduleBytes;
+			_moduleTypes = moduleTypes;
 			_latch.CountDown();
 		}
 	}

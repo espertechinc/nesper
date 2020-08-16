@@ -19,6 +19,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         /// <param name="servicesContext">the runtime</param>
         /// <param name="runtimeSPI">runtime SPI</param>
         /// <param name="adminSPI">admin SPI</param>
+        /// <param name="stageServiceSPI"></param>
         void Init(
             EPServicesContext servicesContext,
             EPEventServiceSPI runtimeSPI,

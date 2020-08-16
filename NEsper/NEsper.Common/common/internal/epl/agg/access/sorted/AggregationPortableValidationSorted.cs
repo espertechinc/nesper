@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 				return parameters.Length == 0;
 			}
 
-			var methodEnum = EnumHelper.Parse<AggregationMethodSortedEnum>(nameMixed);
+			var methodEnum = EnumHelper.ParseBoxed<AggregationMethodSortedEnum>(nameMixed);
 			return name.Equals("sorted") || methodEnum != null;
 		}
 

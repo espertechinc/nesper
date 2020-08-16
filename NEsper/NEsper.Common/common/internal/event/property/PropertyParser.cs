@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.@event.property
         {
             try {
                 return PropertyParserNoDep.ParseAndWalkLaxToSimple(propertyName, false);
-            } catch (PropertyAccessException p) {
+            } catch (PropertyAccessException) {
                 return new SimpleProperty(propertyName);
             }
         }

@@ -163,7 +163,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				new EventPropertyDescriptor(
 					"mapped",
 					typeof(IDictionary<string, object>),
-					mappedReturnsObject ? typeof(object) : typeof(string),
+					typeof(string),
 					false,
 					false,
 					false,

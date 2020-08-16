@@ -49,11 +49,11 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             return true;
         }
 
-        public void AddTo(IDictionary<string, byte[]> additionalClasses)
+        public void AddTo(ICollection<Type> types)
         {
         }
 
-        public void RemoveFrom(IDictionary<string, byte[]> moduleBytes)
+        public void RemoveFrom(ICollection<Type> types)
         {
         }
     }

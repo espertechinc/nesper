@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
 
 	    public override ExprAggregateNodeBase AggregationExpression => parent;
 
-	    public MathContext OptionalMathContext => optionalMathContext;
+	    public override MathContext OptionalMathContext => optionalMathContext;
 
 	    public override AggregationPortableValidation AggregationPortableValidation => 
 		    new AggregationPortableValidationAvg(

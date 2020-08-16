@@ -381,7 +381,7 @@ namespace com.espertech.esper.compiler.@internal.util
             var compiler = new RoslynCompiler()
                 .WithCodeLogging(compileTimeServices.Configuration.Compiler.Logging.IsEnableCode)
                 .WithCodeAuditDirectory(compileTimeServices.Configuration.Compiler.Logging.AuditDirectory)
-                .WithCodegenClass(clazz);
+                .WithCodegenClasses(new[] {clazz});
 
             assembly = compiler.Compile();
 
@@ -760,18 +760,18 @@ namespace com.espertech.esper.compiler.@internal.util
             return method;
         }
 
-        private static String[] GetSupertypeNames(EventType eventType) {
+        private static string[] GetSupertypeNames(EventType eventType) {
             var superTypes = eventType.SuperTypes;
             var superTypesLength = superTypes?.Count ?? 0;
             
             if (superTypes != null && superTypesLength > 0) {
-                String[] superTypeNames = new String[superTypesLength];
+                string[] superTypeNames = new string[superTypesLength];
                 for (int i = 0; i < superTypesLength; i++) {
                     superTypeNames[i] = superTypes[i].Name;
                 }
                 return superTypeNames;
             }
-            return new String[0];
+            return new string[0];
         }
 
         private static CodegenMethod RegisterEventTypeSerdeCodegen(

@@ -106,57 +106,27 @@ namespace com.espertech.esperio.regression.adapter
 
 		private void FailOnDestroy()
 		{
-			try {
-				_stateManager.Destroy();
-				Assert.Fail();
-			}
-			catch (IllegalStateTransitionException ex) {
-				// Expected
-			}
+			Assert.Throws<IllegalStateTransitionException>(() => _stateManager.Destroy());
 		}
 
 		private void FailOnStart()
 		{
-			try {
-				_stateManager.Start();
-				Assert.Fail();
-			}
-			catch (IllegalStateTransitionException ex) {
-				// Expected
-			}
+			Assert.Throws<IllegalStateTransitionException>(() => _stateManager.Start());
 		}
 
 		private void FailOnResume()
 		{
-			try {
-				_stateManager.Resume();
-				Assert.Fail();
-			}
-			catch (IllegalStateTransitionException ex) {
-				// Expected
-			}
+			Assert.Throws<IllegalStateTransitionException>(() => _stateManager.Resume());
 		}
 
 		private void FailOnPause()
 		{
-			try {
-				_stateManager.Pause();
-				Assert.Fail();
-			}
-			catch (IllegalStateTransitionException ex) {
-				// Expected
-			}
+			Assert.Throws<IllegalStateTransitionException>(() => _stateManager.Pause());
 		}
 
 		private void FailOnStop()
 		{
-			try {
-				_stateManager.Stop();
-				Assert.Fail();
-			}
-			catch (IllegalStateTransitionException ex) {
-				// Expected
-			}
+			Assert.Throws<IllegalStateTransitionException>(() => _stateManager.Stop());
 		}
 
 		private void Start()

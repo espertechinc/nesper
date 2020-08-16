@@ -122,7 +122,7 @@ namespace com.espertech.esper.compiler.@internal.util
             var pathVariables = new PathRegistry<string, VariableMetaData>(PathRegistryObjectType.VARIABLE);
             var pathExprDeclared = new PathRegistry<string, ExpressionDeclItem>(PathRegistryObjectType.EXPRDECL);
             var pathScript = new PathRegistry<NameAndParamNum, ExpressionScriptProvided>(PathRegistryObjectType.SCRIPT);
-            var pathClassProvided = new PathRegistry<String, ClassProvided>(PathRegistryObjectType.CLASSPROVIDED);
+            var pathClassProvided = new PathRegistry<string, ClassProvided>(PathRegistryObjectType.CLASSPROVIDED);
 
             // add runtime-path which is the information an existing runtime may have
             if (path.CompilerPathables != null) {
@@ -313,7 +313,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 }
 
                 // initialize inlined classes
-                var moduleClassProvideds = new Dictionary<String, ClassProvided>();
+                var moduleClassProvideds = new Dictionary<string, ClassProvided>();
                 var classProvidedCollector = new ClassProvidedCollectorCompileTime(moduleClassProvideds, classLoaderParent);
                 try {
                     provider.ModuleProvider.InitializeClassProvided(new EPModuleClassProvidedInitServicesImpl(classProvidedCollector));
@@ -501,12 +501,12 @@ namespace com.espertech.esper.compiler.@internal.util
                 container,
                 compilerServices,
                 configuration,
-                classProvidedCompileTimeRegistry,
-                classProvidedCompileTimeResolver,
                 contextCompileTimeRegistry,
                 contextCompileTimeResolver,
                 beanEventTypeStemService,
                 beanEventTypeFactoryPrivate,
+                classProvidedCompileTimeRegistry,
+                classProvidedCompileTimeResolver,
                 databaseConfigServiceCompileTime,
                 importServiceCompileTime,
                 exprDeclaredCompileTimeRegistry,
@@ -525,6 +525,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 patternResolutionService,
                 scriptCompileTimeRegistry,
                 scriptCompileTimeResolver,
+                null, // scriptServiceCompileTime
                 serdeEventTypeRegistry,
                 serdeResolver,
                 tableCompileTimeRegistry,
@@ -638,7 +639,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
         private static SerdeCompileTimeResolver MakeSerdeResolver(
             ConfigurationCompilerSerde config,
-            IDictionary<String, Object> transientConfiguration)
+            IDictionary<string, object> transientConfiguration)
         {
             var context = new SerdeProviderFactoryContext();
 

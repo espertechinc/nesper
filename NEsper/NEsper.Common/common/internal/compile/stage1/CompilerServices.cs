@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
+using System.Reflection;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -34,11 +34,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1
             string classNameSimple,
             ModuleCompileTimeServices services);
 
-        void CompileClass(
-            string code,
-            string filenameWithoutExtension,
-            IDictionary<string, byte[]> classpath,
-            IDictionary<string, byte[]> output, ModuleCompileTimeServices services);
-
+        CompileResponse Compile(CompileRequest request);
     }
 } // end of namespace

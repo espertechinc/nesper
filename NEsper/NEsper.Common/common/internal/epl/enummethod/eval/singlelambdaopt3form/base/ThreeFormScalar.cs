@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 					"resultEvent",
 					NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(numParameters)), resultTypeMember))
 				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("resultEvent"))
-				.DeclareVar<object[]>("props", ExprDotMethod(Ref("resultEvent"), "getProperties"));
+				.DeclareVar<object[]>("props", ExprDotName(Ref("resultEvent"), "Properties"));
 			if (hasIndex) {
 				block.DeclareVar<int>("count", Constant(-1));
 			}

@@ -39,9 +39,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
     ///     2 Stream query strategy/execution tree
     ///     (stream 0)         Lookup in stream 1
     ///     (stream 1)         Lookup in stream 0
-    ///     <para />
+    ///     <para>
     ///     ------ Example 1   a 3 table join
-    ///     </para><para>
+    ///     </para>
+    ///     <para>
     ///         " where streamA.id = streamB.id " +
     ///         "   and streamB.id = streamC.id";
     ///     </para>

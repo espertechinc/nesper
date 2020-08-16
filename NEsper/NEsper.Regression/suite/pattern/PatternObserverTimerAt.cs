@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 long nextLong = DateTimeParsingFunctions.ParseDefaultMSec(next);
                 env.AdvanceTime(nextLong - 1);
                 // Comment-me-in: System.out.println("Advance to " + DateTime.print(nextLong - 1));
-                Assert.IsFalse(env.Listener("s0").IsInvoked(), "unexpected callback at " + next);
+                Assert.IsFalse(env.Listener("s0").IsInvoked, "unexpected callback at " + next);
 
                 // send right-after time
                 env.AdvanceTime(nextLong);

@@ -55,13 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 
 		public class MySupportClassloader : ClassLoader
 		{
-
 			private readonly IList<string> names = new List<string>();
-
-			public Stream GetResourceAsStream(string resourceName)
-			{
-				throw new NotImplementedException();
-			}
 
 			public Type GetClass(string typeName)
 			{
@@ -69,12 +63,6 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 			}
 
 			public IList<string> Names => names;
-
-			protected Type FindClass(string name)
-			{
-				names.Add(name);
-				return base.FindClass(name);
-			}
 		}
 	}
 } // end of namespace

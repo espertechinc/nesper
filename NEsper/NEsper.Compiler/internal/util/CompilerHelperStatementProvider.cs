@@ -80,7 +80,7 @@ namespace com.espertech.esper.compiler.@internal.util
             // Stage 0 - parse and compile-inline-classes and walk statement
             CompilerHelperSingleResult walked = ParseCompileInlinedClassesWalk(compilable, compileTimeServices);
             StatementSpecRaw raw = walked.StatementSpecRaw;
-            String classNameCreateClass = null;
+            string classNameCreateClass = null;
             if (raw.CreateClassProvided != null) {
                 classNameCreateClass = DetermineClassNameCreateClass(walked.ClassesInlined);
             }
@@ -357,11 +357,16 @@ namespace com.espertech.esper.compiler.@internal.util
                     typeof(StatementProvider),
                     classPostfix);
 
-                var additionalClasses = new HashMap<String, byte[]>(walked.ClassesInlined.Bytes);
+                var additionalClasses = new HashSet<Type>();
+                additionalClasses.AddAll(walked.ClassesInlined.Classes);
                 compileTimeServices.ClassProvidedCompileTimeResolver.AddTo(additionalClasses);
                 compileTimeServices.ClassProvidedCompileTimeRegistry.AddTo(additionalClasses);
 
-                return new CompilableItem(statementProviderClassName, classes, postCompile, additionalClasses);
+                return new CompilableItem(
+                    statementProviderClassName,
+                    classes,
+                    postCompile,
+                    additionalClasses);
             }
             catch (StatementSpecCompileException) {
                 throw;
@@ -378,9 +383,9 @@ namespace com.espertech.esper.compiler.@internal.util
             }
         }
 
-        private static String DetermineClassNameCreateClass(ClassProvidedPrecompileResult classesInlined)
+        private static string DetermineClassNameCreateClass(ClassProvidedPrecompileResult classesInlined)
         {
-            String className = null;
+            string className = null;
             for (int i = classesInlined.Classes.Count - 1; i >= 0; i--) {
                 var clazz = classesInlined.Classes[i];
                 if (clazz.FullName.Contains("+")) { // TBD: <<-- Evaluation, converted from JVM notation to CLR
@@ -390,7 +395,11 @@ namespace com.espertech.esper.compiler.@internal.util
                 return clazz.FullName;
             }
 
-            throw new IllegalStateException("Could not determine class name, entries are: " + classesInlined.Bytes.Keys);
+            var exportedTypes = classesInlined.Assembly.GetExportedTypes()
+                .Select(t => t.Name)
+                .ToList();
+            
+            throw new IllegalStateException("Could not determine class name, entries are: " + exportedTypes.RenderAny());
         }
 
         private static void VerifyForgeables(IList<StmtClassForgeable> forgables)

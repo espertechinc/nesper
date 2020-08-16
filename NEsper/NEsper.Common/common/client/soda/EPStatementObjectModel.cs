@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.client.soda
     ///     Use the toEPL method to generate a textual EPL from an object model.
     ///     <para>
     ///         Minimally, and EPL statement consists of the select-clause and the where-clause.These are represented by
-    ///         <<seealso cref="SelectClause" /> and <seealso cref="FromClause" /> respectively.
+    ///         <seealso cref="SelectClause" /> and <seealso cref="FromClause" /> respectively.
     ///     </para>
     ///     <para>
     ///         Here is a short example that create a simple EPL statement such as "select page, responseTime from PageLoad" :

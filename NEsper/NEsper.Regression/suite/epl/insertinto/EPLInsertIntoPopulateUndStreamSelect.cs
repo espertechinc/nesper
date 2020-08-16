@@ -220,7 +220,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 			// mismatch in type
 			env.CompileDeploy(rep.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedE1>() + "create schema E1 as (myint long)", path);
 			string message = !rep.IsAvroEvent()
-				? "Type by name 'E1' in property 'myint' expected java.lang.Integer but receives java.lang.Long"
+				? "Type by name 'E1' in property 'myint' expected System.Int32 but receives System.Int64"
 				: "Type by name 'E1' in property 'myint' expected schema '\"long\"' but received schema '\"int\"'";
 			SupportMessageAssertUtil.TryInvalidCompile(env, path, "insert into E1 select mysrc.* from Src as mysrc", message);
 

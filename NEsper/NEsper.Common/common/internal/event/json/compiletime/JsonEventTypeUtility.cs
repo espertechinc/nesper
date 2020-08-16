@@ -15,7 +15,6 @@ using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
-using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -25,9 +24,9 @@ using com.espertech.esper.common.@internal.epl.annotation;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.json.core;
-using com.espertech.esper.common.@internal.@event.json.parser.delegates.endvalue;
+using com.espertech.esper.common.@internal.@event.json.parser.deserializers.forge;
 using com.espertech.esper.common.@internal.@event.json.parser.forge;
-using com.espertech.esper.common.@internal.@event.json.write;
+using com.espertech.esper.common.@internal.@event.json.serializers;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
@@ -161,31 +160,31 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				},
 			};
 
-			var delegateClassNameSimple = jsonClassNameSimple + "__Delegate";
-			StmtClassForgeableFactory @delegate = new ProxyStmtClassForgeableFactory() {
+			var deserializerClassNameSimple = jsonClassNameSimple + "__Delegate";
+			StmtClassForgeableFactory deserializer = new ProxyStmtClassForgeableFactory() {
 				ProcMake = (
 					namespaceScope,
 					classPostfix) => {
-					return new StmtClassForgeableJsonDelegate(
+					return new StmtClassForgeableJsonDeserializer(
 						CodegenClassType.JSONDELEGATE,
-						delegateClassNameSimple,
+						deserializerClassNameSimple,
 						namespaceScope,
 						underlyingClassNameForReference,
 						forgeableDesc);
 				},
 			};
 
-			var delegateFactoryClassNameSimple = jsonClassNameSimple + "__Factory";
-			StmtClassForgeableFactory delegateFactory = new ProxyStmtClassForgeableFactory() {
+			var deserializerFactoryClassNameSimple = jsonClassNameSimple + "__Factory";
+			StmtClassForgeableFactory deserializerFactory = new ProxyStmtClassForgeableFactory() {
 				ProcMake = (
 					namespaceScope,
 					classPostfix) => {
-					return new StmtClassForgeableJsonDelegateFactory(
+					return new StmtClassForgeableJsonSerializer(
 						CodegenClassType.JSONDELEGATEFACTORY,
-						delegateFactoryClassNameSimple,
+						deserializerFactoryClassNameSimple,
 						optionalUnderlyingProvided != null,
 						namespaceScope,
-						delegateClassNameSimple,
+						deserializerClassNameSimple,
 						underlyingClassNameForReference,
 						forgeableDesc);
 				},
@@ -194,8 +193,8 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			var underlyingClassNameFull = optionalUnderlyingProvided == null
 				? services.Namespace + "." + underlyingClassNameSimple
 				: optionalUnderlyingProvided.Name;
-			var delegateClassNameFull = services.Namespace + "." + delegateClassNameSimple;
-			var delegateFactoryClassNameFull = services.Namespace + "." + delegateFactoryClassNameSimple;
+			var deserializerClassNameFull = services.Namespace + "." + deserializerClassNameSimple;
+			var deserializerFactoryClassNameFull = services.Namespace + "." + deserializerFactoryClassNameSimple;
 			var serdeClassNameFull =
 				services.Namespace +
 				"." +
@@ -207,8 +206,8 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			var detail = new JsonEventTypeDetail(
 				underlyingClassNameFull,
 				optionalUnderlyingProvided,
-				delegateClassNameFull,
-				delegateFactoryClassNameFull,
+				deserializerClassNameFull,
+				deserializerFactoryClassNameFull,
 				serdeClassNameFull,
 				fieldDescriptors,
 				dynamic,
@@ -233,15 +232,15 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 
 			IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>(3);
 
-			// generate delegate and factory forgables for application classes
+			// generate deserializer and factory forgables for application classes
 			GenerateApplicationClassForgables(optionalUnderlyingProvided, deepClasses, additionalForgeables, raw.Annotations, services);
 
 			if (optionalUnderlyingProvided == null) {
 				additionalForgeables.Add(underlying);
 			}
 
-			additionalForgeables.Add(@delegate);
-			additionalForgeables.Add(delegateFactory);
+			additionalForgeables.Add(deserializer);
+			additionalForgeables.Add(deserializerFactory);
 
 			return new EventTypeForgeablesPair(eventType, additionalForgeables);
 		}
@@ -326,35 +325,35 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				var forges = ComputeValueForges(properties, fields, deepClasses, annotations, services);
 				var fieldDescriptors = ComputeFields(properties, fieldNames, null, fields);
 
-				var delegateClassNameSimple = entry.Value.DelegateClassName;
+				var deserializerClassNameSimple = entry.Value.DelegateClassName;
 				var forgeableDesc = new StmtClassForgeableJsonDesc(properties, fieldDescriptors, false, 0, null, forges);
-				StmtClassForgeableFactory @delegate = new ProxyStmtClassForgeableFactory() {
+				StmtClassForgeableFactory deserializer = new ProxyStmtClassForgeableFactory() {
 					ProcMake = (
 						namespaceScope,
-						classPostfix) => new StmtClassForgeableJsonDelegate(
+						classPostfix) => new StmtClassForgeableJsonDeserializer(
 						CodegenClassType.JSONNESTEDCLASSDELEGATEANDFACTORY,
-						delegateClassNameSimple,
+						deserializerClassNameSimple,
 						namespaceScope,
 						entry.Key.Name,
 						forgeableDesc),
 				};
 
-				var delegateFactoryClassNameSimple = entry.Value.DelegateFactoryClassName;
-				StmtClassForgeableFactory delegateFactory = new ProxyStmtClassForgeableFactory() {
+				var deserializerFactoryClassNameSimple = entry.Value.DelegateFactoryClassName;
+				StmtClassForgeableFactory deserializerFactory = new ProxyStmtClassForgeableFactory() {
 					ProcMake = (
 						namespaceScope,
-						classPostfix) => new StmtClassForgeableJsonDelegateFactory(
+						classPostfix) => new StmtClassForgeableJsonSerializer(
 						CodegenClassType.JSONNESTEDCLASSDELEGATEANDFACTORY,
-						delegateFactoryClassNameSimple,
+						deserializerFactoryClassNameSimple,
 						true,
 						namespaceScope,
-						delegateClassNameSimple,
+						deserializerClassNameSimple,
 						entry.Key.Name,
 						forgeableDesc),
 				};
 
-				additionalForgeables.Add(@delegate);
-				additionalForgeables.Add(delegateFactory);
+				additionalForgeables.Add(deserializer);
+				additionalForgeables.Add(deserializerFactory);
 			}
 		}
 
@@ -434,10 +433,8 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				if (type == null) {
 					forgeDesc = new JsonForgeDesc(
 						entry.Key,
-						null,
-						null,
-						JsonEndValueForgeNull.INSTANCE,
-						JsonWriteForgeNull.INSTANCE);
+						JsonDeserializerForgeNull.INSTANCE,
+						JsonSerializerForgeNull.INSTANCE);
 				}
 				else if (type is Type clazz) {
 					forgeDesc = JsonForgeFactoryBuiltinClassTyped.Forge(
@@ -540,7 +537,8 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 					throw new IllegalStateException("Unrecognized type " + type);
 				}
 
-				allFieldsInclSupertype.Put(entry.Key, new JsonUnderlyingField(fieldName, index, assignedType, fields.Get(fieldName)));
+				allFieldsInclSupertype.Put(entry.Key, new JsonUnderlyingField(
+					fieldName, assignedType, fields.Get(fieldName)));
 				index++;
 			}
 
@@ -622,8 +620,17 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 				allowDuplicate = true;
 			}
 
-			classLoader.Add(jsonEventType.Detail.DelegateClassName, jsonEventType.DelegateType, optionalDeploymentId, allowDuplicate);
-			classLoader.Add(jsonEventType.Detail.DelegateFactoryClassName, jsonEventType.DelegateFactory.GetType(), optionalDeploymentId, allowDuplicate);
+			classLoader.Add(
+				jsonEventType.Detail.DeserializerClassName,
+				jsonEventType.DeserializerType,
+				optionalDeploymentId,
+				allowDuplicate);
+
+			classLoader.Add(
+				jsonEventType.Detail.DeserializerFactoryClassName,
+				jsonEventType.SerializationContext.GetType(),
+				optionalDeploymentId,
+				allowDuplicate);
 		}
 
 		private static IDictionary<string, object> ResolvePropertiesFromFields(IDictionary<string, FieldInfo> fields)

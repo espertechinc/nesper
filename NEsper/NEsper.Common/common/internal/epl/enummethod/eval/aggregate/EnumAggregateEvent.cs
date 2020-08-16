@@ -129,6 +129,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate
 			return LocalMethod(methodNode, premade.Eps, premade.Enumcoll, premade.IsNewData, premade.ExprCtx);
 		}
 
-		public int StreamNumSize => StreamNumLambda + 2;
+		public override int StreamNumSize => StreamNumLambda + 2;
 	}
 } // end of namespace

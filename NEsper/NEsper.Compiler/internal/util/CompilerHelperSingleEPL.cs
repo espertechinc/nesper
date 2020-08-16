@@ -113,7 +113,7 @@ namespace com.espertech.esper.compiler.@internal.util
 			try {
 				classesInlined = CompileClassProvided(classes, compileTimeServices, null);
 				// add inlined classes including create-class
-				compileTimeServices.ClassProvidedExtension.Add(classesInlined.Classes, classesInlined.Bytes);
+				compileTimeServices.ClassProvidedExtension.Add(classesInlined.Classes);
 			}
 			catch (ExprValidationException ex) {
 				throw new StatementSpecCompileException(ex.Message, ex, compilable.ToEPL());

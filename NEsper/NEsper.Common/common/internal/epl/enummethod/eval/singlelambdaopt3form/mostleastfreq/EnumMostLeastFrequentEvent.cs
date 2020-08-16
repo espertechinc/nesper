@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			block.MethodReturn(
 				Cast(
 					_returnType,
-					StaticMethod(typeof(EnumMostLeastFrequentHelper), "getEnumMostLeastFrequentResult", Ref("items"), Constant(_isMostFrequent))));
+					StaticMethod(typeof(EnumMostLeastFrequentHelper), "GetEnumMostLeastFrequentResult", Ref("items"), Constant(_isMostFrequent))));
 		}
 	}
 } // end of namespace

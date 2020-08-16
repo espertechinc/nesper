@@ -27,8 +27,8 @@ namespace com.espertech.esper.common.@internal.@event.json.core
         public JsonEventTypeDetail(
             string underlyingClassName,
             Type optionalUnderlyingProvided,
-            string delegateClassName,
-            string delegateFactoryClassName,
+            string deserializerClassName,
+            string deserializerFactoryClassName,
             string serdeClassName,
             IDictionary<string, JsonUnderlyingField> fieldDescriptors,
             bool dynamic,
@@ -36,8 +36,8 @@ namespace com.espertech.esper.common.@internal.@event.json.core
         {
             UnderlyingClassName = underlyingClassName;
             OptionalUnderlyingProvided = optionalUnderlyingProvided;
-            DelegateClassName = delegateClassName;
-            DelegateFactoryClassName = delegateFactoryClassName;
+            DeserializerClassName = deserializerClassName;
+            DeserializerFactoryClassName = deserializerFactoryClassName;
             SerdeClassName = serdeClassName;
             FieldDescriptors = fieldDescriptors;
             IsDynamic = dynamic;
@@ -48,9 +48,9 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 
         public string UnderlyingClassName { get; set; }
 
-        public string DelegateClassName { get; set; }
+        public string DeserializerClassName { get; set; }
 
-        public string DelegateFactoryClassName { get; set; }
+        public string DeserializerFactoryClassName { get; set; }
 
         public Type OptionalUnderlyingProvided { set; get; }
 
@@ -69,8 +69,8 @@ namespace com.espertech.esper.common.@internal.@event.json.core
                 .DeclareVar(typeof(JsonEventTypeDetail), "detail", NewInstance(typeof(JsonEventTypeDetail)))
                 .SetProperty(Ref("detail"), "UnderlyingClassName", Constant(UnderlyingClassName))
                 .SetProperty(Ref("detail"), "OptionalUnderlyingProvided", Constant(OptionalUnderlyingProvided))
-                .SetProperty(Ref("detail"), "DelegateClassName", Constant(DelegateClassName))
-                .SetProperty(Ref("detail"), "DelegateFactoryClassName", Constant(DelegateFactoryClassName))
+                .SetProperty(Ref("detail"), "DelegateClassName", Constant(DeserializerClassName))
+                .SetProperty(Ref("detail"), "DelegateFactoryClassName", Constant(DeserializerFactoryClassName))
                 .SetProperty(Ref("detail"), "SerdeClassName", Constant(SerdeClassName))
                 .SetProperty(Ref("detail"), "FieldDescriptors", LocalMethod(MakeFieldDescCodegen(method, classScope)))
                 .SetProperty(Ref("detail"), "IsDynamic", Constant(IsDynamic))

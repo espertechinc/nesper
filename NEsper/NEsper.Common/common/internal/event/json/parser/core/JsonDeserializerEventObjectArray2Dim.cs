@@ -7,30 +7,33 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
+using System.Text.Json;
 
-using com.espertech.esper.common.@internal.@event.json.parser.delegates.array2dim;
+using com.espertech.esper.common.@internal.@event.json.serde;
 
 namespace com.espertech.esper.common.@internal.@event.json.parser.core
 {
-    public class JsonDeserializerEventObjectArray2Dim : JsonDeserializerArray2DimBase
+    public class JsonDeserializerEventObjectArray2Dim : JsonDeserializerBase
     {
-        private readonly Type componentType;
-        private readonly JsonDelegateFactory factory;
+        private readonly Type _componentType;
+        private readonly JsonSerializationContext _factory;
+        private readonly List<object> _events = new List<object>();
 
         public JsonDeserializerEventObjectArray2Dim(
-            JsonDeserializerBase parent,
-            JsonDelegateFactory factory,
-            Type componentType) : base(parent)
+            JsonSerializationContext factory,
+            Type componentType)
         {
-            this.factory = factory;
-            this.componentType = componentType;
+            _factory = factory;
+            _componentType = componentType;
         }
 
-        public override object GetResult() => JsonDeserializerEventObjectArray.CollectionToTypedArray(collection, componentType);
-
-        public override JsonDeserializerBase StartArrayInner()
+        public override object Deserialize(JsonElement element)
         {
-            return new JsonDeserializerEventObjectArray(this, factory, componentType.GetElementType());
+            throw new NotImplementedException();
         }
+
+        public override object GetResult() => 
+            throw new NotImplementedException();
     }
 } // end of namespace

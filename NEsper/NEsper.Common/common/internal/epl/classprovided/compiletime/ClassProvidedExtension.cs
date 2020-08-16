@@ -18,11 +18,8 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
         ExtensionAggregationFunction,
         ExtensionAggregationMultiFunction
     {
-        public void Add(
-            IList<Type> classes,
-            IDictionary<string, byte[]> bytes);
+        public void Add(IList<Type> classes);
 
-        public IDictionary<string, byte[]> GetBytes();
         public bool IsLocalInlinedClass(Type declaringClass);
     }
 } // end of namespace

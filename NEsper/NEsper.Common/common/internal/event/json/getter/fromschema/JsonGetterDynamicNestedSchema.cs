@@ -24,18 +24,18 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
     /// </summary>
     public sealed class JsonGetterDynamicNestedSchema : JsonEventPropertyGetter
     {
-        private readonly JsonEventPropertyGetter innerGetter;
-        private readonly string propertyName;
-        private readonly string underlyingClassName;
+        private readonly JsonEventPropertyGetter _innerGetter;
+        private readonly string _propertyName;
+        private readonly string _underlyingClassName;
 
         public JsonGetterDynamicNestedSchema(
             string propertyName,
             JsonEventPropertyGetter innerGetter,
             string underlyingClassName)
         {
-            this.propertyName = propertyName;
-            this.innerGetter = innerGetter;
-            this.underlyingClassName = underlyingClassName;
+            this._propertyName = propertyName;
+            this._innerGetter = innerGetter;
+            this._underlyingClassName = underlyingClassName;
         }
 
         public object Get(EventBean eventBean)
@@ -45,8 +45,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public object GetJsonProp(object @object)
         {
-            var inner = ((IDictionary<string, object>) @object).Get(propertyName);
-            return inner != null ? innerGetter.GetJsonProp(inner) : null;
+            var inner = ((IDictionary<string, object>) @object).Get(_propertyName);
+            return inner != null ? _innerGetter.GetJsonProp(inner) : null;
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CastUnderlying(underlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(CastUnderlying(_underlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
         }
 
         public CodegenExpression UnderlyingGetCodegen(
@@ -64,12 +64,12 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
         {
             var method = codegenMethodScope
                 .MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(underlyingClassName, "und");
+                .AddParam(_underlyingClassName, "und");
             method.Block
-                .DeclareVar(typeof(object), "inner", ExprDotMethod(Ref("und"), "get", Constant(propertyName)))
+                .DeclareVar(typeof(object), "inner", ExprDotMethod(Ref("und"), "get", Constant(_propertyName)))
                 .IfNotInstanceOf("inner", typeof(IDictionary<string, object>))
                 .BlockReturn(ConstantNull())
-                .MethodReturn(innerGetter.UnderlyingGetCodegen(Cast(typeof(IDictionary<string, object>), Ref("inner")), method, codegenClassScope));
+                .MethodReturn(_innerGetter.UnderlyingGetCodegen(Cast(typeof(IDictionary<string, object>), Ref("inner")), method, codegenClassScope));
             return LocalMethod(method, underlyingExpression);
         }
 
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingExistsCodegen(CastUnderlying(underlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingExistsCodegen(CastUnderlying(_underlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -88,12 +88,12 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
         {
             var method = codegenMethodScope
                 .MakeChild(typeof(bool), GetType(), codegenClassScope)
-                .AddParam(underlyingClassName, "und");
+                .AddParam(_underlyingClassName, "und");
             method.Block
-                .DeclareVar(typeof(object), "inner", ExprDotMethod(Ref("und"), "Get", Constant(propertyName)))
+                .DeclareVar(typeof(object), "inner", ExprDotMethod(Ref("und"), "Get", Constant(_propertyName)))
                 .IfNotInstanceOf("inner", typeof(IDictionary<string, object>))
                 .BlockReturn(ConstantFalse())
-                .MethodReturn(innerGetter.UnderlyingExistsCodegen(Cast(typeof(IDictionary<string, object>), Ref("inner")), method, codegenClassScope));
+                .MethodReturn(_innerGetter.UnderlyingExistsCodegen(Cast(typeof(IDictionary<string, object>), Ref("inner")), method, codegenClassScope));
             return LocalMethod(method, underlyingExpression);
         }
 
@@ -130,12 +130,12 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public bool GetJsonExists(object @object)
         {
-            var inner = ((JsonEventObjectBase) @object).Get(propertyName);
+            var inner = ((JsonEventObjectBase) @object).Get(_propertyName);
             if (!(inner is IDictionary<string, object>)) {
                 return false;
             }
 
-            return innerGetter.GetJsonExists(inner);
+            return _innerGetter.GetJsonExists(inner);
         }
     }
 } // end of namespace

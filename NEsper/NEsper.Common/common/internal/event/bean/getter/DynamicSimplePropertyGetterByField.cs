@@ -36,12 +36,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			_fieldName = fieldName;
 		}
 
-		protected override MemberInfo DetermineFieldOrProperty(Type clazz)
+		protected override FieldInfo DetermineField(Type clazz)
 		{
 			return DynamicSimplePropertyDetermineField(_fieldName, clazz);
 		}
 
-		protected override CodegenExpression DetermineFieldOrPropertyCodegen(
+		protected override CodegenExpression DetermineFieldCodegen(
 			CodegenExpressionRef clazz,
 			CodegenMethodScope parent,
 			CodegenClassScope codegenClassScope)

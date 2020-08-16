@@ -87,7 +87,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 .ToList();
 
             ISet<ImportDecl> imports = new SortedSet<ImportDecl>();
-            imports.Add(new ImportDecl(typeof(Int32).Namespace, null));
+            imports.Add(new ImportDecl(typeof(int).Namespace, null));
             imports.Add(new ImportDecl(typeof(CompatExtensions).Namespace, null));
             imports.Add(new ImportDecl(typeof(UnsupportedOperationException).Namespace, null));
             imports.Add(new ImportDecl(typeof(Enumerable).Namespace, null));

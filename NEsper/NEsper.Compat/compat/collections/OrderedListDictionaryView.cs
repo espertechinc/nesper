@@ -22,6 +22,8 @@ namespace com.espertech.esper.compat.collections
     {
         private readonly OrderedListDictionary<TK, TV> _parent;
         private readonly BoundRange<TK> _range;
+        private readonly OrderedListDictionaryKeys<TK, TV> _keys;
+        private readonly OrderedListDictionaryValues<TK, TV> _values;
 
         /// <summary>
         /// Constructor
@@ -34,8 +36,8 @@ namespace com.espertech.esper.compat.collections
         {
             _parent = parent;
             _range = range;
-            Keys = new OrderedListDictionaryKeys<TK, TV>(_parent, _range);
-            Values = new OrderedListDictionaryValues<TK, TV>(_parent, _range);
+            _keys = new OrderedListDictionaryKeys<TK, TV>(_parent, _range);
+            _values = new OrderedListDictionaryValues<TK, TV>(_parent, _range);
         }
 
         /// <summary>
@@ -439,7 +441,12 @@ namespace com.espertech.esper.compat.collections
         ///     An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the object that implements
         ///     <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </returns>
-        public ICollection<TK> Keys { get; }
+        public ICollection<TK> Keys => _keys;
+
+        /// <summary>
+        /// Returns the keys as an ordered collection.
+        /// </summary>
+        public IOrderedCollection<TK> OrderedKeys => _keys;
 
         /// <summary>
         ///     Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the
@@ -449,7 +456,7 @@ namespace com.espertech.esper.compat.collections
         ///     An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the object that implements
         ///     <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </returns>
-        public ICollection<TV> Values { get; }
+        public ICollection<TV> Values => _values;
 
         /// <summary>
         ///     Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />,
@@ -499,6 +506,16 @@ namespace com.espertech.esper.compat.collections
             return _parent
                 .EnumerateRange(_range)
                 .GetEnumerator();
+        }
+        
+        /// <summary>
+        /// Returns an inverted version of the dictionary.
+        /// </summary>
+        /// <returns></returns>
+        public IOrderedDictionary<TK, TV> Invert()
+        {
+            var inverted = (OrderedListDictionary<TK, TV>) _parent.Invert();
+            return new OrderedListDictionaryView<TK, TV>(inverted, _range);
         }
     }
 }

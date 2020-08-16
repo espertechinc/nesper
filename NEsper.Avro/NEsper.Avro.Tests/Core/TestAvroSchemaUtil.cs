@@ -18,6 +18,8 @@ using com.espertech.esper.compat.collections;
 
 using NEsper.Avro.Extensions;
 
+using Newtonsoft.Json.Linq;
+
 using NUnit.Framework;
 
 namespace NEsper.Avro.Core
@@ -25,8 +27,8 @@ namespace NEsper.Avro.Core
 	[TestFixture]
 	public class TestAvroSchemaUtil
 	{
-		private readonly static EventTypeNameResolver EVENT_ADAPTER_SERVICE = new ProxyEventTypeNameResolver() {
-			ProcGetTypeByName = (typeName) => { return null; },
+		private static readonly EventTypeNameResolver EVENT_ADAPTER_SERVICE = new ProxyEventTypeNameResolver() {
+			ProcGetTypeByName = (typeName) => null,
 		};
 
 		[Test]
@@ -190,9 +192,9 @@ namespace NEsper.Avro.Core
 			ConfigurationCommonEventTypeMeta.AvroSettingsConfig avroSettings,
 			EventTypeNameResolver eventTypeNameResolver)
 		{
-			var assembler = SchemaBuilder.Record("myrecord");
-			AvroSchemaUtil.AssembleField("somefield", value, assembler, annotations, avroSettings, eventTypeNameResolver, "stmtname", null);
-			Schema schema = assembler.EndRecord();
+			var fields = new JArray();
+			AvroSchemaUtil.AssembleField("somefield", value, fields, annotations, avroSettings, eventTypeNameResolver, "stmtname", null);
+			var schema = SchemaBuilder.Record("myrecord", fields);
 			return schema.GetField("somefield").Schema;
 		}
 

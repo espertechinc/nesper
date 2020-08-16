@@ -55,9 +55,9 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
                 EventTypeUtility.ResolveTypeCodegen(FragmentType, EPStatementInitServicesConstants.REF));
             return StaticMethod(
                 typeof(JsonFieldGetterHelperSchema),
-                "handleJsonCreateFragmentSimple",
+                "HandleJsonCreateFragmentSimple",
                 underlyingExpression,
-                Constant(Field.PropertyNumber),
+                Constant(Field.FieldName),
                 eventType,
                 factory);
         }
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
             return JsonFieldGetterHelperSchema.HandleJsonCreateFragmentSimple(
                 (JsonEventObjectBase) @object,
-                Field.PropertyNumber,
+                Field.FieldName,
                 FragmentType,
                 EventBeanTypedEventFactory);
         }

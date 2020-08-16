@@ -104,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 					env,
 					path,
 					"select MyTable.sortcol.floorKey('a') from SupportBean_S0",
-					"Failed to validate select-clause expression 'MyTable.sortcol.floorKey(\"a\")': Method 'floorKey' for parameter 0 requires a key of type 'java.lang.Integer' but receives 'java.lang.String'");
+					"Failed to validate select-clause expression 'MyTable.sortcol.floorKey(\"a\")': Method 'floorKey' for parameter 0 requires a key of type 'System.Int32' but receives 'System.String'");
 
 				TryInvalidCompile(
 					env,
@@ -121,13 +121,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 					env,
 					path,
 					"select MyTable.sortcol.submap('a', true, 3, true) from SupportBean_S0",
-					"Failed to validate select-clause expression 'MyTable.sortcol.submap(\"a\",true,3,true)': Method 'submap' for parameter 0 requires a key of type 'java.lang.Integer' but receives 'java.lang.String'");
+					"Failed to validate select-clause expression 'MyTable.sortcol.submap(\"a\",true,3,true)': Method 'submap' for parameter 0 requires a key of type 'System.Int32' but receives 'System.String'");
 
 				TryInvalidCompile(
 					env,
 					path,
 					"select MyTable.sortcol.submap(1, true, 'a', true) from SupportBean_S0",
-					"Failed to validate select-clause expression 'MyTable.sortcol.submap(1,true,\"a\",true)': Method 'submap' for parameter 2 requires a key of type 'java.lang.Integer' but receives 'java.lang.String'");
+					"Failed to validate select-clause expression 'MyTable.sortcol.submap(1,true,\"a\",true)': Method 'submap' for parameter 2 requires a key of type 'System.Int32' but receives 'System.String'");
 
 				env.UndeployAll();
 			}
@@ -426,18 +426,18 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 					env.SendEventBean(new SupportBean_S0(i));
 					var @event = env.Listener("s0").AssertOneGetNewAndReset();
 					var message = "failed at " + i;
-					Assert.AreEqual(message, FirstEventString(treemap.CeilingEntry(i)), @event.Get("ceid"));
-					Assert.AreEqual(message, FirstEvent(treemap.CeilingEntry(i)), @event.Get("cefo"));
-					Assert.AreEqual(message, LastEvent(treemap.CeilingEntry(i)), @event.Get("ceslo"));
-					Assert.AreEqual(message, FirstEventString(treemap.FloorEntry(i)), @event.Get("feid"));
-					Assert.AreEqual(message, FirstEvent(treemap.FloorEntry(i)), @event.Get("fefo"));
-					Assert.AreEqual(message, LastEvent(treemap.FloorEntry(i)), @event.Get("feslo"));
-					Assert.AreEqual(message, FirstEventString(treemap.HigherEntry(i)), @event.Get("heid"));
-					Assert.AreEqual(message, FirstEvent(treemap.HigherEntry(i)), @event.Get("hefo"));
-					Assert.AreEqual(message, LastEvent(treemap.HigherEntry(i)), @event.Get("heslo"));
-					Assert.AreEqual(message, FirstEventString(treemap.LowerEntry(i)), @event.Get("leid"));
-					Assert.AreEqual(message, FirstEvent(treemap.LowerEntry(i)), @event.Get("lefo"));
-					Assert.AreEqual(message, LastEvent(treemap.LowerEntry(i)), @event.Get("leslo"));
+					Assert.AreEqual(FirstEventString(treemap.GreaterThanOrEqualTo(i)), @event.Get("ceid"), message);
+					Assert.AreEqual(FirstEvent(treemap.GreaterThanOrEqualTo(i)), @event.Get("cefo"), message);
+					Assert.AreEqual(LastEvent(treemap.GreaterThanOrEqualTo(i)), @event.Get("ceslo"), message);
+					Assert.AreEqual(FirstEventString(treemap.LessThanOrEqualTo(i)), @event.Get("feid"), message);
+					Assert.AreEqual(FirstEvent(treemap.LessThanOrEqualTo(i)), @event.Get("fefo"), message);
+					Assert.AreEqual(LastEvent(treemap.LessThanOrEqualTo(i)), @event.Get("feslo"), message);
+					Assert.AreEqual(FirstEventString(treemap.GreaterThan(i)), @event.Get("heid"), message);
+					Assert.AreEqual(FirstEvent(treemap.GreaterThan(i)), @event.Get("hefo"), message);
+					Assert.AreEqual(LastEvent(treemap.GreaterThan(i)), @event.Get("heslo"), message);
+					Assert.AreEqual(FirstEventString(treemap.LessThan(i)), @event.Get("leid"), message);
+					Assert.AreEqual(FirstEvent(treemap.LessThan(i)), @event.Get("lefo"), message);
+					Assert.AreEqual(LastEvent(treemap.LessThan(i)), @event.Get("leslo"), message);
 				}
 
 				env.UndeployAll();
@@ -480,18 +480,18 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				for (var i = 0; i < 12; i++) {
 					env.SendEventBean(new SupportBean_S0(i));
 					var @event = env.Listener("s0").AssertOneGetNewAndReset();
-					Assert.AreEqual(FirstEvent(treemap.CeilingEntry(i)), @event.Get("ce"));
-					EPAssertionUtil.AssertEqualsExactOrder(AllEvents(treemap.CeilingEntry(i)), (SupportBean[]) @event.Get("ces"));
-					Assert.AreEqual(treemap.CeilingKey(i), @event.Get("ck"));
-					Assert.AreEqual(FirstEvent(treemap.FloorEntry(i)), @event.Get("fe"));
-					EPAssertionUtil.AssertEqualsExactOrder(AllEvents(treemap.FloorEntry(i)), (SupportBean[]) @event.Get("fes"));
-					Assert.AreEqual(treemap.FloorKey(i), @event.Get("fk"));
-					Assert.AreEqual(FirstEvent(treemap.HigherEntry(i)), @event.Get("he"));
-					EPAssertionUtil.AssertEqualsExactOrder(AllEvents(treemap.HigherEntry(i)), (SupportBean[]) @event.Get("hes"));
-					Assert.AreEqual(treemap.HigherKey(i), @event.Get("hk"));
-					Assert.AreEqual(FirstEvent(treemap.LowerEntry(i)), @event.Get("le"));
-					EPAssertionUtil.AssertEqualsExactOrder(AllEvents(treemap.LowerEntry(i)), (SupportBean[]) @event.Get("les"));
-					Assert.AreEqual(treemap.LowerKey(i), @event.Get("lk"));
+					Assert.AreEqual(FirstEvent(treemap.GreaterThanOrEqualTo(i)), @event.Get("ce"));
+					EPAssertionUtil.AssertEqualsExactOrder(AllEvents(treemap.GreaterThanOrEqualTo(i)), (SupportBean[]) @event.Get("ces"));
+					Assert.AreEqual(treemap.GreaterThanOrEqualTo(i)?.Key, @event.Get("ck"));
+					Assert.AreEqual(FirstEvent(treemap.LessThanOrEqualTo(i)), @event.Get("fe"));
+					EPAssertionUtil.AssertEqualsExactOrder(AllEvents(treemap.LessThanOrEqualTo(i)), (SupportBean[]) @event.Get("fes"));
+					Assert.AreEqual(treemap.LessThanOrEqualTo(i)?.Key, @event.Get("fk"));
+					Assert.AreEqual(FirstEvent(treemap.GreaterThan(i)), @event.Get("he"));
+					EPAssertionUtil.AssertEqualsExactOrder(AllEvents(treemap.GreaterThan(i)), (SupportBean[]) @event.Get("hes"));
+					Assert.AreEqual(treemap.GreaterThan(i)?.Key, @event.Get("hk"));
+					Assert.AreEqual(FirstEvent(treemap.LessThan(i)), @event.Get("le"));
+					EPAssertionUtil.AssertEqualsExactOrder(AllEvents(treemap.LessThan(i)), (SupportBean[]) @event.Get("les"));
+					Assert.AreEqual(treemap.LessThan(i)?.Key, @event.Get("lk"));
 				}
 
 				env.UndeployAll();
@@ -509,18 +509,18 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				env.EplToModelCompileDeploy(epl).AddListener("s0");
 
 				MakeSendBean(env, treemap, "E1", 10);
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {FloorEntryFirstEvent(treemap, 10 - 1)});
+				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {LessThanOrEqualToFirstEvent(treemap, 10 - 1)});
 
 				MakeSendBean(env, treemap, "E2", 20);
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {FloorEntryFirstEvent(treemap, 20 - 1)});
+				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {LessThanOrEqualToFirstEvent(treemap, 20 - 1)});
 
 				env.Milestone(0);
 
 				MakeSendBean(env, treemap, "E3", 15);
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {FloorEntryFirstEvent(treemap, 15 - 1)});
+				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {LessThanOrEqualToFirstEvent(treemap, 15 - 1)});
 
 				MakeSendBean(env, treemap, "E3", 17);
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {FloorEntryFirstEvent(treemap, 17 - 1)});
+				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {LessThanOrEqualToFirstEvent(treemap, 17 - 1)});
 
 				env.UndeployAll();
 			}
@@ -541,13 +541,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				MakeSendBean(env, treemap, "E3", 30);
 
 				env.SendEventBean(new SupportBean_S0(15));
-				Assert.AreEqual(FloorEntryFirstEvent(treemap, 15), env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+				Assert.AreEqual(LessThanOrEqualToFirstEvent(treemap, 15), env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
 
 				env.Milestone(0);
 
 				for (var i = 0; i < 40; i++) {
 					env.SendEventBean(new SupportBean_S0(i));
-					Assert.AreEqual(FloorEntryFirstEvent(treemap, i), env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+					Assert.AreEqual(LessThanOrEqualToFirstEvent(treemap, i), env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
 				}
 
 				env.UndeployAll();
@@ -574,7 +574,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
 				for (var i = 0; i < 40; i++) {
 					env.SendEventBean(new SupportBean_S0(i));
-					Assert.AreEqual(FloorEntryFirstEvent(treemap, i), env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+					Assert.AreEqual(LessThanOrEqualToFirstEvent(treemap, i), env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
 				}
 
 				env.UndeployAll();
@@ -639,11 +639,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			treemap.Put(bean.IntPrimitive, existing);
 		}
 
-		private static SupportBean FloorEntryFirstEvent(
+		private static SupportBean LessThanOrEqualToFirstEvent(
 			IOrderedDictionary<int, IList<SupportBean>> treemap,
 			int key)
 		{
-			return treemap.FloorEntry(key) == null ? null : treemap.FloorEntry(key).Value[0];
+			return treemap.LessThanOrEqualTo(key)?.Value[0];
 		}
 
 		private static void PrepareTestData(
@@ -679,7 +679,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 		{
 			var submap = treemap.Between(sme.FromKey, sme.IsFromInclusive, sme.ToKey, sme.IsToInclusive);
 			var all = new List<SupportBean>();
-			foreach (KeyValuePair<int, IList<SupportBean>> entry in submap) {
+			foreach (var entry in submap) {
 				all.AddAll(entry.Value);
 			}
 
@@ -697,11 +697,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			MySubmapEvent sme,
 			IOrderedDictionary<object, SupportBean[]> actual)
 		{
-			IOrderedDictionary<int, IList<SupportBean>> expected = treemap.Between(sme.FromKey, sme.IsFromInclusive, sme.ToKey, sme.IsToInclusive);
+			var expected = treemap.Between(sme.FromKey, sme.IsFromInclusive, sme.ToKey, sme.IsToInclusive);
 			Assert.AreEqual(expected.Count, actual.Count);
-			foreach (int key in expected.Keys) {
-				SupportBean[] expectedEvents = expected.Get(key).ToArray();
-				SupportBean[] actualEvents = actual.Get(key);
+			foreach (var key in expected.Keys) {
+				var expectedEvents = expected.Get(key).ToArray();
+				var actualEvents = actual.Get(key);
 				EPAssertionUtil.AssertEqualsExactOrder(expectedEvents, actualEvents);
 			}
 		}
@@ -718,17 +718,17 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
 			CompareEntry(treemap.First(), actual.FirstEntry);
 			CompareEntry(treemap.Last(), actual.LastEntry);
-			CompareEntry(treemap.FloorEntry(5), actual.FloorEntry(5));
-			CompareEntry(treemap.CeilingEntry(5), actual.CeilingEntry(5));
-			CompareEntry(treemap.LowerEntry(5), actual.LowerEntry(5));
-			CompareEntry(treemap.HigherEntry(5), actual.HigherEntry(5));
+			CompareEntry(treemap.LessThanOrEqualTo(5), actual.LessThanOrEqualTo(5));
+			CompareEntry(treemap.GreaterThanOrEqualTo(5), actual.GreaterThanOrEqualTo(5));
+			CompareEntry(treemap.LessThan(5), actual.LessThan(5));
+			CompareEntry(treemap.GreaterThan(5), actual.GreaterThan(5));
 
 			Assert.AreEqual(treemap.Keys.First(), actual.FirstEntry.Key);
 			Assert.AreEqual(treemap.Keys.Last(), actual.LastEntry.Key);
-			Assert.AreEqual(treemap.FloorKey(5), actual.FloorKey(5));
-			Assert.AreEqual(treemap.CeilingKey(5), actual.CeilingKey(5));
-			Assert.AreEqual(treemap.LowerKey(5), actual.LowerKey(5));
-			Assert.AreEqual(treemap.HigherKey(5), actual.HigherKey(5));
+			Assert.AreEqual(treemap.LessThanOrEqualTo(5)?.Key, actual.LessThanOrEqualTo(5)?.Key);
+			Assert.AreEqual(treemap.GreaterThanOrEqualTo(5)?.Key, actual.GreaterThanOrEqualTo(5)?.Key);
+			Assert.AreEqual(treemap.LessThan(5)?.Key, actual.LessThan(5)?.Key);
+			Assert.AreEqual(treemap.GreaterThan(5)?.Key, actual.GreaterThan(5)?.Key);
 
 			Assert.AreEqual(treemap.ContainsKey(5), actual.ContainsKey(5));
 			Assert.AreEqual(treemap.IsEmpty(), actual.IsEmpty());
@@ -745,51 +745,59 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			Assert.AreEqual(5, actual.Keys.Count);
 			Assert.AreEqual(5, actual.Values.Count);
 
-			// collection tests
-			ICollection<ICollection<EventBean>> coll = actual.Values;
-			Assert.AreEqual(5, coll.Count);
-			Assert.IsFalse(coll.IsEmpty());
-			IEnumerator<ICollection<EventBean>> enumerator = coll.GetEnumerator();
-			EPAssertionUtil.AssertEqualsExactOrder(treemap.Get(1).ToArray(), ToArrayOfUnderlying(enumerator.Next()));
-			Assert.IsTrue(enumerator.MoveNext());
-			Assert.AreEqual(5, coll.ToArray().Length);
-			EPAssertionUtil.AssertEqualsExactOrder(treemap.Get(1).ToArray(), ToArrayOfUnderlying((ICollection<EventBean>) coll.ToArray()[0]));
+			// values
+			var values = actual.Values;
+			Assert.That(values.Count, Is.EqualTo(5));
+			Assert.That(values.IsEmpty(), Is.False);
+			
+			var valuesEnum = values.GetEnumerator();
+			Assert.That(valuesEnum, Is.Not.Null);
+			Assert.That(valuesEnum.MoveNext, Is.True);
 
-			// navigable set tests
-			NavigableSet<object> nks = actual.NavigableKeySet();
-			IEnumerator<object> nksit = nks.Iterator();
-			Assert.AreEqual(1, nksit.Next());
-			Assert.IsTrue(nksit.MoveNext());
-			Assert.IsNotNull(nks.Comparator());
-			Assert.AreEqual(1, nks.First());
-			Assert.AreEqual(9, nks.Last());
-			Assert.AreEqual(5, nks.Count);
-			Assert.IsFalse(nks.IsEmpty());
-			Assert.IsTrue(nks.Contains(6));
-			Assert.IsNotNull(nks.ToArray());
-			Assert.IsNotNull(nks.ToArray());
-			Assert.IsNotNull(nks.Spliterator());
-			Assert.IsNotNull(nks.Stream());
-			Assert.IsNotNull(nks.ParallelStream());
-			Assert.AreEqual(4, nks.Lower(5));
-			Assert.AreEqual(6, nks.Higher(5));
-			Assert.AreEqual(4, nks.Floor(5));
-			Assert.AreEqual(6, nks.Ceiling(5));
-			Assert.IsNotNull(nks.DescendingSet());
-			Assert.IsNotNull(nks.DescendingIterator());
-			nks.ForEach(a => { });
-			Assert.IsNotNull(nks.SubSet(1, true, 100, true));
-			Assert.IsNotNull(nks.HeadSet(100, true));
-			Assert.IsNotNull(nks.TailSet(1, true));
-			Assert.IsNotNull(nks.SubSet(1, 100));
-			Assert.IsNotNull(nks.HeadSet(100));
-			Assert.IsNotNull(nks.TailSet(1));
+			CollectionAssert.AreEqual(
+				treemap.Get(1).ToArray(),
+				ToArrayOfUnderlying(valuesEnum.Current));
+			
+			Assert.That(valuesEnum.MoveNext, Is.True);
+			Assert.That(values.ToArray(), Has.Length.EqualTo(5));
+
+			CollectionAssert.AreEqual(
+				treemap.Get(1).ToArray(),
+				ToArrayOfUnderlying((ICollection<EventBean>) values.ToArray()[0]));
+
+			// ordered key set
+			var oks = actual.OrderedKeys;
+			
+			//Assert.That(oks.Comparator());
+			Assert.That(oks.FirstEntry, Is.EqualTo(1));
+			Assert.That(oks.LastEntry, Is.EqualTo(9));
+			Assert.That(oks.Count, Is.EqualTo(5));
+			Assert.That(oks.IsEmpty(), Is.False);
+			Assert.That(oks.Contains(6), Is.True);
+			Assert.That(oks.ToArray(), Is.Not.Null);
+
+			Assert.That(oks.LessThan(5), Is.EqualTo(4));
+			Assert.That(oks.GreaterThan(5), Is.EqualTo(6));
+			Assert.That(oks.LessThanOrEqualTo(5), Is.EqualTo(4));
+			Assert.That(oks.GreaterThanOrEqualTo(5), Is.EqualTo(6));
+
+			Assert.That(oks.Between(1, true, 100, true), Is.Not.Null);
+			Assert.That(oks.Head(100, true), Is.Not.Null);
+			Assert.That(oks.Tail(1, true), Is.Not.Null);
+
+			// ordered key set - enumerator
+			var oksit = oks.GetEnumerator();
+			Assert.That(oksit, Is.Not.Null);
+			Assert.That(oksit.MoveNext(), Is.True);
+			Assert.That(oksit.Current, Is.EqualTo(1));
+			Assert.That(oksit.MoveNext(), Is.True);
+			
 
 			// entry set
 			ICollection<KeyValuePair<object, ICollection<EventBean>>> set = actual;
 			Assert.IsFalse(set.IsEmpty());
-			IEnumerator<KeyValuePair<object, ICollection<EventBean>>> setit = set.GetEnumerator();
-			KeyValuePair<object, ICollection<EventBean>> entry = setit.Advance();
+			var setit = set.GetEnumerator();
+			var entry = setit.Advance();
 			Assert.AreEqual(1, entry.Key);
 			Assert.IsTrue(setit.MoveNext());
 			EPAssertionUtil.AssertEqualsExactOrder(treemap.Get(1).ToArray(), ToArrayOfUnderlying(entry.Value));
@@ -800,16 +808,20 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			Assert.IsNotNull(set.ToArray());
 
 			// sorted map
-			IOrderedDictionary<object, ICollection<EventBean>> events = actual.Head(100);
+			var events = actual.Head(100);
 			Assert.AreEqual(5, events.Count);
 		}
 
 		private static void CompareEntry(
-			KeyValuePair<int, IList<SupportBean>> expected,
-			KeyValuePair<object, ICollection<EventBean>> actual)
+			KeyValuePair<int, IList<SupportBean>>? expected,
+			KeyValuePair<object, ICollection<EventBean>>? actual)
 		{
-			Assert.AreEqual(expected.Key, actual.Key);
-			EPAssertionUtil.AssertEqualsExactOrder(expected.Value.ToArray(), ToArrayOfUnderlying(actual.Value));
+			Assert.That(expected, Is.Not.Null);
+			Assert.That(actual, Is.Not.Null);
+			Assert.AreEqual(expected.Value.Key, actual.Value.Key);
+			EPAssertionUtil.AssertEqualsExactOrder(
+				expected.Value.Value.ToArray(),
+				ToArrayOfUnderlying(actual.Value.Value));
 		}
 
 		private static SupportBean[] ToArrayOfUnderlying(ICollection<EventBean> eventBeans)

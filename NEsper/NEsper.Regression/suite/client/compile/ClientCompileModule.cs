@@ -307,14 +307,14 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 					}
 				);
 
-				Assert.AreEqual("org.mycompany.events", env.ParseModule("module org.mycompany.events; select * from java.lang.Object;").Name);
-				Assert.AreEqual("glob.update.me", env.ParseModule("module glob.update.me; select * from java.lang.Object;").Name);
+				Assert.AreEqual("org.mycompany.events", env.ParseModule("module org.mycompany.events; select * from System.Object;").Name);
+				Assert.AreEqual("glob.update.me", env.ParseModule("module glob.update.me; select * from System.Object;").Name);
 				Assert.AreEqual(
 					"seconds.until.every.where",
-					env.ParseModule("uses seconds.until.every.where; select * from java.lang.Object;").Uses.ToArray()[0]);
+					env.ParseModule("uses seconds.until.every.where; select * from System.Object;").Uses.ToArray()[0]);
 				Assert.AreEqual(
 					"seconds.until.every.where",
-					env.ParseModule("import seconds.until.every.where; select * from java.lang.Object;").Imports.ToArray()[0]);
+					env.ParseModule("import seconds.until.every.where; select * from System.Object;").Imports.ToArray()[0]);
 
 				// Test script square brackets
 				module = env.ReadModule("regression/test_module_13.epl");

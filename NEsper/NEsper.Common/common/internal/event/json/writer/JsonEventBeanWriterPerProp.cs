@@ -6,40 +6,40 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 
 namespace com.espertech.esper.common.@internal.@event.json.writer
 {
 	/// <summary>
 	/// Writer method for writing to Json-type events.
 	/// </summary>
-	public class JsonEventBeanWriterPerProp : EventBeanWriter {
-	    private readonly JsonEventBeanPropertyWriter[] writers;
+	public class JsonEventBeanWriterPerProp : EventBeanWriter
+	{
+		private readonly JsonEventBeanPropertyWriter[] _writers;
 
-	    /// <summary>
-	    /// Ctor.
-	    /// </summary>
-	    /// <param name="writers">names of properties to write</param>
-	    public JsonEventBeanWriterPerProp(JsonEventBeanPropertyWriter[] writers) {
-	        this.writers = writers;
-	    }
+		/// <summary>
+		/// Ctor.
+		/// </summary>
+		/// <param name="writers">names of properties to write</param>
+		public JsonEventBeanWriterPerProp(JsonEventBeanPropertyWriter[] writers)
+		{
+			_writers = writers;
+		}
 
-	    /// <summary>
-	    /// Write values to an event.
-	    /// </summary>
-	    /// <param name="values">to write</param>
-	    /// <param name="theEvent">to write to</param>
-	    public void Write(object[] values, EventBean theEvent) {
-	        object @event = theEvent.Underlying;
-	        for (int i = 0; i < writers.Length; i++) {
-	            writers[i].Write(values[i], @event);
-	        }
-	    }
+		/// <summary>
+		/// Write values to an event.
+		/// </summary>
+		/// <param name="values">to write</param>
+		/// <param name="theEvent">to write to</param>
+		public void Write(
+			object[] values,
+			EventBean theEvent)
+		{
+			object @event = theEvent.Underlying;
+			for (int i = 0; i < _writers.Length; i++) {
+				_writers[i].Write(values[i], @event);
+			}
+		}
 	}
 } // end of namespace

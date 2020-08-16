@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 
 				SupportMessageAssertUtil.TryInvalidCompile(
 					env,
-					"@JsonSchemaField(name=mydate, adapter='java.lang.String') create json schema JsonEvent(mydate Date)",
+					"@JsonSchemaField(name=mydate, adapter='System.String') create json schema JsonEvent(mydate Date)",
 					"Json schema field adapter class does not implement interface 'JsonFieldAdapterString");
 
 				SupportMessageAssertUtil.TryInvalidCompile(

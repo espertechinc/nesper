@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.rettype
     /// </summary>
     public class ClassEPType : EPType
     {
-        internal ClassEPType(Type type)
+        public ClassEPType(Type type)
         {
             Clazz = type;
         }

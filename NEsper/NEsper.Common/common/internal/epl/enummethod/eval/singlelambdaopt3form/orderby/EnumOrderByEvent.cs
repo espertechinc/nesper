@@ -17,6 +17,8 @@ using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3f
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.collections.btree;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.orderby
@@ -30,8 +32,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			ExprDotEvalParamLambda lambda,
 			bool descending) : base(lambda)
 		{
-			this._descending = descending;
-			this._innerBoxedType = Boxing.GetBoxedType(InnerExpression.EvaluationType);
+			_descending = descending;
+			_innerBoxedType = InnerExpression.EvaluationType.GetBoxedType();
 		}
 
 		public override EnumEval EnumEvaluator {
@@ -43,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 						enumcoll,
 						isNewData,
 						context) => {
-						SortedDictionary<object, object> sort = new SortedDictionary<object, object>();
+						var sort = new BTreeDictionary<object, object>();
 						var hasColl = false;
 
 						var beans = (ICollection<EventBean>) enumcoll;
@@ -92,7 +94,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			ExprForgeCodegenSymbol scope,
 			CodegenClassScope codegenClassScope)
 		{
-			block.DeclareVar(typeof(SortedDictionary<object, object>), "sort", NewInstance(typeof(SortedDictionary<object, object>)))
+			block
+				.DeclareVar(typeof(BTreeDictionary<object, object>), "sort", NewInstance(typeof(BTreeDictionary<object, object>)))
 				.DeclareVar<bool>("hasColl", ConstantFalse());
 		}
 
@@ -107,7 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
 		public override void ReturnResult(CodegenBlock block)
 		{
-			block.MethodReturn(StaticMethod(typeof(EnumOrderByHelper), "enumOrderBySortEval", Ref("sort"), Ref("hasColl"), Constant(_descending)));
+			block.MethodReturn(StaticMethod(typeof(EnumOrderByHelper), "EnumOrderBySortEval", Ref("sort"), Ref("hasColl"), Constant(_descending)));
 		}
 	}
 } // end of namespace

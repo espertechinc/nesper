@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 var epl = "@name('ABCName') select myinvalidagg() from SupportBean";
                 EPDeployment deployment;
                 try {
-                    var compiled = env.Compiler.Compile(epl, new CompilerArguments(configuration));
+                    var compiled = EPCompilerProvider.Compiler.Compile(epl, new CompilerArguments(configuration));
                     deployment = runtime.DeploymentService.Deploy(compiled);
                 }
                 catch (Exception t) {
@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 var epl = "@name('ABCName') select myinvalidagg() from SupportBean";
                 EPDeployment deployment;
                 try {
-                    var compiled = env.Compiler.Compile(epl, new CompilerArguments(configuration));
+                    var compiled = EPCompilerProvider.Compiler.Compile(epl, new CompilerArguments(configuration));
                     deployment = runtime.DeploymentService.Deploy(compiled);
                 }
                 catch (Exception t) {

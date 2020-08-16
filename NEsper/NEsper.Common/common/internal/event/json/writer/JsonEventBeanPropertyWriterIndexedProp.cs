@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Linq;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.json.compiletime;
 using com.espertech.esper.common.@internal.@event.json.parser.core;
+using com.espertech.esper.common.@internal.@event.json.serde;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -19,31 +21,39 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
 {
     public class JsonEventBeanPropertyWriterIndexedProp : JsonEventBeanPropertyWriter
     {
-        private readonly int index;
+        private readonly int _index;
 
         public JsonEventBeanPropertyWriterIndexedProp(
-            JsonDelegateFactory delegateFactory,
+            JsonSerializationContext serializationContext,
             JsonUnderlyingField propertyName,
-            int index) : base(delegateFactory, propertyName)
+            int index) : base(serializationContext, propertyName)
         {
-            this.index = index;
+            _index = index;
         }
 
         public override void Write(
             object value,
             object und)
         {
-            JsonWriteArrayProp(value, delegateFactory.GetValue(field.PropertyNumber, und), index);
+            var lookup = (ILookup<string, object>) und;
+            //SerializationContext.GetValue(_field.FieldName, und),
+            JsonWriteArrayProp(value, lookup[Field.FieldName], _index);
         }
 
         public override CodegenExpression WriteCodegen(
             CodegenExpression assigned,
-            CodegenExpression und,
+            CodegenExpression underlying,
             CodegenExpression target,
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            return StaticMethod(GetType(), "jsonWriteArrayProp", assigned, ExprDotName(und, field.FieldName), Constant(index));
+            return StaticMethod(
+                GetType(),
+                "JsonWriteArrayProp",
+                assigned, // value 
+                ExprDotName(underlying, Field.FieldName), // arrayEntry
+                Constant(_index) // index
+            );
         }
 
         /// <summary>
@@ -59,7 +69,7 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
         {
             if (arrayEntry is Array array &&
                 array.Length > index) {
-                array.SetValue(arrayEntry, index);
+                array.SetValue(value, index);
             }
         }
     }

@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createclass
                 throw new ExprValidationException("Class '" + className + "' has already been declared");
             }
 
-            var classProvided = new ClassProvided(classProvidedPrecompileResult.Bytes, className);
+            var classProvided = new ClassProvided(classProvidedPrecompileResult.Assembly, className);
             var visibility = services.ModuleVisibilityRules.GetAccessModifierExpression(Base, className);
             classProvided.ModuleName = Base.ModuleName;
             classProvided.Visibility = visibility;

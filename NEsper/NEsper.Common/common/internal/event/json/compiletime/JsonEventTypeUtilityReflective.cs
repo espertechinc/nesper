@@ -20,12 +20,10 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
-
 namespace com.espertech.esper.common.@internal.@event.json.compiletime
 {
 	public class JsonEventTypeUtilityReflective
 	{
-
 		public static IDictionary<Type, JsonApplicationClassDelegateDesc> ComputeClassesDeep(
 			Type clazz,
 			string eventTypeName,
@@ -146,7 +144,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 					services);
 				return false;
 			}
-			catch (UnsupportedOperationException ex) {
+			catch (UnsupportedOperationException) {
 				return true;
 			}
 		}

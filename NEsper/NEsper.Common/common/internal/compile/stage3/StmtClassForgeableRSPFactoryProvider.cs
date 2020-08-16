@@ -34,10 +34,9 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames; // REF_EPS
-using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames; // REF_EXPREVALCONTEXT
+using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
-using static com.espertech.esper.common.@internal.epl.resultset.core.ResultSetProcessorOutputConditionType; // POLICY_LASTALL_UNORDERED
+using static com.espertech.esper.common.@internal.epl.resultset.core.ResultSetProcessorOutputConditionType;
 
 namespace com.espertech.esper.common.@internal.compile.stage3
 {
@@ -652,7 +651,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 	        ctorParams.Add(new CodegenTypedParam(typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref, false));
 
 	        var ctor = new CodegenCtor(typeof(StmtClassForgeableRSPFactoryProvider), classScope, ctorParams);
-	        ctor.Block.AssignRef(MEMBER_EVENTBEANFACTORY, ExprDotMethod(EPStatementInitServicesConstants.REF, "getEventBeanTypedEventFactory"));
+	        ctor.Block.AssignRef(MEMBER_EVENTBEANFACTORY, ExprDotName(EPStatementInitServicesConstants.REF, "EventBeanTypedEventFactory"));
 
 	        var processMethod = CodegenMethod
 		        .MakeMethod(typeof(EventBean), typeof(StmtClassForgeableRSPFactoryProvider), symbolProvider, classScope)

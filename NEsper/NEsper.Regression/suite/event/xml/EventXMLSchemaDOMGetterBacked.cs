@@ -9,6 +9,8 @@
 using System.Collections.Generic;
 using System.Threading;
 
+using com.espertech.esper.compat;
+using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
@@ -35,7 +37,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string schemaUriSimpleSchema = Thread.CurrentThread().ContextClassLoader.GetResource("regression/simpleSchema.xsd").ToString();
+				var resourceManager = env.Container.ResourceManager();
+				var schemaUriSimpleSchema = resourceManager.GetResourceAsStream("regression/simpleSchema.xsd").ConsumeStream();
 				var epl = "@public @buseventtype " +
 				          "@XMLSchema(rootElementName='simpleEvent', schemaResource='" +
 				          schemaUriSimpleSchema +

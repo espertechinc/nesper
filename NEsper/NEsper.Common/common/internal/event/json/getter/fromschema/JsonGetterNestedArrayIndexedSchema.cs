@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 {
     public sealed class JsonGetterNestedArrayIndexedSchema : JsonGetterNestedArrayIndexedBase
     {
-        private readonly JsonUnderlyingField field;
+        private readonly JsonUnderlyingField _field;
 
         public JsonGetterNestedArrayIndexedSchema(
             int index,
@@ -23,16 +23,16 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             string underlyingClassName,
             JsonUnderlyingField field) : base(index, innerGetter, underlyingClassName)
         {
-            this.field = field;
+            this._field = field;
         }
 
-        public override string FieldName => field.FieldName;
+        public override string FieldName => _field.FieldName;
 
-        public override Type FieldType => field.PropertyType;
+        public override Type FieldType => _field.PropertyType;
 
         public override object GetJsonProp(object @object)
         {
-            var item = JsonFieldGetterHelperSchema.GetJsonIndexedProp(@object, field.PropertyNumber, Index);
+            var item = JsonFieldGetterHelperSchema.GetJsonIndexedProp(@object, _field.FieldName, Index);
             if (item == null) {
                 return null;
             }
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public override bool GetJsonExists(object @object)
         {
-            var item = JsonFieldGetterHelperSchema.GetJsonIndexedProp(@object, field.PropertyNumber, Index);
+            var item = JsonFieldGetterHelperSchema.GetJsonIndexedProp(@object, _field.FieldName, Index);
             if (item == null) {
                 return false;
             }
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public override object GetJsonFragment(object @object)
         {
-            var item = JsonFieldGetterHelperSchema.GetJsonIndexedProp(@object, field.PropertyNumber, Index);
+            var item = JsonFieldGetterHelperSchema.GetJsonIndexedProp(@object, _field.FieldName, Index);
             if (item == null) {
                 return null;
             }

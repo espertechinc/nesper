@@ -75,11 +75,11 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             // assignment methods
             var assignMethod = CodegenMethod
-                .MakeMethod(typeof(Void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(StatementAIFactoryAssignments), "assignments")
                 .WithStatic(false);
             var unassignMethod = CodegenMethod
-                .MakeMethod(typeof(Void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .WithStatic(false);
             GenerateAssignAndUnassign(_numStreams, assignMethod, unassignMethod, _namespaceScope.FieldsNamed);
 

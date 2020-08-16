@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 namespace com.espertech.esper.compiler.@internal.util
@@ -13,6 +14,6 @@ namespace com.espertech.esper.compiler.@internal.util
     public interface CompilableItemPostCompileLatch
     {
         void AwaitAndRun();
-        void Completed(IDictionary<string, byte[]> moduleBytes);
+        void Completed(IDictionary<string, Type> moduleTypes);
     }
 } // end of namespace

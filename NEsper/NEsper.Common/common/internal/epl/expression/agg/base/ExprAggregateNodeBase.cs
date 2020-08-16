@@ -344,7 +344,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             }
         }
 
-        public bool IsExprTextWildcardWhenNoParams => true;
+        public virtual bool IsExprTextWildcardWhenNoParams => true;
 
         public CodegenExpression GetAggFuture(CodegenClassScope codegenClassScope)
         {

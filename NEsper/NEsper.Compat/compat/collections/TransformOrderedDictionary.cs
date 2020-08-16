@@ -1,4 +1,12 @@
-﻿using System;
+﻿///////////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// http://esper.codehaus.org                                                          /
+// ---------------------------------------------------------------------------------- /
+// The software in this package is published under the terms of the GPL license       /
+// a copy of which has been included with this distribution in the license.txt file.  /
+///////////////////////////////////////////////////////////////////////////////////////
+
+using System;
 using System.Collections.Generic;
 
 namespace com.espertech.esper.compat.collections
@@ -42,6 +50,12 @@ namespace com.espertech.esper.compat.collections
         /// Returns a comparer for the key.
         /// </summary>
         public IComparer<TK1> KeyComparer => throw new NotSupportedException();
+
+        /// <summary>
+        /// Returns the keys as an ordered collection.
+        /// </summary>
+        public IOrderedCollection<TK1> OrderedKeys => new TransformOrderedCollection<TK2, TK1>(
+            _subDictionaryOrdered.OrderedKeys, KeyIn, KeyOut);
 
         /// <summary>
         /// Returns a readonly ordered dictionary that includes everything before the value.
@@ -264,6 +278,20 @@ namespace com.espertech.esper.compat.collections
                     KeyOut(value.Key),
                     ValueOut(value.Value));
             }
+        }
+
+        /// <summary>
+        /// Returns an ordered dictionary in inverted order.
+        /// </summary>
+        /// <returns></returns>
+        public IOrderedDictionary<TK1, TV1> Invert()
+        {
+            return new TransformOrderedDictionary<TK1, TV1, TK2, TV2>(
+                _subDictionaryOrdered.Invert(),
+                KeyOut,
+                KeyIn,
+                ValueOut,
+                ValueIn);
         }
     }
 }

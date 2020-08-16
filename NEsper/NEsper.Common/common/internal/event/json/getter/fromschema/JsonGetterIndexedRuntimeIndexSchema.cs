@@ -21,11 +21,11 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
     /// </summary>
     public sealed class JsonGetterIndexedRuntimeIndexSchema : EventPropertyGetterIndexedSPI
     {
-        private readonly JsonUnderlyingField field;
+        private readonly JsonUnderlyingField _field;
 
         public JsonGetterIndexedRuntimeIndexSchema(JsonUnderlyingField field)
         {
-            this.field = field;
+            this._field = field;
         }
 
         public CodegenExpression EventBeanGetIndexedCodegen(
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
                 typeof(JsonFieldGetterHelperSchema),
                 "GetJsonIndexedProp",
                 ExprDotName(beanExpression, "Underlying"),
-                Constant(field.PropertyNumber),
+                Constant(_field.FieldName),
                 key);
         }
 
@@ -46,7 +46,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             EventBean eventBean,
             int index)
         {
-            return JsonFieldGetterHelperSchema.GetJsonIndexedProp(eventBean.Underlying, field.PropertyNumber, index);
+            return JsonFieldGetterHelperSchema.GetJsonIndexedProp(
+                eventBean.Underlying,
+                _field.FieldName,
+                index);
         }
     }
 } // end of namespace

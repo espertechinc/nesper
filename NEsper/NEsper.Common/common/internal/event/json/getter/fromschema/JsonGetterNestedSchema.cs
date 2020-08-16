@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 {
     public sealed class JsonGetterNestedSchema : JsonGetterNestedBase
     {
-        private readonly JsonUnderlyingField field;
+        private readonly JsonUnderlyingField _field;
 
         public JsonGetterNestedSchema(
             JsonEventPropertyGetter innerGetter,
@@ -23,20 +23,20 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             JsonUnderlyingField field)
             : base(innerGetter, underlyingClassName)
         {
-            this.field = field;
+            this._field = field;
         }
 
         public override string FieldName {
-            get { return field.FieldName; }
+            get { return _field.FieldName; }
         }
 
         public override Type FieldType {
-            get { return field.PropertyType; }
+            get { return _field.PropertyType; }
         }
 
         public override object GetJsonProp(object @object)
         {
-            var value = JsonFieldGetterHelperSchema.GetJsonSimpleProp(field, @object);
+            var value = JsonFieldGetterHelperSchema.GetJsonSimpleProp(_field, @object);
             if (value == null) {
                 return null;
             }
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public override bool GetJsonExists(object @object)
         {
-            var value = JsonFieldGetterHelperSchema.GetJsonSimpleProp(field, @object);
+            var value = JsonFieldGetterHelperSchema.GetJsonSimpleProp(_field, @object);
             if (value == null) {
                 return false;
             }
@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public override object GetJsonFragment(object @object)
         {
-            var value = JsonFieldGetterHelperSchema.GetJsonSimpleProp(field, @object);
+            var value = JsonFieldGetterHelperSchema.GetJsonSimpleProp(_field, @object);
             if (value == null) {
                 return null;
             }

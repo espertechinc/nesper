@@ -14,7 +14,6 @@ using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
@@ -26,11 +25,11 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace com.espertech.esper.compiler.@internal.util
 {
-    public class RoslynCompiler
+    public partial class RoslynCompiler
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private static readonly LanguageVersion MaxLanguageVersion = Enum
+        internal static readonly LanguageVersion MaxLanguageVersion = Enum
             .GetValues(typeof(LanguageVersion))
             .Cast<LanguageVersion>()
             .Max();
@@ -61,18 +60,13 @@ namespace com.espertech.esper.compiler.@internal.util
         /// </summary>
         public RoslynCompiler()
         {
-            CodegenClasses = new List<CodegenClass>();
+            Sources = new List<Source>();
         }
 
         /// <summary>
         /// Gets the assembly.
         /// </summary>
         public Assembly Assembly { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the codegen class.
-        /// </summary>
-        public IList<CodegenClass> CodegenClasses { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether we include code logging.
@@ -84,18 +78,11 @@ namespace com.espertech.esper.compiler.@internal.util
         /// </summary>
         public string CodeAuditDirectory { get; set; }
         
-        public RoslynCompiler WithCodegenClasses(IEnumerable<CodegenClass> codegenClasses)
-        {
-            CodegenClasses = new List<CodegenClass>(codegenClasses);
-            return this;
-        }
-
-        public RoslynCompiler WithCodegenClass(CodegenClass codegenClass)
-        {
-            CodegenClasses.Add(codegenClass);
-            return this;
-        }
-
+        /// <summary>
+        /// Gets or sets the codegen class.
+        /// </summary>
+        public IList<Source> Sources { get; set; }
+        
         public RoslynCompiler WithCodeLogging(bool isCodeLogging)
         {
             IsCodeLogging = isCodeLogging;
@@ -105,6 +92,19 @@ namespace com.espertech.esper.compiler.@internal.util
         public RoslynCompiler WithCodeAuditDirectory(string targetDirectory)
         {
             CodeAuditDirectory = targetDirectory;
+            return this;
+        }
+
+
+        public RoslynCompiler WithCodegenClasses(IList<CodegenClass> sorted)
+        {
+            Sources = sorted.Select(_ => new SourceCodegen(_)).ToList<Source>();
+            return this;
+        }
+        
+        public RoslynCompiler WithSources(IList<Source> sources)
+        {
+            Sources = sources;
             return this;
         }
         
@@ -156,16 +156,28 @@ namespace com.espertech.esper.compiler.@internal.util
             return _metadataReferences;
         }
 
-        private Pair<CodegenClass, SyntaxTree> Compile(CodegenClass codegenClass)
+        /// <summary>
+        /// Compiles a single source into its syntax elements.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        private Pair<string, SyntaxTree> Compile(Source source)
         {
             var options = new CSharpParseOptions(kind: SourceCodeKind.Regular, languageVersion: MaxLanguageVersion);
-            // Convert the codegen to source
-            var source = CodegenSyntaxGenerator.Compile(codegenClass);
             // Convert the codegen source to syntax tree
-            return new Pair<CodegenClass, SyntaxTree>(
-                codegenClass,
-                CSharpSyntaxTree.ParseText(source, options));
+            return new Pair<string, SyntaxTree>(
+                source.Name,
+                CSharpSyntaxTree.ParseText(source.Code, options));
         }
+        
+        /// <summary>
+        /// Creates a syntax-tree list.
+        /// </summary>
+        /// <returns></returns>
+        private IList<Pair<string, SyntaxTree>> CreateSyntaxTree()
+        {
+            return Sources.Select(Compile).ToList();
+        }        
 
         private SyntaxTree CompileAssemblyBindings()
         {
@@ -242,13 +254,8 @@ namespace com.espertech.esper.compiler.@internal.util
         private Assembly CompileInternal()
         {
             // Convert the codegen class into it's source representation.
-            var syntaxTreePairs = CodegenClasses
-                .Select(Compile)
-                .ToList();
-            var syntaxTrees = syntaxTreePairs
-                .Select(p => p.Second)
-                .ToList();
-
+            var syntaxTreePairs = CreateSyntaxTree();
+            var syntaxTrees = syntaxTreePairs.Select(_ => _.Second).ToList();
             syntaxTrees.Insert(0, CompileAssemblyBindings());
             
             // Create an in-memory representation of the compiled source.
@@ -267,7 +274,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
             if (CodeAuditDirectory != null) {
                 foreach (var syntaxTreePair in syntaxTreePairs) {
-                    string tempClassName = syntaxTreePair.First.ClassName;
+                    string tempClassName = syntaxTreePair.First;
                     string tempClassPath = Path.Combine(CodeAuditDirectory, $"{tempClassName}.cs");
                     try {
                         File.WriteAllText(tempClassPath, syntaxTreePair.Second.ToString());
@@ -319,10 +326,6 @@ namespace com.espertech.esper.compiler.@internal.util
             using (var stream = new MemoryStream()) {
                 var result = compilation.Emit(stream);
                 if (!result.Success) {
-                    foreach (var error in result.Diagnostics) {
-                        Console.WriteLine(error);
-                    }
-
                     throw new RoslynCompilationException(
                         "failure during module compilation",
                         result.Diagnostics);

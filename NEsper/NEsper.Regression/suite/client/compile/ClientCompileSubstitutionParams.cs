@@ -211,7 +211,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 catch (EPCompileException ex) {
                     AssertMessage(
                         ex,
-                        "Exception processing statement: Invalid constant of type 'java.lang.Object' encountered as the class has no compiler representation, please use substitution parameters instead");
+                        "Exception processing statement: Invalid constant of type 'System.Object' encountered as the class has no compiler representation, please use substitution parameters instead");
                 }
             }
         }
@@ -230,9 +230,9 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 var epl = "@name('s0') select " +
                           "?:a0:int[] as c0, " +
                           "?:a1:int[primitive] as c1, " +
-                          "?:a2:java.lang.Object[] as c2, " +
+                          "?:a2:System.Object[] as c2, " +
                           "?:a3:string[][] as c3, " +
-                          "?:a4:java.lang.Object[][] as c4 " +
+                          "?:a4:System.Object[][] as c4 " +
                           "from SupportBean";
 
                 EPCompiled compiled;
@@ -390,7 +390,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 TryInvalidCompile(
                     env,
                     "select ?:p0:int as c0, ?:p0:long from SupportBean",
-                    "Substitution parameter 'p0' incompatible type assignment between types 'java.lang.Integer' and 'java.lang.Long'");
+                    "Substitution parameter 'p0' incompatible type assignment between types 'System.Int32' and 'System.Int64'");
             }
         }
 
@@ -753,8 +753,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                         TryInvalidSetObject(
                             prepared,
                             stmt => stmt.SetObject(1, 10),
-                            "Failed to set substitution parameter 1, expected a value of type 'java.lang.String': " +
-                            SupportVersionUtil.GetCastMessage(typeof(int?), typeof(string)));
+                            "Failed to set substitution parameter 1, expected a value of type 'System.String'");
                         prepared.SetObject(1, "abc");
                     });
                 DeployWithOptionsWUndeploy(env, compiled, options);
@@ -766,8 +765,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                         TryInvalidSetObject(
                             prepared,
                             stmt => stmt.SetObject("p0", 10),
-                            "Failed to set substitution parameter 'p0', expected a value of type 'java.lang.String': " +
-                            SupportVersionUtil.GetCastMessage(typeof(int?), typeof(string)));
+                            "Failed to set substitution parameter 'p0', expected a value of type 'System.String'");
                         prepared.SetObject("p0", "abc");
                     });
                 DeployWithOptionsWUndeploy(env, compiled, options);

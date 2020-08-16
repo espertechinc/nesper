@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.core
 {
     public class JsonDeserializerUnknown : JsonDeserializerBase
     {
-        public JsonDeserializerUnknown(JsonDeserializerBase parent) : base(parent)
+        public JsonDeserializerUnknown()
         {
         }
 

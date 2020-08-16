@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.json.util;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
@@ -21,6 +22,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 using com.espertech.esper.compat.magic;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
@@ -361,6 +363,27 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.UndeployAll();
         }
 
+        private static void TryAssertionRepresentationSimple(
+            RegressionEnvironment env,
+            EventRepresentationChoice rep,
+            IDictionary<EventRepresentationChoice, Consumer<object>> assertions)
+        {
+            var epl = rep.GetAnnotationTextWJsonProvided<MyLocalJsonProvided>() +
+                      " insert into SomeStream select theString, intPrimitive from SupportBean;\n" +
+                      "@name('s0') select * from SomeStream;\n";
+            env.CompileDeploy(epl).AddListener("s0");
+
+            env.SendEventBean(new SupportBean("E1", 10));
+            var assertion = assertions.Get(rep);
+            if (assertion == null) {
+                Assert.Fail("No assertion provided for type " + rep);
+            }
+
+            assertion.Invoke(env.Listener("s0").AssertOneGetNewAndReset().Underlying);
+
+            env.UndeployAll();
+        }
+
         private static void TryAssertionWildcardRecast(
             RegressionEnvironment env,
             bool sourceBean,
@@ -456,6 +479,40 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         private static SupportMarketDataBean MakeMarketDataEvent(string symbol)
         {
             return new SupportMarketDataBean(symbol, 0, 0L, null);
+        }
+
+        internal class EPLInsertIntoEventRepresentationsSimple : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                IDictionary<EventRepresentationChoice, Consumer<object>> assertions = new Dictionary<EventRepresentationChoice, Consumer<object>>();
+                assertions.Put(EventRepresentationChoice.OBJECTARRAY, und => {
+                    EPAssertionUtil.AssertEqualsExactOrder(new object[] {"E1", 10}, (object[]) und);
+                });
+                Consumer<object> mapAssertion = und => EPAssertionUtil.AssertPropsMap(
+                    und.AsStringDictionary(), "TheString,IntPrimitive".SplitCsv(), "E1", 10);
+                assertions.Put(EventRepresentationChoice.MAP, mapAssertion);
+                assertions.Put(EventRepresentationChoice.DEFAULT, mapAssertion);
+                assertions.Put(EventRepresentationChoice.AVRO, und => {
+                    var rec = (GenericRecord) und;
+                    Assert.AreEqual("E1", rec.Get("TheString"));
+                    Assert.AreEqual(10, rec.Get("IntPrimitive"));
+                });
+                assertions.Put(EventRepresentationChoice.JSON, und => {
+                    var rec = (JsonEventObject) und;
+                    Assert.AreEqual("E1", rec.Get("TheString"));
+                    Assert.AreEqual(10, rec.Get("IntPrimitive"));
+                });
+                assertions.Put(EventRepresentationChoice.JSONCLASSPROVIDED, und => {
+                    var rec = (MyLocalJsonProvided) und;
+                    Assert.AreEqual("E1", rec.theString);
+                    Assert.AreEqual(10, rec.intPrimitive);
+                });
+
+                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
+                    TryAssertionRepresentationSimple(env, rep, assertions);
+                }
+            }
         }
 
         internal class EPLInsertIntoRStreamOMToStmt : RegressionExecution

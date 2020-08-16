@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 					env,
 					epl,
 					typeof(MyLocalJsonProvidedStringInt),
-					"Public field 'c0' of class '%CLASS%' declared as type 'java.lang.String' cannot receive a value of type 'java.lang.Integer'");
+					"Public field 'c0' of class '%CLASS%' declared as type 'System.String' cannot receive a value of type 'System.Int32'");
 			}
 		}
 
@@ -124,12 +124,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 					env,
 					prefix + "select 0 as c0 from SupportBean",
 					typeof(MyLocalJsonProvidedStringInt),
-					"Public field 'c0' of class '%CLASS%' declared as type 'java.lang.String' cannot receive a value of type 'java.lang.Integer'");
+					"Public field 'c0' of class '%CLASS%' declared as type 'System.String' cannot receive a value of type 'System.Int32'");
 				TryInvalidSchema(
 					env,
 					prefix + "select new {a=0} as c0 from SupportBean",
 					typeof(MyLocalJsonProvidedStringInt),
-					"Public field 'c0' of class '%CLASS%' declared as type 'java.lang.String' cannot receive a value of type 'java.util.Map'");
+					"Public field 'c0' of class '%CLASS%' declared as type 'System.String' cannot receive a value of type 'java.util.Map'");
 			}
 		}
 

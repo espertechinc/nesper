@@ -33,10 +33,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         private readonly BeanEventTypeFactory _beanEventTypeFactory;
         private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
         private readonly Type _fragmentClassType;
+        private bool _isFragmentable;
         private readonly bool _isArray;
         private readonly bool _isIterable;
         private volatile BeanEventType _fragmentEventType;
-        private bool _isFragmentable;
 
         public BaseNativePropertyGetter(
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
@@ -68,6 +68,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         public abstract Type TargetType { get; }
 
         public abstract Type BeanPropType { get; }
+
+        public bool IsFragmentable => _isFragmentable;
 
         public object GetFragment(EventBean eventBean)
         {

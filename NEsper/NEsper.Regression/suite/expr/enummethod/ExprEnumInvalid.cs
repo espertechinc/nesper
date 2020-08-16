@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			SupportMessageAssertUtil.TryInvalidCompile(
 				env,
 				epl,
-				"Failed to validate select-clause expression 'contained.take('a')': Failed to resolve enumeration method, date-time method or mapped property 'contained.take('a')': Failed to validate enumeration method 'take', expected a number-type result for expression parameter 0 but received java.lang.String [select contained.take('a') from SupportBean_ST0_Container]");
+				"Failed to validate select-clause expression 'contained.take('a')': Failed to resolve enumeration method, date-time method or mapped property 'contained.take('a')': Failed to validate enumeration method 'take', expected a number-type result for expression parameter 0 but received System.String [select contained.take('a') from SupportBean_ST0_Container]");
 
 			// invalid incompatible params
 			epl = "select contained.take(x => x.p00) from SupportBean_ST0_Container";
@@ -168,7 +168,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			SupportMessageAssertUtil.TryInvalidCompile(
 				env,
 				epl,
-				"Failed to validate select-clause expression 'contained.average()': Failed to validate enumeration method 'average', expected a number-type result for expression parameter 0 but received java.lang.String [select contained.average(x => x.id) from SupportBean_ST0_Container]");
+				"Failed to validate select-clause expression 'contained.average()': Failed to validate enumeration method 'average', expected a number-type result for expression parameter 0 but received System.String [select contained.average(x => x.id) from SupportBean_ST0_Container]");
 
 			// not a property
 			epl = "select contained.firstof().dummy from SupportBean_ST0_Container";

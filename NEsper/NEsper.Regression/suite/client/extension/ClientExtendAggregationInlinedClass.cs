@@ -37,15 +37,16 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 		}
 
 		const string INLINEDCLASS_CONCAT = "inlined_class \"\"\"\n" +
-		                                   "import com.espertech.esper.common.client.hook.aggfunc.*;\n" +
-		                                   "import com.espertech.esper.common.internal.epl.expression.core.*;\n" +
-		                                   "import com.espertech.esper.common.client.hook.forgeinject.*;\n" +
-		                                   "import com.espertech.esper.common.client.serde.*;\n" +
-		                                   "import java.io.*;\n" +
-		                                   "@ExtensionAggregationFunction(name=\"concat\")\n" +
-		                                   "public class ConcatAggForge implements AggregationFunctionForge {\n" +
-		                                   "  public void validate(AggregationFunctionValidationContext validationContext) throws ExprValidationException {\n" +
-		                                   "    Class paramType = validationContext.getParameterTypes()[0];\n" +
+		                                   "using System;\n" +
+		                                   "using System.IO;\n" +
+		                                   "using com.espertech.esper.common.client.hook.aggfunc;\n" +
+		                                   "using com.espertech.esper.common.internal.epl.expression.core;\n" +
+		                                   "using com.espertech.esper.common.client.hook.forgeinject;\n" +
+		                                   "using com.espertech.esper.common.client.serde;\n" +
+		                                   "[ExtensionAggregationFunction(Name=\"concat\")]\n" +
+		                                   "public class ConcatAggForge : AggregationFunctionForge {\n" +
+		                                   "  public void Validate(AggregationFunctionValidationContext validationContext) {\n" +
+		                                   "    var paramType = validationContext.GetParameterTypes()[0];\n" +
 		                                   "    if (paramType != String.class) {\n" +
 		                                   "      throw new ExprValidationException(\"Invalid parameter type '\" + paramType.getSimpleName() + \"'\");\n" +
 		                                   "    }\n" +

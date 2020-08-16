@@ -20,11 +20,11 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 {
     public class JsonGetterDynamicSimpleSchema : JsonEventPropertyGetter
     {
-        private readonly string propertyName;
+        private readonly string _propertyName;
 
         public JsonGetterDynamicSimpleSchema(string propertyName)
         {
-            this.propertyName = propertyName;
+            this._propertyName = propertyName;
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(typeof(JsonGetterDynamicHelperSchema), "getJsonPropertySimpleValue", Constant(propertyName), underlyingExpression);
+            return StaticMethod(typeof(JsonGetterDynamicHelperSchema), "GetJsonPropertySimpleValue", Constant(_propertyName), underlyingExpression);
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(typeof(JsonGetterDynamicHelperSchema), "getJsonPropertySimpleExists", Constant(propertyName), underlyingExpression);
+            return StaticMethod(typeof(JsonGetterDynamicHelperSchema), "GetJsonPropertySimpleExists", Constant(_propertyName), underlyingExpression);
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
         public object GetJsonProp(object @object)
         {
             var und = (IDictionary<string, object>) @object;
-            return und.Get(propertyName);
+            return und.Get(_propertyName);
         }
 
         public object GetJsonFragment(object @object)
@@ -104,7 +104,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
         public bool GetJsonExists(object @object)
         {
             var und = (IDictionary<string, object>) @object;
-            return und.ContainsKey(propertyName);
+            return und.ContainsKey(_propertyName);
         }
     }
 } // end of namespace

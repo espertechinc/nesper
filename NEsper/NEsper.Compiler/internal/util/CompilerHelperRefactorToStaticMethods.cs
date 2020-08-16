@@ -118,7 +118,7 @@ namespace com.espertech.esper.compiler.@internal.util
 		private static void RecursiveBottomUpCollectStatic(
 			CodegenMethod method,
 			ISet<CodegenMethodWGraph> collected,
-			Func<CodegenMethod, Boolean> permittedMethods)
+			Func<CodegenMethod, bool> permittedMethods)
 		{
 			foreach (var child in method.Children) {
 				RecursiveBottomUpCollectStatic(child, collected, permittedMethods);

@@ -18,9 +18,7 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.core
         private readonly JsonDeserializerBase _itemDeserializer;
         private IList<object> _result = null;
 
-        public JsonDeserializerCollection(
-            JsonDeserializerBase parent,
-            JsonDeserializerBase itemDeserializer) : base(parent)
+        public JsonDeserializerCollection(JsonDeserializerBase itemDeserializer)
         {
             _itemDeserializer = itemDeserializer;
         }
@@ -33,7 +31,7 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.core
                 throw new IllegalStateException($"expected {nameof(JsonValueKind.Array)}, but received {element.ValueKind}");
             }
 
-            _result = JsonElementExtensions.ElementToArray(element, _itemDeserializer);
+            _result = JsonElementExtensions.ElementToArray(element, _itemDeserializer.Deserialize);
             return _result;
         }
     }

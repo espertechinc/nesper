@@ -138,7 +138,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 compileTimeServices);
             var plan = FilterSpecCompilerIndexPlanner.PlanFilterParameters(unwound, args);
 
-            var hook = (FilterSpecCompileHook?) ImportUtil.GetAnnotationHook(
+            var hook = (FilterSpecCompileHook) ImportUtil.GetAnnotationHook(
                 statementRawInfo.Annotations,
                 HookType.INTERNAL_FILTERSPEC,
                 typeof(FilterSpecCompileHook),

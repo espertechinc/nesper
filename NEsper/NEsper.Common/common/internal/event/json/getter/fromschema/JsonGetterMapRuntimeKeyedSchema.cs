@@ -21,11 +21,11 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
     /// </summary>
     public sealed class JsonGetterMapRuntimeKeyedSchema : EventPropertyGetterMappedSPI
     {
-        private readonly JsonUnderlyingField field;
+        private readonly JsonUnderlyingField _field;
 
         public JsonGetterMapRuntimeKeyedSchema(JsonUnderlyingField field)
         {
-            this.field = field;
+            this._field = field;
         }
 
         public CodegenExpression EventBeanGetMappedCodegen(
@@ -36,9 +36,9 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
         {
             return StaticMethod(
                 typeof(JsonFieldGetterHelperSchema),
-                "getJsonMappedProp",
-                ExprDotMethod(beanExpression, "getUnderlying"),
-                Constant(field.PropertyNumber),
+                "GetJsonMappedProp",
+                ExprDotName(beanExpression, "Underlying"),
+                Constant(_field.FieldName),
                 key);
         }
 
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             EventBean eventBean,
             string mapKey)
         {
-            return JsonFieldGetterHelperSchema.GetJsonMappedProp(eventBean.Underlying, field.PropertyNumber, mapKey);
+            return JsonFieldGetterHelperSchema.GetJsonMappedProp(eventBean.Underlying, _field.FieldName, mapKey);
         }
     }
 } // end of namespace

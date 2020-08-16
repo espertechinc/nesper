@@ -8,6 +8,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -57,10 +59,9 @@ namespace com.espertech.esper.compiler.@internal.util
 
         public Type CompileStandInClass(
             CodegenClassType classType,
-            String classNameSimple,
+            string classNameSimple,
             ModuleCompileTimeServices services)
         {
-            var classes = new Dictionary<String, byte[]>();
             var namespaceScope = new CodegenNamespaceScope(services.Namespace, null, false);
             var classScope = new CodegenClassScope(true, namespaceScope, null);
             var clazz = new CodegenClass(
@@ -78,6 +79,31 @@ namespace com.espertech.esper.compiler.@internal.util
             // the contents of the assembly that we are generating items into.
 
             throw new NotImplementedException();
+        }
+
+        public CompileResponse Compile(CompileRequest request)
+        {
+            var configuration = request.ModuleCompileTimeServices.Configuration;
+            var compiler = new RoslynCompiler()
+                .WithCodeLogging(configuration.Compiler.Logging.IsEnableCode)
+                .WithCodeAuditDirectory(configuration.Compiler.Logging.AuditDirectory)
+                .WithSources(request.Classes
+                    .Select(_ => new RoslynCompiler.SourceBasic(_.ClassName, _.Code))
+                    .ToList<RoslynCompiler.Source>());
+
+            return new CompileResponse(
+                request,
+                compiler.Compile());
+
+#if false
+            try {
+                JaninoCompiler.compile(code, filenameWithoutExtension, classpath, output, services);
+            }
+            catch (RuntimeException ex) {
+                string message = ex.getMessage().replace(CompileException.class.getName() + ": ", "");
+                throw new CompilerServicesCompileException(message, ex);
+            }
+#endif
         }
     }
 } // end of namespace

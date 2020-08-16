@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.compile.stage2;
 
 namespace com.espertech.esper.common.client.serde
@@ -24,7 +26,7 @@ namespace com.espertech.esper.common.client.serde
         public SerdeProviderAdditionalInfoEventType(
             StatementRawInfo raw,
             string eventTypeName,
-            EventType[] eventTypeSupertypes) : base(raw)
+            IList<EventType> eventTypeSupertypes) : base(raw)
         {
             EventTypeName = eventTypeName;
             EventTypeSupertypes = eventTypeSupertypes;
@@ -40,7 +42,7 @@ namespace com.espertech.esper.common.client.serde
         ///     Returns supertypes when available.
         /// </summary>
         /// <value>supertypes</value>
-        public EventType[] EventTypeSupertypes { get; }
+        public IList<EventType> EventTypeSupertypes { get; }
 
         public override string ToString()
         {

@@ -10,13 +10,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 
 using com.espertech.esper.common.client.json.util;
 using com.espertech.esper.compat;
 
-using static com.espertech.esper.common.@internal.@event.json.write.JsonWriteUtil;
+using static com.espertech.esper.common.@internal.@event.json.serializers.JsonSerializerUtil;
 
 namespace com.espertech.esper.common.@internal.@event.json.core
 {
@@ -55,6 +56,22 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 		    out KeyValuePair<string, object> value);
 
 	    /// <summary>
+	    /// Attempts to find the native value of the same name including property names of the parent event type if any.  Returns
+	    /// the key-value pair if found, otherwise throws KeyNotFoundException.
+	    /// </summary>
+	    /// <param name="name"></param>
+	    /// <returns></returns>
+	    /// <exception cref="KeyNotFoundException"></exception>
+	    public virtual KeyValuePair<string, object> GetNativeEntry(string name)
+	    {
+		    if (!TryGetNativeEntry(name, out var value)) {
+			    throw new KeyNotFoundException(name);
+		    }
+
+		    return value;
+	    }
+
+	    /// <summary>
 	    /// Attempts to find the native value of the same name including property names of the parent event type if any.  If found,
 	    /// the method places the value into the out var and returns true.  Otherwise, false.
 	    /// </summary>
@@ -64,6 +81,22 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 	    public abstract bool TryGetNativeValue(
 		    string name,
 		    out object value);
+
+	    /// <summary>
+	    /// Attempts to find the native value of the same name including property names of the parent event type if any.  Returns
+	    /// the value if found, otherwise throws KeyNotFoundException.
+	    /// </summary>
+	    /// <param name="name"></param>
+	    /// <returns></returns>
+	    /// <exception cref="KeyNotFoundException"></exception>
+	    public virtual object GetNativeValue(string name)
+	    {
+		    if (!TryGetNativeValue(name, out var value)) {
+			    throw new KeyNotFoundException(name);
+		    }
+
+		    return value;
+	    }
 
 	    /// <summary>
 	    /// Returns the flag whether the key exists as a pre-declared property of the same name including
@@ -81,7 +114,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 	    /// <returns>flag</returns>
 	    public virtual bool NativeContainsValue(object value)
 	    {
-		    using var enumerator = NativeEnumerable().GetEnumerator();
+		    using var enumerator = NativeEnumerable.GetEnumerator();
 		    while (enumerator.MoveNext()) {
 			    if (Equals(value, enumerator.Current.Value)) {
 				    return true;
@@ -92,11 +125,17 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 	    }
 
 	    /// <summary>
-	    /// Returns an enumerable for the native keys.
+	    /// Returns a collection of native keys.
 	    /// </summary>
-	    /// <returns></returns>
-	    public abstract IEnumerable<KeyValuePair<string, object>> NativeEnumerable(); 
-	    
+	    public virtual IEnumerable<string> NativeKeys =>
+		    NativeEnumerable.Select(_ => _.Key);
+
+	    /// <summary>
+	    /// Returns an enumerable for the native key-value pairs.
+	    /// </summary>
+	    /// <value></value>
+	    public abstract IEnumerable<KeyValuePair<string, object>> NativeEnumerable { get; }
+
 	    /// <summary>
 	    /// Write the pre-declared properties to the writer
 	    /// </summary>
@@ -178,7 +217,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 	    {
 		    var arrayLength = array.Length;
 
-		    using(var enumerator = NativeEnumerable().GetEnumerator()) {
+		    using(var enumerator = NativeEnumerable.GetEnumerator()) {
 			    while ((arrayIndex < arrayLength) && enumerator.MoveNext()) {
 				    array[arrayIndex] = enumerator.Current;
 				    arrayIndex++;
@@ -200,7 +239,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 
 	    public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
 	    {
-		    using(var enumerator = NativeEnumerable().GetEnumerator()) {
+		    using(var enumerator = NativeEnumerable.GetEnumerator()) {
 			    while (enumerator.MoveNext()) {
 				    yield return enumerator.Current;
 			    }

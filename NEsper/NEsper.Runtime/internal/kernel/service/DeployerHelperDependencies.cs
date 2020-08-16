@@ -235,7 +235,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 								objectNameFunction.Invoke(objectName)));
 					}
 				}
-				catch (ArgumentException ex) {
+				catch (ArgumentException) {
 					// not handled
 				}
 			}
@@ -261,7 +261,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 								new HashSet<string>(ids)));
 					}
 				}
-				catch (ArgumentException ex) {
+				catch (ArgumentException) {
 					// no need to handle
 				}
 			}

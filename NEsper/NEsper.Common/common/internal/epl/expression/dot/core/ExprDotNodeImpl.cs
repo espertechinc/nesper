@@ -192,7 +192,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 						false,
 						validationContext.TableCompileTimeResolver);
 				}
-				catch (ExprValidationPropertyException ex) {
+				catch (ExprValidationPropertyException) {
 					// fine
 				}
 
@@ -240,7 +240,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 						true,
 						validationContext.TableCompileTimeResolver);
 				}
-				catch (ExprValidationPropertyException ex) {
+				catch (ExprValidationPropertyException) {
 					// fine
 				}
 
@@ -359,7 +359,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 					true,
 					validationContext.TableCompileTimeResolver);
 			}
-			catch (ExprValidationPropertyException ex) {
+			catch (ExprValidationPropertyException) {
 				// not a property
 			}
 
@@ -901,19 +901,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 			return streamTypeService.GetStreamNumForStreamName(name.Name);
 		}
 
-		public void Accept(ExprNodeVisitor visitor)
+		public override void Accept(ExprNodeVisitor visitor)
 		{
 			base.Accept(visitor);
 			ExprNodeUtilityQuery.AcceptChain(visitor, _chainSpec);
 		}
 
-		public void Accept(ExprNodeVisitorWithParent visitor)
+		public override void Accept(ExprNodeVisitorWithParent visitor)
 		{
 			base.Accept(visitor);
 			ExprNodeUtilityQuery.AcceptChain(visitor, _chainSpec);
 		}
 
-		public void AcceptChildnodes(
+		public override void AcceptChildnodes(
 			ExprNodeVisitorWithParent visitor,
 			ExprNode parent)
 		{
@@ -921,7 +921,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 			ExprNodeUtilityQuery.AcceptChain(visitor, _chainSpec, this);
 		}
 
-		public void ReplaceUnlistedChildNode(
+		public override void ReplaceUnlistedChildNode(
 			ExprNode nodeToReplace,
 			ExprNode newNode)
 		{

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -42,7 +43,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 			StatementRawInfo raw,
 			Type underlyingType,
 			string eventTypeName,
-			EventType[] eventTypeSupertypes);
+			IList<EventType> eventTypeSupertypes);
 
 		DataInputOutputSerdeForge SerdeForEventProperty(
 			Type typedProperty,

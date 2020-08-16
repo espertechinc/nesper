@@ -15,18 +15,6 @@ namespace com.espertech.esper.common.@internal.util
 {
     public class ClassLoaderDefault : ClassLoader
     {
-        private IResourceManager _resourceManager;
-
-        public ClassLoaderDefault(IResourceManager resourceManager)
-        {
-            _resourceManager = resourceManager;
-        }
-
-        public Stream GetResourceAsStream(string resourceName)
-        {
-            return _resourceManager.GetResourceAsStream(resourceName);
-        }
-
         public Type GetClass(string typeName)
         {
             return TypeHelper.ResolveType(typeName, true);

@@ -51,9 +51,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 		/// </summary>
 		/// <param name="clazz">to search for a matching field</param>
 		/// <returns>field or property if found, or null if no matching exists</returns>
-		protected abstract MemberInfo DetermineFieldOrProperty(Type clazz);
+		protected abstract FieldInfo DetermineField(Type clazz);
 
-		protected abstract CodegenExpression DetermineFieldOrPropertyCodegen(
+		protected abstract CodegenExpression DetermineFieldCodegen(
 			CodegenExpressionRef clazz,
 			CodegenMethodScope parent,
 			CodegenClassScope codegenClassScope);
@@ -251,7 +251,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 				}
 
 				// Lookup method to use
-				var field = dynamicPropertyGetterBase.DetermineFieldOrProperty(obj.GetType());
+				var field = dynamicPropertyGetterBase.DetermineField(obj.GetType());
 
 				// Cache descriptor and create field
 				desc = DynamicPropertyCacheAdd(obj.GetType(), field, cache);
@@ -276,8 +276,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 					StaticMethod(typeof(DynamicPropertyGetterByFieldBase), "DynamicPropertyCacheCheck", Ref("cache"), Ref("obj")))
 				.IfRefNotNull("desc")
 				.BlockReturn(Ref("desc"))
-				.DeclareVar(typeof(Type), "clazz", ExprDotMethod(Ref("obj"), "getClass"))
-				.DeclareVar(typeof(FieldInfo), "field", DetermineFieldOrPropertyCodegen(Ref("clazz"), method, codegenClassScope))
+				.DeclareVar(typeof(Type), "clazz", ExprDotMethod(Ref("obj"), "GetType"))
+				.DeclareVar(typeof(FieldInfo), "field", DetermineFieldCodegen(Ref("clazz"), method, codegenClassScope))
 				.AssignRef(
 					"desc",
 					StaticMethod(typeof(DynamicPropertyGetterByFieldBase), "DynamicPropertyCacheAdd", Ref("clazz"), Ref("field"), Ref("cache")))
@@ -315,7 +315,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 		/// <returns>descriptor</returns>
 		public static DynamicPropertyDescriptorByField DynamicPropertyCacheAdd(
 			Type clazz,
-			MemberInfo field,
+			FieldInfo field,
 			CopyOnWriteList<DynamicPropertyDescriptorByField> cache)
 		{
 			var propertyDescriptor = new DynamicPropertyDescriptorByField(clazz, field);

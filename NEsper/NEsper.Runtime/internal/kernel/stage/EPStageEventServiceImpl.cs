@@ -527,7 +527,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 				try {
 					ProcessMatches(eventBean);
 				}
-				catch (Exception ex) {
+				catch (Exception) {
 					threadLocals.GetOrCreate().MatchesArrayThreadLocal.Clear();
 					throw;
 				}

@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             bool join,
             EventType[] typesPerStream);
 
-        public MathContext OptionalMathContext { get; set; }
+        public virtual MathContext OptionalMathContext { get; set; }
 
         public AggregationMultiFunctionStateKey GetAggregationStateKey(bool isMatchRecognize)
         {

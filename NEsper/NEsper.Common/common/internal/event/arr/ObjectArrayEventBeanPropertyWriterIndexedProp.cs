@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public override CodegenExpression WriteCodegen(
             CodegenExpression assigned,
-            CodegenExpression und,
+            CodegenExpression underlying,
             CodegenExpression target,
             CodegenMethodScope parent,
             CodegenClassScope classScope)
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 typeof(ObjectArrayEventBeanPropertyWriterIndexedProp),
                 "ObjectArrayWriteIndexedProp",
                 assigned,
-                und,
+                underlying,
                 Constant(index),
                 Constant(indexTarget));
         }

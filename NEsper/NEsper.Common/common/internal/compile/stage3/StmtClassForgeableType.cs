@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 	    FAF,
 	    MULTIKEY,
 	    JSONEVENT,
-	    JSONDELEGATE,
-	    JSONDELEGATEFACTORY
+	    JSON_DESERIALIZER,
+	    JSON_SERIALIZER
 	}
 } // end of namespace

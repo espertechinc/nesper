@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -283,11 +282,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				var und = (JsonEventObjectBase) @event.Underlying;
 
-				Assert.AreEqual(0, und.NativeSize);
-				AssertNoSuchElement(() => und.getNativeValue(0));
-				AssertNoSuchElement(() => und.getNativeKey(0));
-				AssertNoSuchElement(() => und.getNativeEntry(0));
-				Assert.AreEqual(-1, und.GetNativeNum("x"));
+				Assert.That(und.NativeCount, Is.Zero);
+				Assert.That(und.TryGetValue("x", out var result), Is.False);
 				Assert.IsTrue(und.JsonValues.IsEmpty());
 
 				SupportJsonEventTypeUtil.CompareDictionaries(new LinkedHashMap<string, object>(), und);
@@ -323,14 +319,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				var und = (JsonEventObjectBase) @event.Underlying;
 
-				Assert.AreEqual(2, und.NativeSize);
-				AssertByIndex(2, _ => und.NativeValue, new object[] {4d, "def"});
-				AssertByIndex(2, _ => und.getNativeKey, new object[] {"b1", "d1"});
-				AssertByIndex(2, _ => und.GetNativeEntry(i), new object[] {
-					ToEntry("b1", 4d),
-					ToEntry("d1", "def")
-				});
-				AssertByName(und, "b1,d1");
+				Assert.That(und.NativeCount, Is.EqualTo(2));
+				Assert.That(und.NativeContainsKey("b1"), Is.True);
+				Assert.That(und.NativeContainsKey("d1"), Is.True);
+				CollectionAssert.AreEquivalent(
+					new [] {
+						new KeyValuePair<string, object>("b1", 4d),
+						new KeyValuePair<string, object>("d1", "def")
+					},
+					und.NativeEnumerable);
+
 				Assert.IsTrue(und.JsonValues.IsEmpty());
 
 				IDictionary<string, object> compared = new LinkedHashMap<string, object>();
@@ -370,14 +368,19 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				var und = (JsonEventObjectBase) @event.Underlying;
 
-				Assert.AreEqual(2, und.NativeSize);
-				AssertByIndex(2, _ => und.getNativeValue, new object[] {4d, "def"});
-				AssertByIndex(2, _ => und.getNativeKey, new object[] {"a1", "c1"});
-				AssertByIndex(2, _ => und.getNativeEntry, new object[] {
-					ToEntry("a1", 4d),
-					ToEntry("c1", "def")
-				});
-				AssertByName(und, "a1,c1");
+				Assert.That(und.NativeCount, Is.EqualTo(2));
+				Assert.That(und.NativeContainsKey("a1"), Is.True);
+				Assert.That(und.NativeContainsKey("c1"), Is.True);
+				CollectionAssert.AreEquivalent(
+					new[] {"a1", "c1"},
+					und.NativeKeys);
+				CollectionAssert.AreEquivalent(
+					new [] {
+						new KeyValuePair<string, object>("a1", 4d),
+						new KeyValuePair<string, object>("c1", "def")
+					},
+					und.NativeEnumerable);
+
 				Assert.IsTrue(und.JsonValues.IsEmpty());
 
 				IDictionary<string, object> compared = new LinkedHashMap<string, object>();
@@ -423,18 +426,41 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			private void AssertEvent(EventBean @event)
 			{
 				var und = (JsonEventObjectBase) @event.Underlying;
-				Assert.AreEqual(6, und.NativeSize);
-				AssertByIndex(6, _ => und.getNativeValue, new object[] {4d, "x", 3, "def", 2d, 1});
-				AssertByIndex(6, _ => und.getNativeKey, new object[] {"a1", "b1", "b2", "c1", "d1", "d2"});
-				AssertByIndex(6, _ => und.getNativeEntry, new object[] {
-					ToEntry("a1", 4d),
-					ToEntry("b1", "x"),
-					ToEntry("b2", 3),
-					ToEntry("c1", "def"),
-					ToEntry("d1", 2d),
-					ToEntry("d2", 1)
-				});
-				AssertByName(und, "a1,b1,b2,c1,d1,d2");
+				
+				Assert.That(und.NativeCount, Is.EqualTo(6));
+				Assert.That(und.NativeContainsKey("a1"), Is.True);
+				Assert.That(und.NativeContainsKey("b1"), Is.True);
+				Assert.That(und.NativeContainsKey("b2"), Is.True);
+
+				CollectionAssert.AreEquivalent(
+					new[] {"a1", "b1", "b2", "c1", "d1", "d2"},
+					und.NativeKeys);
+				
+				CollectionAssert.AreEquivalent(
+					new [] {
+						new KeyValuePair<string, object>("a1", 4d),
+						new KeyValuePair<string, object>("c1", "def")
+					},
+					und.NativeEnumerable);
+
+				Assert.That(und.NativeCount, Is.EqualTo(6));
+				Assert.That(und.NativeContainsKey("a1"), Is.True);
+				Assert.That(und.NativeContainsKey("a2"), Is.False);
+				Assert.That(und.NativeContainsKey("c1"), Is.True);
+				CollectionAssert.AreEquivalent(
+					new[] {"a1", "b1", "b2", "c1", "d1", "d2"},
+					und.NativeKeys);
+				CollectionAssert.AreEquivalent(
+					new [] {
+						new KeyValuePair<string, object>("a1", 4d),
+						new KeyValuePair<string, object>("b1", "x"),
+						new KeyValuePair<string, object>("b2", 3),
+						new KeyValuePair<string, object>("c1", "def"),
+						new KeyValuePair<string, object>("d1", 2d),
+						new KeyValuePair<string, object>("d2", 1)
+					},
+					und.NativeEnumerable);
+				
 				Assert.IsTrue(und.JsonValues.IsEmpty());
 
 				IDictionary<string, object> compared = new LinkedHashMap<string, object>();
@@ -475,16 +501,22 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				var und = (JsonEventObjectBase) @event.Underlying;
 
-				AssertByIndex(4, _ => und.getNativeValue, new object[] {"abc", 10, "def", 20});
-				AssertByIndex(4, _ => und.getNativeKey, new object[] {"p1", "p2", "c1", "c2"});
-				AssertByIndex(4, _ => und.getNativeEntry, new object[] {
-					ToEntry("p1", "abc"), 
-					ToEntry("p2", 10), 
-					ToEntry("c1", "def"), 
-					ToEntry("c2", 20)
-				});
-				Assert.AreEqual(4, und.NativeSize);
-				AssertByName(und, "p1,p2,c1,c2");
+				Assert.That(und.NativeCount, Is.EqualTo(4));
+                Assert.That(und.NativeContainsKey("p1"), Is.True);
+                Assert.That(und.NativeContainsKey("p3"), Is.False);
+                Assert.That(und.NativeContainsKey("c1"), Is.True);
+                CollectionAssert.AreEquivalent(
+                	new[] {"p1", "p2", "c1", "c2"},
+                	und.NativeKeys);
+                CollectionAssert.AreEquivalent(
+                	new [] {
+	                    new KeyValuePair<string, object>("p1", "abc"), 
+	                    new KeyValuePair<string, object>("p2", 10), 
+	                    new KeyValuePair<string, object>("c1", "def"), 
+	                    new KeyValuePair<string, object>("c2", 20)
+                	},
+                	und.NativeEnumerable);
+
 				Assert.IsTrue(und.JsonValues.IsEmpty());
 
 				IDictionary<string, object> compared = new LinkedHashMap<string, object>();
@@ -495,48 +527,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				SupportJsonEventTypeUtil.CompareDictionaries(compared, und);
 
 				Assert.AreEqual("{\"p1\":\"abc\",\"p2\":10,\"c1\":\"def\",\"c2\":20}", und.ToString());
-			}
-		}
-
-		private static KeyValuePair<string, object> ToEntry(
-			string name,
-			object value)
-		{
-			return new KeyValuePair<string, object>(name, value);
-		}
-
-		private static void AssertByName(
-			JsonEventObjectBase und,
-			string csv)
-		{
-			var split = csv.SplitCsv();
-			for (var i = 0; i < split.Length; i++) {
-				Assert.IsTrue(und.ContainsKey(split[i]));
-				Assert.AreEqual(i, und.GetNativeNum(split[i]));
-			}
-		}
-
-		private static void AssertByIndex(
-			int numFields,
-			Func<int, object> indexFunction,
-			object[] expected)
-		{
-			var actual = new object[numFields];
-			for (var i = 0; i < numFields; i++) {
-				actual[i] = indexFunction.Invoke(i);
-			}
-
-			EPAssertionUtil.AssertEqualsExactOrder(expected, actual);
-		}
-
-		private static void AssertNoSuchElement(Runnable runnable)
-		{
-			try {
-				runnable.Invoke();
-				Assert.Fail();
-			}
-			catch (NoSuchElementException ex) {
-				// expected
 			}
 		}
 

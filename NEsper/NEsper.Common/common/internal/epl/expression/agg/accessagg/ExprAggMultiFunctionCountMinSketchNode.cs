@@ -182,7 +182,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 			return ConstantNull();
 		}
 
-		protected bool IsExprTextWildcardWhenNoParams => false;
+		public override bool IsExprTextWildcardWhenNoParams => false;
 
 		private CountMinSketchSpecForge ValidateSpecification(ExprValidationContext exprValidationContext)
 		{

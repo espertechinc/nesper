@@ -565,7 +565,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 					env,
 					path,
 					"on SupportBean update MyInfra set intarray[intPrimitive]='x'",
-					"Failed to validate assignment expression 'intarray[intPrimitive]=\"x\"': Invalid assignment to property 'intarray' component type 'int' from expression returning 'java.lang.String'");
+					"Failed to validate assignment expression 'intarray[intPrimitive]=\"x\"': Invalid assignment to property 'intarray' component type 'int' from expression returning 'System.String'");
 				TryInvalidCompile(
 					env,
 					path,

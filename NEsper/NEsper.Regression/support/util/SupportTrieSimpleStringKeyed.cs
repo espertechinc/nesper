@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.collections.btree;
 
 namespace com.espertech.esper.regressionlib.support.util
 {
@@ -40,9 +41,9 @@ namespace com.espertech.esper.regressionlib.support.util
 			simple.Clear();
 		}
 
-		public SortedDictionary<string, V> PrefixMap(string key)
+		public IOrderedDictionary<string, V> PrefixMap(string key)
 		{
-			var result = new SortedDictionary<string, V>();
+			var result = new BTreeDictionary<string, V>();
 			foreach (var entry in simple) {
 				if (entry.Key.StartsWith(key)) {
 					result.Put(entry.Key, entry.Value);

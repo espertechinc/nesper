@@ -10,7 +10,7 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.core
 {
     public abstract class JsonDeserializerGenericBase : JsonDeserializerBase
     {
-        public JsonDeserializerGenericBase(JsonDeserializerBase parent) : base(parent)
+        public JsonDeserializerGenericBase()
         {
         }
     }

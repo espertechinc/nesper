@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.core
 {
@@ -57,6 +58,23 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             BaseType?.AddReferenced(classes);
             foreach(var @interface in Interfaces) {
                 @interface.AddReferenced(classes);
+            }
+        }
+
+        public void Render(StringBuilder builder)
+        {
+            var delimiter = " : ";
+                
+            if (BaseType != null) {
+                builder.Append(delimiter);
+                BaseType.Render(builder);
+                delimiter = ", ";
+            }
+
+            foreach (var implement in Interfaces) {
+                builder.Append(delimiter);
+                implement.Render(builder);
+                delimiter = ", ";
             }
         }
     }

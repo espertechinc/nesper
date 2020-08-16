@@ -29,15 +29,15 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             StatementContextFilterEvalEnv filterEvalEnv)
         {
             if (plan.FilterNegate != null) {
-                var controlResult = (bool) plan.FilterNegate.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                if (controlResult != null && !controlResult) {
+                var controlResult = plan.FilterNegate.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                if (controlResult != null && false.Equals(controlResult)) {
                     return null;
                 }
             }
 
             if (plan.FilterConfirm != null) {
-                var controlResult = (bool) plan.FilterConfirm.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                if (controlResult != null && controlResult) {
+                var controlResult = plan.FilterConfirm.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                if (controlResult != null && true.Equals(controlResult)) {
                     return FilterValueSetParamConstants.EMPTY;
                 }
             }
@@ -56,8 +56,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             foreach (var path in paths) {
                 var pass = true;
                 if (path.PathNegate != null) {
-                    var controlResult = (bool) path.PathNegate.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                    if (controlResult != null && !controlResult) {
+                    var controlResult = path.PathNegate.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                    if (controlResult != null && false.Equals(controlResult)) {
                         pass = false;
                     }
                 }
@@ -88,8 +88,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             var count = 0;
             foreach (var triplet in triplets) {
                 if (triplet.TripletConfirm != null) {
-                    var controlResult = (bool) triplet.TripletConfirm.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                    if (controlResult != null && controlResult) {
+                    var controlResult = triplet.TripletConfirm.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                    if (controlResult != null && true.Equals(controlResult)) {
                         continue;
                     }
                 }

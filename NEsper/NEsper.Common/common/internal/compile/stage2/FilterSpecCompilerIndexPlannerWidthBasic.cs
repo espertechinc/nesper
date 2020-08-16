@@ -14,8 +14,7 @@ using com.espertech.esper.common.@internal.epl.expression.ops;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
-using static com.espertech.esper.common.@internal.compile.stage2.FilterSpecCompilerIndexPlannerHelper; //decomposePopulateConsolidate;
-using static com.espertech.esper.common.@internal.compile.stage2.FilterSpecCompilerIndexPlannerHelper; //makeRemainingNode;
+using static com.espertech.esper.common.@internal.compile.stage2.FilterSpecCompilerIndexPlannerHelper;
 
 namespace com.espertech.esper.common.@internal.compile.stage2
 {

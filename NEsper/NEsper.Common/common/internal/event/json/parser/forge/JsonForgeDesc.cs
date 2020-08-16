@@ -8,8 +8,8 @@
 
 using System;
 
-using com.espertech.esper.common.@internal.@event.json.parser.delegates.endvalue;
-using com.espertech.esper.common.@internal.@event.json.write;
+using com.espertech.esper.common.@internal.@event.json.parser.deserializers.forge;
+using com.espertech.esper.common.@internal.@event.json.serializers;
 
 namespace com.espertech.esper.common.@internal.@event.json.parser.forge
 {
@@ -17,28 +17,17 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
     {
         public JsonForgeDesc(
             string fieldName,
-            JsonDelegateForge optionalStartObjectForge,
-            JsonDelegateForge optionalStartArrayForge,
-            JsonEndValueForge endValueForge,
-            JsonWriteForge writeForge)
+            JsonDeserializerForge deserializerForge,
+            JsonSerializerForge serializerForge)
         {
-            OptionalStartObjectForge = optionalStartObjectForge;
-            OptionalStartArrayForge = optionalStartArrayForge;
-            EndValueForge = endValueForge;
-            WriteForge = writeForge;
-            if (endValueForge == null || writeForge == null) {
-                throw new ArgumentException("Unexpected null forge for end-value or write forge for field '" + fieldName + "'");
+            DeserializerForge = deserializerForge;
+            SerializerForge = serializerForge;
+            if (deserializerForge == null || serializerForge == null) {
+                throw new ArgumentException("Unexpected null forge for deserialize or write forge for field '" + fieldName + "'");
             }
         }
+        public JsonDeserializerForge DeserializerForge { get; }
 
-        public JsonDelegateForge OptionalStartObjectForge { get; }
-
-        public JsonEndValueForge EndValueForge { get; }
-
-        public JsonEndValueForge DeserializeForge { get; }
-
-        public JsonDelegateForge OptionalStartArrayForge { get; }
-
-        public JsonWriteForge WriteForge { get; }
+        public JsonSerializerForge SerializerForge { get; }
     }
 } // end of namespace

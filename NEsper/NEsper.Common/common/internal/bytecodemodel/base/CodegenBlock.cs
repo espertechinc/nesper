@@ -756,6 +756,19 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public CodegenStatementSwitch SwitchBlockExpressions(
             CodegenExpression switchExpression,
+            IList<CodegenExpression> expressions,
+            bool blocksReturnValues,
+            bool withDefaultUnsupported)
+        {
+            return SwitchBlockExpressions(
+                switchExpression,
+                expressions.ToArray(),
+                blocksReturnValues,
+                withDefaultUnsupported);
+        }
+
+        public CodegenStatementSwitch SwitchBlockExpressions(
+            CodegenExpression switchExpression,
             CodegenExpression[] expressions,
             bool blocksReturnValues,
             bool withDefaultUnsupported)

@@ -27,15 +27,15 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             StatementContextFilterEvalEnv filterEvalEnv)
         {
             if (plan.FilterNegate != null) {
-                var controlResult = (bool) plan.FilterNegate.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                if (controlResult != null && !controlResult) {
+                var controlResult = plan.FilterNegate.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                if (controlResult != null && false.Equals(controlResult)) {
                     return null;
                 }
             }
 
             if (plan.FilterConfirm != null) {
-                var controlResult = (bool) plan.FilterConfirm.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                if (controlResult != null && controlResult) {
+                var controlResult = plan.FilterConfirm.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                if (controlResult != null && true.Equals(controlResult)) {
                     return FilterValueSetParamConstants.EMPTY;
                 }
             }

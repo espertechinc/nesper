@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -18,12 +19,15 @@ namespace com.espertech.esper.compiler.@internal.util
             string providerClassName,
             IList<CodegenClass> classes,
             CompilableItemPostCompileLatch postCompileLatch,
-            IDictionary<string, byte[]> classesProvided)
+            ICollection<Type> classesProvided)
         {
             ProviderClassName = providerClassName;
             Classes = classes;
             PostCompileLatch = postCompileLatch;
-            ClassesProvided = classesProvided;
+            ClassesProvided = new Dictionary<string, Type>();
+            foreach (var classProvided in classesProvided) {
+                ClassesProvided[classProvided.FullName] = classProvided;
+            }
         }
 
         public string ProviderClassName { get; }
@@ -32,6 +36,6 @@ namespace com.espertech.esper.compiler.@internal.util
 
         public CompilableItemPostCompileLatch PostCompileLatch { get; }
 
-        public IDictionary<string, byte[]> ClassesProvided { get; }
+        public IDictionary<string, Type> ClassesProvided { get; }
     }
 } // end of namespace
