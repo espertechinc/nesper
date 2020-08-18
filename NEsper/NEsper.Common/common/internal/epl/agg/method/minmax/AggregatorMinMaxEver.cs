@@ -14,13 +14,12 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
+using com.espertech.esper.common.@internal.serde.compiletime.sharable;
 using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
-    CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
 using static com.espertech.esper.common.@internal.epl.expression.core.MinMaxTypeEnum;
 
@@ -52,7 +51,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
             _currentMinMax = membersColumnized.AddMember(col, typeof(IComparable), "currentMinMax");
             _serde = classScope.AddOrGetDefaultFieldSharable(
                 new CodegenSharableSerdeClassTyped(
-                    CodegenSharableSerdeClassTyped.CodegenSharableSerdeName.VALUE_NULLABLE, factory.ResultType, serde, classScope));
+                    CodegenSharableSerdeClassTyped.CodegenSharableSerdeName.VALUE_NULLABLE,
+                    factory.ResultType,
+                    serde,
+                    classScope));
         }
 
         protected override void ApplyEvalEnterNonNull(

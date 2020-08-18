@@ -40,12 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 				var mySupportClassloader = new MySupportClassloader();
 				options.DeploymentClassLoaderOption = _ => mySupportClassloader;
 
-				try {
-					env.Deployment.Deploy(compiled, options);
-				}
-				catch (EPDeployException e) {
-					Assert.Fail(e.Message);
-				}
+				env.Deployment.Deploy(compiled, options);
 
 				Assert.IsFalse(mySupportClassloader.Names.IsEmpty());
 

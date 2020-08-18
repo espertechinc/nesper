@@ -636,8 +636,12 @@ namespace com.espertech.esper.compat.collections
             return
                 "{" +
                 _hashList
-                    .Select(subPair => string.Format("{0}={1}", subPair.First.RenderAny(), subPair.Second.RenderAny()))
-                    .Aggregate((a, b) => a + ", " + b) +
+                    .Select(subPair => {
+                        var renderFirst = subPair.First.RenderAny();
+                        var renderSecond = subPair.Second.RenderAny();
+                        return $"{renderFirst}={renderSecond}";
+                    })
+                    .Aggregate((a, b) => $"{a}, {b}") +
                 "}";
         }
     }

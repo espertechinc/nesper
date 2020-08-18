@@ -7,17 +7,15 @@ namespace com.espertech.esper.compat.collections.btree
     {
         private IComparer<TK> _comparer;
         private Node _root;
-        private Mutable<Node> _mutableRoot;
-        private Mutable<int> _mutableSize;
-        private Func<TV,TK> _keyAccessor;
+        private readonly Func<TV,TK> _keyAccessor;
 
         // Compute how many values we can fit onto a leaf node.
-        private int kNodeTargetValues;
+        private readonly int _kNodeTargetValues;
         // We need a minimum of 3 values per internal node in order to perform
         // splitting (1 value for the two nodes involved in the split and 1 value
         // propagated to the parent as the delimiter for the split).
-        private int kNodeValues;
-        private int kMinNodeValues;
+        private readonly int _kNodeValues;
+        private readonly int _kMinNodeValues;
 
         /// <summary>
         /// Returns the root node.
@@ -96,6 +94,7 @@ namespace com.espertech.esper.compat.collections.btree
         /// <summary>
         /// Constructor.
         /// </summary>
+        /// <param name="keyAccessor"></param>
         /// <param name="comparer"></param>
         /// <param name="targetNodeCount"></param>
         public BTree(
@@ -107,9 +106,9 @@ namespace com.espertech.esper.compat.collections.btree
             _comparer = comparer ?? throw new ArgumentNullException(nameof(comparer));
             _root = null;
 
-            kNodeTargetValues = targetNodeCount;
-            kNodeValues = kNodeTargetValues >= 3 ? kNodeTargetValues : 3;
-            kMinNodeValues = kNodeValues / 2;
+            _kNodeTargetValues = targetNodeCount;
+            _kNodeValues = _kNodeTargetValues >= 3 ? _kNodeTargetValues : 3;
+            _kMinNodeValues = _kNodeValues / 2;
         }
     }
 }

@@ -134,7 +134,8 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                     Ref(NAME_JOINEXECSTRATEGY),
                     Ref(NAME_RESULTSETPROCESSOR),
                     Ref(NAME_PARENTVIEW),
-                    Constant(false)));
+                    Constant(false),
+                    Constant(null)));
         }
 
         public void CollectSchedules(IList<ScheduleHandleCallbackProvider> scheduleHandleCallbackProviders)

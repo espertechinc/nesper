@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 			set => this._orderByWithoutOutputRateLimit = value;
 		}
 
-		public bool UnidirectionalJoin {
+		public bool IsUnidirectionalJoin {
 			set => this._unidirectionalJoin = value;
 		}
 

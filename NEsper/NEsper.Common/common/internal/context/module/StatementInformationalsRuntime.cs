@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.util;
+using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.audit;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
@@ -83,5 +84,7 @@ namespace com.espertech.esper.common.@internal.context.module
         public IDictionary<StatementProperty, object> Properties { get; set; }
 
         public IDictionary<string, int> SubstitutionParamNames { get; set; }
+        
+        public ExpressionScriptProvided[] OnScripts { get; set; }
     }
 } // end of namespace

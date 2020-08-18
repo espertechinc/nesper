@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			CodegenClassScope codegenClassScope)
 		{
 			CodegenExpression memberCache = codegenClassScope.AddOrGetDefaultFieldSharable(SharableCode);
-			var method = parent.MakeChild(typeof(bool), typeof(DynamicPropertyGetterByMethodBase), codegenClassScope)
+			var method = parent.MakeChild(typeof(bool), typeof(DynamicPropertyGetterByMethodOrPropertyBase), codegenClassScope)
 				.AddParam(typeof(object), "object");
 			method.Block
 				.DeclareVar(typeof(DynamicPropertyDescriptorByField), "desc", GetPopulateCacheCodegen(memberCache, Ref("object"), method, codegenClassScope))

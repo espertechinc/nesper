@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 	/// <summary>
 	/// Base class for getters for a dynamic property (syntax field.inner?), caches methods to use for classes.
 	/// </summary>
-	public abstract class DynamicPropertyGetterByMethodBase : BeanEventPropertyGetter
+	public abstract class DynamicPropertyGetterByMethodOrPropertyBase : BeanEventPropertyGetter
 	{
 		private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
 		private readonly BeanEventTypeFactory _beanEventTypeFactory;
@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 		/// <returns>property</returns>
 		public static object CacheAndCall(
 			CopyOnWriteList<DynamicPropertyDescriptorByMethod> cache,
-			DynamicPropertyGetterByMethodBase getter,
+			DynamicPropertyGetterByMethodOrPropertyBase getter,
 			object @object,
 			EventBeanTypedEventFactory eventBeanTypedEventFactory,
 			BeanEventTypeFactory beanEventTypeFactory)
@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 		{
 			CodegenExpression memberCache = codegenClassScope.AddOrGetDefaultFieldSharable(_sharableCode);
 			var method = parent
-				.MakeChild(typeof(object), typeof(DynamicPropertyGetterByMethodBase), codegenClassScope)
+				.MakeChild(typeof(object), typeof(DynamicPropertyGetterByMethodOrPropertyBase), codegenClassScope)
 				.AddParam(typeof(object), "object");
 			method.Block
 				.DeclareVar<DynamicPropertyDescriptorByMethod>("desc", GetPopulateCacheCodegen(memberCache, Ref("object"), method, codegenClassScope))
@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 		/// <returns>exists-flag</returns>
 		public static bool CacheAndExists(
 			CopyOnWriteList<DynamicPropertyDescriptorByMethod> cache,
-			DynamicPropertyGetterByMethodBase getter,
+			DynamicPropertyGetterByMethodOrPropertyBase getter,
 			object @object,
 			EventBeanTypedEventFactory eventBeanTypedEventFactory)
 		{
@@ -149,7 +149,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			CodegenClassScope codegenClassScope)
 		{
 			var memberCache = codegenClassScope.AddOrGetDefaultFieldSharable(_sharableCode);
-			var method = parent.MakeChild(typeof(bool), typeof(DynamicPropertyGetterByMethodBase), codegenClassScope)
+			var method = parent.MakeChild(typeof(bool), typeof(DynamicPropertyGetterByMethodOrPropertyBase), codegenClassScope)
 				.AddParam(typeof(object), "object");
 			method.Block
 				.DeclareVar<DynamicPropertyDescriptorByMethod>("desc", GetPopulateCacheCodegen(memberCache, Ref("object"), method, codegenClassScope))
@@ -159,7 +159,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			return LocalMethod(method, underlyingExpression);
 		}
 
-		public DynamicPropertyGetterByMethodBase(
+		public DynamicPropertyGetterByMethodOrPropertyBase(
 			EventBeanTypedEventFactory eventBeanTypedEventFactory,
 			BeanEventTypeFactory beanEventTypeFactory)
 		{
@@ -235,7 +235,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 
 		internal static DynamicPropertyDescriptorByMethod GetPopulateCache(
 			CopyOnWriteList<DynamicPropertyDescriptorByMethod> cache,
-			DynamicPropertyGetterByMethodBase dynamicPropertyGetterBase,
+			DynamicPropertyGetterByMethodOrPropertyBase dynamicPropertyGetterBase,
 			object obj,
 			EventBeanTypedEventFactory eventBeanTypedEventFactory)
 		{
@@ -267,21 +267,21 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			CodegenClassScope codegenClassScope)
 		{
 			var method = parent
-				.MakeChild(typeof(DynamicPropertyDescriptorByMethod), typeof(DynamicPropertyGetterByMethodBase), codegenClassScope)
+				.MakeChild(typeof(DynamicPropertyDescriptorByMethod), typeof(DynamicPropertyGetterByMethodOrPropertyBase), codegenClassScope)
 				.AddParam(typeof(CopyOnWriteList<DynamicPropertyDescriptorByMethod>), "cache")
 				.AddParam(typeof(object), "obj");
 			method.Block
 				.DeclareVar(
 					typeof(DynamicPropertyDescriptorByMethod),
 					"desc",
-					StaticMethod(typeof(DynamicPropertyGetterByMethodBase), "DynamicPropertyCacheCheck", Ref("cache"), Ref("obj")))
+					StaticMethod(typeof(DynamicPropertyGetterByMethodOrPropertyBase), "DynamicPropertyCacheCheck", Ref("cache"), Ref("obj")))
 				.IfRefNotNull("desc")
 				.BlockReturn(Ref("desc"))
 				.DeclareVar(typeof(Type), "clazz", ExprDotMethod(Ref("obj"), "GetType"))
 				.DeclareVar(typeof(MethodInfo), "method", DetermineMethodCodegen(Ref("clazz"), method, codegenClassScope))
 				.AssignRef(
 					"desc",
-					StaticMethod(typeof(DynamicPropertyGetterByMethodBase), "DynamicPropertyCacheAdd", Ref("clazz"), Ref("method"), Ref("cache")))
+					StaticMethod(typeof(DynamicPropertyGetterByMethodOrPropertyBase), "DynamicPropertyCacheAdd", Ref("clazz"), Ref("method"), Ref("cache")))
 				.MethodReturn(Ref("desc"));
 			return LocalMethod(method, memberCache, @object);
 		}

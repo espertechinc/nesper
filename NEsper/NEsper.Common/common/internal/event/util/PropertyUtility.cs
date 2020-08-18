@@ -111,29 +111,29 @@ namespace com.espertech.esper.common.@internal.@event.util
         }
 
         public static PropertyAccessException GetTargetException(
-            MethodInfo method,
+            MemberInfo member,
             TargetException e)
         {
-            var declaring = method.DeclaringType;
-            var message = $"Failed to invoke method {method.Name} on class {declaring.CleanName()}: {e.InnerException.Message}";
+            var declaring = member.DeclaringType;
+            var message = $"Failed to invoke method {member.Name} on class {declaring.CleanName()}: {e.InnerException.Message}";
             throw new PropertyAccessException(message, e);
         }
 
         public static PropertyAccessException GetTargetException(
-            MethodInfo method,
+            MemberInfo member,
             TargetInvocationException e)
         {
-            var declaring = method.DeclaringType;
-            var message = $"Failed to invoke method {method.Name} on class {declaring.CleanName()}: {e.InnerException.Message}";
+            var declaring = member.DeclaringType;
+            var message = $"Failed to invoke method {member.Name} on class {declaring.CleanName()}: {e.InnerException.Message}";
             throw new PropertyAccessException(message, e);
         }
 
         public static PropertyAccessException GetGeneralException(
-            MethodInfo method,
+            MemberInfo member,
             Exception t)
         {
-            var declaring = method.DeclaringType;
-            var message = $"Failed to invoke method {method.Name} on class {declaring.CleanName()}: {t.Message}";
+            var declaring = member.DeclaringType;
+            var message = $"Failed to invoke method {member.Name} on class {declaring.CleanName()}: {t.Message}";
             throw new PropertyAccessException(message, t);
         }
 

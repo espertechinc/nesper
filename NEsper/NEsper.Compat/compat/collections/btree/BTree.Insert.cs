@@ -24,11 +24,11 @@ namespace com.espertech.esper.compat.collections.btree
 
             if (cursor.Node.Count == cursor.Node.MaxCount) {
                 // Make room in the leaf for the new item.
-                if (cursor.Node.MaxCount < kNodeValues) {
+                if (cursor.Node.MaxCount < _kNodeValues) {
                     // Insertion into the root where the root is smaller that the full node
                     // size. Simply grow the size of the root node.
                     Assert(cursor.Node == Root);
-                    cursor.Node = NewLeafRootNode(Math.Min(kNodeValues, 2 * cursor.Node.MaxCount));
+                    cursor.Node = NewLeafRootNode(Math.Min(_kNodeValues, 2 * cursor.Node.MaxCount));
                     cursor.Node.Swap(Root);
                     Root.DestroyValues();
                     Root = cursor.Node;

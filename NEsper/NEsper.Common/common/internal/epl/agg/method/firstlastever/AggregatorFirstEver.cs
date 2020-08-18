@@ -15,14 +15,13 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
+using com.espertech.esper.common.@internal.serde.compiletime.sharable;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
-using static com.espertech.esper.common.@internal.serde.CodegenSharableSerdeClassTyped.CodegenSharableSerdeName;
 
 namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
 {
@@ -57,7 +56,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
             //   elsewhere which makes assignment problematic.  Revisit this problem when we have more
             //   time.
             _firstValue = membersColumnized.AddMember(col, typeof(object), "firstValue");
-            _serde = classScope.AddOrGetDefaultFieldSharable(new CodegenSharableSerdeClassTyped(VALUE_NULLABLE, childType, serde, classScope));
+            _serde = classScope.AddOrGetDefaultFieldSharable(
+                new CodegenSharableSerdeClassTyped(
+                    CodegenSharableSerdeClassTyped.CodegenSharableSerdeName.VALUE_NULLABLE,
+                    childType,
+                    serde,
+                    classScope));
         }
 
         protected override void ApplyEvalEnterNonNull(

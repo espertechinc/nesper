@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.collection
             }
 
             if (other is MultiKeyArrayOfKeys<T> otherKeys) {
-                return Equals(Array, otherKeys.Array);
+                return Arrays.AreEqual(Array, otherKeys.Array);
             }
 
             return false;
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.collection
 
         public override string ToString()
         {
-            return "MultiKey" + Arrays.AsList(Array);
+            return GetType().Name + Arrays.AsList(Array);
         }
     }
 } // end of namespace

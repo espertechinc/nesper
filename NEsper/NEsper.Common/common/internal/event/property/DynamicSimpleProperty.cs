@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.@event.xml;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.@event.property
 {
@@ -48,7 +49,7 @@ namespace com.espertech.esper.common.@internal.@event.property
             BeanEventTypeFactory beanEventTypeFactory)
         {
             if (!eventType.Stem.IsPublicFields) {
-                return new DynamicSimplePropertyGetterByMethod(
+                return new DynamicSimplePropertyGetterByMethodOrProperty(
                     PropertyNameAtomic,
                     eventBeanTypedEventFactory,
                     beanEventTypeFactory);

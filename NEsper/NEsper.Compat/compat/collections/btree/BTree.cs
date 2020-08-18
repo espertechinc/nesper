@@ -20,12 +20,12 @@ namespace com.espertech.esper.compat.collections.btree
     /// A btree implementation of the STL set and map interfaces. A btree is both
     /// smaller and faster than STL set/map. The red-black tree implementation of
     /// STL set/map has an overhead of 3 pointers (left, right and parent) plus the
-    /// node color information for each stored value. So a set<int32> consumes 20
+    /// node color information for each stored value. So a set&lt;int32&gt; consumes 20
     /// bytes for each value stored. This btree implementation stores multiple
     /// values on fixed size nodes (usually 256 bytes) and doesn't store child
-    /// pointers for leaf nodes. The result is that a btree_set<int32> may use much
+    /// pointers for leaf nodes. The result is that a btree_set&lt;int32&gt; may use much
     /// less memory per stored value. For the random insertion benchmark in
-    /// btree_test.cc, a btree_set<int32> with node-size of 256 uses 4.9 bytes per
+    /// btree_test.cc, a btree_set&lt;int32&gt; with node-size of 256 uses 4.9 bytes per
     /// stored value.
     ///
     /// The packing of multiple values on to each node of a btree has another effect
@@ -111,7 +111,7 @@ namespace com.espertech.esper.compat.collections.btree
             // internal_fields *p = reinterpret_cast<internal_fields*>(
             //   mutable_internal_allocator()->allocate(sizeof(internal_fields)));
             // return node_type::init_internal(p, parent);
-            return new Node(_keyAccessor, false, kNodeValues, parent);
+            return new Node(_keyAccessor, false, _kNodeValues, parent);
         }
 
         private Node NewInternalRootNode()
@@ -124,7 +124,7 @@ namespace com.espertech.esper.compat.collections.btree
             return new Node(
                 _keyAccessor,
                 false,
-                kNodeValues,
+                _kNodeValues,
                 parent,
                 parent,
                 parent.Count);
@@ -135,7 +135,7 @@ namespace com.espertech.esper.compat.collections.btree
             // leaf_fields *p = reinterpret_cast<leaf_fields*>(
             //   mutable_internal_allocator()->allocate(sizeof(leaf_fields)));
             // return node_type::init_leaf(p, parent, kNodeValues);
-            return new Node(_keyAccessor, true, kNodeValues, parent);
+            return new Node(_keyAccessor, true, _kNodeValues, parent);
         }
 
         private Node NewLeafRootNode(int maxCount)

@@ -200,7 +200,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
                 aiFactoryProviderClassName,
                 namespaceScope,
                 forge,
-                createDesc.VariableName);
+                createDesc.VariableName,
+                serde);
 
             var informationals = StatementInformationalsUtil.GetInformationals(
                 _base,

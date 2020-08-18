@@ -16,6 +16,7 @@ namespace com.espertech.esper.runtime.client
     /// <summary>
     ///     Exception during a deploy operation by <seealso cref="EPDeploymentService.Deploy(EPCompiled)" />
     /// </summary>
+    [Serializable]
     public class EPDeployException : Exception
     {
         private readonly int _rolloutItemNumber;
@@ -56,19 +57,16 @@ namespace com.espertech.esper.runtime.client
         {
             _rolloutItemNumber = rolloutItemNumber;
         }
-
+        
         /// <summary>
-        /// Constructor for serialization.
+        /// Deserialization constructor.
         /// </summary>
         /// <param name="info"></param>
         /// <param name="context"></param>
-        /// <param name="rolloutItemNumber">rollout item number when using rollout</param>
         protected EPDeployException(
             SerializationInfo info,
-            StreamingContext context,
-            int rolloutItemNumber) : base(info, context)
+            StreamingContext context) : base(info, context)
         {
-            _rolloutItemNumber = rolloutItemNumber;
         }
     }
 } // end of namespace

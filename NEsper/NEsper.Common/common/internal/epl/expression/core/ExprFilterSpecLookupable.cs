@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         [NonSerialized] private readonly ExprEventEvaluator _eval;
         private readonly Type _returnType;
         private readonly bool _isNonPropertyEval;
-        private readonly DataInputOutputSerde<Object> _valueSerde;
+        private readonly DataInputOutputSerde _valueSerde;
         [NonSerialized] private readonly ExprEvaluator _expr;
 
         public ExprFilterSpecLookupable(
@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprEvaluator expr,
             Type returnType,
             bool isNonPropertyEval,
-            DataInputOutputSerde<Object> valueSerde)
+            DataInputOutputSerde valueSerde)
         {
             _expression = expression;
             _eval = eval;

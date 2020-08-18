@@ -23,17 +23,19 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 	/// <summary>
 	/// Getter for a dynamic property (syntax field.inner?), using vanilla reflection.
 	/// </summary>
-	public class DynamicSimplePropertyGetterByMethod : DynamicPropertyGetterByMethodBase
+	public class DynamicSimplePropertyGetterByMethodOrProperty : DynamicPropertyGetterByMethodOrPropertyBase
 	{
+		private readonly string _propertyName;
 		private readonly string _getterMethodName;
 		private readonly string _isMethodName;
 
-		public DynamicSimplePropertyGetterByMethod(
+		public DynamicSimplePropertyGetterByMethodOrProperty(
 			string fieldName,
 			EventBeanTypedEventFactory eventBeanTypedEventFactory,
 			BeanEventTypeFactory beanEventTypeFactory)
 			: base(eventBeanTypedEventFactory, beanEventTypeFactory)
 		{
+			_propertyName = PropertyHelper.GetPropertyName(fieldName);
 			_getterMethodName = PropertyHelper.GetGetterMethodName(fieldName);
 			_isMethodName = PropertyHelper.GetIsMethodName(fieldName);
 		}
@@ -56,7 +58,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 
 		protected override MethodInfo DetermineMethod(Type clazz)
 		{
-			return DynamicSimplePropertyDetermineMethod(_getterMethodName, _isMethodName, clazz);
+			return DynamicSimplePropertyDetermineMethod(
+				_propertyName, _getterMethodName, _isMethodName, clazz);
 		}
 
 		protected override CodegenExpression DetermineMethodCodegen(
@@ -64,7 +67,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			CodegenMethodScope parent,
 			CodegenClassScope codegenClassScope)
 		{
-			return StaticMethod(GetType(), "DynamicSimplePropertyDetermineMethod", Constant(_getterMethodName), Constant(_isMethodName), clazz);
+			return StaticMethod(
+				GetType(),
+				"DynamicSimplePropertyDetermineMethod",
+				Constant(_propertyName),
+				Constant(_getterMethodName),
+				Constant(_isMethodName),
+				clazz);
 		}
 
 		public override bool IsExistsProperty(EventBean eventBean)
@@ -101,25 +110,40 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
+		/// <param name="propertyName"></param>
 		/// <param name="getterMethodName">getter</param>
 		/// <param name="isMethodName">is-method</param>
 		/// <param name="clazz">class</param>
 		/// <returns>method or null</returns>
 		public static MethodInfo DynamicSimplePropertyDetermineMethod(
+			string propertyName,
 			string getterMethodName,
 			string isMethodName,
 			Type clazz)
 		{
-			var method = clazz.GetMethod(getterMethodName);
-			if (method != null) {
-				return method;
+			var propertyInfo = clazz.GetProperty(propertyName);
+			if (propertyInfo != null && propertyInfo.CanRead) {
+				return propertyInfo.GetMethod;
+			}
+			
+			try {
+				var trueGetMethod = clazz.GetMethod(getterMethodName);
+				if (trueGetMethod != null) {
+					return trueGetMethod;
+				}
+
+				// did not find a method matching the getterMethodName
+			}
+			catch (Exception ex1) when (ex1 is AmbiguousMatchException || ex1 is ArgumentNullException) {
+				// fall through
 			}
 
-			if (isMethodName != null) {
-				method = clazz.GetMethod(isMethodName);
+			try {
+				return clazz.GetMethod(isMethodName);
 			}
-
-			return method;
+			catch (Exception ex2) when (ex2 is AmbiguousMatchException || ex2 is ArgumentNullException) {
+				return null;
+			}
 		}
 	}
 } // end of namespace

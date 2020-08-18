@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.util.CollectionUtil;
@@ -26,25 +27,27 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 	/// <summary>
 	/// Getter for a dynamic mapped property (syntax field.mapped('key')?), using vanilla reflection.
 	/// </summary>
-	public class DynamicMappedPropertyGetterByMethod : DynamicPropertyGetterByMethodBase
+	public class DynamicMappedPropertyGetterByMethodOrProperty : DynamicPropertyGetterByMethodOrPropertyBase
 	{
+		private readonly string _propertyName;
 		private readonly string _getterMethodName;
 		private readonly object[] _parameters;
 
-		public DynamicMappedPropertyGetterByMethod(
+		public DynamicMappedPropertyGetterByMethodOrProperty(
 			string fieldName,
 			string key,
 			EventBeanTypedEventFactory eventBeanTypedEventFactory,
 			BeanEventTypeFactory beanEventTypeFactory)
 			: base(eventBeanTypedEventFactory, beanEventTypeFactory)
 		{
+			_propertyName = PropertyHelper.GetPropertyName(fieldName);
 			_getterMethodName = PropertyHelper.GetGetterMethodName(fieldName);
 			_parameters = new object[] {key};
 		}
 
 		protected override MethodInfo DetermineMethod(Type clazz)
 		{
-			return DynamicMapperPropertyDetermineMethod(clazz, _getterMethodName);
+			return DynamicMapperPropertyDetermineMethod(clazz, _propertyName, _getterMethodName);
 		}
 
 		protected override CodegenExpression DetermineMethodCodegen(
@@ -52,7 +55,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			CodegenMethodScope parent,
 			CodegenClassScope codegenClassScope)
 		{
-			return StaticMethod(typeof(DynamicMappedPropertyGetterByMethod), "DynamicMapperPropertyDetermineMethod", clazz, Constant(_getterMethodName));
+			return StaticMethod(
+				typeof(DynamicMappedPropertyGetterByMethodOrProperty),
+				"DynamicMapperPropertyDetermineMethod",
+				clazz,
+				Constant(_propertyName),
+				Constant(_getterMethodName));
 		}
 
 		protected override object Call(
@@ -62,13 +70,19 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			return DynamicMappedPropertyGet(descriptor, underlying, _parameters);
 		}
 
-		protected override CodegenExpression CallCodegen(CodegenExpressionRef desc,
+		protected override CodegenExpression CallCodegen(
+			CodegenExpressionRef desc,
 			CodegenExpressionRef @object,
 			CodegenMethodScope parent,
 			CodegenClassScope codegenClassScope)
 		{
-			var @params = codegenClassScope.AddDefaultFieldUnshared(true, typeof(object[]), Constant(_parameters));
-			return StaticMethod(typeof(DynamicMappedPropertyGetterByMethod), "DynamicMappedPropertyGet", desc, @object, @params);
+			var @params = codegenClassScope.AddDefaultFieldUnshared<object[]>(true, Constant(_parameters));
+			return StaticMethod(
+				typeof(DynamicMappedPropertyGetterByMethodOrProperty),
+				"DynamicMappedPropertyGet",
+				desc,
+				@object,
+				@params);
 		}
 
 		public override CodegenExpression UnderlyingExistsCodegen(
@@ -77,21 +91,20 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			CodegenClassScope codegenClassScope)
 		{
 			CodegenExpression memberCache = codegenClassScope.AddOrGetDefaultFieldSharable(SharableCode);
-			var method = parent.MakeChild(typeof(bool), typeof(DynamicPropertyGetterByMethodBase), codegenClassScope)
+			var method = parent.MakeChild(typeof(bool), typeof(DynamicPropertyGetterByMethodOrPropertyBase), codegenClassScope)
 				.AddParam(typeof(object), "object");
 			method.Block
-				.DeclareVar(typeof(DynamicPropertyDescriptorByMethod), "desc", GetPopulateCacheCodegen(memberCache, Ref("object"), method, codegenClassScope))
+				.DeclareVar<DynamicPropertyDescriptorByMethod>("desc", GetPopulateCacheCodegen(memberCache, Ref("object"), method, codegenClassScope))
 				.IfCondition(EqualsNull(ExprDotName(Ref("desc"), "Method")))
 				.BlockReturn(ConstantFalse())
 				.MethodReturn(
 					StaticMethod(
-						typeof(DynamicMappedPropertyGetterByMethod),
+						typeof(DynamicMappedPropertyGetterByMethodOrProperty),
 						"DynamicMappedPropertyExists",
 						Ref("desc"),
 						Ref("object"),
 						Constant(_parameters[0])));
 			return LocalMethod(method, underlyingExpression);
-
 		}
 
 		public override bool IsExistsProperty(EventBean eventBean)
@@ -108,24 +121,55 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
 		/// <param name="clazz">class</param>
+		/// <param name="propertyName"></param>
 		/// <param name="getterMethodName">method</param>
 		/// <returns>value</returns>
 		/// <throws>PropertyAccessException for access ex</throws>
 		public static MethodInfo DynamicMapperPropertyDetermineMethod(
 			Type clazz,
+			string propertyName,
 			string getterMethodName)
 		{
-			var method = clazz.GetMethod(
-				getterMethodName,
-				new Type[] {typeof(string)});
-			if (method == null) {
+			MethodInfo method = null;
+
+			try
+			{
+				method = clazz.GetMethod(getterMethodName, new[] { typeof(string) });
+				if (method != null)
+				{
+					return method;
+				}
+			}
+			catch (AmbiguousMatchException)
+			{
+			}
+
+			// Getting here means there is no "indexed" method matching the form GetXXX(int index);
+			// this section attempts to now see if the method can be found in such a way that it
+			// return an array (or presumably a list) that can be indexed.  We've added to this by
+			// augmenting it with the property name.  As we know, c# properties simply mask
+			// properties that have a similar form to the ones outlined herein.
+
+			var property = clazz.GetProperty(propertyName);
+			if (property != null && property.CanRead)
+			{
+				method = property.GetGetMethod();
+			}
+
+			if (method == null)
+			{
 				method = clazz.GetMethod(getterMethodName, new Type[0]);
-				if (method == null) {
-					return null;
+			}
+
+			if (method != null)
+			{
+				if (method.ReturnType.IsGenericStringDictionary())
+				{
+					return method;
 				}
 			}
 
-			return method.ReturnType.IsGenericStringDictionary() ? method : null;
+			return null;
 		}
 
 		/// <summary>
@@ -144,10 +188,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 				if (descriptor.HasParameters) {
 					return descriptor.Method.Invoke(underlying, parameters);
 				}
-				else {
-					var result = descriptor.Method.Invoke(underlying, null);
-					return GetMapValueChecked(result, parameters[0]);
+
+				var result = descriptor.Method.Invoke(underlying, null);
+				if (result == null)
+				{
+					return null;
 				}
+
+				return GetMapValueChecked(result, parameters[0]);
 			}
 			catch (InvalidCastException e) {
 				throw PropertyUtility.GetMismatchException(descriptor.Method, underlying, e);
@@ -182,10 +230,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 				if (descriptor.HasParameters) {
 					return true;
 				}
-				else {
-					var result = descriptor.Method.Invoke(underlying, null);
-					return GetMapKeyExistsChecked(result, key);
-				}
+
+				var result = descriptor.Method.Invoke(underlying, null);
+				return result != null && GetMapKeyExistsChecked(result, key);
 			}
 			catch (InvalidCastException e) {
 				throw PropertyUtility.GetMismatchException(descriptor.Method, underlying, e);

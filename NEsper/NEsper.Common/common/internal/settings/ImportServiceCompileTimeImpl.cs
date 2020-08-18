@@ -138,14 +138,47 @@ namespace com.espertech.esper.common.@internal.settings
 			return new Pair<Type, ImportSingleRowDesc>(clazz, pair);
 		}
 
+		public IEnumerable<string> GetAnnotationNames(string className)
+		{
+			if (!string.IsNullOrWhiteSpace(className)) {
+				// Return the classname itself.
+				yield return className;
+				// Return the capitalized version of the classname, if it is different
+				// than the classname itself.
+				string capClassName = null;
+				if (Char.IsLower(className[0])) {
+					capClassName = Char.ToUpperInvariant(className[0]) + className.Substring(1);
+					if (capClassName != className) {
+						yield return capClassName;
+					}
+				}
+				// Return the "attribute" name if applicable.
+				if (!className.EndsWith("Attribute")) {
+					yield return className + "Attribute";
+					// Return the capitalized classname with attribute if applicable.
+					if (capClassName != null) {
+						yield return capClassName + "Attribute";
+					}
+				}
+			}
+		}
+
 		public Type ResolveAnnotation(string className)
 		{
-			Type clazz;
-			try {
-				clazz = ResolveClassInternal(className, true, true, ExtensionClassEmpty.INSTANCE);
+			Type clazz = null;
+			TypeLoadException firstException = null;
+			
+			foreach (var classNameCandidate in GetAnnotationNames(className)) {
+				try {
+					clazz = ResolveClassInternal(classNameCandidate, true, true, ExtensionClassEmpty.INSTANCE);
+				}
+				catch (TypeLoadException e) {
+					firstException ??= e;
+				}
 			}
-			catch (TypeLoadException e) {
-				throw new ImportException("Could not load annotation class by name '" + className + "', please check imports", e);
+
+			if (clazz == null) {
+				throw new ImportException("Could not load annotation class by name '" + className + "', please check imports", firstException);
 			}
 
 			return clazz;

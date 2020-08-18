@@ -17,14 +17,13 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
+using com.espertech.esper.common.@internal.serde.compiletime.sharable;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compat.io;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
-    CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
-using static com.espertech.esper.common.@internal.serde.CodegenSharableSerdeClassTyped.CodegenSharableSerdeName;
 
 namespace com.espertech.esper.common.@internal.epl.agg.method.nth
 {
@@ -53,7 +52,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
             _currentBufferElementPointer = membersColumnized.AddMember(col, typeof(int), "cbep");
             _numDataPoints = membersColumnized.AddMember(col, typeof(long), "cnt");
             _serdeValue = classScope.AddOrGetDefaultFieldSharable(
-                new CodegenSharableSerdeClassTyped(VALUE_NULLABLE, factory.ChildType, factory.Serde, classScope));
+                new CodegenSharableSerdeClassTyped(
+                    CodegenSharableSerdeClassTyped.CodegenSharableSerdeName.VALUE_NULLABLE,
+                    factory.ChildType,
+                    factory.Serde,
+                    classScope));
         }
 
         protected override void ApplyEvalEnterNonNull(
@@ -167,7 +170,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
         public static AggregationNthState Read(
             DataInput input,
             byte[] unitKey,
-            DataInputOutputSerdeWCollation<object> serdeNullable,
+            DataInputOutputSerde serdeNullable,
             int sizeBuf)
         {
             var filled = input.ReadBoolean();
@@ -181,7 +184,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
             state.NumDataPoints = input.ReadLong();
             state.CurrentBufferElementPointer = input.ReadInt();
             for (var i = 0; i < sizeBuf; i++) {
-                circularBuffer[i] = serdeNullable.Read(input, unitKey);
+                circularBuffer[i] = serdeNullable.ReadAny(input, unitKey);
             }
 
             return state;
@@ -203,7 +206,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
             DataOutput output,
             byte[] unitKey,
             EventBeanCollatedWriter writer,
-            DataInputOutputSerdeWCollation<object> serdeNullable,
+            DataInputOutputSerde serdeNullable,
             object[] circularBuffer,
             long numDataPoints,
             int currentBufferElementPointer,

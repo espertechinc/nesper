@@ -16,17 +16,15 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
+using com.espertech.esper.common.@internal.serde.serdeset.builtin;
 using com.espertech.esper.common.@internal.type;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compat.logging;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
-    CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
 
 namespace com.espertech.esper.common.@internal.epl.agg.method.avg
@@ -150,7 +148,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
         {
             method.Block
                 .Apply(WriteLong(output, row, _cnt))
-                .StaticMethod(typeof(DIOSerdeBigInteger), "WriteBigInt", RowDotMember(row, _sum), output);
+                .StaticMethod(typeof(DIOBigIntegerUtil), "WriteBigInt", RowDotMember(row, _sum), output);
         }
 
         protected override void ReadWODistinct(
@@ -165,7 +163,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                 .Apply(ReadLong(row, _cnt, input))
                 .AssignRef(
                     RowDotMember(row, _sum),
-                    StaticMethod(typeof(DIOSerdeBigInteger), "ReadBigInt", input));
+                    StaticMethod(typeof(DIOBigIntegerUtil), "ReadBigInt", input));
         }
 
         /// <summary>

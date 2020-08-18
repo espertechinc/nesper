@@ -9,19 +9,18 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.util;
 
 using static com.espertech.esper.common.@internal.epl.agg.core.AggregationServiceCodegenNames;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
-    CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 
 namespace com.espertech.esper.common.@internal.epl.agg.rollup
@@ -68,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
                 .DeclareVar<AggregationRowFactory>(
                     "rowFactory",
                     NewInstance(classNames.RowFactoryTop, Ref("this")))
-                .DeclareVar<DataInputOutputSerdeWCollation<AggregationRow>>(
+                .DeclareVar<DataInputOutputSerde<AggregationRow>>(
                     "rowSerde",
                     NewInstance(classNames.RowSerdeTop, Ref("this")))
                 .MethodReturn(

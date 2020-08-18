@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.runtime.client.util
 {
@@ -112,6 +113,7 @@ namespace com.espertech.esper.runtime.client.util
             public int Patch { get; }
         }
 
+        [Serializable]
         public class VersionException : Exception
         {
             public VersionException(string message) : base(message)
@@ -121,6 +123,11 @@ namespace com.espertech.esper.runtime.client.util
             public VersionException(
                 string message,
                 Exception innerException) : base(message, innerException)
+            {
+            }
+
+            protected VersionException(SerializationInfo info,
+                StreamingContext context) : base(info, context)
             {
             }
         }

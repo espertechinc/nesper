@@ -15,12 +15,11 @@ using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
+using com.espertech.esper.common.@internal.serde.compiletime.sharable;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
-using static com.espertech.esper.common.@internal.serde.CodegenSharableSerdeClassTyped.CodegenSharableSerdeName;
 
 namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
 {
@@ -48,7 +47,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
             this._factory = factory;
             _refSet = membersColumnized.AddMember(col, typeof(SortedRefCountedSet<object>), "refSet");
             _serde = classScope.AddOrGetDefaultFieldSharable(
-                new CodegenSharableSerdeClassTyped(SORTEDREFCOUNTEDSET, factory.ResultType, factory.Serde, classScope));
+                new CodegenSharableSerdeClassTyped(
+                    CodegenSharableSerdeClassTyped.CodegenSharableSerdeName.SORTEDREFCOUNTEDSET,
+                    factory.ResultType,
+                    factory.Serde,
+                    classScope));
             rowCtor.Block.AssignRef(_refSet, NewInstance(typeof(SortedRefCountedSet<object>)));
         }
 

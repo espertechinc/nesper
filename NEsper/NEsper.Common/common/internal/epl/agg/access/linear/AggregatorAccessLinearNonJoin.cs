@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -16,13 +15,11 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.access.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.serde;
+using com.espertech.esper.common.@internal.serde.compiletime.sharable;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
-    CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
-using static com.espertech.esper.common.@internal.serde.CodegenSharableSerdeEventTyped.CodegenSharableSerdeName;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.linear
 {
@@ -214,7 +211,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
 
         private CodegenExpressionInstanceField GetSerde(CodegenClassScope classScope)
         {
-            return classScope.AddOrGetDefaultFieldSharable(new CodegenSharableSerdeEventTyped(LISTEVENTS, _forge.EventType));
+            return classScope.AddOrGetDefaultFieldSharable(
+                new CodegenSharableSerdeEventTyped(
+                    CodegenSharableSerdeEventTyped.CodegenSharableSerdeName.LISTEVENTS,
+                    _forge.EventType));
         }
     }
 } // end of namespace

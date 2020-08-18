@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
                         HandleViewResources(compiler, element);
                         break;
                     
-                    case "serde":
+                    case "serde-settings":
                         HandleSerdeSettings(compiler, element);
                         break;
                 }

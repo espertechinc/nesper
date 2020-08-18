@@ -52,7 +52,7 @@
                     break;
                 }
 
-                if (cursor.Node.Count >= kMinNodeValues) {
+                if (cursor.Node.Count >= _kMinNodeValues) {
                     break;
                 }
 

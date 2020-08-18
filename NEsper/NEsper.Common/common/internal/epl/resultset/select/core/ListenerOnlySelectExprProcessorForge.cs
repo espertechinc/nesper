@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 				typeof(StatementResultService),
 				ExprDotName(EPStatementInitServicesConstants.REF, EPStatementInitServicesConstants.STATEMENTRESULTSERVICE));
 			processMethod.Block
-				.IfCondition(Or(isSythesize, ExprDotMethod(stmtResultSvc, "isMakeSynthetic")))
+				.IfCondition(Or(isSythesize, ExprDotName(stmtResultSvc, "IsMakeSynthetic")))
 				.BlockReturn(LocalMethod(syntheticMethod))
 				.MethodReturn(ConstantNull());
 

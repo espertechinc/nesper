@@ -1137,6 +1137,9 @@ namespace com.espertech.esper.common.@internal.util
         {
             if (candidate is IDictionary<object, object> map) {
                 return map.Get(key);
+            } else if (candidate.GetType().IsGenericStringDictionary()) {
+                var dictionary = candidate.AsObjectDictionary();
+                return dictionary.Get(key);
             }
 
             return null;
@@ -1148,6 +1151,9 @@ namespace com.espertech.esper.common.@internal.util
         {
             if (candidate is IDictionary<object, object> map) {
                 return map.ContainsKey(key);
+            } else if (candidate.GetType().IsGenericStringDictionary()) {
+                var dictionary = candidate.AsObjectDictionary();
+                return dictionary.ContainsKey(key);
             }
 
             return false;

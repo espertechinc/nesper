@@ -50,6 +50,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 	    public const string MEMBERNAME_STATEMENT_FIELDS = "statementFields";
     
 	    private static readonly CodegenExpressionMember MEMBER_EVENTBEANFACTORY = Member("ebfactory");
+	    private static readonly CodegenExpressionMember MEMBER_STATEMENT_FIELDS = Member("statementFields");
 
 	    private readonly string _className;
 	    private readonly ResultSetProcessorDesc _spec;
@@ -560,7 +561,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
 	        method.Block
 		        .Apply(InstrumentationCode.Instblock(classScope, "q" + forge.InstrumentedQName))
-		        .DeclareVar(typeof(UniformPair<EventBean[]>), "pair", LocalMethod(instrumented, REF_NEWDATA, REF_OLDDATA, REF_ISSYNTHESIZE))
+		        .DeclareVar<UniformPair<EventBean[]>>("pair", LocalMethod(instrumented, REF_NEWDATA, REF_OLDDATA, REF_ISSYNTHESIZE))
 		        .Apply(InstrumentationCode.Instblock(classScope, "a" + forge.InstrumentedQName, Ref("pair")))
 		        .MethodReturn(Ref("pair"));
 	    }
@@ -585,7 +586,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
 	        method.Block
 		        .Apply(InstrumentationCode.Instblock(classScope, "q" + forge.InstrumentedQName))
-		        .DeclareVar(typeof(UniformPair<EventBean[]>), "pair", LocalMethod(instrumented, REF_NEWDATA, REF_OLDDATA, REF_ISSYNTHESIZE))
+		        .DeclareVar<UniformPair<EventBean[]>>("pair", LocalMethod(instrumented, REF_NEWDATA, REF_OLDDATA, REF_ISSYNTHESIZE))
 		        .Apply(InstrumentationCode.Instblock(classScope, "a" + forge.InstrumentedQName, Ref("pair")))
 		        .MethodReturn(Ref("pair"));
 	    }
@@ -644,6 +645,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 		        });
 
 	        var members = new List<CodegenTypedParam>(2);
+	        members.Add(new CodegenTypedParam(classScope.NamespaceScope.FieldsClassName, NAME_STATEMENT_FIELDS));
 	        members.Add(new CodegenTypedParam(typeof(EventBeanTypedEventFactory), MEMBER_EVENTBEANFACTORY.Ref));
 
 	        var ctorParams = new List<CodegenTypedParam>(2);
@@ -651,6 +653,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 	        ctorParams.Add(new CodegenTypedParam(typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref, false));
 
 	        var ctor = new CodegenCtor(typeof(StmtClassForgeableRSPFactoryProvider), classScope, ctorParams);
+	        ctor.Block.AssignRef(MEMBER_STATEMENT_FIELDS, ExprDotName(Ref("o"), NAME_STATEMENT_FIELDS));
 	        ctor.Block.AssignRef(MEMBER_EVENTBEANFACTORY, ExprDotName(EPStatementInitServicesConstants.REF, "EventBeanTypedEventFactory"));
 
 	        var processMethod = CodegenMethod
@@ -676,19 +679,19 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 		        classScope);
 	        exprSymbol.DerivedSymbolsCodegen(processMethod, processMethod.Block, classScope);
 	        processMethod.Block
-		        .DeclareVar(typeof(EventBean), "out", LocalMethod(performMethod))
+		        .DeclareVar<EventBean>("@out", LocalMethod(performMethod))
 		        .Apply(
 			        InstrumentationCode.Instblock(
 				        classScope,
 				        "aSelectClause",
 				        ResultSetProcessorCodegenNames.REF_ISNEWDATA,
-				        Ref("out"),
+				        Ref("@out"),
 				        ConstantNull()))
-		        .MethodReturn(Ref("out"));
+		        .MethodReturn(Ref("@out"));
 
 	        var allProperties = new CodegenClassProperties();
 	        var allMethods = new CodegenClassMethods();
-	        CodegenStackGenerator.RecursiveBuildStack(processMethod, "process", allMethods, allProperties);
+	        CodegenStackGenerator.RecursiveBuildStack(processMethod, "Process", allMethods, allProperties);
 
 	        return new CodegenInnerClass(
 		        className,

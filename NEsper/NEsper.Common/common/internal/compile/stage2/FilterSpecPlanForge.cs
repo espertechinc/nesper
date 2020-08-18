@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 .SetProperty(Ref("plan"), "FilterConfirm", OptionalEvaluator(FilterConfirm, method, classScope))
                 .SetProperty(Ref("plan"), "FilterNegate", OptionalEvaluator(FilterNegate, method, classScope))
                 .SetProperty(Ref("plan"), "Convertor", ConvertorForge == null ? ConstantNull() : ConvertorForge.MakeAnonymous(method, classScope))
-                .ExprDotMethod(Ref("plan"), "initialize")
+                .ExprDotMethod(Ref("plan"), "Initialize")
                 .MethodReturn(Ref("plan"));
             return method;
         }

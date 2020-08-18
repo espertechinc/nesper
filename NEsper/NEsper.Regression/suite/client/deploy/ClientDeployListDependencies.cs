@@ -150,19 +150,19 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 					"@name('provide') @public create window MyWindow#keepall as SupportBean;\n" +
 					"@public create table MyTable(k string primary key, value string);\n" +
 					"@public create variable int MyVariable = 0;\n" +
-					"@public create context MyContext partition by theString from SupportBean;\n" +
+					"@public create context MyContext partition by TheString from SupportBean;\n" +
 					"@public create schema MyEventType();\n" +
 					"@public create expression MyExpression { 0 };\n" +
 					"@public create expression double MyScript(stringvalue) [0];\n" +
-					"@public create index MyIndexA on MyWindow(intPrimitive);\n" +
+					"@public create index MyIndexA on MyWindow(IntPrimitive);\n" +
 					"@public create index MyIndexB on MyTable(value);\n" +
 					"@public create inlined_class \"\"\" public class MyClass { public static String doIt() { return \"abc\"; } }\"\"\";\n";
 				env.CompileDeploy(eplProvide, path);
 
 				var eplConsume = "@name('consume') context MyContext select MyVariable, count(*), MyTable['a'].value from MyWindow;\n" +
 				                 "select MyExpression(), MyScript('a'), MyClass.doIt() from MyEventType;\n" +
-				                 "on SupportBean as sb merge MyWindow as mw where sb.intPrimitive=mw.intPrimitive when matched then delete;\n" +
-				                 "on SupportBean as sb merge MyTable as mt where sb.theString=mt.value when matched then delete;\n";
+				                 "on SupportBean as sb merge MyWindow as mw where sb.IntPrimitive=mw.IntPrimitive when matched then delete;\n" +
+				                 "on SupportBean as sb merge MyTable as mt where sb.TheString=mt.value when matched then delete;\n";
 				env.CompileDeploy(eplConsume, path);
 
 				var deploymentIdProvide = env.DeploymentId("provide");

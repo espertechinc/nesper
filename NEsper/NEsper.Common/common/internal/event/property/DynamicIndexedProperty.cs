@@ -59,7 +59,11 @@ namespace com.espertech.esper.common.@internal.@event.property
             BeanEventTypeFactory beanEventTypeFactory)
         {
             if (!eventType.Stem.IsPublicFields) {
-                return new DynamicIndexedPropertyGetterByMethod(
+                var propertyInfo = eventType.UnderlyingType.GetProperty(PropertyNameAtomic);
+                if (propertyInfo != null && propertyInfo.CanRead) {
+                }
+
+                return new DynamicIndexedPropertyGetterByMethodOrProperty(
                     PropertyNameAtomic,
                     Index,
                     eventBeanTypedEventFactory,

@@ -48,8 +48,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             var method = parent.MakeChild(typeof(FilterSpecPlanPathTriplet), typeof(FilterSpecParamForge), classScope);
             method.Block
                 .DeclareVar(typeof(FilterSpecPlanPathTriplet), "triplet", NewInstance(typeof(FilterSpecPlanPathTriplet)))
-                .ExprDotMethod(Ref("triplet"), "setParam", LocalMethod(Param.MakeCodegen(classScope, method, symbols)))
-                .ExprDotMethod(Ref("triplet"), "setTripletConfirm", OptionalEvaluator(TripletConfirm, method, classScope))
+                .SetProperty(Ref("triplet"), "Param", LocalMethod(Param.MakeCodegen(classScope, method, symbols)))
+                .SetProperty(Ref("triplet"), "TripletConfirm", OptionalEvaluator(TripletConfirm, method, classScope))
                 .MethodReturn(Ref("triplet"));
             return method;
         }

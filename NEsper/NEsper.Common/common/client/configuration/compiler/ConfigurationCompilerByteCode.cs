@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// <summary>
         /// Returns the flag whether the compiler allows inlined classes.
         /// </summary>
-        public bool IsAllowInlinedClass { get; set; } = false;
+        public bool IsAllowInlinedClass { get; set; } = true;
 
         /// <summary>
         ///     Returns indicator whether the binary class code should include debug symbols

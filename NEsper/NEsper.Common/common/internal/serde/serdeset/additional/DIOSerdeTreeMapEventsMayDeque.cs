@@ -14,7 +14,7 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.additional
 {
-    internal interface DIOSerdeTreeMapEventsMayDeque
+    public interface DIOSerdeTreeMapEventsMayDeque
     {
         void Write(
             IDictionary<object, object> @object,

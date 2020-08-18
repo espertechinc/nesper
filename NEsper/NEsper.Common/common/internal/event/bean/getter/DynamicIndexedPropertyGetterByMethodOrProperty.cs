@@ -16,6 +16,9 @@ using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -24,19 +27,21 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 	/// <summary>
 	/// Getter for a dynamic indexed property (syntax field.indexed[0]?), using vanilla reflection.
 	/// </summary>
-	public class DynamicIndexedPropertyGetterByMethod : DynamicPropertyGetterByMethodBase
+	public class DynamicIndexedPropertyGetterByMethodOrProperty : DynamicPropertyGetterByMethodOrPropertyBase
 	{
+		private readonly string _propertyName;
 		private readonly string _getterMethodName;
 		private readonly object[] _parameters;
 		private readonly int _index;
 
-		public DynamicIndexedPropertyGetterByMethod(
+		public DynamicIndexedPropertyGetterByMethodOrProperty(
 			string fieldName,
 			int index,
 			EventBeanTypedEventFactory eventBeanTypedEventFactory,
 			BeanEventTypeFactory beanEventTypeFactory)
 			: base(eventBeanTypedEventFactory, beanEventTypeFactory)
 		{
+			_propertyName = PropertyHelper.GetPropertyName(fieldName);
 			_getterMethodName = PropertyHelper.GetGetterMethodName(fieldName);
 			_parameters = new object[] {index};
 			_index = index;
@@ -44,7 +49,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 
 		protected override MethodInfo DetermineMethod(Type clazz)
 		{
-			return DynamicIndexPropertyDetermineMethod(clazz, _getterMethodName);
+			return DynamicIndexPropertyDetermineMethod(clazz, _propertyName, _getterMethodName);
 		}
 
 		protected override CodegenExpression DetermineMethodCodegen(
@@ -52,7 +57,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			CodegenMethodScope parent,
 			CodegenClassScope codegenClassScope)
 		{
-			return StaticMethod(typeof(DynamicIndexedPropertyGetterByMethod), "DynamicIndexPropertyDetermineMethod", clazz, Constant(_getterMethodName));
+			return StaticMethod(
+				typeof(DynamicIndexedPropertyGetterByMethodOrProperty),
+				"DynamicIndexPropertyDetermineMethod",
+				clazz,
+				Constant(_propertyName),
+				Constant(_getterMethodName));
 		}
 
 		protected override object Call(
@@ -68,8 +78,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			CodegenMethodScope parent,
 			CodegenClassScope codegenClassScope)
 		{
-			var @params = codegenClassScope.AddDefaultFieldUnshared(true, typeof(object[]), Constant(_parameters));
-			return StaticMethod(typeof(DynamicIndexedPropertyGetterByMethod), "DynamicIndexedPropertyGet", desc, @object, @params, Constant(_index));
+			var @params = codegenClassScope.AddDefaultFieldUnshared<object[]>(true, Constant(_parameters));
+			return StaticMethod(
+				typeof(DynamicIndexedPropertyGetterByMethodOrProperty),
+				"DynamicIndexedPropertyGet",
+				desc,
+				@object,
+				@params,
+				Constant(_index));
 		}
 
 		public override bool IsExistsProperty(EventBean eventBean)
@@ -88,14 +104,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			CodegenClassScope codegenClassScope)
 		{
 			CodegenExpression memberCache = codegenClassScope.AddOrGetDefaultFieldSharable(SharableCode);
-			var method = parent.MakeChild(typeof(bool), typeof(DynamicPropertyGetterByMethodBase), codegenClassScope)
+			var method = parent.MakeChild(typeof(bool), typeof(DynamicPropertyGetterByMethodOrPropertyBase), codegenClassScope)
 				.AddParam(typeof(object), "object");
 			method.Block
 				.DeclareVar(typeof(DynamicPropertyDescriptorByMethod), "desc", GetPopulateCacheCodegen(memberCache, Ref("object"), method, codegenClassScope))
 				.IfCondition(EqualsNull(ExprDotName(Ref("desc"), "Method")))
 				.BlockReturn(ConstantFalse())
 				.MethodReturn(
-					StaticMethod(typeof(DynamicIndexedPropertyGetterByMethod), "DynamicIndexedPropertyExists", Ref("desc"), Ref("object"), Constant(_index)));
+					StaticMethod(typeof(DynamicIndexedPropertyGetterByMethodOrProperty), "DynamicIndexedPropertyExists", Ref("desc"), Ref("object"), Constant(_index)));
 			return LocalMethod(method, underlyingExpression);
 		}
 
@@ -103,24 +119,51 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
 		/// <param name="clazz">class</param>
+		/// <param name="propertyName"></param>
 		/// <param name="getterMethodName">method</param>
 		/// <returns>null or method</returns>
 		public static MethodInfo DynamicIndexPropertyDetermineMethod(
 			Type clazz,
+			string propertyName,
 			string getterMethodName)
 		{
-			var method = clazz.GetMethod(getterMethodName, new [] { typeof(int) });
-			if (method != null) {
-				return method;
+			MethodInfo method = null;
+
+			try {
+				method = clazz.GetMethod(getterMethodName, new[] {typeof(int)});
+				if (method != null) {
+					return method;
+				}
 			}
-			
-			method = clazz.GetMethod(getterMethodName);
-			if ((method == null) || (!method.ReturnType.IsArray)) {
-				return null;
+			catch (AmbiguousMatchException) {
 			}
 
-			return method;
-		}
+			// Getting here means there is no "indexed" method matching the form GetXXX(int index);
+			// this section attempts to now see if the method can be found in such a way that it
+			// return an array (or presumably a list) that can be indexed.  We've added to this by
+			// augmenting it with the property name.  As we know, c# properties simply mask
+			// properties that have a similar form to the ones outlined herein.
+
+			var property = clazz.GetProperty(propertyName);
+			if (property != null && property.CanRead) {
+				method = property.GetGetMethod();
+			}
+
+			if (method == null) {
+				method = clazz.GetMethod(getterMethodName, new Type[0]);
+			}
+
+			if (method != null) {
+				if (method.ReturnType.IsArray) {
+					return method;
+				}
+
+				if (method.ReturnType.IsGenericList()) {
+					return method;
+				}
+			}
+
+			return null;		}
 
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
@@ -140,18 +183,22 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 				if (descriptor.HasParameters) {
 					return descriptor.Method.Invoke(underlying, parameters);
 				}
-				else {
-					var array = (Array) descriptor.Method.Invoke(underlying, null);
-					if (array == null) {
-						return null;
-					}
 
-					if (array.Length <= index) {
-						return null;
-					}
-
-					return array.GetValue(index);
+				var result = descriptor.Method.Invoke(underlying, null);
+				if (result == null) {
+					return null;
 				}
+
+				if (result is Array array) {
+					return array.Length > index ? array.GetValue(index) : null;
+				}
+
+				if (result.GetType().IsGenericList()) {
+					var list = result.AsObjectList(MagicMarker.SingletonInstance);
+					return list.Count > index ? list[index] : null;
+				}
+				
+				return null;
 			}
 			catch (InvalidCastException e) {
 				throw PropertyUtility.GetMismatchException(descriptor.Method, underlying, e);
@@ -186,18 +233,22 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 				if (descriptor.HasParameters) {
 					return true;
 				}
-				else {
-					var array = (Array) descriptor.Method.Invoke(underlying, null);
-					if (array == null) {
-						return false;
-					}
-
-					if (array.Length <= index) {
-						return false;
-					}
-
-					return true;
+				
+				var result = descriptor.Method.Invoke(underlying, null);
+				if (result == null) {
+					return false;
 				}
+
+				if (result is Array array) {
+					return index < array.Length;
+				}
+
+				if (result.GetType().IsGenericList()) {
+					var list = result.AsObjectList(MagicMarker.SingletonInstance);
+					return index < list.Count;
+				}
+
+				return false;
 			}
 			catch (InvalidCastException e) {
 				throw PropertyUtility.GetMismatchException(descriptor.Method, underlying, e);

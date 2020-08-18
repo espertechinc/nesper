@@ -25,6 +25,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 {
     public class CodegenMethodWGraph
     {
+        private bool _isStatic;
+
         public CodegenMethodWGraph(
             string name,
             CodegenMethodFootprint footprint,
@@ -53,8 +55,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public bool IsPublic { get; set; }
 
-        public bool IsStatic { get; set; }
-        
+        public bool IsStatic {
+            get => _isStatic;
+            set => _isStatic = value;
+        }
+
         public CodegenMethod Originator { get; set;  }
 
         public void MergeClasses(ISet<Type> classes)
@@ -101,6 +106,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             if (isPublic)
             {
                 builder.Append("public ");
+            }
+            else
+            {
+                // We found that there's an important distinction with internal classes between Java and C#.  In Java
+                // private methods in an inner class are still visible and callable between parent and child.  In C#
+                // this is not true.  We alleviate this by making the default method access intenral.
+                builder.Append("internal ");
             }
 
             if (IsStatic)

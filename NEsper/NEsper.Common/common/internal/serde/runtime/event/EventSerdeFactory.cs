@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.@internal.serde.serdeset.additional;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 

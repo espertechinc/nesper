@@ -130,7 +130,9 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             for (var i = 0; i < fields.Count; i++) {
                 string name = fields[i].Field.Name;
-                members.Add(new CodegenTypedParam(fields[i].Type, name).WithStatic(true).WithFinal(false));
+                members.Add(new CodegenTypedParam(fields[i].Type, name)
+                    .WithStatic(false)
+                    .WithFinal(true));
             }
         }
 
@@ -139,7 +141,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             foreach (var entry in _namespaceScope.FieldsNamed) {
                 fields.Add(new CodegenTypedParam(entry.Value.Type, entry.Key.Name)
                     .WithFinal(false)
-                    .WithStatic(true));
+                    .WithStatic(false));
             }
         }
 

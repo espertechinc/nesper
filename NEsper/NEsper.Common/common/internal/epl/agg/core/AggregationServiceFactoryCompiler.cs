@@ -356,11 +356,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             var output = Ref("output");
             var unitKey = Ref("unitKey");
             var writer = Ref("writer");
+
             var writeMethod = CodegenMethod.MakeMethod(
                     typeof(void),
                     typeof(AggregationServiceFactoryCompiler),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
+                .WithOverride()
                 .AddParam(
                     CodegenNamedParam.From(
                         typeof(AggregationRow), "@object",
@@ -374,6 +376,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     typeof(AggregationServiceFactoryCompiler),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
+                .WithOverride()
                 .AddParam(CodegenNamedParam.From(typeof(DataInput), input.Ref, typeof(byte[]), unitKey.Ref))
                 .AddThrown(typeof(IOException));
 
@@ -452,7 +455,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             CodegenStackGenerator.RecursiveBuildStack(writeMethod, "Write", methods, properties);
             CodegenStackGenerator.RecursiveBuildStack(readMethod, "Read", methods, properties);
 
-            var innerClassInterface = typeof(DataInputOutputSerdeWCollation<AggregationRow>);
+            var innerClassInterface = typeof(DataInputOutputSerdeBase<AggregationRow>);
             var innerClass = new CodegenInnerClass(
                 classNameSerde,
                 innerClassInterface,

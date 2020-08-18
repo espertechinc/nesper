@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -47,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
                 .DeclareVar<AggregationRowFactory>(
                     "rowFactory",
                     NewInstance(classNames.RowFactoryTop, Ref("this")))
-                .DeclareVar<DataInputOutputSerdeWCollation<AggregationRow>>(
+                .DeclareVar<DataInputOutputSerde<AggregationRow>>(
                     "rowSerde",
                     NewInstance(classNames.RowSerdeTop, Ref("this")))
                 .DeclareVar<AggregationServiceFactory>(

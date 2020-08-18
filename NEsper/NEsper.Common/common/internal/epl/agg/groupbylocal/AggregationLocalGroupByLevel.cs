@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
     {
         public AggregationLocalGroupByLevel(
             AggregationRowFactory rowFactory,
-            DataInputOutputSerdeWCollation<AggregationRow> rowSerde,
+            DataInputOutputSerde<AggregationRow> rowSerde,
             Type[] groupKeyTypes,
             ExprEvaluator groupKeyEval,
             bool isDefaultLevel,
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
 
         public AggregationRowFactory RowFactory { get; }
 
-        public DataInputOutputSerdeWCollation<AggregationRow> RowSerde { get; }
+        public DataInputOutputSerde<AggregationRow> RowSerde { get; }
 
         public Type[] GroupKeyTypes { get; }
 

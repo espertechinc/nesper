@@ -200,7 +200,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			CodegenClassScope classScope)
 		{
 			var fromLambda = new CodegenExpressionLambda(method.Block).WithParam<object[]>("keys");
-			var fromClass = NewInstance<ProxyMultiKeyFromMultiKey>(fromLambda);
+			var fromClass = NewInstance<ProxyMultiKeyFromObjectArray>(fromLambda);
 
 			// CodegenExpressionNewAnonymousClass fromClass = NewAnonymousClass(method.Block, typeof(MultiKeyFromObjectArray));
 			// CodegenMethod from = CodegenMethod
@@ -360,7 +360,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 
 			get.Block
 				.DeclareVar(eventType.UnderlyingType, "und", Cast(eventType.UnderlyingType, ExprDotUnderlying(Ref("bean"))))
-				.MethodReturn(NewInstance(multiKeyClassRef.ClassNameMK, expressions));
+				.BlockReturn(NewInstance(multiKeyClassRef.ClassNameMK, expressions));
 
 			return anonymous;
 		}

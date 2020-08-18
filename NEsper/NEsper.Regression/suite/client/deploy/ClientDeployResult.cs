@@ -115,12 +115,12 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 Assert.AreEqual(2, result.Statements.Length);
                 Assert.AreEqual(1, env.Deployment.Deployments.Length);
                 Assert.AreEqual(
-                    "@name(\"StmtOne\")" +
+                    "@Name(\"StmtOne\")" +
                     NEWLINE +
                     "create schema MyEvent(id String, val1 int, val2 int)",
                     env.Statement("StmtOne").GetProperty(StatementProperty.EPL));
                 Assert.AreEqual(
-                    "@name(\"StmtTwo\")" +
+                    "@Name(\"StmtTwo\")" +
                     NEWLINE +
                     "select * from MyEvent",
                     env.Statement("StmtTwo").GetProperty(StatementProperty.EPL));

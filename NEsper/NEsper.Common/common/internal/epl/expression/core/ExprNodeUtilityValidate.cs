@@ -436,9 +436,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 if (constNode == null) {
                     throw propertyException;
                 }
-                else {
-                    return constNode;
-                }
+
+                return constNode;
             }
 
             // If there is a class name, assume a static method is possible.

@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             Assert.AreEqual(typeof(AnnotationName), annotations[1].GetType());
             Assert.AreEqual("MyTestStmt", ((AnnotationName) annotations[1]).Value);
             Assert.AreEqual("MyTestStmt", stmt.Name);
-            Assert.AreEqual("@name(\"MyTestStmt\")", annotations[1].ToString());
+            Assert.AreEqual("@Name(\"MyTestStmt\")", annotations[1].ToString());
 
             Assert.AreEqual(typeof(AnnotationTag), annotations[2].GetType());
             Assert.AreEqual("UserId", ((AnnotationTag) annotations[2]).Name);
@@ -108,7 +108,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@MyAnnotationAPIEventType create schema ABC();\n" +
-                             "@name('s0') select * from ABC;\n";
+                             "@Name('s0') select * from ABC;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventMap(EmptyDictionary<string, object>.Instance, "ABC");
@@ -128,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     "@MyAnnotationValueDefaulted " +
                     "@MyAnnotationValueEnum(SupportEnum=" + typeof(SupportEnum).FullName + ".ENUM_VALUE_3) " +
                     "@MyAnnotationValuePair(StringVal='a',IntVal=-1,LongVal=2,BooleanVal=True,CharVal='x',ByteVal=10,ShortVal=20,DoubleVal=2.5) " +
-                    "@name('STMTONE') " +
+                    "@Name('STMTONE') " +
                     "select * from SupportBean";
                 var stmtTextFormatted =
                     "@MyAnnotationSimple" +
@@ -141,7 +141,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     NEWLINE +
                     "@MyAnnotationValuePair(StringVal='a',IntVal=-1,LongVal=2,BooleanVal=True,CharVal='x',ByteVal=10,ShortVal=20,DoubleVal=2.5)" +
                     NEWLINE +
-                    "@name('STMTONE')" +
+                    "@Name('STMTONE')" +
                     NEWLINE +
                     "select *" +
                     NEWLINE +
@@ -358,7 +358,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     "            NestableValues=@MyAnnotationNestableValues(Val=999, Arr={2, 1}),\n" +
                     "            NestableNestable=@MyAnnotationNestableNestable(\"CDF\")\n" +
                     "    ) " +
-                    "@name('s0') select * from SupportBean";
+                    "@Name('s0') select * from SupportBean";
                 env.CompileDeploy(stmtText);
 
                 var annotations = env.Statement("s0").Annotations;
@@ -402,7 +402,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             {
                 string epl;
 
-                epl = "@name('MyTestStmt') @Description('MyTestStmt description') @Tag(Name=\"UserId\", Value=\"value\") " +
+                epl = "@Name('MyTestStmt') @Description('MyTestStmt description') @Tag(Name=\"UserId\", Value=\"value\") " +
                       "select * from SupportBean";
                 env.CompileDeploy(epl).AddListener("MyTestStmt");
                 TryAssertion(env.Statement("MyTestStmt"));
@@ -413,7 +413,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.UndeployAll();
 
                 // try lowercase
-                epl = "@name('MyTestStmt') @Description('MyTestStmt description') @Tag(Name=\"UserId\", Value=\"value\") " +
+                epl = "@Name('MyTestStmt') @Description('MyTestStmt description') @Tag(Name=\"UserId\", Value=\"value\") " +
                       " select * from SupportBean";
                 env.CompileDeploy(epl).AddListener("MyTestStmt");
                 TryAssertion(env.Statement("MyTestStmt"));
@@ -471,7 +471,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.UndeployAll();
 
                 // NoLock
-                env.CompileDeploy("@name('s0') @NoLock select * from SupportBean");
+                env.CompileDeploy("@Name('s0') @NoLock select * from SupportBean");
                 Assert.AreEqual(
                     1, AnnotationUtil.FindAnnotations(env.Statement("s0").Annotations, typeof(NoLockAttribute)).Count);
 

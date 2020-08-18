@@ -29,6 +29,6 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 
         public string AliasName { get; set; }
         
-        private DataInputOutputSerde KeySerde { get; set; }
+        public DataInputOutputSerde KeySerde { get; set; }
     }
 } // end of namespace

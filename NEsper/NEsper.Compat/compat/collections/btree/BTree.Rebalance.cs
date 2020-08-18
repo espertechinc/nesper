@@ -155,7 +155,7 @@ namespace com.espertech.esper.compat.collections.btree
                 // we deleted the first element from iter.node and the node is not
                 // empty. This is a small optimization for the common pattern of deleting
                 // from the front of the tree.
-                if ((right.Count > kMinNodeValues) &&
+                if ((right.Count > _kMinNodeValues) &&
                     ((cursor.Node.Count == 0) ||
                      (cursor.Position > 0))) {
                     var toMove = (right.Count - cursor.Node.Count) / 2;
@@ -171,7 +171,7 @@ namespace com.espertech.esper.compat.collections.btree
                 // empty. This is a small optimization for the common pattern of deleting
                 // from the back of the tree.
                 var left = parent.GetChild(cursor.Node.Position - 1);
-                if ((left.Count > kMinNodeValues) &&
+                if ((left.Count > _kMinNodeValues) &&
                     ((cursor.Node.Count == 0) ||
                      (cursor.Position < cursor.Node.Count))) {
                     var toMove = (left.Count - cursor.Node.Count) / 2;

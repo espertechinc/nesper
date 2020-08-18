@@ -260,10 +260,12 @@ namespace com.espertech.esper.compat.collections
             Bound<TK> start,
             Bound<TK> end)
         {
-            var startPair = new KeyValuePair<TK, TV>(start.Value, default);
-            var endPair = new KeyValuePair<TK, TV>(end.Value, default);
-            if (_itemComparer.Compare(startPair, endPair) > 0) {
-                throw new ArgumentException("invalid key order");
+            if (start != null && end != null) {
+                var startPair = new KeyValuePair<TK, TV>(start.Value, default);
+                var endPair = new KeyValuePair<TK, TV>(end.Value, default);
+                if (_itemComparer.Compare(startPair, endPair) > 0) {
+                    throw new ArgumentException("invalid key order");
+                }
             }
 
             int tailIndex = GetHeadIndex(end);
@@ -533,10 +535,12 @@ namespace com.espertech.esper.compat.collections
             Bound<TK> start,
             Bound<TK> end)
         {
-            var startPair = new KeyValuePair<TK, TV>(start.Value, default);
-            var endPair = new KeyValuePair<TK, TV>(end.Value, default);
-            if (_itemComparer.Compare(startPair, endPair) > 0) {
-                throw new ArgumentException("invalid key order");
+            if (start != null && end != null) {
+                var startPair = new KeyValuePair<TK, TV>(start.Value, default);
+                var endPair = new KeyValuePair<TK, TV>(end.Value, default);
+                if (_itemComparer.Compare(startPair, endPair) > 0) {
+                    throw new ArgumentException("invalid key order");
+                }
             }
 
             int tailIndex = GetHeadIndex(end);

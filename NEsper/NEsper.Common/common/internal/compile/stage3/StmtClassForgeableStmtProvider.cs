@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -46,12 +47,17 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             bool includeDebugSymbols,
             bool fireAndForget)
         {
+            if (_namespaceScope.FieldsClassName == null) {
+                Debug.WriteLine("FieldsClassName == null");
+            }
+
             // write code to create an implementation of StatementResource
             var methods = new CodegenClassMethods();
             var properties = new CodegenClassProperties();
             
             // members
             IList<CodegenTypedParam> members = new List<CodegenTypedParam>();
+            members.Add(new CodegenTypedParam(_namespaceScope.FieldsClassName, MEMBERNAME_STATEMENT_FIELDS));
             members.Add(new CodegenTypedParam(typeof(StatementInformationalsRuntime), MEMBERNAME_INFORMATION));
             members.Add(new CodegenTypedParam(typeof(StatementAIFactoryProvider), MEMBERNAME_FACTORY_PROVIDER).WithFinal(false));
 
@@ -121,20 +127,19 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             method.Block.AssignMember(
                 MEMBERNAME_FACTORY_PROVIDER,
-                NewInstance(_statementAiFactoryClassName, REF_STMTINITSVC));
+                NewInstance(_statementAiFactoryClassName, REF_STMTINITSVC, Ref(MEMBERNAME_STATEMENT_FIELDS)));
             return method;
         }
 
-        private static CodegenMethod MakeGetStatementAIFactoryProvider(CodegenClassScope classScope)
+        private static CodegenProperty  MakeGetStatementAIFactoryProvider(CodegenClassScope classScope)
         {
-            var method = CodegenMethod
-                .MakeMethod(
-                    typeof(StatementAIFactoryProvider),
-                    typeof(StmtClassForgeableStmtProvider),
-                    CodegenSymbolProviderEmpty.INSTANCE,
-                    classScope);
-            method.Block.MethodReturn(Ref(MEMBERNAME_FACTORY_PROVIDER));
-            return method;
+            var property = CodegenProperty.MakePropertyNode(
+                typeof(StatementAIFactoryProvider),
+                typeof(StmtClassForgeableStmtProvider),
+                CodegenSymbolProviderEmpty.INSTANCE,
+                classScope);
+            property.GetterBlock.BlockReturn(Ref(MEMBERNAME_FACTORY_PROVIDER));
+            return property;
         }
     }
 } // end of namespace

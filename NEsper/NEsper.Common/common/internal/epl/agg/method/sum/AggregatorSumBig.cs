@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
+using com.espertech.esper.common.@internal.serde.serdeset.builtin;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
@@ -106,19 +107,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
         {
             if (sumType.IsBigInteger()) {
                 method.Block.StaticMethod(
-                    typeof(DIOSerdeBigInteger),
+                    typeof(DIOBigIntegerUtil),
                     "WriteBigInt",
                     RowDotMember(row, sum),
                     output);
             }
             else {
                 throw new IllegalStateException("Codegen can only be performed on BigIntegers");
-
-                //method.Block.StaticMethod(
-                //    typeof(DIOSerdeBigInteger),
-                //    "WriteBigDec",
-                //    RowDotRef(row, sum),
-                //    output);
             }
         }
 
@@ -131,13 +126,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             if (sumType.IsBigInteger()) {
                 method.Block.AssignRef(
                     RowDotMember(row, sum),
-                    StaticMethod(typeof(DIOSerdeBigInteger), "ReadBigInt", input));
+                    StaticMethod(typeof(DIOBigIntegerUtil), "ReadBigInt", input));
             }
             else {
                 throw new IllegalStateException("Codegen can only be performed on BigIntegers");
-                //method.Block.AssignRef(
-                //    RowDotRef(row, sum),
-                //    StaticMethod(typeof(DIOSerdeBigInteger), "ReadBigDec", input));
             }
         }
     }

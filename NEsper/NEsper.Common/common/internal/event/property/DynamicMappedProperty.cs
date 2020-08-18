@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.bean.core;
@@ -59,7 +60,16 @@ namespace com.espertech.esper.common.@internal.@event.property
             BeanEventTypeFactory beanEventTypeFactory)
         {
             if (!eventType.Stem.IsPublicFields) {
-                return new DynamicMappedPropertyGetterByMethod(
+                // Determine if there is an "indexed" method matching the form GetXXX(int index)
+                var underlyingType = eventType.UnderlyingType;
+                
+                
+                
+                var propertyInfo = eventType.UnderlyingType.GetProperty(PropertyNameAtomic);
+                if (propertyInfo != null && propertyInfo.CanRead) {
+                }
+
+                return new DynamicMappedPropertyGetterByMethodOrProperty(
                     PropertyNameAtomic,
                     Key,
                     eventBeanTypedEventFactory,

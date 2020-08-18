@@ -12,6 +12,7 @@ using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.airegistry;
 using com.espertech.esper.common.@internal.context.controller.core;
@@ -300,7 +301,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
             return AIRegistryUtil.AllocateRegistries(registryRequirements, AIRegistryFactoryMap.INSTANCE);
         }
 
-        public DataInputOutputSerdeWCollation<object>[] ContextPartitionKeySerdes { get; private set; }
+        public DataInputOutputSerde[] ContextPartitionKeySerdes { get; private set; }
 
         public int NumNestingLevels => ContextDefinition.ControllerFactories.Length;
 
@@ -397,9 +398,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
             return Realization.GetAgentInstanceIds(selector);
         }
 
-        public DataInputOutputSerdeWCollation<object>[] GetContextPartitionKeySerdeSubset(int nestingLevel)
+        public DataInputOutputSerde[] GetContextPartitionKeySerdeSubset(int nestingLevel)
         {
-            var serdes = new DataInputOutputSerdeWCollation<object>[nestingLevel - 1];
+            var serdes = new DataInputOutputSerde[nestingLevel - 1];
             for (var i = 0; i < nestingLevel - 1; i++) {
                 serdes[i] = ContextPartitionKeySerdes[i];
             }

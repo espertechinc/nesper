@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
+using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.context.aifactory.core.SAIFFInitializeSymbol;
@@ -22,16 +23,19 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
     {
         private readonly StatementAgentInstanceFactoryCreateVariableForge _forge;
         private readonly string _variableName;
+        private readonly DataInputOutputSerdeForge _serde;
 
         public StmtClassForgeableAIFactoryProviderCreateVariable(
             string className,
             CodegenNamespaceScope namespaceScope,
             StatementAgentInstanceFactoryCreateVariableForge forge,
-            string variableName)
+            string variableName,
+            DataInputOutputSerdeForge serde)
             : base(className, namespaceScope)
         {
             _forge = forge;
             _variableName = variableName;
+            _serde = serde;
         }
 
         protected override Type TypeOfFactory()
@@ -47,7 +51,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
             var method = parent.MakeChildWithScope(TypeOfFactory(), GetType(), saiffInitializeSymbol, classScope)
                 .AddParam(typeof(EPStatementInitServices), REF_STMTINITSVC.Ref);
             method.Block
-                .ExprDotMethod(REF_STMTINITSVC, "ActivateVariable", Constant(_variableName))
+                .ExprDotMethod(REF_STMTINITSVC, "ActivateVariable", Constant(_variableName), _serde.Codegen(method, classScope, null))
                 .MethodReturn(LocalMethod(_forge.InitializeCodegen(method, saiffInitializeSymbol, classScope)));
             return method;
         }

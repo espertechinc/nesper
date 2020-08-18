@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.context;
+using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.context.airegistry;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.@event.core;
@@ -46,7 +47,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
 
         StatementAIResourceRegistry AllocateAgentInstanceResourceRegistry(AIRegistryRequirements registryRequirements);
 
-        DataInputOutputSerdeWCollation<object>[] ContextPartitionKeySerdes { get; }
+        DataInputOutputSerde[] ContextPartitionKeySerdes { get; }
 
         ContextManagerRealization AllocateNewRealization(AgentInstanceContext agentInstanceContext);
 

@@ -68,12 +68,7 @@ namespace com.espertech.esper.regressionlib.framework
             RegressionPath path)
         {
             var args = GetArgsNoExport(path);
-            try {
-                return Compiler.CompileQuery(query, args);
-            }
-            catch (Exception t) {
-                throw NotExpected(t);
-            }
+            return Compiler.CompileQuery(query, args);
         }
 
         public EPCompiled CompileFAF(
@@ -81,12 +76,7 @@ namespace com.espertech.esper.regressionlib.framework
             RegressionPath path)
         {
             var args = GetArgsNoExport(path);
-            try {
-                return Compiler.CompileQuery(model, args);
-            }
-            catch (Exception t) {
-                throw NotExpected(t);
-            }
+            return Compiler.CompileQuery(model, args);
         }
 
         public EPFireAndForgetQueryResult CompileExecuteFAF(
@@ -115,24 +105,13 @@ namespace com.espertech.esper.regressionlib.framework
             EPCompiled compiled,
             DeploymentOptions options)
         {
-            try {
-                Runtime.DeploymentService.Deploy(compiled, options);
-            }
-            catch (EPDeployException ex) {
-                throw NotExpected(ex);
-            }
-
+            Runtime.DeploymentService.Deploy(compiled, options);
             return this;
         }
 
         public string DeployGetId(EPCompiled compiled)
         {
-            try {
-                return Runtime.DeploymentService.Deploy(compiled).DeploymentId;
-            }
-            catch (EPDeployException ex) {
-                throw NotExpected(ex);
-            }
+            return Runtime.DeploymentService.Deploy(compiled).DeploymentId;
         }
 
         public RegressionEnvironment SendEventObjectArray(
@@ -282,17 +261,12 @@ namespace com.espertech.esper.regressionlib.framework
 
         public RegressionEnvironment UndeployAll()
         {
-            try {
-                Runtime.DeploymentService.UndeployAll();
+            Runtime.DeploymentService.UndeployAll();
 
-                string[] stageURIs = Runtime.StageService.StageURIs;
-                foreach (string uri in stageURIs) {
-                    EPStage stage = Runtime.StageService.GetExistingStage(uri);
-                    stage.Destroy();
-                }
-            }
-            catch (EPUndeployException ex) {
-                throw NotExpected(ex);
+            string[] stageURIs = Runtime.StageService.StageURIs;
+            foreach (string uri in stageURIs) {
+                EPStage stage = Runtime.StageService.GetExistingStage(uri);
+                stage.Destroy();
             }
 
             return this;
@@ -300,13 +274,7 @@ namespace com.espertech.esper.regressionlib.framework
 
         public RegressionEnvironment Undeploy(string deploymentId)
         {
-            try {
-                Runtime.DeploymentService.Undeploy(deploymentId);
-            }
-            catch (EPUndeployException ex) {
-                throw NotExpected(ex);
-            }
-
+            Runtime.DeploymentService.Undeploy(deploymentId);
             return this;
         }
 
@@ -493,32 +461,22 @@ namespace com.espertech.esper.regressionlib.framework
             EPStatementObjectModel model,
             CompilerArguments args)
         {
-            try {
-                var module = new Module();
-                module.Items.Add(new ModuleItem(model));
-                return Compiler.Compile(module, args);
-            }
-            catch (Exception t) {
-                throw NotExpected(t);
-            }
+            var module = new Module();
+            module.Items.Add(new ModuleItem(model));
+            return Compiler.Compile(module, args);
         }
 
         public RegressionEnvironment UndeployModuleContaining(string statementName)
         {
             var deployments = Runtime.DeploymentService.Deployments;
-            try {
-                foreach (var deployment in deployments) {
-                    var info = Runtime.DeploymentService.GetDeployment(deployment);
-                    foreach (var stmt in info.Statements) {
-                        if (stmt.Name.Equals(statementName)) {
-                            Runtime.DeploymentService.Undeploy(deployment);
-                            return this;
-                        }
+            foreach (var deployment in deployments) {
+                var info = Runtime.DeploymentService.GetDeployment(deployment);
+                foreach (var stmt in info.Statements) {
+                    if (stmt.Name.Equals(statementName)) {
+                        Runtime.DeploymentService.Undeploy(deployment);
+                        return this;
                     }
                 }
-            }
-            catch (EPUndeployException ex) {
-                throw NotExpected(ex);
             }
 
             Assert.Fail("Failed to find deployment with statement '" + statementName + "'");
@@ -537,13 +495,8 @@ namespace com.espertech.esper.regressionlib.framework
             string epl,
             CompilerArguments arguments)
         {
-            try {
-                arguments.Configuration = Configuration;
-                return Compiler.Compile(epl, arguments);
-            }
-            catch (EPCompileException t) {
-                throw NotExpected(t);
-            }
+            arguments.Configuration = Configuration;
+            return Compiler.Compile(epl, arguments);
         }
 
         public EPCompiled Compile(
@@ -572,13 +525,8 @@ namespace com.espertech.esper.regressionlib.framework
 
         public EPStatementObjectModel EplToModel(string epl)
         {
-            try {
-                var model = Compiler.EplToModel(epl, Configuration);
-                return this.CopyMayFail(model); // copy to test serializability
-            }
-            catch (EPCompileException t) {
-                throw NotExpected(t);
-            }
+            var model = Compiler.EplToModel(epl, Configuration);
+            return this.CopyMayFail(model); // copy to test serializability
         }
 
         public IContainer Container => Configuration.Container;
@@ -640,13 +588,8 @@ namespace com.espertech.esper.regressionlib.framework
             IList<EPDeploymentRolloutCompiled> items,
             RolloutOptions options)
         {
-            try {
-                Runtime.DeploymentService.Rollout(items, options);
-                return this;
-            }
-            catch (EPDeployException ex) {
-                throw NotExpected(ex);
-            }
+            Runtime.DeploymentService.Rollout(items, options);
+            return this;
         }
 
         public EPFireAndForgetQueryResult ExecuteQuery(EPCompiled compiled)
@@ -666,31 +609,21 @@ namespace com.espertech.esper.regressionlib.framework
 
         private EPDeployment TryDeploy(EPCompiled compiled)
         {
-            try {
-                return Runtime.DeploymentService.Deploy(compiled);
-            }
-            catch (EPDeployException ex) {
-                throw NotExpected(ex);
-            }
+            return Runtime.DeploymentService.Deploy(compiled);
         }
 
         private EPCompiled TryCompile(
             string epl,
             Consumer<CompilerOptions> options)
         {
-            try {
-                if (options == null) {
-                    return Compiler.Compile(epl, new CompilerArguments(Configuration));
-                }
-
-                var args = new CompilerArguments(Configuration);
-                options.Invoke(args.Options);
-
-                return Compiler.Compile(epl, args);
+            if (options == null) {
+                return Compiler.Compile(epl, new CompilerArguments(Configuration));
             }
-            catch (Exception t) {
-                throw NotExpected(t);
-            }
+
+            var args = new CompilerArguments(Configuration);
+            options.Invoke(args.Options);
+
+            return Compiler.Compile(epl, args);
         }
 
         private CompilerArguments GetArgsNoExport(RegressionPath path)
@@ -712,11 +645,6 @@ namespace com.espertech.esper.regressionlib.framework
             args.Options.AccessModifierScript = ctx => NameAccessModifier.PUBLIC;
             args.Options.AccessModifierTable = ctx => NameAccessModifier.PUBLIC;
             return args;
-        }
-
-        private EPException NotExpected(Exception t)
-        {
-            throw new EPException("Test failed due to exception: " + t.Message, t);
         }
     }
 } // end of namespace

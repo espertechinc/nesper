@@ -296,11 +296,16 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 
             // register provided classes
-            ModuleClassProvidedInitializeSymbol symbolsClassProvidedInit = new ModuleClassProvidedInitializeSymbol();
-            CodegenMethod initializeClassProvidedMethod = CodegenMethod.MakeParentNode(typeof(void), typeof(EPCompilerImpl), symbolsClassProvidedInit, classScope)
+            var symbolsClassProvidedInit = new ModuleClassProvidedInitializeSymbol();
+            var initializeClassProvidedMethod = CodegenMethod
+                .MakeParentNode(typeof(void), typeof(EPCompilerImpl), symbolsClassProvidedInit, classScope)
                 .AddParam(typeof(EPModuleClassProvidedInitServices), ModuleClassProvidedInitializeSymbol.REF_INITSVC.Ref);
             foreach (var currClazz in compileTimeServices.ClassProvidedCompileTimeRegistry.Classes) {
-                CodegenMethod addClassProvided = RegisterClassProvidedCodegen(currClazz, initializeClassProvidedMethod, classScope, symbolsClassProvidedInit);
+                var addClassProvided = RegisterClassProvidedCodegen(
+                    currClazz,
+                    initializeClassProvidedMethod,
+                    classScope,
+                    symbolsClassProvidedInit);
                 initializeClassProvidedMethod.Block.Expression(LocalMethod(addClassProvided));
             }
             
@@ -323,8 +328,16 @@ namespace com.espertech.esper.compiler.@internal.util
             statementsProp.GetterBlock.BlockReturn(Ref("statements"));
 
             // build stack
-            CodegenStackGenerator.RecursiveBuildStack(moduleNameProp, "ModuleName", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(modulePropertiesProp, "ModuleProperties", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(
+                moduleNameProp,
+                "ModuleName",
+                methods,
+                properties);
+            CodegenStackGenerator.RecursiveBuildStack(
+                modulePropertiesProp,
+                "ModuleProperties",
+                methods,
+                properties);
             CodegenStackGenerator.RecursiveBuildStack(
                 moduleDependenciesProp,
                 "ModuleDependencies",
@@ -340,7 +353,11 @@ namespace com.espertech.esper.compiler.@internal.util
                 "InitializeNamedWindows",
                 methods,
                 properties);
-            CodegenStackGenerator.RecursiveBuildStack(initializeTablesMethod, "InitializeTables", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(
+                initializeTablesMethod,
+                "InitializeTables",
+                methods,
+                properties);
             CodegenStackGenerator.RecursiveBuildStack(
                 initializeIndexesMethod,
                 "InitializeIndexes",
@@ -366,7 +383,16 @@ namespace com.espertech.esper.compiler.@internal.util
                 "InitializeScripts",
                 methods,
                 properties);
-            CodegenStackGenerator.RecursiveBuildStack(statementsProp, "Statements", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(
+                initializeClassProvidedMethod,
+                "InitializeClassProvided",
+                methods,
+                properties);
+            CodegenStackGenerator.RecursiveBuildStack(
+                statementsProp,
+                "Statements",
+                methods,
+                properties);
 
             var clazz = new CodegenClass(
                 CodegenClassType.MODULEPROVIDER,

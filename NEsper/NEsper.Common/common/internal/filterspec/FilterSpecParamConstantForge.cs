@@ -58,15 +58,15 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .MakeChild(typeof(FilterSpecParam), typeof(FilterSpecParamConstantForge), classScope);
             method.Block
                 .DeclareVar<ExprFilterSpecLookupable>(
-                    "lookupable",
+                    "lkupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
-                .DeclareVar<FilterOperator>("op", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
+                .DeclareVar<FilterOperator>("filterOperator", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
 
             var getFilterValue = new CodegenExpressionLambda(method.Block)
                 .WithParams(FilterSpecParam.GET_FILTER_VALUE_FP);
             var inner = NewInstance<ProxyFilterSpecParam>(
-                Ref("lookupable"),
-                Ref("op"),
+                Ref("lkupable"),
+                Ref("filterOperator"),
                 getFilterValue);
 
             //var inner = NewAnonymousClass(

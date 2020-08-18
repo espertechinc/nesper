@@ -40,7 +40,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             Assert.AreEqual(typeof(SupportBeanIterableProps.SupportBeanSpecialGetterNested), fragmentTypeOne.FragmentType.UnderlyingType);
 
             var theEvent = (EventBean) eventBean.GetFragment(propertyName);
-            Assert.AreEqual(value, theEvent.Get("NestedValue"));
+            Assert.That(theEvent, Is.Not.Null);
+            Assert.That(theEvent.Get("NestedValue"), Is.EqualTo(value));
         }
 
         private void AssertNestedCollection(
@@ -126,11 +127,23 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
             // indexed getter
             TryInvalidGetFragment(eventBean, "Indexed");
-            Assert.AreEqual(
-                typeof(SupportBeanCombinedProps.NestedLevOne),
-                ((EventBean) eventBean.GetFragment("Indexed[0]")).EventType.UnderlyingType);
-            Assert.AreEqual("abc", ((EventBean) eventBean.GetFragment("Array[0]")).Get("NestLevOneVal"));
-            Assert.AreEqual("abc", eventBean.GetFragment("Array[2]?").AsEventBean().Get("NestLevOneVal"));
+            
+            Assert.That(eventBean.GetFragment("Indexed[0]").AsEventBean(), Is.Not.Null);
+            Assert.That(eventBean.GetFragment("Indexed[0]").AsEventBean().EventType, Is.Not.Null);
+            Assert.That(eventBean.GetFragment("Indexed[0]").AsEventBean().EventType.UnderlyingType,
+                Is.EqualTo(typeof(SupportBeanCombinedProps.NestedLevOne)));
+            
+            Assert.That(eventBean.GetFragment("Array[0]"), Is.Not.Null);
+            Assert.That(eventBean.GetFragment("Array[0]").AsEventBean(), Is.Not.Null);
+            Assert.That(eventBean.GetFragment("Array[0]").AsEventBean().Get("NestLevOneVal"), Is.EqualTo("abc"));
+
+            Assert.That(eventBean.GetFragment("Array[2]?"), Is.Not.Null);
+            Assert.That(eventBean.GetFragment("Array[2]?").AsEventBean(), Is.Not.Null);
+            Assert.That(eventBean.GetFragment("Array[2]?").AsEventBean().Get("NestLevOneVal"), Is.EqualTo("abc"));
+
+            //Assert.AreEqual("abc", ((EventBean) eventBean.GetFragment("Array[0]")).Get("NestLevOneVal"));
+            //Assert.AreEqual("abc", eventBean.GetFragment("Array[2]?").AsEventBean().Get("NestLevOneVal"));
+            
             Assert.IsNull(eventBean.GetFragment("Array[3]?"));
             Assert.IsNull(eventBean.GetFragment("Array[4]?"));
             Assert.IsNull(eventBean.GetFragment("Array[5]?"));

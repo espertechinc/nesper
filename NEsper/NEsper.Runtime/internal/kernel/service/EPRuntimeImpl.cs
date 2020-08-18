@@ -51,14 +51,13 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private Configuration configAtInitialization;
-        private Configuration configLastProvided;
+        private Configuration _configAtInitialization;
+        private Configuration _configLastProvided;
 
-        private volatile EPRuntimeEnv runtimeEnvironment;
-        private readonly IDictionary<string, EPRuntimeSPI> runtimes;
-        private readonly CopyOnWriteArraySet<EPRuntimeStateListener> serviceListeners;
-        
-        private AtomicBoolean _serviceStatusProvider;
+        private volatile EPRuntimeEnv _runtimeEnvironment;
+        private readonly IDictionary<string, EPRuntimeSPI> _runtimes;
+        private readonly CopyOnWriteArraySet<EPRuntimeStateListener> _serviceListeners;
+
         private EPRuntimeCompileReflectiveSPI _compileReflective;
         private EPRuntimeStatementSelectionSPI _statementSelection;
         
@@ -82,12 +81,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             }
 
             this.Container = configuration.Container;
-            this.runtimes = runtimes;
+            this._runtimes = runtimes;
             URI = runtimeURI ?? throw new ArgumentNullException(nameof(runtimeURI), "runtime URI should not be null at this stage");
 
-            serviceListeners = new CopyOnWriteArraySet<EPRuntimeStateListener>();
+            _serviceListeners = new CopyOnWriteArraySet<EPRuntimeStateListener>();
 
-            configLastProvided = TakeSnapshot(configuration);
+            _configLastProvided = TakeSnapshot(configuration);
 
             DoInitialize(null);
         }
@@ -98,11 +97,11 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         public void PostInitialize()
         {
             // plugin-loaders
-            var pluginLoaders = runtimeEnvironment.Services.ConfigSnapshot.Runtime.PluginLoaders;
+            var pluginLoaders = _runtimeEnvironment.Services.ConfigSnapshot.Runtime.PluginLoaders;
             // in the order configured
             foreach (var config in pluginLoaders) {
                 try {
-                    var plugin = (PluginLoader) runtimeEnvironment.Services.RuntimeEnvContext.Lookup("plugin-loader/" + config.LoaderName);
+                    var plugin = (PluginLoader) _runtimeEnvironment.Services.RuntimeEnvContext.Lookup("plugin-loader/" + config.LoaderName);
                     plugin.PostInitialize();
                 }
                 catch (Exception ex) {
@@ -119,7 +118,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         /// <param name="configuration">is the runtimeconfigs</param>
         public void SetConfiguration(Configuration configuration)
         {
-            configLastProvided = TakeSnapshot(configuration);
+            _configLastProvided = TakeSnapshot(configuration);
         }
 
         public IContainer Container { get; }
@@ -128,56 +127,56 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
         public EPEventService EventService {
             get {
-                if (runtimeEnvironment == null) {
+                if (_runtimeEnvironment == null) {
                     throw new EPRuntimeDestroyedException(URI);
                 }
 
-                return runtimeEnvironment.Runtime;
+                return _runtimeEnvironment.Runtime;
             }
         }
 
         public EPDeploymentService DeploymentService {
             get {
-                if (runtimeEnvironment == null) {
+                if (_runtimeEnvironment == null) {
                     throw new EPRuntimeDestroyedException(URI);
                 }
 
-                return runtimeEnvironment.DeploymentService;
+                return _runtimeEnvironment.DeploymentService;
             }
         }
 
         public EPStageService StageService {
             get {
-                if (runtimeEnvironment == null) {
+                if (_runtimeEnvironment == null) {
                     throw new EPRuntimeDestroyedException(URI);
                 }
 
-                return runtimeEnvironment.StageService;
+                return _runtimeEnvironment.StageService;
             }
         }
 
         public EPServicesContext ServicesContext {
             get {
-                if (runtimeEnvironment == null) {
+                if (_runtimeEnvironment == null) {
                     throw new EPRuntimeDestroyedException(URI);
                 }
 
-                return runtimeEnvironment.Services;
+                return _runtimeEnvironment.Services;
             }
         }
 
-        public Configuration ConfigurationDeepCopy => TakeSnapshot(configAtInitialization);
+        public Configuration ConfigurationDeepCopy => TakeSnapshot(_configAtInitialization);
 
-        public IDictionary<string, object> ConfigurationTransient => configLastProvided.Common.TransientConfiguration;
+        public IDictionary<string, object> ConfigurationTransient => _configLastProvided.Common.TransientConfiguration;
 
         public void Destroy()
         {
             lock (this) {
-                if (runtimeEnvironment != null) {
+                if (_runtimeEnvironment != null) {
                     Log.Info("Destroying runtime URI '" + URI + "'");
 
                     // first invoke listeners
-                    foreach (var listener in serviceListeners) {
+                    foreach (var listener in _serviceListeners) {
                         try {
                             listener.OnEPRuntimeDestroyRequested(this);
                         }
@@ -186,15 +185,15 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                         }
                     }
 
-                    if (configLastProvided.Runtime.MetricsReporting.IsRuntimeMetrics) {
-                        DestroyEngineMetrics(runtimeEnvironment.Services.RuntimeURI);
+                    if (_configLastProvided.Runtime.MetricsReporting.IsRuntimeMetrics) {
+                        DestroyEngineMetrics(_runtimeEnvironment.Services.RuntimeURI);
                     }
 
                     ServiceStatusProvider?.Set(false);
-                    runtimeEnvironment.StageService.Destroy();
+                    _runtimeEnvironment.StageService.Destroy();
 
                     // assign null value
-                    var runtimeToDestroy = runtimeEnvironment;
+                    var runtimeToDestroy = _runtimeEnvironment;
                     runtimeToDestroy.Services.TimerService.StopInternalClock(false);
 
                     // plugin-loaders - destroy in opposite order
@@ -217,20 +216,20 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                     runtimeToDestroy.Services.ThreadingService.Dispose();
 
                     // assign null - making EPRuntime and EPAdministrator unobtainable
-                    runtimeEnvironment = null;
+                    _runtimeEnvironment = null;
                     runtimeToDestroy.StageService.Clear();
 
                     runtimeToDestroy.Runtime.Destroy();
                     runtimeToDestroy.DeploymentService.Destroy();
                     runtimeToDestroy.Services.Destroy();
-                    runtimes.Remove(URI);
+                    _runtimes.Remove(URI);
 
                     runtimeToDestroy.Services.Initialize();
                 }
             }
         }
 
-        public bool IsDestroyed => runtimeEnvironment == null;
+        public bool IsDestroyed => _runtimeEnvironment == null;
 
         public void Initialize()
         {
@@ -244,21 +243,21 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
         public INamingContext Context {
             get {
-                if (runtimeEnvironment == null) {
+                if (_runtimeEnvironment == null) {
                     throw new EPRuntimeDestroyedException(URI);
                 }
 
-                return runtimeEnvironment.Services.RuntimeEnvContext;
+                return _runtimeEnvironment.Services.RuntimeEnvContext;
             }
         }
 
         public IReaderWriterLock RuntimeInstanceWideLock {
             get {
-                if (runtimeEnvironment == null) {
+                if (_runtimeEnvironment == null) {
                     throw new EPRuntimeDestroyedException(URI);
                 }
 
-                return runtimeEnvironment.Services.EventProcessingRWLock;
+                return _runtimeEnvironment.Services.EventProcessingRWLock;
             }
         }
 
@@ -266,106 +265,106 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
         public void AddRuntimeStateListener(EPRuntimeStateListener listener)
         {
-            serviceListeners.Add(listener);
+            _serviceListeners.Add(listener);
         }
 
         public bool RemoveRuntimeStateListener(EPRuntimeStateListener listener)
         {
-            return serviceListeners.Remove(listener);
+            return _serviceListeners.Remove(listener);
         }
 
         public EPEventServiceSPI EventServiceSPI {
             get {
-                if (runtimeEnvironment == null) {
+                if (_runtimeEnvironment == null) {
                     throw new EPRuntimeDestroyedException(URI);
                 }
 
-                return runtimeEnvironment.Runtime;
+                return _runtimeEnvironment.Runtime;
             }
         }
 
         public void RemoveAllRuntimeStateListeners()
         {
-            serviceListeners.Clear();
+            _serviceListeners.Clear();
         }
 
         public EPDataFlowService DataFlowService {
             get {
-                if (runtimeEnvironment == null) {
+                if (_runtimeEnvironment == null) {
                     throw new EPRuntimeDestroyedException(URI);
                 }
 
-                return runtimeEnvironment.Services.DataflowService;
+                return _runtimeEnvironment.Services.DataflowService;
             }
         }
 
         public EPContextPartitionService ContextPartitionService {
             get {
-                if (runtimeEnvironment == null) {
+                if (_runtimeEnvironment == null) {
                     throw new EPRuntimeDestroyedException(URI);
                 }
 
-                return runtimeEnvironment.ContextPartitionService;
+                return _runtimeEnvironment.ContextPartitionService;
             }
         }
 
         public EPVariableService VariableService {
             get {
-                if (runtimeEnvironment == null) {
+                if (_runtimeEnvironment == null) {
                     throw new EPRuntimeDestroyedException(URI);
                 }
 
-                return runtimeEnvironment.VariableService;
+                return _runtimeEnvironment.VariableService;
             }
         }
 
         public EPMetricsService MetricsService {
             get {
-                if (runtimeEnvironment == null) {
+                if (_runtimeEnvironment == null) {
                     throw new EPRuntimeDestroyedException(URI);
                 }
 
-                return runtimeEnvironment.MetricsService;
+                return _runtimeEnvironment.MetricsService;
             }
         }
 
         public EPEventTypeService EventTypeService {
             get {
-                if (runtimeEnvironment == null) {
+                if (_runtimeEnvironment == null) {
                     throw new EPRuntimeDestroyedException(URI);
                 }
 
-                return runtimeEnvironment.EventTypeService;
+                return _runtimeEnvironment.EventTypeService;
             }
         }
 
         public EPRenderEventService RenderEventService {
             get {
-                if (runtimeEnvironment == null) {
+                if (_runtimeEnvironment == null) {
                     throw new EPRuntimeDestroyedException(URI);
                 }
 
-                return runtimeEnvironment.Services.EventRenderer;
+                return _runtimeEnvironment.Services.EventRenderer;
             }
         }
 
         public EPFireAndForgetService FireAndForgetService {
             get {
-                if (runtimeEnvironment == null) {
+                if (_runtimeEnvironment == null) {
                     throw new EPRuntimeDestroyedException(URI);
                 }
 
-                return runtimeEnvironment.FireAndForgetService;
+                return _runtimeEnvironment.FireAndForgetService;
             }
         }
 
         public ThreadingService ThreadingService {
             get {
-                if (runtimeEnvironment == null) {
+                if (_runtimeEnvironment == null) {
                     throw new EPRuntimeDestroyedException(URI);
                 }
 
-                return runtimeEnvironment.Services.ThreadingService;
+                return _runtimeEnvironment.Services.ThreadingService;
             }
         }
 
@@ -391,7 +390,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
         public EPCompilerPathable RuntimePath {
             get {
-                var services = runtimeEnvironment.Services;
+                var services = _runtimeEnvironment.Services;
 
                 var variables = new VariableRepositoryPreconfigured();
                 foreach (var entry in services.VariableManagementService.DeploymentsWithVariables) {
@@ -438,40 +437,40 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             Log.Info("Initializing runtime URI '" + URI + "' version " + RuntimeVersion.RUNTIME_VERSION);
 
             // Retain config-at-initialization since config-last-provided can be set to new values and "initialize" can be called
-            configAtInitialization = configLastProvided;
+            _configAtInitialization = _configLastProvided;
 
             // Verify settings
-            if (configLastProvided.Runtime.Threading.IsInternalTimerEnabled &&
-                configLastProvided.Common.TimeSource.TimeUnit != TimeUnit.MILLISECONDS) {
+            if (_configLastProvided.Runtime.Threading.IsInternalTimerEnabled &&
+                _configLastProvided.Common.TimeSource.TimeUnit != TimeUnit.MILLISECONDS) {
                 throw new ConfigurationException("Internal timer requires millisecond time resolution");
             }
 
             // This setting applies to all runtimes in a given VM
-            ExecutionPathDebugLog.IsDebugEnabled = configLastProvided.Runtime.Logging.IsEnableExecutionDebug;
-            ExecutionPathDebugLog.IsTimerDebugEnabled = configLastProvided.Runtime.Logging.IsEnableTimerDebug;
+            ExecutionPathDebugLog.IsDebugEnabled = _configLastProvided.Runtime.Logging.IsEnableExecutionDebug;
+            ExecutionPathDebugLog.IsTimerDebugEnabled = _configLastProvided.Runtime.Logging.IsEnableTimerDebug;
 
             // This setting applies to all runtimes in a given VM
-            AuditPath.AuditPattern = configLastProvided.Runtime.Logging.AuditPattern;
+            AuditPath.AuditPattern = _configLastProvided.Runtime.Logging.AuditPattern;
 
-            if (runtimeEnvironment != null) {
+            if (_runtimeEnvironment != null) {
                 if (ServiceStatusProvider != null) {
                     ServiceStatusProvider.Set(false);
                 }
 
-                runtimeEnvironment.Services.TimerService.StopInternalClock(false);
+                _runtimeEnvironment.Services.TimerService.StopInternalClock(false);
 
-                if (configLastProvided.Runtime.MetricsReporting.IsRuntimeMetrics) {
-                    DestroyEngineMetrics(runtimeEnvironment.Services.RuntimeURI);
+                if (_configLastProvided.Runtime.MetricsReporting.IsRuntimeMetrics) {
+                    DestroyEngineMetrics(_runtimeEnvironment.Services.RuntimeURI);
                 }
 
-                runtimeEnvironment.Runtime.Initialize();
+                _runtimeEnvironment.Runtime.Initialize();
 
-                runtimeEnvironment.Services.Destroy();
+                _runtimeEnvironment.Services.Destroy();
             }
 
             ServiceStatusProvider = new AtomicBoolean(true);
             // Make EP services context factory
-            var epServicesContextFactoryClassName = configLastProvided.Runtime.EPServicesContextFactoryClassName;
+            var epServicesContextFactoryClassName = _configLastProvided.Runtime.EPServicesContextFactoryClassName;
             EPServicesContextFactory epServicesContextFactory;
             if (epServicesContextFactoryClassName == null) {
                 // Check system properties
@@ -484,7 +483,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             else {
                 Type clazz;
                 try {
-                    clazz = TransientConfigurationResolver.ResolveClassForNameProvider(configLastProvided.Common.TransientConfiguration)
+                    clazz = TransientConfigurationResolver.ResolveClassForNameProvider(_configLastProvided.Common.TransientConfiguration)
                         .ClassForName(epServicesContextFactoryClassName);
                 }
                 catch (TypeLoadException) {
@@ -504,7 +503,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
             EPServicesContext services;
             try {
-                services = epServicesContextFactory.CreateServicesContext(this, configLastProvided);
+                services = epServicesContextFactory.CreateServicesContext(this, _configLastProvided);
             }
             catch (EPException ex) {
                 throw new ConfigurationException("Failed runtime startup: " + ex.Message, ex);
@@ -535,10 +534,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             EPVariableService variableService = new EPVariableServiceImpl(services);
             EPMetricsService metricsService = new EPMetricsServiceImpl(services);
             EPFireAndForgetService fireAndForgetService = new EpFireAndForgetServiceImpl(services, ServiceStatusProvider);
-            EPStageServiceSPI stageService = new EPStageServiceImpl(services, _serviceStatusProvider);
+            EPStageServiceSPI stageService = new EPStageServiceImpl(services, ServiceStatusProvider);
 
             // Build runtime environment
-            runtimeEnvironment = new EPRuntimeEnv(
+            _runtimeEnvironment = new EPRuntimeEnv(
                 services,
                 eventService,
                 deploymentService,
@@ -648,7 +647,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             stageService.RecoveredStageInitialize(availableTypes);
 
             // Start clocking
-            if (configLastProvided.Runtime.Threading.IsInternalTimerEnabled) {
+            if (_configLastProvided.Runtime.Threading.IsInternalTimerEnabled) {
                 services.TimerService.StartInternalClock();
             }
 
@@ -661,17 +660,17 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             }
 
             // Start metrics reporting, if any
-            if (configLastProvided.Runtime.MetricsReporting.IsEnableMetricsReporting) {
+            if (_configLastProvided.Runtime.MetricsReporting.IsEnableMetricsReporting) {
                 services.MetricReportingService.SetContext(services.FilterService, services.SchedulingService, eventService);
             }
 
             // Start runtimes metrics report
-            if (configLastProvided.Runtime.MetricsReporting.IsRuntimeMetrics) {
+            if (_configLastProvided.Runtime.MetricsReporting.IsRuntimeMetrics) {
                 StartEngineMetrics(services, eventService);
             }
 
             // call initialize listeners
-            foreach (var listener in serviceListeners) {
+            foreach (var listener in _serviceListeners) {
                 try {
                     listener.OnEPRuntimeInitialized(this);
                 }
@@ -714,7 +713,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         /// <param name="services">is the runtime instance services</param>
         private void LoadAdapters(EPServicesContext services)
         {
-            var pluginLoaders = configLastProvided.Runtime.PluginLoaders;
+            var pluginLoaders = _configLastProvided.Runtime.PluginLoaders;
             if (pluginLoaders == null || pluginLoaders.Count == 0) {
                 return;
             }
