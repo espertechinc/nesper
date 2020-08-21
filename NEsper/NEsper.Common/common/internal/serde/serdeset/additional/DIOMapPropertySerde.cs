@@ -28,13 +28,13 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.additional
             _serdes = serdes;
         }
 
-        public override IDictionary<string, object> Read(
+        public override IDictionary<string, object> ReadValue(
             DataInput input,
             byte[] unitKey)
         {
             var map = new Dictionary<string, object>();
             for (var i = 0; i < _keys.Length; i++) {
-                var value = _serdes[i].ReadAny(input, unitKey);
+                var value = _serdes[i].Read(input, unitKey);
                 map.Put(_keys[i], value);
             }
 

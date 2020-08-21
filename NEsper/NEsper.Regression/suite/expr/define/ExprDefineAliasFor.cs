@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             {
                 var epl = "create expression the_expr alias for {TheString='a' and IntPrimitive=1};\n" +
                           "create context the_context start @now end after 10 minutes;\n" +
-                          "@name('s0') context the_context select * from SupportBean(the_expr)\n";
+                          "@Name('s0') context the_context select * from SupportBean(the_expr)\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("a", 1));
@@ -83,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 env.CompileDeploy("create expression F1 alias for {10}", path);
                 env.CompileDeploy("create expression F2 alias for {20}", path);
                 env.CompileDeploy("create expression F3 alias for {F1+F2}", path);
-                env.CompileDeploy("@name('s0') select F3 as c0 from SupportBean", path).AddListener("s0");
+                env.CompileDeploy("@Name('s0') select F3 as c0 from SupportBean", path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
                 EPAssertionUtil.AssertProps(
@@ -99,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') @Audit expression total alias for {sum(IntPrimitive)} " +
+                var epl = "@Name('s0') @Audit expression total alias for {sum(IntPrimitive)} " +
                           "select total, total+1 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -127,7 +127,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 env.CompileDeploy(eplDeclare, path);
 
                 env.CompileDeploy("create expression myalias alias for {1}", path);
-                env.CompileDeploy("@name('s0') select myaliastwo from SupportBean(IntPrimitive = myalias)", path)
+                env.CompileDeploy("@Name('s0') select myaliastwo from SupportBean(IntPrimitive = myalias)", path)
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 0));

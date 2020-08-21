@@ -110,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			RegressionPath path)
 		{
 
-			var stmtText = "@name('s0') select id? as myid, exists(id?) as exists_myid from " + typename;
+			var stmtText = "@Name('s0') select id? as myid, exists(id?) as exists_myid from " + typename;
 			env.CompileDeploy(stmtText, path).AddListener("s0");
 
 			Assert.AreEqual(expectedPropertyType, env.Statement("s0").EventType.GetPropertyType("myid"));

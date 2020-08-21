@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                       "\n" +
                       "context HashByUserCtx insert into ScoreCycleWindow select * from ScoreCycle;\n" +
                       "\n" +
-                      "@name('Select') context HashByUserCtx insert into UserKeywordTotalStream\n" +
+                      "@Name('Select') context HashByUserCtx insert into UserKeywordTotalStream\n" +
                       "select userId, keyword, sum(score) as sumScore from ScoreCycleWindow group by userId, keyword;";
             env.CompileDeployWBusPublicType(epl, new RegressionPath());
             var listener = new MyUpdateListener();

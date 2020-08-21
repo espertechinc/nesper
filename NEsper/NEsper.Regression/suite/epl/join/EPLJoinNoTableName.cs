@@ -18,7 +18,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
     {
         public void Run(RegressionEnvironment env)
         {
-            var joinStatement = "@name('s0') select * from " +
+            var joinStatement = "@Name('s0') select * from " +
                                 "SupportMarketDataBean#length(3)," +
                                 "SupportBean#length(3)" +
                                 " where Symbol=TheString and Volume=LongBoxed";

@@ -27,7 +27,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 		private const string CLASSNAME_COMPILER = "com.espertech.esper.compiler.@internal.util.EPCompilerSPI";
 		private const string CLASSNAME_COMPILER_EXPRESSIONS = "com.espertech.esper.compiler.@internal.util.EPCompilerSPIExpression";
 
-		private Boolean _available;
+		private bool _available;
 		private string _message;
 		private ConstructorInfo _compilerArgsCtor;
 		private MethodInfo _compilerArgsGetPath;
@@ -216,52 +216,52 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 				return false;
 			}
 
-			_compilerArgsGetPath = FindMethod(compilerArgsClass, "getPath");
+			_compilerArgsGetPath = FindMethod(compilerArgsClass, "GetPath");
 			if (_compilerArgsGetPath == null) {
 				return false;
 			}
 
-			_compilerPathAdd = FindMethod(compilerPathClass, "add", typeof(EPCompilerPathable));
+			_compilerPathAdd = FindMethod(compilerPathClass, "Add", typeof(EPCompilerPathable));
 			if (_compilerPathAdd == null) {
 				return false;
 			}
 
-			_compilerProviderGetCompiler = FindMethod(compilerProvider, "getCompiler");
+			_compilerProviderGetCompiler = FindMethod(compilerProvider, "GetCompiler");
 			if (_compilerProviderGetCompiler == null) {
 				return false;
 			}
 
-			_compileModuleString = FindMethod(compiler, "compile", typeof(string), compilerArgsClass);
+			_compileModuleString = FindMethod(compiler, "Compile", typeof(string), compilerArgsClass);
 			if (_compileModuleString == null) {
 				return false;
 			}
 
-			_compileModuleObject = FindMethod(compiler, "compile", typeof(Module), compilerArgsClass);
+			_compileModuleObject = FindMethod(compiler, "Compile", typeof(Module), compilerArgsClass);
 			if (_compileModuleObject == null) {
 				return false;
 			}
 
-			_expressionCompiler = FindMethod(compiler, "expressionCompiler", typeof(Configuration));
+			_expressionCompiler = FindMethod(compiler, "ExpressionCompiler", typeof(Configuration));
 			if (_expressionCompiler == null) {
 				return false;
 			}
 
-			_compileValidate = FindMethod(compilerExpressions, "compileValidate", typeof(string), typeof(EventType[]), typeof(string[]));
+			_compileValidate = FindMethod(compilerExpressions, "CompileValidate", typeof(string), typeof(EventType[]), typeof(string[]));
 			if (_compileValidate == null) {
 				return false;
 			}
 
-			_eplToModel = FindMethod(compiler, "eplToModel", typeof(string), typeof(Configuration));
+			_eplToModel = FindMethod(compiler, "EplToModel", typeof(string), typeof(Configuration));
 			if (_eplToModel == null) {
 				return false;
 			}
 
-			_parseModule = FindMethod(compiler, "parseModule", typeof(string));
+			_parseModule = FindMethod(compiler, "ParseModule", typeof(string));
 			if (_parseModule == null) {
 				return false;
 			}
 
-			_compileFireAndForget = FindMethod(compiler, "compileQuery", typeof(string), compilerArgsClass);
+			_compileFireAndForget = FindMethod(compiler, "CompileQuery", typeof(string), compilerArgsClass);
 			return _compileFireAndForget != null;
 		}
 

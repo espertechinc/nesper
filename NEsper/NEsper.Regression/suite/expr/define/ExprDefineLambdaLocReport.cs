@@ -22,7 +22,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
         public void Run(RegressionEnvironment env)
         {
             // Regular algorithm to find separated luggage and new owner.
-            var epl = "@name('s0') " +
+            var epl = "@Name('s0') " +
                       "expression lostLuggage {" +
                       "  lr => lr.Items.where(l -> l.Type='L' and " +
                       "    lr.Items.anyof(p -> p.Type='P' and p.AssetId=l.AssetIdPassenger and LRUtil.Distance(l.Location.X, l.Location.Y, p.Location.X, p.Location.Y) > 20))" +

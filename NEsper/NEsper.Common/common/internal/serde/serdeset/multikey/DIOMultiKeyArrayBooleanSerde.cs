@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.multikey
 			WriteInternal(mk.Keys, output);
 		}
 
-		public override MultiKeyArrayBoolean Read(
+		public override MultiKeyArrayBoolean ReadValue(
 			DataInput input,
 			byte[] unitKey)
 		{

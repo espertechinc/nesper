@@ -47,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             // create all statements
             for (var i = 0; i < statements.Length; i++) {
-                env.CompileDeploy("@name('s" + i + "')" + statements[i]).AddListener("s" + i);
+                env.CompileDeploy("@Name('s" + i + "')" + statements[i]).AddListener("s" + i);
             }
 
             env.Milestone(milestone.GetAndIncrement());
@@ -148,12 +148,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var eplOne = "@name('s1') select * from SupportBean(IntPrimitive in (0) and TheString like 'X%')";
+                var eplOne = "@Name('s1') select * from SupportBean(IntPrimitive in (0) and TheString like 'X%')";
                 env.CompileDeploy(eplOne).AddListener("s1");
 
                 env.Milestone(0);
 
-                var eplTwo = "@name('s2') select * from SupportBean(IntPrimitive in (0,1) and TheString like 'A%')";
+                var eplTwo = "@Name('s2') select * from SupportBean(IntPrimitive in (0,1) and TheString like 'A%')";
                 env.CompileDeploy(eplTwo).AddListener("s2");
 
                 env.Milestone(1);
@@ -171,10 +171,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var eplNotMatching =
-                    "@name('A') select * from SupportBean(IntPrimitive in (0,0,1) and TheString like 'X%')";
+                    "@Name('A') select * from SupportBean(IntPrimitive in (0,0,1) and TheString like 'X%')";
                 env.CompileDeploy(eplNotMatching).AddListener("A");
 
-                var eplMatching = "@name('B') select * from SupportBean(IntPrimitive in (0,1) and TheString like 'A%')";
+                var eplMatching = "@Name('B') select * from SupportBean(IntPrimitive in (0,1) and TheString like 'A%')";
                 env.CompileDeploy(eplMatching).AddListener("B");
 
                 env.Milestone(0);
@@ -192,7 +192,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select * from pattern [a=SupportBeanNumeric -> every b=SupportBean(IntPrimitive in (a.IntOne, a.IntTwo))]";
+                    "@Name('s0') select * from pattern [a=SupportBeanNumeric -> every b=SupportBean(IntPrimitive in (a.IntOne, a.IntTwo))]";
                 env.CompileDeployAddListenerMile(epl, "s0", 0);
 
                 SendBeanNumeric(env, 10, 20);
@@ -206,7 +206,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.UndeployAll();
 
                 epl =
-                    "@name('s0') select * from pattern [a=SupportBean_S0 -> every b=SupportBean(TheString in (a.P00, a.P01, a.P02))]";
+                    "@Name('s0') select * from pattern [a=SupportBean_S0 -> every b=SupportBean(TheString in (a.P00, a.P01, a.P02))]";
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
 
                 env.SendEventBean(new SupportBean_S0(1, "a", "b", "c", "d"));
@@ -229,7 +229,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select * from SupportBean(IntPrimitive in (1, 10))";
+                var epl = "@Name('s0') select * from SupportBean(IntPrimitive in (1, 10))";
                 env.CompileDeployAddListenerMile(epl, "s0", 0);
 
                 SendBeanInt(env, 10);
@@ -246,7 +246,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 types.Add(SupportEnum.ENUM_VALUE_2);
                 var collectionType = typeof(ICollection<SupportEnum>).CleanName();
                 var compiled = env.Compile(
-                    "@name('s0') select * from SupportBean ev " + "where ev.EnumValue in (?::`" + collectionType + "`)");
+                    "@Name('s0') select * from SupportBean ev " + "where ev.EnumValue in (?::`" + collectionType + "`)");
                 env.Deploy(
                     compiled,
                     new DeploymentOptions().WithStatementSubstitutionParameter(

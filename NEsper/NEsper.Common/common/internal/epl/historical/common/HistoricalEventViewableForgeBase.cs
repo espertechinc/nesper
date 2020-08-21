@@ -117,13 +117,13 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
                             }
                         }
                         else {
-                            block.DeclareVar(typeof(object[]), "values", Cast(typeof(object[]), Ref("lv")));
+                            block.DeclareVar<object[]>("values", Cast(typeof(object[]), Ref("lv")));
                             CodegenExpression[] expressions = new CodegenExpression[MultiKeyClassRef.MKTypes.Length];
                             for (int i = 0; i < expressions.Length; i++) {
                                 expressions[i] = Cast(MultiKeyClassRef.MKTypes[i], ArrayAtIndex(Ref("values"), Constant(i)));
                             }
 
-                            block.BlockReturn(NewInstance(MultiKeyClassRef.ClassNameMK, expressions));
+                            block.BlockReturn(NewInstanceInner(MultiKeyClassRef.ClassNameMK, expressions));
                         }
                     });
             

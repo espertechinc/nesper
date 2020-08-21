@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
     {
         public void Run(RegressionEnvironment env)
         {
-            var statementText = "@name('s0') select " +
+            var statementText = "@Name('s0') select " +
                                 "simple, " +
                                 "object, " +
                                 "nodefmap, " +
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             env.UndeployModuleContaining("s0");
 
             // assert type info
-            env.CompileDeploy("@name('s0') select * from NestedObjectArr").AddListener("s0");
+            env.CompileDeploy("@Name('s0') select * from NestedObjectArr").AddListener("s0");
             var eventType = env.Statement("s0").EventType;
 
             var propertiesReceived = eventType.PropertyNames;
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 
             // nested PONO with generic return type
             env.UndeployModuleContaining("s0");
-            env.CompileDeploy("@name('s0') select * from MyNested(bean.Insides.anyOf(i->Id = 'A'))").AddListener("s0");
+            env.CompileDeploy("@Name('s0') select * from MyNested(bean.Insides.anyOf(i->Id = 'A'))").AddListener("s0");
 
             env.SendEventObjectArray(new object[] {new MyNested(Arrays.AsList(new MyInside("A")))}, "MyNested");
             Assert.IsTrue(env.Listener("s0").IsInvoked);

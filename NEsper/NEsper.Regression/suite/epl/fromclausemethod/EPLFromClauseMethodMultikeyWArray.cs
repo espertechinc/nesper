@@ -36,10 +36,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') select * from SupportEventWithManyArray as e,\n" +
+				string epl = "@Name('s0') select * from SupportEventWithManyArray as e,\n" +
 				             "method:" +
 				             typeof(SupportJoinResultIsArray).FullName +
-				             ".getResultTwoField(e.id, e.intOne) as s";
+				             ".getResultTwoField(e.id, e.IntOne) as s";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SupportBean sb1 = SendManyArrayGetSB(env, "MA1", new int[] {1, 2});
@@ -70,10 +70,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') select * from SupportEventWithManyArray as e,\n" +
+				string epl = "@Name('s0') select * from SupportEventWithManyArray as e,\n" +
 				             "method:" +
 				             typeof(SupportJoinResultIsArray).FullName +
-				             ".getResultIntArray(e.intOne) as s";
+				             ".getResultIntArray(e.IntOne) as s";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendManyArray(env, "E1", new int[] {1, 2});
@@ -99,11 +99,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') select * from SupportEventWithManyArray as e,\n" +
+				string epl = "@Name('s0') select * from SupportEventWithManyArray as e,\n" +
 				             "method:" +
 				             typeof(SupportJoinResultIsArray).FullName +
 				             ".getArray() as s " +
-				             "where s.doubleArray = e.doubleOne and s.intArray = e.intOne and s.value > e.value";
+				             "where s.doubleArray = e.DoubleOne and s.IntArray = e.IntOne and s.value > e.value";
 
 				RunAssertion(env, epl);
 
@@ -118,11 +118,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') select * from SupportEventWithManyArray as e,\n" +
+				string epl = "@Name('s0') select * from SupportEventWithManyArray as e,\n" +
 				             "method:" +
 				             typeof(SupportJoinResultIsArray).FullName +
 				             ".GetArray() as s " +
-				             "where s.doubleArray = e.doubleOne and s.intArray = e.intOne";
+				             "where s.doubleArray = e.DoubleOne and s.IntArray = e.IntOne";
 
 				RunAssertion(env, epl);
 
@@ -137,11 +137,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') select * from SupportEventWithManyArray as e,\n" +
+				string epl = "@Name('s0') select * from SupportEventWithManyArray as e,\n" +
 				             "method:" +
 				             typeof(SupportJoinResultIsArray).FullName +
 				             ".getArray() as s " +
-				             "where s.doubleArray = e.doubleOne";
+				             "where s.doubleArray = e.DoubleOne";
 
 				RunAssertion(env, epl);
 

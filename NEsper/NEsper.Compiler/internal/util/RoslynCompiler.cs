@@ -127,7 +127,6 @@ namespace com.espertech.esper.compiler.@internal.util
 
                 lock (AssemblyCacheBindings) {
                     foreach (var assemblyBinding in AssemblyCacheBindings) {
-                        //Console.WriteLine("metadataReferences[0]: {0}", assemblyBinding.Value.Assembly.FullName);
                         metadataReferences.Add(assemblyBinding.Value.MetadataReference);
                     }
                 }
@@ -144,7 +143,6 @@ namespace com.espertech.esper.compiler.@internal.util
                                 PortableExecutionReferenceCache[assembly] = portableExecutableReference;
                             }
 
-                            //Console.WriteLine("metadataReferences[1]: {0}", assembly.FullName);
                             metadataReferences.Add(portableExecutableReference);
                         }
                     }
@@ -161,20 +159,24 @@ namespace com.espertech.esper.compiler.@internal.util
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        private Pair<string, SyntaxTree> Compile(Source source)
+        private System.Tuple<string, string, SyntaxTree> Compile(Source source)
         {
             var options = new CSharpParseOptions(kind: SourceCodeKind.Regular, languageVersion: MaxLanguageVersion);
+            var syntaxTree = CSharpSyntaxTree.ParseText(source.Code, options);
+            var @namespace = GetNamespaceForSyntaxTree(syntaxTree);
+            
             // Convert the codegen source to syntax tree
-            return new Pair<string, SyntaxTree>(
+            return new System.Tuple<string, string, SyntaxTree>(
+                @namespace, 
                 source.Name,
-                CSharpSyntaxTree.ParseText(source.Code, options));
+                syntaxTree);
         }
         
         /// <summary>
         /// Creates a syntax-tree list.
         /// </summary>
         /// <returns></returns>
-        private IList<Pair<string, SyntaxTree>> CreateSyntaxTree()
+        private IList<System.Tuple<string, string, SyntaxTree>> CreateSyntaxTree()
         {
             return Sources.Select(Compile).ToList();
         }        
@@ -255,7 +257,7 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             // Convert the codegen class into it's source representation.
             var syntaxTreePairs = CreateSyntaxTree();
-            var syntaxTrees = syntaxTreePairs.Select(_ => _.Second).ToList();
+            var syntaxTrees = syntaxTreePairs.Select(_ => _.Item3).ToList();
             syntaxTrees.Insert(0, CompileAssemblyBindings());
             
             // Create an in-memory representation of the compiled source.
@@ -273,18 +275,14 @@ namespace com.espertech.esper.compiler.@internal.util
                 .AddSyntaxTrees(syntaxTrees);
 
             if (CodeAuditDirectory != null) {
-                foreach (var syntaxTreePair in syntaxTreePairs) {
-                    string tempClassName = syntaxTreePair.First;
-                    string tempClassPath = Path.Combine(CodeAuditDirectory, $"{tempClassName}.cs");
-                    try {
-                        File.WriteAllText(tempClassPath, syntaxTreePair.Second.ToString());
-                    }
-                    catch (Exception) {
-                        // Not fatal, but we need to log the failure
-                        Log.Warn($"Unable to write audit file for {tempClassName} to \"{tempClassPath}\"");
-                    }
-                }
+                WriteCodeAudit(syntaxTreePairs, CodeAuditDirectory);
             }
+
+#if false
+            else {
+                WriteCodeAudit(syntaxTreePairs, @"C:\\src\\Espertech\\NEsper-8.5.0\\NEsper\\NEsper.Regression.Review\\generated");
+            }
+#endif
 
 #if DIAGNOSTICS
             Console.WriteLine("EmitToImage: {0}", assemblyName);
@@ -321,13 +319,36 @@ namespace com.espertech.esper.compiler.@internal.util
             return Assembly;
         }
 
+        private void WriteCodeAudit(IList<System.Tuple<string, string, SyntaxTree>> syntaxTreePairs, string targetDirectory)
+        {
+            foreach (var syntaxTreePair in syntaxTreePairs) {
+                string tempNamespace = syntaxTreePair.Item1;
+                string tempClassName = syntaxTreePair.Item2;
+                string tempClassPath = Path.Combine(targetDirectory, tempNamespace);
+
+                try {
+                    if (!Directory.Exists(tempClassPath)) {
+                        Directory.CreateDirectory(tempClassPath);
+                    }
+
+                    tempClassPath = Path.Combine(tempClassPath, $"{tempClassName}.cs");
+                    File.WriteAllText(tempClassPath, syntaxTreePair.Item3.ToString());
+                }
+                catch (Exception) {
+                    // Not fatal, but we need to log the failure
+                    Log.Warn($"Unable to write audit file for {tempClassName} to \"{tempClassPath}\"");
+                }
+            }
+        }
+
         private static byte[] EmitToImage(CSharpCompilation compilation)
         {
             using (var stream = new MemoryStream()) {
                 var result = compilation.Emit(stream);
                 if (!result.Success) {
+                    var diagnosticsMessage = result.Diagnostics.RenderAny();
                     throw new RoslynCompilationException(
-                        "failure during module compilation",
+                        "failure during module compilation: " + diagnosticsMessage,
                         result.Diagnostics);
                 }
 
@@ -335,6 +356,26 @@ namespace com.espertech.esper.compiler.@internal.util
             }
         }
 
+        private string GetNamespaceForSyntaxTree(SyntaxTree syntaxTree)
+        {
+            var namespaceVisitor = new NamespaceVisitor();
+            namespaceVisitor.Visit(syntaxTree.GetRoot());
+            return namespaceVisitor.Namespace;
+        }
+
+
+        public class NamespaceVisitor : CSharpSyntaxWalker
+        {
+            private string _namespace = "generated";
+
+            public string Namespace => _namespace;
+
+            public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
+            {
+                _namespace = node.Name.ToFullString().Trim();
+            }
+        }
+        
         struct CacheBinding
         {
             internal readonly Assembly Assembly;

@@ -26,7 +26,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             RegressionEnvironment env,
             RegressionPath path)
         {
-            var statementText = "@name('s0') select" +
+            var statementText = "@Name('s0') select" +
                                 " nested as a," +
                                 " nested.n1 as b," +
                                 " nested.n2 as c," +

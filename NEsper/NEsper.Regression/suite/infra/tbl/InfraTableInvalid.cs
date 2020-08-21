@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             string messageOrNull)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("@name('create') create table " + name + "(value " + declared + ")", path);
+            env.CompileDeploy("@Name('create') create table " + name + "(value " + declared + ")", path);
 
             try {
                 var epl = "into table " +

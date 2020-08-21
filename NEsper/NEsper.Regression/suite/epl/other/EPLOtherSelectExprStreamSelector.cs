@@ -97,13 +97,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var stmtOneText = "@name('l1') insert into StreamA select Nested.* from SupportBeanComplexProps as S0";
+                var stmtOneText = "@Name('l1') insert into StreamA select Nested.* from SupportBeanComplexProps as S0";
                 env.CompileDeploy(stmtOneText, path).AddListener("l1");
                 Assert.AreEqual(
                     typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested),
                     env.Statement("l1").EventType.UnderlyingType);
 
-                var stmtTwoText = "@name('l2') select NestedValue from StreamA";
+                var stmtTwoText = "@Name('l2') select NestedValue from StreamA";
                 env.CompileDeploy(stmtTwoText, path).AddListener("l2");
                 Assert.AreEqual(typeof(string), env.Statement("l2").EventType.GetPropertyType("NestedValue"));
 
@@ -121,11 +121,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtOneText = "@name('l1') insert into streamA select a.* from pattern [every a=SupportBean]";
+                var stmtOneText = "@Name('l1') insert into streamA select a.* from pattern [every a=SupportBean]";
                 env.CompileDeploy(stmtOneText).AddListener("l1");
 
                 var stmtTwoText =
-                    "@name('l2') insert into streamA select a.* from pattern [every a=SupportBean where timer:within(30 sec)]";
+                    "@Name('l2') insert into streamA select a.* from pattern [every a=SupportBean where timer:within(30 sec)]";
                 env.CompileDeploy(stmtTwoText).AddListener("l2");
 
                 var eventType = env.Statement("l1").EventType;
@@ -138,7 +138,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Assert.AreSame(theEvent, env.Listener("l2").AssertOneGetNewAndReset().Underlying);
 
                 var stmtThreeText =
-                    "@name('l3') insert into streamB select a.*, 'abc' as abc from pattern [every a=SupportBean where timer:within(30 sec)]";
+                    "@Name('l3') insert into streamB select a.*, 'abc' as abc from pattern [every a=SupportBean where timer:within(30 sec)]";
                 env.CompileDeploy(stmtThreeText);
                 Assert.AreEqual(typeof(Pair<object, IDictionary<string, object>>), env.Statement("l3").EventType.UnderlyingType);
                 Assert.AreEqual(typeof(string), env.Statement("l3").EventType.GetPropertyType("abc"));
@@ -164,7 +164,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy(model).AddListener("s0");
 
                 var epl =
-                    "@name('s0') select S0.*, S1.* as S1stream, TheString as sym from SupportBean#keepall as S0, " +
+                    "@Name('s0') select S0.*, S1.* as S1stream, TheString as sym from SupportBean#keepall as S0, " +
                     "SupportMarketDataBean#keepall as S1";
                 Assert.AreEqual(epl, model.ToEPL());
                 var modelReverse = env.EplToModel(model.ToEPL());
@@ -189,7 +189,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select *, win.* from SupportBean#length(3) as win";
+                var epl = "@Name('s0') select *, win.* from SupportBean#length(3) as win";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var type = env.Statement("s0").EventType;
@@ -207,7 +207,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select *, S1.* from SupportBean#length(3) as S0, " +
+                var epl = "@Name('s0') select *, S1.* from SupportBean#length(3) as S0, " +
                           "SupportMarketDataBean#keepall as S1";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -237,7 +237,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select *, win.* as S0 from SupportBean#length(3) as win";
+                var epl = "@Name('s0') select *, win.* as S0 from SupportBean#length(3) as win";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var type = env.Statement("s0").EventType;
@@ -261,7 +261,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select *, S1.* as S1stream, S0.* as S0stream from SupportBean#length(3) as S0, " +
+                    "@Name('s0') select *, S1.* as S1stream, S0.* as S0stream from SupportBean#length(3) as S0, " +
                     "SupportMarketDataBean#keepall as S1";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -293,7 +293,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select TheString.* as S0, IntPrimitive as a, TheString.* as S1, IntPrimitive as b from SupportBean#length(3) as TheString";
+                    "@Name('s0') select TheString.* as S0, IntPrimitive as a, TheString.* as S1, IntPrimitive as b from SupportBean#length(3) as TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var type = env.Statement("s0").EventType;
@@ -320,7 +320,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select IntPrimitive, S1.* as S1stream, TheString, Symbol as sym, S0.* as S0stream from SupportBean#length(3) as S0, " +
+                    "@Name('s0') select IntPrimitive, S1.* as S1stream, TheString, Symbol as sym, S0.* as S0stream from SupportBean#length(3) as S0, " +
                     "SupportMarketDataBean#keepall as S1";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -355,7 +355,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select IntPrimitive as a, string.*, IntPrimitive as b from SupportBean#length(3) as string";
+                    "@Name('s0') select IntPrimitive as a, string.*, IntPrimitive as b from SupportBean#length(3) as string";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var type = env.Statement("s0").EventType;
@@ -380,7 +380,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select IntPrimitive, S1.*, Symbol as sym from SupportBean#length(3) as S0, " +
+                var epl = "@Name('s0') select IntPrimitive, S1.*, Symbol as sym from SupportBean#length(3) as S0, " +
                           "SupportMarketDataBean#keepall as S1";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -409,7 +409,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select TheString.* from SupportBean#length(3) as TheString";
+                var epl = "@Name('s0') select TheString.* from SupportBean#length(3) as TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var type = env.Statement("s0").EventType;
@@ -427,7 +427,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select TheString.* as S0 from SupportBean#length(3) as TheString";
+                var epl = "@Name('s0') select TheString.* as S0 from SupportBean#length(3) as TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var type = env.Statement("s0").EventType;
@@ -446,7 +446,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select S1.* as S1 from SupportBean#length(3) as S0, " +
+                var epl = "@Name('s0') select S1.* as S1 from SupportBean#length(3) as S0, " +
                           "SupportMarketDataBean#keepall as S1";
                 env.CompileDeploy(epl);
                 var testListener = new SupportUpdateListener();
@@ -465,7 +465,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.UndeployAll();
 
                 // reverse streams
-                epl = "@name('s0') select S0.* as szero from SupportBean#length(3) as S0, " +
+                epl = "@Name('s0') select S0.* as szero from SupportBean#length(3) as S0, " +
                       "SupportMarketDataBean#keepall as S1";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -487,7 +487,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select S1.* from SupportBean#length(3) as S0, " +
+                var epl = "@Name('s0') select S1.* from SupportBean#length(3) as S0, " +
                           "SupportMarketDataBean#keepall as S1";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -504,7 +504,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.UndeployAll();
 
                 // reverse streams
-                epl = "@name('s0') select S0.* from SupportBean#length(3) as S0, " +
+                epl = "@Name('s0') select S0.* from SupportBean#length(3) as S0, " +
                       "SupportMarketDataBean#keepall as S1";
                 env.CompileDeploy(epl).AddListener("s0");
 

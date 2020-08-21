@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.filterspec
     {
         public static readonly CodegenExpressionRef REF_MATCHEDEVENTMAP = new CodegenExpressionRef("matchedEvents");
         public static readonly CodegenExpressionRef REF_STMTCTXFILTEREVALENV = new CodegenExpressionRef("stmtCtxFilterEnv");
-        public static readonly CodegenExpressionRef REF_LOOKUPABLE = new CodegenExpressionRef("lkupable"); // see name below
+        public static readonly CodegenExpressionRef REF_LOOKUPABLE = new CodegenExpressionRef("lookupable"); // see name below
         public static readonly CodegenExpressionRef REF_FILTEROPERATOR = new CodegenExpressionRef("filterOperator"); // see name below
 
         public static readonly IList<CodegenNamedParam> GET_FILTER_VALUE_FP = CodegenNamedParam.From(

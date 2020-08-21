@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					";\n";
 				env.CompileDeployWBusPublicType(epl, path);
 
-				var insert = "@name('s0') insert into MyArrayEvent select " +
+				var insert = "@Name('s0') insert into MyArrayEvent select " +
 				             "cast(arr_string, string[]) as c0, " +
 				             "cast(arr_primitive, int[primitive]) as c1, " +
 				             "cast(arr_boxed_one, int[]) as c2, " +
@@ -152,14 +152,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var stmt = "@name('s0') select " +
+				var stmt = "@Name('s0') select " +
 				           "cast(anInt, int) as intVal, " +
 				           "cast(anDouble, double) as doubleVal, " +
 				           "cast(anLong, long) as longVal, " +
 				           "cast(anFloat, float) as floatVal, " +
 				           "cast(anByte, byte) as byteVal, " +
 				           "cast(anShort, short) as shortVal, " +
-				           "cast(IntPrimitive, int) as intOne, " +
+				           "cast(IntPrimitive, int) as IntOne, " +
 				           "cast(IntBoxed, int) as intTwo, " +
 				           "cast(IntPrimitive, System.Int64) as longOne, " +
 				           "cast(IntBoxed, long) as longTwo " +
@@ -185,7 +185,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				Assert.AreEqual(1.001f, row.Get("floatVal"));
 				Assert.AreEqual((byte) 10, row.Get("byteVal"));
 				Assert.AreEqual((short) 223, row.Get("shortVal"));
-				Assert.AreEqual(10, row.Get("intOne"));
+				Assert.AreEqual(10, row.Get("IntOne"));
 				Assert.AreEqual(11, row.Get("intTwo"));
 				Assert.AreEqual(10L, row.Get("longOne"));
 				Assert.AreEqual(11L, row.Get("longTwo"));
@@ -277,7 +277,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				env.UndeployAll();
 
 				// test cast with chained and null
-				var epl = "@name('s0') select cast(one as " +
+				var epl = "@Name('s0') select cast(one as " +
 				          typeof(SupportBean).Name +
 				          ").getTheString() as t0," +
 				          "cast(null, " +
@@ -361,7 +361,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select cast(TheString, int) as t0 from SupportBean";
+				var epl = "@Name('s0') select cast(TheString, int) as t0 from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("t0"));
@@ -377,7 +377,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select" +
+				var epl = "@Name('s0') select" +
 				          " cast(item?, " + typeof(SupportMarkerInterface).Name + ") as t0, " +
 				          " cast(item?, " + typeof(ISupportA).Name + ") as t1, " +
 				          " cast(item?, " + typeof(ISupportBaseAB).Name + ") as t2, " +
@@ -433,7 +433,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select cast(item?,System.String) as t0 from SupportBeanDynRoot";
+				var epl = "@Name('s0') select cast(item?,System.String) as t0 from SupportBeanDynRoot";
 
 				env.EplToModelCompileDeploy(epl).AddListener("s0");
 
@@ -465,7 +465,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select" +
+				var epl = "@Name('s0') select" +
 				          " cast(BoolPrimitive as System.Boolean) as t0, " +
 				          " cast(BoolBoxed | BoolPrimitive, boolean) as t1, " +
 				          " cast(BoolBoxed, string) as t2 " +
@@ -633,7 +633,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			RegressionEnvironment env,
 			AtomicLong milestone)
 		{
-			var epl = "@name('s0') select cast(yyyymmdd,date,dateformat:\"yyyyMMdd\") from MyDateType";
+			var epl = "@Name('s0') select cast(yyyymmdd,date,dateformat:\"yyyyMMdd\") from MyDateType";
 			env.CompileDeploy(epl).AddListener("s0").Milestone(milestone.GetAndIncrement());
 			Assert.AreEqual("cast(yyyymmdd,date,dateformat:\"yyyyMMdd\")", env.Statement("s0").EventType.PropertyNames[0]);
 			env.UndeployAll();
@@ -680,7 +680,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			RegressionEnvironment env,
 			AtomicLong milestone)
 		{
-			var epl = "@name('s0') select " +
+			var epl = "@Name('s0') select " +
 			          "cast('1997-07-16T19:20:30Z',dtx,dateformat:'iso') as c0," +
 			          "cast('1997-07-16T19:20:30+01:00',dtx,dateformat:'iso') as c1," +
 			          "cast('1997-07-16T19:20:30',dtx,dateformat:'iso') as c2," +
@@ -738,7 +738,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			var sdfDate = sdt.DateTimeEx.DateTime.ToString("s");
 			var sdf = typeof(SimpleDateFormat).FullName;
 
-			var epl = "@name('s0') select " +
+			var epl = "@Name('s0') select " +
 			          $"cast('{sdfDate}',dtx,dateformat:{sdf}.GetInstance()) as c0," +
 			          $"cast('{sdfDate}',datetimeoffset,dateformat:{sdf}.GetInstance()) as c1," +
 			          $"cast('{sdfDate}',datetime,dateformat:{sdf}.GetInstance()) as c2," +

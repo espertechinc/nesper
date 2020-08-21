@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "val2",
                     "val3"
                 };
-                var eplFragment = "@name('s0') select " +
+                var eplFragment = "@Name('s0') select " +
                                   "DateTimeEx.set('month', 1) as val0," +
                                   "DateTimeOffset.set('month', 1) as val1," +
                                   "DateTime.set('month', 1) as val2," +
@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "val0","val1","val2","val3","val4","val5","val6" };
-                var eplFragment = "@name('s0') select " +
+                var eplFragment = "@Name('s0') select " +
                                   "DateTimeOffset.set('msec', 1) as val0," +
                                   "DateTimeOffset.set('sec', 2) as val1," +
                                   "DateTimeOffset.set('minutes', 3) as val2," +

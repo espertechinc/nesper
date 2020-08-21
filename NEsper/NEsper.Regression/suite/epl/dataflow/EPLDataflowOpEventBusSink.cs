@@ -39,14 +39,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             string typeName,
             object[] events)
         {
-            var graph = "@name('flow') create dataflow MyGraph " +
+            var graph = "@Name('flow') create dataflow MyGraph " +
                         "DefaultSupportSourceOp -> instream<" +
                         typeName +
                         ">{}" +
                         "EventBusSink(instream) {}";
             env.CompileDeploy(graph);
 
-            env.CompileDeploy("@name('s0') select * from " + typeName).AddListener("s0");
+            env.CompileDeploy("@Name('s0') select * from " + typeName).AddListener("s0");
 
             var source = new DefaultSupportSourceOp(events);
             var options = new EPDataFlowInstantiationOptions();
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 var path = new RegressionPath();
                 env.CompileDeploy("create schema SampleSchema(tagId string, locX double, locY double)", path);
-                var docSmple = "@name('s0') create dataflow MyDataFlow\n" +
+                var docSmple = "@Name('s0') create dataflow MyDataFlow\n" +
                                "BeaconSource -> instream<SampleSchema> {} // produces sample stream to\n" +
                                "//demonstrate below\n" +
                                "// Send SampleSchema events produced by beacon to the event bus.\n" +
@@ -113,9 +113,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             {
                 var path = new RegressionPath();
                 env.CompileDeploy("create objectarray schema MyEventBeacon(P0 string, P1 long)", path);
-                env.CompileDeploy("@name('s0') select * from MyEventBeacon", path).AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from MyEventBeacon", path).AddListener("s0");
                 env.CompileDeploy(
-                    "@name('flow') create dataflow MyDataFlowOne " +
+                    "@Name('flow') create dataflow MyDataFlowOne " +
                     "" +
                     "BeaconSource -> BeaconStream<MyEventBeacon> {" +
                     "  iterations : 3," +
@@ -149,11 +149,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     "create objectarray schema MyEventTwo(type string, f0 string, f1 int);\n";
                 env.CompileDeployWBusPublicType(schemaEPL, path);
 
-                env.CompileDeploy("@name('s0') select * from MyEventOne", path).AddListener("s0");
-                env.CompileDeploy("@name('s1') select * from MyEventTwo", path).AddListener("s1");
+                env.CompileDeploy("@Name('s0') select * from MyEventOne", path).AddListener("s0");
+                env.CompileDeploy("@Name('s1') select * from MyEventTwo", path).AddListener("s1");
 
                 env.CompileDeploy(
-                    "@name('flow') create dataflow MyDataFlow " +
+                    "@Name('flow') create dataflow MyDataFlow " +
                     "MyObjectArrayGraphSource -> OutStream<?> {}" +
                     "EventBusSink(OutStream) {" +
                     "  collector : {" +

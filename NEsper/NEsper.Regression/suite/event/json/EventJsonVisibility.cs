@@ -45,13 +45,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				env.CompileDeploy(moduleB, pathB);
 
 				env.CompileDeploy(
-						"insert into JsonSchema select theString as fruit, 'large' as size from SupportBean;\n" +
-						"@name('a') select fruit, size from JsonSchema#keepall",
+						"insert into JsonSchema select TheString as fruit, 'large' as size from SupportBean;\n" +
+						"@Name('a') select fruit, size from JsonSchema#keepall",
 						pathA)
 					.AddListener("a");
 				env.CompileDeploy(
-						"insert into JsonSchema select theString as carId from SupportBean;\n" +
-						"@name('b') select carId from JsonSchema#keepall",
+						"insert into JsonSchema select TheString as carId from SupportBean;\n" +
+						"@Name('b') select carId from JsonSchema#keepall",
 						pathB)
 					.AddListener("b");
 
@@ -83,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			public void Run(RegressionEnvironment env)
 			{
 				string epl = "@public @buseventtype create json schema SimpleJson(fruit string, size string, color string);\n" +
-				             "@name('s0') select fruit, size, color from SimpleJson#keepall;\n";
+				             "@Name('s0') select fruit, size, color from SimpleJson#keepall;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				RunAssertionSimple(env);
@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				RegressionPath path = new RegressionPath();
 				env.CompileDeploy("@public @buseventtype create json schema SimpleJson(fruit string, size string, color string)", path);
-				env.CompileDeploy("@name('s0') select fruit, size, color from SimpleJson#keepall", path).AddListener("s0");
+				env.CompileDeploy("@Name('s0') select fruit, size, color from SimpleJson#keepall", path).AddListener("s0");
 
 				RunAssertionSimple(env);
 
@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			public void Run(RegressionEnvironment env)
 			{
 				env.CompileDeploy("@public @buseventtype create json schema SimpleJson(fruit string, size string, color string)");
-				string epl = "@name('s0') select fruit, size, color from SimpleJson#keepall";
+				string epl = "@Name('s0') select fruit, size, color from SimpleJson#keepall";
 				EPCompiled compiled = env.Compile(epl, new CompilerArguments(env.Runtime.RuntimePath));
 				env.Deploy(compiled).AddListener("s0");
 

@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             string filterClause)
         {
             var epl =
-                "@name('s0') select irstream a.Price as aPrice, b.Price as bPrice, Math.Max(a.Price, b.Price) - Math.Min(a.Price, b.Price) as spread " +
+                "@Name('s0') select irstream a.Price as aPrice, b.Price as bPrice, Math.Max(a.Price, b.Price) - Math.Min(a.Price, b.Price) as spread " +
                 "from SupportMarketDataBean(Symbol='SYM1')#length(1) as a, " +
                 "SupportMarketDataBean(Symbol='SYM2')#length(1) as b " +
                 filterClause +
@@ -268,7 +268,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select * " +
+                var epl = "@Name('s0') select * " +
                           "from SupportBean#length_batch(2) " +
                           "where IntPrimitive>0 " +
                           "having count(*)=2";
@@ -325,7 +325,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream Symbol, Price, avg(Price) as avgPrice " +
+                var epl = "@Name('s0') select irstream Symbol, Price, avg(Price) as avgPrice " +
                           "from SupportMarketDataBean#length(5) " +
                           "having Price < avg(Price)";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -340,7 +340,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream Symbol, Price, avg(Price) as avgPrice " +
+                var epl = "@Name('s0') select irstream Symbol, Price, avg(Price) as avgPrice " +
                           "from SupportBeanString#length(100) as one, " +
                           "SupportMarketDataBean#length(5) as two " +
                           "where one.TheString = two.Symbol " +
@@ -359,7 +359,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream Symbol, Price, avg(Price) as avgPrice " +
+                var epl = "@Name('s0') select irstream Symbol, Price, avg(Price) as avgPrice " +
                           "from SupportMarketDataBean#length(5) as two " +
                           "having Volume < avg(Price)";
                 env.CompileDeploy(epl).UndeployAll();
@@ -387,7 +387,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') insert into MyStream select quote.* from SupportBean#length(14) quote having avg(IntPrimitive) >= 3\n";
+                    "@Name('s0') insert into MyStream select quote.* from SupportBean#length(14) quote having avg(IntPrimitive) >= 3\n";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("abc", 2));
@@ -415,7 +415,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select irstream sum(myEvent.IntPrimitive) as mysum from pattern [every myEvent=SupportBean] having sum(myEvent.IntPrimitive) = 2";
+                    "@Name('s0') select irstream sum(myEvent.IntPrimitive) as mysum from pattern [every myEvent=SupportBean] having sum(myEvent.IntPrimitive) = 2";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, 1);
@@ -438,7 +438,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select istream sum(myEvent.IntPrimitive) as mysum from pattern [every myEvent=SupportBean" +
+                    "@Name('s0') select istream sum(myEvent.IntPrimitive) as mysum from pattern [every myEvent=SupportBean" +
                     "] having sum(myEvent.IntPrimitive) = 2";
                 env.CompileDeploy(epl).AddListener("s0");
 

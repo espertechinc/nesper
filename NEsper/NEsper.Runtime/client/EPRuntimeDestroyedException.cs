@@ -7,23 +7,33 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
+
 using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.runtime.client
 {
     /// <summary>
-    /// This exception is thrown to indicate that the runtime instance has been destroyed.
-    /// <para />This exception applies to destroyed runtime when a client attempts to use the runtime after it was destroyed.
+    ///     This exception is thrown to indicate that the runtime instance has been destroyed.
+    ///     <para>
+    ///         This exception applies to destroyed runtime when a client attempts to use the runtime after it was destroyed.
+    ///     </para>
     /// </summary>
     [Serializable]
     public class EPRuntimeDestroyedException : EPRuntimeException
     {
         /// <summary>
-        /// Ctor.
+        ///     Ctor.
         /// </summary>
         /// <param name="runtimeURI">runtime URI</param>
         public EPRuntimeDestroyedException(string runtimeURI)
             : base("Runtime has already been destroyed for runtime URI '" + runtimeURI + "'")
+        {
+        }
+
+        protected EPRuntimeDestroyedException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

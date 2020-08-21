@@ -54,8 +54,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             CodegenClassScope classScope)
         {
             return NewInstance<AggregationLocalGroupByLevel>(
-                NewInstance(rowFactory, Ref("this")),
-                NewInstance(rowSerde, Ref("this")),
+                NewInstanceInner(rowFactory, Ref("this")),
+                NewInstanceInner(rowSerde, Ref("this")),
                 Constant(ExprNodeUtilityQuery.GetExprResultTypes(PartitionForges)),
                 groupKeyEval,
                 Constant(IsDefaultLevel),

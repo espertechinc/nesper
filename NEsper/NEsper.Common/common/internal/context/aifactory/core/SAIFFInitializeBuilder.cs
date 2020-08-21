@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             this.classScope = classScope;
 
             method = parent.MakeChild(returnType, originator, classScope);
-            method.Block.DeclareVar(returnType, refName, NewInstance(returnType));
+            method.Block.DeclareVar(returnType, refName, NewInstanceInner(returnType));
         }
 
         public SAIFFInitializeBuilder EventtypesMayNull(

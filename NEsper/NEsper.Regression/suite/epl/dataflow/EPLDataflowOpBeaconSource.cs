@@ -57,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 "create schema MyEvent(p0 string, p1 long, p2 double)", path);
             
             env.CompileDeploy(
-                "@name('flow') create dataflow MyDataFlowOne " +
+                "@Name('flow') create dataflow MyDataFlowOne " +
                 "" +
                 "BeaconSource -> BeaconStream<" + streamType + "> " +
                 "{" +
@@ -121,7 +121,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             string typeName)
         {
             env.CompileDeploy(
-                "@name('flow') create dataflow MyDataFlowOne " +
+                "@Name('flow') create dataflow MyDataFlowOne " +
                 "" +
                 "BeaconSource -> BeaconStream<" +
                 typeName +
@@ -175,7 +175,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy("create Schema SomeEvent()", path);
                 env.CompileDeploy("create variable int var_iterations=3", path);
                 env.CompileDeploy(
-                    "@name('flow') create dataflow MyDataFlowOne " +
+                    "@Name('flow') create dataflow MyDataFlowOne " +
                     "BeaconSource -> BeaconStream<SomeEvent> {" +
                     "  iterations : var_iterations" +
                     "}" +
@@ -210,7 +210,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 }
 
                 // test doc samples
-                var epl = "@name('flow') create dataflow MyDataFlow\n" +
+                var epl = "@Name('flow') create dataflow MyDataFlow\n" +
                           "  create schema SampleSchema(tagId string, locX double, locY double)," +
                           "  " +
                           "  // BeaconSource that produces empty object-array events without delay or interval\n" +
@@ -239,7 +239,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.UndeployAll();
 
                 // test options-provided beacon field
-                var eplMinimal = "@name('flow') create dataflow MyGraph " +
+                var eplMinimal = "@Name('flow') create dataflow MyGraph " +
                                  "BeaconSource -> outstream<SupportBean> {iterations:1} " +
                                  "EventBusSink(outstream) {}";
                 env.CompileDeploy(eplMinimal);
@@ -248,7 +248,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 options.AddParameterURI("BeaconSource/TheString", "E1");
                 var instance = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyGraph", options);
 
-                env.CompileDeploy("@name('s0') select * from SupportBean").AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from SupportBean").AddListener("s0");
                 instance.Run();
                 Sleep(200);
                 EPAssertionUtil.AssertProps(
@@ -274,7 +274,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 object[] output;
 
                 env.CompileDeploy(
-                    "@name('flow') create dataflow MyDataFlowOne " +
+                    "@Name('flow') create dataflow MyDataFlowOne " +
                     "BeaconSource -> BeaconStream {}" +
                     "DefaultSupportCaptureOp(BeaconStream) {}");
 
@@ -297,7 +297,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 // BeaconSource with given number of iterations
                 env.CompileDeploy(
-                    "@name('flow') create dataflow MyDataFlowTwo " +
+                    "@Name('flow') create dataflow MyDataFlowTwo " +
                     "BeaconSource -> BeaconStream {" +
                     "  iterations: 5" +
                     "}" +
@@ -319,7 +319,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 // BeaconSource with delay
                 env.CompileDeploy(
-                    "@name('flow') create dataflow MyDataFlowThree " +
+                    "@Name('flow') create dataflow MyDataFlowThree " +
                     "BeaconSource -> BeaconStream {" +
                     "  iterations: 2," +
                     "  initialDelay: 0.5" +
@@ -345,7 +345,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 // BeaconSource with period
                 env.CompileDeploy(
-                    "@name('flow') create dataflow MyDataFlowFour " +
+                    "@Name('flow') create dataflow MyDataFlowFour " +
                     "BeaconSource -> BeaconStream {" +
                     "  interval: 0.5" +
                     "}" +
@@ -373,7 +373,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 var path = new RegressionPath();
                 env.CompileDeploy("create objectarray schema MyTestOAType(p1 string)", path);
                 env.CompileDeploy(
-                    "@name('flow') create dataflow MyDataFlowFive " +
+                    "@Name('flow') create dataflow MyDataFlowFive " +
                     "BeaconSource -> BeaconStream<MyTestOAType> {" +
                     "  interval: 0.5," +
                     "  p1 : 'abc'" +

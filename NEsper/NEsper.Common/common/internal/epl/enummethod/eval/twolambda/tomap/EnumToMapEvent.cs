@@ -82,9 +82,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tom
 			block.DeclareVar(typeof(IDictionary<object, object>), "map", NewInstance(typeof(Dictionary<object, object>)));
 			block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
 				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), @Ref("next"))
-				.DeclareVar(typeof(object), "key", InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-				.DeclareVar(typeof(object), "value", secondExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-				.Expression(ExprDotMethod(@Ref("map"), "put", @Ref("key"), @Ref("value")));
+				.DeclareVar<object>("key", InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+				.DeclareVar<object>("value", secondExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+				.Expression(ExprDotMethod(@Ref("map"), "Put", @Ref("key"), @Ref("value")));
 			block.MethodReturn(@Ref("map"));
 			return LocalMethod(methodNode, premade.Eps, premade.Enumcoll, premade.IsNewData, premade.ExprCtx);
 		}

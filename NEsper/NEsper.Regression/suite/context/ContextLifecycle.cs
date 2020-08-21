@@ -42,9 +42,9 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 var eplOne = "create context CtxSegmentedByTarget partition by TheString from SupportBean;" +
-                             "@name('out') context CtxSegmentedByTarget on SupportBean insert into NewSupportBean select * where IntPrimitive = 100;";
+                             "@Name('out') context CtxSegmentedByTarget on SupportBean insert into NewSupportBean select * where IntPrimitive = 100;";
                 env.CompileDeploy(eplOne, path);
-                env.CompileDeploy("@name('s0') select * from NewSupportBean", path).AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from NewSupportBean", path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 Assert.IsFalse(env.Listener("s0").GetAndClearIsInvoked());
@@ -58,12 +58,12 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = new [] { "mymax" };
                 var eplTwo = "create context CtxSegmentedByTarget partition by TheString from SupportBean;" +
                              "context CtxSegmentedByTarget create window NewEvent#unique(TheString) as SupportBean;" +
-                             "@name('out') context CtxSegmentedByTarget on SupportBean " +
+                             "@Name('out') context CtxSegmentedByTarget on SupportBean " +
                              "insert into NewEvent select * where IntPrimitive = 100 " +
                              "insert into NewEventTwo select (select max(IntPrimitive) from NewEvent) as mymax  " +
                              "output all;";
                 env.CompileDeploy(eplTwo, path);
-                env.CompileDeploy("@name('s0') select * from NewEventTwo", path).AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from NewEventTwo", path).AddListener("s0");
                 env.SendEventBean(new SupportBean("E1", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // Trigger not in context
                 env.CompileDeploy(
-                    "@name('createwindow') context NineToFive create window MyWindow#keepall as SupportBean",
+                    "@Name('createwindow') context NineToFive create window MyWindow#keepall as SupportBean",
                     path);
                 TryInvalidCompile(
                     env,
@@ -155,7 +155,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('context') create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)";
+                var epl = "@Name('context') create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)";
                 Assert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env));
                 Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env));
 
@@ -172,7 +172,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(epl, path);
                 Assert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env));
 
-                env.CompileDeploy("@name('s0') context NineToFive select * from SupportBean", path);
+                env.CompileDeploy("@Name('s0') context NineToFive select * from SupportBean", path);
                 Assert.AreEqual(1, SupportScheduleHelper.ScheduleCountOverall(env));
 
                 env.UndeployModuleContaining("s0");
@@ -184,8 +184,8 @@ namespace com.espertech.esper.regressionlib.suite.context
                 // create same context
                 path.Clear();
                 env.CompileDeploy(epl, path);
-                env.CompileDeploy("@name('C') context NineToFive select * from SupportBean", path);
-                env.CompileDeploy("@name('D') context NineToFive select * from SupportBean", path);
+                env.CompileDeploy("@Name('C') context NineToFive select * from SupportBean", path);
+                env.CompileDeploy("@Name('D') context NineToFive select * from SupportBean", path);
 
                 Assert.AreEqual(1, SupportScheduleHelper.ScheduleCountOverall(env));
 
@@ -205,7 +205,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // same context twice
                 var eplCreateCtx =
-                    "@name('ctx') create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)";
+                    "@Name('ctx') create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)";
                 env.CompileDeploy(eplCreateCtx, path);
                 TryInvalidCompile(env, path, eplCreateCtx, "Context by name 'NineToFive' already exists");
 
@@ -231,7 +231,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 // test update: update is not allowed as it is processed out-of-context by eventService
                 env.CompileDeploy("insert into ABCStream select * from SupportBean", path);
                 env.CompileDeploy(
-                    "@name('context') create context SegmentedByAString partition by TheString from ABCStream",
+                    "@Name('context') create context SegmentedByAString partition by TheString from ABCStream",
                     path);
                 TryInvalidCompile(
                     env,

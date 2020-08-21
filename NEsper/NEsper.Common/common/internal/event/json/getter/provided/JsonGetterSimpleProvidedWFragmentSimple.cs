@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             var method = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(Field.DeclaringType, "record");
             method.Block
-                .DeclareVar(typeof(object), "value", UnderlyingGetCodegen(Ref("record"), codegenMethodScope, codegenClassScope))
+                .DeclareVar<object>("value", UnderlyingGetCodegen(Ref("record"), codegenMethodScope, codegenClassScope))
                 .IfRefNullReturnNull("value");
             string adapterMethod;
             if (FragmentType is BeanEventType) {

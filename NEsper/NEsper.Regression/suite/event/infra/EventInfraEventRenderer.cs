@@ -103,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			object @event,
 			RegressionPath path)
 		{
-			var epl = "@name('s0') select * from " + typename;
+			var epl = "@Name('s0') select * from " + typename;
 			env.CompileDeploy(epl, path).AddListener("s0");
 			send.Invoke(env, @event, typename);
 

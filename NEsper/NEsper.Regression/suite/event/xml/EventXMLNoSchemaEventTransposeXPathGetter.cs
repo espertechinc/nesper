@@ -23,7 +23,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public void Run(RegressionEnvironment env)
         {
             // note class not a fragment
-            env.CompileDeploy("@name('s0') insert into MyNestedStream select nested1 from TestXMLSchemaTypeTXG");
+            env.CompileDeploy("@Name('s0') insert into MyNestedStream select nested1 from TestXMLSchemaTypeTXG");
             CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {
                     new EventPropertyDescriptor("nested1", typeof(XmlNode), null, false, false, false, false, false)

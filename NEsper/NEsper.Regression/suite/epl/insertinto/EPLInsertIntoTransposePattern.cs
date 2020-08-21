@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('window') create window OneWindow#time(1 day) as select TheString as alertId, This from SupportBean",
+                    "@Name('window') create window OneWindow#time(1 day) as select TheString as alertId, This from SupportBean",
                     path);
                 env.CompileDeploy(
                     "insert into OneWindow select '1' as alertId, stream0.quote.This as This " +
@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     new[] {new object[] {"1", 10}, new object[] {"2", 20}});
 
                 env.CompileDeploy(
-                    "@name('window-2') create window TwoWindow#time(1 day) as select TheString as alertId, * from SupportBean",
+                    "@Name('window-2') create window TwoWindow#time(1 day) as select TheString as alertId, * from SupportBean",
                     path);
                 env.CompileDeploy(
                     "insert into TwoWindow select '3' as alertId, quote.* " +
@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "insert into MyStreamABBean select a, b from pattern [a=SupportBean_A -> b=SupportBean_B]";
                 env.CompileDeploy(stmtTextOne, path);
 
-                var stmtTextTwo = "@name('s0') select a.Id, b.Id from MyStreamABBean";
+                var stmtTextTwo = "@Name('s0') select a.Id, b.Id from MyStreamABBean";
                 env.CompileDeploy(stmtTextTwo, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("A1"));
@@ -118,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var path = new RegressionPath();
                 var stmtTextOne =
-                    "@name('i1') insert into MyStreamABMap select a, b from pattern [a=AEventMap -> b=BEventMap]";
+                    "@Name('i1') insert into MyStreamABMap select a, b from pattern [a=AEventMap -> b=BEventMap]";
                 env.CompileDeploy(stmtTextOne, path).AddListener("i1");
                 Assert.AreEqual(
                     typeof(IDictionary<string, object>),
@@ -127,7 +127,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     typeof(IDictionary<string, object>),
                     env.Statement("i1").EventType.GetPropertyType("b"));
 
-                var stmtTextTwo = "@name('s0') select a.Id, b.Id from MyStreamABMap";
+                var stmtTextTwo = "@Name('s0') select a.Id, b.Id from MyStreamABMap";
                 env.CompileDeploy(stmtTextTwo, path).AddListener("s0");
                 Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("a.Id"));
                 Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("b.Id"));

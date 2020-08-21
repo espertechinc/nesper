@@ -201,7 +201,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 log.Info("Started event send for read");
 
                 try {
-                    var eplSelect = "@name('s0') select vartotal[TheString] as out from SupportBean";
+                    var eplSelect = "@Name('s0') select vartotal[TheString] as out from SupportBean";
                     env.CompileDeploy(eplSelect, path).AddListener("s0");
                     var listener = env.Listener("s0");
 

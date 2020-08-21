@@ -45,10 +45,10 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             env.AdvanceTime(0);
             var path = new RegressionPath();
-            env.CompileDeploy("@name('var') create variable boolean myvar = false", path);
+            env.CompileDeploy("@Name('var') create variable boolean myvar = false", path);
             env.CompileDeploy("create context SegmentedByString as partition by TheString from SupportBean", path);
             env.CompileDeploy(
-                "@name('s0') context SegmentedByString select TheString, count(*) - 1 as cnt from SupportBean output snapshot when myvar = true",
+                "@Name('s0') context SegmentedByString select TheString, count(*) - 1 as cnt from SupportBean output snapshot when myvar = true",
                 path);
             var listener = new SupportUpdateListener();
             env.Statement("s0").AddListener(listener);

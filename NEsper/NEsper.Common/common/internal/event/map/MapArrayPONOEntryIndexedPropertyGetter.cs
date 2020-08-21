@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                 .AddParam(typeof(IDictionary<string, object>), "map")
                 .AddParam(typeof(int), "index")
                 .Block
-                .DeclareVar(typeof(object), "value", ExprDotMethod(Ref("map"), "Get", Constant(_propertyMap)))
+                .DeclareVar<object>("value", ExprDotMethod(Ref("map"), "Get", Constant(_propertyMap)))
                 .MethodReturn(StaticMethod(typeof(BaseNestableEventUtil), "GetBNArrayValueAtIndexWithNullCheck", Ref("value"), Ref("index")));
         }
 
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                 .AddParam(typeof(IDictionary<string, object>), "map")
                 .AddParam(typeof(int), "index")
                 .Block
-                .DeclareVar(typeof(object), "value", ExprDotMethod(Ref("map"), "Get", Constant(_propertyMap)))
+                .DeclareVar<object>("value", ExprDotMethod(Ref("map"), "Get", Constant(_propertyMap)))
                 .MethodReturn(StaticMethod(typeof(CollectionUtil), "ArrayExistsAtIndex", Ref("value"), Ref("index")));
         }
 

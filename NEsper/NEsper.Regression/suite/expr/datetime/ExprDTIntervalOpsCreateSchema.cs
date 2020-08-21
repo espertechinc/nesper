@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             var startA = "2002-05-30T09:00:00.000";
             var epl = 
                 $"create schema SupportBeanXXX as {typeName} starttimestamp LongPrimitive endtimestamp LongBoxed;\n" +
-                $"@name('s0') select a.Get('month') as val0 from SupportBeanXXX a;\n";
+                $"@Name('s0') select a.Get('month') as val0 from SupportBeanXXX a;\n";
 
             env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
@@ -116,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             var epl = eventRepresentationEnum.GetAnnotationTextWJsonProvided<T>() + " create schema TypeA as (startts " + typeOfDatetimeProp + ", endts " + typeOfDatetimeProp + ") starttimestamp startts endtimestamp endts;\n";
             epl += eventRepresentationEnum.GetAnnotationTextWJsonProvided<T>() + " create schema TypeB as (startts " + typeOfDatetimeProp + ", endts " + typeOfDatetimeProp + ") starttimestamp startts endtimestamp endts;\n";
-            epl += "@name('s0') select a.includes(b) as val0 from TypeA#lastevent as a, TypeB#lastevent as b;\n";
+            epl += "@Name('s0') select a.includes(b) as val0 from TypeA#lastevent as a, TypeB#lastevent as b;\n";
             env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
             MakeSendEvent(env, "TypeA", eventRepresentationEnum, startA, endA);

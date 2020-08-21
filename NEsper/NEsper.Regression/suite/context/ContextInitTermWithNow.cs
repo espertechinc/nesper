@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(contextExpr, path);
 
                 string[] fields = {"cnt"};
-                var streamExpr = "@name('s0') context MyContext " +
+                var streamExpr = "@Name('s0') context MyContext " +
                                  "select count(*) as cnt from SupportBean output last when terminated";
                 env.CompileDeploy(streamExpr, path).AddListener("s0");
 
@@ -97,7 +97,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(contextExpr, path);
 
                 string[] fields = {"cnt"};
-                var streamExpr = "@name('s0') context MyContext " +
+                var streamExpr = "@Name('s0') context MyContext " +
                                  "select count(*) as cnt from SupportBean output last when terminated";
                 env.CompileDeploy(streamExpr, path).AddListener("s0");
 

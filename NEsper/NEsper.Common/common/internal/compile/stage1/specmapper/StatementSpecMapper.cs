@@ -2403,8 +2403,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                 Type constantType = null;
                 if (op.ConstantType != null) {
                     try {
-                        constantType =
-                            mapContext.ImportService.ClassForNameProvider.ClassForName(op.ConstantType);
+                        constantType = mapContext.ImportService.ClassForNameProvider.ClassForName(op.ConstantType);
                     }
                     catch (TypeLoadException) {
                         constantType = TypeHelper.GetPrimitiveTypeForName(op.ConstantType);

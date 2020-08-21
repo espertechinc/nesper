@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			CodegenClassScope codegenClassScope)
 		{
 			block
-				.DeclareVar(typeof(BTreeDictionary<object, object>), "sort", NewInstance(typeof(BTreeDictionary<object, object>)))
+				.DeclareVar<BTreeDictionary<object, object>>("sort", NewInstance(typeof(BTreeDictionary<object, object>)))
 				.DeclareVar<bool>("hasColl", ConstantFalse());
 		}
 

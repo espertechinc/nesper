@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             RegressionPath path)
         {
             // test expression reuse
-            var epl = "@name('s0') expression q {" +
+            var epl = "@Name('s0') expression q {" +
                       "  x -> (select * from Win where IntPrimitive = x.P00)" +
                       "}" +
                       "select " +
@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             RegressionPath path)
         {
             // test expression reuse
-            var epl = "@name('s0') expression q {" +
+            var epl = "@Name('s0') expression q {" +
                       "  x => Win(TheString = x.Key0).where(y -> IntPrimitive = x.P00)" +
                       "}" +
                       "select " +

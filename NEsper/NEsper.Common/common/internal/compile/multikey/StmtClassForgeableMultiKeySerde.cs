@@ -57,11 +57,11 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			bool includeDebugSymbols,
 			bool fireAndForget)
 		{
-			CodegenClassProperties properties = new CodegenClassProperties();
-			CodegenClassMethods methods = new CodegenClassMethods();
-			CodegenClassScope classScope = new CodegenClassScope(includeDebugSymbols, namespaceScope, className);
+			var properties = new CodegenClassProperties();
+			var methods = new CodegenClassMethods();
+			var classScope = new CodegenClassScope(includeDebugSymbols, namespaceScope, className);
 
-			CodegenMethod writeMethod = CodegenMethod
+			var writeMethod = CodegenMethod
 				.MakeParentNode(typeof(void),  typeof(StmtClassForgeableMultiKeySerde), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(typeof(object), OBJECT_NAME)
 				.AddParam(typeof(DataOutput), OUTPUT_NAME)
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 
 			CodegenStackGenerator.RecursiveBuildStack(writeMethod, "Write", methods, properties);
 
-			CodegenMethod readMethod = CodegenMethod.MakeParentNode(
+			var readMethod = CodegenMethod.MakeParentNode(
 					typeof(object),
 					typeof(StmtClassForgeableMultiKeySerde),
 					CodegenSymbolProviderEmpty.INSTANCE,
@@ -92,12 +92,12 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			CodegenStackGenerator.RecursiveBuildStack(readMethod, "Read", methods, properties);
 
 			IList<CodegenTypedParam> members = new List<CodegenTypedParam>();
-			for (int i = 0; i < forges.Length; i++) {
+			for (var i = 0; i < forges.Length; i++) {
 				members.Add(new CodegenTypedParam(forges[i].ForgeClassName(), "s" + i));
 			}
 
-			CodegenCtor providerCtor = new CodegenCtor(GetType(), ClassName, includeDebugSymbols, EmptyList<CodegenTypedParam>.Instance);
-			for (int i = 0; i < forges.Length; i++) {
+			var providerCtor = new CodegenCtor(GetType(), ClassName, includeDebugSymbols, EmptyList<CodegenTypedParam>.Instance);
+			for (var i = 0; i < forges.Length; i++) {
 				providerCtor.Block.AssignRef("s" + i, forges[i].Codegen(providerCtor, classScope, null));
 			}
 
@@ -124,24 +124,24 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 		private void MakeWriteMethod(CodegenMethod writeMethod)
 		{
 			writeMethod.Block.DeclareVar(classNameMK, "key", Cast(classNameMK, Ref(OBJECT_NAME)));
-			for (int i = 0; i < types.Length; i++) {
-				CodegenExpressionRef key = Ref("key.k" + i);
+			for (var i = 0; i < types.Length; i++) {
+				var key = Ref("key.k" + i);
 				CodegenExpression serde = Ref("s" + i);
-				writeMethod.Block.ExprDotMethod(serde, "write", key, Ref(OUTPUT_NAME), Ref(UNITKEY_NAME), Ref(WRITER_NAME));
+				writeMethod.Block.ExprDotMethod(serde, "Write", key, Ref(OUTPUT_NAME), Ref(UNITKEY_NAME), Ref(WRITER_NAME));
 			}
 		}
 
 		private void MakeReadMethod(CodegenMethod readMethod)
 		{
-			CodegenExpression[] @params = new CodegenExpression[types.Length];
-			for (int i = 0; i < types.Length; i++) {
+			var @params = new CodegenExpression[types.Length];
+			for (var i = 0; i < types.Length; i++) {
 				CodegenExpression serde = Ref("s" + i);
 				@params[i] = Cast(
 					types[i].GetBoxedType(),
-					ExprDotMethod(serde, "read", Ref(INPUT_NAME), Ref(UNITKEY_NAME)));
+					ExprDotMethod(serde, "Read", Ref(INPUT_NAME), Ref(UNITKEY_NAME)));
 			}
 
-			readMethod.Block.MethodReturn(NewInstance(classNameMK, @params));
+			readMethod.Block.MethodReturn(NewInstanceInner(classNameMK, @params));
 		}
 	}
 } // end of namespace

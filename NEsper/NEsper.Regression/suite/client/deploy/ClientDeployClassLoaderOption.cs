@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select * from SupportBean";
+				var epl = "@Name('s0') select * from SupportBean";
 				var compiled = env.Compile(epl);
 				var options = new DeploymentOptions();
 				var mySupportClassloader = new MySupportClassloader();

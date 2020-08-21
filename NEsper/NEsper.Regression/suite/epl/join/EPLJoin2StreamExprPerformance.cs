@@ -29,63 +29,63 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             var milestone = new AtomicLong();
 
             epl =
-                "@name('s0') select IntPrimitive as val from SupportBean#keepall sb, SupportBean_ST0#lastevent s0 where sb.TheString = 'E6750'";
+                "@Name('s0') select IntPrimitive as val from SupportBean#keepall sb, SupportBean_ST0#lastevent s0 where sb.TheString = 'E6750'";
             TryAssertion(env, epl, milestone, new SupportBean_ST0("E", -1), 6750);
 
             epl =
-                "@name('s0') select IntPrimitive as val from SupportBean_ST0#lastevent s0, SupportBean#keepall sb where sb.TheString = 'E6749'";
+                "@Name('s0') select IntPrimitive as val from SupportBean_ST0#lastevent s0, SupportBean#keepall sb where sb.TheString = 'E6749'";
             TryAssertion(env, epl, milestone, new SupportBean_ST0("E", -1), 6749);
 
             epl = "create variable string myconst = 'E6751';\n" +
-                  "@name('s0') select IntPrimitive as val from SupportBean_ST0#lastevent s0, SupportBean#keepall sb where sb.TheString = myconst;\n";
+                  "@Name('s0') select IntPrimitive as val from SupportBean_ST0#lastevent s0, SupportBean#keepall sb where sb.TheString = myconst;\n";
             TryAssertion(env, epl, milestone, new SupportBean_ST0("E", -1), 6751);
 
             epl =
-                "@name('s0') select IntPrimitive as val from SupportBean_ST0#lastevent s0, SupportBean#keepall sb where sb.TheString = (Id || '6752')";
+                "@Name('s0') select IntPrimitive as val from SupportBean_ST0#lastevent s0, SupportBean#keepall sb where sb.TheString = (Id || '6752')";
             TryAssertion(env, epl, milestone, new SupportBean_ST0("E", -1), 6752);
 
             epl =
-                "@name('s0') select IntPrimitive as val from SupportBean#keepall sb, SupportBean_ST0#lastevent s0 where sb.TheString = (Id || '6753')";
+                "@Name('s0') select IntPrimitive as val from SupportBean#keepall sb, SupportBean_ST0#lastevent s0 where sb.TheString = (Id || '6753')";
             TryAssertion(env, epl, milestone, new SupportBean_ST0("E", -1), 6753);
 
             epl =
-                "@name('s0') select IntPrimitive as val from SupportBean#keepall sb, SupportBean_ST0#lastevent s0 where sb.TheString = 'E6754' and sb.IntPrimitive=6754";
+                "@Name('s0') select IntPrimitive as val from SupportBean#keepall sb, SupportBean_ST0#lastevent s0 where sb.TheString = 'E6754' and sb.IntPrimitive=6754";
             TryAssertion(env, epl, milestone, new SupportBean_ST0("E", -1), 6754);
 
             epl =
-                "@name('s0') select IntPrimitive as val from SupportBean_ST0#lastevent s0, SupportBean#keepall sb where sb.TheString = (Id || '6755') and sb.IntPrimitive=6755";
+                "@Name('s0') select IntPrimitive as val from SupportBean_ST0#lastevent s0, SupportBean#keepall sb where sb.TheString = (Id || '6755') and sb.IntPrimitive=6755";
             TryAssertion(env, epl, milestone, new SupportBean_ST0("E", -1), 6755);
 
             epl =
-                "@name('s0') select IntPrimitive as val from SupportBean_ST0#lastevent s0, SupportBean#keepall sb where sb.IntPrimitive between 6756 and 6756";
+                "@Name('s0') select IntPrimitive as val from SupportBean_ST0#lastevent s0, SupportBean#keepall sb where sb.IntPrimitive between 6756 and 6756";
             TryAssertion(env, epl, milestone, new SupportBean_ST0("E", -1), 6756);
 
             epl =
-                "@name('s0') select IntPrimitive as val from SupportBean_ST0#lastevent s0, SupportBean#keepall sb where sb.IntPrimitive >= 6757 and IntPrimitive <= 6757";
+                "@Name('s0') select IntPrimitive as val from SupportBean_ST0#lastevent s0, SupportBean#keepall sb where sb.IntPrimitive >= 6757 and IntPrimitive <= 6757";
             TryAssertion(env, epl, milestone, new SupportBean_ST0("E", -1), 6757);
 
             epl =
-                "@name('s0') select sum(IntPrimitive) as val from SupportBeanRange#lastevent s0, SupportBean#keepall sb where sb.IntPrimitive >= (RangeStart + 1) and IntPrimitive <= (RangeEnd - 1)";
+                "@Name('s0') select sum(IntPrimitive) as val from SupportBeanRange#lastevent s0, SupportBean#keepall sb where sb.IntPrimitive >= (RangeStart + 1) and IntPrimitive <= (RangeEnd - 1)";
             TryAssertion(env, epl, milestone, new SupportBeanRange("R1", 6000, 6005), 6001 + 6002 + 6003 + 6004);
 
             epl =
-                "@name('s0') select sum(IntPrimitive) as val from SupportBeanRange#lastevent s0, SupportBean#keepall sb where sb.IntPrimitive >= 6001 and IntPrimitive <= (RangeEnd - 1)";
+                "@Name('s0') select sum(IntPrimitive) as val from SupportBeanRange#lastevent s0, SupportBean#keepall sb where sb.IntPrimitive >= 6001 and IntPrimitive <= (RangeEnd - 1)";
             TryAssertion(env, epl, milestone, new SupportBeanRange("R1", 6000, 6005), 6001 + 6002 + 6003 + 6004);
 
             epl =
-                "@name('s0') select sum(IntPrimitive) as val from SupportBeanRange#lastevent s0, SupportBean#keepall sb where sb.IntPrimitive between (RangeStart + 1) and (RangeEnd - 1)";
+                "@Name('s0') select sum(IntPrimitive) as val from SupportBeanRange#lastevent s0, SupportBean#keepall sb where sb.IntPrimitive between (RangeStart + 1) and (RangeEnd - 1)";
             TryAssertion(env, epl, milestone, new SupportBeanRange("R1", 6000, 6005), 6001 + 6002 + 6003 + 6004);
 
             epl =
-                "@name('s0') select sum(IntPrimitive) as val from SupportBeanRange#lastevent s0, SupportBean#keepall sb where sb.IntPrimitive between (RangeStart + 1) and 6004";
+                "@Name('s0') select sum(IntPrimitive) as val from SupportBeanRange#lastevent s0, SupportBean#keepall sb where sb.IntPrimitive between (RangeStart + 1) and 6004";
             TryAssertion(env, epl, milestone, new SupportBeanRange("R1", 6000, 6005), 6001 + 6002 + 6003 + 6004);
 
             epl =
-                "@name('s0') select sum(IntPrimitive) as val from SupportBeanRange#lastevent s0, SupportBean#keepall sb where sb.IntPrimitive in (6001 : (RangeEnd - 1)]";
+                "@Name('s0') select sum(IntPrimitive) as val from SupportBeanRange#lastevent s0, SupportBean#keepall sb where sb.IntPrimitive in (6001 : (RangeEnd - 1)]";
             TryAssertion(env, epl, milestone, new SupportBeanRange("R1", 6000, 6005), 6002 + 6003 + 6004);
 
             epl =
-                "@name('s0') select IntPrimitive as val from SupportBean_ST0#lastevent s0, SupportBean#keepall sb where sb.TheString = 'E6758' and sb.IntPrimitive >= 6758 and IntPrimitive <= 6758";
+                "@Name('s0') select IntPrimitive as val from SupportBean_ST0#lastevent s0, SupportBean#keepall sb where sb.TheString = 'E6758' and sb.IntPrimitive >= 6758 and IntPrimitive <= 6758";
             TryAssertion(env, epl, milestone, new SupportBean_ST0("E", -1), 6758);
         }
 

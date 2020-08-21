@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			WriteInternal(@object, output);
 		}
 
-		public override DateTimeEx[] Read(
+		public override DateTimeEx[] ReadValue(
 			DataInput input,
 			byte[] unitKey)
 		{

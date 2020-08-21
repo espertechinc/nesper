@@ -26,7 +26,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             env.AdvanceTime(0);
 
-            var text = "@name('s0') select * from SupportBean " +
+            var text = "@Name('s0') select * from SupportBean " +
                        "match_recognize (" +
                        " measures A as a" +
                        " pattern (A*)" +

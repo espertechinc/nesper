@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select coalesce(a.TheString, b.TheString) as myString, coalesce(a, b) as myBean" +
+				var epl = "@Name('s0') select coalesce(a.TheString, b.TheString) as myString, coalesce(a, b) as myBean" +
 				          " from pattern [every (a=SupportBean(TheString='s0') or b=SupportBean(TheString='s1'))]";
 				env.CompileDeploy(epl).AddListener("s0");
 
@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				env.CompileDeploy("@name('s0')  select coalesce(LongBoxed, IntBoxed, ShortBoxed) as result from SupportBean").AddListener("s0");
+				env.CompileDeploy("@Name('s0')  select coalesce(LongBoxed, IntBoxed, ShortBoxed) as result from SupportBean").AddListener("s0");
 
 				Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("result"));
 
@@ -108,7 +108,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select coalesce(LongBoxed,IntBoxed,ShortBoxed) as result" +
+				var epl = "@Name('s0') select coalesce(LongBoxed,IntBoxed,ShortBoxed) as result" +
 				          " from SupportBean#length(1000)";
 
 				env.EplToModelCompileDeploy(epl).AddListener("s0");

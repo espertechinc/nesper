@@ -138,7 +138,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 SupportDeploymentStateListener listener = new SupportDeploymentStateListener();
                 env.Deployment.AddDeploymentStateListener(listener);
 
-                env.CompileDeploy("@name('s0') select * from SupportBean");
+                env.CompileDeploy("@Name('s0') select * from SupportBean");
                 var deploymentId = env.DeploymentId("s0");
                 AssertEvent(SupportDeploymentStateListener.GetSingleEventAndReset(), true, deploymentId, "default", 1, -1);
 
@@ -154,8 +154,8 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 Assert.IsFalse(env.Deployment.DeploymentStateListeners.MoveNext());
                 
                 env.Deployment.AddDeploymentStateListener(listener);
-                EPCompiled compiledOne = env.Compile("@name('s0') select * from SupportBean;\n @name('s1') select * from SupportBean;\n");
-                EPCompiled compiledTwo = env.Compile("@name('s2') select * from SupportBean");
+                EPCompiled compiledOne = env.Compile("@Name('s0') select * from SupportBean;\n @name('s1') select * from SupportBean;\n");
+                EPCompiled compiledTwo = env.Compile("@Name('s2') select * from SupportBean");
                 List<EPDeploymentRolloutCompiled> rolloutItems = new List<EPDeploymentRolloutCompiled>() {
                     new EPDeploymentRolloutCompiled(compiledOne),
                     new EPDeploymentRolloutCompiled(compiledTwo)
@@ -183,7 +183,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 }
 
                 // test statement name trim
-                env.CompileDeploy("@name(' stmt0  ') select * from SupportBean_S0");
+                env.CompileDeploy("@Name(' stmt0  ') select * from SupportBean_S0");
                 Assert.IsNotNull(env.Deployment.GetStatement(env.DeploymentId("stmt0"), "stmt0"));
 
                 try {

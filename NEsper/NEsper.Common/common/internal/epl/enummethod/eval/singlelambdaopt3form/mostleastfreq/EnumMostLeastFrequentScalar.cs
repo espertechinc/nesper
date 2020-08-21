@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			ExprForgeCodegenSymbol scope,
 			CodegenClassScope codegenClassScope)
 		{
-			block.DeclareVar(typeof(IDictionary<object,object>), "items", NewInstance(typeof(LinkedHashMap<object,object>)));
+			block.DeclareVar<IDictionary<object,object>>("items", NewInstance(typeof(LinkedHashMap<object,object>)));
 		}
 
 		public override void ForEachBlock(

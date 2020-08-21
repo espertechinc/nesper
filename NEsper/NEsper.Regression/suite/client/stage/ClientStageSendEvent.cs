@@ -58,28 +58,28 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "update istream SupportBean set intPrimitive = -1;\n" +
-				             "@name('s0') select * from SupportBean;\n";
+				string epl = "update istream SupportBean set IntPrimitive = -1;\n" +
+				             "@Name('s0') select * from SupportBean;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				string deploymentId = env.DeploymentId("s0");
 				env.StageService.GetStage("ST");
 
 				SendEvent(env, null, "E1", 10);
-				Assert.AreEqual(-1, env.Listener("s0").AssertOneGetNewAndReset().Get("intPrimitive"));
+				Assert.AreEqual(-1, env.Listener("s0").AssertOneGetNewAndReset().Get("IntPrimitive"));
 
 				StageIt(env, "ST", deploymentId);
 
 				env.Milestone(0);
 
 				SendEvent(env, "ST", "E2", 20);
-				Assert.AreEqual(-1, env.ListenerStage("ST", "s0").AssertOneGetNewAndReset().Get("intPrimitive"));
+				Assert.AreEqual(-1, env.ListenerStage("ST", "s0").AssertOneGetNewAndReset().Get("IntPrimitive"));
 
 				UnstageIt(env, "ST", deploymentId);
 
 				env.Milestone(1);
 
 				SendEvent(env, null, "E3", 30);
-				Assert.AreEqual(-1, env.Listener("s0").AssertOneGetNewAndReset().Get("intPrimitive"));
+				Assert.AreEqual(-1, env.Listener("s0").AssertOneGetNewAndReset().Get("IntPrimitive"));
 
 				env.UndeployAll();
 			}
@@ -89,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') select (select sum(id) from SupportBean_S0) as thesum from SupportBean;\n";
+				string epl = "@Name('s0') select (select sum(id) from SupportBean_S0) as thesum from SupportBean;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				string deploymentId = env.DeploymentId("s0");
 				env.StageService.GetStage("ST");
@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			{
 				string epl =
 					"create context MyContext start SupportBean_S0 end pattern [SupportBean_S1(id=100) -> SupportBean_S1(id=200)];\n" +
-					"@name('s0') context MyContext select sum(intPrimitive) as thesum from SupportBean;\n";
+					"@Name('s0') context MyContext select sum(IntPrimitive) as thesum from SupportBean;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				string deploymentId = env.DeploymentId("s0");
 				env.StageService.GetStage("ST");
@@ -169,9 +169,9 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			public void Run(RegressionEnvironment env)
 			{
 				string epl =
-					"create context MyContext partition by theString from SupportBean, p00 from SupportBean_S0 " +
+					"create context MyContext partition by TheString from SupportBean, p00 from SupportBean_S0 " +
 					"terminated by SupportBean_S0;\n" +
-					"@name('s0') context MyContext select sum(intPrimitive) as thesum from SupportBean;\n";
+					"@Name('s0') context MyContext select sum(IntPrimitive) as thesum from SupportBean;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				string deploymentId = env.DeploymentId("s0");
 				env.StageService.GetStage("ST");
@@ -210,8 +210,8 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			public void Run(RegressionEnvironment env)
 			{
 				string epl =
-					"create context MyContext partition by theString from SupportBean initiated by SupportBean(intPrimitive=1);\n" +
-					"@name('s0') context MyContext select sum(longPrimitive) as thesum from SupportBean;\n";
+					"create context MyContext partition by TheString from SupportBean initiated by SupportBean(IntPrimitive=1);\n" +
+					"@Name('s0') context MyContext select sum(LongPrimitive) as thesum from SupportBean;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				string deploymentId = env.DeploymentId("s0");
 				env.StageService.GetStage("ST");
@@ -249,7 +249,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			{
 				string epl =
 					"create context MyContext start SupportBean_S0 end SupportBean_S1;\n" +
-					"@name('s0') context MyContext select sum(intPrimitive) as thesum from SupportBean;\n";
+					"@Name('s0') context MyContext select sum(IntPrimitive) as thesum from SupportBean;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				string deploymentId = env.DeploymentId("s0");
 				env.StageService.GetStage("ST");
@@ -293,9 +293,9 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			{
 				string epl =
 					"create context MyContext \n" +
-					"  context MyContextA coalesce by consistent_hash_crc32(theString) from SupportBean granularity 16,\n" +
-					"  context MyContextB coalesce by consistent_hash_crc32(intPrimitive) from SupportBean granularity 16;\n" +
-					"@name('s0') context MyContext select sum(longPrimitive) as thesum from SupportBean group by theString, intPrimitive;\n";
+					"  context MyContextA coalesce by consistent_hash_crc32(TheString) from SupportBean granularity 16,\n" +
+					"  context MyContextB coalesce by consistent_hash_crc32(IntPrimitive) from SupportBean granularity 16;\n" +
+					"@Name('s0') context MyContext select sum(LongPrimitive) as thesum from SupportBean group by TheString, IntPrimitive;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				string deploymentId = env.DeploymentId("s0");
 				env.StageService.GetStage("ST");
@@ -335,9 +335,9 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 				string epl =
 					"create context MyContext \n" +
 					"  context MyContextA initiated by SupportBean_S0 as e1,\n" +
-					"  context MyContextB partition by theString from SupportBean;\n" +
-					"@name('s0') context MyContext select context.MyContextA.e1.id as c0, context.MyContextB.key1 as c1," +
-					"  sum(intPrimitive) as thesum from SupportBean;\n";
+					"  context MyContextB partition by TheString from SupportBean;\n" +
+					"@Name('s0') context MyContext select context.MyContextA.e1.id as c0, context.MyContextB.key1 as c1," +
+					"  sum(IntPrimitive) as thesum from SupportBean;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				string deploymentId = env.DeploymentId("s0");
 				env.StageService.GetStage("ST");
@@ -415,9 +415,9 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			{
 				string epl =
 					"create context MyContext \n" +
-					"  context MyContextCategory partition by theString from SupportBean,\n" +
-					"  context MyContextPartitioned start SupportBean(intPrimitive=1);\n" +
-					"@name('s0') context MyContext select sum(longPrimitive) as thesum from SupportBean;\n";
+					"  context MyContextCategory partition by TheString from SupportBean,\n" +
+					"  context MyContextPartitioned start SupportBean(IntPrimitive=1);\n" +
+					"@Name('s0') context MyContext select sum(LongPrimitive) as thesum from SupportBean;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				string deploymentId = env.DeploymentId("s0");
 				env.StageService.GetStage("ST");
@@ -460,9 +460,9 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			{
 				string epl =
 					"create context MyContext \n" +
-					"  context MyContextCategory group by theString = 'A' as grp1, group by theString = 'B' as grp2 from SupportBean,\n" +
-					"  context MyContextPartitioned partition by intPrimitive from SupportBean;\n" +
-					"@name('s0') context MyContext select sum(longPrimitive) as thesum from SupportBean;\n";
+					"  context MyContextCategory group by TheString = 'A' as grp1, group by TheString = 'B' as grp2 from SupportBean,\n" +
+					"  context MyContextPartitioned partition by IntPrimitive from SupportBean;\n" +
+					"@Name('s0') context MyContext select sum(LongPrimitive) as thesum from SupportBean;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				string deploymentId = env.DeploymentId("s0");
 				env.StageService.GetStage("ST");
@@ -505,8 +505,8 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			public void Run(RegressionEnvironment env)
 			{
 				string epl =
-					"create context MyContext initiated by SupportBean(theString='init') as sb;\n" +
-					"@name('s0') context MyContext select context.sb.intPrimitive as c0, sum(intPrimitive) as thesum from SupportBean;\n";
+					"create context MyContext initiated by SupportBean(TheString='init') as sb;\n" +
+					"@Name('s0') context MyContext select context.sb.IntPrimitive as c0, sum(IntPrimitive) as thesum from SupportBean;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				string deploymentId = env.DeploymentId("s0");
 				string[] fields = new string[] {"c0", "thesum"};
@@ -568,8 +568,8 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			public void Run(RegressionEnvironment env)
 			{
 				string epl =
-					"create context MyContext start SupportBean(theString='start');\n" +
-					"@name('s0') context MyContext select sum(intPrimitive) as thesum from SupportBean;\n";
+					"create context MyContext start SupportBean(TheString='start');\n" +
+					"@Name('s0') context MyContext select sum(IntPrimitive) as thesum from SupportBean;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				string deploymentId = env.DeploymentId("s0");
 
@@ -602,8 +602,8 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			public void Run(RegressionEnvironment env)
 			{
 				string epl =
-					"create context MyContext coalesce by consistent_hash_crc32(theString) from SupportBean granularity 16;\n" +
-					"@name('s0') context MyContext select theString, sum(intPrimitive) as thesum from SupportBean group by theString;\n";
+					"create context MyContext coalesce by consistent_hash_crc32(TheString) from SupportBean granularity 16;\n" +
+					"@Name('s0') context MyContext select TheString, sum(IntPrimitive) as thesum from SupportBean group by TheString;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				string deploymentId = env.DeploymentId("s0");
 
@@ -638,8 +638,8 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			public void Run(RegressionEnvironment env)
 			{
 				string epl =
-					"create context MyContext group by theString='A' as grp1, group by theString='B' as grp2 from SupportBean;\n" +
-					"@name('s0') context MyContext select sum(intPrimitive) as thesum from SupportBean;\n";
+					"create context MyContext group by TheString='A' as grp1, group by TheString='B' as grp2 from SupportBean;\n" +
+					"@Name('s0') context MyContext select sum(IntPrimitive) as thesum from SupportBean;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				string deploymentId = env.DeploymentId("s0");
 
@@ -676,8 +676,8 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			public void Run(RegressionEnvironment env)
 			{
 				RegressionPath path = new RegressionPath();
-				env.CompileDeploy("@name('context') @public create context MyContext partition by theString from SupportBean", path);
-				env.CompileDeploy("@name('s0') context MyContext select sum(intPrimitive) as thesum from SupportBean", path).AddListener("s0");
+				env.CompileDeploy("@Name('context') @public create context MyContext partition by TheString from SupportBean", path);
+				env.CompileDeploy("@Name('s0') context MyContext select sum(IntPrimitive) as thesum from SupportBean", path).AddListener("s0");
 				string deploymentIdContext = env.DeploymentId("context");
 				string deploymentIdStmt = env.DeploymentId("s0");
 
@@ -713,7 +713,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') select * from pattern[every SupportBean]";
+				string epl = "@Name('s0') select * from pattern[every SupportBean]";
 				RunAssertionPatternEvery(env, epl);
 			}
 		}
@@ -722,7 +722,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') select * from pattern[every-distinct(a.theString) a=SupportBean]";
+				string epl = "@Name('s0') select * from pattern[every-distinct(a.TheString) a=SupportBean]";
 				RunAssertionPatternEvery(env, epl);
 			}
 		}
@@ -731,7 +731,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') select * from pattern[SupportBean(theString='a') or SupportBean(theString='b')]";
+				string epl = "@Name('s0') select * from pattern[SupportBean(TheString='a') or SupportBean(TheString='b')]";
 				env.CompileDeploy(epl).AddListener("s0");
 				string deploymentId = env.DeploymentId("s0");
 				env.StageService.GetStage("ST");
@@ -751,7 +751,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') select * from pattern[SupportBean(theString='a') and not SupportBean(theString='b')]";
+				string epl = "@Name('s0') select * from pattern[SupportBean(TheString='a') and not SupportBean(TheString='b')]";
 				env.CompileDeploy(epl).AddListener("s0");
 				string deploymentId = env.DeploymentId("s0");
 				env.StageService.GetStage("ST");
@@ -772,7 +772,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') select * from pattern[SupportBean(theString='a') until SupportBean(theString='b')]";
+				string epl = "@Name('s0') select * from pattern[SupportBean(TheString='a') until SupportBean(TheString='b')]";
 				env.CompileDeploy(epl).AddListener("s0");
 				string deploymentId = env.DeploymentId("s0");
 				env.StageService.GetStage("ST");
@@ -793,7 +793,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') select * from pattern[SupportBean(theString='a') where timer:within(10 sec)]";
+				string epl = "@Name('s0') select * from pattern[SupportBean(TheString='a') where timer:within(10 sec)]";
 				env.CompileDeploy(epl).AddListener("s0");
 				string deploymentId = env.DeploymentId("s0");
 				env.StageService.GetStage("ST");
@@ -813,7 +813,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') select * from pattern[SupportBean(theString='a') and SupportBean(theString='b')]";
+				string epl = "@Name('s0') select * from pattern[SupportBean(TheString='a') and SupportBean(TheString='b')]";
 				env.CompileDeploy(epl).AddListener("s0");
 				string deploymentId = env.DeploymentId("s0");
 
@@ -836,8 +836,8 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') select * from pattern[SupportBean(theString='a') -> SupportBean(theString='b') ->" +
-				             "SupportBean(theString='c') -> SupportBean(theString='d') -> SupportBean(theString='e')]";
+				string epl = "@Name('s0') select * from pattern[SupportBean(TheString='a') -> SupportBean(TheString='b') ->" +
+				             "SupportBean(TheString='c') -> SupportBean(TheString='d') -> SupportBean(TheString='e')]";
 				env.CompileDeploy(epl).AddListener("s0");
 				string deploymentId = env.DeploymentId("s0");
 
@@ -882,7 +882,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 				string epl =
 					"create window MyWindow#keepall as SupportBean;\n" +
 					"insert into MyWindow select * from SupportBean;\n" +
-					"@name('s0') select sum(intPrimitive) as c0 from MyWindow;\n";
+					"@Name('s0') select sum(IntPrimitive) as c0 from MyWindow;\n";
 				RunAssertionSimple(env, epl);
 			}
 		}
@@ -891,7 +891,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				RunAssertionSimple(env, "@name('s0') select sum(intPrimitive) as c0 from SupportBean");
+				RunAssertionSimple(env, "@Name('s0') select sum(IntPrimitive) as c0 from SupportBean");
 			}
 		}
 

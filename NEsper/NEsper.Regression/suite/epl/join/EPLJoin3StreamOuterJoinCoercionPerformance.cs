@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select S1.IntBoxed as v1, S2.LongBoxed as v2, S3.DoubleBoxed as v3 from " +
+                var stmtText = "@Name('s0') select S1.IntBoxed as v1, S2.LongBoxed as v2, S3.DoubleBoxed as v3 from " +
                                "SupportBean(TheString='A')#length(1000000) S1 " +
                                " left outer join " +
                                "SupportBean(TheString='B')#length(1000000) S2 on S1.IntBoxed=S2.LongBoxed " +
@@ -88,7 +88,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select S1.IntBoxed as v1, S2.LongBoxed as v2, S3.DoubleBoxed as v3 from " +
+                var stmtText = "@Name('s0') select S1.IntBoxed as v1, S2.LongBoxed as v2, S3.DoubleBoxed as v3 from " +
                                "SupportBean(TheString='A')#length(1000000) S1 " +
                                " left outer join " +
                                "SupportBean(TheString='B')#length(1000000) S2 on S1.IntBoxed=S2.LongBoxed " +
@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select S1.IntBoxed as v1, S2.LongBoxed as v2, S3.DoubleBoxed as v3 from " +
+                var stmtText = "@Name('s0') select S1.IntBoxed as v1, S2.LongBoxed as v2, S3.DoubleBoxed as v3 from " +
                                "SupportBean(TheString='A')#length(1000000) S1 " +
                                " left outer join " +
                                "SupportBean(TheString='B')#length(1000000) S2 on S1.IntBoxed=S2.LongBoxed " +
@@ -162,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select * from " +
+                var stmtText = "@Name('s0') select * from " +
                                "SupportBeanRange#keepall sbr " +
                                " left outer join " +
                                "SupportBean_ST0#keepall S0 on S0.Key0=sbr.Key" +

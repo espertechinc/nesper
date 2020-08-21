@@ -37,11 +37,11 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             string[] keyProps,
             Type[] keyTypes,
             EventPropertyValueGetter keyGetter,
-            DataInputOutputSerde<Object> keySerde,
+            DataInputOutputSerde keySerde,
             string[] rangeProps,
             Type[] rangeTypes,
             EventPropertyValueGetter[] rangeGetters,
-            DataInputOutputSerde<Object>[] rangeKeySerdes)
+            DataInputOutputSerde[] rangeKeySerdes)
         {
             this._indexedStreamNum = indexedStreamNum;
             this._subqueryNum = subqueryNum;

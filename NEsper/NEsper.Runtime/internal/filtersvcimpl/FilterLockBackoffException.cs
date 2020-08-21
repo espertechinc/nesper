@@ -7,6 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
+
 using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
@@ -19,7 +21,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         {
         }
 
-        public FilterLockBackoffException(string message,
+        public FilterLockBackoffException(
+            string message,
             Exception cause)
             : base(message, cause)
         {
@@ -27,6 +30,12 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         public FilterLockBackoffException(Exception cause)
             : base(cause)
+        {
+        }
+
+        protected FilterLockBackoffException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

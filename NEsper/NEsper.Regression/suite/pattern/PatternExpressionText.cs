@@ -184,7 +184,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             string patternText,
             string expectedIfDifferent)
         {
-            var epl = "@name('A') select * from pattern [" + patternText + "]";
+            var epl = "@Name('A') select * from pattern [" + patternText + "]";
             TryAssertionEPL(env, epl, patternText, expectedIfDifferent);
 
             epl = "@Audit @Name('A') select * from pattern [" + patternText + "]";

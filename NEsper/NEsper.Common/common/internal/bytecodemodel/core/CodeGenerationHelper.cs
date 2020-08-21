@@ -19,6 +19,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public static string GetClassName(Type clazz)
+        {
+            var stringBuilder = new StringBuilder();
+            AppendClassName(stringBuilder, clazz);
+            return stringBuilder.ToString();
+        }
         public static StringBuilder AppendClassName(
             StringBuilder builder,
             Type clazz)

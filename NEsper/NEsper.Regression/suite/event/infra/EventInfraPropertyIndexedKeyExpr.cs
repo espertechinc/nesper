@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     "@JsonSchema(className='" +
                     typeof(MyLocalJsonProvided).MaskTypeName() +
                     "') @public @buseventtype create json schema JsonSchema();\n" +
-                    "@name('s0') select * from JsonSchema;\n")
+                    "@Name('s0') select * from JsonSchema;\n")
                 .AddListener("s0");
             env.SendEventJson("{ \"indexed\": [1, 2], \"mapped\" : { \"keyOne\": 20 }}", "JsonSchema");
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             env.CompileDeploy(
                     "@public @buseventtype create json schema JsonSchema(indexed int[], mapped System.Collections.Generic.IDictionary<string, object>);\n" +
-                    "@name('s0') select * from JsonSchema;\n")
+                    "@Name('s0') select * from JsonSchema;\n")
                 .AddListener("s0");
             env.SendEventJson("{ \"indexed\": [1, 2], \"mapped\" : { \"keyOne\": 20 }}", "JsonSchema");
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 "create schema MyIndexMappedSamplerBean as " + typeof(MyIndexMappedSamplerBean).MaskTypeName(),
                 path);
 
-            env.CompileDeploy("@name('s0') select * from MyIndexMappedSamplerBean", path).AddListener("s0");
+            env.CompileDeploy("@Name('s0') select * from MyIndexMappedSamplerBean", path).AddListener("s0");
 
             env.SendEventBean(new MyIndexMappedSamplerBean());
 
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             var collections = typeof(Collections).FullName;
             env.CompileDeploy(
-                $"@name('s0') select {{1, 2}} as Arr, *, {collections}.SingletonDataMap('A', 2) as Mapped from SupportBean");
+                $"@Name('s0') select {{1, 2}} as Arr, *, {collections}.SingletonDataMap('A', 2) as Mapped from SupportBean");
             env.AddListener("s0");
 
             env.SendEventBean(new SupportBean());
@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             var epl = "create schema MapEventInner(P0 string);\n" +
                       "create schema MapEvent(intarray int[], mapinner MapEventInner[]);\n" +
-                      "@name('s0') select * from MapEvent;\n";
+                      "@Name('s0') select * from MapEvent;\n";
             env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
             IDictionary<string, object>[] mapinner = {
@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             var epl = "create objectarray schema OAEventInner(p0 string);\n" +
                       "create objectarray schema OAEvent(intarray int[], oainner OAEventInner[]);\n" +
-                      "@name('s0') select * from OAEvent;\n";
+                      "@Name('s0') select * from OAEvent;\n";
             env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
             object[] oainner = {

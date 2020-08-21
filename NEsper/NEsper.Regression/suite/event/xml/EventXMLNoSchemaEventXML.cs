@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select event.type as type, event.uid as uid from MyEventWTypeAndUID";
+                var epl = "@Name('s0') select event.type as type, event.uid as uid from MyEventWTypeAndUID";
                 RunAssertion(env, epl, "MyEventWTypeAndUID");
             }
         }
@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                           "@XMLSchemaField(name='event.type', xpath='/event/@type', type='string')" +
                           "@XMLSchemaField(name='event.uid', xpath='/event/@uid', type='string')" +
                           "create xml schema MyEventCreateSchema();\n" +
-                          "@name('s0') select event.type as type, event.uid as uid from MyEventCreateSchema;\n";
+                          "@Name('s0') select event.type as type, event.uid as uid from MyEventCreateSchema;\n";
                 RunAssertion(env, epl, "MyEventCreateSchema");
             }
         }

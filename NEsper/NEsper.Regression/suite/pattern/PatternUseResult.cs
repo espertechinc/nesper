@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select sb[1].IntPrimitive as c0 " +
+                    "@Name('s0') select sb[1].IntPrimitive as c0 " +
                     " from pattern [every [2] sb=SupportBean -> SupportBean_A(Id like sb[1].TheString)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -119,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select sb.IntPrimitive as c0 from pattern[every sb=SupportBean -> SupportBean_A(Id like sb.TheString)]";
+                    "@Name('s0') select sb.IntPrimitive as c0 from pattern[every sb=SupportBean -> SupportBean_A(Id like sb.TheString)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 for (var i = 0; i < 10; i++) {
@@ -177,8 +177,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var epl = "create objectarray schema TypeOne(Symbol string, Price double);\n" +
                           "create objectarray schema TypeTwo(Symbol string, market string, Price double);\n" +
                           "\n" +
-                          "@name('Out2') select a[0].Symbol from pattern [ [2] a=TypeOne ]\n;" +
-                          "@name('Out3') select a[0].market from pattern [ [2] a=TypeTwo ];";
+                          "@Name('Out2') select a[0].Symbol from pattern [ [2] a=TypeOne ]\n;" +
+                          "@Name('Out3') select a[0].market from pattern [ [2] a=TypeTwo ];";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath());
 
                 env.AddListener("Out2");
@@ -375,7 +375,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var expression = "@name('s0') select * from pattern [" +
+                var expression = "@Name('s0') select * from pattern [" +
                                  "every tradeevent1=SupportTradeEvent(UserId in ('U1000','U1001','U1002') ) -> " +
                                  "(tradeevent2=SupportTradeEvent(UserId in ('U1000','U1001','U1002') and " +
                                  "  UserId != tradeevent1.UserId and " +

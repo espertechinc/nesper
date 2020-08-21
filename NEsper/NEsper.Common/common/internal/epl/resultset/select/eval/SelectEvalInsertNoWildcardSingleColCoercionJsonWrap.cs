@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 			    .Block
 			    .DeclareVar(typeof(string), "json", Cast(typeof(string), Ref("result")))
 			    .IfNullReturnNull(Ref("json"))
-			    .DeclareVar(typeof(object), "und",
+			    .DeclareVar<object>("und",
 				    ExprDotMethod(memberUndType, "Parse", Ref("json")))
 			    .DeclareVar(typeof(EventBean), "bean",
 				    ExprDotMethod(eventBeanFactory, "AdapterForTypedJson", Ref("und"), memberUndType))

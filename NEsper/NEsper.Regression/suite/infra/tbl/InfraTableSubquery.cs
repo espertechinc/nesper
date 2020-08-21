@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 string epl = "create table MyTable(tablecol string primary key);\n" +
                              "insert into MyTable select p00 as tablecol from SupportBean_S0;\n" +
-                             "@name('s0') select * from SupportBean(theString=(select tablecol from MyTable).orderBy().firstOf())";
+                             "@Name('s0') select * from SupportBean(TheString=(select tablecol from MyTable).orderBy().firstOf())";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendAssert(env, "E", false);
@@ -130,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "select sum(IntPrimitive) as total from SupportBean group by TheString",
                     path);
                 env.CompileDeploy(
-                        "@name('s0') select (select total from varagg where key = S0.P00) as value " +
+                        "@Name('s0') select (select total from varagg where key = S0.P00) as value " +
                         "from SupportBean_S0 as S0",
                         path)
                     .AddListener("s0");
@@ -155,7 +155,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.CompileDeploy("create table InfraOne (string string, IntPrimitive int)", path);
                 env.CompileDeploy(
-                        "@name('s0') select (select IntPrimitive from InfraOne where string = S0.P00) as c0 from SupportBean_S0 as S0",
+                        "@Name('s0') select (select IntPrimitive from InfraOne where string = S0.P00) as c0 from SupportBean_S0 as S0",
                         path)
                     .AddListener("s0");
                 env.CompileDeploy(
@@ -196,7 +196,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(eplInto, path);
 
                 var eplSubselect =
-                    "@name('s0') select (select value from MyTable as tbl where sb.TheString = tbl.p2) as c0 from SupportBean as sb";
+                    "@Name('s0') select (select value from MyTable as tbl where sb.TheString = tbl.p2) as c0 from SupportBean as sb";
                 env.CompileDeploy(eplSubselect, path).AddListener("s0");
 
                 SendInsertUpdate(env, "G1", "SG1", "P2_1", 10);

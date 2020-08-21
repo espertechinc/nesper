@@ -34,9 +34,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             int level,
             CodegenIndent indent)
         {
-            builder.Append("new ").Append(_innerName).Append("(");
+            builder
+                .Append("new ")
+                .Append(_innerName)
+                .Append("(");
+            
             CodegenExpressionBuilder.RenderExpressions(builder, _params, isInnerClass);
-            builder.Append(")");
+
+            builder.Append(") /* CodegenExpressionNewInstanceInnerClass */");
         }
 
         public void MergeClasses(ISet<Type> classes)

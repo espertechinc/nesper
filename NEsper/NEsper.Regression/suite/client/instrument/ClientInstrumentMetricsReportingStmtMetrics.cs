@@ -31,24 +31,24 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             SendTimer(env, 1000);
 
             var statements = new EPStatement[5];
-            statements[0] = env.CompileDeploy("@name('stmt_metrics') select * from " + typeof(StatementMetric).FullName)
+            statements[0] = env.CompileDeploy("@Name('stmt_metrics') select * from " + typeof(StatementMetric).FullName)
                 .Statement("stmt_metrics");
             statements[0].AddListener(env.ListenerNew());
 
             statements[1] = env.CompileDeploy(
-                    "@name('cpuStmtOne') select * from SupportBean(IntPrimitive=1)#keepall where MyMetricFunctions.TakeMillis(LongPrimitive)")
+                    "@Name('cpuStmtOne') select * from SupportBean(IntPrimitive=1)#keepall where MyMetricFunctions.TakeMillis(LongPrimitive)")
                 .Statement("cpuStmtOne");
             statements[1].AddListener(env.ListenerNew());
             statements[2] = env.CompileDeploy(
-                    "@name('cpuStmtTwo') select * from SupportBean(IntPrimitive=2)#keepall where MyMetricFunctions.TakeMillis(LongPrimitive)")
+                    "@Name('cpuStmtTwo') select * from SupportBean(IntPrimitive=2)#keepall where MyMetricFunctions.TakeMillis(LongPrimitive)")
                 .Statement("cpuStmtTwo");
             statements[2].AddListener(env.ListenerNew());
             statements[3] = env.CompileDeploy(
-                    "@name('wallStmtThree') select * from SupportBean(IntPrimitive=3)#keepall where MyMetricFunctions.TakeWallTime(LongPrimitive)")
+                    "@Name('wallStmtThree') select * from SupportBean(IntPrimitive=3)#keepall where MyMetricFunctions.TakeWallTime(LongPrimitive)")
                 .Statement("wallStmtThree");
             statements[3].AddListener(env.ListenerNew());
             statements[4] = env.CompileDeploy(
-                    "@name('wallStmtFour') select * from SupportBean(IntPrimitive=4)#keepall where MyMetricFunctions.TakeWallTime(LongPrimitive)")
+                    "@Name('wallStmtFour') select * from SupportBean(IntPrimitive=4)#keepall where MyMetricFunctions.TakeWallTime(LongPrimitive)")
                 .Statement("wallStmtFour");
             statements[4].AddListener(env.ListenerNew());
 

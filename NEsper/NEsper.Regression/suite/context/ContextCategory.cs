@@ -90,11 +90,11 @@ namespace com.espertech.esper.regressionlib.suite.context
 
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('context') create context CategoryContext\n" +
+                var epl = "@Name('context') create context CategoryContext\n" +
                           "group TheString = 'A' as cat1,\n" +
                           "group TheString = 'B' as cat2 \n" +
                           "from SupportBean;\n" +
-                          "@name('s0') context CategoryContext select count(*) as c0, context.label as c1 from SupportBean;\n";
+                          "@Name('s0') context CategoryContext select count(*) as c0, context.label as c1 from SupportBean;\n";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 var deploymentIdContext = env.DeploymentId("context");
@@ -154,10 +154,10 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "c1","c2","c3","c4","c5" };
-                var epl = "@name('CTX') create context CtxCategory " +
+                var epl = "@Name('CTX') create context CtxCategory " +
                           "group by IntPrimitive > 0 as cat1," +
                           "group by IntPrimitive < 0 as cat2 from SupportBean;\n" +
-                          "@name('s0') context CtxCategory " +
+                          "@Name('s0') context CtxCategory " +
                           "select TheString as c1, sum(IntPrimitive) as c2, context.label as c3, context.name as c4, context.id as c5 " +
                           "from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -246,9 +246,9 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 var eplCtx =
-                    "@name('ctx') create context Ctx600a group by TheString like 'A%' as agroup, group by TheString like 'B%' as bgroup, group by TheString like 'C%' as cgroup from SupportBean";
+                    "@Name('ctx') create context Ctx600a group by TheString like 'A%' as agroup, group by TheString like 'B%' as bgroup, group by TheString like 'C%' as cgroup from SupportBean";
                 env.CompileDeploy(eplCtx, path);
-                var eplSum = "@name('s0') context Ctx600a select context.label as c0, count(*) as c1 from SupportBean";
+                var eplSum = "@Name('s0') context Ctx600a select context.label as c0, count(*) as c1 from SupportBean";
                 env.CompileDeploy(eplSum, path).AddListener("s0");
 
                 SendAssertBooleanExprFilter(env, "B1", "bgroup", 1);
@@ -278,10 +278,10 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
 
                 env.CompileDeploy(
-                    "@name('ctx') create context MyCtx as group by IntPrimitive < -5 as grp1, group by IntPrimitive between -5 and +5 as grp2, group by IntPrimitive > 5 as grp3 from SupportBean",
+                    "@Name('ctx') create context MyCtx as group by IntPrimitive < -5 as grp1, group by IntPrimitive between -5 and +5 as grp2, group by IntPrimitive > 5 as grp3 from SupportBean",
                     path);
                 env.CompileDeploy(
-                    "@name('s0') context MyCtx select context.id as c0, context.label as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString",
+                    "@Name('s0') context MyCtx select context.id as c0, context.label as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString",
                     path);
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -430,14 +430,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var ctx = "CategorizedContext";
                 var fields = new [] { "c0", "c1", "c2" };
 
-                var epl = "@name('context') create context " +
+                var epl = "@Name('context') create context " +
                           ctx +
                           " " +
                           "group IntPrimitive < 10 as cat1, " +
                           "group IntPrimitive between 10 and 20 as cat2, " +
                           "group IntPrimitive > 20 as cat3 " +
                           "from SupportBean;\n";
-                epl += "@name('s0') context CategorizedContext " +
+                epl += "@Name('s0') context CategorizedContext " +
                        "select context.name as c0, context.label as c1, sum(IntPrimitive) as c2 from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -524,7 +524,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 var milestone = new AtomicLong();
                 var ctx = "CategorizedContext";
-                var eplCtx = "@name('context') create context " +
+                var eplCtx = "@Name('context') create context " +
                              ctx +
                              " as " +
                              "group IntPrimitive<10 as cat1 " +
@@ -532,7 +532,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(eplCtx, path);
 
                 var eplStmt =
-                    "@name('s0') context CategorizedContext select context.name as c0, context.label as c1, prior(1,IntPrimitive) as c2 from SupportBean";
+                    "@Name('s0') context CategorizedContext select context.name as c0, context.label as c1, prior(1,IntPrimitive) as c2 from SupportBean";
                 env.CompileDeploy(eplStmt, path).AddListener("s0");
 
                 RunAssertion(env, ctx, milestone);
@@ -560,26 +560,26 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('ctx') create context MyCtx as " +
+                    "@Name('ctx') create context MyCtx as " +
                     "group by IntPrimitive < 0 as n, " +
                     "group by IntPrimitive > 0 as p " +
                     "from SupportBean",
                     path);
-                env.CompileDeploy("@name('expr-1') create expression getLabelOne { context.label }", path);
-                env.CompileDeploy("@name('expr-2') create expression getLabelTwo { 'x'||context.label||'x' }", path);
+                env.CompileDeploy("@Name('expr-1') create expression getLabelOne { context.label }", path);
+                env.CompileDeploy("@Name('expr-2') create expression getLabelTwo { 'x'||context.label||'x' }", path);
 
                 env.Milestone(0);
 
                 if (!isAlias) {
                     env.CompileDeploy(
-                        "@name('s0') expression getLabelThree { context.label } " +
+                        "@Name('s0') expression getLabelThree { context.label } " +
                         "context MyCtx " +
                         "select getLabelOne() as c0, getLabelTwo() as c1, getLabelThree() as c2 from SupportBean",
                         path);
                 }
                 else {
                     env.CompileDeploy(
-                        "@name('s0') expression getLabelThree alias for { context.label } " +
+                        "@Name('s0') expression getLabelThree alias for { context.label } " +
                         "context MyCtx " +
                         "select getLabelOne as c0, getLabelTwo as c1, getLabelThree as c2 from SupportBean",
                         path);

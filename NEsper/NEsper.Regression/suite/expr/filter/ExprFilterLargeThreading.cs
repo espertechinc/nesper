@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         private void RunAssertionNoVariable(RegressionEnvironment env)
         {
             var epl =
-                "@name('s0') select * from pattern[a=SupportBean -> every event1=SupportTradeEvent(UserId like '123%')]";
+                "@Name('s0') select * from pattern[a=SupportBean -> every event1=SupportTradeEvent(UserId like '123%')]";
             env.CompileDeploy(epl).AddListener("s0").Milestone(0);
             env.SendEventBean(new SupportBean());
 

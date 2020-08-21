@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var vars = "@name('vars') create variable " +
+                var vars = "@Name('vars') create variable " +
                            typeof(SupportBean).Name +
                            " varbeannull;\n" +
                            "create variable " +
@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
                 var fields = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6" };
                 var stmtSelectText =
-                    "@name('select') select varbean.TheString as c0,varbean.IntPrimitive as c1,vars0.Id as c2,vars0.P00 as c3,varobj as c4,varbeannull.TheString as c5, varobjnull as c6 from SupportBean_A";
+                    "@Name('select') select varbean.TheString as c0,varbean.IntPrimitive as c1,vars0.Id as c2,vars0.P00 as c3,varobj as c4,varbeannull.TheString as c5, varobjnull as c6 from SupportBean_A";
                 env.CompileDeploy(stmtSelectText, path).AddListener("select");
 
                 env.SendEventBean(new SupportBean_A("A1"));
@@ -124,7 +124,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
                 // update properties via on-set
                 var stmtUpdateText =
-                    "@name('update') on SupportBean_B set varbean.TheString = 'EX', varbean.IntPrimitive = -999";
+                    "@Name('update') on SupportBean_B set varbean.TheString = 'EX', varbean.IntPrimitive = -999";
                 env.CompileDeploy(stmtUpdateText, path);
                 Assert.AreEqual(
                     StatementType.ON_SET,
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     new object[] {"EX", -999, 1, "S01", 101L, null, null});
 
                 // update full bean via on-set
-                stmtUpdateText = "@name('update2') on SupportBean(IntPrimitive = 0) as sb set varbean = sb";
+                stmtUpdateText = "@Name('update2') on SupportBean(IntPrimitive = 0) as sb set varbean = sb";
                 env.CompileDeploy(stmtUpdateText, path);
 
                 var bean = new SupportBean("E2", 0);
@@ -183,7 +183,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 Assert.AreEqual(40, ((SupportBean_S3) env.Runtime.VariableService.GetVariableValue(null, "vars3")).Id);
                 Assert.AreEqual("ABC", env.Runtime.VariableService.GetVariableValue(null, "varsobj2"));
 
-                env.CompileDeploy("@name('create') create variable object varsobj3=222");
+                env.CompileDeploy("@Name('create') create variable object varsobj3=222");
                 Assert.AreEqual(
                     222,
                     env.Runtime.VariableService.GetVariableValue(env.DeploymentId("create"), "varsobj3"));
@@ -197,11 +197,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@name('create') create variable SupportBean varbean", path);
+                env.CompileDeploy("@Name('create') create variable SupportBean varbean", path);
 
                 var fields = new [] { "varbean.TheString","varbean.IntPrimitive","varbean.GetTheString()" };
                 env.CompileDeploy(
-                    "@name('s0') select varbean.TheString,varbean.IntPrimitive,varbean.GetTheString() from SupportBean_S0",
+                    "@Name('s0') select varbean.TheString,varbean.IntPrimitive,varbean.GetTheString() from SupportBean_S0",
                     path);
                 env.AddListener("s0");
 
@@ -212,7 +212,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     new object[] {null, null, null});
 
                 env.CompileDeploy(
-                    "@name('set') on SupportBean_A set varbean.TheString = 'A', varbean.IntPrimitive = 1",
+                    "@Name('set') on SupportBean_A set varbean.TheString = 'A', varbean.IntPrimitive = 1",
                     path);
                 env.AddListener("set");
                 env.SendEventBean(new SupportBean_A("E1"));
@@ -256,7 +256,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 // test self evaluate
                 env.UndeployModuleContaining("set");
                 env.CompileDeploy(
-                    "@name('set') on SupportBean_A set varbean.TheString = SupportBean_A.Id, varbean.TheString = '>'||varbean.TheString||'<'",
+                    "@Name('set') on SupportBean_A set varbean.TheString = SupportBean_A.Id, varbean.TheString = '>'||varbean.TheString||'<'",
                     path);
                 env.AddListener("set");
                 env.SendEventBean(new SupportBean_A("E3"));
@@ -267,7 +267,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.UndeployModuleContaining("set");
 
                 // test widen
-                env.CompileDeploy("@name('set') on SupportBean_A set varbean.LongPrimitive = 1", path);
+                env.CompileDeploy("@Name('set') on SupportBean_A set varbean.LongPrimitive = 1", path);
                 env.AddListener("set");
                 env.SendEventBean(new SupportBean_A("E4"));
                 Assert.AreEqual(
@@ -284,18 +284,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@name('v0') create variable Object varobject = null", path);
+                env.CompileDeploy("@Name('v0') create variable Object varobject = null", path);
                 env.CompileDeploy(
-                    "@name('v1') create variable " + typeof(SupportBean_A).FullName + " varbean = null",
+                    "@Name('v1') create variable " + typeof(SupportBean_A).FullName + " varbean = null",
                     path);
-                env.CompileDeploy("@name('v2') create variable SupportBean_S0 vartype = null", path);
+                env.CompileDeploy("@Name('v2') create variable SupportBean_S0 vartype = null", path);
                 var depIdVarobject = env.DeploymentId("v0");
                 var depIdVarbean = env.DeploymentId("v1");
                 var depIdVartype = env.DeploymentId("v2");
 
                 var fields = new [] { "varobject","varbean","varbean.Id","vartype","vartype.Id" };
                 env.CompileDeploy(
-                    "@name('s0') select varobject, varbean, varbean.Id, vartype, vartype.Id from SupportBean",
+                    "@Name('s0') select varobject, varbean, varbean.Id, vartype, vartype.Id from SupportBean",
                     path);
                 env.AddListener("s0");
 
@@ -326,7 +326,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 // test on-set for Object and EventType
                 var fieldsTop = new [] { "varobject","vartype","varbean" };
                 env.CompileDeploy(
-                    "@name('set') on SupportBean_S0(P00='X') arrival set varobject=1, vartype=arrival, varbean=null",
+                    "@Name('set') on SupportBean_S0(P00='X') arrival set varobject=1, vartype=arrival, varbean=null",
                     path);
                 env.AddListener("set");
 
@@ -374,7 +374,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
                 // test on-set for Bean class
                 env.CompileDeploy(
-                    "@name('set-two') on SupportBean_A(Id='Y') arrival set varobject=null, vartype=null, varbean=arrival",
+                    "@Name('set-two') on SupportBean_A(Id='Y') arrival set varobject=null, vartype=null, varbean=arrival",
                     path);
                 env.AddListener("set-two");
                 var a1objectTwo = new SupportBean_A("Y");

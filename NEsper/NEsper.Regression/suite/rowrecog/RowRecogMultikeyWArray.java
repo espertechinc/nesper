@@ -30,7 +30,7 @@ public class RowRecogMultikeyWArray {
 
     private static class RowRecogPartitionMultikeyWArray implements RegressionExecution {
         public void run(RegressionEnvironment env) {
-            String text = "@name('s0') select * from SupportEventWithIntArray " +
+            String text = "@Name('s0') select * from SupportEventWithIntArray " +
                 "match_recognize (" +
                 " partition by array" +
                 " measures A.id as a, B.id as b" +
@@ -67,7 +67,7 @@ public class RowRecogMultikeyWArray {
 
     private static class RowRecogPartitionMultikeyPlain implements RegressionExecution {
         public void run(RegressionEnvironment env) {
-            String text = "@name('s0') select * from SupportBean " +
+            String text = "@Name('s0') select * from SupportBean " +
                 "match_recognize (" +
                 " partition by intPrimitive, longPrimitive" +
                 " measures A.theString as a, B.theString as b" +

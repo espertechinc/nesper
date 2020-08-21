@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             RegressionPath path)
         {
 
-            var stmt = "@name('s0') select a\\.b.c\\.d as val from " + eventTypeName;
+            var stmt = "@Name('s0') select a\\.b.c\\.d as val from " + eventTypeName;
             env.CompileDeploy(stmt, path).AddListener("s0");
 
             SendXMLEvent(env, "<myroot><a.b><c.d>value</c.d></a.b></myroot>", eventTypeName);

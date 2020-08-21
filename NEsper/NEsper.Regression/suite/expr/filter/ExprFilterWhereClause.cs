@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select * from SupportMarketDataBean#length(3) where Symbol='CSCO'";
+                var epl = "@Name('s0') select * from SupportMarketDataBean#length(3) where Symbol='CSCO'";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendMarketDataEvent(env, "IBM");
@@ -96,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           " IntPrimitive + LongPrimitive as p1," +
                           " IntPrimitive * DoublePrimitive as p2," +
                           " FloatPrimitive / DoublePrimitive as p3" +

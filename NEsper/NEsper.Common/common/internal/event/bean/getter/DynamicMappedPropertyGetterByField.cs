@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			var method = parent.MakeChild(typeof(bool), typeof(DynamicPropertyGetterByMethodOrPropertyBase), codegenClassScope)
 				.AddParam(typeof(object), "object");
 			method.Block
-				.DeclareVar(typeof(DynamicPropertyDescriptorByField), "desc", GetPopulateCacheCodegen(memberCache, Ref("object"), method, codegenClassScope))
+				.DeclareVar<DynamicPropertyDescriptorByField>("desc", GetPopulateCacheCodegen(memberCache, Ref("object"), method, codegenClassScope))
 				.IfCondition(EqualsNull(ExprDotName(Ref("desc"), "Field")))
 				.BlockReturn(ConstantFalse())
 				.MethodReturn(

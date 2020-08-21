@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	    public void Write(object @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
 	    }
 
-	    public object ReadAny(DataInput s, byte[] resourceKey) {
+	    public object Read(DataInput s, byte[] resourceKey) {
 	        return null;
 	    }
 

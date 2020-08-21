@@ -149,7 +149,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             method.Block
                 .DeclareVar<AggregationServiceFactory>(
                     "svcFactory",
-                    NewInstance(classNames.ServiceFactory, Ref("this")))
+                    NewInstanceInner(classNames.ServiceFactory, Ref("this")))
                 .MethodReturn(
                     ExprDotMethodChain(EPStatementInitServicesConstants.REF)
                         .Get(AGGREGATIONSERVICEFACTORYSERVICE)
@@ -168,7 +168,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             CodegenClassScope classScope,
             AggregationClassNames classNames)
         {
-            method.Block.MethodReturn(NewInstance(classNames.Service, Ref("o")));
+            method.Block.MethodReturn(NewInstanceInner(classNames.Service, Ref("o")));
         }
 
         public void CtorCodegen(
@@ -327,7 +327,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                                 "Get",
                                 AggregationServiceCodegenNames.REF_GROUPKEY)))
                     .IfCondition(EqualsNull(MEMBER_CURRENTROW))
-                    .AssignRef(MEMBER_CURRENTROW, NewInstance(classNames.GetRowPerLevel(indexDefault), Ref("o")));
+                    .AssignRef(MEMBER_CURRENTROW, NewInstanceInner(classNames.GetRowPerLevel(indexDefault), Ref("o")));
             }
         }
 
@@ -437,7 +437,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
 
             if (localGroupByPlan.OptionalLevelTopForge != null) {
                 method.Block.IfCondition(EqualsNull(MEMBER_AGGREGATORSTOPLEVEL))
-                    .AssignRef(MEMBER_AGGREGATORSTOPLEVEL, NewInstance(classNames.RowTop, Ref("o")))
+                    .AssignRef(MEMBER_AGGREGATORSTOPLEVEL, NewInstanceInner(classNames.RowTop, Ref("o")))
                     .BlockEnd()
                     .ExprDotMethod(
                         MEMBER_AGGREGATORSTOPLEVEL,
@@ -482,7 +482,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                                 "Get",
                                 Ref(groupKeyName))))
                     .IfCondition(EqualsNull(Ref(rowName)))
-                    .AssignRef(rowName, NewInstance(classNames.GetRowPerLevel(levelNum), Ref("o")))
+                    .AssignRef(rowName, NewInstanceInner(classNames.GetRowPerLevel(levelNum), Ref("o")))
                     .ExprDotMethod(
                         ArrayAtIndex(MEMBER_AGGREGATORSPERLEVELANDGROUP, Constant(levelNum)),
                         "Put",

@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmt = "@name('s0') select A.LongBoxed as value from " +
+                var stmt = "@Name('s0') select A.LongBoxed as value from " +
                            "SupportBean(TheString='A')#length(1000000) as A," +
                            "SupportBean(TheString='B')#length(1000000) as B" +
                            " where A.LongBoxed=B.IntPrimitive";
@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmt = "@name('s0') select A.IntPrimitive as value from " +
+                var stmt = "@Name('s0') select A.IntPrimitive as value from " +
                            "SupportBean(TheString='A')#length(1000000) as A," +
                            "SupportBean(TheString='B')#length(1000000) as B" +
                            " where A.IntPrimitive=B.LongBoxed";

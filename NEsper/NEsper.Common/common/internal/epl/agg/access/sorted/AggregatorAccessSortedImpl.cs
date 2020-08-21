@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			CodegenExpressionRef ctx = symbols.GetAddExprEvalCtx(method);
 			CodegenMethod referenceAddToColl = ReferenceAddToCollCodegen(method, namedMethods, classScope);
 			method.Block
-				.DeclareVar(typeof(EventBean), "theEvent", ArrayAtIndex(eps, Constant(forge.Spec.StreamNum)))
+				.DeclareVar<EventBean>("theEvent", ArrayAtIndex(eps, Constant(forge.Spec.StreamNum)))
 				.IfRefNull("theEvent")
 				.BlockReturnNoValue();
 
@@ -135,7 +135,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			CodegenExpressionRef eps = symbols.GetAddEPS(method);
 			CodegenExpressionRef ctx = symbols.GetAddExprEvalCtx(method);
 			CodegenMethod dereferenceRemove = DereferenceRemoveFromCollCodegen(method, namedMethods, classScope);
-			method.Block.DeclareVar(typeof(EventBean), "theEvent", ArrayAtIndex(eps, Constant(forge.Spec.StreamNum)))
+			method.Block.DeclareVar<EventBean>("theEvent", ArrayAtIndex(eps, Constant(forge.Spec.StreamNum)))
 				.IfRefNull("theEvent")
 				.BlockReturnNoValue();
 
@@ -170,7 +170,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			method.Block
 				.IfCondition(ExprDotMethod(sorted, "IsEmpty"))
 				.BlockReturn(ConstantNull())
-				.DeclareVar(typeof(KeyValuePair<string, object>), "max", ExprDotName(sorted, "FirstEntry"))
+				.DeclareVar<KeyValuePair<string, object>>("max", ExprDotName(sorted, "FirstEntry"))
 				.MethodReturn(StaticMethod(typeof(AggregatorAccessSortedImpl), "CheckedPayloadMayDeque", ExprDotName(Ref("max"), "Value")));
 			return LocalMethod(method);
 		}
@@ -183,7 +183,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 			method.Block
 				.IfCondition(ExprDotMethod(sorted, "IsEmpty"))
 				.BlockReturn(ConstantNull())
-				.DeclareVar(typeof(KeyValuePair<string, object>), "min", ExprDotName(sorted, "LastEntry"))
+				.DeclareVar<KeyValuePair<string, object>>("min", ExprDotName(sorted, "LastEntry"))
 				.MethodReturn(StaticMethod(typeof(AggregatorAccessSortedImpl), "CheckedPayloadMayDeque", ExprDotName(Ref("min"), "Value")));
 			return LocalMethod(method);
 		}
@@ -269,7 +269,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
 					exprSymbol.DerivedSymbolsCodegen(method, method.Block, classScope);
 
-					method.Block.DeclareVar(typeof(object[]), "result", NewArrayByLength(typeof(object), Constant(criteria.Length)));
+					method.Block.DeclareVar<object[]>("result", NewArrayByLength(typeof(object), Constant(criteria.Length)));
 					for (int i = 0; i < criteria.Length; i++) {
 						method.Block.AssignArrayElement(Ref("result"), Constant(i), expressions[i]);
 					}
@@ -298,17 +298,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 				.AddParam(typeof(EventBean), "theEvent")
 				.AddParam(typeof(EventBean[]), NAME_EPS)
 				.AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
-			method.Block.DeclareVar(typeof(object), "comparable", LocalMethod(getComparable, REF_EPS, ConstantTrue(), REF_EXPREVALCONTEXT))
-				.DeclareVar(typeof(object), "existing", ExprDotMethod(sorted, "get", Ref("comparable")))
+			method.Block.DeclareVar<object>("comparable", LocalMethod(getComparable, REF_EPS, ConstantTrue(), REF_EXPREVALCONTEXT))
+				.DeclareVar<object>("existing", ExprDotMethod(sorted, "get", Ref("comparable")))
 				.IfRefNull("existing")
 				.ExprDotMethod(sorted, "Put", Ref("comparable"), Ref("theEvent"))
 				.IfElseIf(InstanceOf(Ref("existing"), typeof(EventBean)))
-				.DeclareVar(typeof(ArrayDeque<object>), "coll", NewInstance(typeof(ArrayDeque<object>), Constant(2)))
+				.DeclareVar<ArrayDeque<object>>("coll", NewInstance(typeof(ArrayDeque<object>), Constant(2)))
 				.ExprDotMethod(Ref("coll"), "Add", Ref("existing"))
 				.ExprDotMethod(Ref("coll"), "Add", Ref("theEvent"))
 				.ExprDotMethod(sorted, "Put", Ref("comparable"), Ref("coll"))
 				.IfElse()
-				.DeclareVar(typeof(ArrayDeque<object>), "q", Cast(typeof(ArrayDeque<object>), Ref("existing")))
+				.DeclareVar<ArrayDeque<object>>("q", Cast(typeof(ArrayDeque<object>), Ref("existing")))
 				.ExprDotMethod(Ref("q"), "Add", Ref("theEvent"))
 				.BlockEnd()
 				.Increment(size);
@@ -328,15 +328,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 				.AddParam(typeof(EventBean), "theEvent")
 				.AddParam(typeof(EventBean[]), NAME_EPS)
 				.AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
-			method.Block.DeclareVar(typeof(object), "comparable", LocalMethod(getComparable, REF_EPS, ConstantTrue(), REF_EXPREVALCONTEXT))
-				.DeclareVar(typeof(object), "existing", ExprDotMethod(sorted, "Get", Ref("comparable")))
+			method.Block.DeclareVar<object>("comparable", LocalMethod(getComparable, REF_EPS, ConstantTrue(), REF_EXPREVALCONTEXT))
+				.DeclareVar<object>("existing", ExprDotMethod(sorted, "Get", Ref("comparable")))
 				.IfRefNull("existing")
 				.BlockReturnNoValue()
 				.IfCondition(ExprDotMethod(Ref("existing"), "Equals", Ref("theEvent")))
 				.ExprDotMethod(sorted, "Remove", Ref("comparable"))
 				.Decrement(size)
 				.IfElseIf(InstanceOf(Ref("existing"), typeof(ArrayDeque<object>)))
-				.DeclareVar(typeof(ArrayDeque<object>), "q", Cast(typeof(ArrayDeque<object>), Ref("existing")))
+				.DeclareVar<ArrayDeque<object>>("q", Cast(typeof(ArrayDeque<object>), Ref("existing")))
 				.ExprDotMethod(Ref("q"), "Remove", Ref("theEvent"))
 				.IfCondition(ExprDotMethod(Ref("q"), "IsEmpty"))
 				.ExprDotMethod(sorted, "Remove", Ref("comparable"))
@@ -353,7 +353,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 		{
 			CodegenMethod method = parent.MakeChild(typeof(AggregationStateSorted), typeof(AggregatorAccessSortedImpl), classScope);
 			method.Block
-				.DeclareVar(typeof(AggregationStateSorted), "state", NewInstance(typeof(AggregationStateSorted)))
+				.DeclareVar<AggregationStateSorted>("state", NewInstance(typeof(AggregationStateSorted)))
 				.SetProperty(Ref("state"), "Size", MemberCol("size", column))
 				.SetProperty(Ref("state"), "Sorted", MemberCol("sorted", column))
 				.MethodReturn(Ref("state"));

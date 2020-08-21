@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             RegressionEnvironment env,
             string pattern)
         {
-            var expression = "@name('s0') select * " + "from pattern [" + pattern + "]";
+            var expression = "@Name('s0') select * " + "from pattern [" + pattern + "]";
             env.CompileDeploy(expression);
             env.AddListener("s0");
 
@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var fields = new [] { "c0", "c1" };
 
                 var epl =
-                    "@name('s0') select a.TheString as c0, b.TheString as c1 from pattern [a=SupportBean(IntPrimitive=0) or b=SupportBean(IntPrimitive=1)]";
+                    "@Name('s0') select a.TheString as c0, b.TheString as c1 from pattern [a=SupportBean(IntPrimitive=0) or b=SupportBean(IntPrimitive=1)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
@@ -105,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.AdvanceTime(0);
                 var listener = new SupportUpdateListener();
                 env.CompileDeploy(
-                        "@name('s0') select * from pattern [timer:interval(0) or every timer:interval(1 min)]")
+                        "@Name('s0') select * from pattern [timer:interval(0) or every timer:interval(1 min)]")
                     .Statement("s0")
                     .AddListenerWithReplay(listener);
                 Assert.IsTrue(listener.IsInvoked);

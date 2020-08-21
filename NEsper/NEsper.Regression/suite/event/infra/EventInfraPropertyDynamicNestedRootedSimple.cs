@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Pair<object, object>[] tests,
             Type expectedPropertyType)
         {
-            var stmtText = "@name('s0') select " +
+            var stmtText = "@Name('s0') select " +
                            "SimpleProperty? as Simple, " +
                            "exists(SimpleProperty?) as exists_Simple, " +
                            "Nested?.NestedValue as Nested, " +

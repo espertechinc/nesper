@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        stream.WriteDecimal(@object);
 	    }
 
-	    public override decimal Read(DataInput s, byte[] resourceKey) {
+	    public override decimal ReadValue(DataInput s, byte[] resourceKey) {
 	        return s.ReadDecimal();
 	    }
 

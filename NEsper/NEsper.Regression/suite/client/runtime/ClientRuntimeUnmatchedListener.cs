@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             public void Run(RegressionEnvironment env)
             {
-                var compiled = env.Compile("@name('s0') select * from SupportBean");
+                var compiled = env.Compile("@Name('s0') select * from SupportBean");
                 var listener = new MyUnmatchedListener();
                 env.EventService.UnmatchedListener = listener.Update;
 
@@ -109,7 +109,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.EventService.UnmatchedListener = listener.Update;
 
                 // create insert into
-                env.CompileDeploy("@name('s0') insert into MyEvent select TheString from SupportBean");
+                env.CompileDeploy("@Name('s0') insert into MyEvent select TheString from SupportBean");
 
                 // no statement, should be unmatched
                 SendEvent(env, "E1");

@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
         public void Run(RegressionEnvironment env)
         {
-            env.CompileDeploy("@name('s0') select sleepaLittle(100) from MyEvent");
+            env.CompileDeploy("@Name('s0') select sleepaLittle(100) from MyEvent");
             env.Statement("s0").Subscriber = new MySubscriber();
             for (var i = 0; i < 10000; i++) {
                 env.SendEventBean(new MyEvent());

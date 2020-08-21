@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         private void RunDocSampleUpToN(RegressionEnvironment env)
         {
             var fields = new [] { "a_Id","b_Id" };
-            var epl = "@name('s0') select * from TemperatureSensorEvent\n" +
+            var epl = "@Name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
                       "  partition by Device\n" +
                       "  measures A.Id as a_Id, B.Id as b_Id\n" +
@@ -118,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             bool soda,
             string pattern)
         {
-            var epl = "@name('s0') select * from SupportBean " +
+            var epl = "@Name('s0') select * from SupportBean " +
                       "match_recognize (" +
                       " partition by IntPrimitive" +
                       " measures A as a, B as b, C as c" +

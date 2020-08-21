@@ -65,14 +65,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy("insert into MyInfra select TheString, IntPrimitive from SupportBean");
 
                 if (createExplicitIndex) {
-                    env.CompileDeploy("@name('index') create index MyIndex on MyInfra(TheString)");
+                    env.CompileDeploy("@Name('index') create index MyIndex on MyInfra(TheString)");
                 }
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean("E2", -2));
 
                 var consumeEpl =
-                    "@name('consume') select (select IntPrimitive from MyInfra(IntPrimitive<0) sw where S0.P00=sw.TheString) as val from S0 s0";
+                    "@Name('consume') select (select IntPrimitive from MyInfra(IntPrimitive<0) sw where S0.P00=sw.TheString) as val from S0 s0";
                 if (disableIndexShareConsumer) {
                     consumeEpl = "@Hint('disable_window_subquery_indexshare') " + consumeEpl;
                 }

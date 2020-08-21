@@ -213,7 +213,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var milestone = new AtomicLong();
 
-                var epl = "@name('s0') select irstream Symbol," +
+                var epl = "@Name('s0') select irstream Symbol," +
                           "median(all Price) as myMedian," +
                           "median(distinct Price) as myDistMedian," +
                           "stddev(all Price) as myStdev," +
@@ -228,7 +228,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 // Test NaN sensitivity
                 env.UndeployAll();
 
-                epl = "@name('s0') select stddev(Price) as val from SupportMarketDataBean#length(3)";
+                epl = "@Name('s0') select stddev(Price) as val from SupportMarketDataBean#length(3)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "A", double.NaN);
@@ -311,7 +311,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream Symbol," +
+                var epl = "@Name('s0') select irstream Symbol," +
                           "median(Price) as myMedian," +
                           "median(distinct Price) as myDistMedian," +
                           "stddev(Price) as myStdev," +

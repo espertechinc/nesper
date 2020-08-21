@@ -132,7 +132,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			RegressionPath path)
 		{
 
-			var stmtText = "@name('s0') select " +
+			var stmtText = "@Name('s0') select " +
 			               "indexed[0]? as indexed1, " +
 			               "exists(indexed[0]?) as exists_indexed1, " +
 			               "indexed[1]? as indexed2, " +

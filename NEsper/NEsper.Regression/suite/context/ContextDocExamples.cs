@@ -250,7 +250,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 "  group by Amount < 100 as small, \n" +
                 "  group by Amount between 100 and 1000 as medium, \n" +
                 "  group by Amount > 1000 as large from BankTxn");
-            Create(env, path, "@name('s0') context TxnCategoryContext select * from BankTxn#time(1 minute)");
+            Create(env, path, "@Name('s0') context TxnCategoryContext select * from BankTxn#time(1 minute)");
             ContextPartitionSelectorCategory categorySmall = new ProxyContextPartitionSelectorCategory {
                 ProcLabels = () => Collections.SingletonList("small")
             };

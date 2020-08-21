@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var expression = "@name('s0') select S0.Id as Id, h0.val as valh0, h1.val as valh1 " +
+                var expression = "@Name('s0') select S0.Id as Id, h0.val as valh0, h1.val as valh1 " +
                                  "from SupportBeanInt#lastevent as S0, " +
                                  "method:SupportJoinMethods.FetchVal('H0', 100) as h0, " +
                                  "method:SupportJoinMethods.FetchVal('H1', 100) as h1 " +
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var expression = "@name('s0') select S0.Id as Id, h0.val as valh0, h1.val as valh1 " +
+                var expression = "@Name('s0') select S0.Id as Id, h0.val as valh0, h1.val as valh1 " +
                                  "from SupportBeanInt#lastevent as S0 " +
                                  " left outer join " +
                                  "method:SupportJoinMethods.FetchVal('H0', 100) as h0 " +
@@ -118,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var expression = "@name('s0') select S0.Id as S0Id, S1.Id as S1Id, h0.val as valh0 " +
+                var expression = "@Name('s0') select S0.Id as S0Id, S1.Id as S1Id, h0.val as valh0 " +
                                  "from SupportBeanInt(Id like 'E%')#lastevent as S0, " +
                                  "method:SupportJoinMethods.FetchVal('H0', 100) as h0, " +
                                  "SupportBeanInt(Id like 'F%')#lastevent as S1 " +
@@ -155,7 +155,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             public void Run(RegressionEnvironment env)
             {
                 var expression =
-                    "@name('s0') select S0.Id as S0Id, S1.Id as S1Id, h0.val as valh0, h0.index as indexh0 from " +
+                    "@Name('s0') select S0.Id as S0Id, S1.Id as S1Id, h0.val as valh0, h0.index as indexh0 from " +
                     "method:SupportJoinMethods.FetchVal('H0', 100) as h0, " +
                     "SupportBeanInt(Id like 'H%')#lastevent as S1, " +
                     "SupportBeanInt(Id like 'E%')#lastevent as S0 " +

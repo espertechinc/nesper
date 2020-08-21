@@ -184,7 +184,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
             state.NumDataPoints = input.ReadLong();
             state.CurrentBufferElementPointer = input.ReadInt();
             for (var i = 0; i < sizeBuf; i++) {
-                circularBuffer[i] = serdeNullable.ReadAny(input, unitKey);
+                circularBuffer[i] = serdeNullable.Read(input, unitKey);
             }
 
             return state;

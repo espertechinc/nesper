@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
         {
         }
 
-        public override char? Read(
+        public override char? ReadValue(
             DataInput input,
             byte[] resourceKey)
         {

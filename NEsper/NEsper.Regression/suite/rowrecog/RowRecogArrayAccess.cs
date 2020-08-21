@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             AtomicLong milestone,
             string measures)
         {
-            var text = "@name('s0') select * from SupportBean " +
+            var text = "@Name('s0') select * from SupportBean " +
                        "match_recognize (" +
                        " partition by TheString " +
                        " measures " +
@@ -76,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             string pattern)
         {
             var fields = new [] { "a0","a1","b0","b1","c" };
-            var text = "@name('s0') select * from SupportBean " +
+            var text = "@Name('s0') select * from SupportBean " +
                        "match_recognize (" +
                        " measures A[0].TheString as a0, A[1].TheString as a1, B[0].TheString as b0, B[1].TheString as b1, C.TheString as c" +
                        " pattern (" +
@@ -137,7 +137,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "a","b0","c","d0","e" };
-                var text = "@name('s0') select * from SupportBean " +
+                var text = "@Name('s0') select * from SupportBean " +
                            "match_recognize (" +
                            " measures A.TheString as a, B[0].TheString as b0, C.TheString as c, D[0].TheString as d0, E.TheString as e" +
                            " pattern (A B+ C D+ E)" +
@@ -226,7 +226,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             public void Run(RegressionEnvironment env)
             {
                 var fieldsOne = new [] { "a0","a1","a2","b" };
-                var epl = "@name('s0') select * from SupportBean " +
+                var epl = "@Name('s0') select * from SupportBean " +
                           "match_recognize (" +
                           " measures A[0].TheString as a0, A[1].TheString as a1, A[2].TheString as a2, B.TheString as b" +
                           " pattern (A* B)" +
@@ -279,7 +279,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.UndeployAll();
 
                 var fieldsTwo = new [] { "a[0].TheString","a[1].TheString","b.TheString" };
-                var eplTwo = "@name('s0') select * from SupportBean " +
+                var eplTwo = "@Name('s0') select * from SupportBean " +
                              "match_recognize (" +
                              " measures A as a, B as b " +
                              " pattern (A+ B)" +

@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        stream.WriteDouble(@object);
 	    }
 
-	    public override double Read(DataInput s, byte[] resourceKey) {
+	    public override double ReadValue(DataInput s, byte[] resourceKey) {
 	        return s.ReadDouble();
 	    }
 

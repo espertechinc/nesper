@@ -171,7 +171,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select S0.Id as idS0, S1.Id as idS1 " +
+                var stmtText = "@Name('s0') select S0.Id as idS0, S1.Id as idS1 " +
                                "from pattern [every S0=SupportBean_S0" +
                                " or every S1=SupportBean_S1] " +
                                "where S0.Id is not null and S0.Id<100 or S1.Id is not null and S1.Id>=100";
@@ -204,7 +204,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select S0.Id as idS0, S1.Id as idS1 " +
+                var stmtText = "@Name('s0') select S0.Id as idS0, S1.Id as idS1 " +
                                "from pattern [every S0=SupportBean_S0" + 
                                " or every S1=SupportBean_S1] " +
                                "where (S0.Id is not null and S0.Id < 100) or (S1.Id is not null and S1.Id >= 100)";
@@ -231,7 +231,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select sum(S0.Id) as sumS0, sum(S1.Id) as sumS1, sum(S0.Id + S1.Id) as sumS0S1 " +
+                    "@Name('s0') select sum(S0.Id) as sumS0, sum(S1.Id) as sumS1, sum(S0.Id + S1.Id) as sumS0S1 " +
                     "from pattern [every S0=SupportBean_S0" +
                     " or every S1=SupportBean_S1]";
                 env.CompileDeploy(stmtText).AddListener("s0");
@@ -256,7 +256,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select irstream a.Id as idA, b.Id as idB, " +
+                var stmtText = "@Name('s0') select irstream a.Id as idA, b.Id as idB, " +
                                "a.P00 as P00A, b.P00 as P00B from pattern [every a=SupportBean_S0" +
                                " -> every b=SupportBean_S0(P00=a.P00)]#time(1)";
                 env.CompileDeploy(stmtText).AddListener("s0");
@@ -290,7 +290,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@name('s0') select irstream * from pattern [every(S0=SupportMarketDataBean(Symbol='S0') and " +
+                    "@Name('s0') select irstream * from pattern [every(S0=SupportMarketDataBean(Symbol='S0') and " +
                     "S1=SupportMarketDataBean(Symbol='S1'))]#length(1)";
                 env.CompileDeploy(text).AddListener("s0");
 

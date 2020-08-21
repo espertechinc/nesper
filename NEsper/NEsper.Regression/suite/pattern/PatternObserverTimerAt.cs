@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             SendTime(env, startTime);
 
-            env.CompileDeploy("@name('s0') " + epl).AddListener("s0");
+            env.CompileDeploy("@Name('s0') " + epl).AddListener("s0");
             RunSequence(env, times);
 
             env.UndeployAll();
@@ -78,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             SendTime(env, startTime);
 
-            env.CompileDeploy("@name('s0') " + epl).AddListener("s0");
+            env.CompileDeploy("@Name('s0') " + epl).AddListener("s0");
             RunSequenceMilliseconds(env, times);
 
             env.UndeployAll();
@@ -239,7 +239,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 SendTimeEvent("2002-05-30T9:00:00.000", env);
-                var epl = "@name('s0') select * from pattern [every timer:at(*,*,*,*,*)]";
+                var epl = "@Name('s0') select * from pattern [every timer:at(*,*,*,*,*)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
@@ -434,7 +434,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var expression = "@name('s0') select * from pattern [every timer:at(0,8,*,*,[1,2,3,4,5])]";
+                var expression = "@Name('s0') select * from pattern [every timer:at(0,8,*,*,[1,2,3,4,5])]";
 
                 var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Utc);
                 dateTimeEx.SetMillis(0);
@@ -454,7 +454,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var expression = "@name('s0') select * from pattern [every timer:at(?::int,?::int,*,*,[1,2,3,4,5])]";
+                var expression = "@Name('s0') select * from pattern [every timer:at(?::int,?::int,*,*,[1,2,3,4,5])]";
 
                 var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Utc);
                 dateTimeEx.SetMillis(0);
@@ -481,7 +481,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var expression = "@name('s0') select * from pattern [every timer:at(VMIN,VHOUR,*,*,[1,2,3,4,5])]";
+                var expression = "@Name('s0') select * from pattern [every timer:at(VMIN,VHOUR,*,*,[1,2,3,4,5])]";
 
                 var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Utc);
                 dateTimeEx.SetMillis(0);
@@ -500,7 +500,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var expression = "@name('s0') select * from pattern [every timer:at(7+1-8,4+4,*,*,[1,2,3,4,5])]";
+                var expression = "@Name('s0') select * from pattern [every timer:at(7+1-8,4+4,*,*,[1,2,3,4,5])]";
 
                 var dateTimeEx = DateTimeEx.GetInstance(TimeZoneInfo.Utc);
                 dateTimeEx.SetMillis(0);
@@ -520,7 +520,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 SendTimeEvent("2008-08-3T06:00:00.000", env);
                 var expression =
-                    "@name('s0') select * from pattern [a=SupportBean -> every timer:at(2*a.IntPrimitive,*,*,*,*)]";
+                    "@Name('s0') select * from pattern [a=SupportBean -> every timer:at(2*a.IntPrimitive,*,*,*,*)]";
                 env.CompileDeploy(expression);
                 env.AddListener("s0");
 
@@ -544,7 +544,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 if (baseUtcOffset.Equals(expectedUtcOffset)) {
                     // asserting only in EST timezone, see schedule util tests
                     SendTimeEvent("2008-01-4T06:50:00.000", env);
-                    env.CompileDeploy("@name('s0') select * from pattern [timer:at(0, 5, 4, 1, *, 0, 'PST')]")
+                    env.CompileDeploy("@Name('s0') select * from pattern [timer:at(0, 5, 4, 1, *, 0, 'PST')]")
                         .AddListener("s0");
 
                     SendTimeEvent("2008-01-4T07:59:59.999", env);

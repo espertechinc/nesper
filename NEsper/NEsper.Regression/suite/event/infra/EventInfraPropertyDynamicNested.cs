@@ -158,7 +158,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Pair<object, object>[] tests,
             Type expectedPropertyType)
         {
-            var stmtText = "@name('s0') " +
+            var stmtText = "@Name('s0') " +
                            eventRepresentationEnum.GetAnnotationText() +
                            additionalAnnotations +
                            " select " +

@@ -23,7 +23,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            var epl = "@name('variables') create variable int varhour;\n" +
+            var epl = "@Name('variables') create variable int varhour;\n" +
                       "create variable int varmin;\n" +
                       "create variable int varsec;\n" +
                       "create variable int varmsec;\n";
@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(startTime));
 
             var fields = new [] { "val0","val1","val2","val3", "val4" };
-            epl = "@name('s0') select " +
+            epl = "@Name('s0') select " +
                   "current_timestamp.withTime(varhour, varmin, varsec, varmsec) as val0," +
                   "LongDate.withTime(varhour, varmin, varsec, varmsec) as val1," +
                   "DateTime.withTime(varhour, varmin, varsec, varmsec) as val2," +

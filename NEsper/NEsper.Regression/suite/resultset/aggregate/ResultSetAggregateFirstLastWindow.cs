@@ -289,7 +289,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select TheString, " +
+                var epl = "@Name('s0') select TheString, " +
                           "first(TheString) as firststring, " +
                           "last(TheString) as laststring, " +
                           "first(IntPrimitive) as firstint, " +
@@ -366,7 +366,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "first(TheString) as firststring, " +
                           "last(TheString) as laststring, " +
                           "first(IntPrimitive) as firstint, " +
@@ -416,7 +416,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select first().Property as val0, first().MyMethod() as val1, window() as val2 from SupportEventPropertyWithMethod#lastevent";
+                    "@Name('s0') select first().Property as val0, first().MyMethod() as val1, window() as val2 from SupportEventPropertyWithMethod#lastevent";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportEventPropertyWithMethod("P1"));
@@ -435,7 +435,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var epl = "create window MyWindowOne#keepall as SupportBean;\n" +
                           "insert into MyWindowOne select * from SupportBean(TheString like 'A%');\n" +
-                          "@name('s0') on SupportBean(TheString like 'B%') select last(mw.IntPrimitive) as li, max(mw.IntPrimitive) as mi from MyWindowOne mw;";
+                          "@Name('s0') on SupportBean(TheString like 'B%') select last(mw.IntPrimitive) as li, max(mw.IntPrimitive) as mi from MyWindowOne mw;";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fields = new [] { "li","mi" };
@@ -482,7 +482,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "prev(IntPrimitive, 0) as p0, " +
                           "prev(IntPrimitive, 1) as p1, " +
                           "prev(IntPrimitive, 2) as p2, " +
@@ -535,7 +535,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var milestone = new AtomicLong();
 
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "first(IntPrimitive, 0) as f0, " +
                           "first(IntPrimitive, 1) as f1, " +
                           "first(IntPrimitive, 2) as f2, " +
@@ -562,8 +562,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.UndeployAll();
 
                 var path = new RegressionPath();
-                env.CompileDeploy("@name('var') create variable int indexvar = 2", path);
-                epl = "@name('s0') select first(IntPrimitive, indexvar) as f0 from SupportBean#keepall";
+                env.CompileDeploy("@Name('var') create variable int indexvar = 2", path);
+                epl = "@Name('s0') select first(IntPrimitive, indexvar) as f0 from SupportBean#keepall";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 var fields = new [] { "f0" };
@@ -649,7 +649,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select Id, (select window(sb.*) from SupportBean#length(2) as sb) as w from SupportBean_A";
+                    "@Name('s0') select Id, (select window(sb.*) from SupportBean#length(2) as sb) as w from SupportBean_A";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fields = new [] { "Id","w" };
@@ -707,7 +707,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 var milestone = new AtomicLong();
 
                 var epl =
-                    "@name('s0') select sum(IntPrimitive) as si, window(sa.IntPrimitive) as wi from SupportBean#length(2) as sa";
+                    "@Name('s0') select sum(IntPrimitive) as si, window(sa.IntPrimitive) as wi from SupportBean#length(2) as sa";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fields = new [] { "si","wi" };
@@ -739,7 +739,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.UndeployAll();
 
                 epl =
-                    "@name('s0') select sum(IntPrimitive) as si, window(sa.IntPrimitive) as wi from SupportBean#keepall as sa group by TheString";
+                    "@Name('s0') select sum(IntPrimitive) as si, window(sa.IntPrimitive) as wi from SupportBean#keepall as sa group by TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -777,7 +777,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select sum(IntPrimitive) as si, window(sa.IntPrimitive) as wi from SupportBean#keepall as sa output every 2 events";
+                    "@Name('s0') select sum(IntPrimitive) as si, window(sa.IntPrimitive) as wi from SupportBean#keepall as sa output every 2 events";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fields = new [] { "si","wi" };
@@ -812,7 +812,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "first(sa.DoublePrimitive + sa.IntPrimitive), " +
                           "first(sa.IntPrimitive), " +
                           "window(sa.*), " +
@@ -833,7 +833,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
                 env.UndeployAll();
 
-                epl = "@name('s0') select " +
+                epl = "@Name('s0') select " +
                       "first(sa.DoublePrimitive + sa.IntPrimitive) as f1, " +
                       "first(sa.IntPrimitive) as f2, " +
                       "window(sa.*) as w1, " +
@@ -845,7 +845,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
                 env.UndeployAll();
 
-                epl = "@name('s0') select " +
+                epl = "@Name('s0') select " +
                       "first(sa.DoublePrimitive + sa.IntPrimitive) as f1, " +
                       "first(sa.IntPrimitive) as f2, " +
                       "window(sa.*) as w1, " +
@@ -885,7 +885,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "sa.Id as ast, " +
                           "sb.Id as bst, " +
                           "first(sa.Id) as fas, " +
@@ -968,7 +968,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "sa.Id as aId, " +
                           "sb.Id as bId, " +
                           "first(sb.P10) as fb, " +
@@ -1024,7 +1024,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream " +
+                var epl = "@Name('s0') select irstream " +
                           "first(TheString) as fs, " +
                           "window(TheString) as ws, " +
                           "last(TheString) as ls " +
@@ -1082,7 +1082,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "TheString, " +
                           "first(IntPrimitive) as fi, " +
                           "window(IntPrimitive) as wi, " +
@@ -1147,7 +1147,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.SendEventBean(new SupportBean("E2", 20));
 
                 var fields = new [] { "firststring","windowstring","laststring" };
-                epl = "@name('s0') select " +
+                epl = "@Name('s0') select " +
                       "first(TheString) as firststring, " +
                       "window(TheString) as windowstring, " +
                       "last(TheString) as laststring " +
@@ -1172,7 +1172,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 var epl = "create window MyWindowThree#keepall as select * from SupportBean;\n" +
                           "insert into MyWindowThree select * from SupportBean;\n" +
                           "on SupportBean_A delete from MyWindowThree where TheString = Id;\n" +
-                          "@name('s0') select " +
+                          "@Name('s0') select " +
                           "first(TheString) as firststring, " +
                           "window(TheString) as windowstring, " +
                           "last(TheString) as laststring " +
@@ -1304,7 +1304,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var milestone = new AtomicLong();
 
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "first(*) as firststar, " +
                           "first(sb.*) as firststarsb, " +
                           "last(*) as laststar, " +
@@ -1338,7 +1338,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select first(TheString) as c0, last(TheString) as c1 from SupportBean";
+                var epl = "@Name('s0') select first(TheString) as c0, last(TheString) as c1 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fields = new [] { "c0", "c1" };
@@ -1375,7 +1375,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "first(TheString) as f1, " +
                           "first(sb.*) as f2, " +
                           "first(*) as f3, " +
@@ -1419,7 +1419,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var milestone = new AtomicLong();
 
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "first(TheString) as firststring, " +
                           "last(TheString) as laststring, " +
                           "first(IntPrimitive) as firstint, " +
@@ -1439,7 +1439,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.UndeployAll();
 
                 // test null-value provided
-                epl = "@name('s0') select window(IntBoxed).take(10) from SupportBean#length(2)";
+                epl = "@Name('s0') select window(IntBoxed).take(10) from SupportBean#length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
                 env.SendEventBean(new SupportBean("E1", 1));
 
@@ -1453,7 +1453,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var milestone = new AtomicLong();
 
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "TheString, " +
                           "first(TheString) as firststring, " +
                           "last(TheString) as laststring, " +
@@ -1491,7 +1491,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.UndeployAll();
 
                 // test SODA indexes
-                var eplFirstLast = "@name('s0') select " +
+                var eplFirstLast = "@Name('s0') select " +
                                    "last(IntPrimitive), " +
                                    "last(IntPrimitive,1), " +
                                    "first(IntPrimitive), " +
@@ -1510,7 +1510,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 var epl = "create window ABCWin.win:keepall() as SupportBean;\n" +
                           "insert into ABCWin select * from SupportBean;\n" +
                           "on SupportBean_S0 delete from ABCWin where IntPrimitive = Id;\n" +
-                          "@name('s0') select TheString as c0, sum(IntPrimitive) as c1, window(IntPrimitive) as c2 from ABCWin group by TheString;\n";
+                          "@Name('s0') select TheString as c0, sum(IntPrimitive) as c1, window(IntPrimitive) as c2 from ABCWin group by TheString;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
@@ -1583,7 +1583,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var fields = new [] { "c0", "c1", "c2" };
 
-                var epl = "@name('s0') select TheString as c0, sum(IntPrimitive) as c1," +
+                var epl = "@Name('s0') select TheString as c0, sum(IntPrimitive) as c1," +
                           "window(IntPrimitive*LongPrimitive) as c2 from SupportBean#length(3) group by TheString order by TheString asc";
                 env.CompileDeploy(epl).AddListener("s0");
 

@@ -58,11 +58,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 	    }
 
 	    public CodegenExpression EvaluateGetEventBeanCodegen(CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        CodegenMethod method = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
+	        var method = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
 	        method.Block
-	            .DeclareVar(typeof(EventBean), "event", ArrayAtIndex(exprSymbol.GetAddEPS(method), Constant(_streamId)))
-	            .IfRefNullReturnNull("event")
-	            .MethodReturn(Cast(typeof(EventBean), _getterSpi.EventBeanFragmentCodegen(Ref("event"), method, codegenClassScope)));
+	            .DeclareVar<EventBean>("@event", ArrayAtIndex(exprSymbol.GetAddEPS(method), Constant(_streamId)))
+	            .IfRefNullReturnNull("@event")
+	            .MethodReturn(Cast(typeof(EventBean), _getterSpi.EventBeanFragmentCodegen(Ref("@event"), method, codegenClassScope)));
 	        return LocalMethod(method);
 	    }
 

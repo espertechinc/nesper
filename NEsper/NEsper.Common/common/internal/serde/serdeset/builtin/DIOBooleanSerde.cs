@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
             stream.WriteBoolean(@object);
         }
 
-        public override bool Read(
+        public override bool ReadValue(
             DataInput s,
             byte[] resourceKey)
         {

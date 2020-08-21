@@ -262,7 +262,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 		        .AddParam(typeof(OrderByProcessor), NAME_ORDERBYPROCESSOR)
 		        .AddParam(typeof(AggregationService), NAME_AGGREGATIONSVC)
 		        .AddParam(typeof(AgentInstanceContext), NAME_AGENTINSTANCECONTEXT);
-	        instantiateMethod.Block.MethodReturn(CodegenExpressionBuilder.NewInstance(
+	        instantiateMethod.Block.MethodReturn(CodegenExpressionBuilder.NewInstanceInner(
 		        CLASSNAME_RESULTSETPROCESSOR, Ref("o"),
 		        MEMBER_ORDERBYPROCESSOR,
 		        MEMBER_AGGREGATIONSVC,
@@ -287,7 +287,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 	        providerExplicitMembers.Add(new CodegenTypedParam(typeof(ResultSetProcessorFactory), "rspFactory"));
 	        providerCtor.Block.AssignMember(
 		        MEMBERNAME_RESULTSETPROCESSORFACTORY,
-		        NewInstance(CLASSNAME_RESULTSETPROCESSORFACTORY, Ref("this")));
+		        NewInstanceInner(CLASSNAME_RESULTSETPROCESSORFACTORY, Ref("this")));
 	    }
 
 	    private static void MakeResultSetProcessor(
@@ -606,7 +606,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 			    explicitMembers.Add(new CodegenTypedParam(typeof(SelectExprProcessor), "selectExprProcessor"));
 			    outerClassCtor.Block.AssignRef(
 				    "selectExprProcessor",
-				    CodegenExpressionBuilder.NewInstance(name, Ref("this"), EPStatementInitServicesConstants.REF));
+				    CodegenExpressionBuilder.NewInstanceInner(name, Ref("this"), EPStatementInitServicesConstants.REF));
 			    var innerClass = MakeSelectExprProcessor(name, classNameParent, classScope, forges[0]);
 			    innerClasses.Add(innerClass);
 			    return;
@@ -626,7 +626,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 			    outerClassCtor.Block.AssignArrayElement(
 				    "selectExprProcessorArray",
 				    Constant(i),
-				    CodegenExpressionBuilder.NewInstance("SelectExprProcessorImpl" + i, Ref("this"), EPStatementInitServicesConstants.REF));
+				    CodegenExpressionBuilder.NewInstanceInner("SelectExprProcessorImpl" + i, Ref("this"), EPStatementInitServicesConstants.REF));
 		    }
 	    }
 

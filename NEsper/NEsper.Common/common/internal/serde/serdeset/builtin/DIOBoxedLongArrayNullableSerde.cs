@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        WriteInternal(@object, output);
 	    }
 
-	    public override long?[] Read(DataInput input, byte[] unitKey) {
+	    public override long?[] ReadValue(DataInput input, byte[] unitKey) {
 	        return ReadInternal(input);
 	    }
 

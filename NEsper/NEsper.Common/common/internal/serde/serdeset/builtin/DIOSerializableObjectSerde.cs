@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			output.Write(objectBytes);
 		}
 
-		public object ReadAny(
+		public object Read(
 			DataInput input,
 			byte[] resourceKey)
 		{

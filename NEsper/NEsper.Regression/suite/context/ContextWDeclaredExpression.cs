@@ -57,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy("create expression getLabelTwo { 'x'||context.label||'x' }", path);
 
                 env.CompileDeploy(
-                        "@name('s0') expression getLabelThree { context.label } " +
+                        "@Name('s0') expression getLabelThree { context.label } " +
                         "context MyCtx " +
                         "select getLabelOne() as c0, getLabelTwo() as c1, getLabelThree() as c2 from SupportBean",
                         path)
@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy("create expression getLabelTwo alias for { 'x'||context.label||'x' }", path);
 
                 env.CompileDeploy(
-                        "@name('s0') expression getLabelThree alias for { context.label } " +
+                        "@Name('s0') expression getLabelThree alias for { context.label } " +
                         "context MyCtx " +
                         "select getLabelOne as c0, getLabelTwo as c1, getLabelThree as c2 from SupportBean",
                         path)
@@ -109,7 +109,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(context, path);
 
                 var statement =
-                    "@name('s0') context context2 select * from pattern[e1=SupportBean(THE_EXPRESSION) -> e2=SupportBean(TheString='y')]";
+                    "@Name('s0') context context2 select * from pattern[e1=SupportBean(THE_EXPRESSION) -> e2=SupportBean(TheString='y')]";
                 env.CompileDeploy(statement, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("x", 1));

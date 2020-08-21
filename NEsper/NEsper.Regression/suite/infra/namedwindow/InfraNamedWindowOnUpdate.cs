@@ -49,11 +49,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         internal class InfraUpdateMultikeyWArrayTwoFields : RegressionExecution {
 
     public void Run (RegressionEnvironment env) {
-        string epl = "@name('create') create window MyWindow#keepall as SupportEventWithManyArray;\n" +
+        string epl = "@Name('create') create window MyWindow#keepall as SupportEventWithManyArray;\n" +
             "insert into MyWindow select * from SupportEventWithManyArray;\n" +
             "on SupportEventWithIntArray as sewia " +
             "update MyWindow as mw set value = sewia.value " +
-            "where mw.id = sewia.id and mw.intOne = sewia.array;\n";
+            "where mw.id = sewia.id and mw.IntOne = sewia.array;\n";
         env.CompileDeploy (epl);
 
         env.SendEventBean (new SupportEventWithManyArray ("ID1").WithIntOne (new int[] { 1, 2 }));
@@ -86,11 +86,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
             public void Run(RegressionEnvironment env)
             {
-                string epl = "@name('create') create window MyWindow#keepall as SupportEventWithManyArray;\n" +
+                string epl = "@Name('create') create window MyWindow#keepall as SupportEventWithManyArray;\n" +
                              "insert into MyWindow select * from SupportEventWithManyArray;\n" +
                              "on SupportEventWithIntArray as sewia " +
                              "update MyWindow as mw set value = sewia.value " +
-                             "where mw.intOne = sewia.array;\n";
+                             "where mw.IntOne = sewia.array;\n";
                 env.CompileDeploy(epl);
 
                 env.SendEventBean(new SupportEventWithManyArray("E1").WithIntOne(new int[] {1, 2}));
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('window') create window MyWindow#keepall as select *, 1 as P0 from SupportBean;\n" +
+                var epl = "@Name('window') create window MyWindow#keepall as select *, 1 as P0 from SupportBean;\n" +
                           "insert into MyWindow select *, 2 as P0 from SupportBean;\n" +
                           "on SupportBean_S0 update MyWindow set TheString = 'x', P0 = 2;\n";
                 env.CompileDeploy(epl);
@@ -142,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('window') create window MyWindowBeanCopyMethod#keepall as SupportBeanCopyMethod;\n" +
+                var epl = "@Name('window') create window MyWindowBeanCopyMethod#keepall as SupportBeanCopyMethod;\n" +
                           "insert into MyWindowBeanCopyMethod select * from SupportBeanCopyMethod;\n" +
                           "on SupportBean update MyWindowBeanCopyMethod set ValOne = 'x';\n";
                 env.CompileDeploy(epl);
@@ -160,7 +160,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             {
                 var epl = "create window MyWindowUNP#keepall as SupportBean;\n" +
                           "insert into MyWindowUNP select * from SupportBean;\n" +
-                          "@name('update') on SupportBean_S0 as sb " +
+                          "@Name('update') on SupportBean_S0 as sb " +
                           "update MyWindowUNP as mywin" +
                           " set mywin.SetIntPrimitive(10)," +
                           "     setBeanLongPrimitive999(mywin);\n";
@@ -183,7 +183,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('create') create window MyWindowMDW#unique(TheString)#length(2) as select * from SupportBean;\n" +
+                    "@Name('create') create window MyWindowMDW#unique(TheString)#length(2) as select * from SupportBean;\n" +
                     "insert into MyWindowMDW select * from SupportBean;\n" +
                     "on SupportBean_A update MyWindowMDW set IntPrimitive=IntPrimitive*100 where TheString=Id;\n";
                 env.CompileDeploy(epl).AddListener("create");
@@ -220,7 +220,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('create') create window MyWindowMU#unique(TheString)#length(2) retain-union as select * from SupportBean;\n" +
+                    "@Name('create') create window MyWindowMU#unique(TheString)#length(2) retain-union as select * from SupportBean;\n" +
                     "insert into MyWindowMU select * from SupportBean;\n" +
                     "on SupportBean_A update MyWindowMU mw set mw.IntPrimitive=IntPrimitive*100 where TheString=Id;\n";
                 env.CompileDeploy(epl).AddListener("create");
@@ -257,7 +257,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('create') create window MyWindowSC#keepall as select * from SupportBeanAbstractSub;\n" +
+                    "@Name('create') create window MyWindowSC#keepall as select * from SupportBeanAbstractSub;\n" +
                     "insert into MyWindowSC select * from SupportBeanAbstractSub;\n" +
                     "on SupportBean update MyWindowSC set V1=TheString, V2=TheString;\n";
                 env.CompileDeploy(epl).AddListener("create");

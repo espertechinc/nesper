@@ -163,7 +163,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 					CodegenSymbolProviderEmpty.INSTANCE,
 					classScope)
 				.AddParam(typeof(JsonDeserializerBase), "parent");
-			makeMethod.Block.MethodReturn(NewInstance(_delegateClassName, Ref("delegator"), Ref("parent"), NewInstance(_underlyingClassName)));
+			makeMethod.Block.MethodReturn(NewInstanceInner(_delegateClassName, Ref("delegator"), Ref("parent"), NewInstanceInner(_underlyingClassName)));
 			CodegenStackGenerator.RecursiveBuildStack(makeMethod, "Make", methods, properties);
 			
 			return makeMethod;
@@ -172,7 +172,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 		private void MakeNewUnderlyingMethod(CodegenMethod method)
 		{
 			// we know this underlying class has a default constructor otherwise it is not json and deep-class eligible
-			method.Block.MethodReturn(NewInstance(_underlyingClassName));
+			method.Block.MethodReturn(NewInstanceInner(_underlyingClassName));
 		}
 
 		private void MakeGetValue(
@@ -203,7 +203,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			CodegenClassScope classScope)
 		{
 			method.Block
-				.DeclareVar(_underlyingClassName, "copy", NewInstance(_underlyingClassName))
+				.DeclareVar(_underlyingClassName, "copy", NewInstanceInner(_underlyingClassName))
 				.DeclareVar(_underlyingClassName, "src", Cast(_underlyingClassName, Ref("und")));
 			foreach (KeyValuePair<string, JsonUnderlyingField> field in _desc.FieldDescriptorsInclSupertype) {
 				string fieldName = field.Value.FieldName;
@@ -333,7 +333,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 						.IfCondition(InstanceOf(Ref("value"), arrayType))
 						.AssignRef(fieldName, Cast(arrayType, Ref("value")))
 						.BlockReturnNoValue()
-						.DeclareVar(typeof(EventBean[]), "events", Cast(typeof(EventBean[]), Ref("value")))
+						.DeclareVar<EventBean[]>("events", Cast(typeof(EventBean[]), Ref("value")))
 						.DeclareVar(arrayType, "array", NewArrayByLength(eventType.UnderlyingType, ArrayLength(Ref("events"))))
 						.ForLoopIntSimple("i", ArrayLength(Ref("events")))
 						.AssignArrayElement("array", Ref("i"), CastUnderlying(eventType.UnderlyingType, ArrayAtIndex(Ref("events"), Ref("i"))))

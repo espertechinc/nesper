@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var fields = new [] { "cb","cnb","c","pct" };
                 var epl =
-                    "@name('s0') select count(*,BoolPrimitive) as cb, count(*,not BoolPrimitive) as cnb, count(*) as c, count(*,BoolPrimitive)/count(*) as pct from SupportBean#length(3)";
+                    "@Name('s0') select count(*,BoolPrimitive) as cb, count(*,not BoolPrimitive) as cnb, count(*) as c, count(*,BoolPrimitive)/count(*) as pct from SupportBean#length(3)";
                 env.CompileDeploy(epl).AddListener("s0");
                 AssertStatelessStmt(env, "s0", false);
 
@@ -117,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "c1","c2" };
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "count(IntBoxed, BoolPrimitive) as c1," +
                           "count(distinct IntBoxed, BoolPrimitive) as c2 " +
                           "from SupportBean#length(3)";
@@ -180,7 +180,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 string epl;
 
                 fields = new [] { "cavedev","cavg","cmax","cmedian","cmin","cstddev","csum","cfmaxever","cfminever" };
-                epl = "@name('s0') select " +
+                epl = "@Name('s0') select " +
                       "avedev(IntBoxed, BoolPrimitive) as cavedev," +
                       "avg(IntBoxed, BoolPrimitive) as cavg, " +
                       "fmax(IntBoxed, BoolPrimitive) as cmax, " +
@@ -231,7 +231,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.UndeployAll();
 
                 fields = new [] { "c1","c2","c3","c4" };
-                epl = "@name('s0') select " +
+                epl = "@Name('s0') select " +
                       "sum(FloatPrimitive, BoolPrimitive) as c1," +
                       "sum(DoublePrimitive, BoolPrimitive) as c2, " +
                       "sum(LongPrimitive, BoolPrimitive) as c3, " +
@@ -269,7 +269,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 // Test min/max-ever
                 env.UndeployAll();
                 fields = new [] { "c1","c2" };
-                epl = "@name('s0') select " +
+                epl = "@Name('s0') select " +
                       "fmax(IntBoxed, BoolPrimitive) as c1," +
                       "fmin(IntBoxed, BoolPrimitive) as c2 " +
                       "from SupportBean";
@@ -317,7 +317,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 // test big decimal big integer
                 env.UndeployAll();
                 fields = new [] { "c1","c2","c3" };
-                epl = "@name('s0') select " +
+                epl = "@Name('s0') select " +
                       "avg(DecimalOne, Bigint < 100) as c1," +
                       "sum(DecimalOne, Bigint < 100) as c2, " +
                       "sum(Bigint, Bigint < 100) as c3 " +
@@ -351,7 +351,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     new object[] {45m, 90m, new BigInteger(50)});
 
                 env.UndeployAll();
-                epl = "@name('s0') select " +
+                epl = "@Name('s0') select " +
                       "avedev(distinct IntBoxed,BoolPrimitive) as cavedev, " +
                       "avg(distinct IntBoxed,BoolPrimitive) as cavg, " +
                       "fmax(distinct IntBoxed,BoolPrimitive) as cmax, " +
@@ -430,7 +430,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 AtomicLong milestone)
             {
                 var fields = new [] { "c1","c2","c3" };
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "firstever(IntBoxed,BoolPrimitive) as c1, " +
                           "lastever(IntBoxed,BoolPrimitive) as c2, " +
                           "countever(*,BoolPrimitive) as c3 " +

@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.multikey
             WriteInternal(mk.Keys, output);
         }
 
-        public override MultiKeyArrayLong Read(
+        public override MultiKeyArrayLong ReadValue(
             DataInput input,
             byte[] unitKey)
         {

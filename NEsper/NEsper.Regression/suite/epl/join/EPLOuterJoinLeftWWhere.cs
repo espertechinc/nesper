@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             RegressionEnvironment env,
             string whereClause)
         {
-            var joinStatement = "@name('s0') select * from " +
+            var joinStatement = "@Name('s0') select * from " +
                                 "SupportBean_S0#length(5) as S0 " +
                                 "left outer join " +
                                 "SupportBean_S1#length(5) as S1" +

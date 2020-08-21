@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.core
             }
 
             method.Block
-                .DeclareVar(typeof(ClassProvided), "cp", NewInstance(typeof(ClassProvided)))
+                .DeclareVar<ClassProvided>("cp", NewInstance(typeof(ClassProvided)))
                 .ExprDotMethod(Ref("cp"), "Assembly", Ref("assembly"))
                 .ExprDotMethod(Ref("cp"), "ClassName", Constant(ClassName))
                 .ExprDotMethod(Ref("cp"), "ModuleName", Constant(ModuleName))

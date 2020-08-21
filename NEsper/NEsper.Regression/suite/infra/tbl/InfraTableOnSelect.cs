@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 "into table varagg " +
                 "select sum(IntPrimitive) as total from SupportBean group by TheString",
                 path);
-            env.CompileDeploy("@name('s0') on SupportBean_S0 select total as value from varagg where key = P00", path)
+            env.CompileDeploy("@Name('s0') on SupportBean_S0 select total as value from varagg where key = P00", path)
                 .AddListener("s0");
 
             AssertValues(env, "G1,G2", new int?[] {null, null});
@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.SendEventBean(new SupportBean("G2", 200));
             AssertValues(env, "G1,G2", new int?[] {100, 200});
 
-            env.CompileDeploy("@name('i1') on SupportBean_S1 select total from varagg where key = P10", path)
+            env.CompileDeploy("@Name('i1') on SupportBean_S1 select total from varagg where key = P10", path)
                 .AddListener("i1");
 
             env.SendEventBean(new SupportBean("G2", 300));

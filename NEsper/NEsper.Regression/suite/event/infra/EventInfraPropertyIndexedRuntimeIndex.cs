@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
 	        env.CompileDeploy(createSchemaEPL +
 	            "create constant variable int offsetNum = 0;" +
-	            "@name('s0') select indexed(offsetNum+0) as c0, indexed(offsetNum+1) as c1 from LocalEvent as e;\n"
+	            "@Name('s0') select indexed(offsetNum+0) as c0, indexed(offsetNum+1) as c1 from LocalEvent as e;\n"
 	        ).AddListener("s0");
 	        var eventType = env.Runtime.EventTypeService.GetEventType(env.DeploymentId("s0"), "LocalEvent");
 

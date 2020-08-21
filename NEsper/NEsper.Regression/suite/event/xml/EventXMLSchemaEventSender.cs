@@ -64,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             String eventTypeNameB,
             RegressionPath path)
         {
-            String stmtText = "@name('s0') select b.c as type, element1 from " + eventTypeNameABC;
+            String stmtText = "@Name('s0') select b.c as type, element1 from " + eventTypeNameABC;
             env.CompileDeploy(stmtText, path).AddListener("s0");
 
             var doc = GetDocument("<a><b><c>text</c></b></a>");
@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             env.UndeployModuleContaining("s0");
 
             // test adding a second type for the same root element
-            stmtText = "@name('s0') select element2 from " + eventTypeNameB + "#lastevent";
+            stmtText = "@Name('s0') select element2 from " + eventTypeNameB + "#lastevent";
             env.CompileDeploy(stmtText, path).AddListener("s0");
 
             // test sender that doesn't care about the root element

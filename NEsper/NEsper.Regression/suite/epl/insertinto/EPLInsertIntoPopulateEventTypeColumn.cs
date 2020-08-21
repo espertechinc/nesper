@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 path);
             env.CompileDeploy("create schema BEvent (e AEvent)", path);
             env.CompileDeploy(
-                    "@name('s0') insert into BEvent select (select e from MyEventWindow) as e from SupportBean(TheString = 'B')",
+                    "@Name('s0') insert into BEvent select (select e from MyEventWindow) as e from SupportBean(TheString = 'B')",
                     path)
                 .AddListener("s0");
 
@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
             var fields = new [] { "ez.e0_0","ez.e0_1" };
             env.CompileDeploy(
-                    "@name('s0') insert into EventOne select " +
+                    "@Name('s0') insert into EventOne select " +
                     "(select P00 as e0_0, P01 as e0_1 from SupportBean_S0#lastevent" +
                     (filter ? " where Id >= 100" : "") +
                     ") as ez " +
@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
             var fields = new [] { "e1_0","ez[0].e0_0","ez[0].e0_1","ez[1].e0_0","ez[1].e0_1" };
             env.CompileDeploy(
-                    "@name('s0')" +
+                    "@Name('s0')" +
                     "expression thequery {" +
                     "  (select P00 as e0_0, P01 as e0_1 from SupportBean_S0#keepall)" +
                     "} " +
@@ -152,7 +152,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
             var fields = new [] { "e0_0" };
             env.CompileDeploy(
-                    "@name('s0') insert into EventOne select " +
+                    "@Name('s0') insert into EventOne select " +
                     "(select P00 as e0_0, P01 as e0_1 from SupportBean_S0#keepall where Id between 10 and 20) as ez " +
                     "from SupportBean",
                     path)
@@ -186,7 +186,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
             var fields = new [] { "P00" };
             env.CompileDeploy(
-                    "@name('s0') insert into EventOne select " +
+                    "@Name('s0') insert into EventOne select " +
                     "(select * from SupportBean_S0#keepall " +
                     (filter ? "where 1=1" : "") +
                     ") as sbarr " +
@@ -223,7 +223,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
             var fields = new [] { "sb.P00" };
             env.CompileDeploy(
-                    "@name('s0') insert into EventOne select " +
+                    "@Name('s0') insert into EventOne select " +
                     "(select * from SupportBean_S0#length(2) " +
                     (filter ? "where Id >= 100" : "") +
                     ") as sb " +
@@ -258,7 +258,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.CompileDeploy("create " + typeType + " schema PurchaseOrder(OrderId string, items Item[])", path);
             env.CompileDeployWBusPublicType("create schema TriggerEvent()", path);
             env.CompileDeploy(
-                    "@name('s0') insert into PurchaseOrder select '001' as OrderId, new {name= 'i1', Price=10} as items from TriggerEvent",
+                    "@Name('s0') insert into PurchaseOrder select '001' as OrderId, new {name= 'i1', Price=10} as items from TriggerEvent",
                     path)
                 .AddListener("s0");
 
@@ -341,7 +341,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 var fields = new [] { "n0.p0","n0.p1" };
                 env.CompileDeploy(
-                        "@name('out') " +
+                        "@Name('out') " +
                         "expression computeNested {\n" +
                         "  sb -> case\n" +
                         "  when IntPrimitive = 1 \n" +

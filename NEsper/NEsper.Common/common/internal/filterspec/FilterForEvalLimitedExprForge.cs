@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             }
 
             method.Block
-                .DeclareVar(typeof(EventBean[]), "eps", LocalMethod(matchEventConvertor, REF_MATCHEDEVENTMAP))
+                .DeclareVar<EventBean[]>("eps", LocalMethod(matchEventConvertor, REF_MATCHEDEVENTMAP))
                 .MethodReturn(valueExpr);
 
             return LocalMethod(method, GET_FILTER_VALUE_REFS);

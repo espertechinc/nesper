@@ -311,7 +311,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     "create window MyWindowOne#firstunique(TheString)#firstlength(3) retain-union as SupportBean;\n" +
                     "insert into MyWindowOne select * from SupportBean;\n" +
                     "on SupportBean_S0 delete from MyWindowOne where TheString = P00;\n" +
-                    "@name('s0') select irstream * from MyWindowOne;\n";
+                    "@Name('s0') select irstream * from MyWindowOne;\n";
                 env.CompileDeploy(epl).AddListener("s0");
                 string[] fields = {"TheString", "IntPrimitive"};
 
@@ -383,7 +383,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select irstream TheString, IntPrimitive from SupportBean#firstlength(3)#firstunique(TheString) retain-union";
+                    "@Name('s0') select irstream TheString, IntPrimitive from SupportBean#firstlength(3)#firstunique(TheString) retain-union";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 TryAssertionFirstUniqueAndFirstLength(env);
@@ -391,7 +391,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.UndeployAll();
 
                 epl =
-                    "@name('s0') select irstream TheString, IntPrimitive from SupportBean#firstunique(TheString)#firstlength(3) retain-union";
+                    "@Name('s0') select irstream TheString, IntPrimitive from SupportBean#firstunique(TheString)#firstlength(3) retain-union";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 TryAssertionFirstUniqueAndFirstLength(env);
@@ -407,7 +407,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string[] fields = {"TheString"};
 
                 var epl =
-                    "@name('s0') select irstream TheString from SupportBean#length_batch(3)#unique(IntPrimitive) retain-union";
+                    "@Name('s0') select irstream TheString from SupportBean#length_batch(3)#unique(IntPrimitive) retain-union";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, "E1", 1);
@@ -513,7 +513,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string[] fields = {"total"};
 
                 var epl =
-                    "@name('s0') select * from SupportBean#unique(IntPrimitive)#unique(IntBoxed)#uni(DoublePrimitive) retain-union";
+                    "@Name('s0') select * from SupportBean#unique(IntPrimitive)#unique(IntBoxed)#uni(DoublePrimitive) retain-union";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, "E1", 1, 10, 100d);
@@ -548,7 +548,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string[] fields = {"TheString"};
 
                 var text =
-                    "@name('s0') select irstream TheString from SupportBean#groupwin(IntPrimitive)#length(2)#unique(IntBoxed) retain-union";
+                    "@Name('s0') select irstream TheString from SupportBean#groupwin(IntPrimitive)#length(2)#unique(IntBoxed) retain-union";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 SendEvent(env, "E1", 1, 10);
@@ -664,7 +664,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@name('s0') select * from SupportBean_S0 where P00 in (select TheString from SupportBean#length(2)#unique(IntPrimitive) retain-union)";
+                    "@Name('s0') select * from SupportBean_S0 where P00 in (select TheString from SupportBean#length(2)#unique(IntPrimitive) retain-union)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 SendEvent(env, "E1", 1);
@@ -708,7 +708,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string[] fields = {"TheString"};
 
                 var epl =
-                    "@name('s0') select irstream TheString from SupportBean#unique(IntPrimitive)#unique(IntBoxed)#unique(DoublePrimitive) retain-union";
+                    "@Name('s0') select irstream TheString from SupportBean#unique(IntPrimitive)#unique(IntBoxed)#unique(DoublePrimitive) retain-union";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "E1", 1, 10, 100d);
@@ -770,7 +770,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string[] fields = {"string"};
 
                 var text =
-                    "@name('s0') select irstream a.P00||b.P10 as string from pattern [every a=SupportBean_S0 -> b=SupportBean_S1]#unique(a.Id)#unique(b.Id) retain-union";
+                    "@Name('s0') select irstream a.P00||b.P10 as string from pattern [every a=SupportBean_S0 -> b=SupportBean_S1]#unique(a.Id)#unique(b.Id) retain-union";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "E1"));
@@ -822,7 +822,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string[] fields = {"TheString"};
 
                 var epl =
-                    "@name('s0') select irstream TheString from SupportBean#unique(IntPrimitive)#unique(IntBoxed) retain-union";
+                    "@Name('s0') select irstream TheString from SupportBean#unique(IntPrimitive)#unique(IntBoxed) retain-union";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, "E1", 1, 10);
@@ -981,7 +981,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string[] fields = {"TheString"};
 
                 var epl =
-                    "@name('s0') select irstream TheString from SupportBean#sort(2, IntPrimitive)#sort(2, IntBoxed) retain-union";
+                    "@Name('s0') select irstream TheString from SupportBean#sort(2, IntPrimitive)#sort(2, IntBoxed) retain-union";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, "E1", 1, 10);
@@ -1080,7 +1080,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
                 var epl =
-                    "@name('s0') select irstream TheString from SupportBean#unique(IntPrimitive)#time(10 sec) retain-union";
+                    "@Name('s0') select irstream TheString from SupportBean#unique(IntPrimitive)#time(10 sec) retain-union";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 TryAssertionTimeWinUnique(env);
@@ -1095,7 +1095,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
                 var epl =
-                    "@name('s0') select irstream TheString from SupportBean#time(10 seconds)#unique(IntPrimitive) retain-union";
+                    "@Name('s0') select irstream TheString from SupportBean#time(10 seconds)#unique(IntPrimitive) retain-union";
                 env.EplToModelCompileDeploy(epl).AddListener("s0");
 
                 TryAssertionTimeWinUnique(env);
@@ -1110,7 +1110,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
                 var epl =
-                    "@name('s0') create window MyWindowTwo#time(10 sec)#unique(IntPrimitive) retain-union as select * from SupportBean;\n" +
+                    "@Name('s0') create window MyWindowTwo#time(10 sec)#unique(IntPrimitive) retain-union as select * from SupportBean;\n" +
                     "insert into MyWindowTwo select * from SupportBean;\n" +
                     "on SupportBean_S0 delete from MyWindowTwo where IntBoxed = Id;\n";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -1127,7 +1127,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
                 var epl =
-                    "@name('s0') create window MyWindowThree#time(10 sec)#unique(IntPrimitive) retain-union as select * from SupportBean;\n" +
+                    "@Name('s0') create window MyWindowThree#time(10 sec)#unique(IntPrimitive) retain-union as select * from SupportBean;\n" +
                     "insert into MyWindowThree select * from SupportBean;\n" +
                     "on SupportBean_S0 delete from MyWindowThree where IntBoxed = Id;\n";
                 env.CompileDeploy(epl).AddListener("s0");

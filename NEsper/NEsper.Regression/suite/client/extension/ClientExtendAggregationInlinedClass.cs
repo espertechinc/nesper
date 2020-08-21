@@ -126,9 +126,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0')\n" +
+				string epl = "@Name('s0')\n" +
 				             INLINEDCLASS_CONCAT +
-				             "select concat(theString) as c0 from SupportBean";
+				             "select concat(TheString) as c0 from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendAssertConcat(env, "A", "A");
@@ -148,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 			{
 				string eplTwiceLocal = INLINEDCLASS_CONCAT.Replace("ConcatAggForge", "ConcatAggForgeOne") +
 				                       INLINEDCLASS_CONCAT.Replace("ConcatAggForge", "ConcatAggForgeTwo") +
-				                       "select concat(theString) from SupportBean";
+				                       "select concat(TheString) from SupportBean";
 				TryInvalidCompile(
 					env,
 					eplTwiceLocal,
@@ -160,7 +160,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				                        "create " +
 				                        INLINEDCLASS_CONCAT.Replace("ConcatAggForge", "ConcatAggForgeTwo") +
 				                        ";\n" +
-				                        "select concat(theString) from SupportBean";
+				                        "select concat(TheString) from SupportBean";
 				TryInvalidCompile(
 					env,
 					eplTwiceCreate,
@@ -169,7 +169,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				RegressionPath path = new RegressionPath();
 				env.Compile("@public create " + INLINEDCLASS_CONCAT.Replace("ConcatAggForge", "ConcatAggForgeOne"), path);
 				env.Compile("@public create " + INLINEDCLASS_CONCAT.Replace("ConcatAggForge", "ConcatAggForgeTwo"), path);
-				string eplTwiceInPath = "select concat(theString) from SupportBean";
+				string eplTwiceInPath = "select concat(TheString) from SupportBean";
 				TryInvalidCompile(
 					env,
 					path,
@@ -183,15 +183,15 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 			public void Run(RegressionEnvironment env)
 			{
 				RegressionPath path = new RegressionPath();
-				string eplWindow = "create window MyWindow#keepall as (theString string);\n" +
-				                   "on SupportBean merge MyWindow insert select theString;\n";
+				string eplWindow = "create window MyWindow#keepall as (TheString string);\n" +
+				                   "on SupportBean merge MyWindow insert select TheString;\n";
 				env.CompileDeploy(eplWindow, path);
 
 				env.SendEventBean(new SupportBean("E1", 1));
 				env.SendEventBean(new SupportBean("E2", 1));
 
 				string eplFAF = INLINEDCLASS_CONCAT +
-				                "select concat(theString) as c0 from MyWindow";
+				                "select concat(TheString) as c0 from MyWindow";
 				EPFireAndForgetQueryResult result = env.CompileExecuteFAF(eplFAF, path);
 				Assert.AreEqual("E1,E2", result.Array[0].Get("c0"));
 
@@ -206,7 +206,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				string epl = "create " +
 				             INLINEDCLASS_CONCAT +
 				             ";\n" +
-				             "@name('s0') select concat(theString) as c0 from SupportBean;\n";
+				             "@Name('s0') select concat(TheString) as c0 from SupportBean;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendAssertConcat(env, "A", "A");
@@ -225,11 +225,11 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string eplCreateInlined = "@name('clazz') @public create " + INLINEDCLASS_CONCAT + ";\n";
+				string eplCreateInlined = "@Name('clazz') @public create " + INLINEDCLASS_CONCAT + ";\n";
 				RegressionPath path = new RegressionPath();
 				env.Compile(eplCreateInlined.Replace("builder.toString()", "null"), path);
 
-				string eplSelect = "@name('s0') select concat(theString) as c0 from SupportBean";
+				string eplSelect = "@Name('s0') select concat(TheString) as c0 from SupportBean";
 				EPCompiled compiledSelect = env.Compile(eplSelect, path);
 
 				env.CompileDeploy(eplCreateInlined);
@@ -262,7 +262,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 					env.CompileDeploy(epl, path);
 				}
 
-				string eplSelect = "uses YYY; @name('s0') select concat(theString) as c0 from SupportBean";
+				string eplSelect = "uses YYY; @name('s0') select concat(TheString) as c0 from SupportBean";
 				env.CompileDeploy(eplSelect, path).AddListener("s0");
 
 				SendAssertConcat(env, "A", "YYY");

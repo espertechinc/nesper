@@ -158,8 +158,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
 			env.CompileDeploy(
 					createSchemaEPL +
-					"@name('s0') select * from LocalEvent[property[0].leaf];\n" +
-					"@name('s1') select * from LocalEvent[property[1].leaf];\n")
+					"@Name('s0') select * from LocalEvent[property[0].leaf];\n" +
+					"@Name('s1') select * from LocalEvent[property[1].leaf];\n")
 				.AddListener("s0")
 				.AddListener("s1");
 			var eventType = env.Runtime.EventTypeService.GetEventType(env.DeploymentId("s0"), "LocalEvent");

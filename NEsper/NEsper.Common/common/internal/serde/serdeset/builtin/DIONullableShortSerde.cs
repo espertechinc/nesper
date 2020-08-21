@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			return ReadInternal(input);
 		}
 
-		public override short? Read(
+		public override short? ReadValue(
 			DataInput input,
 			byte[] resourceKey)
 		{

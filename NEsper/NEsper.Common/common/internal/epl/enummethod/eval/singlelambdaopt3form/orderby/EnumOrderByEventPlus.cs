@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			CodegenClassScope codegenClassScope)
 		{
 			block
-				.DeclareVar(typeof(SortedDictionary<object, object>), "sort", NewInstance(typeof(SortedDictionary<object, object>)))
+				.DeclareVar<SortedDictionary<object, object>>("sort", NewInstance(typeof(SortedDictionary<object, object>)))
 				.DeclareVar<bool>("hasColl", ConstantFalse());
 		}
 

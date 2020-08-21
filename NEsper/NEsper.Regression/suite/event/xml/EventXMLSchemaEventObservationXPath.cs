@@ -65,11 +65,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
         private static void RunAssertion(RegressionEnvironment env, string eventTypeName, RegressionPath path)
         {
-            env.CompileDeploy("@name('s0') select countTags, countTagsInt, idarray, tagArray, tagOne from " + eventTypeName, path);
-            env.CompileDeploy("@name('e0') insert into TagOneStream select tagOne.* from " + eventTypeName, path);
-            env.CompileDeploy("@name('e1') select ID from TagOneStream", path);
-            env.CompileDeploy("@name('e2') insert into TagArrayStream select tagArray as mytags from " + eventTypeName, path);
-            env.CompileDeploy("@name('e3') select mytags[1].ID from TagArrayStream", path);
+            env.CompileDeploy("@Name('s0') select countTags, countTagsInt, idarray, tagArray, tagOne from " + eventTypeName, path);
+            env.CompileDeploy("@Name('e0') insert into TagOneStream select tagOne.* from " + eventTypeName, path);
+            env.CompileDeploy("@Name('e1') select ID from TagOneStream", path);
+            env.CompileDeploy("@Name('e2') insert into TagArrayStream select tagArray as mytags from " + eventTypeName, path);
+            env.CompileDeploy("@Name('e3') select mytags[1].ID from TagArrayStream", path);
 
             var doc = SupportXML.GetDocument(OBSERVATION_XML);
             env.SendEventXMLDOM(doc, eventTypeName);

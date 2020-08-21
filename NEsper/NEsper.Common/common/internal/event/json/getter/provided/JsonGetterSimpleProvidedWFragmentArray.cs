@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(Field.DeclaringType, "record")
                 .Block
-                .DeclareVar(typeof(object), "value", UnderlyingGetCodegen(Ref("record"), codegenMethodScope, codegenClassScope))
+                .DeclareVar<object>("value", UnderlyingGetCodegen(Ref("record"), codegenMethodScope, codegenClassScope))
                 .MethodReturn(StaticMethod(typeof(JsonFieldGetterHelperProvided), "handleJsonProvidedCreateFragmentArray", Ref("value"), eventType, factory));
         }
     }

@@ -193,13 +193,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				var fields = "c0,c1,c2,c3,c4,c5,c6,c7,c8,c9".SplitCsv();
 				var builder = new SupportEvalBuilder("SupportBean")
 					.WithExpression(fields[0], "ShortPrimitive + ShortBoxed")
-					.WithExpression(fields[1], "bytePrimitive + ByteBoxed ")
+					.WithExpression(fields[1], "BytePrimitive + ByteBoxed ")
 					.WithExpression(fields[2], "ShortPrimitive - ShortBoxed")
-					.WithExpression(fields[3], "bytePrimitive - ByteBoxed ")
+					.WithExpression(fields[3], "BytePrimitive - ByteBoxed ")
 					.WithExpression(fields[4], "ShortPrimitive * ShortBoxed")
-					.WithExpression(fields[5], "bytePrimitive * ByteBoxed ")
+					.WithExpression(fields[5], "BytePrimitive * ByteBoxed ")
 					.WithExpression(fields[6], "ShortPrimitive / ShortBoxed")
-					.WithExpression(fields[7], "bytePrimitive / ByteBoxed")
+					.WithExpression(fields[7], "BytePrimitive / ByteBoxed")
 					.WithExpression(fields[8], "ShortPrimitive + LongPrimitive")
 					.WithExpression(fields[9], "BytePrimitive + LongPrimitive");
 

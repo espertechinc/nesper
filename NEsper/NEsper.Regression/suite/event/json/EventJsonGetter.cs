@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				env.CompileDeploy(
 						"@public @buseventtype create json schema JsonEvent(prop java.util.Map);\n" +
-						"@name('s0') select * from JsonEvent")
+						"@Name('s0') select * from JsonEvent")
 					.AddListener("s0");
 
 				env.SendEventJson(

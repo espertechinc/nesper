@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	        public void Run(RegressionEnvironment env) {
 	            env.AdvanceTime(0);
 
-	            var text = "@name('s0') select irstream Symbol, " +
+	            var text = "@Name('s0') select irstream Symbol, " +
 	                       "prev(1, Symbol) as prev1, " +
 	                       "prevtail(Symbol) as prevtail, " +
 	                       "prevcount(Symbol) as prevCountSym, " +
@@ -114,7 +114,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCorePreviousExprNameAndTypeAndSODA : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0') select " +
+	            var epl = "@Name('s0') select " +
 	                      "prev(1,IntPrimitive), " +
 	                      "prev(1,sb), " +
 	                      "prevtail(1,IntPrimitive), " +
@@ -158,7 +158,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCorePreviousPrevStream : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0')select prev(1, s0) as result, " +
+	            var epl = "@Name('s0')select prev(1, s0) as result, " +
 	                      "prevtail(0, s0) as tailresult," +
 	                      "prevwindow(s0) as windowresult," +
 	                      "prevcount(s0) as countresult " +
@@ -199,7 +199,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCorePreviousPrevCountStarWithStaticMethod : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0')select irstream count(*) as total, " +
+	            var epl = "@Name('s0')select irstream count(*) as total, " +
 	                      "prev(" + typeof(ExprCorePrevious).Name + ".intToLong(count(*)) - 1, Price) as firstPrice from SupportMarketDataBean#time(60)";
 	            env.CompileDeploy(epl).AddListener("s0");
 
@@ -211,7 +211,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCorePreviousPrevCountStar : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0')select irstream count(*) as total, " +
+	            var epl = "@Name('s0')select irstream count(*) as total, " +
 	                      "prev(count(*) - 1, Price) as firstPrice from SupportMarketDataBean#time(60)";
 	            env.CompileDeploy(epl).AddListener("s0");
 
@@ -223,7 +223,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCorePreviousPerGroupTwoCriteria : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0')select Symbol, feed, " +
+	            var epl = "@Name('s0')select Symbol, feed, " +
 	                      "prev(1, Price) as prevPrice, " +
 	                      "prevtail(Price) as tailPrice, " +
 	                      "prevcount(Price) as countPrice, " +
@@ -257,7 +257,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	            env.UndeployAll();
 
 	            // test length window overflow
-	            env.CompileDeployAddListenerMile("@name('s0') select prev(5,IntPrimitive) as val0 from SupportBean#groupwin(TheString)#length(5)", "s0", 1);
+	            env.CompileDeployAddListenerMile("@Name('s0') select prev(5,IntPrimitive) as val0 from SupportBean#groupwin(TheString)#length(5)", "s0", 1);
 
 	            env.SendEventBean(new SupportBean("A", 11));
 	            Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("val0"));
@@ -305,7 +305,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	    private class ExprCorePreviousSortWindowPerGroup : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
 	            // descending sort
-	            var epl = "@name('s0')select " +
+	            var epl = "@Name('s0')select " +
 	                      "Symbol, " +
 	                      "prev(1, Price) as prevPrice, " +
 	                      "prev(2, Price) as prevPrevPrice, " +
@@ -357,7 +357,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	        public void Run(RegressionEnvironment env) {
 	            SendTimer(env, 0);
 
-	            var epl = "@name('s0')select " +
+	            var epl = "@Name('s0')select " +
 	                      "Symbol, " +
 	                      "prev(1, Price) as prevPrice, " +
 	                      "prev(2, Price) as prevPrevPrice, " +
@@ -416,7 +416,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	    private class ExprCorePreviousLengthBatchPerGroup : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
 	            // Also testing the alternative syntax here of "prev(property)" and "prev(property, index)" versus "prev(index, property)"
-	            var epl = "@name('s0')select irstream " +
+	            var epl = "@Name('s0')select irstream " +
 	                      "Symbol, " +
 	                      "prev(Price) as prevPrice, " +
 	                      "prev(Price, 2) as prevPrevPrice, " +
@@ -490,7 +490,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCorePreviousTimeWindowPerGroup : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0')select " +
+	            var epl = "@Name('s0')select " +
 	                      "Symbol, " +
 	                      "prev(1, Price) as prevPrice, " +
 	                      "prev(2, Price) as prevPrevPrice, " +
@@ -505,7 +505,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCorePreviousExtTimeWindowPerGroup : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0')select " +
+	            var epl = "@Name('s0')select " +
 	                      "Symbol, " +
 	                      "prev(1, Price) as prevPrice, " +
 	                      "prev(2, Price) as prevPrevPrice, " +
@@ -520,7 +520,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCorePreviousLengthWindowPerGroup : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0') select Symbol, " +
+	            var epl = "@Name('s0') select Symbol, " +
 	                      "prev(1, Price) as prevPrice, " +
 	                      "prev(2, Price) as prevPrevPrice, " +
 	                      "prevtail(Price, 0) as prevTail0Price, " +
@@ -534,7 +534,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCorePreviousTimeWindow : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0')select irstream Symbol as currSymbol, " +
+	            var epl = "@Name('s0')select irstream Symbol as currSymbol, " +
 	                      " prev(2, Symbol) as prevSymbol, " +
 	                      " prev(2, Price) as prevPrice, " +
 	                      " prevtail(0, Symbol) as prevTailSymbol, " +
@@ -607,7 +607,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCorePreviousExtTimedWindow : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0')select irstream Symbol as currSymbol, " +
+	            var epl = "@Name('s0')select irstream Symbol as currSymbol, " +
 	                      " prev(2, Symbol) as prevSymbol, " +
 	                      " prev(2, Price) as prevPrice, " +
 	                      " prevtail(0, Symbol) as prevTailSymbol, " +
@@ -659,7 +659,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCorePreviousTimeBatchWindow : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0')select irstream Symbol as currSymbol, " +
+	            var epl = "@Name('s0')select irstream Symbol as currSymbol, " +
 	                      " prev(2, Symbol) as prevSymbol, " +
 	                      " prev(2, Price) as prevPrice, " +
 	                      " prevtail(0, Symbol) as prevTailSymbol, " +
@@ -718,7 +718,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCorePreviousTimeBatchWindowJoin : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0')select TheString as currSymbol, " +
+	            var epl = "@Name('s0')select TheString as currSymbol, " +
 	                      " prev(2, Symbol) as prevSymbol, " +
 	                      " prev(1, Price) as prevPrice, " +
 	                      " prevtail(0, Symbol) as prevTailSymbol, " +
@@ -766,7 +766,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCorePreviousLengthWindow : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0')select irstream Symbol as currSymbol, " +
+	            var epl = "@Name('s0')select irstream Symbol as currSymbol, " +
 	                      "prev(0, Symbol) as prev0Symbol, " +
 	                      "prev(1, Symbol) as prev1Symbol, " +
 	                      "prev(2, Symbol) as prev2Symbol, " +
@@ -813,7 +813,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCorePreviousLengthBatch : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0')select irstream Symbol as currSymbol, " +
+	            var epl = "@Name('s0')select irstream Symbol as currSymbol, " +
 	                      "prev(0, Symbol) as prev0Symbol, " +
 	                      "prev(1, Symbol) as prev1Symbol, " +
 	                      "prev(2, Symbol) as prev2Symbol, " +
@@ -867,7 +867,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCorePreviousLengthWindowWhere : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0') select prev(2, Symbol) as currSymbol " +
+	            var epl = "@Name('s0') select prev(2, Symbol) as currSymbol " +
 	                      "from SupportMarketDataBean#length(100) " +
 	                      "where prev(2, Price) > 100";
 	            env.CompileDeploy(epl).AddListener("s0");
@@ -885,7 +885,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCorePreviousLengthWindowDynamic : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0')select prev(IntPrimitive, TheString) as sPrev " +
+	            var epl = "@Name('s0')select prev(IntPrimitive, TheString) as sPrev " +
 	                      "from SupportBean#length(100)";
 	            env.CompileDeploy(epl).AddListener("s0");
 
@@ -915,7 +915,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCorePreviousSortWindow : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0')select Symbol as currSymbol, " +
+	            var epl = "@Name('s0')select Symbol as currSymbol, " +
 	                      " prev(0, Symbol) as prev0Symbol, " +
 	                      " prev(1, Symbol) as prev1Symbol, " +
 	                      " prev(2, Symbol) as prev2Symbol, " +
@@ -962,7 +962,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	    private class ExprCorePreviousExtTimedBatch : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
 	            var fields = "currSymbol,prev0Symbol,prev0Price,prev1Symbol,prev1Price,prev2Symbol,prev2Price,prevTail0Symbol,prevTail0Price,prevTail1Symbol,prevTail1Price,prevCountPrice,prevWindowPrice".SplitCsv();
-	            var epl = "@name('s0')select irstream Symbol as currSymbol, " +
+	            var epl = "@Name('s0')select irstream Symbol as currSymbol, " +
 	                      "prev(0, Symbol) as prev0Symbol, " +
 	                      "prev(0, Price) as prev0Price, " +
 	                      "prev(1, Symbol) as prev1Symbol, " +

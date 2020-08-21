@@ -79,13 +79,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             method.Block
                 .DeclareVar<AggregationRowFactory>(
                     "rowFactory",
-                    NewInstance(classNames.RowFactoryTop, Ref("this")))
+                    NewInstanceInner(classNames.RowFactoryTop, Ref("this")))
                 .DeclareVar<DataInputOutputSerde<AggregationRow>>(
                     "rowSerde",
-                    NewInstance(classNames.RowSerdeTop, Ref("this")))
+                    NewInstanceInner(classNames.RowSerdeTop, Ref("this")))
                 .DeclareVar<AggregationServiceFactory>(
                     "svcFactory",
-                    NewInstance(classNames.ServiceFactory, Ref("this")))
+                    NewInstanceInner(classNames.ServiceFactory, Ref("this")))
                 .DeclareVar<DataInputOutputSerde>(
                     "serde", aggGroupByDesc.GroupByMultiKey.GetExprMKSerde(method, classScope))
                 .MethodReturn(
@@ -143,7 +143,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             CodegenClassScope classScope,
             AggregationClassNames classNames)
         {
-            method.Block.MethodReturn(NewInstance(classNames.Service, Ref("o"), MEMBER_AGENTINSTANCECONTEXT));
+            method.Block.MethodReturn(NewInstanceInner(classNames.Service, Ref("o"), MEMBER_AGENTINSTANCECONTEXT));
         }
 
         public void CtorCodegen(
@@ -262,7 +262,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                 MEMBER_CURRENTROW,
                 Cast(classNames.RowTop, ExprDotMethod(MEMBER_AGGREGATORSPERGROUP, "Get", REF_GROUPKEY)));
             block.IfCondition(EqualsNull(MEMBER_CURRENTROW))
-                .AssignRef(MEMBER_CURRENTROW, NewInstance(classNames.RowTop, Ref("o")))
+                .AssignRef(MEMBER_CURRENTROW, NewInstanceInner(classNames.RowTop, Ref("o")))
                 .ExprDotMethod(MEMBER_AGGREGATORSPERGROUP, "Put", REF_GROUPKEY, MEMBER_CURRENTROW);
 
             if (HasRefCounting) {
@@ -296,7 +296,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                     MEMBER_CURRENTROW,
                     Cast(classNames.RowTop, ExprDotMethod(MEMBER_AGGREGATORSPERGROUP, "Get", REF_GROUPKEY)))
                 .IfCondition(EqualsNull(MEMBER_CURRENTROW))
-                .AssignRef(MEMBER_CURRENTROW, NewInstance(classNames.RowTop, Ref("o")))
+                .AssignRef(MEMBER_CURRENTROW, NewInstanceInner(classNames.RowTop, Ref("o")))
                 .ExprDotMethod(MEMBER_AGGREGATORSPERGROUP, "Put", REF_GROUPKEY, MEMBER_CURRENTROW);
 
             if (HasRefCounting) {
@@ -344,7 +344,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                     MEMBER_CURRENTROW,
                     Cast(classNames.RowTop, ExprDotMethod(MEMBER_AGGREGATORSPERGROUP, "Get", REF_GROUPKEY)))
                 .IfCondition(EqualsNull(MEMBER_CURRENTROW))
-                .AssignRef(MEMBER_CURRENTROW, NewInstance(classNames.RowTop, Ref("o")));
+                .AssignRef(MEMBER_CURRENTROW, NewInstanceInner(classNames.RowTop, Ref("o")));
         }
 
         public void ClearResultsCodegen(

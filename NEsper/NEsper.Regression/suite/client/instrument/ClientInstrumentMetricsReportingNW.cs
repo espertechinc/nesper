@@ -26,16 +26,16 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
         {
             var path = new RegressionPath();
             env.AdvanceTime(0);
-            env.CompileDeploy("@name('0') create schema StatementMetric as " + typeof(StatementMetric).FullName);
-            env.CompileDeploy("@name('A') create window MyWindow#lastevent as select * from SupportBean", path);
-            env.CompileDeploy("@name('B1') insert into MyWindow select * from SupportBean", path);
-            env.CompileDeploy("@name('B2') insert into MyWindow select * from SupportBean", path);
-            env.CompileDeploy("@name('C') select sum(IntPrimitive) from MyWindow", path);
-            env.CompileDeploy("@name('D') select sum(w1.IntPrimitive) from MyWindow w1, MyWindow w2", path);
+            env.CompileDeploy("@Name('0') create schema StatementMetric as " + typeof(StatementMetric).FullName);
+            env.CompileDeploy("@Name('A') create window MyWindow#lastevent as select * from SupportBean", path);
+            env.CompileDeploy("@Name('B1') insert into MyWindow select * from SupportBean", path);
+            env.CompileDeploy("@Name('B2') insert into MyWindow select * from SupportBean", path);
+            env.CompileDeploy("@Name('C') select sum(IntPrimitive) from MyWindow", path);
+            env.CompileDeploy("@Name('D') select sum(w1.IntPrimitive) from MyWindow w1, MyWindow w2", path);
 
-            var appModuleTwo = "@name('W') create window SupportBeanWindow#keepall as SupportBean;" +
+            var appModuleTwo = "@Name('W') create window SupportBeanWindow#keepall as SupportBean;" +
                                "" +
-                               "@name('M') on SupportBean oe\n" +
+                               "@Name('M') on SupportBean oe\n" +
                                "  merge SupportBeanWindow Pw\n" +
                                "  where Pw.TheString = oe.TheString\n" +
                                "  when not matched \n" +
@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                                "    then update set Pw.IntPrimitive = oe.IntPrimitive";
             env.CompileDeploy(appModuleTwo, path);
 
-            env.CompileDeploy("@name('X') select * from " + typeof(StatementMetric).FullName).AddListener("X");
+            env.CompileDeploy("@Name('X') select * from " + typeof(StatementMetric).FullName).AddListener("X");
             var fields = new [] { "StatementName","NumInput" };
             
             env.SendEventBean(new SupportBean("E1", 1));

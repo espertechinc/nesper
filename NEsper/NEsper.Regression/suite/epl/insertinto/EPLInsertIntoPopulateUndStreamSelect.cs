@@ -114,16 +114,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 		{
 			RegressionPath path = new RegressionPath();
 			string schema = rep.GetAnnotationText() +
-			                "@name('schema') create schema A as (myint int, mystr string);\n" +
+			                "@Name('schema') create schema A as (myint int, mystr string);\n" +
 			                rep.GetAnnotationText() +
 			                "create schema C as (addprop int) inherits A;\n";
 			env.CompileDeployWBusPublicType(schema, path);
 
 			env.CompileDeploy("create window MyWindow#time(5 days) as C", path);
-			env.CompileDeploy("@name('s0') select * from MyWindow", path).AddListener("s0");
+			env.CompileDeploy("@Name('s0') select * from MyWindow", path).AddListener("s0");
 
 			// select underlying
-			env.CompileDeploy("@name('insert') insert into MyWindow select mya.* from A as mya", path);
+			env.CompileDeploy("@Name('insert') insert into MyWindow select mya.* from A as mya", path);
 			if (rep.IsMapEvent()) {
 				env.SendEventMap(MakeMap(123, "abc"), "A");
 			}
@@ -179,7 +179,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
 			RegressionPath path = new RegressionPath();
 			string schemaSrc = rep.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedSrc>() +
-			                   "@name('schema') create schema Src as (myint int, mystr string)";
+			                   "@Name('schema') create schema Src as (myint int, mystr string)";
 			env.CompileDeployWBusPublicType(schemaSrc, path);
 
 			env.CompileDeploy(
@@ -243,7 +243,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 			string fields,
 			object[] expected)
 		{
-			env.CompileDeploy("@name('s0') " + epl, path).AddListener("s0");
+			env.CompileDeploy("@Name('s0') " + epl, path).AddListener("s0");
 
 			if (rep.IsMapEvent()) {
 				env.SendEventMap(MakeMap(123, "abc"), "Src");

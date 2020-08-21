@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.SendEventBean(new SupportCarEvent("opel", "germany", 7000));
 
                 epl =
-                    "@name('s0') select Name, Place, sum(Count), grouping(Name), grouping(Place), grouping_id(Name, Place) as gId " +
+                    "@Name('s0') select Name, Place, sum(Count), grouping(Name), grouping(Place), grouping_id(Name, Place) as gId " +
                     "from CarWindow group by grouping sets((Name, Place),Name, Place,())";
                 var result = env.CompileExecuteFAF(epl, path);
 
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 // try simple
                 var epl =
-                    "@name('s0') select Name, Place, sum(Count), grouping(Name), grouping(Place), grouping_id(Name,Place) as gId " +
+                    "@Name('s0') select Name, Place, sum(Count), grouping(Name), grouping(Place), grouping_id(Name,Place) as gId " +
                     "from SupportCarEvent group by grouping sets((Name, Place), Name, Place, ())";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -145,7 +145,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 // test uncorrelated subquery and expression-declaration and single-row func
                 var epl = "create expression myExpr {x-> '|' || x.Name || '|'};\n" +
-                          "@name('s0') select myfunc(" +
+                          "@Name('s0') select myfunc(" +
                           "  Name, Place, sum(Count), grouping(Name), grouping(Place), grouping_id(Name, Place)," +
                           "  (select RefId from SupportCarInfoEvent#lastevent), " +
                           "  myExpr(ce)" +
@@ -170,7 +170,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 // test "prev" and "prior"
                 var fields = new [] { "c0", "c1", "c2", "c3" };
                 var eplTwo =
-                    "@name('s0') select prev(1, Name) as c0, prior(1, Name) as c1, Name as c2, sum(Count) as c3 " +
+                    "@Name('s0') select prev(1, Name) as c0, prior(1, Name) as c1, Name as c2, sum(Count) as c3 " +
                     "from SupportCarEvent#keepall ce group by rollup(Name)";
                 env.CompileDeploy(eplTwo).AddListener("s0");
 

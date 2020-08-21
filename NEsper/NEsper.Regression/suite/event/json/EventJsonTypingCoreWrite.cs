@@ -49,11 +49,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			public void Run(RegressionEnvironment env)
 			{
 				RegressionPath path = new RegressionPath();
-				env.CompileDeploy("@public create json schema Book(bookId string, price decimal);\n", path);
+				env.CompileDeploy("@public create json schema Book(BookId string, price decimal);\n", path);
 				env.CompileDeploy("@public create json schema Shelf(shelfId string, book Book);\n", path);
 				env.CompileDeploy("@public create json schema Isle(isleId string, shelf Shelf);\n", path);
 				env.CompileDeploy("@public @buseventtype create json schema Library(libraryId string, isle Isle);\n", path);
-				env.CompileDeploy("@name('s0') select * from Library;\n", path).AddListener("s0");
+				env.CompileDeploy("@Name('s0') select * from Library;\n", path).AddListener("s0");
 				string json;
 
 				json = "{\n" +
@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				       "    \"shelf\": {\n" +
 				       "      \"shelfId\": \"S11\",\n" +
 				       "      \"book\": {\n" +
-				       "        \"bookId\": \"B111\",\n" +
+				       "        \"BookId\": \"B111\",\n" +
 				       "        \"price\": 20\n" +
 				       "      }\n" +
 				       "    }\n" +
@@ -114,7 +114,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				AssertJsonWrite(json, @event);
 				EPAssertionUtil.AssertProps(
 					@event,
-					"libraryId,isle.isleId,isle.shelf.shelfId,isle.shelf.book.bookId".SplitCsv(),
+					"libraryId,isle.isleId,isle.shelf.shelfId,isle.shelf.book.BookId".SplitCsv(),
 					new object[] {libraryId, isleId, shelfId, bookId});
 			}
 		}
@@ -124,11 +124,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			public void Run(RegressionEnvironment env)
 			{
 				RegressionPath path = new RegressionPath();
-				env.CompileDeploy("@public create json schema Book(bookId string, price decimal);\n", path);
+				env.CompileDeploy("@public create json schema Book(BookId string, price decimal);\n", path);
 				env.CompileDeploy("@public create json schema Shelf(shelfId string, books Book[]);\n", path);
 				env.CompileDeploy("@public create json schema Isle(isleId string, shelfs Shelf[]);\n", path);
 				env.CompileDeploy("@public @buseventtype create json schema Library(libraryId string, isles Isle[]);\n", path);
-				env.CompileDeploy("@name('s0') select * from Library#keepall;\n", path).AddListener("s0");
+				env.CompileDeploy("@Name('s0') select * from Library#keepall;\n", path).AddListener("s0");
 
 				string jsonOne = "{\n" +
 				                 "  \"libraryId\": \"L1\",\n" +
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				                 "          \"shelfId\": \"S1\",\n" +
 				                 "          \"books\": [\n" +
 				                 "            {\n" +
-				                 "              \"bookId\": \"B1\",\n" +
+				                 "              \"BookId\": \"B1\",\n" +
 				                 "              \"price\": 10\n" +
 				                 "            }\n" +
 				                 "          ]\n" +
@@ -188,7 +188,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				string epl = "@public @buseventtype create json schema JsonEvent (" +
 				             "c0 string, c1 char, c2 character, c3 bool, c4 boolean, " +
 				             "c5 byte, c6 short, c7 int, c8 integer, c9 long, c10 double, c11 float, c12 null);\n" +
-				             "@name('s0') select * from JsonEvent#keepall;\n";
+				             "@Name('s0') select * from JsonEvent#keepall;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				string jsonOne = "{\n" +
@@ -250,7 +250,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				             "c11 long[], c12 long[primitive], " +
 				             "c13 double[], c14 double[primitive], " +
 				             "c15 float[], c16 float[primitive]);\n" +
-				             "@name('s0') select * from JsonEvent#keepall;\n";
+				             "@Name('s0') select * from JsonEvent#keepall;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				string jsonOne = "{ \"c0\": [\"abc\", \"def\"],\n" +
@@ -360,7 +360,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				             "c11 long[][], c12 long[primitive][], " +
 				             "c13 double[][], c14 double[primitive][], " +
 				             "c15 float[][], c16 float[primitive][]);\n" +
-				             "@name('s0') select * from JsonEvent#keepall;\n";
+				             "@Name('s0') select * from JsonEvent#keepall;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				string jsonOne = "{ \"c0\": [[\"a\", \"b\"],[\"c\"]],\n" +
@@ -461,7 +461,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			public void Run(RegressionEnvironment env)
 			{
 				string epl = "@public @buseventtype create json schema JsonEvent (c0 SupportEnum, c1 SupportEnum[], c2 SupportEnum[][]);\n" +
-				             "@name('s0') select * from JsonEvent#keepall;\n";
+				             "@Name('s0') select * from JsonEvent#keepall;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				string jsonOne =
@@ -497,7 +497,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				             "c3 decimal[], " +
 				             "c4 BigInteger[][], " +
 				             "c5 decimal[][]);\n" +
-				             "@name('s0') select * from JsonEvent#keepall;\n";
+				             "@Name('s0') select * from JsonEvent#keepall;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				string jsonOne = "{" +
@@ -529,7 +529,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			public void Run(RegressionEnvironment env)
 			{
 				string epl = "@public @buseventtype create json schema JsonEvent (c0 Object);\n" +
-				             "@name('s0') select * from JsonEvent#keepall;\n";
+				             "@Name('s0') select * from JsonEvent#keepall;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				object[][] namesAndTypes = new object[][] {
 					new object[] {"c0", typeof(object)}
@@ -575,7 +575,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			public void Run(RegressionEnvironment env)
 			{
 				string epl = "@public @buseventtype create json schema JsonEvent (c0 Object[]);\n" +
-				             "@name('s0') select * from JsonEvent#keepall;\n";
+				             "@Name('s0') select * from JsonEvent#keepall;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				object[][] namesAndTypes = new object[][] {
 					new object[] {"c0", typeof(object[])}
@@ -621,7 +621,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			public void Run(RegressionEnvironment env)
 			{
 				string epl = "@public @buseventtype create json schema JsonEvent (c0 Map);\n" +
-				             "@name('s0') select * from JsonEvent#keepall;\n";
+				             "@Name('s0') select * from JsonEvent#keepall;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				object[][] namesAndTypes = new object[][] {
 					new object[] {"c0", typeof(IDictionary<string, object>)}
@@ -658,7 +658,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				env.CompileDeploy(
 						"@JsonSchema(dynamic=true) @public @buseventtype create json schema JsonEvent();\n" +
-						"@name('s0') select * from JsonEvent#keepall")
+						"@Name('s0') select * from JsonEvent#keepall")
 					.AddListener("s0");
 
 				string jsonOne = "{\n" +
@@ -700,7 +700,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				env.CompileDeploy(
 						"@JsonSchema(dynamic=true) @public @buseventtype create json schema JsonEvent();\n" +
-						"@name('s0') select * from JsonEvent#keepall")
+						"@Name('s0') select * from JsonEvent#keepall")
 					.AddListener("s0");
 
 				string json = "{\n" +
@@ -732,7 +732,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				env.CompileDeploy(
 						"@JsonSchema(dynamic=true) @public @buseventtype create json schema JsonEvent();\n" +
-						"@name('s0') select * from JsonEvent#keepall")
+						"@Name('s0') select * from JsonEvent#keepall")
 					.AddListener("s0");
 
 				string jsonOne = "{\n" +
@@ -767,7 +767,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				env.CompileDeploy(
 						"@JsonSchema(dynamic=true) @public @buseventtype create json schema JsonEvent();\n" +
-						"@name('s0') select * from JsonEvent#keepall")
+						"@Name('s0') select * from JsonEvent#keepall")
 					.AddListener("s0");
 
 				string json = "{ \"num1\": 42, \"num2\": 42.0, \"num3\": 43.0}";
@@ -803,7 +803,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			int price)
 		{
 			JObject book = new JObject();
-			book.Add("bookId", bookId);
+			book.Add("BookId", bookId);
 			book.Add("price", price);
 			return book;
 		}

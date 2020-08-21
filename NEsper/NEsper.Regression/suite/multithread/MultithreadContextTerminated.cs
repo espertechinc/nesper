@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var eplStatement = "create context StartThenTwoSeconds start StartContextEvent end after 2 seconds";
             env.CompileDeploy(eplStatement, path);
 
-            var aggStatement = "@name('select') context StartThenTwoSeconds " +
+            var aggStatement = "@Name('select') context StartThenTwoSeconds " +
                                "select Account, count(*) as totalCount " +
                                "from PayloadEvent " +
                                "group by Account " +

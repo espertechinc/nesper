@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "string","value" };
-                var text = "@name('s0') select * from SupportRecogBean " +
+                var text = "@Name('s0') select * from SupportRecogBean " +
                            "match_recognize (" +
                            "  measures A.TheString as string, A.Value as value" +
                            "  all matches pattern (A) " +
@@ -96,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             {
                 SendTimer(0, env);
                 var fields = new [] { "a_string","b_string","c_string" };
-                var text = "@name('s0') select * from SupportRecogBean#time(5 sec) " +
+                var text = "@Name('s0') select * from SupportRecogBean#time(5 sec) " +
                            "match_recognize (" +
                            "  measures A.TheString as a_string, B.TheString as b_string, C.TheString as c_string" +
                            "  all matches pattern ( A B C ) " +
@@ -171,7 +171,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             {
                 SendTimer(0, env);
                 var fields = new [] { "a_string","b_string","c_string" };
-                var text = "@name('s0') select * from SupportRecogBean#time_batch(5 sec) " +
+                var text = "@Name('s0') select * from SupportRecogBean#time_batch(5 sec) " +
                            "match_recognize (" +
                            "  partition by Cat " +
                            "  measures A.TheString as a_string, B.TheString as b_string, C.TheString as c_string" +
@@ -260,16 +260,16 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('createwindow') create window MyWindow#keepall as select * from SupportBean",
+                    "@Name('createwindow') create window MyWindow#keepall as select * from SupportBean",
                     path);
-                env.CompileDeploy("@name('insertwindow') insert into MyWindow select * from SupportBean", path);
+                env.CompileDeploy("@Name('insertwindow') insert into MyWindow select * from SupportBean", path);
 
                 env.SendEventBean(new SupportBean("A", 1));
                 env.SendEventBean(new SupportBean("A", 2));
                 env.SendEventBean(new SupportBean("B", 1));
                 env.SendEventBean(new SupportBean("C", 3));
 
-                var text = "@name('S1') select * from MyWindow " +
+                var text = "@Name('S1') select * from MyWindow " +
                            "match_recognize (" +
                            "  partition by TheString " +
                            "  measures A.TheString as ast, A.IntPrimitive as ai, B.IntPrimitive as bi" +
@@ -310,7 +310,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.AdvanceTime(0);
 
                 var fields = new [] { "a_string","b_string","c_string" };
-                var text = "@name('s0') select * from SupportRecogBean#time_batch(5 sec) " +
+                var text = "@Name('s0') select * from SupportRecogBean#time_batch(5 sec) " +
                            "match_recognize (" +
                            "  partition by Cat " +
                            "  measures A.TheString as a_string, B.TheString as b_string, C.TheString as c_string" +

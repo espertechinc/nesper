@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 	    }
 
 	    public override void InitBlock(CodegenBlock block, CodegenMethod methodNode, ExprForgeCodegenSymbol scope, CodegenClassScope codegenClassScope) {
-	        block.DeclareVar(typeof(IDictionary<object,ICollection<object>>), "result", NewInstance(typeof(Dictionary<object,ICollection<object>>)));
+	        block.DeclareVar<IDictionary<object,ICollection<object>>>("result", NewInstance(typeof(Dictionary<object,ICollection<object>>)));
 	    }
 
 	    public override void ForEachBlock(CodegenBlock block, CodegenMethod methodNode, ExprForgeCodegenSymbol scope, CodegenClassScope codegenClassScope) {

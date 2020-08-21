@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
         private void RunAssertionInvalidPropertyExpression(RegressionEnvironment env)
         {
-            var epl = "@name('s0') @IterableUnbound select * from SupportBean";
+            var epl = "@Name('s0') @IterableUnbound select * from SupportBean";
             env.CompileDeploy(epl);
             env.SendEventBean(new SupportBean());
             var theEvent = env.Statement("s0").First();

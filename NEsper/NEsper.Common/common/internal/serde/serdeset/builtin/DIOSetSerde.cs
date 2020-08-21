@@ -39,14 +39,14 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			}
 		}
 
-		public override ISet<object> Read(
+		public override ISet<object> ReadValue(
 			DataInput input,
 			byte[] unitKey)
 		{
 			var size = input.ReadInt();
 			var set = new HashSet<object>();
 			for (int i = 0; i < size; i++) {
-				set.Add(inner.ReadAny(input, unitKey));
+				set.Add(inner.Read(input, unitKey));
 			}
 
 			return set;

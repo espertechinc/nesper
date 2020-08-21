@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select exists(item?.id) as t0, " +
+				var epl = "@Name('s0') select exists(item?.id) as t0, " +
 				          " exists(item?.id?) as t1, " +
 				          " exists(item?.item.IntBoxed) as t2, " +
 				          " exists(item?.indexed[0]?) as t3, " +
@@ -146,7 +146,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select exists(item?.IntBoxed) as t0 from SupportMarkerInterface";
+				var epl = "@Name('s0') select exists(item?.IntBoxed) as t0 from SupportMarkerInterface";
 				env.EplToModelCompileDeploy(epl).AddListener("s0").Milestone(0);
 
 				AssertStringAndNull(env);

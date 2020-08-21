@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 using Antlr4.Runtime;
 
@@ -15,6 +16,7 @@ namespace com.espertech.esper.compiler.@internal.parse
     /// <summary>
     ///     This exception is thrown to indicate a problem in statement creation.
     /// </summary>
+    [Serializable]
     public class ASTWalkException : Exception
     {
         /// <summary>
@@ -30,6 +32,12 @@ namespace com.espertech.esper.compiler.@internal.parse
             string message,
             Exception cause)
             : base(message, cause)
+        {
+        }
+
+        protected ASTWalkException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
 

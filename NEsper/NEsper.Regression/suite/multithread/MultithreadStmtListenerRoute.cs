@@ -36,8 +36,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             int numThreads,
             int numRoutes)
         {
-            env.CompileDeploy("@name('trigger') select * from SupportBean");
-            env.CompileDeploy("@name('s0') select * from SupportMarketDataBean");
+            env.CompileDeploy("@Name('trigger') select * from SupportBean");
+            env.CompileDeploy("@Name('s0') select * from SupportMarketDataBean");
             var listener = new SupportMTUpdateListener();
             env.Statement("s0").AddListener(listener);
 

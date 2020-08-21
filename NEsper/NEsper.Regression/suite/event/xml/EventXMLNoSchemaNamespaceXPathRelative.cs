@@ -59,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             String eventTypeName,
             RegressionPath path)
         {
-            var stmt = "@name('s0') select request.symbol as symbol_a, symbol as symbol_b from " + eventTypeName;
+            var stmt = "@Name('s0') select request.symbol as symbol_a, symbol as symbol_b from " + eventTypeName;
             env.CompileDeploy(stmt, path).AddListener("s0");
 
             var xml =

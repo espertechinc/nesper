@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         
         private static void RunAssertion(RegressionEnvironment env, String eventTypeName, RegressionPath path)
         {
-            env.CompileDeploy("@name('insert') insert into MyNestedStream select nested1 from " + eventTypeName, path);
+            env.CompileDeploy("@Name('insert') insert into MyNestedStream select nested1 from " + eventTypeName, path);
             CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {
                     new EventPropertyDescriptor("nested1", typeof(string), typeof(char), false, false, true, false, false)
@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 env.Statement("insert").EventType.PropertyDescriptors);
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("insert").EventType);
 
-            env.CompileDeploy("@name('s0') select * from " + eventTypeName, path);
+            env.CompileDeploy("@Name('s0') select * from " + eventTypeName, path);
             CollectionAssert.AreEquivalent(new EventPropertyDescriptor[0], env.Statement("s0").EventType.PropertyDescriptors);
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("s0").EventType);
 

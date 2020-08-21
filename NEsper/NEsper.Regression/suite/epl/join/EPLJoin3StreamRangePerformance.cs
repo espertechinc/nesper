@@ -63,9 +63,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var path = new RegressionPath();
                 var epl = "create window ST0#keepall as SupportBean_ST0;\n" +
-                          "@name('I1') insert into ST0 select * from SupportBean_ST0;\n" +
+                          "@Name('I1') insert into ST0 select * from SupportBean_ST0;\n" +
                           "create window ST1#keepall as SupportBean_ST1;\n" +
-                          "@name('I2') insert into ST1 select * from SupportBean_ST1;\n";
+                          "@Name('I2') insert into ST1 select * from SupportBean_ST1;\n";
                 env.CompileDeploy(epl, path).Milestone(0);
 
                 // Preload
@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 log.Info("Done preloading");
 
-                var eplQuery = "@name('s0') @Hint('PREFER_MERGE_JOIN') select * from SupportBeanRange#lastevent a " +
+                var eplQuery = "@Name('s0') @Hint('PREFER_MERGE_JOIN') select * from SupportBeanRange#lastevent a " +
                                "inner join ST0 st0 on st0.Key0 = a.Key " +
                                "inner join ST1 st1 on st1.Key1 = a.Key " +
                                "where " +
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 TryAssertion(env, path, eplQuery);
 
                 eplQuery =
-                    "@name('s0') @Hint('PREFER_MERGE_JOIN') select * from SupportBeanRange#lastevent a, ST0 st0, ST1 st1 " +
+                    "@Name('s0') @Hint('PREFER_MERGE_JOIN') select * from SupportBeanRange#lastevent a, ST0 st0, ST1 st1 " +
                     "where st0.Key0 = a.Key and st1.Key1 = a.Key and " +
                     "st0.P00 between RangeStart and RangeEnd and st1.P10 between RangeStart and RangeEnd";
                 TryAssertion(env, path, eplQuery);
@@ -103,9 +103,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var path = new RegressionPath();
                 var epl = "create window ST0#keepall as SupportBean_ST0;\n" +
-                          "@name('I1') insert into ST0 select * from SupportBean_ST0;\n" +
+                          "@Name('I1') insert into ST0 select * from SupportBean_ST0;\n" +
                           "create window ST1#keepall as SupportBean_ST1;\n" +
-                          "@name('I2') insert into ST1 select * from SupportBean_ST1;\n";
+                          "@Name('I2') insert into ST1 select * from SupportBean_ST1;\n";
                 env.CompileDeploy(epl, path).Milestone(0);
 
                 // Preload
@@ -117,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 log.Info("Done preloading");
 
-                var eplQuery = "@name('s0') select * from SupportBeanRange#lastevent a, ST0 st0, ST1 st1 " +
+                var eplQuery = "@Name('s0') select * from SupportBeanRange#lastevent a, ST0 st0, ST1 st1 " +
                                "where st0.P00 between RangeStart and RangeEnd and st1.P10 between RangeStart and RangeEnd";
                 env.CompileDeploy(eplQuery, path).AddListener("s0").Milestone(1);
 
@@ -147,9 +147,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var path = new RegressionPath();
                 var epl = "create window SBR#keepall as SupportBeanRange;\n" +
-                          "@name('I1') insert into SBR select * from SupportBeanRange;\n" +
+                          "@Name('I1') insert into SBR select * from SupportBeanRange;\n" +
                           "create window ST1#keepall as SupportBean_ST1;\n" +
-                          "@name('I2') insert into ST1 select * from SupportBean_ST1;\n";
+                          "@Name('I2') insert into ST1 select * from SupportBean_ST1;\n";
                 env.CompileDeploy(epl, path).Milestone(0);
 
                 // Preload
@@ -161,7 +161,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 log.Info("Done preloading");
 
-                var eplQuery = "@name('s0') select * from SupportBean_ST0 st0 unidirectional, SBR a, ST1 st1 " +
+                var eplQuery = "@Name('s0') select * from SupportBean_ST0 st0 unidirectional, SBR a, ST1 st1 " +
                                "where st0.Key0 = a.Key and st1.Key1 = a.Key and " +
                                "st1.P10 between RangeStart and RangeEnd";
                 env.CompileDeploy(eplQuery, path).AddListener("s0").Milestone(1);

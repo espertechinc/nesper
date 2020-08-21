@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             public void Run(RegressionEnvironment env)
             {
                 Assert.IsNotNull(env.Runtime.EventTypeService.GetEventTypePreconfigured("MyMap"));
-                env.CompileDeploy("@name('s0') select lev0name.lev1name.sb.TheString as val from MyMap")
+                env.CompileDeploy("@Name('s0') select lev0name.lev1name.sb.TheString as val from MyMap")
                     .AddListener("s0");
 
                 IDictionary<string, object> lev2data = new Dictionary<string, object>();
@@ -186,7 +186,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
         {
             public void Run(RegressionEnvironment env)
             {
-                var statementText = "@name('s0') select beanA.SimpleProperty as simple," +
+                var statementText = "@Name('s0') select beanA.SimpleProperty as simple," +
                                     "beanA.Nested.NestedValue as nested," +
                                     "beanA.Indexed[1] as indexed," +
                                     "beanA.Nested.NestedNested.NestedNestedValue as nestednested " +
@@ -207,7 +207,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             public void Run(RegressionEnvironment env)
             {
                 var statementText =
-                    "@name('s0') select MyInt as intVal, MyString as stringVal from myMapEvent#length(5)";
+                    "@Name('s0') select MyInt as intVal, MyString as stringVal from myMapEvent#length(5)";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 // send Map<String, Object> event

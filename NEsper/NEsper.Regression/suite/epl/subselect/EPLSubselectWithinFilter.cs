@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') " +
+				string epl = "@Name('s0') " +
 				             "inlined_class \"\"\"\n" +
 				             "  public class MyUtil { public static boolean compareIt(String one, String two) { return one.equals(two); } }\n" +
 				             "\"\"\" \n" +
@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') " +
+				string epl = "@Name('s0') " +
 				             "inlined_class \"\"\"\n" +
 				             "  public class MyUtil { public static boolean compareIt(String one, String two) { return one.equals(two); } }\n" +
 				             "\"\"\" \n" +

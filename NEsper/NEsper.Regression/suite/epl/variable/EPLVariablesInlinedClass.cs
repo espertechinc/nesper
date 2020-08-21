@@ -47,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 				env.CompileDeploy(eplClass, path);
 
 				string epl = "create variable MyStateful msf = new MyStateful();\n" +
-				             "@name('s0') select msf.value as c0 from SupportBean;\n" +
+				             "@Name('s0') select msf.value as c0 from SupportBean;\n" +
 				             "on SupportBean_S0 set msf.setValue(p00);\n";
 				env.CompileDeploy(epl, path).AddListener("s0");
 
@@ -99,8 +99,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 				             "}\n" +
 				             "\"\"\"\n" +
 				             "create variable MyStateful msf = new MyStateful(2, 3);\n" +
-				             "@name('s0') select msf.a as c0, msf.b as c1 from SupportBean;\n" +
-				             "on SupportBeanNumeric set msf.setA(intOne), msf.setB(intTwo);\n";
+				             "@Name('s0') select msf.a as c0, msf.b as c1 from SupportBean;\n" +
+				             "on SupportBeanNumeric set msf.setA(IntOne), msf.setB(intTwo);\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendAssert(env, 2, 3);

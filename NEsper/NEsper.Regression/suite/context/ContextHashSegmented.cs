@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var jobject = new JObject();
                 jobject.Add("userId", userId);
                 jobject.Add("keyword", keyword);
-                jobject.Add("productId", productId);
+                jobject.Add("ProductId", productId);
                 jobject.Add("score", score);
                 env.SendEventJson(jobject.ToString(), typeName);
             }
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var fields = new [] { "userId","keyword","sumScore" };
                 var epl =
-                    eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedScoreCycle>() + "create schema ScoreCycle (userId string, keyword string, productId string, score long);\n" +
+                    eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedScoreCycle>() + "create schema ScoreCycle (userId string, keyword string, ProductId string, score long);\n" +
                     eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedUserKeywordTotalStream>() + "create schema UserKeywordTotalStream (userId string, keyword string, sumScore long);\n" +
                     "\n" +
                     eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(ExprCoreNewStruct.MyLocalJsonProvided)) +
@@ -164,10 +164,10 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "\n" +
                     "context HashByUserCtx insert into ScoreCycleWindow select * from ScoreCycle;\n" +
                     "\n" +
-                    "@name('s0') context HashByUserCtx insert into UserKeywordTotalStream \n" +
+                    "@Name('s0') context HashByUserCtx insert into UserKeywordTotalStream \n" +
                     "select userId, keyword, sum(score) as sumScore from ScoreCycleWindow group by keyword;\n" +
                     "\n" +
-                    "@name('outTwo') context HashByUserCtx on UserKeywordTotalStream(sumScore > 10000) delete from ScoreCycleWindow;\n";
+                    "@Name('outTwo') context HashByUserCtx on UserKeywordTotalStream(sumScore > 10000) delete from ScoreCycleWindow;\n";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath());
                 env.AddListener("s0");
 
@@ -212,10 +212,10 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = new [] { "c0", "c1", "c2" };
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('ctx') create context MyCtx as coalesce consistent_hash_crc32(TheString) from SupportBean granularity 16 preallocate",
+                    "@Name('ctx') create context MyCtx as coalesce consistent_hash_crc32(TheString) from SupportBean granularity 16 preallocate",
                     path);
                 env.CompileDeploy(
-                    "@name('s0') context MyCtx select context.id as c0, TheString as c1, sum(IntPrimitive) as c2 from SupportBean#keepall group by TheString",
+                    "@Name('s0') context MyCtx select context.id as c0, TheString as c1, sum(IntPrimitive) as c2 from SupportBean#keepall group by TheString",
                     path);
                 env.Milestone(0);
 
@@ -397,7 +397,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var ctx = "HashSegmentedContext";
                 var fields = new [] { "c0", "c1" };
 
-                var eplCtx = "@name('context') create context " +
+                var eplCtx = "@Name('context') create context " +
                              ctx +
                              " as " +
                              "coalesce " +
@@ -406,7 +406,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                              "preallocate";
                 env.CompileDeploy(eplCtx, path);
 
-                var eplStmt = "@name('s0') context " +
+                var eplStmt = "@Name('s0') context " +
                               ctx +
                               " " +
                               "select context.name as c0, IntPrimitive as c1 from SupportBean#lastevent";
@@ -465,12 +465,12 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var eplContext = "@name('CTX') create context CtxHash " +
+                var eplContext = "@Name('CTX') create context CtxHash " +
                                  "coalesce by consistent_hash_crc32(TheString) from SupportBean granularity 16";
                 env.CompileDeploy(eplContext, path);
 
                 var fields = new [] { "c0", "c1", "c2" };
-                var eplGrouped = "@name('s0') context CtxHash " +
+                var eplGrouped = "@Name('s0') context CtxHash " +
                                  "select context.id as c0, TheString as c1, sum(IntPrimitive) as c2 from SupportBean group by TheString";
                 env.CompileDeploy(eplGrouped, path).AddListener("s0");
 
@@ -525,14 +525,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                 string hashFunc)
             {
                 var path = new RegressionPath();
-                var eplCtxCRC32 = "@name('context') create context Ctx1 as coalesce " +
+                var eplCtxCRC32 = "@Name('context') create context Ctx1 as coalesce " +
                                   hashFunc +
                                   " from SupportBean " +
                                   "granularity 1000000";
                 env.CompileDeploy(eplCtxCRC32, path);
 
                 var fields = new [] { "c1","c2","c3","c4","c5" };
-                var eplStmt = "@name('s0') context Ctx1 select IntPrimitive as c1, " +
+                var eplStmt = "@Name('s0') context Ctx1 select IntPrimitive as c1, " +
                               "sum(LongPrimitive) as c2, prev(1, LongPrimitive) as c3, prior(1, LongPrimitive) as c4," +
                               "(select P00 from SupportBean_S0#length(2)) as c5 " +
                               "from SupportBean#length(3)";
@@ -572,7 +572,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 var ctx = "HashSegmentedContext";
-                var eplCtx = "@name('context') create context " +
+                var eplCtx = "@Name('context') create context " +
                              ctx +
                              " as " +
                              "coalesce " +
@@ -583,7 +583,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(eplCtx, path);
                 // comment-me-in: SupportHashCodeFuncGranularCRC32 codeFunc = new SupportHashCodeFuncGranularCRC32(4);
 
-                var eplStmt = "@name('s0') context " +
+                var eplStmt = "@Name('s0') context " +
                               ctx +
                               " " +
                               "select context.name as c0, IntPrimitive as c1, Id as c2 from SupportBean#keepall as t1, SupportBean_S0#keepall as t2 where t1.TheString = t2.P00";
@@ -659,7 +659,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var milestone = new AtomicLong();
 
                 // test CRC32 Hash
-                var eplCtx = "@name('context') create context " +
+                var eplCtx = "@Name('context') create context " +
                              ctx +
                              " as " +
                              "coalesce consistent_hash_crc32(TheString) from SupportBean " +
@@ -667,7 +667,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                              "preallocate";
                 env.CompileDeploy(eplCtx, path);
 
-                var eplStmt = "@name('s0') context " +
+                var eplStmt = "@Name('s0') context " +
                               ctx +
                               " " +
                               "select context.name as c0, TheString as c1, sum(IntPrimitive) as c2 from SupportBean#keepall group by TheString";
@@ -687,7 +687,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // test with Java-hashCode String hash
                 env.CompileDeploy(
-                    "@name('context') create context " +
+                    "@Name('context') create context " +
                     ctx +
                     " " +
                     "coalesce hash_code(TheString) from SupportBean " +
@@ -696,7 +696,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
 
                 env.CompileDeploy(
-                    "@name('s0') context " +
+                    "@Name('s0') context " +
                     ctx +
                     " " +
                     "select context.name as c0, TheString as c1, sum(IntPrimitive) as c2 from SupportBean#keepall group by TheString",
@@ -711,7 +711,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // test no pre-allocate
                 env.CompileDeploy(
-                    "@name('context') create context " +
+                    "@Name('context') create context " +
                     ctx +
                     " " +
                     "coalesce hash_code(TheString) from SupportBean " +
@@ -719,7 +719,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
 
                 env.CompileDeploy(
-                    "@name('s0') context " +
+                    "@Name('s0') context " +
                     ctx +
                     " " +
                     "select context.name as c0, TheString as c1, sum(IntPrimitive) as c2 from SupportBean#keepall group by TheString",
@@ -872,14 +872,14 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var eplCtx = "@name('context') create context HashSegmentedContext as " +
+                var eplCtx = "@Name('context') create context HashSegmentedContext as " +
                              "coalesce myHash(*) from SupportBean " +
                              "granularity 4 " +
                              "preallocate";
                 env.CompileDeploy(eplCtx, path);
 
                 var eplStmt =
-                    "@name('s0') context HashSegmentedContext select context.id as c1, myHash(*) as c2, mySecond(*, TheString) as c3, " +
+                    "@Name('s0') context HashSegmentedContext select context.id as c1, myHash(*) as c2, mySecond(*, TheString) as c3, " +
                     typeof(ContextHashSegmented).Name +
                     ".MySecondFunc(*, TheString) as c4 from SupportBean";
                 env.CompileDeploy(eplStmt, path);

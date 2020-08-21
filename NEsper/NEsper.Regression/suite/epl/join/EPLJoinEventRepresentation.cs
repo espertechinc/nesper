@@ -128,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 RegressionPath path,
                 Type jsonClass)
             {
-                env.CompileDeploy("@name('s0')" + rep.GetAnnotationTextWJsonProvided(jsonClass) + epl, path)
+                env.CompileDeploy("@Name('s0')" + rep.GetAnnotationTextWJsonProvided(jsonClass) + epl, path)
                     .AddListener("s0")
                     .MilestoneInc(milestone);
 
@@ -160,7 +160,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 // Test for Esper-122
                 var joinStatement =
-                    "@name('s0') select S0.Id, S1.Id, S0.P00, S1.P00 from MapS0#keepall as S0, MapS1#keepall as S1" +
+                    "@Name('s0') select S0.Id, S1.Id, S0.P00, S1.P00 from MapS0#keepall as S0, MapS1#keepall as S1" +
                     " where S0.Id = S1.Id";
                 env.CompileDeployAddListenerMileZero(joinStatement, "s0");
 
@@ -184,7 +184,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 // Test for Esper-122
                 var epl = "insert into S0Stream select 's0' as streamone, * from SupportBean;\n" +
                           "insert into S1Stream select 's1' as streamtwo, * from SupportBean;\n" +
-                          "@name('s0') select * from S0Stream#keepall as a, S1Stream#keepall as b where a.IntBoxed = b.IntBoxed";
+                          "@Name('s0') select * from S0Stream#keepall as a, S1Stream#keepall as b where a.IntBoxed = b.IntBoxed";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 for (var i = 0; i < 100; i++) {

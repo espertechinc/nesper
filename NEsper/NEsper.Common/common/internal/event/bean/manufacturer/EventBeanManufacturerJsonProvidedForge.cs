@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 		{
 			block
 				.DeclareVar(_jsonEventType.UnderlyingType, "und", Cast(_jsonEventType.UnderlyingType, _beanInstantiator.Make(method, codegenClassScope)))
-				.DeclareVar(typeof(object), "value", ConstantNull());
+				.DeclareVar<object>("value", ConstantNull());
 
 			for (var i = 0; i < _writeFieldReflection.Length; i++) {
 				block.AssignRef("value", ArrayAtIndex(Ref("properties"), Constant(i)));

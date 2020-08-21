@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			{
 				AdvanceTime(env, null, "2002-05-30T09:00:00.000");
 
-				string epl = "@name('s0') select * from pattern[timer:interval(10 seconds)];\n";
+				string epl = "@Name('s0') select * from pattern[timer:interval(10 seconds)];\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				string deploymentId = env.DeploymentId("s0");
 
@@ -87,10 +87,10 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			{
 				AdvanceTime(env, null, "2002-05-30T09:00:00.000");
 
-				string epl = "@name('s0') select * from SupportBean#time_batch(10)";
+				string epl = "@Name('s0') select * from SupportBean#time_batch(10)";
 				env.CompileDeploy(epl).AddListener("s0");
 				string deploymentId = env.DeploymentId("s0");
-				string[] fields = new string[] {"theString"};
+				string[] fields = new string[] {"TheString"};
 
 				env.SendEventBean(new SupportBean("E1", 1));
 
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			{
 				env.AdvanceTime(0);
 
-				string epl = "@name('s0') select irstream * from SupportBean#time(10)";
+				string epl = "@Name('s0') select irstream * from SupportBean#time(10)";
 				env.CompileDeploy(epl).AddListener("s0");
 				string deploymentId = env.DeploymentId("s0");
 
@@ -159,14 +159,14 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 				env.AdvanceTimeStage("P1", 9999);
 				Assert.IsFalse(env.ListenerStage("P1", "s0").GetAndClearIsInvoked());
 				env.AdvanceTimeStage("P1", 10000);
-				Assert.AreEqual("E1", env.ListenerStage("P1", "s0").AssertOneGetOldAndReset().Get("theString"));
+				Assert.AreEqual("E1", env.ListenerStage("P1", "s0").AssertOneGetOldAndReset().Get("TheString"));
 
 				env.Milestone(2);
 
 				env.AdvanceTimeStage("P1", 11999);
 				Assert.IsFalse(env.ListenerStage("P1", "s0").GetAndClearIsInvoked());
 				env.AdvanceTimeStage("P1", 12000);
-				Assert.AreEqual("E2", env.ListenerStage("P1", "s0").AssertOneGetOldAndReset().Get("theString"));
+				Assert.AreEqual("E2", env.ListenerStage("P1", "s0").AssertOneGetOldAndReset().Get("TheString"));
 
 				env.AdvanceTime(12000);
 				Assert.IsFalse(env.ListenerStage("P1", "s0").GetAndClearIsInvoked());
@@ -180,7 +180,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 				SupportListener listener = env.Listener("s0");
 				Assert.IsFalse(listener.GetAndClearIsInvoked());
 				env.AdvanceTime(14000);
-				Assert.AreEqual("E3", env.Listener("s0").AssertOneGetOldAndReset().Get("theString"));
+				Assert.AreEqual("E3", env.Listener("s0").AssertOneGetOldAndReset().Get("TheString"));
 
 				env.UndeployAll();
 			}

@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
         private void RunAssertionPlugInViewFlushed(RegressionEnvironment env)
         {
-            var text = "@name('s0') select * from SupportMarketDataBean.mynamespace:flushedsimple(Price)";
+            var text = "@Name('s0') select * from SupportMarketDataBean.mynamespace:flushedsimple(Price)";
             env.CompileDeploy(text).AddListener("s0");
 
             SendEvent(env, 1);
@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
         private void RunAssertionPlugInViewTrend(RegressionEnvironment env)
         {
-            var text = "@name('s0') select irstream * from SupportMarketDataBean.mynamespace:trendspotter(Price)";
+            var text = "@Name('s0') select irstream * from SupportMarketDataBean.mynamespace:trendspotter(Price)";
             env.CompileDeploy(text).AddListener("s0");
 
             SendEvent(env, 10);

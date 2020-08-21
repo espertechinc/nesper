@@ -31,15 +31,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public static bool CanRenderConstant(object constant) {
             switch (constant) {
-                case string stringConstant:
+                case string _:
                 case char _:
                 case null:
+                case byte _:
+                case short _:
+                case int _:
                 case long _:
                 case float _:
                 case double _:
                 case decimal _:
-                case short _:
-                case byte _:
                 case bool _:
                 case BigInteger _:
                 case Array _:
@@ -67,6 +68,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             }
             else if (constant == null) {
                 builder.Append("null");
+            }
+            else if (constant is int) {
+                builder.Append(Literal((int) constant).ToFullString());
             }
             else if (constant is long) {
                 builder.Append(Literal((long) constant).ToFullString());

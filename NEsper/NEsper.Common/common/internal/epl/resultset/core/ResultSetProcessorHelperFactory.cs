@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
     {
         ResultSetProcessorRowPerGroupUnboundHelper MakeRSRowPerGroupUnboundGroupRep(
             Type[] groupKeyTypes,
-            DataInputOutputSerde<Object> serde,
+            DataInputOutputSerde serde,
             EventType eventType,
             AgentInstanceContext agentInstanceContext);
 
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             OutputConditionPolledFactory optionalOutputFirstConditionFactory,
             AggregationGroupByRollupDesc optionalGroupByRollupDesc,
             int optionalRollupLevel,
-            DataInputOutputSerde<Object> serde);
+            DataInputOutputSerde serde);
 
         OutputProcessViewConditionDeltaSet MakeOutputConditionChangeSet(
             EventType[] eventTypes,
@@ -102,35 +102,35 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         ResultSetProcessorGroupedOutputAllGroupReps MakeRSGroupedOutputAllNoOpt(
             AgentInstanceContext agentInstanceContext,
             Type[] groupKeyTypes,
-            DataInputOutputSerde<Object> serde,
+            DataInputOutputSerde serde,
             EventType[] eventTypes);
 
         ResultSetProcessorRowPerGroupOutputAllHelper MakeRSRowPerGroupOutputAllOpt(
             AgentInstanceContext agentInstanceContext,
             ResultSetProcessorRowPerGroup processor,
             Type[] groupKeyTypes,
-            DataInputOutputSerde<Object> serde,
+            DataInputOutputSerde serde,
             EventType[] eventTypes);
 
         ResultSetProcessorRowPerGroupOutputLastHelper MakeRSRowPerGroupOutputLastOpt(
             AgentInstanceContext agentInstanceContext,
             ResultSetProcessorRowPerGroup processor,
             Type[] groupKeyTypes,
-            DataInputOutputSerde<Object> serde,
+            DataInputOutputSerde serde,
             EventType[] eventTypes);
 
         ResultSetProcessorAggregateGroupedOutputAllHelper MakeRSAggregateGroupedOutputAll(
             AgentInstanceContext agentInstanceContext,
             ResultSetProcessorAggregateGrouped processor,
             Type[] groupKeyTypes,
-            DataInputOutputSerde<Object> serde,
+            DataInputOutputSerde serde,
             EventType[] eventTypes);
 
         ResultSetProcessorAggregateGroupedOutputLastHelper MakeRSAggregateGroupedOutputLastOpt(
             AgentInstanceContext agentInstanceContext,
             ResultSetProcessorAggregateGrouped processor,
             Type[] groupKeyTypes,
-            DataInputOutputSerde<Object> serde);
+            DataInputOutputSerde serde);
 
         ResultSetProcessorRowPerGroupRollupOutputLastHelper MakeRSRowPerGroupRollupLast(
             AgentInstanceContext agentInstanceContext,

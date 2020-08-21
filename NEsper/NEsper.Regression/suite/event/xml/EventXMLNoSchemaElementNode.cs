@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             RegressionPath path)
         {
 
-            var stmt = "@name('s0') select event.type as type, event.uid as uid from " + eventTypeName;
+            var stmt = "@Name('s0') select event.type as type, event.uid as uid from " + eventTypeName;
             env.CompileDeploy(stmt, path).AddListener("s0");
 
             var xml = "<batch-event>" +

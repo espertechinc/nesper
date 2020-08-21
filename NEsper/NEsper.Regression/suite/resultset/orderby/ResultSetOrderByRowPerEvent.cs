@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 string[] fields = {"Symbol", "sumPrice"};
-                var epl = "@name('s0') select Symbol, sum(Price) as sumPrice from " +
+                var epl = "@Name('s0') select Symbol, sum(Price) as sumPrice from " +
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
                           "where one.Symbol = two.TheString " +
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select Symbol as mySymbol, sum(Price) as mySum from " +
+                var epl = "@Name('s0') select Symbol as mySymbol, sum(Price) as mySum from " +
                           "SupportMarketDataBean#length(10) " +
                           "output every 6 events " +
                           "order by mySymbol";
@@ -129,7 +129,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select Symbol, sum(Price) from " +
+                var epl = "@Name('s0') select Symbol, sum(Price) from " +
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
                           "where one.Symbol = two.TheString " +
@@ -176,7 +176,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select Symbol, sum(Price) from " +
+                var epl = "@Name('s0') select Symbol, sum(Price) from " +
                           "SupportMarketDataBean#length(10) " +
                           "output every 6 events " +
                           "order by Volume*sum(Price), Symbol";
@@ -209,7 +209,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select Symbol, sum(Price) from " +
+                var epl = "@Name('s0') select Symbol, sum(Price) from " +
                           "SupportMarketDataBean#length(10) " +
                           "output every 6 events " +
                           "order by Symbol";
@@ -242,7 +242,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select Symbol, max(sum(Price)) from " +
+                var epl = "@Name('s0') select Symbol, max(sum(Price)) from " +
                           "SupportMarketDataBean#length(10) " +
                           "output every 6 events " +
                           "order by Symbol";
@@ -278,7 +278,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select Symbol, sum(Price) from " +
+                var epl = "@Name('s0') select Symbol, sum(Price) from " +
                           "SupportMarketDataBean#length(10) " +
                           "having sum(Price) > 0 " +
                           "output every 6 events " +
@@ -312,7 +312,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select Symbol, sum(Price) from " +
+                var epl = "@Name('s0') select Symbol, sum(Price) from " +
                           "SupportMarketDataBean#length(10) " +
                           "output every 6 events " +
                           "order by Symbol, sum(Price)";
@@ -345,7 +345,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select Symbol, sum(Price) from " +
+                var epl = "@Name('s0') select Symbol, sum(Price) from " +
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
                           "where one.Symbol = two.TheString " +
@@ -384,7 +384,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select Symbol, max(sum(Price)) from " +
+                var epl = "@Name('s0') select Symbol, max(sum(Price)) from " +
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
                           "where one.Symbol = two.TheString " +
@@ -426,7 +426,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select Symbol, sum(Price) from " +
+                var epl = "@Name('s0') select Symbol, sum(Price) from " +
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
                           "where one.Symbol = two.TheString " +

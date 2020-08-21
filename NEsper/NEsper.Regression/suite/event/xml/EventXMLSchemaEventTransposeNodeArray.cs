@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             RegressionPath path)
         {
             // try array property insert
-            env.CompileDeploy("@name('s0') select nested3.nested4 as narr from " + eventTypeName + "#lastevent", path);
+            env.CompileDeploy("@Name('s0') select nested3.nested4 as narr from " + eventTypeName + "#lastevent", path);
             CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {
                     new EventPropertyDescriptor(
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             Assert.AreEqual("SAMPLE_V10", fragmentItem.Get("prop5[0]"));
 
             // try array index property insert
-            env.CompileDeploy($"@name('ii') select nested3.nested4[1] as narr from {eventTypeName}#lastevent", path);
+            env.CompileDeploy($"@Name('ii') select nested3.nested4[1] as narr from {eventTypeName}#lastevent", path);
             CollectionAssert.AreEquivalent(
                 new[] {
                     new EventPropertyDescriptor("narr", typeof(XmlNode), null, false, false, false, false, true)

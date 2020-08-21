@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				env.CompileDeploy("@name('s0') select * from SupportBean");
+				env.CompileDeploy("@Name('s0') select * from SupportBean");
 				string deploymentId = env.DeploymentId("s0");
 				env.StageService.GetStage("ST");
 				StageIt(env, "ST", deploymentId);

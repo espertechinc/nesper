@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
                         "WriteNested",
                         refs.Writer,
                         refs.Field,
-                        NewInstance(other.Detail.DeserializerFactoryClassName)));
+                        NewInstanceInner(other.Detail.DeserializerFactoryClassName)));
             }
 
             return new JsonForgeDesc(fieldName, deserializerForge, serializerForge);
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
                         "WriteNestedArray",
                         refs.Writer,
                         refs.Field,
-                        NewInstance(other.Detail.DeserializerFactoryClassName)));
+                        NewInstanceInner(other.Detail.DeserializerFactoryClassName)));
             }
 
             return new JsonForgeDesc(fieldName, deserializerForge, serializerForge);

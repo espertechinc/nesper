@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
 
                 // Test int and singlerow
                 var stmtText =
-                    "@name('s0') select myint from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where ${queryvar_int -2} = mytesttable.myBigint']";
+                    "@Name('s0') select myint from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where ${queryvar_int -2} = mytesttable.myBigint']";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
                 AssertStatelessStmt(env, "s0", false);
 
@@ -83,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
 
                 // Test multi-parameter and multi-row
                 stmtText =
-                    "@name('s0') select myint from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where mytesttable.myBigint between ${queryvar_int-2} and ${queryvar_int+2}'] order by myint";
+                    "@Name('s0') select myint from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where mytesttable.myBigint between ${queryvar_int-2} and ${queryvar_int+2}'] order by myint";
                 env.CompileDeploy(stmtText, path);
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("s0"),
@@ -96,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 // Test substitution parameters
                 TryInvalidCompile(
                     env,
-                    "@name('s0') select myint from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where mytesttable.myBigint between ${?} and ${queryvar_int+?}'] order by myint",
+                    "@Name('s0') select myint from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where mytesttable.myBigint between ${?} and ${queryvar_int+?}'] order by myint",
                     "EPL substitution parameters are not allowed in SQL ${...} expressions, consider using a variable instead");
             }
         }
@@ -116,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
 
                 // Test int and singlerow
                 var stmtText =
-                    "@name('s0') select myint from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where ${queryvar_int} = mytesttable.myBigint']";
+                    "@Name('s0') select myint from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where ${queryvar_int} = mytesttable.myBigint']";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("s0"), new[] {"myint"}, null);
@@ -132,7 +132,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
 
                 // Test boolean and multirow
                 stmtText =
-                    "@name('s0') select * from sql:MyDBWithTxnIso1WithReadOnly ['select myBigint, mybool from mytesttable where ${queryvar_bool} = mytesttable.mybool and myint between ${lower} and ${upper} order by myBigint']";
+                    "@Name('s0') select * from sql:MyDBWithTxnIso1WithReadOnly ['select myBigint, mybool from mytesttable where ${queryvar_bool} = mytesttable.mybool and myint between ${lower} and ${upper} order by myBigint']";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
 
                 string[] fields = {"myBigint", "mybool"};

@@ -343,7 +343,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				          "create " +
 				          INLINEDCLASS_PREFIXMAP +
 				          ";\n" +
-				          "@name('table') create table TableWithTrie(nameTrie trieState(string));\n" +
+				          "@Name('table') create table TableWithTrie(nameTrie trieState(string));\n" +
 				          "@Priority(1) into table TableWithTrie select trieEnter(name) as nameTrie from PersonEvent;\n" +
 				          "@Priority(0) @name('s0') select TableWithTrie.nameTrie.triePrefixMap(name) as c0 from PersonEvent;\n";
 				env.CompileDeploy(epl, path).AddListener("s0");
@@ -390,12 +390,12 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string eplCreateInlined = "@name('clazz') @public create " + INLINEDCLASS_PREFIXMAP + ";\n";
+				string eplCreateInlined = "@Name('clazz') @public create " + INLINEDCLASS_PREFIXMAP + ";\n";
 				RegressionPath path = new RegressionPath();
 				env.Compile(eplCreateInlined, path);
 
 				string epl = "@public @buseventtype create schema PersonEvent(name string, id string);" +
-				             "@name('table') create table TableWithTrie(nameTrie trieState(string));\n" +
+				             "@Name('table') create table TableWithTrie(nameTrie trieState(string));\n" +
 				             "into table TableWithTrie select trieEnter(name) as nameTrie from PersonEvent;\n";
 				EPCompiled compiledTable = env.Compile(epl, path);
 

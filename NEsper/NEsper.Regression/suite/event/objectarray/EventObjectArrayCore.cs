@@ -63,14 +63,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                               "create objectarray schema NBAL_2 (lvl1s NBAL_1[]);\n";
                 env.CompileDeployWBusPublicType(schemas, path);
 
-                env.CompileDeploy("@name('s0') select * from NBAL_1", path).AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from NBAL_1", path).AddListener("s0");
 
                 env.SendEventObjectArray(new object[] {"somevalue"}, "NBAL_1");
                 var @event = env.Listener("s0").AssertOneGetNewAndReset();
                 env.UndeployModuleContaining("s0");
 
                 // add containing-type
-                env.CompileDeploy("@name('s0') select lvl1s[0] as c0 from NBAL_2", path).AddListener("s0");
+                env.CompileDeploy("@Name('s0') select lvl1s[0] as c0 from NBAL_2", path).AddListener("s0");
 
                 env.SendEventObjectArray(new object[] {new[] {@event.Underlying}}, "NBAL_2");
                 Assert.AreEqual("somevalue", ((object[]) env.Listener("s0").AssertOneGetNewAndReset().Get("c0"))[0]);
@@ -117,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
         {
             public void Run(RegressionEnvironment env)
             {
-                var statementText = "@name('s0') select beanA.SimpleProperty as simple," +
+                var statementText = "@Name('s0') select beanA.SimpleProperty as simple," +
                                     "beanA.Nested.NestedValue as nested," +
                                     "beanA.Indexed[1] as indexed," +
                                     "beanA.Nested.NestedNested.NestedNestedValue as nestednested " +
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             public void Run(RegressionEnvironment env)
             {
                 var statementText =
-                    "@name('s0') select MyInt + 2 as intVal, 'x' || MyString || 'x' as stringVal from MyObjectArrayEvent#length(5)";
+                    "@Name('s0') select MyInt + 2 as intVal, 'x' || MyString || 'x' as stringVal from MyObjectArrayEvent#length(5)";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 // send Map<String, Object> event

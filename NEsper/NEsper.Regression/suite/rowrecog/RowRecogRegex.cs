@@ -268,7 +268,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             var buf = new StringBuilder();
             buf.Append(
-                "@name('s0') select * from SupportRecogBean#keepall " +
+                "@Name('s0') select * from SupportRecogBean#keepall " +
                 "match_recognize (\n" +
                 "  measures ");
 

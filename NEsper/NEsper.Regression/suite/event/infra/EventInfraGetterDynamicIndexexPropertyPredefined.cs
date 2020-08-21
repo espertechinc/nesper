@@ -164,7 +164,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			var path = new RegressionPath();
 			env.CompileDeploy(createSchemaEPL, path);
 
-			env.CompileDeploy("@name('s0') select * from LocalEvent", path).AddListener("s0");
+			env.CompileDeploy("@Name('s0') select * from LocalEvent", path).AddListener("s0");
 			var eventType = env.Statement("s0").EventType;
 			var g0 = eventType.GetGetter("array[0]?");
 			var g1 = eventType.GetGetter("array[1]?");
@@ -176,7 +176,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				return;
 			}
 			else {
-				var propepl = "@name('s1') select array[0]? as c0, array[1]? as c1," +
+				var propepl = "@Name('s1') select array[0]? as c0, array[1]? as c1," +
 				              "exists(array[0]?) as c2, exists(array[1]?) as c3, " +
 				              "typeof(array[0]?) as c4, typeof(array[1]?) as c5 from LocalEvent;\n";
 				env.CompileDeploy(propepl, path).AddListener("s1");

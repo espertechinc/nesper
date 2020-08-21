@@ -24,8 +24,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             String postfix,
             String uuid)
         {
-            StringBuilder builder = new StringBuilder();
-            builder.Append(interfaceClass.Name);
+            var interfaceName = interfaceClass.Name.Replace('`', '_');
+            var builder = new StringBuilder();
+            builder.Append(interfaceName);
             builder.Append('_');
             builder.Append(postfix.Replace("(", "_").Replace(")", "_"));
             builder.Append('_');
@@ -38,7 +39,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             Type interfaceClass,
             string postfix)
         {
-            return interfaceClass.Name + "_" + postfix;
+            var interfaceName = interfaceClass.Name.Replace('`', '_');
+            return interfaceName + "_" + postfix;
         }
 
         public static string GenerateClassNameWithNamespace(

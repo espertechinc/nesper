@@ -130,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Pair<object, object>[] tests,
             Type expectedPropertyType)
         {
-            var stmtText = "@name('s0') select " +
+            var stmtText = "@Name('s0') select " +
                            "Item?.Indexed[0] as indexed1, " +
                            "exists(Item?.Indexed[0]) as exists_indexed1, " +
                            "Item?.Indexed[1]? as indexed2, " +

@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 			CodegenClassScope codegenClassScope)
 		{
 			var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope);
-			methodNode.Block.DeclareVar(_jsonEventType.UnderlyingType, "und", NewInstance(_jsonEventType.Detail.UnderlyingClassName));
+			methodNode.Block.DeclareVar(_jsonEventType.UnderlyingType, "und", NewInstanceInner(_jsonEventType.Detail.UnderlyingClassName));
 			for (var i = 0; i < _selectContext.ColumnNames.Length; i++) {
 				var columnName = _selectContext.ColumnNames[i];
 				var fieldClassBoxed = Boxing.GetBoxedType(_jsonEventType.Detail.FieldDescriptors.Get(columnName).PropertyType);
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 						.IfRefNullReturnNull("value")
 						.IfInstanceOf("value", underlyingArrayType)
 						.BlockReturn(Cast(underlyingArrayType, Ref("value")))
-						.DeclareVar(typeof(EventBean[]), "events", Cast(typeof(EventBean[]), Ref("value")))
+						.DeclareVar<EventBean[]>("events", Cast(typeof(EventBean[]), Ref("value")))
 						.DeclareVar(underlyingArrayType, "array", NewArrayByLength(underlyingType, ArrayLength(Ref("events"))))
 						.ForLoopIntSimple("i", ArrayLength(Ref("events")))
 						.AssignArrayElement("array", Ref("i"), Cast(underlyingType, ExprDotUnderlying(ArrayAtIndex(Ref("events"), Ref("i")))))

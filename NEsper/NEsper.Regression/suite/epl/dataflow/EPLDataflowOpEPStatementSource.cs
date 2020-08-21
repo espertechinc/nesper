@@ -49,10 +49,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             string typeName,
             object[] events)
         {
-            env.CompileDeploy("@name('MyStatement') select * from " + typeName);
+            env.CompileDeploy("@Name('MyStatement') select * from " + typeName);
 
             env.CompileDeploy(
-                "@name('flow') create dataflow MyDataFlowOne " +
+                "@Name('flow') create dataflow MyDataFlowOne " +
                 "create schema AllObject System.Object," +
                 "EPStatementSource -> thedata<AllObject> {" +
                 "  statementDeploymentId : '" +
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                    "@name('flow') create dataflow MyDataFlowOne " +
+                    "@Name('flow') create dataflow MyDataFlowOne " +
                     "create map schema SingleProp (Id string), " +
                     "EPStatementSource -> thedata<SingleProp> {" +
                     "  statementDeploymentId : 'MyDeploymentId'," +
@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.SendEventBean(new SupportBean("E1", 1));
                 Assert.AreEqual(0, captureOp.Current.Length);
 
-                var epl = "@name('MyStatement') select TheString as Id from SupportBean";
+                var epl = "@Name('MyStatement') select TheString as Id from SupportBean";
                 var compiled = env.Compile(epl);
                 try {
                     env.Deployment.Deploy(compiled, new DeploymentOptions().WithDeploymentId("MyDeploymentId"));
@@ -154,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.SendEventBean(new SupportBean("E5", 5));
                 Assert.AreEqual(0, captureOp.Current.Length);
 
-                compiled = env.Compile("@name('MyStatement') select 'X'||TheString||'X' as Id from SupportBean");
+                compiled = env.Compile("@Name('MyStatement') select 'X'||TheString||'X' as Id from SupportBean");
                 try {
                     env.Deployment.Deploy(compiled, new DeploymentOptions().WithDeploymentId("MyDeploymentId"));
                 }
@@ -188,7 +188,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 RunAssertionStatementNameExists(env, "MyXMLEvent", DefaultSupportGraphEventUtil.GetXMLEvents());
 
                 // test doc samples
-                var epl = "@name('flow') create dataflow MyDataFlow\n" +
+                var epl = "@Name('flow') create dataflow MyDataFlow\n" +
                           "  create schema SampleSchema(tagId string, locX double),\t// sample type\t\t\t\n" +
                           "\t\t\t\n" +
                           "  // ConsIder only the statement named MySelectStatement when it exists.\n" +
@@ -264,7 +264,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy("select Id from SupportBean_B");
 
                 env.CompileDeploy(
-                    "@name('flow') create dataflow MyDataFlowOne " +
+                    "@Name('flow') create dataflow MyDataFlowOne " +
                     "create schema AllObjects as System.Object," +
                     "EPStatementSource -> thedata<AllObjects> {} " +
                     "DefaultSupportCaptureOp(thedata) {}");
@@ -296,7 +296,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     new [] { "TheString","IntPrimitive" },
                     new object[] {"E1", 1});
 
-                env.CompileDeploy("@name('s2') select Id from SupportBean_A");
+                env.CompileDeploy("@Name('s2') select Id from SupportBean_A");
                 env.SendEventBean(new SupportBean_A("A1"));
                 captureOp.WaitForInvocation(200, 1);
                 EPAssertionUtil.AssertProps(
@@ -311,7 +311,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 Sleep(50);
                 Assert.AreEqual(0, captureOp.Current.Length);
 
-                env.CompileDeploy("@name('s2') select Id from SupportBean_A");
+                env.CompileDeploy("@Name('s2') select Id from SupportBean_A");
 
                 env.SendEventBean(new SupportBean_A("A3"));
                 captureOp.WaitForInvocation(200, 1);

@@ -20,13 +20,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             TryCaseInsensitive(
                 env,
                 "BeanWCIED",
-                "@name('s0') select THESTRING, INTPRIMITIVE from BeanWCIED where THESTRING='A'",
+                "@Name('s0') select THESTRING, INTPRIMITIVE from BeanWCIED where THESTRING='A'",
                 "THESTRING",
                 "INTPRIMITIVE");
             TryCaseInsensitive(
                 env,
                 "BeanWCIED",
-                "@name('s0') select ThEsTrInG, INTprimitIVE from BeanWCIED where THESTRing='A'",
+                "@Name('s0') select ThEsTrInG, INTprimitIVE from BeanWCIED where THESTRing='A'",
                 "ThEsTrInG",
                 "INTprimitIVE");
         }

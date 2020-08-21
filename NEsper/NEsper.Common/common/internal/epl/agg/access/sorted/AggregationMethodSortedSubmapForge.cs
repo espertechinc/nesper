@@ -55,12 +55,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 		{
 			CodegenMethod method = parent.MakeChild(typeof(AggregationMultiFunctionAggregationMethod), GetType(), classScope);
 			method.Block
-				.DeclareVar(typeof(ExprEvaluator), "fromKeyEval", ExprNodeUtilityCodegen.CodegenEvaluator(_fromKey.Forge, method, GetType(), classScope))
+				.DeclareVar<ExprEvaluator>("fromKeyEval", ExprNodeUtilityCodegen.CodegenEvaluator(_fromKey.Forge, method, GetType(), classScope))
 				.DeclareVar(
 					typeof(ExprEvaluator),
 					"fromInclusiveEval",
 					ExprNodeUtilityCodegen.CodegenEvaluator(_fromInclusive.Forge, method, GetType(), classScope))
-				.DeclareVar(typeof(ExprEvaluator), "toKeyEval", ExprNodeUtilityCodegen.CodegenEvaluator(_toKey.Forge, method, GetType(), classScope))
+				.DeclareVar<ExprEvaluator>("toKeyEval", ExprNodeUtilityCodegen.CodegenEvaluator(_toKey.Forge, method, GetType(), classScope))
 				.DeclareVar(
 					typeof(ExprEvaluator),
 					"toInclusiveEval",

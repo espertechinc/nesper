@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string text = "@name('s0') select * from SupportEventWithIntArray " +
+				string text = "@Name('s0') select * from SupportEventWithIntArray " +
 				              "match_recognize (" +
 				              " partition by array" +
 				              " measures A.id as a, B.id as b" +
@@ -71,14 +71,14 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string text = "@name('s0') select * from SupportBean " +
+				string text = "@Name('s0') select * from SupportBean " +
 				              "match_recognize (" +
-				              " partition by intPrimitive, longPrimitive" +
-				              " measures A.theString as a, B.theString as b" +
+				              " partition by IntPrimitive, LongPrimitive" +
+				              " measures A.TheString as a, B.TheString as b" +
 				              " pattern (A B)" +
 				              " define" +
-				              " A as A.doublePrimitive = 1," +
-				              " B as B.doublePrimitive = 2" +
+				              " A as A.DoublePrimitive = 1," +
+				              " B as B.DoublePrimitive = 2" +
 				              ")";
 
 				env.CompileDeploy(text).AddListener("s0");

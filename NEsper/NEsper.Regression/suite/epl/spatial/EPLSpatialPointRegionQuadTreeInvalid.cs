@@ -184,7 +184,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('mywindow') create window PointWindow#keepall as SupportSpatialPoint;\n" +
+                var epl = "@Name('mywindow') create window PointWindow#keepall as SupportSpatialPoint;\n" +
                           "insert into PointWindow select * from SupportSpatialPoint;\n" +
                           "create index MyIndex on PointWindow((Px, Py) pointregionquadtree(0, 0, 100, 100));\n";
                 env.CompileDeploy(epl);

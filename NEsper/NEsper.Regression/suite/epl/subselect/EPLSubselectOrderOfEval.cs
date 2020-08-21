@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var epl = "select * from SupportTradeEventTwo#lastevent;\n" +
-                          "@name('s0') select window(tl.*) as longItems, " +
+                          "@Name('s0') select window(tl.*) as longItems, " +
                           "       (SELECT window(ts.*) AS shortItems FROM SupportTradeEventTwo#time(20 minutes) as ts WHERE ts.SecurityID=tl.SecurityID) " +
                           "from SupportTradeEventTwo#time(20 minutes) as tl " +
                           "where tl.SecurityID = 1000" +
@@ -57,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') @Name('s0')select * from SupportBean(IntPrimitive<10) where IntPrimitive not in (select IntPrimitive from SupportBean#unique(IntPrimitive))";
+                    "@Name('s0') @Name('s0')select * from SupportBean(IntPrimitive<10) where IntPrimitive not in (select IntPrimitive from SupportBean#unique(IntPrimitive))";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportBean("E1", 5));
@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.UndeployAll();
 
                 var eplTwo =
-                    "@name('s0') select * from SupportBean where IntPrimitive not in (select IntPrimitive from SupportBean(IntPrimitive<10)#unique(IntPrimitive))";
+                    "@Name('s0') select * from SupportBean where IntPrimitive not in (select IntPrimitive from SupportBean(IntPrimitive<10)#unique(IntPrimitive))";
                 env.CompileDeployAddListenerMile(eplTwo, "s0", 1);
 
                 env.SendEventBean(new SupportBean("E1", 5));

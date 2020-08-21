@@ -104,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                     "    lsr.symbol as localSymbol, lsr.value as value\n" +
                     "  when matched and lsr.value > result.value then update set value = lsr.value;\n" +
                     "\n" +
-                    "@name('out') context SymbolsPairContext on SymbolsPairOutputEvent select foreignSymbol, localSymbol, value from Result order by foreignSymbol asc;\n";
+                    "@Name('out') context SymbolsPairContext on SymbolsPairOutputEvent select foreignSymbol, localSymbol, value from Result order by foreignSymbol asc;\n";
                 env.CompileDeploy(epl, path).AddListener("out");
 
                 // load mapping table
@@ -185,52 +185,52 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
 
             public void Run(RegressionEnvironment env)
             {
-                var stmtTextOne = "@name('s1') select OrderId, Items.Item[0].ItemId from MediaOrder";
+                var stmtTextOne = "@Name('s1') select OrderId, Items.Item[0].ItemId from MediaOrder";
                 env.CompileDeploy(stmtTextOne).AddListener("s1");
 
-                var stmtTextTwo = "@name('s2') select * from MediaOrder[Books.Book]";
+                var stmtTextTwo = "@Name('s2') select * from MediaOrder[Books.Book]";
                 env.CompileDeploy(stmtTextTwo).AddListener("s2");
 
-                var stmtTextThree = "@name('s3') select * from MediaOrder(OrderId='PO200901')[Books.Book]";
+                var stmtTextThree = "@Name('s3') select * from MediaOrder(OrderId='PO200901')[Books.Book]";
                 env.CompileDeploy(stmtTextThree).AddListener("s3");
 
-                var stmtTextFour = "@name('s4') select count(*) from MediaOrder[Books.Book]#unique(BookId)";
+                var stmtTextFour = "@Name('s4') select count(*) from MediaOrder[Books.Book]#unique(BookId)";
                 env.CompileDeploy(stmtTextFour).AddListener("s4");
 
-                var stmtTextFive = "@name('s5') select * from MediaOrder[Books.Book][Review]";
+                var stmtTextFive = "@Name('s5') select * from MediaOrder[Books.Book][Review]";
                 env.CompileDeploy(stmtTextFive).AddListener("s5");
 
                 var stmtTextSix =
-                    "@name('s6') select * from pattern [c=Cancel -> o=MediaOrder(OrderId = c.OrderId)[Books.Book]]";
+                    "@Name('s6') select * from pattern [c=Cancel -> o=MediaOrder(OrderId = c.OrderId)[Books.Book]]";
                 env.CompileDeploy(stmtTextSix).AddListener("s6");
 
                 var stmtTextSeven =
-                    "@name('s7') select * from MediaOrder[select OrderId, BookId from Books.Book][select * from Review]";
+                    "@Name('s7') select * from MediaOrder[select OrderId, BookId from Books.Book][select * from Review]";
                 env.CompileDeploy(stmtTextSeven).AddListener("s7");
 
                 var stmtTextEight =
-                    "@name('s8') select * from MediaOrder[select * from Books.Book][select ReviewId, Comment from Review]";
+                    "@Name('s8') select * from MediaOrder[select * from Books.Book][select ReviewId, Comment from Review]";
                 env.CompileDeploy(stmtTextEight).AddListener("s8");
 
                 var stmtTextNine =
-                    "@name('s9') select * from MediaOrder[Books.Book as Book][select Book.*, ReviewId, Comment from Review]";
+                    "@Name('s9') select * from MediaOrder[Books.Book as Book][select Book.*, ReviewId, Comment from Review]";
                 env.CompileDeploy(stmtTextNine).AddListener("s9");
 
                 var stmtTextTen =
-                    "@name('s10') select * from MediaOrder[Books.Book as Book][select MediaOrder.*, BookId, ReviewId from Review] as MediaOrder";
+                    "@Name('s10') select * from MediaOrder[Books.Book as Book][select MediaOrder.*, BookId, ReviewId from Review] as MediaOrder";
                 env.CompileDeploy(stmtTextTen).AddListener("s10");
 
                 var path = new RegressionPath();
                 var stmtTextElevenZero =
-                    "@name('s11_0') insert into ReviewStream select * from MediaOrder[Books.Book as Book]\n" +
+                    "@Name('s11_0') insert into ReviewStream select * from MediaOrder[Books.Book as Book]\n" +
                     "    [select MediaOrder.* as MediaOrder, Book.* as Book, Review.* as Review from Review as Review] as MediaOrder";
                 env.CompileDeploy(stmtTextElevenZero, path);
                 var stmtTextElevenOne =
-                    "@name('s11') select MediaOrder.OrderId, Book.BookId, Review.ReviewId from ReviewStream";
+                    "@Name('s11') select MediaOrder.OrderId, Book.BookId, Review.ReviewId from ReviewStream";
                 env.CompileDeploy(stmtTextElevenOne, path).AddListener("s11");
 
                 var stmtTextTwelve =
-                    "@name('s12') select * from MediaOrder[Books.Book where Author = 'Orson Scott Card'][Review]";
+                    "@Name('s12') select * from MediaOrder[Books.Book where Author = 'Orson Scott Card'][Review]";
                 env.CompileDeploy(stmtTextTwelve).AddListener("s12");
 
                 env.SendEventXMLDOM(eventDocOne, "MediaOrder");
@@ -301,7 +301,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select Book.BookId,Item.ItemId from" +
+                    "@Name('s0') select Book.BookId,Item.ItemId from" +
                     " MediaOrder[Books.Book] as Book," +
                     " MediaOrder[Items.Item] as Item" +
                     " where ProductId = BookId" +
@@ -335,7 +335,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 env.UndeployAll();
                 fields = new [] { "count(*)" };
                 stmtText =
-                    "@name('s0') select count(*) from MediaOrder[Books.Book] as Book, MediaOrder[Items.Item] as Item" +
+                    "@Name('s0') select count(*) from MediaOrder[Books.Book] as Book, MediaOrder[Items.Item] as Item" +
                     " where ProductId = BookId" +
                     " order by BookId asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
@@ -355,7 +355,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 // unidirectional count
                 env.UndeployAll();
                 stmtText =
-                    "@name('s0') select count(*)" +
+                    "@Name('s0') select count(*)" +
                     " from MediaOrder[Books.Book] as Book unidirectional, MediaOrder[Items.Item] as Item" +
                     " where ProductId = BookId" +
                     " order by BookId asc";
@@ -393,7 +393,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select Book.BookId,Item.ItemId from MediaOrder[Books.Book] as Book" +
+                    "@Name('s0') select Book.BookId,Item.ItemId from MediaOrder[Books.Book] as Book" +
                     " left outer join MediaOrder[Items.Item] as Item on ProductId = BookId" +
                     " order by BookId, Item.ItemId asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
@@ -419,7 +419,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 env.UndeployAll();
                 fields = new [] { "count(*)" };
                 stmtText =
-                    "@name('s0') select count(*) from MediaOrder[Books.Book] as Book" +
+                    "@Name('s0') select count(*) from MediaOrder[Books.Book] as Book" +
                     " left outer join MediaOrder[Items.Item] as Item on ProductId = BookId";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
@@ -438,7 +438,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 // unidirectional count
                 env.UndeployAll();
                 stmtText =
-                    "@name('s0') select count(*) from MediaOrder[Books.Book] as Book unidirectional" +
+                    "@Name('s0') select count(*) from MediaOrder[Books.Book] as Book unidirectional" +
                     " left outer join MediaOrder[Items.Item] as Item on ProductId = BookId";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
@@ -474,7 +474,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select OrderId, Book.BookId,Item.ItemId from MediaOrder[Books.Book] as Book" +
+                    "@Name('s0') select OrderId, Book.BookId,Item.ItemId from MediaOrder[Books.Book] as Book" +
                     " full outer join MediaOrder[select OrderId, * from Items.Item] as Item on ProductId = BookId" +
                     " order by BookId, Item.ItemId asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
@@ -500,7 +500,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 env.UndeployAll();
                 fields = new [] { "count(*)" };
                 stmtText =
-                    "@name('s0') select count(*) from MediaOrder[Books.Book] as Book" +
+                    "@Name('s0') select count(*) from MediaOrder[Books.Book] as Book" +
                     " full outer join MediaOrder[Items.Item] as Item on ProductId = BookId";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
@@ -519,7 +519,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 // unidirectional count
                 env.UndeployAll();
                 stmtText =
-                    "@name('s0') select count(*) from MediaOrder[Books.Book] as Book unidirectional" +
+                    "@Name('s0') select count(*) from MediaOrder[Books.Book] as Book unidirectional" +
                     " full outer join MediaOrder[Items.Item] as Item on ProductId = BookId";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
@@ -545,7 +545,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             {
                 var fields = new [] { "Category","SubEventType","AvgTime" };
                 var stmtText =
-                    "@name('s0') select Category, SubEventType, avg(ResponseTimeMillis) as AvgTime" +
+                    "@Name('s0') select Category, SubEventType, avg(ResponseTimeMillis) as AvgTime" +
                     " from SupportResponseEvent[select Category, * from SubEvents]#time(1 min)" +
                     " group by Category, SubEventType" +
                     " order by Category, SubEventType";

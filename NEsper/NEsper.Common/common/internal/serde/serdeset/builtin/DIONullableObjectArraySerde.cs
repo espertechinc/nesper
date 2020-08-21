@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			WriteInternal(@object, output, unitKey, writer);
 		}
 
-		public override object[] Read(
+		public override object[] ReadValue(
 			DataInput input,
 			byte[] unitKey)
 		{
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 
 			var array = Array.CreateInstance(_componentType, len);
 			for (int i = 0; i < len; i++) {
-				var value = _componentBinding.ReadAny(input, unitKey);
+				var value = _componentBinding.Read(input, unitKey);
 				array.SetValue(value, i);
 			}
 

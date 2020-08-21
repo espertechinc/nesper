@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        stream.WriteByte(@object);
 	    }
 
-	    public override byte Read(DataInput s, byte[] resourceKey) {
+	    public override byte ReadValue(DataInput s, byte[] resourceKey) {
 	        return s.ReadByte();
 	    }
 

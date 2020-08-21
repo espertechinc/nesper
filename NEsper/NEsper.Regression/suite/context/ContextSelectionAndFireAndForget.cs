@@ -308,7 +308,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var fields = new [] { "c0", "c1" };
                 var epl = "create context PartitionedByString partition by TheString from SupportBean;\n" +
-                          "@name('s0') context PartitionedByString select context.key1 as c0, sum(IntPrimitive) as c1 from SupportBean#length(5);\n";
+                          "@Name('s0') context PartitionedByString select context.key1 as c0, sum(IntPrimitive) as c1 from SupportBean#length(5);\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
@@ -369,7 +369,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     Assert.AreEqual(ex.Message, "No selector provided");
                 }
 
-                env.CompileDeploy("@name('s2') select * from SupportBean");
+                env.CompileDeploy("@Name('s2') select * from SupportBean");
                 try {
                     env.Statement("s2").GetEnumerator(null);
                     Assert.Fail();

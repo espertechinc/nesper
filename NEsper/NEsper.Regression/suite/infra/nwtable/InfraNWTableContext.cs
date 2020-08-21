@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             int num,
             string epl)
         {
-            env.CompileDeploy("@name('s" + num + "')" + epl, path).AddListener("s" + num);
+            env.CompileDeploy("@Name('s" + num + "')" + epl, path).AddListener("s" + num);
         }
 
         private static void MakeSendSupportBean(

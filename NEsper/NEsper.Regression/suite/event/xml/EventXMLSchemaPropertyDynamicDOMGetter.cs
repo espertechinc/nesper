@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             RegressionPath path)
         {
 
-            var stmtText = "@name('s0') select type?,dyn[1]?,nested.nes2?,map('a')? from " + eventTypeName;
+            var stmtText = "@Name('s0') select type?,dyn[1]?,nested.nes2?,map('a')? from " + eventTypeName;
             env.CompileDeploy(stmtText, path).AddListener("s0");
 
             CollectionAssert.AreEquivalent(

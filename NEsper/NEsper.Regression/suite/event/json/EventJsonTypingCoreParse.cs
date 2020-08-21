@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			public void Run(RegressionEnvironment env)
 			{
 				string epl = "@public @buseventtype create json schema JsonEvent (c0 Map);\n" +
-				             "@name('s0') select * from JsonEvent#keepall;\n";
+				             "@Name('s0') select * from JsonEvent#keepall;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				object[][] namesAndTypes = new object[][] {
 					new object[] {"c0", typeof(IDictionary<string, object>)}
@@ -88,7 +88,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			public void Run(RegressionEnvironment env)
 			{
 				string epl = "@public @buseventtype create json schema JsonEvent (c0 Object[]);\n" +
-				             "@name('s0') select * from JsonEvent#keepall;\n";
+				             "@Name('s0') select * from JsonEvent#keepall;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				object[][] namesAndTypes = new object[][] {
 					new object[] {"c0", typeof(object[])}
@@ -139,7 +139,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			public void Run(RegressionEnvironment env)
 			{
 				string epl = "@public @buseventtype create json schema JsonEvent (c0 Object);\n" +
-				             "@name('s0') select * from JsonEvent#keepall;\n";
+				             "@Name('s0') select * from JsonEvent#keepall;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				object[][] namesAndTypes = new object[][] {new object[] {"c0", typeof(object)}};
 				SupportEventTypeAssertionUtil.AssertEventTypeProperties(
@@ -192,7 +192,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				string epl = "@public @buseventtype create json schema JsonEvent (c0 BigInteger, c1 BigDecimal," +
 				             "c2 BigInteger[], c3 BigDecimal[], c4 BigInteger[][], c5 BigDecimal[][]);\n" +
-				             "@name('s0') select * from JsonEvent#keepall;\n";
+				             "@Name('s0') select * from JsonEvent#keepall;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				object[][] namesAndTypes = new object[][] {
 					new object[] {"c0", typeof(BigInteger?)},
@@ -280,7 +280,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			public void Run(RegressionEnvironment env)
 			{
 				string epl = "@public @buseventtype create json schema JsonEvent (c0 SupportEnum, c1 SupportEnum[], c2 SupportEnum[][]);\n" +
-				             "@name('s0') select * from JsonEvent#keepall;\n";
+				             "@Name('s0') select * from JsonEvent#keepall;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				object[][] namesAndTypes = new object[][] {
 					new object[] {"c0", typeof(SupportEnum)},
@@ -371,7 +371,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				             "c11 long[], c12 long[primitive], " +
 				             "c13 double[], c14 double[primitive], " +
 				             "c15 float[], c16 float[primitive]);\n" +
-				             "@name('s0') select * from JsonEvent#keepall;\n";
+				             "@Name('s0') select * from JsonEvent#keepall;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				object[][] namesAndTypes = new object[][] {
 					new object[] {"c0", typeof(string[])},
@@ -592,7 +592,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				             "c11 long[][], c12 long[primitive][], " +
 				             "c13 double[][], c14 double[primitive][], " +
 				             "c15 float[][], c16 float[primitive][]);\n" +
-				             "@name('s0') select * from JsonEvent#keepall;\n";
+				             "@Name('s0') select * from JsonEvent#keepall;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				object[][] namesAndTypes = new object[][] {
 					new object[] {"c0", typeof(string[][])},
@@ -841,7 +841,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				string epl = "@public @buseventtype create json schema JsonEvent (" +
 				             "c0 string, c1 char, c2 character, c3 bool, c4 boolean, " +
 				             "c5 byte, c6 short, c7 int, c8 integer, c9 long, c10 double, c11 float, c12 null);\n" +
-				             "@name('s0') select * from JsonEvent#keepall;\n";
+				             "@Name('s0') select * from JsonEvent#keepall;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				object[][] namesAndTypes = new object[][] {
 					new object[] {"c0", typeof(string)},
@@ -932,7 +932,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				env.CompileDeploy(
 						"@JsonSchema(dynamic=true) @public @buseventtype create json schema JsonEvent();\n" +
-						"@name('s0') select num1? as c0, num2? as c1, num3? as c2 from JsonEvent#keepall")
+						"@Name('s0') select num1? as c0, num2? as c1, num3? as c2 from JsonEvent#keepall")
 					.AddListener("s0");
 
 				string json = "{ \"num1\": 42, \"num2\": 42.0, \"num3\": 4.2E+1}";
@@ -959,7 +959,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				env.CompileDeploy(
 						"@JsonSchema(dynamic=true) @public @buseventtype create json schema JsonEvent();\n" +
-						"@name('s0') select a_array? as c0 from JsonEvent#keepall")
+						"@Name('s0') select a_array? as c0 from JsonEvent#keepall")
 					.AddListener("s0");
 				string json;
 
@@ -1019,7 +1019,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				env.CompileDeploy(
 						"@JsonSchema(dynamic=true) @public @buseventtype create json schema JsonEvent();\n" +
-						"@name('s0') select a_array? as c0 from JsonEvent#keepall")
+						"@Name('s0') select a_array? as c0 from JsonEvent#keepall")
 					.AddListener("s0");
 
 				string json = "{\n" +
@@ -1062,7 +1062,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				env.CompileDeploy(
 						"@JsonSchema(dynamic=true) @public @buseventtype create json schema JsonEvent();\n" +
-						"@name('s0') select a_string? as c0, exists(a_string?) as c1," +
+						"@Name('s0') select a_string? as c0, exists(a_string?) as c1," +
 						"a_number? as c2, exists(a_number?) as c3," +
 						"a_boolean? as c4, exists(a_boolean?) as c5," +
 						"a_null? as c6, exists(a_null?) as c7," +

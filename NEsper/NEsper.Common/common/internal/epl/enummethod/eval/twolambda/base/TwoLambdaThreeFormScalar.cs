@@ -97,9 +97,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 					"resultEvent",
 					NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(_numParameters)), resultTypeMember))
 				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), @Ref("resultEvent"))
-				.DeclareVar(typeof(object[]), "props", ExprDotMethod(@Ref("resultEvent"), "getProperties"));
+				.DeclareVar<object[]>("props", ExprDotMethod(@Ref("resultEvent"), "getProperties"));
 			if (hasIndex) {
-				methodNode.Block.DeclareVar(typeof(int), "count", Constant(-1));
+				methodNode.Block.DeclareVar<int>("count", Constant(-1));
 			}
 
 			if (hasSize) {

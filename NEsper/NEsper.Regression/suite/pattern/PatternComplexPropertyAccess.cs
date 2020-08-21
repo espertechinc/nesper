@@ -120,7 +120,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var pattern = "@name('s0') select * from pattern[every a=SupportBeanComplexProps(Indexed[0]=3)]";
+                var pattern = "@Name('s0') select * from pattern[every a=SupportBeanComplexProps(Indexed[0]=3)]";
                 env.CompileDeploy(pattern).AddListener("s0");
 
                 object theEvent = new SupportBeanComplexProps(new[] {3, 4});
@@ -144,7 +144,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var pattern =
-                    "@name('s0') select * from pattern[every a=SupportBeanComplexProps -> b=SupportBeanComplexProps(Indexed[0] = a.Indexed[0])]";
+                    "@Name('s0') select * from pattern[every a=SupportBeanComplexProps -> b=SupportBeanComplexProps(Indexed[0] = a.Indexed[0])]";
                 env.CompileDeploy(pattern).AddListener("s0");
                 RunIndexedValueProp(env);
                 env.UndeployAll();
@@ -184,7 +184,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var patternText =
-                    "@name('s0') select * from pattern [every a=SupportBeanComplexProps -> b=SupportBeanComplexProps(Indexed[0]=a.Indexed[0])]";
+                    "@Name('s0') select * from pattern [every a=SupportBeanComplexProps -> b=SupportBeanComplexProps(Indexed[0]=a.Indexed[0])]";
                 env.EplToModelCompileDeploy(patternText).AddListener("s0");
                 RunIndexedValueProp(env);
                 env.UndeployAll();

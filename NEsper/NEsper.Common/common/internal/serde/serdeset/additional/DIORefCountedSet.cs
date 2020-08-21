@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.additional
 			output.WriteInt(valueSet.NumValues);
 		}
 
-		public override RefCountedSet<object> Read(
+		public override RefCountedSet<object> ReadValue(
 			DataInput input,
 			byte[] unitKey)
 		{
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.additional
 			var refSet = valueSet.RefSet;
 			int size = input.ReadInt();
 			for (int i = 0; i < size; i++) {
-				var key = _inner.ReadAny(input, unitKey);
+				var key = _inner.Read(input, unitKey);
 				var @ref = input.ReadInt();
 				refSet.Put(key, @ref);
 			}

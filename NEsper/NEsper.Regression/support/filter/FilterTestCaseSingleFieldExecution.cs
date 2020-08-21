@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.support.filter
         {
             // set up statement
             var stmtName = "stmt";
-            var expr = "@name('" + stmtName + "') select * from SupportBean" + testCase.FilterExpr;
+            var expr = "@Name('" + stmtName + "') select * from SupportBean" + testCase.FilterExpr;
             env.CompileDeployAddListenerMileZero(expr, stmtName);
             var initialListener = env.Listener(stmtName);
 

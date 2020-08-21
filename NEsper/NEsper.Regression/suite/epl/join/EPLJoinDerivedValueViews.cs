@@ -17,7 +17,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@name('s0') select\n" +
+            var epl = "@Name('s0') select\n" +
                       "Math.Sign(stream1.slope) as S1,\n" +
                       "Math.Sign(stream2.slope) as S2\n" +
                       "from\n" +

@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             bool useRandomLookupKey)
         {
             var random = new Random();
-            var stmtText = "@name('s0') select myint from " +
+            var stmtText = "@Name('s0') select myint from " +
                            "SupportBean_S0 as S0," +
                            " sql:MyDB ['select myint from mytesttable where ${Id} = mytesttable.myBigint'] as S1";
             env.CompileDeploy(stmtText).AddListener("s0");

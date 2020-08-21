@@ -241,7 +241,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 type.PropertyDescriptors);
 
             var stmt =
-                "@name('s0') select xpathElement1, xpathCountE21, xpathAttrString, xpathAttrNum, xpathAttrBool," +
+                "@Name('s0') select xpathElement1, xpathCountE21, xpathAttrString, xpathAttrNum, xpathAttrBool," +
                 "stringCastLong," +
                 "stringCastDouble," +
                 "numCastInt " +

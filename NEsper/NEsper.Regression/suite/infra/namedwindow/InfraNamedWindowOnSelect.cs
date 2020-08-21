@@ -70,13 +70,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var fields = new [] { "TheString" };
                 var path = new RegressionPath();
 
-                var eplCreate = "@name('create') create window MyWindow.win:keepall() as SupportBean";
+                var eplCreate = "@Name('create') create window MyWindow.win:keepall() as SupportBean";
                 env.CompileDeploy(eplCreate, path).AddListener("create");
 
-                var eplInsert = "@name('insert') insert into MyWindow select * from SupportBean";
+                var eplInsert = "@Name('insert') insert into MyWindow select * from SupportBean";
                 env.CompileDeploy(eplInsert, path);
 
-                var eplOnExpr = "@name('delete') on SupportBean_S0 delete from MyWindow where IntPrimitive = Id";
+                var eplOnExpr = "@Name('delete') on SupportBean_S0 delete from MyWindow where IntPrimitive = Id";
                 env.CompileDeploy(eplOnExpr, path);
 
                 env.Milestone(0);
@@ -109,10 +109,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 string[] fields = {"TheString", "IntPrimitive"};
                 var path = new RegressionPath();
 
-                var epl = "@name('create') create window MyWindow#keepall as select * from SupportBean;\n" +
+                var epl = "@Name('create') create window MyWindow#keepall as select * from SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean(TheString like 'E%');\n" +
-                          "@name('select') on SupportBean_A insert into MyStream select mywin.* from MyWindow as mywin order by TheString asc;\n" +
-                          "@name('consumer') select * from MyStream;\n" +
+                          "@Name('select') on SupportBean_A insert into MyStream select mywin.* from MyWindow as mywin order by TheString asc;\n" +
+                          "@Name('consumer') select * from MyStream;\n" +
                           "insert into MyStream select * from SupportBean(TheString like 'I%');\n";
                 env.CompileDeploy(epl, path).AddListener("select").AddListener("consumer");
                 Assert.AreEqual(
@@ -188,7 +188,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 Assert.AreEqual(typeof(SupportBean), onSelectType.UnderlyingType);
 
                 // delete all from named window
-                var stmtTextDelete = "@name('delete') on SupportBean_B delete from MyWindow";
+                var stmtTextDelete = "@Name('delete') on SupportBean_B delete from MyWindow";
                 env.CompileDeploy(stmtTextDelete, path);
                 SendSupportBean_B(env, "B1");
 
@@ -210,7 +210,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.SendEventBean(new SupportBean("Z", 0));
 
                 var epl =
-                    "@name('s0') on pattern[every e = SupportBean(TheString = 'A') -> SupportBean(IntPrimitive = e.IntPrimitive)] select * from MyWindow";
+                    "@Name('s0') on pattern[every e = SupportBean(TheString = 'A') -> SupportBean(IntPrimitive = e.IntPrimitive)] select * from MyWindow";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 env.Milestone(0);

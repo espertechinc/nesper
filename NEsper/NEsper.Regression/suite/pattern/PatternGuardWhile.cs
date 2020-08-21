@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var fields = new [] { "c0" };
 
                 var epl =
-                    "@name('s0') select a.TheString as c0 from pattern [(every a=SupportBean) while (a.TheString like 'E%')]";
+                    "@Name('s0') select a.TheString as c0 from pattern [(every a=SupportBean) while (a.TheString like 'E%')]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
@@ -126,10 +126,10 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@name('var') create variable boolean myVariable = true", path);
+                env.CompileDeploy("@Name('var') create variable boolean myVariable = true", path);
 
                 var expression =
-                    "@name('s0') select * from pattern [every a=SupportBean(TheString like 'A%') -> (every b=SupportBean(TheString like 'B%')) while (myVariable)]";
+                    "@Name('s0') select * from pattern [every a=SupportBean(TheString like 'A%') -> (every b=SupportBean(TheString like 'B%')) while (myVariable)]";
                 env.CompileDeploy(expression, path);
                 env.AddListener("s0");
 

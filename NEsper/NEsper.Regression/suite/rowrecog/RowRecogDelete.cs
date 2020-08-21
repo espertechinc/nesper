@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                     path);
 
                 var fields = new [] { "a_string","b_string" };
-                var text = "@name('s0') select * from MyNamedWindow " +
+                var text = "@Name('s0') select * from MyNamedWindow " +
                            "match_recognize (" +
                            "  measures A.TheString as a_string, B.TheString as b_string" +
                            "  all matches pattern (A B) " +
@@ -159,7 +159,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                     path);
 
                 var fields = new [] { "a0","a1","b0","b1","c" };
-                var text = "@name('s0') select * from MyWindow " +
+                var text = "@Name('s0') select * from MyWindow " +
                            "match_recognize (" +
                            "  measures A[0].TheString as a0, A[1].TheString as a1, B[0].TheString as b0, B[1].TheString as b1, C.TheString as c" +
                            "  pattern ( A+ B* C ) " +
@@ -258,7 +258,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                     path);
 
                 var fields = new [] { "a0","a1","b" };
-                var text = "@name('s0') select * from MyWindow " +
+                var text = "@Name('s0') select * from MyWindow " +
                            "match_recognize (" +
                            "  measures A[0].TheString as a0, A[1].TheString as a1, B.TheString as b" +
                            "  pattern ( A* B ) " +

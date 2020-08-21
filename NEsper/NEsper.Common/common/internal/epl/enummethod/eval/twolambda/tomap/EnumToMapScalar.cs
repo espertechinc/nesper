@@ -99,30 +99,32 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tom
 				.IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
 				.BlockReturn(StaticMethod(typeof(Collections), "emptyMap"));
 
-			block.DeclareVar(typeof(IDictionary<object, object>), "map", NewInstance(typeof(Dictionary<object, object>)))
+			block.DeclareVar<IDictionary<object, object>>("map", NewInstance(typeof(Dictionary<object, object>)))
 				.DeclareVar(
 					typeof(ObjectArrayEventBean),
 					"resultEvent",
 					NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(_numParameters)), resultTypeMember))
 				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), @Ref("resultEvent"))
-				.DeclareVar(typeof(object[]), "props", ExprDotMethod(@Ref("resultEvent"), "getProperties"));
+				.DeclareVar<object[]>("props", ExprDotMethod(@Ref("resultEvent"), "getProperties"));
 			if (hasIndex) {
-				block.DeclareVar(typeof(int), "count", Constant(-1));
+				block.DeclareVar<int>("count", Constant(-1));
 			}
 
 			if (hasSize) {
 				block.AssignArrayElement(@Ref("props"), Constant(2), ExprDotMethod(REF_ENUMCOLL, "size"));
 			}
 
-			var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+			var forEach = block
+				.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
 				.AssignArrayElement("props", Constant(0), @Ref("next"));
 			if (hasIndex) {
 				forEach.IncrementRef("count").AssignArrayElement("props", Constant(1), @Ref("count"));
 			}
 
-			forEach.DeclareVar(typeof(object), "key", InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-				.DeclareVar(typeof(object), "value", _secondExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-				.Expression(ExprDotMethod(@Ref("map"), "put", @Ref("key"), @Ref("value")));
+			forEach
+				.DeclareVar<object>("key", InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+				.DeclareVar<object>("value", _secondExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+				.Expression(ExprDotMethod(@Ref("map"), "Put", @Ref("key"), @Ref("value")));
 
 			block.MethodReturn(@Ref("map"));
 			return LocalMethod(methodNode, premade.Eps, premade.Enumcoll, premade.IsNewData, premade.ExprCtx);

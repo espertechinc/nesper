@@ -13,6 +13,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.support.util;
 
 namespace com.espertech.esper.regressionrun.Runner
@@ -54,9 +55,8 @@ namespace com.espertech.esper.regressionrun.Runner
                 config.Compiler.Logging.AuditDirectory = "C:\\src\\Espertech\\NEsper-8.5.0\\NEsper\\NEsper.Regression.Review\\generated";
 
                 if (!string.IsNullOrWhiteSpace(config.Compiler.Logging.AuditDirectory)) {
-                    foreach (var file in Directory.GetFiles(config.Compiler.Logging.AuditDirectory, "*.cs")) {
-                        File.Delete(file);
-                    }
+                    Directory.Delete(config.Compiler.Logging.AuditDirectory, true);
+                    Directory.CreateDirectory(config.Compiler.Logging.AuditDirectory);
                 }
 
                 if (Environment.GetEnvironmentVariable(SYSTEM_PROPERTY_LOG_CODE) != null)

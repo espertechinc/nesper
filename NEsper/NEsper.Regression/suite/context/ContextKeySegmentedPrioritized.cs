@@ -21,12 +21,12 @@ namespace com.espertech.esper.regressionlib.suite.context
             env.CompileDeploy("create context SegmentedByMessage partition by TheString from SupportBean", path);
 
             env.CompileDeploy(
-                "@name('s0') @Drop @Priority(1) context SegmentedByMessage select 'test1' from SupportBean",
+                "@Name('s0') @Drop @Priority(1) context SegmentedByMessage select 'test1' from SupportBean",
                 path);
             env.AddListener("s0");
 
             env.CompileDeploy(
-                "@name('s1') @Priority(0) context SegmentedByMessage select 'test2' from SupportBean",
+                "@Name('s1') @Priority(0) context SegmentedByMessage select 'test2' from SupportBean",
                 path);
             env.AddListener("s1");
 

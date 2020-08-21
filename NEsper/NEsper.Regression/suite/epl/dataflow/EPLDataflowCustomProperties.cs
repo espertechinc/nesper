@@ -87,8 +87,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 // test simple properties
                 MyOperatorOneForge.Operators.Clear();
                 env.Compile(
-                    "@name('flow') create dataflow MyGraph MyOperatorOne {" +
-                    "  theString = 'a'," +
+                    "@Name('flow') create dataflow MyGraph MyOperatorOne {" +
+                    "  TheString = 'a'," +
                     "  theInt: 1," +
                     "  theBool: true," +
                     "  theLongOne: 1L," +
@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     "  theDoubleTwo: 2," +
                     "  theFloatOne: 1f," +
                     "  theFloatTwo: 2," +
-                    "  theStringWithSetter: 'b'," +
+                    "  TheStringWithSetter: 'b'," +
                     "  theSystemProperty: systemProperties('test.variable')" +
                     "}");
                 Assert.AreEqual(1, MyOperatorOneForge.Operators.Count);
@@ -121,7 +121,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 // test array etc. properties
                 MyOperatorTwoForge.Operators.Clear();
                 env.Compile(
-                    "@name('flow') create dataflow MyGraph MyOperatorTwo {\n" +
+                    "@Name('flow') create dataflow MyGraph MyOperatorTwo {\n" +
                     "  TheStringArray: ['a', \"b\"],\n" +
                     "  TheIntArray: [1, 2, 3],\n" +
                     "  TheObjectArray: ['a', 1],\n" +

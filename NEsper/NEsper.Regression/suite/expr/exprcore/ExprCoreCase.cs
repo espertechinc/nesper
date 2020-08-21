@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select case when IntPrimitive = 1 then { 1, 2 } else { 1, 2 } end as c1 from SupportBean";
+				var epl = "@Name('s0') select case when IntPrimitive = 1 then { 1, 2 } else { 1, 2 } end as c1 from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				env.SendEventBean(new SupportBean("E1", 1));
@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			{
 				// Testing the two forms of the case expression
 				// Furthermore the test checks the different when clauses and actions related.
-				var epl = "@name('s0') select case " +
+				var epl = "@Name('s0') select case " +
 				          " when Symbol='GE' then Volume " +
 				          " when Symbol='DELL' then sum(Price) " +
 				          "end as p1 from SupportMarketDataBean#length(10)";
@@ -128,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select case" +
+				var epl = "@Name('s0') select case" +
 				          " when Symbol=\"GE\" then Volume" +
 				          " when Symbol=\"DELL\" then sum(Price) " +
 				          "end as p1 from SupportMarketDataBean#length(10)";
@@ -167,7 +167,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			{
 				// Adding to the EPL statement an else expression
 				// when a CSCO ticker is sent the property for the else expression is selected
-				var epl = "@name('s0') select case " +
+				var epl = "@Name('s0') select case " +
 				          " when Symbol='DELL' then 3 * Volume " +
 				          " else Volume " +
 				          "end as p1 from SupportMarketDataBean#length(3)";
@@ -218,7 +218,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select case " +
+				var epl = "@Name('s0') select case " +
 				          "when Symbol=\"DELL\" then Volume*3 " +
 				          "else Volume " +
 				          "end as p1 from SupportMarketDataBean#length(10)";
@@ -275,7 +275,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					.WithExpressions(
 						fields,
 						"case IntPrimitive " +
-						" when longPrimitive then (IntPrimitive + LongPrimitive) " +
+						" when LongPrimitive then (IntPrimitive + LongPrimitive) " +
 						" when DoublePrimitive then IntPrimitive * DoublePrimitive" +
 						" when FloatPrimitive then FloatPrimitive / DoublePrimitive " +
 						" else (IntPrimitive + LongPrimitive + FloatPrimitive + DoublePrimitive) end")
@@ -307,7 +307,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			public void Run(RegressionEnvironment env)
 			{
 				// Test of the various coercion user cases.
-				var epl = "@name('s0') select case IntPrimitive" +
+				var epl = "@Name('s0') select case IntPrimitive" +
 				          " when 1 then Convert.ToString(BoolPrimitive) " +
 				          " when 2 then Convert.ToString(BoolBoxed) " +
 				          " when 3 then Convert.ToString(IntPrimitive) " +
@@ -754,7 +754,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select case TheString " +
+				var epl = "@Name('s0') select case TheString " +
 				          " when null then true " +
 				          " when '' then false end as p1" +
 				          " from SupportBean#length(100)";
@@ -782,7 +782,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select case " +
+				var epl = "@Name('s0') select case " +
 				          " when TheString is null then true " +
 				          " when TheString = '' then false end as p1" +
 				          " from SupportBean#length(100)";
@@ -849,7 +849,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select case IntPrimitive " +
+				var epl = "@Name('s0') select case IntPrimitive " +
 				          "when 1 then null " +
 				          "when 2 then 1.0d " +
 				          "when 3 then null " +
@@ -869,7 +869,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select case IntPrimitive " +
+				var epl = "@Name('s0') select case IntPrimitive " +
 				          " when 1 then null " +
 				          " when 2 then 1.0" +
 				          " when 3 then null " +
@@ -901,7 +901,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select case BoolBoxed " +
+				var epl = "@Name('s0') select case BoolBoxed " +
 				          " when null then 1 " +
 				          " when true then 2l" +
 				          " when false then 3 " +
@@ -925,7 +925,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select case IntPrimitive " +
+				var epl = "@Name('s0') select case IntPrimitive " +
 				          " when 1.0 then null " +
 				          " when 4/2.0 then 'x'" +
 				          " end as p1 from SupportBean#length(100)";
@@ -948,7 +948,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select 2 * (case IntPrimitive" +
+				var epl = "@Name('s0') select 2 * (case IntPrimitive" +
 				          " when 1 then 2 " +
 				          " when 2 then 3 " +
 				          " else 10 end) as p1 " +
@@ -977,7 +977,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select case IntPrimitive" +
+				var epl = "@Name('s0') select case IntPrimitive" +
 				          " when 1 then sum(LongPrimitive) " +
 				          " when 2 then sum(FloatPrimitive) " +
 				          " else sum(IntPrimitive) end as p1 " +
@@ -1018,7 +1018,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select case supportEnum " +
+				var epl = "@Name('s0') select case supportEnum " +
 				          " when " + typeof(SupportEnumHelper).FullName + ".GetValueForEnum(0) then 1 " +
 				          " when " + typeof(SupportEnumHelper).FullName + ".GetValueForEnum(1) then 2 " +
 				          " end as p1 " +
@@ -1047,7 +1047,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select case IntPrimitive * 2 " +
+				var epl = "@Name('s0') select case IntPrimitive * 2 " +
 				          " when 2 then " + typeof(SupportEnumHelper).FullName + ".GetValueForEnum(0) " +
 				          " when 4 then " + typeof(SupportEnumHelper).FullName + ".GetValueForEnum(1) " +
 				          " else " + typeof(SupportEnumHelper).FullName + ".getValueForEnum(2) " +
@@ -1078,7 +1078,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			public void Run(RegressionEnvironment env)
 			{
 				var caseSubExpr = "case IntPrimitive when 1 then 0 end";
-				var epl = "@name('s0') select " + caseSubExpr + " from SupportBean#length(10)";
+				var epl = "@Name('s0') select " + caseSubExpr + " from SupportBean#length(10)";
 
 				env.CompileDeploy(epl).AddListener("s0");
 				Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType(caseSubExpr));

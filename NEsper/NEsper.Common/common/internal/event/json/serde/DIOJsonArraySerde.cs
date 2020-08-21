@@ -28,11 +28,11 @@ namespace com.espertech.esper.common.@internal.@event.json.serde
             Write((object[]) @object, output, unitKey, writer);
         }
 
-        object DataInputOutputSerde.ReadAny(
+        object DataInputOutputSerde.Read(
             DataInput input,
             byte[] unitKey)
         {
-            return Read(input, unitKey);
+            return ReadValue(input, unitKey);
         }
 
         public void Write(
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serde
             }
         }
 
-        public object[] Read(
+        public object[] ReadValue(
             DataInput input,
             byte[] unitKey)
         {

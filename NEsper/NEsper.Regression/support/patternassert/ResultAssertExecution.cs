@@ -342,7 +342,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
         {
             var eplSelect = join ? eplJoin : eplNonJoin;
             var streamPrefix = irstream ? "select irstream" : "select";
-            return "@name('s0') " + streamPrefix + " " + eplSelect;
+            return "@Name('s0') " + streamPrefix + " " + eplSelect;
         }
 
         public static string GetEPL(

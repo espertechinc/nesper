@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.client.serde
 		/// <param name="unitKey">the identifying key of the reader, can be null if not relevant or not provided</param>
 		/// <returns>object read or null if this is a nullable value</returns>
 		/// <throws>IOException for io exceptions</throws>
-		object ReadAny(
+		object Read(
 			DataInput input,
 			byte[] unitKey);
 	}
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.client.serde
 		/// <param name="unitKey">the identifying key of the reader, can be null if not relevant or not provided</param>
 		/// <returns>object read or null if this is a nullable value</returns>
 		/// <throws>IOException for io exceptions</throws>
-		TE Read(
+		TE ReadValue(
 			DataInput input,
 			byte[] unitKey);
 	}

@@ -37,13 +37,13 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var @base = env.Compile("@name('basevar') @public create constant variable int basevar = 1");
-				var child0 = env.Compile("@name('s0') select basevar from SupportBean", new RegressionPath().Add(@base));
+				var @base = env.Compile("@Name('basevar') @public create constant variable int basevar = 1");
+				var child0 = env.Compile("@Name('s0') select basevar from SupportBean", new RegressionPath().Add(@base));
 				var child1 = env.Compile(
-					"@name('child1var') create constant variable int child1var = 2;\n" +
-					"@name('s1') select basevar, child1var from SupportBean;\n",
+					"@Name('child1var') create constant variable int child1var = 2;\n" +
+					"@Name('s1') select basevar, child1var from SupportBean;\n",
 					new RegressionPath().Add(@base));
-				var child11 = env.Compile("@name('s2') select basevar, child1var from SupportBean;\n", new RegressionPath().Add(@base).Add(child1));
+				var child11 = env.Compile("@Name('s2') select basevar, child1var from SupportBean;\n", new RegressionPath().Add(@base).Add(child1));
 
 				env.Rollout(ToRolloutItems(@base, child0, child1, child11), null);
 				env.AddListener("s0").AddListener("s1").AddListener("s2");
@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 				AssertStatementIds(env, "basevar,s0,child1var,s1,s2", 1, 2, 3, 4, 5);
 
 				var item = new EPDeploymentRolloutCompiled(
-					env.Compile("@name('s3') select basevar, child1var from SupportBean", new RegressionPath().Add(@base).Add(child1)),
+					env.Compile("@Name('s3') select basevar, child1var from SupportBean", new RegressionPath().Add(@base).Add(child1)),
 					null);
 				env.Rollout(Collections.SingletonList(item), null).AddListener("s3");
 				var deploymentChild11 = env.Deployment.GetDeployment(env.DeploymentId("s2"));
@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 
 				env.Milestone(2);
 
-				env.CompileDeploy("@name('s1') select * from SupportBean");
+				env.CompileDeploy("@Name('s1') select * from SupportBean");
 				TryInvalidRollout(
 					env,
 					"A precondition is not satisfied: Required dependency variable 'basevar' cannot be found",
@@ -101,11 +101,11 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var type = env.Compile("@name('s0') @public @buseventtype create schema MyEvent(p string)");
-				var selectMyEvent = env.Compile("@name('s0') select * from MyEvent", new RegressionPath().Add(type));
-				var selectSB = env.Compile("@name('s0') select * from SupportBean");
-				var selectSBParameterized = env.Compile("@name('s0') select * from SupportBean(theString = ?::string)");
-				env.CompileDeploy("@name('s1') select * from SupportBean");
+				var type = env.Compile("@Name('s0') @public @buseventtype create schema MyEvent(p string)");
+				var selectMyEvent = env.Compile("@Name('s0') select * from MyEvent", new RegressionPath().Add(type));
+				var selectSB = env.Compile("@Name('s0') select * from SupportBean");
+				var selectSBParameterized = env.Compile("@Name('s0') select * from SupportBean(TheString = ?::string)");
+				env.CompileDeploy("@Name('s1') select * from SupportBean");
 
 				// dependency not found
 				var msg = "A precondition is not satisfied: Required dependency event type 'MyEvent' cannot be found";
@@ -153,9 +153,9 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 			public void Run(RegressionEnvironment env)
 			{
 				var path = new RegressionPath();
-				var eplOne = "@name('type') @public @buseventtype create schema MyEvent(p string)";
+				var eplOne = "@Name('type') @public @buseventtype create schema MyEvent(p string)";
 				var compiledOne = env.Compile(eplOne, path);
-				var eplTwo = "@name('s0') select * from MyEvent";
+				var eplTwo = "@Name('s0') select * from MyEvent";
 				var compiledTwo = env.Compile(eplTwo, path);
 
 				IList<EPDeploymentRolloutCompiled> items = new List<EPDeploymentRolloutCompiled>();

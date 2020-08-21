@@ -57,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                            "when matched then update set c0=Id, c1=Id, c2=Id, c3=Id, c4=Id, c5=Id";
             env.CompileDeploy(eplMerge, path);
 
-            var eplQuery = "@name('s0') select varagg.c0 as c0, varagg.c1 as c1, varagg.c2 as c2," +
+            var eplQuery = "@Name('s0') select varagg.c0 as c0, varagg.c1 as c1, varagg.c2 as c2," +
                            "varagg.c3 as c3, varagg.c4 as c4, varagg.c5 as c5 from SupportBean_S1";
             env.CompileDeploy(eplQuery, path).AddListener("s0");
 

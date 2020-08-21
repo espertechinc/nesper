@@ -38,11 +38,11 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 			public void Run(RegressionEnvironment env)
 			{
 				var path = new RegressionPath();
-				env.CompileDeploy("@name('typea') @public create schema TypeA()", path);
-				env.CompileDeploy("@name('typeb') @public create schema TypeB()", path);
-				env.CompileDeploy("@name('typec') @public create schema TypeC(a TypeA, b TypeB)", path);
-				env.CompileDeploy("@name('typed') @public create schema TypeD(c TypeC)", path);
-				env.CompileDeploy("@name('typee') @public create schema TypeE(c TypeC)", path);
+				env.CompileDeploy("@Name('typea') @public create schema TypeA()", path);
+				env.CompileDeploy("@Name('typeb') @public create schema TypeB()", path);
+				env.CompileDeploy("@Name('typec') @public create schema TypeC(a TypeA, b TypeB)", path);
+				env.CompileDeploy("@Name('typed') @public create schema TypeD(c TypeC)", path);
+				env.CompileDeploy("@Name('typee') @public create schema TypeE(c TypeC)", path);
 
 				var a = env.DeploymentId("typea");
 				var b = env.DeploymentId("typeb");
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				env.CompileDeploy("@name('s0') select * from SupportBean");
+				env.CompileDeploy("@Name('s0') select * from SupportBean");
 				AssertNoneProvidedConsumed(env, "s0");
 				env.CompileDeploy("module A;\n @name('table') create table MyTable(k string, v string)");
 				AssertNoneProvidedConsumed(env, "table");
@@ -110,10 +110,10 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 				var pathB = new RegressionPath();
 				env.CompileDeploy("module B;\n @name('createB') @protected create window MyWindow#keepall as SupportBean", pathB);
 
-				env.CompileDeploy("@name('B1') select * from MyWindow", pathB);
-				env.CompileDeploy("@name('A1') select * from MyWindow", pathA);
-				env.CompileDeploy("@name('A2') select * from MyWindow", pathA);
-				env.CompileDeploy("@name('B2') select * from MyWindow", pathB);
+				env.CompileDeploy("@Name('B1') select * from MyWindow", pathB);
+				env.CompileDeploy("@Name('A1') select * from MyWindow", pathA);
+				env.CompileDeploy("@Name('A2') select * from MyWindow", pathA);
+				env.CompileDeploy("@Name('B2') select * from MyWindow", pathB);
 
 				AssertProvided(
 					env,
@@ -147,7 +147,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 			{
 				var path = new RegressionPath();
 				var eplProvide =
-					"@name('provide') @public create window MyWindow#keepall as SupportBean;\n" +
+					"@Name('provide') @public create window MyWindow#keepall as SupportBean;\n" +
 					"@public create table MyTable(k string primary key, value string);\n" +
 					"@public create variable int MyVariable = 0;\n" +
 					"@public create context MyContext partition by TheString from SupportBean;\n" +
@@ -159,7 +159,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 					"@public create inlined_class \"\"\" public class MyClass { public static String doIt() { return \"abc\"; } }\"\"\";\n";
 				env.CompileDeploy(eplProvide, path);
 
-				var eplConsume = "@name('consume') context MyContext select MyVariable, count(*), MyTable['a'].value from MyWindow;\n" +
+				var eplConsume = "@Name('consume') context MyContext select MyVariable, count(*), MyTable['a'].value from MyWindow;\n" +
 				                 "select MyExpression(), MyScript('a'), MyClass.doIt() from MyEventType;\n" +
 				                 "on SupportBean as sb merge MyWindow as mw where sb.IntPrimitive=mw.IntPrimitive when matched then delete;\n" +
 				                 "on SupportBean as sb merge MyTable as mt where sb.TheString=mt.value when matched then delete;\n";

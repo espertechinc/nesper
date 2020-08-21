@@ -34,8 +34,8 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') insert into SomeStream select TheString, IntPrimitive from SupportBean;" +
-                    "@name('s1') select TheString, IntPrimitive from SomeStream(IntPrimitive = 0)";
+                    "@Name('s0') insert into SomeStream select TheString, IntPrimitive from SupportBean;" +
+                    "@Name('s1') select TheString, IntPrimitive from SomeStream(IntPrimitive = 0)";
                 var compiled = env.Compile(epl);
 
                 env.Deploy(compiled).AddListener("s1").Milestone(0);
@@ -77,10 +77,10 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
                 var args = new CompilerArguments(env.Configuration);
                 args.Options.AccessModifierEventType = ctx => NameAccessModifier.PUBLIC;
                 var first = env.Compile(
-                    "@name('s0') insert into SomeStream select TheString as a, IntPrimitive as b from SupportBean",
+                    "@Name('s0') insert into SomeStream select TheString as a, IntPrimitive as b from SupportBean",
                     args);
                 var second = env.Compile(
-                    "@name('s1') select a, b from SomeStream",
+                    "@Name('s1') select a, b from SomeStream",
                     new CompilerArguments(env.Configuration).SetPath(new CompilerPath().Add(first)));
 
                 env.Deploy(first).Milestone(0);

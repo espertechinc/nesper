@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
         public ResultSetProcessorRowPerGroupUnboundHelper MakeRSRowPerGroupUnboundGroupRep(
             Type[] groupKeyTypes,
-            DataInputOutputSerde<Object> serde,
+            DataInputOutputSerde serde,
             EventType eventType,
             AgentInstanceContext agentInstanceContext)
         {
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             OutputConditionPolledFactory optionalOutputFirstConditionFactory,
             AggregationGroupByRollupDesc optionalGroupByRollupDesc,
             int optionalRollupLevel,
-            DataInputOutputSerde<Object> serde)
+            DataInputOutputSerde serde)
         {
             return new ResultSetProcessorGroupedOutputFirstHelperImpl();
         }
@@ -163,7 +163,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         public ResultSetProcessorGroupedOutputAllGroupReps MakeRSGroupedOutputAllNoOpt(
             AgentInstanceContext agentInstanceContext,
             Type[] groupKeyTypes,
-            DataInputOutputSerde<Object> serde,
+            DataInputOutputSerde serde,
             EventType[] eventTypes)
         {
             return new ResultSetProcessorGroupedOutputAllGroupRepsImpl();
@@ -173,7 +173,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             AgentInstanceContext agentInstanceContext,
             ResultSetProcessorRowPerGroup resultSetProcessorRowPerGroup,
             Type[] groupKeyTypes,
-            DataInputOutputSerde<Object> serde,
+            DataInputOutputSerde serde,
             EventType[] eventTypes)
         {
             return new ResultSetProcessorRowPerGroupOutputAllHelperImpl(resultSetProcessorRowPerGroup);
@@ -183,7 +183,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             AgentInstanceContext agentInstanceContext,
             ResultSetProcessorRowPerGroup resultSetProcessorRowPerGroup,
             Type[] groupKeyTypes,
-            DataInputOutputSerde<Object> serde,
+            DataInputOutputSerde serde,
             EventType[] eventTypes)
         {
             return new ResultSetProcessorRowPerGroupOutputLastHelperImpl(resultSetProcessorRowPerGroup);
@@ -193,7 +193,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             AgentInstanceContext agentInstanceContext,
             ResultSetProcessorAggregateGrouped processor,
             Type[] groupKeyTypes,
-            DataInputOutputSerde<Object> serde,
+            DataInputOutputSerde serde,
             EventType[] eventTypes)
         {
             return new ResultSetProcessorAggregateGroupedOutputAllHelperImpl(processor);
@@ -203,7 +203,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             AgentInstanceContext agentInstanceContext,
             ResultSetProcessorAggregateGrouped processor,
             Type[] groupKeyTypes,
-            DataInputOutputSerde<Object> serde)
+            DataInputOutputSerde serde)
         {
             return new ResultSetProcessorAggregateGroupedOutputLastHelperImpl(processor);
         }

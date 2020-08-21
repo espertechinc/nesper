@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string eplFragment = "@name('s0') select items.where(i => i.location.x = 0 and i.location.y = 0) as zeroloc from LocationReport";
+				string eplFragment = "@Name('s0') select items.where(i => i.location.x = 0 and i.location.y = 0) as zeroloc from LocationReport";
 				env.CompileDeploy(eplFragment).AddListener("s0");
 
 				env.SendEventBean(LocationReportFactory.MakeSmall());
@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				Assert.AreEqual("P00020", items[0].AssetId);
 
 				env.UndeployAll();
-				eplFragment = "@name('s0') select items.where(i => i.location.x = 0).where(i => i.location.y = 0) as zeroloc from LocationReport";
+				eplFragment = "@Name('s0') select items.where(i => i.location.x = 0).where(i => i.location.y = 0) as zeroloc from LocationReport";
 				env.CompileDeploy(eplFragment).AddListener("s0");
 
 				env.SendEventBean(LocationReportFactory.MakeSmall());
@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			public void Run(RegressionEnvironment env)
 			{
 
-				string eplFragment = "@name('s0') select assetId," +
+				string eplFragment = "@Name('s0') select assetId," +
 				                     "  (select * from Zone#keepall).where(z => inrect(z.rectangle, location)) as zones " +
 				                     "from Item";
 				env.CompileDeploy(eplFragment).AddListener("s0");
@@ -89,8 +89,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				// subquery with event as input
 				string epl = "create schema SettlementEvent (symbol string, price double);" +
 				             "create schema PriceEvent (symbol string, price double);\n" +
-				             "create schema OrderEvent (orderId string, pricedata PriceEvent);\n" +
-				             "select (select pricedata from OrderEvent#unique(orderId))\n" +
+				             "create schema OrderEvent (OrderId string, pricedata PriceEvent);\n" +
+				             "select (select pricedata from OrderEvent#unique(OrderId))\n" +
 				             ".anyOf(v => v.symbol = 'GE') as has_ge from SettlementEvent(symbol = 'GE')";
 				env.CompileDeploy(epl);
 
@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 				env.CompileDeploy("create window ZoneWindow#keepall as Zone", path);
 				env.CompileDeploy("insert into ZoneWindow select * from Zone", path);
 
-				epl = "@name('s0') select ZoneWindow.where(z => inrect(z.rectangle, location)) as zones from Item";
+				epl = "@Name('s0') select ZoneWindow.where(z => inrect(z.rectangle, location)) as zones from Item";
 				env.CompileDeploy(epl, path).AddListener("s0");
 
 				env.SendEventBean(new Zone("Z1", new Rectangle(0, 0, 20, 20)));
@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
 				env.UndeployModuleContaining("s0");
 
-				epl = "@name('s0') select ZoneWindow(name in ('Z4', 'Z5', 'Z3')).where(z => inrect(z.rectangle, location)) as zones from Item";
+				epl = "@Name('s0') select ZoneWindow(name in ('Z4', 'Z5', 'Z3')).where(z => inrect(z.rectangle, location)) as zones from Item";
 				env.CompileDeploy(epl, path).AddListener("s0");
 
 				env.SendEventBean(new Zone("Z3", new Rectangle(0, 0, 20, 20)));
@@ -143,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') select window(*).where(p => distance(0, 0, p.location.x, p.location.y) < 20) as centeritems " +
+				string epl = "@Name('s0') select window(*).where(p => distance(0, 0, p.location.x, p.location.y) < 20) as centeritems " +
 				             "from Item(type='P')#time(10) group by assetId";
 				env.CompileDeploy(epl).AddListener("s0");
 
@@ -164,7 +164,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') select prevwindow(items).where(p => distance(0, 0, p.location.x, p.location.y) < 20) as centeritems " +
+				string epl = "@Name('s0') select prevwindow(items).where(p => distance(0, 0, p.location.x, p.location.y) < 20) as centeritems " +
 				             "from Item(type='P')#time(10) as items";
 				env.CompileDeploy(epl).AddListener("s0");
 
@@ -186,7 +186,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') select items.where(p => distance(0, 0, p.location.x, p.location.y) < 20) as centeritems " +
+				string epl = "@Name('s0') select items.where(p => distance(0, 0, p.location.x, p.location.y) < 20) as centeritems " +
 				             "from LocationReport";
 				env.CompileDeploy(epl).AddListener("s0");
 
@@ -203,7 +203,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') select ZoneFactory.GetZones().where(z => inrect(z.rectangle, item.location)) as zones\n" +
+				string epl = "@Name('s0') select ZoneFactory.GetZones().where(z => inrect(z.rectangle, item.location)) as zones\n" +
 				             "from Item as item";
 				env.CompileDeploy(epl).AddListener("s0");
 
@@ -220,7 +220,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') expression passengers {\n" +
+				string epl = "@Name('s0') expression passengers {\n" +
 				             "  lr => lr.items.where(l => l.type='P')\n" +
 				             "}\n" +
 				             "select passengers(lr) as p," +
@@ -465,7 +465,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			string select,
 			Consumer<object> verifier)
 		{
-			string epl = "@name('s0') select " + select + " as result from SupportBean";
+			string epl = "@Name('s0') select " + select + " as result from SupportBean";
 			env.CompileDeploy(epl).AddListener("s0");
 
 			env.SendEventBean(new SupportBean("E1", 0));
@@ -480,8 +480,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			RegressionPath path,
 			string epl)
 		{
-			env.CompileDeploy("@name('s0')" + epl, path).UndeployModuleContaining("s0");
-			env.EplToModelCompileDeploy("@name('s0') " + epl, path).UndeployModuleContaining("s0");
+			env.CompileDeploy("@Name('s0')" + epl, path).UndeployModuleContaining("s0");
+			env.EplToModelCompileDeploy("@Name('s0') " + epl, path).UndeployModuleContaining("s0");
 		}
 	}
 } // end of namespace

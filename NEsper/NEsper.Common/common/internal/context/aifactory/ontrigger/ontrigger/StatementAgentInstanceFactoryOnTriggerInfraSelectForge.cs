@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                 .SetProperty(
                     saiff,
                     "ResultSetProcessorFactoryProvider",
-                    NewInstance(
+                    NewInstanceInner(
                         resultSetProcessorProviderClassName,
                         symbols.GetAddInitSvc(method),
                         Ref("statementFields")))
@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                 .SetProperty(saiff, "IsDistinct", Constant(distinct))
                 .SetProperty(
                     saiff,
-                    "DistinctKeySetter",
+                    "DistinctKeyGetter",
                     MultiKeyCodegen.CodegenGetterEventDistinct(
                         distinct,
                         ResultEventType,

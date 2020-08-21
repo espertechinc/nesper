@@ -59,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.SendEventBean(new SupportBean("E0", 0));
 
             // select/read
-            var eplSubselect = "@name('s0') select (select count(*) from MyTable) as c0 from SupportBean_S0";
+            var eplSubselect = "@Name('s0') select (select count(*) from MyTable) as c0 from SupportBean_S0";
             env.CompileDeploy(eplSubselect, path).AddListener("s0");
 
             var writeRunnable = new WriteRunnable(env);

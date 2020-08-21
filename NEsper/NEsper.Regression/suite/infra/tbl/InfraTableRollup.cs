@@ -66,10 +66,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.CompileDeploy("create table MyTableR1D(pk string primary key, total sum(int))", path);
                 env.CompileDeploy(
-                        "@name('into') into table MyTableR1D insert into MyStreamOne select TheString, sum(IntPrimitive) as total from SupportBean#length(4) group by rollup(TheString)",
+                        "@Name('into') into table MyTableR1D insert into MyStreamOne select TheString, sum(IntPrimitive) as total from SupportBean#length(4) group by rollup(TheString)",
                         path)
                     .AddListener("into");
-                env.CompileDeploy("@name('s0') select MyTableR1D[P00].total as c0 from SupportBean_S0", path)
+                env.CompileDeploy("@Name('s0') select MyTableR1D[P00].total as c0 from SupportBean_S0", path)
                     .AddListener("s0");
 
                 env.Milestone(0);

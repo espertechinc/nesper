@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var path = new RegressionPath();
             env.CompileDeploy("create context MyCtx start @now end after 1 second", path);
             env.CompileDeploy(
-                "@name('s0') context MyCtx select count(*) as cnt from SupportBean output last when terminated",
+                "@Name('s0') context MyCtx select count(*) as cnt from SupportBean output last when terminated",
                 path);
             var listener = new SupportUpdateListener();
             env.Statement("s0").AddListener(listener);

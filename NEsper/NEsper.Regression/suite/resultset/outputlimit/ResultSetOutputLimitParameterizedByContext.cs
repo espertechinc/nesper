@@ -20,8 +20,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         public void Run(RegressionEnvironment env)
         {
             env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec("2002-05-01T09:00:00.000"));
-            var epl = "@name('ctx') create context MyCtx start SupportScheduleSimpleEvent as sse;\n" +
-                      "@name('s0') context MyCtx\n" +
+            var epl = "@Name('ctx') create context MyCtx start SupportScheduleSimpleEvent as sse;\n" +
+                      "@Name('s0') context MyCtx\n" +
                       "select count(*) as c \n" +
                       "from SupportBean_S0\n" +
                       "output last at(context.sse.Atminute, context.sse.Athour, *, *, *, *) and when terminated\n";

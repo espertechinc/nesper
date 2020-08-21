@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select (select P10 from SupportBean_S1#length(100000) where Id = S0.Id) as value from SupportBean_S0 as S0";
+                    "@Name('s0') select (select P10 from SupportBean_S1#length(100000) where Id = S0.Id) as value from SupportBean_S0 as S0";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 // preload with 10k events
@@ -90,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select (select P10 from SupportBean_S1#length(100000) where S0.Id = Id and P10 = S0.P00) as value from SupportBean_S0 as S0";
+                    "@Name('s0') select (select P10 from SupportBean_S1#length(100000) where S0.Id = Id and P10 = S0.P00) as value from SupportBean_S0 as S0";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 // preload with 10k events
@@ -118,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select (select P00 from SupportBean_S0#length(100000) where P00 = S1.P10 and P01 = S2.P20 and P02 = S3.P30) as value " +
+                    "@Name('s0') select (select P00 from SupportBean_S0#length(100000) where P00 = S1.P10 and P01 = S2.P20 and P02 = S3.P30) as value " +
                     "from SupportBean_S1#length(100000) as S1, SupportBean_S2#length(100000) as S2, SupportBean_S3#length(100000) as S3 where S1.Id = S2.Id and S2.Id = S3.Id";
                 TryPerfJoin3Criteria(env, stmtText);
             }
@@ -129,7 +129,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select (select P00 from SupportBean_S0#length(100000) where P01 = S2.P20 and P00 = S1.P10 and P02 = S3.P30 and Id >= 0) as value " +
+                    "@Name('s0') select (select P00 from SupportBean_S0#length(100000) where P01 = S2.P20 and P00 = S1.P10 and P02 = S3.P30 and Id >= 0) as value " +
                     "from SupportBean_S3#length(100000) as S3, SupportBean_S1#length(100000) as S1, SupportBean_S2#length(100000) as S2 where S2.Id = S3.Id and S1.Id = S2.Id";
                 TryPerfJoin3Criteria(env, stmtText);
             }

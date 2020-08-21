@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.MethodReturn(NewInstance(CLASSNAME_ORDERBYPROCESSOR, Ref("o")));
+            method.Block.MethodReturn(NewInstanceInner(CLASSNAME_ORDERBYPROCESSOR, Ref("o")));
         }
 
         public void CtorCodegen(

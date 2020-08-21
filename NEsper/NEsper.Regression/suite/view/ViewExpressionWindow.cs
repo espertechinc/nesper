@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AdvanceTime(0);
 
                 var epl =
-                    "@name('s0') select irstream TheString as c0 from SupportBean#expr(newest_timestamp - oldest_timestamp < 1000)";
+                    "@Name('s0') select irstream TheString as c0 from SupportBean#expr(newest_timestamp - oldest_timestamp < 1000)";
                 env.CompileDeploy(epl).AddListener("s0").Milestone(0);
 
                 env.AdvanceTime(1000);
@@ -162,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 string[] fields = {"TheString"};
                 var epl =
-                    "@name('s0') select irstream * from SupportBean#expr(newest_event.IntPrimitive = oldest_event.IntPrimitive)";
+                    "@Name('s0') select irstream * from SupportBean#expr(newest_event.IntPrimitive = oldest_event.IntPrimitive)";
                 env.CompileDeploy(epl).AddListener("s0").Milestone(0);
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -259,7 +259,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 string[] fields = {"TheString"};
-                var epl = "@name('s0') select * from SupportBean#expr(current_count <= 2)";
+                var epl = "@Name('s0') select * from SupportBean#expr(current_count <= 2)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -294,7 +294,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 string[] fields = {"TheString"};
                 var epl =
-                    "@name('s0') select irstream * from SupportBean#expr(oldest_timestamp > newest_timestamp - 2000)";
+                    "@Name('s0') select irstream * from SupportBean#expr(oldest_timestamp > newest_timestamp - 2000)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.AdvanceTime(1000);
@@ -406,7 +406,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string[] fields = {"TheString"};
 
                 var epl = "create variable boolean KEEP = true;\n" +
-                          "@name('s0') select irstream * from SupportBean#expr(KEEP);\n";
+                          "@Name('s0') select irstream * from SupportBean#expr(KEEP);\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.AdvanceTime(1000);
@@ -468,7 +468,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string[] fields = {"TheString"};
 
                 var epl = "create variable long SIZE = 1000;\n" +
-                          "@name('s0') select irstream * from SupportBean#expr(newest_timestamp - oldest_timestamp < SIZE)";
+                          "@Name('s0') select irstream * from SupportBean#expr(newest_timestamp - oldest_timestamp < SIZE)";
                 env.CompileDeploy(epl).AddListener("s0").Milestone(0);
 
                 env.AdvanceTime(1000);
@@ -519,7 +519,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select * from SupportBean#expr(udf(TheString, view_reference, expired_count))";
+                var epl = "@Name('s0') select * from SupportBean#expr(udf(TheString, view_reference, expired_count))";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 LocalUDF.Result = true;
@@ -561,7 +561,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 string[] fields = {"TheString"};
-                var epl = "@name('s0') create window NW#expr(true) as SupportBean;\n" +
+                var epl = "@Name('s0') create window NW#expr(true) as SupportBean;\n" +
                           "insert into NW select * from SupportBean;\n" +
                           "on SupportBean_A delete from NW where TheString = Id;\n";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -596,7 +596,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 string[] fields = {"val0"};
-                var epl = "@name('s0') select prev(1, TheString) as val0 from SupportBean#expr(true)";
+                var epl = "@Name('s0') select prev(1, TheString) as val0 from SupportBean#expr(true)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -622,7 +622,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 string[] fields = {"TheString"};
-                var epl = "@name('s0') select irstream TheString from SupportBean#expr(sum(IntPrimitive) < 10)";
+                var epl = "@Name('s0') select irstream TheString from SupportBean#expr(sum(IntPrimitive) < 10)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -735,7 +735,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 string[] fields = {"TheString"};
                 var epl =
-                    "@name('s0') select irstream TheString from SupportBean#groupwin(IntPrimitive)#expr(sum(LongPrimitive) < 10)";
+                    "@Name('s0') select irstream TheString from SupportBean#groupwin(IntPrimitive)#expr(sum(LongPrimitive) < 10)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "E1", 1, 5);
@@ -791,7 +791,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 string[] fields = {"TheString"};
-                var epl = "@name('s0') create window NW#expr(sum(IntPrimitive) < 10) as SupportBean;\n" +
+                var epl = "@Name('s0') create window NW#expr(sum(IntPrimitive) < 10) as SupportBean;\n" +
                           "insert into NW select * from SupportBean;\n" +
                           "on SupportBean_A delete from NW where TheString = Id;\n";
                 env.CompileDeploy(epl).AddListener("s0");

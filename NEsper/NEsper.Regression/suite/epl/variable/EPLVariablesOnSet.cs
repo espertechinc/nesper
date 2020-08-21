@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 					"import " +
 					typeof(MyLocalVariable).FullName +
 					";\n" +
-					"@name('var') create variable MyLocalVariable VAR = new MyLocalVariable(1, 10);\n" +
+					"@Name('var') create variable MyLocalVariable VAR = new MyLocalVariable(1, 10);\n" +
 					"" +
 					"inlined_class \"\"\"\n" +
 					"  import " +
@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 					"    }\n" +
 					"  }\n" +
 					"\"\"\"\n" +
-					"@name('s0') on SupportBean set Helper.swap(VAR);\n";
+					"@Name('s0') on SupportBean set Helper.swap(VAR);\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				AssertVariable(env, 1, 10);
@@ -92,8 +92,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 					"import " +
 					typeof(MyLocalVariable).FullName +
 					";\n" +
-					"@name('var') create variable MyLocalVariable VARONE = new MyLocalVariable(1, 10);\n" +
-					"@name('var') create variable MyLocalVariable VARTWO = new MyLocalVariable(1, 10);\n" +
+					"@Name('var') create variable MyLocalVariable VARONE = new MyLocalVariable(1, 10);\n" +
+					"@Name('var') create variable MyLocalVariable VARTWO = new MyLocalVariable(1, 10);\n" +
 					"" +
 					"inlined_class \"\"\"\n" +
 					"  import " +
@@ -104,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 					"    }\n" +
 					"  }\n" +
 					"\"\"\"\n" +
-					"@name('s0') on SupportBean set Helper.swap(VARONE, VARTWO);\n";
+					"@Name('s0') on SupportBean set Helper.swap(VARONE, VARTWO);\n";
 				TryInvalidCompile(
 					env,
 					eplInvalid,
@@ -114,8 +114,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 					"import " +
 					typeof(MyLocalVariable).FullName +
 					";\n" +
-					"@name('var') create constant variable MyLocalVariable VAR = new MyLocalVariable(1, 10);\n" +
-					"@name('s0') on SupportBean set VAR.reset();\n";
+					"@Name('var') create constant variable MyLocalVariable VAR = new MyLocalVariable(1, 10);\n" +
+					"@Name('s0') on SupportBean set VAR.reset();\n";
 				TryInvalidCompile(
 					env,
 					eplConstant,
@@ -139,8 +139,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 			{
 				string epl =
 					"create variable System.Double[] dbls = new System.Double[3];\n" +
-					"@priority(1) on SupportBean set dbls[intPrimitive] = 1;\n" +
-					"@name('s0') select dbls as c0 from SupportBean;\n";
+					"@priority(1) on SupportBean set dbls[IntPrimitive] = 1;\n" +
+					"@Name('s0') select dbls as c0 from SupportBean;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				env.SendEventBean(new SupportBean("E1", 1));
@@ -155,7 +155,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 			public void Run(RegressionEnvironment env)
 			{
 				RegressionPath path = new RegressionPath();
-				string eplVariables = "@name('create') create variable double[primitive] doublearray;\n" +
+				string eplVariables = "@Name('create') create variable double[primitive] doublearray;\n" +
 				                      "create variable int[primitive] intarray;\n" +
 				                      "create variable int notAnArray;";
 				env.Compile(eplVariables, path);
@@ -164,8 +164,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 				TryInvalidCompile(
 					env,
 					path,
-					"on SupportBean set xxx[intPrimitive]=1d",
-					"Failed to validate assignment expression 'xxx[intPrimitive]=1.0': Variable by name 'xxx' has not been created or configured");
+					"on SupportBean set xxx[IntPrimitive]=1d",
+					"Failed to validate assignment expression 'xxx[IntPrimitive]=1.0': Variable by name 'xxx' has not been created or configured");
 
 				// index expression is not Integer
 				TryInvalidCompile(
@@ -178,21 +178,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 				TryInvalidCompile(
 					env,
 					path,
-					"on SupportBean set intarray[intPrimitive]='x'",
-					"Failed to validate assignment expression 'intarray[intPrimitive]=\"x\"': Invalid assignment of column '\"x\"' of type 'System.String' to event property 'intarray' typed as 'int', column and parameter types mismatch");
+					"on SupportBean set intarray[IntPrimitive]='x'",
+					"Failed to validate assignment expression 'intarray[IntPrimitive]=\"x\"': Invalid assignment of column '\"x\"' of type 'System.String' to event property 'intarray' typed as 'int', column and parameter types mismatch");
 
 				// not-an-array
 				TryInvalidCompile(
 					env,
 					path,
-					"on SupportBean set notAnArray[intPrimitive]=1",
-					"Failed to validate assignment expression 'notAnArray[intPrimitive]=1': Variable 'notAnArray' is not an array");
+					"on SupportBean set notAnArray[IntPrimitive]=1",
+					"Failed to validate assignment expression 'notAnArray[IntPrimitive]=1': Variable 'notAnArray' is not an array");
 
 				path.Clear();
 
 				// runtime-behavior for index-overflow and null-array and null-index and
-				string epl = "@name('create') create variable double[primitive] doublearray = new double[3];\n" +
-				             "on SupportBean set doublearray[intBoxed]=doubleBoxed;\n";
+				string epl = "@Name('create') create variable double[primitive] doublearray = new double[3];\n" +
+				             "on SupportBean set doublearray[IntBoxed]=DoubleBoxed;\n";
 				env.CompileDeploy(epl);
 
 				// index returned is too large
@@ -233,11 +233,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 			public void Run(RegressionEnvironment env)
 			{
 				RegressionPath path = new RegressionPath();
-				string eplCreate = "@name('vars') @public create variable double[primitive] doublearray = new double[3];\n" +
+				string eplCreate = "@Name('vars') @public create variable double[primitive] doublearray = new double[3];\n" +
 				                   "@public create variable String[] stringarray = new String[] {'a', 'b', 'c'};\n";
 				env.CompileDeploy(eplCreate, path);
 
-				string epl = "on SupportBean set doublearray[intPrimitive] = 1, stringarray[intPrimitive] = 'x'";
+				string epl = "on SupportBean set doublearray[IntPrimitive] = 1, stringarray[IntPrimitive] = 'x'";
 				env.CompileDeploy(soda, epl, path);
 
 				AssertVariables(env, new double[3], "a,b,c".SplitCsv());
@@ -267,7 +267,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('var') @public create variable int total_sum = -1;\n" +
+				string epl = "@Name('var') @public create variable int total_sum = -1;\n" +
 				             "on SupportBean set total_sum = (select sum(value) as c0 from SupportEventWithIntArray#keepall group by array)";
 				env.CompileDeploy(epl);
 
@@ -306,8 +306,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 			public void Run(RegressionEnvironment env)
 			{
 				string epl = "create variable boolean var_simple_set = true;\n" +
-				             "@name('set') on SupportBean_S0 set var_simple_set = false;\n" +
-				             "@name('s0') select var_simple_set as c0 from SupportBean;\n";
+				             "@Name('set') on SupportBean_S0 set var_simple_set = false;\n" +
+				             "@Name('s0') select var_simple_set as c0 from SupportBean;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				env.SendEventBean(new SupportBean("E1", 0));
@@ -332,7 +332,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 			{
 
 				string stmtTextSet =
-					"@name('s0') on SupportBean_S0 as s0str set var1SS = (select p10 from SupportBean_S1#lastevent), var2SS = (select p11||s0str.p01 from SupportBean_S1#lastevent)";
+					"@Name('s0') on SupportBean_S0 as s0str set var1SS = (select p10 from SupportBean_S1#lastevent), var2SS = (select p11||s0str.p01 from SupportBean_S1#lastevent)";
 				env.CompileDeploy(stmtTextSet);
 				string[] fieldsVar = new string[] {"var1SS", "var2SS"};
 				EPAssertionUtil.AssertPropsPerRow(
@@ -369,7 +369,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string stmtTextSet = "@name('set') on SupportBean set var1OND = intPrimitive, var2OND = var1OND + 1, var3OND = var1OND + var2OND";
+				string stmtTextSet = "@Name('set') on SupportBean set var1OND = IntPrimitive, var2OND = var1OND + 1, var3OND = var1OND + var2OND";
 				env.CompileDeploy(stmtTextSet).AddListener("set");
 				string[] fieldsVar = new string[] {"var1OND", "var2OND", "var3OND"};
 				EPAssertionUtil.AssertPropsPerRow(
@@ -417,7 +417,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 			public void Run(RegressionEnvironment env)
 			{
 
-				string stmtTextSet = "@name('set') on SupportBean set var1OD = intPrimitive, var2OD = var2OD, var1OD = intBoxed, var3OD = var3OD + 1";
+				string stmtTextSet = "@Name('set') on SupportBean set var1OD = IntPrimitive, var2OD = var2OD, var1OD = IntBoxed, var3OD = var3OD + 1";
 				env.CompileDeploy(stmtTextSet).AddListener("set");
 				string[] fieldsVar = new string[] {"var1OD", "var2OD", "var3OD"};
 				EPAssertionUtil.AssertPropsPerRow(
@@ -480,7 +480,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 				RegressionPath path = new RegressionPath();
 				model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
 				env.CompileDeploy(model, path);
-				string stmtText = "@name('s0') select var1OM, var2OM, id from SupportBean_A";
+				string stmtText = "@Name('s0') select var1OM, var2OM, id from SupportBean_A";
 				Assert.AreEqual(stmtText, model.ToEPL());
 				env.AddListener("s0");
 
@@ -489,11 +489,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fieldsSelect, new object[] {10d, 11L, "E1"});
 
 				model = new EPStatementObjectModel();
-				model.OnExpr = OnClause.CreateOnSet(Expressions.Eq(Expressions.Property("var1OM"), Expressions.Property("intPrimitive")))
-					.AddAssignment(Expressions.Eq(Expressions.Property("var2OM"), Expressions.Property("intBoxed")));
+				model.OnExpr = OnClause.CreateOnSet(Expressions.Eq(Expressions.Property("var1OM"), Expressions.Property("IntPrimitive")))
+					.AddAssignment(Expressions.Eq(Expressions.Property("var2OM"), Expressions.Property("IntBoxed")));
 				model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBean)));
 				model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("set"));
-				string stmtTextSet = "@name('set') on SupportBean set var1OM=intPrimitive, var2OM=intBoxed";
+				string stmtTextSet = "@Name('set') on SupportBean set var1OM=IntPrimitive, var2OM=IntBoxed";
 				env.CompileDeploy(model, path).AddListener("set");
 				Assert.AreEqual(stmtTextSet, model.ToEPL());
 
@@ -533,19 +533,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 			{
 				RegressionPath path = new RegressionPath();
 
-				string textVar = "@name('s0_0') create variable int resvar = 1";
+				string textVar = "@Name('s0_0') create variable int resvar = 1";
 				env.CompileDeploy(textVar, path).AddListener("s0_0");
 				string[] fieldsVarOne = new string[] {"resvar"};
 
-				textVar = "@name('s0_1') create variable int durvar = 10";
+				textVar = "@Name('s0_1') create variable int durvar = 10";
 				env.CompileDeploy(textVar, path).AddListener("s0_1");
 				string[] fieldsVarTwo = new string[] {"durvar"};
 
-				string textSet = "@name('s1') on SupportBean set resvar = intPrimitive, durvar = intPrimitive";
+				string textSet = "@Name('s1') on SupportBean set resvar = IntPrimitive, durvar = IntPrimitive";
 				env.CompileDeploy(textSet, path).AddListener("s1");
 				string[] fieldsVarSet = new string[] {"resvar", "durvar"};
 
-				string textSelect = "@name('s2') select irstream resvar, durvar, symbol from SupportMarketDataBean";
+				string textSelect = "@Name('s2') select irstream resvar, durvar, symbol from SupportMarketDataBean";
 				env.CompileDeploy(textSelect, path).AddListener("s2");
 				string[] fieldsSelect = new string[] {"resvar", "durvar", "symbol"};
 
@@ -611,14 +611,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 			public void Run(RegressionEnvironment env)
 			{
 
-				string stmtText = "@name('s0') select var1C, var2C, id from SupportBean_A";
+				string stmtText = "@Name('s0') select var1C, var2C, id from SupportBean_A";
 				env.EplToModelCompileDeploy(stmtText).AddListener("s0");
 
 				string[] fieldsSelect = new string[] {"var1C", "var2C", "id"};
 				SendSupportBean_A(env, "E1");
 				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fieldsSelect, new object[] {10d, 11L, "E1"});
 
-				string stmtTextSet = "@name('set') on SupportBean set var1C=intPrimitive, var2C=intBoxed";
+				string stmtTextSet = "@Name('set') on SupportBean set var1C=IntPrimitive, var2C=IntBoxed";
 				env.EplToModelCompileDeploy(stmtTextSet).AddListener("set");
 
 				EventType typeSet = env.Statement("set").EventType;
@@ -656,10 +656,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 			public void Run(RegressionEnvironment env)
 			{
 
-				string stmtText = "@name('s0') select var1RTC, theString from SupportBean(theString like 'E%')";
+				string stmtText = "@Name('s0') select var1RTC, TheString from SupportBean(TheString like 'E%')";
 				env.CompileDeploy(stmtText).AddListener("s0");
 
-				string[] fieldsSelect = new string[] {"var1RTC", "theString"};
+				string[] fieldsSelect = new string[] {"var1RTC", "TheString"};
 				SendSupportBean(env, "E1", 1);
 				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fieldsSelect, new object[] {10, "E1"});
 
@@ -668,7 +668,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 				SendSupportBean(env, "E2", 2);
 				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fieldsSelect, new object[] {10, "E2"});
 
-				string stmtTextSet = "@name('set') on SupportBean(theString like 'S%') set var1RTC = intPrimitive";
+				string stmtTextSet = "@Name('set') on SupportBean(TheString like 'S%') set var1RTC = IntPrimitive";
 				env.CompileDeploy(stmtTextSet).AddListener("set");
 
 				EventType typeSet = env.Statement("set").EventType;
@@ -719,7 +719,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 			public void Run(RegressionEnvironment env)
 			{
 
-				string stmtTextSet = "@name('set') on SupportBean(theString like 'S%' or theString like 'B%') set var1ROM = intPrimitive, var2ROM = intBoxed";
+				string stmtTextSet = "@Name('set') on SupportBean(TheString like 'S%' or TheString like 'B%') set var1ROM = IntPrimitive, var2ROM = IntBoxed";
 				env.CompileDeploy(stmtTextSet).AddListener("set");
 				string[] fieldsVar = new string[] {"var1ROM", "var2ROM"};
 				EPAssertionUtil.AssertPropsPerRow(
@@ -755,9 +755,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 						new object[] {-1, -2}
 					});
 
-				string stmtText = "@name('s0') select var1ROM, var2ROM, theString from SupportBean(theString like 'E%' or theString like 'B%')";
+				string stmtText = "@Name('s0') select var1ROM, var2ROM, TheString from SupportBean(TheString like 'E%' or TheString like 'B%')";
 				env.CompileDeploy(stmtText).AddListener("s0");
-				string[] fieldsSelect = new string[] {"var1ROM", "var2ROM", "theString"};
+				string[] fieldsSelect = new string[] {"var1ROM", "var2ROM", "TheString"};
 				EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("s0"), fieldsSelect, null);
 
 				env.Milestone(1);
@@ -809,7 +809,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string stmtTextSet = "@name('set') on SupportBean(theString like 'S%') set papi_1 = 'end', papi_2 = false, papi_3 = null";
+				string stmtTextSet = "@Name('set') on SupportBean(TheString like 'S%') set papi_1 = 'end', papi_2 = false, papi_3 = null";
 				env.CompileDeploy(stmtTextSet).AddListener("set");
 				string[] fieldsVar = new string[] {"papi_1", "papi_2", "papi_3"};
 				EPAssertionUtil.AssertPropsPerRow(
@@ -856,7 +856,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 			public void Run(RegressionEnvironment env)
 			{
 
-				string stmtTextSet = "@name('set') on SupportBean set var1COE = intPrimitive, var2COE = intPrimitive, var3COE=intBoxed";
+				string stmtTextSet = "@Name('set') on SupportBean set var1COE = IntPrimitive, var2COE = IntPrimitive, var3COE=IntBoxed";
 				env.CompileDeploy(stmtTextSet).AddListener("set");
 				string[] fieldsVar = new string[] {"var1COE", "var2COE", "var3COE"};
 				EPAssertionUtil.AssertPropsPerRow(
@@ -873,7 +873,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 				Assert.AreEqual(typeof(IDictionary<string, object>), typeSet.UnderlyingType);
 				EPAssertionUtil.AssertEqualsAnyOrder(typeSet.PropertyNames, fieldsVar);
 
-				string stmtText = "@name('s0') select irstream var1COE, var2COE, var3COE, id from SupportBean_A#length(2)";
+				string stmtText = "@Name('s0') select irstream var1COE, var2COE, var3COE, id from SupportBean_A#length(2)";
 				env.CompileDeploy(stmtText).AddListener("s0");
 				string[] fieldsSelect = new string[] {"var1COE", "var2COE", "var3COE", "id"};
 				EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("s0"), fieldsSelect, null);
@@ -954,8 +954,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
 				TryInvalidCompile(
 					env,
-					"on SupportBean set var3IS = doublePrimitive",
-					"Failed to validate assignment expression 'var3IS=doublePrimitive': Variable 'var3IS' of declared type System.Int32 cannot be assigned a value of type System.Double");
+					"on SupportBean set var3IS = DoublePrimitive",
+					"Failed to validate assignment expression 'var3IS=DoublePrimitive': Variable 'var3IS' of declared type System.Int32 cannot be assigned a value of type System.Double");
 
 				TryInvalidCompile(env, "on SupportBean set var2IS = 'false'", "skip");
 				TryInvalidCompile(env, "on SupportBean set var3IS = 1.1", "skip");

@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     : "create table MyInfraFAFKB (TheString string primary key, IntPrimitive int primary key)";
                 env.CompileDeploy(eplCreate, path);
                 env.CompileDeploy("insert into MyInfraFAFKB select TheString, IntPrimitive from SupportBean", path);
-                env.CompileDeploy("@name('Idx') create index Idx1 on MyInfraFAFKB(IntPrimitive btree)", path);
+                env.CompileDeploy("@Name('Idx') create index Idx1 on MyInfraFAFKB(IntPrimitive btree)", path);
 
                 // insert X rows
                 var maxRows = 10000; //for performance testing change to int maxRows = 100000;

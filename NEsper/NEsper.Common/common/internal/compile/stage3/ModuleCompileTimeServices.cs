@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Threading;
+
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.compile.stage1;
 using com.espertech.esper.common.@internal.context.compile;
@@ -39,6 +41,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 {
     public class ModuleCompileTimeServices
     {
+        private static long _generation = 0L;
+        
         public ModuleCompileTimeServices(
             IContainer container,
             CompilerServices compilerServices,
@@ -77,6 +81,10 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             ViewResolutionService viewResolutionService,
             XMLFragmentEventTypeFactory xmlFragmentEventTypeFactory)
         {
+            var generation = Interlocked.Increment(ref _generation);
+            
+            Namespace = $"generation_{generation}";
+
             Container = container;
             CompilerServices = compilerServices;
             Configuration = configuration;
@@ -120,6 +128,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
         public ModuleCompileTimeServices(IContainer container)
         {
+            Namespace = null;
             Container = container;
             CompilerServices = null;
             Configuration = null;
@@ -161,7 +170,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             #endregion
         }
 
-        public string Namespace { get; } = "generated";
+        public string Namespace { get; }
         public IContainer Container { get; }
 
         public BeanEventTypeStemService BeanEventTypeStemService { get; }

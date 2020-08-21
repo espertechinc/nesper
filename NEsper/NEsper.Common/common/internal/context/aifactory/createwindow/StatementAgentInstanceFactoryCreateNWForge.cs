@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                 .SetProperty(
                     Ref("saiff"),
                     "ResultSetProcessorFactoryProvider",
-                    NewInstance(
+                    NewInstanceInner(
                         resultSetProcessorProviderClassName,
                         symbols.GetAddInitSvc(method),
                         Ref("statementFields")))

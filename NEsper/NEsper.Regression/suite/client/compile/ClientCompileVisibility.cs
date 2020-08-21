@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 		private const string CREATE_EPL =
 			"${PREFIX} create schema MySchema();" +
 			"${PREFIX} create variable int abc;\n" +
-			"${PREFIX} create context MyContext partition by theString from SupportBean;\n" +
+			"${PREFIX} create context MyContext partition by TheString from SupportBean;\n" +
 			"${PREFIX} create window MyWindow#keepall as SupportBean;\n" +
 			"${PREFIX} create table MyTable as (c count(*));\n" +
 			"${PREFIX} create expression MyExpr { 1 };\n" +
@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 			"select 1 from MySchema;\n" +
 			"select abc from SupportBean;\n" +
 			"context MyContext select * from SupportBean;\n" +
-			"on SupportBean update MyWindow set theString = 'a';\n" +
+			"on SupportBean update MyWindow set TheString = 'a';\n" +
 			"into table MyTable select count(*) as c from SupportBean;\n" +
 			"select MyExpr() from SupportBean;\n" +
 			"select myscript(1) from SupportBean;\n" +
@@ -119,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
 				RunAssertionDisambiguate(
 					env,
-					"create context MyContext partition by theString from SupportBean;",
+					"create context MyContext partition by TheString from SupportBean;",
 					"create context MyContext partition by id from SupportBean_S0;",
 					"context MyContext select p00 from SupportBean_S0",
 					() => { });
@@ -204,7 +204,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 			{
 				env.CompileDeploy(
 						"@public @BusEventType create schema MyEvent(p0 string);\n" +
-						"@name('s0') select * from MyEvent;\n")
+						"@Name('s0') select * from MyEvent;\n")
 					.AddListener("s0");
 				env.SendEventMap(EmptyDictionary<string, object>.Instance, "MyEvent");
 				Assert.IsTrue(env.Listener("s0").IsInvoked);
@@ -279,7 +279,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 			{
 				var commonEPL = "create variable int abc;\n" +
 				                "create schema MySchema();" +
-				                "create context MyContext partition by theString from SupportBean;\n" +
+				                "create context MyContext partition by TheString from SupportBean;\n" +
 				                "create window MyWindow#keepall as SupportBean;\n" +
 				                "create table MyTable as (c count(*));\n" +
 				                "create expression MyExpr { 1 };\n" +
@@ -388,7 +388,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 				env.Deploy(compiledInsert);
 
 				var compiledSelect = env.Compile(
-					"@name('s0') select theString as c0, sum(intPrimitive) as c1 from MyWindow;\n",
+					"@Name('s0') select TheString as c0, sum(IntPrimitive) as c1 from MyWindow;\n",
 					new CompilerArguments(new Configuration()).SetPath(new CompilerPath().Add(compiledCreate)));
 				env.Deploy(compiledSelect).AddListener("s0");
 
@@ -432,7 +432,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 			TryInvalidCompile(
 				env,
 				path,
-				"on SupportBean update MyWindow set theString = 'a'",
+				"on SupportBean update MyWindow set TheString = 'a'",
 				"A named window or table 'MyWindow' has not been declared");
 			TryInvalidCompile(
 				env,

@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.additional
 			output.WriteLong(valueSet.CountPoints);
 		}
 
-		public override SortedRefCountedSet<object> Read(
+		public override SortedRefCountedSet<object> ReadValue(
 			DataInput input,
 			byte[] unitKey)
 		{
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.additional
 			var refSet = valueSet.RefSet;
 			int size = input.ReadInt();
 			for (int i = 0; i < size; i++) {
-				var key = _inner.ReadAny(input, unitKey);
+				var key = _inner.Read(input, unitKey);
 				var cnt = input.ReadLong();
 				refSet[key] = new AtomicLong(cnt);
 			}

@@ -64,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             RegressionPath path)
         {
 
-            env.CompileDeploy("@name('s0') insert into MyNestedStream select nested1 from " + eventTypeName + "#lastevent", path);
+            env.CompileDeploy("@Name('s0') insert into MyNestedStream select nested1 from " + eventTypeName + "#lastevent", path);
 
             CollectionAssert.AreEquivalent(
                 new[] {
@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("s0").EventType);
 
             env.CompileDeploy(
-                "@name('s1') select nested1.attr1 as attr1, nested1.prop1 as prop1, nested1.prop2 as prop2, nested1.nested2.prop3 as prop3, nested1.nested2.prop3[0] as prop3_0, nested1.nested2 as nested2 from MyNestedStream#lastevent",
+                "@Name('s1') select nested1.attr1 as attr1, nested1.prop1 as prop1, nested1.prop2 as prop2, nested1.nested2.prop3 as prop3, nested1.nested2.prop3[0] as prop3_0, nested1.nested2 as nested2 from MyNestedStream#lastevent",
                 path);
             CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {
@@ -96,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 env.Statement("s1").EventType.PropertyDescriptors);
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("s1").EventType);
 
-            env.CompileDeploy("@name('sw') select * from MyNestedStream", path);
+            env.CompileDeploy("@Name('sw') select * from MyNestedStream", path);
             CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {
                     new EventPropertyDescriptor("nested1", typeof(XmlNode), null, false, false, false, false, true)
@@ -105,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("sw").EventType);
 
             env.CompileDeploy(
-                "@name('iw') insert into MyNestedStreamTwo select nested1.* from " + eventTypeName + "#lastevent",
+                "@Name('iw') insert into MyNestedStreamTwo select nested1.* from " + eventTypeName + "#lastevent",
                 path);
             CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {

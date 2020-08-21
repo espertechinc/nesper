@@ -32,9 +32,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             public void Run(RegressionEnvironment env)
             {
                 string epl = "module test;\n" +
-                             "@name('event') @buseventtype @public create map schema Fubar as (foo string, bar double);\n" +
-                             "@name('window') @protected create window Snafu#keepall as Fubar;\n" +
-                             "@name('insert') @private insert into Snafu select * from Fubar;\n";
+                             "@Name('event') @buseventtype @public create map schema Fubar as (foo string, bar double);\n" +
+                             "@Name('window') @protected create window Snafu#keepall as Fubar;\n" +
+                             "@Name('insert') @private insert into Snafu select * from Fubar;\n";
                 env.CompileDeploy(epl);
 
                 env.SendEventMap(CollectionUtil.BuildMap("foo", "a", "bar", 1d), "Fubar");
@@ -89,8 +89,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             bool namedWindow)
         {
             var eplCreate = namedWindow
-                ? "@name('s0') create window MyInfra#keepall as (c0 int[], c1 int[primitive])"
-                : "@name('s0') create table MyInfra (c0 int[], c1 int[primitive])";
+                ? "@Name('s0') create window MyInfra#keepall as (c0 int[], c1 int[primitive])"
+                : "@Name('s0') create table MyInfra (c0 int[], c1 int[primitive])";
             env.CompileDeploy(eplCreate);
 
             object[][] expectedType = {

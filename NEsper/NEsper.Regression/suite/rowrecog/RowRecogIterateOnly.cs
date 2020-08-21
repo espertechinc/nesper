@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "a" };
-                var text = "@name('s0') @Hint('iterate_only') select * from SupportRecogBean#length(1) " +
+                var text = "@Name('s0') @Hint('iterate_only') select * from SupportRecogBean#length(1) " +
                            "match_recognize (" +
                            "  measures A.TheString as a" +
                            "  all matches " +
@@ -116,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "a","cat" };
-                var text = "@name('s0') @Hint('iterate_only') select * from SupportRecogBean#lastevent " +
+                var text = "@Name('s0') @Hint('iterate_only') select * from SupportRecogBean#lastevent " +
                            "match_recognize (" +
                            "  partition by Cat" +
                            "  measures A.TheString as a, A.Cat as cat" +

@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             // setup statements
             var deployed = SupportCompileDeployUtil.CompileDeploy(
-                "@name('s0') select count(*) as cnt from SupportBean",
+                "@Name('s0') select count(*) as cnt from SupportBean",
                 runtime,
                 configuration);
             var listener = new SupportMTUpdateListener();

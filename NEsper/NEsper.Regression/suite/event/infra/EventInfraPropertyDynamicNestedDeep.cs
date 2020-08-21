@@ -156,7 +156,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             FunctionSendEvent send,
             object underlyingComplete)
         {
-            var stmtText = "@name('s0') select * from " + typename;
+            var stmtText = "@Name('s0') select * from " + typename;
             env.CompileDeploy(stmtText).AddListener("s0");
 
             send.Invoke(env, underlyingComplete, typename);
@@ -174,7 +174,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Pair<object, object>[] tests,
             Type expectedPropertyType)
         {
-            var stmtText = "@name('s0') select " +
+            var stmtText = "@Name('s0') select " +
                            " Item.Nested?.NestedValue as n1, " +
                            " exists(Item.Nested?.NestedValue) as exists_n1, " +
                            " Item.Nested?.NestedValue? as n2, " +

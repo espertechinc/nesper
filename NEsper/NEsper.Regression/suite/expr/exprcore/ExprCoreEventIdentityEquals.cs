@@ -52,10 +52,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var docSample = "create schema OrderEvent(orderId string, amount double);\n" +
+				var docSample = "create schema OrderEvent(OrderId string, amount double);\n" +
 				                "select * from OrderEvent as arrivingEvent \n" +
-				                "  where exists (select * from OrderEvent#time(5) as last5 where not event_identity_equals(arrivingEvent, last5) and arrivingEvent.orderId = last5.orderId);\n" +
-				                "select orderId, window(*).aggregate(0d, (result, e) => result + (case when event_identity_equals(oe, e) then 0d else e.amount end)) as c0 from OrderEvent#time(10) as oe";
+				                "  where exists (select * from OrderEvent#time(5) as last5 where not event_identity_equals(arrivingEvent, last5) and arrivingEvent.OrderId = last5.OrderId);\n" +
+				                "select OrderId, window(*).aggregate(0d, (result, e) => result + (case when event_identity_equals(oe, e) then 0d else e.amount end)) as c0 from OrderEvent#time(10) as oe";
 				env.CompileDeploy(docSample).UndeployAll();
 			}
 		}
@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			public void Run(RegressionEnvironment env)
 			{
 				var text =
-					"@name('s0') select * from SupportBean as e where exists (select * from SupportBean#keepall as ka where not event_identity_equals(e, ka) and e.TheString = ka.TheString)";
+					"@Name('s0') select * from SupportBean as e where exists (select * from SupportBean#keepall as ka where not event_identity_equals(e, ka) and e.TheString = ka.TheString)";
 				env.CompileDeploy(text).AddListener("s0");
 
 				SendAssertNotReceived(env, "E1");
@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			public void Run(RegressionEnvironment env)
 			{
 				var text =
-					"@name('s0') select TheString, window(*).aggregate(0, (result, e) => result + (case when event_identity_equals(sb, e) then 0 else e.IntPrimitive end)) as c0 from SupportBean#time(10) as sb";
+					"@Name('s0') select TheString, window(*).aggregate(0, (result, e) => result + (case when event_identity_equals(sb, e) then 0 else e.IntPrimitive end)) as c0 from SupportBean#time(10) as sb";
 				env.CompileDeploy(text).AddListener("s0");
 
 				SendAssert(env, "E1", 10, 0);

@@ -235,10 +235,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                     originatingStreamToViewableStream)
                 .Expression(
                     "FactoryProvider",
-                    NewInstance(
+                    NewInstanceInner(
                         classNameAIFactoryProvider,
                         symbols.GetAddInitSvc(builder.Method()),
-                        NewInstance(classNameFieldsFactoryProvider)
+                        NewInstanceInner(classNameFieldsFactoryProvider)
                         ))
                 .Build();
         }

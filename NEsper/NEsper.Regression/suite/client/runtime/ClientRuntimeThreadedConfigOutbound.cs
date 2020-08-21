@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         public void Run(RegressionEnvironment env)
         {
             var listener = new SupportListenerSleeping(200);
-            env.CompileDeploy("@name('s0') select * from SupportBean").Statement("s0").AddListener(listener);
+            env.CompileDeploy("@Name('s0') select * from SupportBean").Statement("s0").AddListener(listener);
 
             var start = PerformanceObserver.NanoTime;
             for (var i = 0; i < 5; i++) {

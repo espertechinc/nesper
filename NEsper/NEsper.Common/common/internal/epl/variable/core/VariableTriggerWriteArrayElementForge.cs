@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 	    {
 		    CodegenMethod method = parent.MakeChild(typeof(VariableTriggerWriteArrayElement), this.GetType(), classScope);
 		    method.Block
-			    .DeclareVar(typeof(VariableTriggerWriteArrayElement), "desc", NewInstance(typeof(VariableTriggerWriteArrayElement)))
+			    .DeclareVar<VariableTriggerWriteArrayElement>("desc", NewInstance(typeof(VariableTriggerWriteArrayElement)))
 			    .SetProperty(Ref("desc"), "VariableName", Constant(variableName))
 			    .SetProperty(
 				    Ref("desc"),

@@ -75,18 +75,18 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 					coerced = NewInstance(clazz, expressions[0]);
 				}
 				else {
-					coerced = ExprNodeUtilityCodegen.CodegenCoerce(expressions[0], evaluationType, targetTypes == null ? null : targetTypes[0], false);
+					coerced = ExprNodeUtilityCodegen.CodegenCoerce(expressions[0], evaluationType, targetTypes?[0], false);
 				}
 
 				exprMethod.Block.MethodReturn(coerced);
 			}
 			else {
-				exprMethod.Block.DeclareVar(typeof(object[]), "values", NewArrayByLength(typeof(object), Constant(forges.Length)));
+				exprMethod.Block.DeclareVar<object[]>("values", NewArrayByLength(typeof(object), Constant(forges.Length)));
 				for (var i = 0; i < forges.Length; i++) {
 					var coerced = ExprNodeUtilityCodegen.CodegenCoerce(
 						expressions[i],
 						forges[i].EvaluationType,
-						targetTypes == null ? null : targetTypes[i],
+						targetTypes?[i],
 						false);
 					exprMethod.Block.AssignArrayElement("values", Constant(i), coerced);
 				}
@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 				exprMethod.Block.MethodReturn(Ref("values"));
 			}
 
-			evaluate.Block.MethodReturn(LocalMethod(exprMethod, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
+			evaluate.Block.BlockReturn(LocalMethod(exprMethod, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
 			return evaluator;
 		}
 
@@ -134,7 +134,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 
 			return ExprNodeUtilityCodegen.CodegenEvaluatorWCoerce(
 				forges[0],
-				optionalCoercionTypes == null ? null : optionalCoercionTypes[0],
+				optionalCoercionTypes?[0],
 				method,
 				typeof(MultiKeyCodegen),
 				classScope);
@@ -162,7 +162,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			}
 
 			exprSymbol.DerivedSymbolsCodegen(eventUnpackMethod, exprMethod.Block, classScope);
-			exprMethod.Block.MethodReturn(NewInstance(multiKeyClassRef.ClassNameMK, expressions));
+			exprMethod.Block.MethodReturn(NewInstanceInner(multiKeyClassRef.ClassNameMK, expressions));
 
 			eventUnpackMethod.Block.MethodReturn(LocalMethod(exprMethod, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
 			return eventUnpackMethod;
@@ -188,7 +188,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			return EventTypeUtility.CodegenGetterWCoerce(
 				getters[0],
 				getterResultTypes[0],
-				optionalCoercionTypes == null ? null : optionalCoercionTypes[0],
+				optionalCoercionTypes?[0],
 				method,
 				typeof(MultiKeyCodegen),
 				classScope);
@@ -227,7 +227,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 					expressions[i] = Cast(optionalMultiKeyClasses.MKTypes[i], ArrayAtIndex(Ref("keys"), Constant(i)));
 				}
 
-				fromLambda.Block.BlockReturn(NewInstance(optionalMultiKeyClasses.ClassNameMK, expressions));
+				fromLambda.Block.BlockReturn(NewInstanceInner(optionalMultiKeyClasses.ClassNameMK, expressions));
 			}
 
 			return fromClass;
@@ -252,12 +252,12 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			}
 			else {
 				var expressions = new CodegenExpression[optionalMultiKeyClasses.MKTypes.Length];
-				fromLambda.Block.DeclareVar(typeof(MultiKeyArrayOfKeys<object>), "mk", Cast(typeof(MultiKeyArrayOfKeys<object>), Ref("key")));
+				fromLambda.Block.DeclareVar<MultiKeyArrayOfKeys<object>>("mk", Cast(typeof(MultiKeyArrayOfKeys<object>), Ref("key")));
 				for (var i = 0; i < expressions.Length; i++) {
-					expressions[i] = Cast(optionalMultiKeyClasses.MKTypes[i], ExprDotMethod(Ref("mk"), "GetKey", Constant(i)));
+					expressions[i] = Cast(optionalMultiKeyClasses.MKTypes[i], ExprDotMethod(Ref("mk"), "Get", Constant(i)));
 				}
 
-				fromLambda.Block.BlockReturn(NewInstance(optionalMultiKeyClasses.ClassNameMK, expressions));
+				fromLambda.Block.BlockReturn(NewInstanceInner(optionalMultiKeyClasses.ClassNameMK, expressions));
 			}
 
 			return fromInstance;
@@ -332,9 +332,9 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			}
 
 			exprSymbol.DerivedSymbolsCodegen(method, exprMethod.Block, classScope);
-			exprMethod.Block.MethodReturn(NewInstance(multiKeyClassRef.ClassNameMK, expressions));
+			exprMethod.Block.MethodReturn(NewInstanceInner(multiKeyClassRef.ClassNameMK, expressions));
 
-			evaluate.Block.MethodReturn(LocalMethod(exprMethod, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
+			evaluate.Block.BlockReturn(LocalMethod(exprMethod, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
 			return evaluator;
 		}
 
@@ -360,7 +360,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 
 			get.Block
 				.DeclareVar(eventType.UnderlyingType, "und", Cast(eventType.UnderlyingType, ExprDotUnderlying(Ref("bean"))))
-				.BlockReturn(NewInstance(multiKeyClassRef.ClassNameMK, expressions));
+				.BlockReturn(NewInstanceInner(multiKeyClassRef.ClassNameMK, expressions));
 
 			return anonymous;
 		}
@@ -384,7 +384,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 				expressions[i] = ExprNodeUtilityCodegen.CodegenCoerce(expressions[i], getterType, mkType, true);
 			}
 
-			get.Block.BlockReturn(NewInstance(multiKeyClassRef.ClassNameMK, expressions));
+			get.Block.BlockReturn(NewInstanceInner(multiKeyClassRef.ClassNameMK, expressions));
 
 			return lambda;
 		}

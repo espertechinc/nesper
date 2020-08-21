@@ -48,10 +48,10 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .DeclareVar<ExprFilterSpecLookupable>(
                     "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
-                .DeclareVar<FilterOperator>("op", EnumValue(typeof(FilterOperator), filterOperator.GetName()))
+                .DeclareVar<FilterOperator>("filterOperator", EnumValue(typeof(FilterOperator), filterOperator.GetName()))
                 .DeclareVar<FilterSpecParamAdvancedIndexQuadTreePointRegion>(
                     "fpai",
-                    NewInstance<FilterSpecParamAdvancedIndexQuadTreePointRegion>(Ref("lookupable"), Ref("op")))
+                    NewInstance<FilterSpecParamAdvancedIndexQuadTreePointRegion>(Ref("lookupable"), Ref("filterOperator")))
                 .SetProperty(
                     Ref("fpai"),
                     "XEval",

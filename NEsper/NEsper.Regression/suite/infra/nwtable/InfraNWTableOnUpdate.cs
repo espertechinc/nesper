@@ -67,8 +67,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 RegressionPath path = new RegressionPath();
                 string stmtTextCreate = namedWindow
-                    ? "@name('create') create window MyInfra#keepall() as (value int)"
-                    : "@name('create') create table MyInfra(value int)";
+                    ? "@Name('create') create window MyInfra#keepall() as (value int)"
+                    : "@Name('create') create table MyInfra(value int)";
                 env.CompileDeploy(stmtTextCreate, path).AddListener("create");
                 env.CompileExecuteFAF("insert into MyInfra select 0 as value", path);
 
@@ -120,13 +120,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create window
                 var stmtTextCreate = namedWindow
-                    ? "@name('create') create window MyInfra.win:keepall() as SupportBean"
-                    : "@name('create') create table MyInfra(TheString string, IntPrimitive int primary key)";
+                    ? "@Name('create') create window MyInfra.win:keepall() as SupportBean"
+                    : "@Name('create') create table MyInfra(TheString string, IntPrimitive int primary key)";
                 env.CompileDeploy(stmtTextCreate, path).AddListener("create");
 
                 // create insert into
                 var stmtTextInsert =
-                    "@name('insert') insert into MyInfra select TheString, IntPrimitive from SupportBean";
+                    "@Name('insert') insert into MyInfra select TheString, IntPrimitive from SupportBean";
                 env.CompileDeploy(stmtTextInsert, path);
 
                 env.Milestone(0);
@@ -137,7 +137,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create onUpdate
                 var stmtTextOnUpdate =
-                    "@name('update') on SupportBean_S0 update MyInfra set TheString = P00 where IntPrimitive = Id";
+                    "@Name('update') on SupportBean_S0 update MyInfra set TheString = P00 where IntPrimitive = Id";
                 env.CompileDeploy(stmtTextOnUpdate, path).AddListener("update");
                 Assert.AreEqual(
                     StatementType.ON_UPDATE,
@@ -218,7 +218,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     : "create table MyInfra(TheString string primary key, IntPrimitive int, IntBoxed int, DoublePrimitive double);\n";
                 epl +=
                     "insert into MyInfra select TheString, IntPrimitive, IntBoxed, DoublePrimitive from SupportBean;\n";
-                epl += "@name('update') on SupportBean_S0 as sb " +
+                epl += "@Name('update') on SupportBean_S0 as sb " +
                        "update MyInfra as mywin" +
                        " set IntPrimitive=Id, IntBoxed=mywin.IntPrimitive, DoublePrimitive=initial.IntPrimitive" +
                        " where mywin.TheString = sb.P00;\n";
@@ -267,13 +267,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // ESPER-507
                 var path = new RegressionPath();
                 var eplCreate = namedWindow
-                    ? "@name('create') create window MyInfraSS#keepall as SupportBean"
-                    : "@name('create') create table MyInfraSS(TheString string primary key, IntPrimitive int)";
+                    ? "@Name('create') create window MyInfraSS#keepall as SupportBean"
+                    : "@Name('create') create table MyInfraSS(TheString string primary key, IntPrimitive int)";
                 env.CompileDeploy(eplCreate, path);
                 env.CompileDeploy("insert into MyInfraSS select TheString, IntPrimitive from SupportBean", path);
 
                 // This is better done with "set IntPrimitive = IntPrimitive + 1"
-                var epl = "@name(\"Self Update\")\n" +
+                var epl = "@Name(\"Self Update\")\n" +
                           "on SupportBean_A c\n" +
                           "update MyInfraSS s\n" +
                           "set IntPrimitive = (select IntPrimitive from MyInfraSS t where t.TheString = c.Id) + 1\n" +

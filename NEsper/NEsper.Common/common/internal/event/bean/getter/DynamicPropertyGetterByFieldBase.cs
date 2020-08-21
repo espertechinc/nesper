@@ -114,7 +114,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			var method = parent.MakeChild(typeof(object), typeof(DynamicPropertyGetterByFieldBase), codegenClassScope)
 				.AddParam(typeof(object), "object");
 			method.Block
-				.DeclareVar(typeof(DynamicPropertyDescriptorByField), "desc", GetPopulateCacheCodegen(memberCache, Ref("object"), method, codegenClassScope))
+				.DeclareVar<DynamicPropertyDescriptorByField>("desc", GetPopulateCacheCodegen(memberCache, Ref("object"), method, codegenClassScope))
 				.IfCondition(EqualsNull(ExprDotName(Ref("desc"), "Field")))
 				.BlockReturn(ConstantNull())
 				.MethodReturn(CallCodegen(Ref("desc"), Ref("object"), method, codegenClassScope));
@@ -152,7 +152,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 			var method = parent.MakeChild(typeof(bool), typeof(DynamicPropertyGetterByFieldBase), codegenClassScope)
 				.AddParam(typeof(object), "object");
 			method.Block
-				.DeclareVar(typeof(DynamicPropertyDescriptorByField), "desc", GetPopulateCacheCodegen(memberCache, Ref("object"), method, codegenClassScope))
+				.DeclareVar<DynamicPropertyDescriptorByField>("desc", GetPopulateCacheCodegen(memberCache, Ref("object"), method, codegenClassScope))
 				.IfCondition(EqualsNull(ExprDotName(Ref("desc"), "Field")))
 				.BlockReturn(ConstantFalse())
 				.MethodReturn(Constant(true));
@@ -276,8 +276,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 					StaticMethod(typeof(DynamicPropertyGetterByFieldBase), "DynamicPropertyCacheCheck", Ref("cache"), Ref("obj")))
 				.IfRefNotNull("desc")
 				.BlockReturn(Ref("desc"))
-				.DeclareVar(typeof(Type), "clazz", ExprDotMethod(Ref("obj"), "GetType"))
-				.DeclareVar(typeof(FieldInfo), "field", DetermineFieldCodegen(Ref("clazz"), method, codegenClassScope))
+				.DeclareVar<Type>("clazz", ExprDotMethod(Ref("obj"), "GetType"))
+				.DeclareVar<FieldInfo>("field", DetermineFieldCodegen(Ref("clazz"), method, codegenClassScope))
 				.AssignRef(
 					"desc",
 					StaticMethod(typeof(DynamicPropertyGetterByFieldBase), "DynamicPropertyCacheAdd", Ref("clazz"), Ref("field"), Ref("cache")))

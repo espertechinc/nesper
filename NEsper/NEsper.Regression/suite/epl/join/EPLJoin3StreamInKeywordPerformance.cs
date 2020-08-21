@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@name('s0') select S0.Id as val from " +
+            var epl = "@Name('s0') select S0.Id as val from " +
                       "SupportBean_S0#keepall S0, " +
                       "SupportBean_S1#keepall S1, " +
                       "SupportBean_S2#keepall S2 " +

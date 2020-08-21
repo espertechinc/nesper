@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             for (var i = 0; i < numStmt; i++) {
                 listeners[i] = new SupportCountListener();
                 var stmtName = "stmt" + i;
-                var nameAnnotation = "@name('" + stmtName + "')";
+                var nameAnnotation = "@Name('" + stmtName + "')";
                 var epl = $"{nameAnnotation}select irstream IntPrimitive, TheString as key from SupportBean#time(1 sec)";
                 env.CompileDeploy(epl).Statement(stmtName).AddListener(listeners[i]);
             }

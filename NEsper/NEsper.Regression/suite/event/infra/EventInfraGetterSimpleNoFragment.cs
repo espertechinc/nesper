@@ -104,10 +104,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 		{
 
 			var epl = createSchemaEPL +
-			          "@name('s0') select * from " +
+			          "@Name('s0') select * from " +
 			          typeName +
 			          ";\n" +
-			          "@name('s1') select property as c0, exists(property) as c1, typeof(property) as c2 from " +
+			          "@Name('s1') select property as c0, exists(property) as c1, typeof(property) as c2 from " +
 			          typeName +
 			          ";\n";
 			env.CompileDeploy(epl).AddListener("s0").AddListener("s1");

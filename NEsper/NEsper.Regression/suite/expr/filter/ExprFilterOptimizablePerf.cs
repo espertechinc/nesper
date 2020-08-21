@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
 	        public void Run(RegressionEnvironment env) {
 	            // func(...) = value
-	            TryOptimizableEquals(env, new RegressionPath(), "select * from SupportBean(libSplit(theString) = !NUM!)", 10);
+	            TryOptimizableEquals(env, new RegressionPath(), "select * from SupportBean(libSplit(TheString) = !NUM!)", 10);
 	        }
 	    }
 
@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
 	        public void Run(RegressionEnvironment env) {
 	            // func(...) implied true
-	            TryOptimizableBoolean(env, new RegressionPath(), "select * from SupportBean(libE1True(theString))");
+	            TryOptimizableBoolean(env, new RegressionPath(), "select * from SupportBean(libE1True(TheString))");
 	        }
 	    }
 
@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 	        public void Run(RegressionEnvironment env) {
 	            // declared expression (...) = value
 	            RegressionPath path = new RegressionPath();
-	            env.CompileDeploy("@name('create-expr') create expression thesplit {theString => libSplit(theString)}", path).AddListener("create-expr");
+	            env.CompileDeploy("@Name('create-expr') create expression thesplit {TheString => libSplit(TheString)}", path).AddListener("create-expr");
 	            TryOptimizableEquals(env, path, "select * from SupportBean(thesplit(*) = !NUM!)", 10);
 	        }
 	    }
@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 	        public void Run(RegressionEnvironment env) {
 	            // declared expression (...) implied true
 	            RegressionPath path = new RegressionPath();
-	            env.CompileDeploy("@name('create-expr') create expression theE1Test {theString => libE1True(theString)}", path).AddListener("create-expr");
+	            env.CompileDeploy("@Name('create-expr') create expression theE1Test {TheString => libE1True(TheString)}", path).AddListener("create-expr");
 	            TryOptimizableBoolean(env, path, "select * from SupportBean(theE1Test(*))");
 	        }
 	    }
@@ -88,7 +88,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 	        public void Run(RegressionEnvironment env) {
 	            SupportUpdateListener listener = new SupportUpdateListener();
 	            for (int i = 0; i < 100; i++) {
-	                string epl = "@name('s" + i + "') select * from SupportBean(theString = '" + i + "' or intPrimitive=" + i + ")";
+	                string epl = "@Name('s" + i + "') select * from SupportBean(TheString = '" + i + "' or IntPrimitive=" + i + ")";
 	                EPCompiled compiled = env.Compile(epl);
 	                env.Deploy(compiled).Statement("s" + i).AddListener(listener);
 	            }
@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 	    private static void TryOptimizableEquals(RegressionEnvironment env, RegressionPath path, string epl, int numStatements) {
 	        // test function returns lookup value and "equals"
 	        for (int i = 0; i < numStatements; i++) {
-		        string text = "@name('s" + i + "') " + epl.Replace("!NUM!", i.ToString());
+		        string text = "@Name('s" + i + "') " + epl.Replace("!NUM!", i.ToString());
 	            env.CompileDeploy(text, path).AddListener("s" + i);
 	        }
 	        env.Milestone(0);
@@ -138,7 +138,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 	        // test function returns lookup value and "equals"
 	        int count = 10;
 	        for (int i = 0; i < count; i++) {
-	            EPCompiled compiled = env.Compile("@name('s" + i + "')" + epl, path);
+	            EPCompiled compiled = env.Compile("@Name('s" + i + "')" + epl, path);
 	            EPDeploymentService admin = env.Runtime.DeploymentService;
 	            try {
 	                admin.Deploy(compiled);

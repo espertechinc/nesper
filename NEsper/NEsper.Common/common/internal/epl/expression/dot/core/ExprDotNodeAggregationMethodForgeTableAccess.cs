@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 new CodegenFieldNameTableAccess(subprop.TableAccessNumber),
                 typeof(ExprTableEvalStrategy));
             method.Block
-                .DeclareVar(typeof(AggregationRow), "row", ExprDotMethod(future, "GetAggregationRow", eps, newData, evalCtx))
+                .DeclareVar<AggregationRow>("row", ExprDotMethod(future, "GetAggregationRow", eps, newData, evalCtx))
                 .IfRefNullReturnNull("row")
                 .MethodReturn(
                     CodegenLegoCast.CastSafeFromObjectType(

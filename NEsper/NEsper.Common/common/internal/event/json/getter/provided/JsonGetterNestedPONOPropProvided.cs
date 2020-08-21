@@ -119,7 +119,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(field.DeclaringType, "und")
                 .Block
-                .DeclareVar(typeof(object), "value", Ref("und." + field.Name))
+                .DeclareVar<object>("value", Ref("und." + field.Name))
                 .IfRefNullReturnNull("value")
                 .MethodReturn(nestedGetter.UnderlyingGetCodegen(CastRef(nestedGetter.TargetType, "value"), codegenMethodScope, codegenClassScope));
         }
@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             return codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
                 .AddParam(field.DeclaringType, "und")
                 .Block
-                .DeclareVar(typeof(object), "value", Ref("und." + field.Name))
+                .DeclareVar<object>("value", Ref("und." + field.Name))
                 .IfRefNullReturnFalse("value")
                 .MethodReturn(nestedGetter.UnderlyingExistsCodegen(CastRef(nestedGetter.TargetType, "value"), codegenMethodScope, codegenClassScope));
         }

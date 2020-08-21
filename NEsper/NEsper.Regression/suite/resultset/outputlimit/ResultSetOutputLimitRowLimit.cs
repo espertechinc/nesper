@@ -297,23 +297,23 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 // batch-window assertions
                 var path = new RegressionPath();
                 var eplWithBatchSingleKey =
-                    "@name('s0') select TheString from SupportBean#length_batch(10) order by TheString limit 1";
+                    "@Name('s0') select TheString from SupportBean#length_batch(10) order by TheString limit 1";
                 TryAssertionLimitOneSingleKeySortBatch(env, path, eplWithBatchSingleKey);
 
                 var eplWithBatchMultiKey =
-                    "@name('s0') select TheString, IntPrimitive from SupportBean#length_batch(5) order by TheString asc, IntPrimitive desc limit 1";
+                    "@Name('s0') select TheString, IntPrimitive from SupportBean#length_batch(5) order by TheString asc, IntPrimitive desc limit 1";
                 TryAssertionLimitOneMultiKeySortBatch(env, path, eplWithBatchMultiKey);
 
                 // context output-when-terminated assertions
                 env.CompileDeploy("create context StartS0EndS1 as start SupportBean_S0 end SupportBean_S1", path);
 
-                var eplContextSingleKey = "@name('s0') context StartS0EndS1 " +
+                var eplContextSingleKey = "@Name('s0') context StartS0EndS1 " +
                                           "select TheString from SupportBean#keepall " +
                                           "output snapshot when terminated " +
                                           "order by TheString limit 1";
                 TryAssertionLimitOneSingleKeySortBatch(env, path, eplContextSingleKey);
 
-                var eplContextMultiKey = "@name('s0') context StartS0EndS1 " +
+                var eplContextMultiKey = "@Name('s0') context StartS0EndS1 " +
                                          "select TheString, IntPrimitive from SupportBean#keepall " +
                                          "output snapshot when terminated " +
                                          "order by TheString asc, IntPrimitive desc limit 1";
@@ -376,7 +376,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream * from SupportBean#length_batch(3) limit 1";
+                var epl = "@Name('s0') select irstream * from SupportBean#length_batch(3) limit 1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 TryAssertion(env);
@@ -395,7 +395,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
                 string epl;
 
-                epl = "@name('s0') select * from SupportBean#length(5) output every 5 events limit myoffset, myrows";
+                epl = "@Name('s0') select * from SupportBean#length(5) output every 5 events limit myoffset, myrows";
                 env.CompileDeploy(epl, path).AddListener("s0");
                 TryAssertionVariable(env);
                 env.UndeployModuleContaining("s0");
@@ -403,7 +403,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.SendEventBean(new SupportBeanNumeric(2, 1));
 
                 epl =
-                    "@name('s0') select * from SupportBean#length(5) output every 5 events limit myrows offset myoffset";
+                    "@Name('s0') select * from SupportBean#length(5) output every 5 events limit myrows offset myoffset";
                 env.CompileDeploy(epl, path).AddListener("s0");
                 TryAssertionVariable(env);
                 env.UndeployModuleContaining("s0");
@@ -422,7 +422,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select * from SupportBean#length(5) output every 5 events order by IntPrimitive limit 2 offset 2";
+                    "@Name('s0') select * from SupportBean#length(5) output every 5 events order by IntPrimitive limit 2 offset 2";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fields = new [] { "TheString" };
@@ -482,7 +482,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 TryAssertion(env);
                 env.UndeployAll();
 
-                env.EplToModelCompileDeploy("@name('s0') " + epl).AddListener("s0");
+                env.EplToModelCompileDeploy("@Name('s0') " + epl).AddListener("s0");
                 TryAssertion(env);
                 env.UndeployAll();
             }
@@ -493,7 +493,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) group by TheString order by sum(IntPrimitive) limit 2";
+                    "@Name('s0') select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) group by TheString order by sum(IntPrimitive) limit 2";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fields = new [] { "TheString","mysum" };
@@ -540,7 +540,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 SendTimer(env, 1000);
                 var epl =
-                    "@name('s0') select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) output every 10 seconds order by TheString desc limit 2";
+                    "@Name('s0') select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) output every 10 seconds order by TheString desc limit 2";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fields = new [] { "TheString","mysum" };
@@ -568,7 +568,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 SendTimer(env, 1000);
                 var epl =
-                    "@name('s0') select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) group by TheString output snapshot every 10 seconds order by sum(IntPrimitive) desc limit 2";
+                    "@Name('s0') select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) group by TheString output snapshot every 10 seconds order by sum(IntPrimitive) desc limit 2";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fields = new [] { "TheString","mysum" };
@@ -596,7 +596,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 SendTimer(env, 1000);
                 var epl =
-                    "@name('s0') select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) group by TheString output snapshot every 10 seconds order by sum(IntPrimitive) desc limit -1 offset 1";
+                    "@Name('s0') select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) group by TheString output snapshot every 10 seconds order by sum(IntPrimitive) desc limit -1 offset 1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fields = new [] { "TheString","mysum" };

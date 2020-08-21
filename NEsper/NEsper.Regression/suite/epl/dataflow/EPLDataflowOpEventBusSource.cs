@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             SendableEvent[] events)
         {
             env.CompileDeploy(
-                "@name('flow') create dataflow MyDataFlowOne " +
+                "@Name('flow') create dataflow MyDataFlowOne " +
                 "EventBusSource -> ReceivedStream<" + typeName + "> {} " +
                 "DefaultSupportCaptureOp(ReceivedStream) {}");
 
@@ -90,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             bool underlying)
         {
             env.CompileDeploy(
-                "@name('flow') create dataflow MyDataFlowOne " +
+                "@Name('flow') create dataflow MyDataFlowOne " +
                 "EventBusSource -> ReceivedStream<" + (underlying ? "MyEventOA" : "EventBean<MyEventOA>") + "> {} " +
                 "DefaultSupportCaptureOp(ReceivedStream) {}",
                 path);
@@ -155,7 +155,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 // test doc samples
                 var path = new RegressionPath();
                 env.CompileDeploy("create schema SampleSchema(tagId string, locX double, locY double)", path);
-                var epl = "@name('flow') create dataflow MyDataFlow\n" +
+                var epl = "@Name('flow') create dataflow MyDataFlow\n" +
                           "\n" +
                           "  // Receive all SampleSchema events from the event bus.\n" +
                           "  // No transformation.\n" +
@@ -197,7 +197,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 // test collector
                 env.CompileDeploy(
-                    "@name('flow') create dataflow MyDataFlowOne " +
+                    "@Name('flow') create dataflow MyDataFlowOne " +
                     "EventBusSource -> ReceivedStream<MyEventOA> {filter: p0 like 'A%'} " +
                     "DefaultSupportCaptureOp(ReceivedStream) {}",
                     path);

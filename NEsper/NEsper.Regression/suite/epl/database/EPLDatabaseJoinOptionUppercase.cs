@@ -19,7 +19,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             var sql = "select myint from mytesttable where ${TheString} = myvarchar'" +
                       "metadatasql 'select myint from mytesttable'";
-            var stmtText = "@name('s0') select MYINT from " +
+            var stmtText = "@Name('s0') select MYINT from " +
                            " sql:MyDBUpperCase ['" +
                            sql +
                            "] as S0," +

@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			env.CompileDeploy(
 					createSchemaEPL +
 					"create constant variable string keyChar = 'a';" +
-					"@name('s0') select mapped(keyChar||'1') as c0, mapped(keyChar||'2') as c1 from LocalEvent as e;\n"
+					"@Name('s0') select mapped(keyChar||'1') as c0, mapped(keyChar||'2') as c1 from LocalEvent as e;\n"
 				)
 				.AddListener("s0");
 			var eventType = env.Runtime.EventTypeService.GetEventType(env.DeploymentId("s0"), "LocalEvent");

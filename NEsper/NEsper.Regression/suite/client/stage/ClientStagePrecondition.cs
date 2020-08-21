@@ -37,8 +37,8 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			public void Run(RegressionEnvironment env)
 			{
 				RegressionPath path = new RegressionPath();
-				env.CompileDeploy("@name('context') @public create context MyContext initiated by SupportBean", path);
-				env.CompileDeploy("@name('stmt') context MyContext select count(*) from SupportBean_S0", path);
+				env.CompileDeploy("@Name('context') @public create context MyContext initiated by SupportBean", path);
+				env.CompileDeploy("@Name('stmt') context MyContext select count(*) from SupportBean_S0", path);
 				string idCreate = env.DeploymentId("context");
 				string idStmt = env.DeploymentId("stmt");
 
@@ -59,8 +59,8 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			public void Run(RegressionEnvironment env)
 			{
 				RegressionPath path = new RegressionPath();
-				env.CompileDeploy("@name('variable') @public create variable int MyVariable", path);
-				env.CompileDeploy("@name('stmt') select MyVariable from SupportBean_S0", path);
+				env.CompileDeploy("@Name('variable') @public create variable int MyVariable", path);
+				env.CompileDeploy("@Name('stmt') select MyVariable from SupportBean_S0", path);
 
 				EPStage stage = env.Runtime.StageService.GetStage("S1");
 				string idCreate = env.DeploymentId("variable");
@@ -78,8 +78,8 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			public void Run(RegressionEnvironment env)
 			{
 				RegressionPath path = new RegressionPath();
-				env.CompileDeploy("@name('context') @public create context MyContext initiated by SupportBean", path);
-				env.CompileDeploy("@name('stmt') context MyContext select count(*) from SupportBean_S0", path);
+				env.CompileDeploy("@Name('context') @public create context MyContext initiated by SupportBean", path);
+				env.CompileDeploy("@Name('stmt') context MyContext select count(*) from SupportBean_S0", path);
 
 				EPStage stage = env.Runtime.StageService.GetStage("S1");
 				string idCreate = env.DeploymentId("context");
@@ -88,7 +88,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 				TryInvalidStageProvides(env, stage, idCreate, idStmt, "context 'MyContext'");
 				TryInvalidStageConsumes(env, stage, idStmt, idCreate, "context 'MyContext'");
 
-				env.CompileDeploy("@name('stmt-2') context MyContext select count(*) from SupportBean_S1", path);
+				env.CompileDeploy("@Name('stmt-2') context MyContext select count(*) from SupportBean_S1", path);
 				string idStmt2 = env.DeploymentId("stmt-2");
 
 				TryInvalidStage(env, stage, new string[] {idCreate, idStmt});
@@ -104,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			public void Run(RegressionEnvironment env)
 			{
 				RegressionPath path = new RegressionPath();
-				env.CompileDeploy("@name('create') @public create window MyWindow#keepall as SupportBean", path);
+				env.CompileDeploy("@Name('create') @public create window MyWindow#keepall as SupportBean", path);
 				EPStage stage = env.Runtime.StageService.GetStage("S1");
 				string idCreate = env.DeploymentId("create");
 
@@ -134,7 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			string objectName,
 			string epl)
 		{
-			env.CompileDeploy("@name('tester') " + epl, path);
+			env.CompileDeploy("@Name('tester') " + epl, path);
 			string idTester = env.DeploymentId("tester");
 			TryInvalidStageProvides(env, stage, idCreate, idTester, objectName);
 			TryInvalidStageConsumes(env, stage, idTester, idCreate, objectName);

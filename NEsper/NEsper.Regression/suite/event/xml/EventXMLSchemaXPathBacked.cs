@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             string typeName,
             RegressionPath path)
         {
-            var stmtSelectWild = "@name('s0') select * from " + typeName;
+            var stmtSelectWild = "@Name('s0') select * from " + typeName;
             env.CompileDeploy(stmtSelectWild, path).AddListener("s0");
             var type = env.Statement("s0").EventType;
             SupportEventTypeAssertionUtil.AssertConsistency(type);
@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 type.PropertyDescriptors);
             env.UndeployModuleContaining("s0");
 
-            var stmt = "@name('s0') select nested1 as nodeProp," +
+            var stmt = "@Name('s0') select nested1 as nodeProp," +
                        "prop4 as nested1Prop," +
                        "nested1.prop2 as nested2Prop," +
                        "nested3.nested4('a').prop5[1] as complexProp," +

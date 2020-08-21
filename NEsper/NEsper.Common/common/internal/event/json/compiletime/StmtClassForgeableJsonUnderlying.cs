@@ -193,7 +193,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 		{
 			if (desc.NumFieldsSupertype > 0) {
 				method.Block
-					.DeclareVar(typeof(int), "parent", ExprDotMethod(Ref("super"), "getNativeNum", Ref("name")))
+					.DeclareVar<int>("parent", ExprDotMethod(Ref("super"), "getNativeNum", Ref("name")))
 					.IfCondition(Relational(Ref("parent"), GT, Constant(-1)))
 					.BlockReturn(Ref("parent"));
 			}
@@ -284,7 +284,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 		{
 			if (desc.OptionalSupertype != null) {
 				method.Block
-					.DeclareVar(typeof(bool), "parent", ExprDotMethod(Ref("base"), "NativeContainsKey", Ref("name")))
+					.DeclareVar<bool>("parent", ExprDotMethod(Ref("base"), "NativeContainsKey", Ref("name")))
 					.IfCondition(Ref("parent"))
 					.BlockReturn(ConstantTrue());
 			}

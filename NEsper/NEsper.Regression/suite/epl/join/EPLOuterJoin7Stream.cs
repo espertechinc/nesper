@@ -647,7 +647,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// -&gt; s4
                 /// -&gt; s5
                 /// </summary>
-                var epl = "@name('s0') select * from " +
+                var epl = "@Name('s0') select * from " +
                           "SupportBean_S0#length(1000) as S0 " +
                           " left outer join SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10 " +
                           " right outer join SupportBean_S2#length(1000) as S2 on S0.P01 = S2.P20 " +
@@ -1140,7 +1140,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// -&gt; s4
                 /// -&gt; s5
                 /// </summary>
-                var epl = "@name('s0') select * from " +
+                var epl = "@Name('s0') select * from " +
                           "SupportBean_S0#length(1000) as S0 " +
                           " left outer join SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10 " +
                           " right outer join SupportBean_S2#length(1000) as S2 on S0.P00 = S2.P20 " +
@@ -1164,7 +1164,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// -&gt; s4
                 /// -&gt; s5
                 /// </summary>
-                var epl = "@name('s0') select * from " +
+                var epl = "@Name('s0') select * from " +
                           "SupportBean_S1#length(1000) as S1 " +
                           " right outer join SupportBean_S3#length(1000) as S3 on S1.P10 = S3.P30 " +
                           " left outer join SupportBean_S4#length(1000) as S4 on S1.P10 = S4.P40 " +
@@ -1189,7 +1189,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// -&gt; s4
                 /// -&gt; s5
                 /// </summary>
-                var epl = "@name('s0') select * from " +
+                var epl = "@Name('s0') select * from " +
                           "SupportBean_S2#length(1000) as S2 " +
                           " right outer join SupportBean_S6#length(1000) as S6 on S2.P20 = S6.P60 " +
                           " left outer join SupportBean_S5#length(1000) as S5 on S2.P20 = S5.P50 " +
@@ -1214,7 +1214,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// -&gt; s4
                 /// -&gt; s5
                 /// </summary>
-                var epl = "@name('s0') select * from " +
+                var epl = "@Name('s0') select * from " +
                           "SupportBean_S3#length(1000) as S3 " +
                           " left outer join SupportBean_S1#length(1000) as S1 on S3.P30 = S1.P10 " +
                           " left outer join SupportBean_S4#length(1000) as S4 on S1.P10 = S4.P40 " +
@@ -1239,7 +1239,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// -&gt; s4
                 /// -&gt; s5
                 /// </summary>
-                var epl = "@name('s0') select * from " +
+                var epl = "@Name('s0') select * from " +
                           "SupportBean_S4#length(1000) as S4 " +
                           " right outer join SupportBean_S1#length(1000) as S1 on S4.P40 = S1.P10 " +
                           " right outer join SupportBean_S3#length(1000) as S3 on S1.P10 = S3.P30 " +
@@ -1264,7 +1264,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// -&gt; s4
                 /// -&gt; s5
                 /// </summary>
-                var epl = "@name('s0') select * from " +
+                var epl = "@Name('s0') select * from " +
                           "SupportBean_S5#length(1000) as S5 " +
                           " right outer join SupportBean_S2#length(1000) as S2 on S2.P20 = S5.P50 " +
                           " right outer join SupportBean_S6#length(1000) as S6 on S2.P20 = S6.P60 " +
@@ -1289,7 +1289,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// -&gt; s4
                 /// -&gt; s5
                 /// </summary>
-                var epl = "@name('s0') select * from " +
+                var epl = "@Name('s0') select * from " +
                           "SupportBean_S6#length(1000) as S6 " +
                           " left outer join SupportBean_S2#length(1000) as S2 on S2.P20 = S6.P60 " +
                           " left outer join SupportBean_S5#length(1000) as S5 on S2.P20 = S5.P50 " +

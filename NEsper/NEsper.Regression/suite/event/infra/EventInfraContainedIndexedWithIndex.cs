@@ -137,8 +137,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
 			env.CompileDeploy(
 					createSchemaEPL +
-					"@name('s0') select * from LocalEvent[indexed[0]];\n" +
-					"@name('s1') select * from LocalEvent[indexed[1]];\n"
+					"@Name('s0') select * from LocalEvent[indexed[0]];\n" +
+					"@Name('s1') select * from LocalEvent[indexed[1]];\n"
 				)
 				.AddListener("s0")
 				.AddListener("s1");

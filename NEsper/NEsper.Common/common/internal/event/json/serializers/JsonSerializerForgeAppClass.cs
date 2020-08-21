@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
                 _serializeMethodName,
                 refs.Writer,
                 refs.Field,
-                NewInstance(_factoryClassName));
+                NewInstanceInner(_factoryClassName));
         }
     }
 } // end of namespace

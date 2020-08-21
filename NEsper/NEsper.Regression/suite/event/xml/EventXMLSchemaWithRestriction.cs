@@ -59,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             string eventTypeName,
             RegressionPath path)
         {
-            var text = "@name('s0') select order_amount from " + eventTypeName;
+            var text = "@Name('s0') select order_amount from " + eventTypeName;
             env.CompileDeploy(text, path).AddListener("s0");
 
             SupportXML.SendXMLEvent(

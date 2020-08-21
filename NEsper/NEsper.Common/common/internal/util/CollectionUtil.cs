@@ -1131,13 +1131,17 @@ namespace com.espertech.esper.common.@internal.util
             return true;
         }
 
-        public static Object GetMapValueChecked(
-            Object candidate,
-            Object key)
+        public static object GetMapValueChecked(
+            object candidate,
+            object key)
         {
-            if (candidate is IDictionary<object, object> map) {
+            if (candidate == null) {
+                return null;
+            }
+            else if (candidate is IDictionary<object, object> map) {
                 return map.Get(key);
-            } else if (candidate.GetType().IsGenericStringDictionary()) {
+            }
+            else if (candidate.GetType().IsGenericStringDictionary()) {
                 var dictionary = candidate.AsObjectDictionary();
                 return dictionary.Get(key);
             }
@@ -1146,12 +1150,16 @@ namespace com.espertech.esper.common.@internal.util
         }
 
         public static bool GetMapKeyExistsChecked(
-            Object candidate,
-            Object key)
+            object candidate,
+            object key)
         {
-            if (candidate is IDictionary<object, object> map) {
+            if (candidate == null) {
+                return null;
+            }
+            else if (candidate is IDictionary<object, object> map) {
                 return map.ContainsKey(key);
-            } else if (candidate.GetType().IsGenericStringDictionary()) {
+            }
+            else if (candidate.GetType().IsGenericStringDictionary()) {
                 var dictionary = candidate.AsObjectDictionary();
                 return dictionary.ContainsKey(key);
             }

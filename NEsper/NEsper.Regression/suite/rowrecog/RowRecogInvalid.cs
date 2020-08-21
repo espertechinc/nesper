@@ -16,7 +16,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
     {
         public void Run(RegressionEnvironment env)
         {
-            var text = "@name('s0') select * from SupportRecogBean " +
+            var text = "@Name('s0') select * from SupportRecogBean " +
                        "match_recognize (" +
                        " measures A as a_array" +
                        " pattern (A+ B)" +

@@ -169,20 +169,20 @@ namespace com.espertech.esper.common.@internal.filterspec
                     "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
                 .DeclareVar<FilterOperator>(
-                    "op",
+                    "filterOperator",
                     EnumValue(typeof(FilterOperator), filterOperator.GetName()));
 
             var getFilterValue = new CodegenExpressionLambda(method.Block)
                 .WithParams(FilterSpecParam.GET_FILTER_VALUE_FP);
             var param = NewInstance<ProxyFilterSpecParam>(
                 Ref("lookupable"),
-                Ref("op"),
+                Ref("filterOperator"),
                 getFilterValue);
 
             //var param = NewAnonymousClass(
             //    method.Block,
             //    typeof(FilterSpecParam),
-            //    +++Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
+            //    +++Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("filterOperator")));
             //var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
             //    .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
             //param.AddMethod("GetFilterValue", getFilterValue);

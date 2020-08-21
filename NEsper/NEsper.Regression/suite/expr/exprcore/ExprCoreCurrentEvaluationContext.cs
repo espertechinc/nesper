@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	        public void Run(RegressionEnvironment env) {
 	            SendTimer(env, 0);
 
-	            var epl = "@name('s0') select " +
+	            var epl = "@Name('s0') select " +
 	                      "current_evaluation_context() as c0, " +
 	                      "current_evaluation_context(), " +
 	                      "current_evaluation_context().getRuntimeURI() as c2 from SupportBean";

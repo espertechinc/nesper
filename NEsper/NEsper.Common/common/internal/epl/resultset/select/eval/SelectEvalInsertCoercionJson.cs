@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 			CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
 			methodNode.Block
 				.DeclareVar(source.Detail.UnderlyingClassName, "src", CastUnderlying(source.Detail.UnderlyingClassName, ArrayAtIndex(refEPS, Constant(0))))
-				.DeclareVar(target.Detail.UnderlyingClassName, "und", NewInstance(target.Detail.UnderlyingClassName));
+				.DeclareVar(target.Detail.UnderlyingClassName, "und", NewInstanceInner(target.Detail.UnderlyingClassName));
 			foreach (var entryTarget in target.Detail.FieldDescriptors) {
 				var src = source.Detail.FieldDescriptors.Get(entryTarget.Key);
 				if (src == null) {

@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				var epl = "@public @buseventtype create json schema JsonEvent(person " +
 				          typeof(MyLocalPersonEvent).FullName +
 				          ");\n" +
-				          "@name('s0') select * from JsonEvent;\n";
+				          "@Name('s0') select * from JsonEvent;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				var uuid = Guid.NewGuid();
@@ -67,9 +67,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			public void Run(RegressionEnvironment env)
 			{
 				var epl = "@JsonSchema(dynamic=true) @public @buseventtype create json schema SensorEvent();\n" +
-				          "@name('s0') select entityID? as entityId, temperature? as temperature, status? as status, \n" +
+				          "@Name('s0') select entityID? as entityId, temperature? as temperature, status? as status, \n" +
 				          "\tentityName? as entityName, vt? as vt, flags? as flags from SensorEvent;\n" +
-				          "@name('s1') select entityName?.english as englishEntityName from SensorEvent";
+				          "@Name('s1') select entityName?.english as englishEntityName from SensorEvent";
 				env.CompileDeploy(epl).AddListener("s0").AddListener("s1");
 
 				var json = "{\n" +
@@ -109,7 +109,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				var path = new RegressionPath();
 				env.CompileDeploy("@public @buseventtype create json schema CarLocUpdateEvent(carId string, direction int)", path);
-				env.CompileDeploy("@name('s0') select carId, direction, count(*) as cnt from CarLocUpdateEvent(direction = 1)#time(1 min)", path)
+				env.CompileDeploy("@Name('s0') select carId, direction, count(*) as cnt from CarLocUpdateEvent(direction = 1)#time(1 min)", path)
 					.AddListener("s0");
 
 				var @event = "{" +
@@ -133,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				var epl = "create json schema Names(lastname string, firstname string);\n" +
 				          "@public @buseventtype create json schema BookEvent(isbn string, author Names, editor Names, title string, category string[]);\n" +
-				          "@name('s0') select isbn, author.lastname as authorName, editor.lastname as editorName, \n" +
+				          "@Name('s0') select isbn, author.lastname as authorName, editor.lastname as editorName, \n" +
 				          "  category[0] as primaryCategory from BookEvent;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
@@ -170,7 +170,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				var epl = "create json schema IdAndType(int string, type string);\n" +
 				          "create json schema Batters(machine string, batter IdAndType[]);\n" +
 				          "@public @buseventtype create json schema CakeEvent(id string, type string, name string, batters Batters, topping IdAndType[]);\n" +
-				          "@name('s0') select name, batters.batter[0].type as firstBatterType,\n" +
+				          "@Name('s0') select name, batters.batter[0].type as firstBatterType,\n" +
 				          "  topping[0].type as firstToppingType, batters.machine as batterMachine, batters.batter.countOf() as countBatters,\n" +
 				          "  topping.countOf() as countToppings from CakeEvent;\n";
 				env.CompileDeploy(epl).AddListener("s0");

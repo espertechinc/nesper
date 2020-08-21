@@ -26,7 +26,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             var fields = Collections.Array("RuntimeURI", "Timestamp", "InputCount", "InputCountDelta", "ScheduleDepth");
             SendTimer(env, 1000);
 
-            var text = "@name('s0') select * from " + typeof(RuntimeMetric).FullName;
+            var text = "@Name('s0') select * from " + typeof(RuntimeMetric).FullName;
             env.CompileDeploy(text).AddListener("s0");
 
             env.SendEventBean(new SupportBean());

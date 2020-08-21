@@ -133,13 +133,13 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .DeclareVar<ExprFilterSpecLookupable>(
                     "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
-                .DeclareVar<FilterOperator>("op", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
+                .DeclareVar<FilterOperator>("filterOperator", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
 
             // getFilterValue-FilterSpecParamExprNode code
             //var param = NewAnonymousClass(
             //    method.Block,
             //    typeof(FilterSpecParamExprNode),
-            //    Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
+            //    Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("filterOperator")));
             //var getFilterValue = CodegenMethod.MakeMethod(typeof(object), GetType(), classScope)
             //    .AddParam(GET_FILTER_VALUE_FP);
             //param.AddMethod("GetFilterValue", getFilterValue);
@@ -149,7 +149,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 
             var param = NewInstance<ProxyFilterSpecParamExprNode>(
                 Ref("lookupable"),
-                Ref("op"));
+                Ref("filterOperator"));
 
             if (TaggedEventTypes != null && !TaggedEventTypes.IsEmpty() ||
                 _arrayEventTypes != null && !_arrayEventTypes.IsEmpty()) {

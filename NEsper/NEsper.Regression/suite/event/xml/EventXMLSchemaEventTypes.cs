@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             String eventTypeName,
             RegressionPath path)
         {
-            var stmtSelectWild = "@name('s0') select * from " + eventTypeName;
+            var stmtSelectWild = "@Name('s0') select * from " + eventTypeName;
             env.CompileDeploy(stmtSelectWild, path).AddListener("s0");
 
             var type = env.Statement("s0").EventType;

@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				env.CompileDeploy(
 						"@public @buseventtype create json schema JsonEvent(`p q` string, ABC string, abc string, AbC string);\n" +
-						"@name('s0') select * from JsonEvent#keepall")
+						"@Name('s0') select * from JsonEvent#keepall")
 					.AddListener("s0");
 
 				env.SendEventJson(

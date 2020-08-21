@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select " +
+				var epl = "@Name('s0') select " +
 				          "LongDate.roll('date', true) as c0, " +
 				          "DateTimeEx.roll('date', true) as c1, " +
 				          "DateTimeOffset.roll('date', true) as c2, " +
@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select " +
+				var epl = "@Name('s0') select " +
 				          "LongDate.asArrayOfString() as c0, " +
 				          "DateTimeEx.asArrayOfString() as c1, " +
 				          "DateTimeOffset.asArrayOfString() as c2, " +

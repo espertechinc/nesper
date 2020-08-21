@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			{
 				string epl = "create table MyTable(windowcol window(*) @type('SupportBean'));\n" +
 				             "into table MyTable select window(*) as windowcol from SupportBean;\n" +
-				             "@name('s0') select MyTable.windowcol.listReference() as collref from SupportBean_S0";
+				             "@Name('s0') select MyTable.windowcol.listReference() as collref from SupportBean_S0";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				AssertType(env, typeof(IList<EventBean>), "collref");
@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			{
 				string epl = "create table MyTable(windowcol window(*) @type('SupportBean'));\n" +
 				             "into table MyTable select window(*) as windowcol from SupportBean;\n" +
-				             "@name('s0') select windowcol.first(intPrimitive) as c0, windowcol.last(intPrimitive) as c1, windowcol.countEvents() as c2 from SupportBean_S0, MyTable";
+				             "@Name('s0') select windowcol.first(IntPrimitive) as c0, windowcol.last(IntPrimitive) as c1, windowcol.countEvents() as c2 from SupportBean_S0, MyTable";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				AssertType(env, typeof(int?), "c0,c1,c2");
@@ -87,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			{
 				string epl = "create table MyTable(windowcol window(*) @type('SupportBean'));\n" +
 				             "into table MyTable select window(*) as windowcol from SupportBean#length(2);\n" +
-				             "@name('s0') select MyTable.windowcol.first() as c0, MyTable.windowcol.last() as c1 from SupportBean_S0";
+				             "@Name('s0') select MyTable.windowcol.first() as c0, MyTable.windowcol.last() as c1 from SupportBean_S0";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				AssertType(env, typeof(SupportBean), "c0,c1");
@@ -121,9 +121,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string[] fields = "theString,c0,c1".SplitCsv();
+				string[] fields = "TheString,c0,c1".SplitCsv();
 				string epl =
-					"@name('s0') select theString, window(*).first() as c0, window(*).last() as c1 from SupportBean#length(3) as sb group by theString";
+					"@Name('s0') select TheString, window(*).first() as c0, window(*).last() as c1 from SupportBean#length(3) as sb group by TheString";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				AssertType(env, typeof(SupportBean), "c0,c1");
@@ -169,7 +169,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				TryInvalidCompile(
 					env,
 					path,
-					"select MyTable.windowcol.listReference(intPrimitive) from SupportBean_S0",
+					"select MyTable.windowcol.listReference(IntPrimitive) from SupportBean_S0",
 					"Failed to validate select-clause expression 'MyTable.windowcol.listReference(int...(45 chars)': Invalid number of parameters");
 
 				env.UndeployAll();

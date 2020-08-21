@@ -43,21 +43,21 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             var path = new RegressionPath();
             env.CompileDeploy(
-                "@name('context') create context SegmentedByString " +
+                "@Name('context') create context SegmentedByString " +
                 "partition by TheString from SupportBean, P00 from SupportBean_S0",
                 path);
 
             var eplCreate = namedWindow
-                ? "@name('named window') context SegmentedByString create window MyInfra#keepall as SupportBean"
-                : "@name('table') context SegmentedByString create table MyInfra(TheString string primary key, IntPrimitive int primary key)";
+                ? "@Name('named window') context SegmentedByString create window MyInfra#keepall as SupportBean"
+                : "@Name('table') context SegmentedByString create table MyInfra(TheString string primary key, IntPrimitive int primary key)";
             env.CompileDeploy(eplCreate, path);
             env.CompileDeploy(
-                "@name('insert') context SegmentedByString insert into MyInfra select TheString, IntPrimitive from SupportBean",
+                "@Name('insert') context SegmentedByString insert into MyInfra select TheString, IntPrimitive from SupportBean",
                 path);
 
             string[] fieldsNW = {"TheString", "IntPrimitive"};
             env.CompileDeploy(
-                "@name('s0') context SegmentedByString " +
+                "@Name('s0') context SegmentedByString " +
                 "on SupportBean_S0 select mywin.* from MyInfra as mywin",
                 path);
             env.AddListener("s0");
@@ -94,21 +94,21 @@ namespace com.espertech.esper.regressionlib.suite.context
             bool namedWindow)
         {
             var path = new RegressionPath();
-            var epl = "@name('create-ctx') create context SegmentedByCustomer " +
+            var epl = "@Name('create-ctx') create context SegmentedByCustomer " +
                       "  initiated by SupportBean_S0 S0 " +
                       "  terminated by SupportBean_S1(P00 = P10);" +
                       "" +
-                      "@name('create-infra') context SegmentedByCustomer\n" +
+                      "@Name('create-infra') context SegmentedByCustomer\n" +
                       (namedWindow
                           ? "create window MyInfra#keepall as SupportBean;"
                           : "create table MyInfra(TheString string primary key, IntPrimitive int);") +
                       "" +
                       (namedWindow
-                          ? "@name('insert-into-window') insert into MyInfra select TheString, IntPrimitive from SupportBean;"
-                          : "@name('insert-into-table') context SegmentedByCustomer insert into MyInfra select TheString, IntPrimitive from SupportBean;"
+                          ? "@Name('insert-into-window') insert into MyInfra select TheString, IntPrimitive from SupportBean;"
+                          : "@Name('insert-into-table') context SegmentedByCustomer insert into MyInfra select TheString, IntPrimitive from SupportBean;"
                       ) +
                       "" +
-                      "@name('create-index') context SegmentedByCustomer create index MyIndex on MyInfra(IntPrimitive);";
+                      "@Name('create-index') context SegmentedByCustomer create index MyIndex on MyInfra(IntPrimitive);";
             env.CompileDeploy(epl, path);
 
             env.SendEventBean(new SupportBean_S0(1, "A"));
@@ -139,26 +139,26 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             var path = new RegressionPath();
             env.CompileDeploy(
-                "@name('context') create context SegmentedByString " +
+                "@Name('context') create context SegmentedByString " +
                 "partition by TheString from SupportBean, P00 from SupportBean_S0, P10 from SupportBean_S1",
                 path);
 
             string[] fieldsNW = {"TheString", "IntPrimitive"};
             var eplCreate = namedWindow
-                ? "@name('named window') context SegmentedByString create window MyInfra#keepall as SupportBean"
-                : "@name('named window') context SegmentedByString create table MyInfra(TheString string primary key, IntPrimitive int primary key)";
+                ? "@Name('named window') context SegmentedByString create window MyInfra#keepall as SupportBean"
+                : "@Name('named window') context SegmentedByString create table MyInfra(TheString string primary key, IntPrimitive int primary key)";
             env.CompileDeploy(eplCreate, path);
             var eplInsert = namedWindow
-                ? "@name('insert') insert into MyInfra select TheString, IntPrimitive from SupportBean"
-                : "@name('insert') context SegmentedByString insert into MyInfra select TheString, IntPrimitive from SupportBean";
+                ? "@Name('insert') insert into MyInfra select TheString, IntPrimitive from SupportBean"
+                : "@Name('insert') context SegmentedByString insert into MyInfra select TheString, IntPrimitive from SupportBean";
             env.CompileDeploy(eplInsert, path);
 
-            env.CompileDeploy("@name('s0') context SegmentedByString select irstream * from MyInfra", path)
+            env.CompileDeploy("@Name('s0') context SegmentedByString select irstream * from MyInfra", path)
                 .AddListener("s0");
 
             // Delete testing
             env.CompileDeploy(
-                "@name('on-delete') context SegmentedByString on SupportBean_S0 delete from MyInfra",
+                "@Name('on-delete') context SegmentedByString on SupportBean_S0 delete from MyInfra",
                 path);
 
             env.SendEventBean(new SupportBean("G1", 1));
@@ -230,7 +230,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
             // update testing
             env.CompileDeploy(
-                "@name('on-merge') context SegmentedByString on SupportBean_S0 update MyInfra set IntPrimitive = IntPrimitive + 1",
+                "@Name('on-merge') context SegmentedByString on SupportBean_S0 update MyInfra set IntPrimitive = IntPrimitive + 1",
                 path);
 
             env.SendEventBean(new SupportBean("G4", 4));
@@ -299,7 +299,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             epl += namedWindow
                 ? "context SegmentedByString create window MyInfra#keepall as SupportBean;\n"
                 : "context SegmentedByString create table MyInfra (TheString string primary key, IntPrimitive int);\n";
-            epl += "@name('insert') context SegmentedByString insert into MyInfra select TheString, IntPrimitive from SupportBean;\n";
+            epl += "@Name('insert') context SegmentedByString insert into MyInfra select TheString, IntPrimitive from SupportBean;\n";
             epl += "@Audit @Name('s0') context SegmentedByString " +
                    "select *, (select max(IntPrimitive) from MyInfra) as mymax from SupportBean_S0;\n";
             env.CompileDeploy(epl).AddListener("s0");
@@ -381,16 +381,16 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('context') create context SegmentedByString partition by TheString from SupportBean",
+                    "@Name('context') create context SegmentedByString partition by TheString from SupportBean",
                     path);
 
                 env.CompileDeploy(
-                    "@name('named window') context SegmentedByString create window MyWindow#lastevent as SupportBean",
+                    "@Name('named window') context SegmentedByString create window MyWindow#lastevent as SupportBean",
                     path);
                 env.AddListener("named window");
-                env.CompileDeploy("@name('insert') insert into MyWindow select * from SupportBean", path);
+                env.CompileDeploy("@Name('insert') insert into MyWindow select * from SupportBean", path);
 
-                env.CompileDeploy("@name('s0') select * from MyWindow", path).AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from MyWindow", path).AddListener("s0");
 
                 string[] fields = {"TheString", "IntPrimitive"};
                 env.SendEventBean(new SupportBean("G1", 10));
@@ -420,7 +420,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.UndeployModuleContaining("s0");
 
                 // Out-of-context consumer not initialized
-                env.CompileDeploy("@name('s0') select count(*) as cnt from MyWindow", path);
+                env.CompileDeploy("@Name('s0') select count(*) as cnt from MyWindow", path);
                 EPAssertionUtil.AssertProps(
                     env.GetEnumerator("s0").Advance(),
                     new [] { "cnt" },
@@ -436,19 +436,19 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('context') create context SegmentedByString partition by TheString from SupportBean",
+                    "@Name('context') create context SegmentedByString partition by TheString from SupportBean",
                     path);
 
                 env.CompileDeploy(
-                    "@name('named window') context SegmentedByString create window MyWindow#keepall as SupportBean",
+                    "@Name('named window') context SegmentedByString create window MyWindow#keepall as SupportBean",
                     path);
                 env.AddListener("named window");
-                env.CompileDeploy("@name('insert') insert into MyWindow select * from SupportBean", path);
+                env.CompileDeploy("@Name('insert') insert into MyWindow select * from SupportBean", path);
 
                 string[] fieldsNW = {"TheString", "IntPrimitive"};
                 string[] fieldsCnt = {"TheString", "cnt"};
                 env.CompileDeploy(
-                    "@name('select') context SegmentedByString select TheString, count(*) as cnt from MyWindow group by TheString",
+                    "@Name('select') context SegmentedByString select TheString, count(*) as cnt from MyWindow group by TheString",
                     path);
                 env.AddListener("select");
 
@@ -502,7 +502,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // In-context consumer not initialized
                 env.CompileDeploy(
-                    "@name('select') context SegmentedByString select count(*) as cnt from MyWindow",
+                    "@Name('select') context SegmentedByString select count(*) as cnt from MyWindow",
                     path);
                 env.AddListener("select");
                 try {
@@ -520,12 +520,12 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('context') create context SegmentedByString " +
+                var epl = "@Name('context') create context SegmentedByString " +
                           "partition by TheString from SupportBean, P00 from SupportBean_S0, P10 from SupportBean_S1;\n";
                 epl +=
-                    "@name('named window') context SegmentedByString create window MyWindow#keepall as SupportBean;\n";
-                epl += "@name('insert') insert into MyWindow select * from SupportBean;\n";
-                epl += "@name('on-merge') context SegmentedByString " +
+                    "@Name('named window') context SegmentedByString create window MyWindow#keepall as SupportBean;\n";
+                epl += "@Name('insert') insert into MyWindow select * from SupportBean;\n";
+                epl += "@Name('on-merge') context SegmentedByString " +
                        "on SupportBean_S0 " +
                        "merge MyWindow " +
                        "when matched then " +
@@ -593,14 +593,14 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('context') create context SegmentedByString partition by TheString from SupportBean",
+                    "@Name('context') create context SegmentedByString partition by TheString from SupportBean",
                     path);
                 env.CompileDeploy(
-                    "@name('table') context SegmentedByString " +
+                    "@Name('table') context SegmentedByString " +
                     "create table MyTable(TheString string, IntPrimitive int primary key)",
                     path);
                 env.CompileDeploy(
-                    "@name('insert') context SegmentedByString insert into MyTable select TheString, IntPrimitive from SupportBean",
+                    "@Name('insert') context SegmentedByString insert into MyTable select TheString, IntPrimitive from SupportBean",
                     path);
 
                 env.SendEventBean(new SupportBean("G1", 10));

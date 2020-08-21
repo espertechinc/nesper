@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        }
 	    }
 
-	    public override char[][] Read(DataInput input, byte[] unitKey) {
+	    public override char[][] ReadValue(DataInput input, byte[] unitKey) {
 	        int len = input.ReadInt();
 	        if (len == -1) {
 	            return null;

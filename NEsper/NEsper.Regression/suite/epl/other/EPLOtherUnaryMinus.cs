@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             env.CompileDeploy(
                     "create variable double v = 1.0;\n;" +
-                    "@name('s0') select -IntPrimitive as c0, -v as c1 from SupportBean;\n")
+                    "@Name('s0') select -IntPrimitive as c0, -v as c1 from SupportBean;\n")
                 .AddListener("s0");
 
             env.SendEventBean(new SupportBean("E1", 10));

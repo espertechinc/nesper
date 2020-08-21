@@ -23,7 +23,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             var milestone = new AtomicLong();
 
-            var epl = "@name('s0') select " +
+            var epl = "@Name('s0') select " +
                       "TheString, " +
                       "nth(IntPrimitive,0) as int1, " + // current
                       "nth(IntPrimitive,1) as int2 " + // one before

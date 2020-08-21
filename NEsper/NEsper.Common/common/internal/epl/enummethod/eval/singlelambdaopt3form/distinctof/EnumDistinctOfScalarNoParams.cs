@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			}
 			else {
 				var arrayMK = MultiKeyPlanner.GetMKClassForComponentType(_fieldType.GetElementType());
-				method.Block.DeclareVar(typeof(IDictionary<object, object>), "distinct", NewInstance(typeof(LinkedHashMap<object, object>)));
+				method.Block.DeclareVar<IDictionary<object, object>>("distinct", NewInstance(typeof(LinkedHashMap<object, object>)));
 				
 				var loop = method.Block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL);
 				loop.DeclareVar(arrayMK, "comparable", NewInstance(arrayMK, Cast(_fieldType, Ref("next"))))

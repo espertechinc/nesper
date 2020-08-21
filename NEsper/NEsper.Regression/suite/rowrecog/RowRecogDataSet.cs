@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@name('s0') select * " +
+                var text = "@Name('s0') select * " +
                            "from SupportBean " +
                            "match_recognize (" +
                            " measures A.TheString as beginA, last(Z.TheString) as lastZ" +
@@ -261,7 +261,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var query = "@name('s0') SELECT * " +
+                var query = "@Name('s0') SELECT * " +
                             "FROM SupportRecogBean#keepall" +
                             "   MATCH_RECOGNIZE (" +
                             "       MEASURES A.TheString AS a_string," +

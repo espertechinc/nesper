@@ -86,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@name('s0') select irstream * from SupportMarketDataBean#length_batch(3)";
+                var text = "@Name('s0') select irstream * from SupportMarketDataBean#length_batch(3)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(MakeMarketDataEvent("E1"));
@@ -192,7 +192,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream * from SupportBean#length_batch(2)";
+                var epl = "@Name('s0') select irstream * from SupportBean#length_batch(2)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
                 var events = Get10Events();
 
@@ -243,7 +243,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream * from SupportBean#length_batch(1)";
+                var epl = "@Name('s0') select irstream * from SupportBean#length_batch(1)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
                 var events = Get10Events();
 
@@ -276,7 +276,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream * from SupportBean#length_batch(3)";
+                var epl = "@Name('s0') select irstream * from SupportBean#length_batch(3)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
                 var events = Get10Events();
 
@@ -337,7 +337,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@name('s0') select irstream *, " +
+                var text = "@Name('s0') select irstream *, " +
                            "prev(1, Symbol) as prev1, " +
                            "prevtail(0, Symbol) as prevTail0, " +
                            "prevtail(1, Symbol) as prevTail1, " +
@@ -379,7 +379,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var epl = "create window ABCWin#length_batch(3) as SupportBean;\n" +
                           "insert into ABCWin select * from SupportBean;\n" +
                           "on SupportBean_A delete from ABCWin where TheString = Id;\n" +
-                          "@name('s0') select irstream * from ABCWin;\n";
+                          "@Name('s0') select irstream * from ABCWin;\n";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("s0"), fields, null);
@@ -486,17 +486,17 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 string epl;
                 if (runType == ViewLengthBatchNormalRunType.VIEW) {
-                    epl = "@name('s0') select irstream TheString, prev(1, TheString) as prevString " +
+                    epl = "@Name('s0') select irstream TheString, prev(1, TheString) as prevString " +
                           "from SupportBean" +
                           (optionalDatawindow == null ? "#length_batch(3)" : optionalDatawindow);
                 }
                 else if (runType == ViewLengthBatchNormalRunType.GROUPWIN) {
-                    epl = "@name('s0') select irstream * from SupportBean#groupwin(DoubleBoxed)#length_batch(3)";
+                    epl = "@Name('s0') select irstream * from SupportBean#groupwin(DoubleBoxed)#length_batch(3)";
                 }
                 else if (runType == ViewLengthBatchNormalRunType.NAMEDWINDOW) {
                     epl = "create window ABCWin#length_batch(3) as SupportBean;\n" +
                           "insert into ABCWin select * from SupportBean;\n" +
-                          "@name('s0') select irstream * from ABCWin;\n";
+                          "@Name('s0') select irstream * from ABCWin;\n";
                 }
                 else {
                     throw new EPException("Unrecognized variant " + runType);

@@ -259,12 +259,12 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 			var @ref = Ref("rw");
 			method.Block
 				.DeclareVar<VariableReadWritePackage>(@ref.Ref, NewInstance<VariableReadWritePackage>())
-				.SetProperty(@ref, "setCopyMethods", MakeCopyMethods(_copyMethods, method, symbols, classScope))
-				.SetProperty(@ref, "setAssignments", MakeAssignments(_assignments, _variables, method, symbols, classScope))
-				.SetProperty(@ref, "setVariables", MakeVariables(_variables, method, symbols, classScope))
-				.SetProperty(@ref, "setWriters", MakeWriters(_writers, method, symbols, classScope))
-				.SetProperty(@ref, "setReadersForGlobalVars", MakeReadersForGlobalVars(_variables, method, symbols, classScope))
-				.SetProperty(@ref, "setMustCoerce", Constant(_mustCoerce))
+				.SetProperty(@ref, "CopyMethods", MakeCopyMethods(_copyMethods, method, symbols, classScope))
+				.SetProperty(@ref, "Assignments", MakeAssignments(_assignments, _variables, method, symbols, classScope))
+				.SetProperty(@ref, "Variables", MakeVariables(_variables, method, symbols, classScope))
+				.SetProperty(@ref, "Writers", MakeWriters(_writers, method, symbols, classScope))
+				.SetProperty(@ref, "ReadersForGlobalVars", MakeReadersForGlobalVars(_variables, method, symbols, classScope))
+				.SetProperty(@ref, "MustCoerce", Constant(_mustCoerce))
 				.MethodReturn(@ref);
 			return LocalMethod(method);
 		}
@@ -364,16 +364,16 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 			CodegenClassScope classScope)
 		{
 			if (copyMethods.IsEmpty()) {
-				return EnumValue(typeof(EmptyDictionary<EventType, EventBeanCopyMethod>), "Instance");
+				return EnumValue(typeof(EmptyDictionary<EventTypeSPI, EventBeanCopyMethod>), "Instance");
 			}
 
 			var method = parent.MakeChild(
-				typeof(IDictionary<EventType, EventBeanCopyMethod>),
+				typeof(IDictionary<EventTypeSPI, EventBeanCopyMethod>),
 				typeof(VariableReadWritePackageForge),
 				classScope);
-			method.Block.DeclareVar<IDictionary<EventType, EventBeanCopyMethod>>(
+			method.Block.DeclareVar<IDictionary<EventTypeSPI, EventBeanCopyMethod>>(
 				"methods",
-				NewInstance<Dictionary<EventType, EventBeanCopyMethod>>(Constant(copyMethods.Count)));
+				NewInstance<Dictionary<EventTypeSPI, EventBeanCopyMethod>>(Constant(copyMethods.Count)));
 			foreach (var entry in copyMethods) {
 				var type = EventTypeUtility.ResolveTypeCodegen(entry.Key, symbols.GetAddInitSvc(method));
 				var copyMethod = entry.Value.MakeCopyMethodClassScoped(classScope);

@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
         {
             var method = parent.MakeChild(typeof(JsonDeserializerBase), typeof(JsonForgeFactoryEventTypeTyped), classScope);
             method.Block
-                .MethodReturn(NewInstance(delegateClassName, fields.BaseHandler, fields.This, NewInstance(beanClassName)));
+                .MethodReturn(NewInstanceInner(delegateClassName, fields.BaseHandler, fields.This, NewInstance(beanClassName)));
             return LocalMethod(method);
         }
     }

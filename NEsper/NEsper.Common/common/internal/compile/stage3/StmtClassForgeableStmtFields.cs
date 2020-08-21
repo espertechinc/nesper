@@ -63,10 +63,12 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             // substitution-parameter members
             GenerateSubstitutionParamMembers(members);
 
-            // ctor
-            var ctor = new CodegenCtor(GetType(), ClassName, includeDebugSymbols, Collections.GetEmptyList<CodegenTypedParam>());
             var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, ClassName);
 
+            // ctor
+            var ctor = new CodegenCtor(GetType(), ClassName, includeDebugSymbols, Collections.GetEmptyList<CodegenTypedParam>());
+            ctor.Block.AssignRef(Ref("statementFields"), Ref("this"));
+            
             // init method
             var initMethod = _namespaceScope.InitMethod;
             foreach (var entry in _namespaceScope.FieldsUnshared) {

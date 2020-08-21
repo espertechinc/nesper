@@ -68,7 +68,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session.Destroy();
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEPLFromClauseMethodVariable()
         {
             RegressionSession session = RegressionRunner.Session();
@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             session.Destroy();
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestEPLFromClauseMethodMultikeyWArray()
         {
             RegressionSession session = RegressionRunner.Session();

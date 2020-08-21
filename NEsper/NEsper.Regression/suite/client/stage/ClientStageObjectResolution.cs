@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 		private const string EPL_EXPRESSION = "@public create expression MyExpression {1};\n";
 		private const string EPL_SCRIPT = "@public create expression MyScript(params)[ ];\n";
 
-		private const string EPL_OBJECTS = "@name('eplobjects') " +
+		private const string EPL_OBJECTS = "@Name('eplobjects') " +
 		                                   EPL_NAMED_WINDOW +
 		                                   EPL_CONTEXT +
 		                                   EPL_VARIABLE +
@@ -128,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 					eplExpression,
 					"A precondition is not satisfied: Required dependency declared-expression 'MyExpression' cannot be found");
 
-				var eplScript = "select MyScript(theString) from SupportBean";
+				var eplScript = "select MyScript(TheString) from SupportBean";
 				TryInvalidDeploy(env, path, eplScript, "A precondition is not satisfied: Required dependency script 'MyScript' cannot be found");
 
 				UnstageIt(env, "S1", idCreate);

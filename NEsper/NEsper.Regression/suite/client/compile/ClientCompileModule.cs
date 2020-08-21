@@ -188,7 +188,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var module = MakeModule("com.testit", "@name('A') select SupportStaticMethodLib.plusOne(intPrimitive) as val from SupportBean");
+				var module = MakeModule("com.testit", "@Name('A') select SupportStaticMethodLib.plusOne(IntPrimitive) as val from SupportBean");
 				module.Imports.Add(new ImportNamespace(typeof(SupportStaticMethodLib)));
 
 				var compiled = CompileModule(env, module);
@@ -202,7 +202,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 				var epl = "import " +
 				          typeof(SupportStaticMethodLib).Name +
 				          ";\n" +
-				          "@name('A') select SupportStaticMethodLib.plusOne(intPrimitive) as val from SupportBean;\n";
+				          "@Name('A') select SupportStaticMethodLib.plusOne(IntPrimitive) as val from SupportBean;\n";
 				env.CompileDeploy(epl).AddListener("A");
 
 				env.SendEventBean(new SupportBean("E1", 6));

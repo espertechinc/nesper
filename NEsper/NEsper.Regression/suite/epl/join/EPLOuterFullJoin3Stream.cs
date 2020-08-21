@@ -599,7 +599,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// Query:
                 /// s0
                 /// </summary>
-                var joinStatement = "@name('s0') select * from " +
+                var joinStatement = "@Name('s0') select * from " +
                                     "SupportBean_S0#length(1000) as S0 " +
                                     " full outer join SupportBean_S1#length(1000) as S1 on S0.P00 = S1.P10 " +
                                     " full outer join SupportBean_S2#length(1000) as S2 on S0.P00 = S2.P20 ";

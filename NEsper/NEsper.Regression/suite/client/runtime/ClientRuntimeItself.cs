@@ -53,8 +53,8 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 			public void Run(RegressionEnvironment env)
 			{
 				env.CompileDeploy(
-					"@name('a') select * from SupportBean;\n" +
-					"@name('b') select * from SupportBean(theString='xxx');\n");
+					"@Name('a') select * from SupportBean;\n" +
+					"@Name('b') select * from SupportBean(TheString='xxx');\n");
 				var spi = (EPRuntimeSPI) env.Runtime;
 
 				var myTraverse = new MyStatementTraverse();
@@ -132,27 +132,27 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 				var result = env.Runtime.FireAndForgetService.ExecuteQuery(compiledFAF);
 				EPAssertionUtil.AssertPropsPerRow(
 					result.GetEnumerator(),
-					new string[] {"theString"},
+					new string[] {"TheString"},
 					new object[][] {
 						new object[] {"E1"}
 					});
 
-				var compiledFromEPL = svc.ReflectiveCompile("@name('s0') select * from MyWindow");
+				var compiledFromEPL = svc.ReflectiveCompile("@Name('s0') select * from MyWindow");
 				env.Deploy(compiledFromEPL);
 				EPAssertionUtil.AssertPropsPerRow(
 					env.GetEnumerator("s0"),
-					new string[] {"theString"},
+					new string[] {"TheString"},
 					new object[][] {
 						new object[] {"E1"}
 					});
 
 				var module = new Module();
-				module.Items.Add(new ModuleItem("@name('s1') select * from MyWindow"));
+				module.Items.Add(new ModuleItem("@Name('s1') select * from MyWindow"));
 				var compiledFromModule = svc.ReflectiveCompile(module);
 				env.Deploy(compiledFromModule);
 				EPAssertionUtil.AssertPropsPerRow(
 					env.GetEnumerator("s1"),
-					new string[] {"theString"},
+					new string[] {"TheString"},
 					new object[][] {
 						new object[] {"E1"}
 					});
@@ -175,7 +175,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				env.CompileDeploy("@name('s0') select * from SupportBean");
+				env.CompileDeploy("@Name('s0') select * from SupportBean");
 				var listener = new MyListener();
 				env.Statement("s0").AddListener(listener);
 

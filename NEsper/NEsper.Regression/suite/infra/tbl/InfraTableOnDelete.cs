@@ -78,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.CompileDeploy("create index MyIdx on MyTable(pKey0)", path);
                 env.CompileDeploy(
-                        "@name('s0') on SupportBean_S0 select sum(thesum) as c0 from MyTable where pKey0=P00",
+                        "@Name('s0') on SupportBean_S0 select sum(thesum) as c0 from MyTable where pKey0=P00",
                         path)
                     .AddListener("s0");
 
@@ -90,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 AssertSum(env, "E1,E2,E3", new long?[] {6L, 10L, 77L});
 
                 env.CompileDeploy(
-                    "@name('on-delete') on SupportBean_S1 delete from MyTable where pKey0=P10 and pkey1=Id",
+                    "@Name('on-delete') on SupportBean_S1 delete from MyTable where pKey0=P10 and pkey1=Id",
                     path);
 
                 env.SendEventBean(new SupportBean_S1(11, "E1")); // deletes {"E1", 11, 4L}
@@ -128,11 +128,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(
                     "into table varagg select sum(IntPrimitive) as thesum from SupportBean group by TheString",
                     path);
-                env.CompileDeploy("@name('s0') select varagg[P00].thesum as value from SupportBean_S0", path)
+                env.CompileDeploy("@Name('s0') select varagg[P00].thesum as value from SupportBean_S0", path)
                     .AddListener("s0");
-                env.CompileDeploy("@name('sdf') on SupportBean_S1(Id = 1) delete from varagg where key = P10", path)
+                env.CompileDeploy("@Name('sdf') on SupportBean_S1(Id = 1) delete from varagg where key = P10", path)
                     .AddListener("sdf");
-                env.CompileDeploy("@name('sda') on SupportBean_S1(Id = 2) delete from varagg", path).AddListener("sda");
+                env.CompileDeploy("@Name('sda') on SupportBean_S1(Id = 2) delete from varagg", path).AddListener("sda");
 
                 object[][] expectedType = {
                     new object[] {"key", typeof(string)},

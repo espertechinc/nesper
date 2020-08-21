@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.AdvanceTime(0);
 
                 env.CompileDeploy(
-                    "@name('s0') select current_timestamp() as ct from pattern[every timer:interval(1.5 sec)]");
+                    "@Name('s0') select current_timestamp() as ct from pattern[every timer:interval(1.5 sec)]");
                 env.AddListener("s0");
 
                 env.AdvanceTimeSpan(3500);
@@ -128,13 +128,13 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 Assert.IsNull(env.EventService.NextScheduledTime);
                 AssertSchedules(runtimeSPI.StatementNearestSchedules, new object[0][]);
 
-                env.CompileDeploy("@name('s0') select * from pattern[timer:interval(2 sec)]");
+                env.CompileDeploy("@Name('s0') select * from pattern[timer:interval(2 sec)]");
                 Assert.AreEqual(2000L, (long) env.EventService.NextScheduledTime);
                 AssertSchedules(
                     runtimeSPI.StatementNearestSchedules,
                     new[] {new object[] {"s0", 2000L}});
 
-                env.CompileDeploy("@name('s2') select * from pattern[timer:interval(150 msec)]");
+                env.CompileDeploy("@Name('s2') select * from pattern[timer:interval(150 msec)]");
                 Assert.AreEqual(150L, (long) env.EventService.NextScheduledTime);
                 AssertSchedules(
                     runtimeSPI.StatementNearestSchedules,
@@ -146,7 +146,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     runtimeSPI.StatementNearestSchedules,
                     new[] {new object[] {"s0", 2000L}});
 
-                env.CompileDeploy("@name('s3') select * from pattern[timer:interval(3 sec) and timer:interval(4 sec)]");
+                env.CompileDeploy("@Name('s3') select * from pattern[timer:interval(3 sec) and timer:interval(4 sec)]");
                 Assert.AreEqual(2000L, (long) env.EventService.NextScheduledTime);
                 AssertSchedules(
                     runtimeSPI.StatementNearestSchedules,

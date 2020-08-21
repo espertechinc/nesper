@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			}
 		}
 
-		public override DateTimeOffset? Read(
+		public override DateTimeOffset? ReadValue(
 			DataInput input,
 			byte[] unitKey)
 		{

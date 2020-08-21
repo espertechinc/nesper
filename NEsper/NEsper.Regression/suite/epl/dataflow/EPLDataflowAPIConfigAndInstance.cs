@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             // finally create one
             var path = new RegressionPath();
             var epl = "create objectarray schema MyEvent ();\n" +
-                      "@name('df') create dataflow MyDataflow " +
+                      "@Name('df') create dataflow MyDataflow " +
                       "BeaconSource -> outdata<MyEvent> {" +
                       "  iterations:1" +
                       "}" +
@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             // add once more to instantiate
             dataFlowRuntime.SaveConfiguration("MyFirstFlow", deploymentId, "MyDataflow", null);
             var instance = dataFlowRuntime.InstantiateSavedConfiguration("MyFirstFlow");
-            env.CompileDeploy("@name('s0') select * from MyEvent", path).AddListener("s0");
+            env.CompileDeploy("@Name('s0') select * from MyEvent", path).AddListener("s0");
             instance.Run();
             Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
             EPAssertionUtil.AssertEqualsExactOrder(new[] {"MyFirstFlow"}, dataFlowRuntime.SavedConfigurations);

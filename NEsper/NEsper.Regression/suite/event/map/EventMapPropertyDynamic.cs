@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
         private void RunAssertionMapWithinMap(RegressionEnvironment env)
         {
-            var statementText = "@name('s0') select " +
+            var statementText = "@Name('s0') select " +
                                 "Innermap.Int? as t0, " +
                                 "Innermap.InnerTwo?.Nested as t1, " +
                                 "Innermap.InnerTwo?.InnerThree.NestedTwo as t2, " +
@@ -90,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
         private void RunAssertionMapWithinMapExists(RegressionEnvironment env)
         {
-            var statementText = "@name('s0') select " +
+            var statementText = "@Name('s0') select " +
                                 "exists(Innermap.Int?) as t0, " +
                                 "exists(Innermap.InnerTwo?.Nested) as t1, " +
                                 "exists(Innermap.InnerTwo?.InnerThree.NestedTwo) as t2, " +

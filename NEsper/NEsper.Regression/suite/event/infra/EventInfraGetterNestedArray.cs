@@ -156,8 +156,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 		{
 
 			var epl = createSchemaEPL +
-			          "@name('s0') select * from LocalEvent;\n" +
-			          "@name('s1') select property[0].id as c0, property[1].id as c1," +
+			          "@Name('s0') select * from LocalEvent;\n" +
+			          "@Name('s1') select property[0].id as c0, property[1].id as c1," +
 			          " exists(property[0].id) as c2, exists(property[1].id) as c3," +
 			          " typeof(property[0].id) as c4, typeof(property[1].id) as c5" +
 			          " from LocalEvent;\n";

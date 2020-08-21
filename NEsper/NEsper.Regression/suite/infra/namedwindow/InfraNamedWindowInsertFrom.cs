@@ -65,10 +65,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('windowOne') create window MyWindow#keepall as SupportBean;\n" +
-                          "@name('windowTwo')create window MyWindowTwo#keepall as MyWindow;\n" +
+                var epl = "@Name('windowOne') create window MyWindow#keepall as SupportBean;\n" +
+                          "@Name('windowTwo')create window MyWindowTwo#keepall as MyWindow;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
-                          "@name('selectOne') select TheString from MyWindow;\n";
+                          "@Name('selectOne') select TheString from MyWindow;\n";
                 env.CompileDeploy(epl).AddListener("selectOne").AddListener("windowOne");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 string[] fields = {"TheString"};
                 var path = new RegressionPath();
 
-                var epl = "@name('window') create window MyWindowIWT#keepall as SupportBean;\n" +
+                var epl = "@Name('window') create window MyWindowIWT#keepall as SupportBean;\n" +
                           "insert into MyWindowIWT select * from SupportBean(IntPrimitive > 0);\n";
                 env.CompileDeploy(epl, path).AddListener("window");
 
@@ -116,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.Milestone(2);
 
                 // create window with keep-all
-                var stmtTextCreateTwo = "@name('windowTwo') create window MyWindowTwo#keepall as MyWindowIWT insert";
+                var stmtTextCreateTwo = "@Name('windowTwo') create window MyWindowTwo#keepall as MyWindowIWT insert";
                 env.CompileDeploy(stmtTextCreateTwo, path).AddListener("windowTwo");
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("windowTwo"),
@@ -134,7 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create window with keep-all and filter
                 var stmtTextCreateThree =
-                    "@name('windowThree') create window MyWindowThree#keepall as MyWindowIWT insert where TheString like 'A%'";
+                    "@Name('windowThree') create window MyWindowThree#keepall as MyWindowIWT insert where TheString like 'A%'";
                 env.CompileDeploy(stmtTextCreateThree, path).AddListener("windowThree");
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("windowThree"),
@@ -149,7 +149,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create window with last-per-id
                 var stmtTextCreateFour =
-                    "@name('windowFour') create window MyWindowFour#unique(IntPrimitive) as MyWindowIWT insert";
+                    "@Name('windowFour') create window MyWindowFour#unique(IntPrimitive) as MyWindowIWT insert";
                 env.CompileDeploy(stmtTextCreateFour, path).AddListener("windowFour");
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("windowFour"),
@@ -311,7 +311,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             {
                 var path = new RegressionPath();
                 env.CompileDeploy("create window MyWindowVS#keepall as select * from VarStream", path);
-                env.CompileDeploy("@name('window') create window MyWindowVSTwo#keepall as MyWindowVS", path);
+                env.CompileDeploy("@Name('window') create window MyWindowVSTwo#keepall as MyWindowVS", path);
 
                 env.CompileDeploy("insert into VarStream select * from SupportBean_A", path);
                 env.CompileDeploy("insert into VarStream select * from SupportBean_B", path);

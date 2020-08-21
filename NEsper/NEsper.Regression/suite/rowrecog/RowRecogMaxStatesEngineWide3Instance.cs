@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         private void RunAssertionTwoStatementNoDelete(RegressionEnvironment env)
         {
             var fields = new [] { "c0" };
-            var eplOne = "@name('S1') select * from SupportBean(TheString='A') " +
+            var eplOne = "@Name('S1') select * from SupportBean(TheString='A') " +
                          "match_recognize (" +
                          "  measures P1.LongPrimitive as c0" +
                          "  pattern (P1 P2 P3) " +
@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                          ")";
             env.CompileDeploy(eplOne).AddListener("S1");
 
-            var eplTwo = "@name('S2') select * from SupportBean(TheString='B') " +
+            var eplTwo = "@Name('S2') select * from SupportBean(TheString='B') " +
                          "match_recognize (" +
                          "  measures P1.LongPrimitive as c0" +
                          "  pattern (P1 P2 P3) " +
@@ -142,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 "create context MyCtx initiated by SupportBean_S0 as S0 terminated by SupportBean_S1(P10 = S0.P00)";
             env.CompileDeploy(eplCtx, path);
 
-            var epl = "@name('S1') context MyCtx select * from SupportBean(TheString = context.S0.P00) " +
+            var epl = "@Name('S1') context MyCtx select * from SupportBean(TheString = context.S0.P00) " +
                       "match_recognize (" +
                       "  measures P2.TheString as c0" +
                       "  pattern (P1 P2) " +
@@ -204,7 +204,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var delete = "on SupportBean_S0 delete from MyWindow where TheString = P00";
             env.CompileDeploy(delete, path);
 
-            var epl = "@name('S1') select * from MyWindow " +
+            var epl = "@Name('S1') select * from MyWindow " +
                       "match_recognize (" +
                       "  partition by TheString " +
                       "  measures P1.LongPrimitive as c0, P2.LongPrimitive as c1" +
@@ -274,7 +274,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var delete = "on SupportBean_S0 delete from MyWindow where TheString = P00 and IntPrimitive = Id";
             env.CompileDeploy(delete, path);
 
-            var epl = "@name('S1') select * from MyWindow " +
+            var epl = "@Name('S1') select * from MyWindow " +
                       "match_recognize (" +
                       "  partition by TheString " +
                       "  measures P1.LongPrimitive as c0, P2.LongPrimitive as c1, P3.LongPrimitive as c2" +

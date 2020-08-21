@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         public void Run(RegressionEnvironment env)
         {
             var stmtTextSet =
-                "@name('set') on SupportBean set p_1 = TheString, p_2 = BoolBoxed, p_3 = IntBoxed, p_4 = IntBoxed";
+                "@Name('set') on SupportBean set p_1 = TheString, p_2 = BoolBoxed, p_3 = IntBoxed, p_4 = IntBoxed";
             env.CompileDeploy(stmtTextSet).AddListener("set");
             string[] fieldsVar = {"p_1", "p_2", "p_3", "p_4"};
             EPAssertionUtil.AssertPropsPerRow(

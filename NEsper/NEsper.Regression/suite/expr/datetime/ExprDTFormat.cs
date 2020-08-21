@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(startTime));
 
                 var fields = new [] { "val0","val1","val2","val3", "val4" };
-                var eplFragment = "@name('s0') select " +
+                var eplFragment = "@Name('s0') select " +
                                   "current_timestamp.format() as val0," +
                                   "DateTimeEx.format() as val1," +
                                   "DateTimeOffset.format() as val2," +
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 var sdf = new SimpleDateFormat(sdfPattern);
 
                 var fields = new [] { "val0","val1","val2","val3" };
-                var eplFragment = "@name('s0') select " +
+                var eplFragment = "@Name('s0') select " +
                                   "DateTimeEx.format(\"" + sdfPattern + "\") as val0," +
                                   "DateTimeOffset.format(\"" + sdfPattern + "\") as val1," +
                                   "DateTime.format(\"" + sdfPattern + "\") as val2," +

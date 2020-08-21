@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
                 var epl = descriptor.ExpressionText;
                 var model = descriptor.ObjectModel;
                 var statementName = NameOfStatement(descriptor);
-                var nameAnnotation = "@name(\"" + statementName + "\") ";
+                var nameAnnotation = "@Name(\"" + statementName + "\") ";
                 EPCompiled compiled;
                 log.Debug(".RunTest Deploying " + epl);
 

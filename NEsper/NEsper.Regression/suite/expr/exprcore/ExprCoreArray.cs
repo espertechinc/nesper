@@ -74,13 +74,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select " +
+				var epl = "@Name('s0') select " +
 				          "{'a', 'b'} as stringArray," +
 				          "{} as emptyArray," +
 				          "{1} as oneEleArray," +
-				          "{1,2,3} as intArray," +
+				          "{1,2,3} as IntArray," +
 				          "{1,null} as intNullArray," +
-				          "{1L,10L} as longArray," +
+				          "{1L,10L} as LongArray," +
 				          "{'a',1, 1e20} as mixedArray," +
 				          "{1, 1.1d, 1e20} as doubleArray," +
 				          "{5, 6L} as intLongArray," +
@@ -104,9 +104,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				EPAssertionUtil.AssertEqualsExactOrder((string[]) theEvent.Get("stringArray"), new[] {"a", "b"});
 				EPAssertionUtil.AssertEqualsExactOrder((object[]) theEvent.Get("emptyArray"), new object[0]);
 				EPAssertionUtil.AssertEqualsExactOrder((int?[]) theEvent.Get("oneEleArray"), new int?[] {1});
-				EPAssertionUtil.AssertEqualsExactOrder((int?[]) theEvent.Get("intArray"), new int?[] {1, 2, 3});
+				EPAssertionUtil.AssertEqualsExactOrder((int?[]) theEvent.Get("IntArray"), new int?[] {1, 2, 3});
 				EPAssertionUtil.AssertEqualsExactOrder((int?[]) theEvent.Get("intNullArray"), new int?[] {1, null});
-				EPAssertionUtil.AssertEqualsExactOrder((long?[]) theEvent.Get("longArray"), new long?[] {1L, 10L});
+				EPAssertionUtil.AssertEqualsExactOrder((long?[]) theEvent.Get("LongArray"), new long?[] {1L, 10L});
 				EPAssertionUtil.AssertEqualsExactOrder((object[]) theEvent.Get("mixedArray"), new object[] {"a", 1, 1e20});
 				EPAssertionUtil.AssertEqualsExactOrder((double?[]) theEvent.Get("doubleArray"), new double?[] {1d, 1.1, 1e20});
 				EPAssertionUtil.AssertEqualsExactOrder((long?[]) theEvent.Get("intLongArray"), new long?[] {5L, 6L});
@@ -132,10 +132,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select {\"a\",\"b\"} as stringArray, " +
+				var epl = "@Name('s0') select {\"a\",\"b\"} as stringArray, " +
 				          "{} as emptyArray, " +
 				          "{1} as oneEleArray, " +
-				          "{1,2,3} as intArray " +
+				          "{1,2,3} as IntArray " +
 				          "from SupportBean";
 				env.EplToModelCompileDeploy(epl).AddListener("s0").Milestone(0);
 
@@ -146,7 +146,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				EPAssertionUtil.AssertEqualsExactOrder((string[]) theEvent.Get("stringArray"), new[] {"a", "b"});
 				EPAssertionUtil.AssertEqualsExactOrder((object[]) theEvent.Get("emptyArray"), new object[0]);
 				EPAssertionUtil.AssertEqualsExactOrder((int?[]) theEvent.Get("oneEleArray"), new int?[] {1});
-				EPAssertionUtil.AssertEqualsExactOrder((int?[]) theEvent.Get("intArray"), new int?[] {1, 2, 3});
+				EPAssertionUtil.AssertEqualsExactOrder((int?[]) theEvent.Get("IntArray"), new int?[] {1, 2, 3});
 
 				env.UndeployAll();
 			}
@@ -179,10 +179,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select {\"a\",\"b\"} as stringArray, " +
+				var epl = "@Name('s0') select {\"a\",\"b\"} as stringArray, " +
 				          "{} as emptyArray, " +
 				          "{1} as oneEleArray, " +
-				          "{1,2,3} as intArray " +
+				          "{1,2,3} as IntArray " +
 				          "from " +
 				          typeof(SupportBean).Name;
 				var model = new EPStatementObjectModel();
@@ -191,7 +191,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					.Add(Expressions.Array().Add(Expressions.Constant("a")).Add(Expressions.Constant("b")), "stringArray")
 					.Add(Expressions.Array(), "emptyArray")
 					.Add(Expressions.Array().Add(Expressions.Constant(1)), "oneEleArray")
-					.Add(Expressions.Array().Add(Expressions.Constant(1)).Add(2).Add(3), "intArray");
+					.Add(Expressions.Array().Add(Expressions.Constant(1)).Add(2).Add(3), "IntArray");
 
 				model.FromClause = FromClause.Create(FilterStream.Create(typeof(SupportBean).Name));
 				Assert.AreEqual(epl, model.ToEPL());
@@ -204,7 +204,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				EPAssertionUtil.AssertEqualsExactOrder((string[]) theEvent.Get("stringArray"), new[] {"a", "b"});
 				EPAssertionUtil.AssertEqualsExactOrder((object[]) theEvent.Get("emptyArray"), new object[0]);
 				EPAssertionUtil.AssertEqualsExactOrder((int?[]) theEvent.Get("oneEleArray"), new int?[] {1});
-				EPAssertionUtil.AssertEqualsExactOrder((int?[]) theEvent.Get("intArray"), new int?[] {1, 2, 3});
+				EPAssertionUtil.AssertEqualsExactOrder((int?[]) theEvent.Get("IntArray"), new int?[] {1, 2, 3});
 
 				env.UndeployAll();
 			}
@@ -219,7 +219,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				var nullArraySchema = SchemaBuilder.Array(NullType());
 
 				var stmtText =
-					"@name('s0') @AvroSchemaField(name='emptyArray', schema='" +
+					"@Name('s0') @AvroSchemaField(name='emptyArray', schema='" +
 					intArraySchema.ToString() +
 					"')" +
 					"@AvroSchemaField(name='mixedArray', schema='" +
@@ -232,9 +232,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					"select {'a', 'b'} as stringArray," +
 					"{} as emptyArray," +
 					"{1} as oneEleArray," +
-					"{1,2,3} as intArray," +
+					"{1,2,3} as IntArray," +
 					"{1,null} as intNullArray," +
-					"{1L,10L} as longArray," +
+					"{1L,10L} as LongArray," +
 					"{'a',1, 1e20} as mixedArray," +
 					"{1, 1.1d, 1e20} as doubleArray," +
 					"{5, 6L} as intLongArray," +
@@ -251,9 +251,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				CompareColl(theEvent, "stringArray", new[] {"a", "b"});
 				CompareColl(theEvent, "emptyArray", new object[0]);
 				CompareColl(theEvent, "oneEleArray", new int?[] {1});
-				CompareColl(theEvent, "intArray", new int?[] {1, 2, 3});
+				CompareColl(theEvent, "IntArray", new int?[] {1, 2, 3});
 				CompareColl(theEvent, "intNullArray", new int?[] {1, null});
-				CompareColl(theEvent, "longArray", new long?[] {1L, 10L});
+				CompareColl(theEvent, "LongArray", new long?[] {1L, 10L});
 				CompareColl(theEvent, "mixedArray", new object[] {"a", 1, 1e20});
 				CompareColl(theEvent, "doubleArray", new double?[] {1d, 1.1, 1e20});
 				CompareColl(theEvent, "intLongArray", new long?[] {5L, 6L});

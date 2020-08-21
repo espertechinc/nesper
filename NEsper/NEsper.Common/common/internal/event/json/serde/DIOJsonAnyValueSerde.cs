@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serde
             DIOJsonSerdeHelper.WriteValue(@object, output);
         }
 
-        public object ReadAny(
+        public object Read(
             DataInput input,
             byte[] unitKey)
         {

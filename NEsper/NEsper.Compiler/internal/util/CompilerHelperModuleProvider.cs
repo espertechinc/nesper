@@ -322,7 +322,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 statementsProp.GetterBlock.ExprDotMethod(
                     Ref("statements"),
                     "Add",
-                    NewInstance(statementClassName));
+                    NewInstanceInner(statementClassName));
             }
 
             statementsProp.GetterBlock.BlockReturn(Ref("statements"));

@@ -36,19 +36,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 				var epl =
 					$"create schema CarOutputStream(status string, outputevent {typeof(SupportBean).MaskTypeName()});\n" +
 					$"create table StatusTable(theString string primary key, lastevent {typeof(SupportBean).MaskTypeName()});\n" +
-					"on SupportBean as ce merge StatusTable as st where ce.theString = st.theString \n" +
+					"on SupportBean as ce merge StatusTable as st where ce.TheString = st.TheString \n" +
 					"  when matched \n" +
 					"    then update set lastevent = ce \n" +
 					"  when not matched \n" +
-					"    then insert select ce.theString as theString, ce as lastevent\n" +
+					"    then insert select ce.TheString as TheString, ce as lastevent\n" +
 					"    then insert into CarOutputStream select 'online' as status, ce as outputevent;\n" +
 					"insert into CarTimeoutStream select e.* \n" +
-					"  from pattern[every e=SupportBean -> (timer:interval(1 minutes) and not SupportBean(theString = e.theString))];\n" +
-					"on CarTimeoutStream as cts merge StatusTable as st where cts.theString = st.theString \n" +
+					"  from pattern[every e=SupportBean -> (timer:interval(1 minutes) and not SupportBean(TheString = e.TheString))];\n" +
+					"on CarTimeoutStream as cts merge StatusTable as st where cts.TheString = st.TheString \n" +
 					"  when matched \n" +
 					"    then delete \n" +
 					"    then insert into CarOutputStream select 'offline' as status, lastevent as outputevent;\n" +
-					"@name('s0') select * from CarOutputStream";
+					"@Name('s0') select * from CarOutputStream";
 				env.AdvanceTime(0);
 				env.CompileDeploy(epl).AddListener("s0");
 
@@ -82,7 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 				          "  when matched \n" +
 				          "    then delete \n" +
 				          "    then insert into CarOutputStream select 'offline' as status, lastevent as outputevent;\n" +
-				          "@name('s0') select * from CarOutputStream";
+				          "@Name('s0') select * from CarOutputStream";
 				env.AdvanceTime(0);
 				env.CompileDeploy(epl).AddListener("s0");
 

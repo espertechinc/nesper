@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             string hint,
             string expectedIndexName)
         {
-            var epl = "@name('s0') " +
+            var epl = "@Name('s0') " +
                       IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
                       hint +
                       "on SupportSpatialAABB as aabb select mpw.Id as c0 from MyPointWindow as mpw " +
@@ -144,10 +144,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             {
                 var path = new RegressionPath();
                 var epl =
-                    "@name('win') create window MyPointWindow#keepall as (Id string, Category string, Px double, Py double);\n" +
-                    "@name('insert') insert into MyPointWindow select Id, Category, Px, Py from SupportSpatialPoint;\n" +
-                    "@name('Idx1') create index IdxHash on MyPointWindow(Category);\n" +
-                    "@name('Idx2') create index IdxQuadtree on MyPointWindow((Px, Py) pointregionquadtree(0, 0, 100, 100));\n";
+                    "@Name('win') create window MyPointWindow#keepall as (Id string, Category string, Px double, Py double);\n" +
+                    "@Name('insert') insert into MyPointWindow select Id, Category, Px, Py from SupportSpatialPoint;\n" +
+                    "@Name('Idx1') create index IdxHash on MyPointWindow(Category);\n" +
+                    "@Name('Idx2') create index IdxQuadtree on MyPointWindow((Px, Py) pointregionquadtree(0, 0, 100, 100));\n";
                 env.CompileDeploy(epl, path);
 
                 SendPoint(env, "P1", 10, 15, "X");
@@ -165,10 +165,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('win') create window MyPointWindow#keepall as (Id string, Px double, Py double);\n" +
-                          "@name('insert') insert into MyPointWindow select Id, Px, Py from SupportSpatialPoint;\n" +
-                          "@name('Idx') create unique index Idx on MyPointWindow( (Px, Py) pointregionquadtree(0, 0, 100, 100));\n" +
-                          "@name('out') on SupportSpatialAABB select mpw.Id as c0 from MyPointWindow as mpw where point(Px, Py).inside(rectangle(X, Y, Width, Height));\n";
+                var epl = "@Name('win') create window MyPointWindow#keepall as (Id string, Px double, Py double);\n" +
+                          "@Name('insert') insert into MyPointWindow select Id, Px, Py from SupportSpatialPoint;\n" +
+                          "@Name('Idx') create unique index Idx on MyPointWindow( (Px, Py) pointregionquadtree(0, 0, 100, 100));\n" +
+                          "@Name('out') on SupportSpatialAABB select mpw.Id as c0 from MyPointWindow as mpw where point(Px, Py).inside(rectangle(X, Y, Width, Height));\n";
                 env.CompileDeploy(epl).AddListener("out");
 
                 SendPoint(env, "P1", 10, 15);
@@ -193,7 +193,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 var epl = "create window MyPointWindow#keepall as (Id string, Px double, Py double);\n" +
                           "insert into MyPointWindow select Id, Px, Py from SupportSpatialPoint;\n" +
                           "create index Idx on MyPointWindow( (Px, Py) pointregionquadtree(0, 0, 100, 100));\n" +
-                          "@name('s0') on SupportSpatialAABB select mpw.Id as c0 from MyPointWindow as mpw where point(Px, Py).inside(rectangle(X, Y, Width, Height));\n";
+                          "@Name('s0') on SupportSpatialAABB select mpw.Id as c0 from MyPointWindow as mpw where point(Px, Py).inside(rectangle(X, Y, Width, Height));\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 for (var x = 0; x < 100; x++) {
@@ -228,7 +228,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 var epl = "create window PointWindow#keepall as (Id string, Px double, Py double);\n" +
                           "create index MyIndex on PointWindow((Px,Py) pointregionquadtree(0,0,100,100,2,12));\n" +
                           "insert into PointWindow select Id, Px, Py from SupportSpatialPoint;\n" +
-                          "@name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from PointWindow as pt where point(Px,Py).inside(rectangle(X,Y,Width,Height));\n";
+                          "@Name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from PointWindow as pt where point(Px,Py).inside(rectangle(X,Y,Width,Height));\n";
                 env.CompileDeploy(epl, path);
 
                 env.CompileExecuteFAF("delete from PointWindow where Id='P1'", path);
@@ -278,7 +278,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     "create index MyIdxWithExpr on MyTable((tx*10, ty*10) pointregionquadtree(0, 0, 1000, 1000))",
                     path);
 
-                var eplOne = "@name('s0') " +
+                var eplOne = "@Name('s0') " +
                              IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
                              "on SupportSpatialAABB select tbl.Id as c0 from MyTable as tbl where point(tx, ty).inside(rectangle(X, Y, Width, Height))";
                 env.CompileDeploy(eplOne, path).AddListener("s0");
@@ -288,7 +288,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 // Invalid use of index, the properties match and the bounding boxes do not match due to "x*10" missing.
                 env.UndeployModuleContaining("s0");
 
-                var eplTwo = "@name('s0') " +
+                var eplTwo = "@Name('s0') " +
                              IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
                              "on SupportSpatialAABB select tbl.Id as c0 from MyTable as tbl where point(tx*10, tbl.ty*10).inside(rectangle(X, Y, Width, Height))";
                 env.CompileDeploy(eplTwo, path).AddListener("s0");
@@ -322,7 +322,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 env.CompileDeploy(epl, path);
 
                 var listener = new SupportUpdateListener();
-                var textOne = "@name('s0') " +
+                var textOne = "@Name('s0') " +
                               IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
                               "on SupportSpatialAABB select tbl.Id as c0 from MyPointTable as tbl where point(X1, Y1).inside(rectangle(X, Y, Width, Height))";
                 env.CompileDeploy(textOne, path).Statement("s0").AddListener(listener);
@@ -331,7 +331,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     "Idx1",
                     "non-unique hash={} btree={} advanced={pointregionquadtree(X1,Y1)}");
 
-                var textTwo = "@name('s1') " +
+                var textTwo = "@Name('s1') " +
                               IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
                               "on SupportSpatialAABB select tbl.Id as c0 from MyPointTable as tbl where point(tbl.X2, Y2).inside(rectangle(X, Y, Width, Height))";
                 env.CompileDeploy(textTwo, path).Statement("s1").AddListener(listener);
@@ -357,7 +357,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     "create index MyIndex on MyWindow((Px,Py) pointregionquadtree(0,0,100,100));\n" +
                     "insert into MyWindow select * from SupportSpatialPoint;\n" +
                     IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
-                    "@name('out') select (select Id from MyWindow as mw where point(mw.Px,mw.Py).inside(rectangle(aabb.X,aabb.Y,aabb.Width,aabb.Height))).aggregate('', \n" +
+                    "@Name('out') select (select Id from MyWindow as mw where point(mw.Px,mw.Py).inside(rectangle(aabb.X,aabb.Y,aabb.Width,aabb.Height))).aggregate('', \n" +
                     "  (result, item) -> result || (case when result='' then '' else ',' end) || item) as c0 from SupportSpatialAABB aabb";
                 env.CompileDeploy(epl).AddListener("out");
 
@@ -398,7 +398,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 RegressionEnvironment env,
                 RegressionPath path)
             {
-                var epl = "@name('s0') " +
+                var epl = "@Name('s0') " +
                           IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
                           "on SupportSpatialAABB as aabb select points.Id as c0 " +
                           "from MyWindow as points where point(Px, Py).inside(rectangle(Px,Py,1,1))";
@@ -415,7 +415,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 RegressionEnvironment env,
                 RegressionPath path)
             {
-                var epl = "@name('s0') " +
+                var epl = "@Name('s0') " +
                           IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
                           "on SupportSpatialAABB as aabb select points.Id as c0 " +
                           "from MyWindow as points where point(Px + X, Py + Y).inside(rectangle(X,Y,Width,Height))";
@@ -432,9 +432,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 RegressionEnvironment env,
                 RegressionPath path)
             {
-                var epl = "@name('s0') " +
+                var epl = "@Name('s0') " +
                           IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
-                          "@name('out') on SupportSpatialAABB as aabb select points.Id as c0 " +
+                          "@Name('out') on SupportSpatialAABB as aabb select points.Id as c0 " +
                           "from MyWindow as points where point(0, 0).inside(rectangle(X,Y,Width,Height))";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
@@ -451,7 +451,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                    "@name('s0') select point(XOffset, YOffset).inside(rectangle(X, Y, Width, Height)) as c0 from SupportEventRectangleWithOffset");
+                    "@Name('s0') select point(XOffset, YOffset).inside(rectangle(X, Y, Width, Height)) as c0 from SupportEventRectangleWithOffset");
                 env.AddListener("s0");
 
                 SendAssert(env, env.Listener("s0"), 1, 1, 0, 0, 2, 2, true);
@@ -487,7 +487,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                           "context CtxBox create window MyWindow#keepall as SupportSpatialPoint;\n" +
                           "context CtxBox create index MyIndex on MyWindow((Px+context.box.XOffset, Py+context.box.YOffset) pointregionquadtree(context.box.X, context.box.Y, context.box.Width, context.box.Height));\n" +
                           "context CtxBox on SupportSpatialPoint(Category = context.box.Id) merge MyWindow when not matched then insert select *;\n" +
-                          "@name('s0') context CtxBox on SupportSpatialAABB(Category = context.box.Id) aabb " +
+                          "@Name('s0') context CtxBox on SupportSpatialAABB(Category = context.box.Id) aabb " +
                           "  select points.Id as c0 from MyWindow points where point(Px, Py).inside(rectangle(X, Y, Width, Height))";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -531,7 +531,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     path);
                 env.CompileDeploy(soda, "insert into MyWindow select * from SupportSpatialPoint", path);
 
-                var epl = "@name('s0') " +
+                var epl = "@Name('s0') " +
                           IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
                           " on SupportSpatialAABB as aabb " +
                           "select points.Id as c0 from MyWindow as points where point(Px,Py).inside(rectangle(X,Y,Width,Height))";
@@ -630,7 +630,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 var epl = "create window PointWindow#keepall as (Id string, Px double, Py double);\n" +
                           "create index MyIndex on PointWindow((Px,Py) pointregionquadtree(0,0,100,100,2,5));\n" +
                           "insert into PointWindow select Id, Px, Py from SupportSpatialPoint;\n" +
-                          "@name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from PointWindow as pt where point(Px,Py).inside(rectangle(X,Y,Width,Height));\n";
+                          "@Name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from PointWindow as pt where point(Px,Py).inside(rectangle(X,Y,Width,Height));\n";
                 env.CompileDeploy(epl, path).AddListener("out");
 
                 var boxesLevel4 = GetLevel5Boxes();
@@ -778,7 +778,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 var epl = "create window PointWindow#keepall as (Id string, Px double, Py double);\n" +
                           "create index MyIndex on PointWindow((Px,Py) pointregionquadtree(0,0,100,100));\n" +
                           "insert into PointWindow select Id, Px, Py from SupportSpatialPoint;\n" +
-                          "@name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from PointWindow as pt where point(Px,Py).inside(rectangle(X,Y,Width,Height));\n";
+                          "@Name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from PointWindow as pt where point(Px,Py).inside(rectangle(X,Y,Width,Height));\n";
                 env.CompileDeploy(epl, path).AddListener("out");
 
                 var random = new Random();
@@ -852,7 +852,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 var epl = "create window PointWindow#keepall as (Id string, Px double, Py double);\n" +
                           "create unique index MyIndex on PointWindow((Px,Py) pointregionquadtree(0,0,1000,1000));\n" +
                           "insert into PointWindow select Id, Px, Py from SupportSpatialPoint;\n" +
-                          "@name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from PointWindow as pt where point(Px,Py).inside(rectangle(X,Y,Width,Height));\n";
+                          "@Name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from PointWindow as pt where point(Px,Py).inside(rectangle(X,Y,Width,Height));\n";
                 env.CompileDeploy(epl, path).AddListener("out");
 
                 var random = new Random();
@@ -941,7 +941,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 var epl = "create table PointTable as (Id string primary key, Px double, Py double);\n" +
                           "create index MyIndex on PointTable((Px,Py) pointregionquadtree(0,0,100,100));\n" +
                           "insert into PointTable select Id, Px, Py from SupportSpatialPoint;\n" +
-                          "@name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from PointTable as pt where point(Px,Py).inside(rectangle(X,Y,Width,Height));\n";
+                          "@Name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from PointTable as pt where point(Px,Py).inside(rectangle(X,Y,Width,Height));\n";
                 env.CompileDeploy(epl, path).AddListener("out");
 
                 var random = new Random();
@@ -1034,7 +1034,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 var epl = "create window PointWindow#keepall as (Id string, Px double, Py double);\n" +
                           "create index MyIndex on PointWindow((Px,Py) pointregionquadtree(0,0,100,100,2,12));\n" +
                           "insert into PointWindow select Id, Px, Py from SupportSpatialPoint;\n" +
-                          "@name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from PointWindow as pt where point(Px,Py).inside(rectangle(X,Y,Width,Height));\n";
+                          "@Name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from PointWindow as pt where point(Px,Py).inside(rectangle(X,Y,Width,Height));\n";
                 env.CompileDeploy(epl).AddListener("out");
 
                 SendPoint(env, "P0", 1.9290410254557688, 79.2596477701767);
@@ -1078,7 +1078,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 var epl = "create table PointTable(Id string primary key, Px double, Py double);\n" +
                           "create index MyIndex on PointTable((Px,Py) pointregionquadtree(0,0,100,100,2,12));\n" +
                           "insert into PointTable select Id, Px, Py from SupportSpatialPoint;\n" +
-                          "@name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from PointTable as pt where point(Px,Py).inside(rectangle(X,Y,Width,Height));\n";
+                          "@Name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from PointTable as pt where point(Px,Py).inside(rectangle(X,Y,Width,Height));\n";
                 env.CompileDeploy(epl).AddListener("out");
 
                 IList<SupportSpatialPoint> points = new List<SupportSpatialPoint>();
@@ -1106,7 +1106,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 var epl = "create table PointTable(Id string primary key, Px double, Py double);\n" +
                           "create index MyIndex on PointTable((Px,Py) pointregionquadtree(0,0,100,100,4,40));\n" +
                           "insert into PointTable select Id, Px, Py from SupportSpatialPoint;\n" +
-                          "@name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from PointTable as pt where point(Px,Py).inside(rectangle(X,Y,Width,Height));\n";
+                          "@Name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from PointTable as pt where point(Px,Py).inside(rectangle(X,Y,Width,Height));\n";
                 env.CompileDeploy(epl).AddListener("out");
 
                 SendPoint(env, "P1", 80, 40);
@@ -1135,7 +1135,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 var epl = "create table PointTable(Id string primary key, Px double, Py double);\n" +
                           "create index MyIndex on PointTable((Px,Py) pointregionquadtree(0,0,100,100,4,40));\n" +
                           "insert into PointTable select Id, Px, Py from SupportSpatialPoint;\n" +
-                          "@name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from PointTable as pt where point(Px,Py).inside(rectangle(X,Y,Width,Height));\n";
+                          "@Name('out') on SupportSpatialAABB as aabb select pt.Id as c0 from PointTable as pt where point(Px,Py).inside(rectangle(X,Y,Width,Height));\n";
                 env.CompileDeploy(epl, path).AddListener("out");
 
                 SendPoint(env, "P1", 80, 80);

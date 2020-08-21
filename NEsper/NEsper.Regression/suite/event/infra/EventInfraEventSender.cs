@@ -114,7 +114,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			}
 
 			// Internal implicit wrapper type
-			env.CompileDeploy("insert into ABC select *, theString as value from SupportBean");
+			env.CompileDeploy("insert into ABC select *, TheString as value from SupportBean");
 			try {
 				env.EventService.GetEventSender("ABC");
 				Assert.Fail("Event type named 'ABC' could not be found");
@@ -133,13 +133,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			object underlying)
 		{
 
-			var stmtText = "@name('s0') select * from " + typename;
+			var stmtText = "@Name('s0') select * from " + typename;
 			env.CompileDeploy(stmtText, path).AddListener("s0");
 
 			var sender = env.EventService.GetEventSender(typename);
 			env.CompileDeploy(
 				"@public @buseventtype create schema TriggerEvent();\n" +
-				"@name('trigger') select * from TriggerEvent;\n");
+				"@Name('trigger') select * from TriggerEvent;\n");
 			env.Statement("trigger").Events += (esender, args) => {
 				sender.RouteEvent(underlying);
 			};
@@ -157,7 +157,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			params object[] correctUnderlyings)
 		{
 
-			var stmtText = "@name('s0') select * from " + typename;
+			var stmtText = "@Name('s0') select * from " + typename;
 			env.CompileDeploy(stmtText, path).AddListener("s0");
 
 			var sender = env.EventService.GetEventSender(typename);

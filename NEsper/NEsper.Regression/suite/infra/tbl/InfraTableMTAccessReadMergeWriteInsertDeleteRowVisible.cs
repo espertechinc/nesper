@@ -63,9 +63,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.CompileDeploy(eplCreateTable, path);
 
             var eplSelect = grouped
-                ? "@name('s0') select MyTable['K1'].p0 as c0, MyTable['K1'].p1 as c1, MyTable['K1'].p2 as c2, " +
+                ? "@Name('s0') select MyTable['K1'].p0 as c0, MyTable['K1'].p1 as c1, MyTable['K1'].p2 as c2, " +
                   "MyTable['K1'].p3 as c3, MyTable['K1'].p4 as c4, MyTable['K1'].p5 as c5 from SupportBean_S0"
-                : "@name('s0') select MyTable.p0 as c0, MyTable.p1 as c1, MyTable.p2 as c2, " +
+                : "@Name('s0') select MyTable.p0 as c0, MyTable.p1 as c1, MyTable.p2 as c2, " +
                   "MyTable.p3 as c3, MyTable.p4 as c4, MyTable.p5 as c5 from SupportBean_S0";
             env.CompileDeploy(eplSelect, path).AddListener("s0");
 

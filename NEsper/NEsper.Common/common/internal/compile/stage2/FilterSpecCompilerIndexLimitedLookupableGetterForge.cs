@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 .AddParam(typeof(ExprEvaluatorContext), "ctx");
             var getImpl = CodegenLegoMethodExpression.CodegenExpression(_lookupable.Forge, method, classScope);
             method.Block
-                .DeclareVar(typeof(EventBean[]), "events", NewArrayWithInit(typeof(EventBean), Ref("eventBean")))
+                .DeclareVar<EventBean[]>("events", NewArrayWithInit(typeof(EventBean), Ref("eventBean")))
                 .MethodReturn(LocalMethod(getImpl, NewArrayWithInit(typeof(EventBean), Ref("eventBean")), ConstantTrue(), Ref("ctx")));
             return LocalMethod(method, beanExpression, ctxExpression);
         }

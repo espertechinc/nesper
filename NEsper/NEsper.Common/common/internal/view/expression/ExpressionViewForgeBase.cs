@@ -195,7 +195,7 @@ namespace com.espertech.esper.common.@internal.view.expression
                 .DeclareVar(
                     evalClass.ClassName,
                     "eval",
-                    NewInstance(evalClass.ClassName, Ref("statementFields")))
+                    NewInstanceInner(evalClass.ClassName, Ref("statementFields")))
                 .SetProperty(
                     factory,
                     "BuiltinMapType",

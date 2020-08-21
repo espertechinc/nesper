@@ -100,8 +100,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             RegressionPath path)
         {
             var listeners = GetListeners(env);
-            env.CompileDeploy("@name('s0') select * from AStream2SP", path).AddListener("s0", listeners[0]);
-            env.CompileDeploy("@name('s1') select * from BStream2SP", path).AddListener("s1", listeners[1]);
+            env.CompileDeploy("@Name('s0') select * from AStream2SP", path).AddListener("s0", listeners[0]);
+            env.CompileDeploy("@Name('s1') select * from BStream2SP", path).AddListener("s1", listeners[1]);
 
             Assert.AreNotSame(env.Statement("s0").EventType, env.Statement("s1").EventType);
             Assert.AreSame(env.Statement("s0").EventType.UnderlyingType, env.Statement("s1").EventType.UnderlyingType);
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                                "output all";
             env.CompileDeploy(stmtOrigText, path);
 
-            env.CompileDeploy("@name('s0') on OtherStream select col2 from WinTwo", path).AddListener("s0");
+            env.CompileDeploy("@Name('s0') on OtherStream select col2 from WinTwo", path).AddListener("s0");
 
             // populate WinOne
             env.SendEventBean(new SupportBean("E1", 2));
@@ -194,9 +194,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             env.CompileDeploy(soda, epl, path);
 
             var listeners = GetListeners(env);
-            env.CompileDeploy("@name('s0') select * from StartEvent", path).AddListener("s0", listeners[0]);
-            env.CompileDeploy("@name('s1') select * from ThenEvent", path).AddListener("s1", listeners[1]);
-            env.CompileDeploy("@name('s2') select * from MoreEvent", path).AddListener("s2", listeners[2]);
+            env.CompileDeploy("@Name('s0') select * from StartEvent", path).AddListener("s0", listeners[0]);
+            env.CompileDeploy("@Name('s1') select * from ThenEvent", path).AddListener("s1", listeners[1]);
+            env.CompileDeploy("@Name('s2') select * from MoreEvent", path).AddListener("s2", listeners[2]);
 
             env.SendEventBean(OrderBeanFactory.MakeEventOne());
             var fieldsOrderId = new [] { "oi" };
@@ -225,7 +225,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             bool soda)
         {
             var path = new RegressionPath();
-            var epl = "@name('split') on OrderBean " +
+            var epl = "@Name('split') on OrderBean " +
                       "insert into BeginEvent select OrderDetail.OrderId as OrderId " +
                       "insert into OrderItem select * from [select OrderDetail.OrderId as OrderId, * from OrderDetail.Items] " +
                       "insert into EndEvent select OrderDetail.OrderId as OrderId " +
@@ -236,9 +236,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.Statement("split").GetProperty(StatementProperty.STATEMENTTYPE));
 
             var listeners = GetListeners(env);
-            env.CompileDeploy("@name('s0') select * from BeginEvent", path).AddListener("s0", listeners[0]);
-            env.CompileDeploy("@name('s1') select * from OrderItem", path).AddListener("s1", listeners[1]);
-            env.CompileDeploy("@name('s2') select * from EndEvent", path).AddListener("s2", listeners[2]);
+            env.CompileDeploy("@Name('s0') select * from BeginEvent", path).AddListener("s0", listeners[0]);
+            env.CompileDeploy("@Name('s1') select * from OrderItem", path).AddListener("s1", listeners[1]);
+            env.CompileDeploy("@Name('s2') select * from EndEvent", path).AddListener("s2", listeners[2]);
 
             var orderItemType = env.Runtime.EventTypeService.GetEventType(env.DeploymentId("split"), "OrderItem");
             Assert.AreEqual("[\"Amount\", \"ItemId\", \"Price\", \"ProductId\", \"OrderId\"]", orderItemType.PropertyNames.RenderAny());
@@ -286,7 +286,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             var listeners = GetListeners(env);
             string[] listenerEPL = {"select * from StreamOne", "select * from StreamTwo", "select * from StreamThree"};
             for (var i = 0; i < listenerEPL.Length; i++) {
-                env.CompileDeploy("@name('s" + i + "')" + listenerEPL[i], path).AddListener("s" + i, listeners[i]);
+                env.CompileDeploy("@Name('s" + i + "')" + listenerEPL[i], path).AddListener("s" + i, listeners[i]);
                 listeners[i].Reset();
             }
 
@@ -335,7 +335,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 "create context MyOrderContext \n" +
                 "  initiated by MyOrderBeginEvent as obe\n" +
                 "  terminated by MyOrderEndEvent(OrderId = obe.OrderId);\n" +
-                "@name('count') context MyOrderContext select count(*) as orderItemCount from MyOrderItemEvent output when terminated;\n";
+                "@Name('count') context MyOrderContext select count(*) as orderItemCount from MyOrderItemEvent output when terminated;\n";
             env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("count");
 
             var @event = new Dictionary<string, object>();
@@ -389,9 +389,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 string epl = "create schema AValue(value int);\n" +
                              "on SupportBean\n" +
-                             "  insert into AValue select (select sum(value) as c0 from SupportEventWithIntArray#keepall group by array) as value where intPrimitive > 0\n" +
-                             "  insert into AValue select 0 as value where intPrimitive <= 0;\n" +
-                             "@name('s0') select * from AValue;\n";
+                             "  insert into AValue select (select sum(value) as c0 from SupportEventWithIntArray#keepall group by array) as value where IntPrimitive > 0\n" +
+                             "  insert into AValue select 0 as value where IntPrimitive <= 0;\n" +
+                             "@Name('s0') select * from AValue;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportEventWithIntArray("E1", new int[] {1, 2}, 10));
@@ -472,21 +472,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var path = new RegressionPath();
 
                 // test wildcard
-                var stmtOrigText = "@name('insert') on SupportBean insert into AStream select *";
+                var stmtOrigText = "@Name('insert') on SupportBean insert into AStream select *";
                 env.CompileDeploy(stmtOrigText, path).AddListener("insert");
 
                 var listeners = GetListeners(env);
-                env.CompileDeploy("@name('s0') select * from AStream", path).AddListener("s0", listeners[0]);
+                env.CompileDeploy("@Name('s0') select * from AStream", path).AddListener("s0", listeners[0]);
 
                 SendSupportBean(env, "E1", 1);
                 AssertReceivedSingle(listeners, 0, "E1");
                 Assert.IsFalse(env.Listener("insert").IsInvoked);
 
                 // test select
-                stmtOrigText = "@name('s1') on SupportBean insert into BStreamABC select 3*IntPrimitive as value";
+                stmtOrigText = "@Name('s1') on SupportBean insert into BStreamABC select 3*IntPrimitive as value";
                 env.CompileDeploy(stmtOrigText, path);
 
-                env.CompileDeploy("@name('s2') select value from BStreamABC", path);
+                env.CompileDeploy("@Name('s2') select value from BStreamABC", path);
                 env.AddListener("s2", listeners[1]);
 
                 SendSupportBean(env, "E1", 6);
@@ -505,7 +505,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var stmtOrigText = "@name('split') on SupportBean " +
+                var stmtOrigText = "@Name('split') on SupportBean " +
                                    "insert into AStream2SP select * where IntPrimitive=1 " +
                                    "insert into BStream2SP select * where IntPrimitive=1 or IntPrimitive=2";
                 env.CompileDeploy(stmtOrigText, path).AddListener("split");
@@ -542,13 +542,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var stmtOrigText = "@name('split') on SupportBean " +
+                var stmtOrigText = "@Name('split') on SupportBean " +
                                    "insert into AStreamSub select (select P00 from SupportBean_S0#lastevent) as string where IntPrimitive=(select Id from SupportBean_S0#lastevent) " +
                                    "insert into BStreamSub select (select P01 from SupportBean_S0#lastevent) as string where IntPrimitive<>(select Id from SupportBean_S0#lastevent) or (select Id from SupportBean_S0#lastevent) is null";
                 env.CompileDeploy(stmtOrigText, path).AddListener("split");
 
-                env.CompileDeploy("@name('s0') select * from AStreamSub", path).AddListener("s0");
-                env.CompileDeploy("@name('s1') select * from BStreamSub", path).AddListener("s1");
+                env.CompileDeploy("@Name('s0') select * from AStreamSub", path).AddListener("s0");
+                env.CompileDeploy("@Name('s1') select * from BStreamSub", path).AddListener("s1");
 
                 SendSupportBean(env, "E1", 1);
                 Assert.IsFalse(env.Listener("s0").GetAndClearIsInvoked());
@@ -573,15 +573,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var stmtOrigText = "@name('split') on SupportBean " +
+                var stmtOrigText = "@Name('split') on SupportBean " +
                                    "insert into AStream2S select TheString where IntPrimitive=1 " +
                                    "insert into BStream2S select TheString where IntPrimitive=1 or IntPrimitive=2 " +
                                    "output all";
                 env.CompileDeploy(stmtOrigText, path).AddListener("split");
 
                 var listeners = GetListeners(env);
-                env.CompileDeploy("@name('s0') select * from AStream2S", path).AddListener("s0", listeners[0]);
-                env.CompileDeploy("@name('s1') select * from BStream2S", path).AddListener("s1", listeners[1]);
+                env.CompileDeploy("@Name('s0') select * from AStream2S", path).AddListener("s0", listeners[0]);
+                env.CompileDeploy("@Name('s1') select * from BStream2S", path).AddListener("s1", listeners[1]);
 
                 Assert.AreNotSame(env.Statement("s0").EventType, env.Statement("s1").EventType);
                 Assert.AreSame(
@@ -613,7 +613,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var stmtOrigText = "@name('split') on SupportBean " +
+                var stmtOrigText = "@Name('split') on SupportBean " +
                                    "insert into AStream2S select TheString || '_1' as TheString where IntPrimitive in (1, 2) " +
                                    "insert into BStream2S select TheString || '_2' as TheString where IntPrimitive in (2, 3) " +
                                    "insert into CStream2S select TheString || '_3' as TheString " +
@@ -621,9 +621,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy(stmtOrigText, path).AddListener("split");
 
                 var listeners = GetListeners(env);
-                env.CompileDeploy("@name('s0') select * from AStream2S", path).AddListener("s0", listeners[0]);
-                env.CompileDeploy("@name('s1') select * from BStream2S", path).AddListener("s1", listeners[1]);
-                env.CompileDeploy("@name('s2') select * from CStream2S", path).AddListener("s2", listeners[2]);
+                env.CompileDeploy("@Name('s0') select * from AStream2S", path).AddListener("s0", listeners[0]);
+                env.CompileDeploy("@Name('s1') select * from BStream2S", path).AddListener("s1", listeners[1]);
+                env.CompileDeploy("@Name('s2') select * from CStream2S", path).AddListener("s2", listeners[2]);
 
                 SendSupportBean(env, "E1", 2);
                 AssertReceivedEach(listeners, new[] {"E1_1", "E1_2", "E1_3"});
@@ -650,16 +650,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var stmtOrigText = "@name('split') on SupportBean as mystream " +
+                var stmtOrigText = "@Name('split') on SupportBean as mystream " +
                                    "insert into AStream34 select mystream.TheString||'_1' as TheString where IntPrimitive=1 " +
                                    "insert into BStream34 select mystream.TheString||'_2' as TheString where IntPrimitive=2 " +
                                    "insert into CStream34 select TheString||'_3' as TheString";
                 env.CompileDeploy(stmtOrigText, path).AddListener("split");
 
                 var listeners = GetListeners(env);
-                env.CompileDeploy("@name('s0') select * from AStream34", path).AddListener("s0", listeners[0]);
-                env.CompileDeploy("@name('s1') select * from BStream34", path).AddListener("s1", listeners[1]);
-                env.CompileDeploy("@name('s2') select * from CStream34", path).AddListener("s2", listeners[2]);
+                env.CompileDeploy("@Name('s0') select * from AStream34", path).AddListener("s0", listeners[0]);
+                env.CompileDeploy("@Name('s1') select * from BStream34", path).AddListener("s1", listeners[1]);
+                env.CompileDeploy("@Name('s2') select * from CStream34", path).AddListener("s2", listeners[2]);
 
                 Assert.AreNotSame(env.Statement("s0").EventType, env.Statement("s1").EventType);
                 Assert.AreSame(
@@ -691,7 +691,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var stmtOrigText = "@name('split') on SupportBean " +
+                var stmtOrigText = "@Name('split') on SupportBean " +
                                    "insert into AStream34 select TheString||'_1' as TheString where IntPrimitive=10 " +
                                    "insert into BStream34 select TheString||'_2' as TheString where IntPrimitive=20 " +
                                    "insert into CStream34 select TheString||'_3' as TheString where IntPrimitive<0 " +
@@ -699,10 +699,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy(stmtOrigText, path).AddListener("split");
 
                 var listeners = GetListeners(env);
-                env.CompileDeploy("@name('s0') select * from AStream34", path).AddListener("s0", listeners[0]);
-                env.CompileDeploy("@name('s1') select * from BStream34", path).AddListener("s1", listeners[1]);
-                env.CompileDeploy("@name('s2') select * from CStream34", path).AddListener("s2", listeners[2]);
-                env.CompileDeploy("@name('s3') select * from DStream34", path).AddListener("s3", listeners[3]);
+                env.CompileDeploy("@Name('s0') select * from AStream34", path).AddListener("s0", listeners[0]);
+                env.CompileDeploy("@Name('s1') select * from BStream34", path).AddListener("s1", listeners[1]);
+                env.CompileDeploy("@Name('s2') select * from CStream34", path).AddListener("s2", listeners[2]);
+                env.CompileDeploy("@Name('s3') select * from DStream34", path).AddListener("s3", listeners[3]);
 
                 SendSupportBean(env, "E5", -999);
                 AssertReceivedSingle(listeners, 2, "E5_3");

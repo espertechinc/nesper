@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 var fields = new [] { "sbs","sbi","sbri" };
                 var epl =
-                    "@name('s0') select sb.TheString as sbs, sb.IntPrimitive as sbi, sbr.Id as sbri from SupportBean#length(10) sb, SupportBeanRange#length(10) sbr " +
+                    "@Name('s0') select sb.TheString as sbs, sb.IntPrimitive as sbi, sbr.Id as sbri from SupportBean#length(10) sb, SupportBeanRange#length(10) sbr " +
                     "where IntPrimitive between RangeStartLong and RangeEndLong";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.UndeployAll();
 
                 epl =
-                    "@name('s0') select sb.TheString as sbs, sb.IntPrimitive as sbi, sbr.Id as sbri from SupportBean#length(10) sb, SupportBeanRange#length(10) sbr " +
+                    "@Name('s0') select sb.TheString as sbs, sb.IntPrimitive as sbi, sbr.Id as sbri from SupportBean#length(10) sb, SupportBeanRange#length(10) sbr " +
                     "where sbr.Key = sb.TheString and IntPrimitive between RangeStartLong and RangeEndLong";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
@@ -124,7 +124,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var joinStatement = "@name('s0') select Volume from " +
+                var joinStatement = "@Name('s0') select Volume from " +
                                     "SupportMarketDataBean#length(3) as S0," +
                                     "SupportBean#length(3) as S1 " +
                                     " where S0.Volume = S1.IntPrimitive";

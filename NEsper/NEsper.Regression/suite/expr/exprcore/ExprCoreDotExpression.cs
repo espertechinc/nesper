@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			public void Run(RegressionEnvironment env)
 			{
 				var epl = "@public @buseventtype create schema MyEvent(mycoll Collection);\n" +
-				          "@name('s0') select mycoll.toArray() as c0," +
+				          "@Name('s0') select mycoll.toArray() as c0," +
 				          "  mycoll.toArray(new Object[0]) as c1," +
 				          "  mycoll.toArray(new Object[]{}) as c2 " +
 				          "from MyEvent";
@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			public void Run(RegressionEnvironment env)
 			{
 				var epl =
-					"@name('s0') select p01.split(',').selectFrom(v -> v).size() as sz from SupportBean_S0(p00=p01.split(',').selectFrom(v -> v).get(2))";
+					"@Name('s0') select p01.split(',').selectFrom(v -> v).size() as sz from SupportBean_S0(p00=p01.split(',').selectFrom(v -> v).get(2))";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendAssert(env, "A", "A,B,C", null);
@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select sb.equals(maxBy(IntPrimitive)) as c0 from SupportBean as sb";
+				var epl = "@Name('s0') select sb.equals(maxBy(IntPrimitive)) as c0 from SupportBean as sb";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendAssertDotObjectEquals(env, 10, true);
@@ -144,7 +144,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select " +
+				var epl = "@Name('s0') select " +
 				          "innerTypes('key1') as c0,\n" +
 				          "innerTypes(key) as c1,\n" +
 				          "innerTypes('key1').ids[1] as c2,\n" +
@@ -220,7 +220,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select " +
+				var epl = "@Name('s0') select " +
 				          "levelOne.getCustomLevelOne(10) as val0, " +
 				          "levelOne.levelTwo.getCustomLevelTwo(20) as val1, " +
 				          "levelOne.levelTwo.levelThree.getCustomLevelThree(30) as val2 " +
@@ -247,7 +247,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				epl += "create window NodeWithDataWindow#unique(node.id) as NodeWithData;\n";
 				epl += "insert into NodeWithDataWindow " +
 				       "select node, data from NodeWindow node join NodeDataWindow as data on node.id = data.nodeId;\n";
-				epl += "@name('s0') select node.id, data.nodeId, data.value, node.compute(data) from NodeWithDataWindow;\n";
+				epl += "@Name('s0') select node.id, data.nodeId, data.value, node.compute(data) from NodeWithDataWindow;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				env.SendEventBean(new SupportEventNode("1"));
@@ -262,7 +262,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select " +
+				var epl = "@Name('s0') select " +
 				          "nested.NestedValue, " +
 				          "nested.NestedNested.NestedNestedValue " +
 				          "from SupportBeanComplexProps";
@@ -293,7 +293,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			public void Run(RegressionEnvironment env)
 			{
 				var subexpr = "top.getChildOne(\"abc\",10).getChildTwo(\"append\")";
-				var epl = "@name('s0') select " + subexpr + " from SupportChainTop as top";
+				var epl = "@Name('s0') select " + subexpr + " from SupportChainTop as top";
 				env.CompileDeploy(epl).AddListener("s0");
 				AssertChainedParam(env, subexpr);
 				env.UndeployAll();
@@ -308,7 +308,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select " +
+				var epl = "@Name('s0') select " +
 				          "(arrayProperty).size() as size, " +
 				          "(arrayProperty).get(0) as get0, " +
 				          "(arrayProperty).get(1) as get1, " +
@@ -348,7 +348,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select " +
+				var epl = "@Name('s0') select " +
 				          "(abc).getArray().size() as size, " +
 				          "(abc).getArray().get(0).getNestLevOneVal() as get0 " +
 				          "from SupportBeanCombinedProps as abc";

@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                 bean.CharPrimitive = 'x';
                 bean.EnumValue = SupportEnum.ENUM_VALUE_2;
 
-                env.CompileDeploy("@name('s0') select * from SupportBean");
+                env.CompileDeploy("@Name('s0') select * from SupportBean");
                 env.SendEventBean(bean);
 
                 var result = env.Runtime.RenderEventService.RenderXML("supportBean", env.GetEnumerator("s0").Advance());
@@ -104,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select * from OuterMap").AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from OuterMap").AddListener("s0");
 
                 IDictionary<string, object> dataInner = new LinkedHashMap<string, object>();
                 dataInner.Put("stringarr", new[] {"a", null});
@@ -182,7 +182,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
             {
                 // ESPER-469
                 env.CompileDeploy(
-                    "@name('s0') select System.DateTime.Parse(\"2010-01-31\") as mySqlDate from SupportBean");
+                    "@Name('s0') select System.DateTime.Parse(\"2010-01-31\") as mySqlDate from SupportBean");
                 env.SendEventBean(new SupportBean());
 
                 var theEvent = env.GetEnumerator("s0").Advance();

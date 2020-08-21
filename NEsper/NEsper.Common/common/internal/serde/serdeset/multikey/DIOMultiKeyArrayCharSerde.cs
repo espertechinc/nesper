@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.multikey
     {
         public static readonly DIOMultiKeyArrayCharSerde INSTANCE = new DIOMultiKeyArrayCharSerde();
 
-        public override MultiKeyArrayChar Read(
+        public override MultiKeyArrayChar ReadValue(
             DataInput input,
             byte[] unitKey)
         {

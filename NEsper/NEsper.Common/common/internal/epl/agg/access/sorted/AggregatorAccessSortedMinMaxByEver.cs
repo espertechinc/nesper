@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 		{
 			CodegenExpression eps = symbols.GetAddEPS(method);
 			CodegenExpression ctx = symbols.GetAddExprEvalCtx(method);
-			method.Block.DeclareVar(typeof(EventBean), "theEvent", ArrayAtIndex(eps, Constant(_forge.Spec.StreamNum)))
+			method.Block.DeclareVar<EventBean>("theEvent", ArrayAtIndex(eps, Constant(_forge.Spec.StreamNum)))
 				.IfCondition(EqualsNull(Ref("theEvent")))
 				.BlockReturnNoValue()
 				.InstanceMethod(AddEventCodegen(method, namedMethods, classScope), Ref("theEvent"), eps, ctx);
@@ -189,12 +189,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 				.AddParam(typeof(EventBean), "theEvent")
 				.AddParam(typeof(EventBean[]), NAME_EPS)
 				.AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
-			methodNode.Block.DeclareVar(typeof(object), "comparable", LocalMethod(comparable, REF_EPS, ConstantTrue(), REF_EXPREVALCONTEXT))
+			methodNode.Block.DeclareVar<object>("comparable", LocalMethod(comparable, REF_EPS, ConstantTrue(), REF_EXPREVALCONTEXT))
 				.IfCondition(EqualsNull(_currentMinMax))
 				.AssignRef(_currentMinMax, Ref("comparable"))
 				.AssignRef(_currentMinMaxBean, Ref("theEvent"))
 				.IfElse()
-				.DeclareVar(typeof(int), "compareResult", ExprDotMethod(_comparator, "Compare", _currentMinMax, Ref("comparable")))
+				.DeclareVar<int>("compareResult", ExprDotMethod(_comparator, "Compare", _currentMinMax, Ref("comparable")))
 				.IfCondition(Relational(Ref("compareResult"), _forge.Spec.IsMax ? LT : GT, Constant(0)))
 				.AssignRef(_currentMinMax, Ref("comparable"))
 				.AssignRef(_currentMinMaxBean, Ref("theEvent"));
@@ -226,7 +226,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
 					exprSymbol.DerivedSymbolsCodegen(method, method.Block, classScope);
 
-					method.Block.DeclareVar(typeof(object[]), "result", NewArrayByLength(typeof(object), Constant(criteria.Length)));
+					method.Block.DeclareVar<object[]>("result", NewArrayByLength(typeof(object), Constant(criteria.Length)));
 					for (var i = 0; i < criteria.Length; i++) {
 						method.Block.AssignArrayElement(Ref("result"), Constant(i), expressions[i]);
 					}

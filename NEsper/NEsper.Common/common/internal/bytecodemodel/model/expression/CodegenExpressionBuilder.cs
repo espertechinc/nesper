@@ -497,7 +497,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return new CodegenExpressionNewInstance(clazz, @params);
         }
 
-        public static CodegenExpression NewInstance(
+        public static CodegenExpression NewInstanceInner(
             string name,
             params CodegenExpression[] @params)
         {

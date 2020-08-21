@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.compile.faf
 {
     public class StmtClassForgeableQueryMethodProvider : StmtClassForgeable
     {
-        private const string MEMBERNAME_QUERYMETHOD = "QueryMethod";
+        private const string MEMBERNAME_QUERYMETHOD = "queryMethod";
 
         private readonly FAFQueryMethodForge _forge;
         private readonly CodegenNamespaceScope _namespaceScope;

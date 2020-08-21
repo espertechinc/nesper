@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "val0", "val1", "val2", "val3" };
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "DateTimeEx.get('month') as val0," +
                           "DateTimeOffset.get('month') as val1," +
                           "DateTime.get('month') as val2," +
@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.UndeployAll();
 
                 // try event as input
-                epl = "@name('s0') select abc.Get('month') as val0 from SupportTimeStartEndA as abc";
+                epl = "@Name('s0') select abc.Get('month') as val0 from SupportTimeStartEndA as abc";
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
 
                 env.SendEventBean(SupportTimeStartEndA.Make("A0", startTime, 0));
@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.UndeployAll();
 
                 // test "Get" method on object is preferred
-                epl = "@name('s0') select e.Get() as c0, e.Get('abc') as c1 from SupportEventWithJustGet as e";
+                epl = "@Name('s0') select e.Get() as c0, e.Get('abc') as c1 from SupportEventWithJustGet as e";
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
                 env.SendEventBean(new SupportEventWithJustGet());
                 EPAssertionUtil.AssertProps(
@@ -89,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "val0","val1","val2","val3","val4","val5","val6","val7" };
-                var eplFragment = "@name('s0') select " +
+                var eplFragment = "@Name('s0') select " +
                                   "DateTimeOffset.get('msec') as val0," +
                                   "DateTimeOffset.get('sec') as val1," +
                                   "DateTimeOffset.get('minutes') as val2," +

@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy("insert into MyInfra select TheString, IntPrimitive from SupportBean", path);
 
                 var consumeEpl =
-                    "@name('s0') select (select IntPrimitive from MyInfra where TheString = S1.P10) as val from SupportBean_S0#lastevent as S0, SupportBean_S1#lastevent as S1";
+                    "@Name('s0') select (select IntPrimitive from MyInfra where TheString = S1.P10) as val from SupportBean_S0#lastevent as S0, SupportBean_S1#lastevent as S1";
                 env.CompileDeploy(consumeEpl, path).AddListener("s0");
 
                 var fields = new [] { "val" };

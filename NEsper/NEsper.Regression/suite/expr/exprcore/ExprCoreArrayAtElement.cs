@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select new String('a,b').split(',')[IntPrimitive] as c0 from SupportBean";
+				var epl = "@Name('s0') select new String('a,b').split(',')[IntPrimitive] as c0 from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 				var eventType = env.Statement("s0").EventType;
 				Assert.AreEqual(typeof(string), eventType.GetPropertyType("c0"));
@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') inlined_class \"\"\"\n" +
+				var epl = "@Name('s0') inlined_class \"\"\"\n" +
 				          "  import com.espertech.esper.common.client.hook.singlerowfunc.*;\n" +
 				          "  @ExtensionSingleRowFunction(name=\"toArray\", methodName=\"toArray\")\n" +
 				          "  public class Helper {\n" +
@@ -146,7 +146,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				          typeof(MyHolder).Name +
 				          ";\n" +
 				          "create variable MyHolder[] var_mh = new MyHolder[] {new MyHolder('a'), new MyHolder('b')};\n" +
-				          "@name('s0') select var_mh[IntPrimitive].getId() as c0 from SupportBean";
+				          "@Name('s0') select var_mh[IntPrimitive].getId() as c0 from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 				var fields = "c0".SplitCsv();
 				var @out = env.Statement("s0").EventType;
@@ -178,7 +178,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				var eplVariableSBArray = "create variable " + typeof(MyHolder).Name + " var_ = null";
 				env.CompileDeploy(soda, eplVariableSBArray, path);
 
-				var epl = "@name('s0') select var_intarr[IntPrimitive] as c0 from SupportBean";
+				var epl = "@Name('s0') select var_intarr[IntPrimitive] as c0 from SupportBean";
 				env.CompileDeploy(soda, epl, path).AddListener("s0");
 				var fields = "c0".SplitCsv();
 				var @out = env.Statement("s0").EventType;
@@ -203,7 +203,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				                "@public @buseventtype create schema Lvl0(lvl1 Lvl1, indexNumber int, lvl0id string);\n";
 				env.CompileDeploy(eplSchema, path);
 
-				var epl = "@name('s0') select lvl1.lvl2[indexNumber].id as c0, me.lvl1.lvl2[indexNumber].id as c1 from Lvl0 as me";
+				var epl = "@Name('s0') select lvl1.lvl2[indexNumber].id as c0, me.lvl1.lvl2[indexNumber].id as c1 from Lvl0 as me";
 				env.CompileDeploy(epl, path).AddListener("s0");
 				var fields = "c0,c1".SplitCsv();
 				var @out = env.Statement("s0").EventType;
@@ -288,7 +288,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				                "@public @buseventtype create schema Lvl0(lvl1 Lvl1, indexNumber int, id string);\n";
 				env.CompileDeploy(eplSchema, path);
 
-				var epl = "@name('s0') select " +
+				var epl = "@Name('s0') select " +
 				          "lvl1.lvl2.intarr[indexNumber] as c0, " +
 				          "lvl1.lvl2.intarr.size() as c1, " +
 				          "me.lvl1.lvl2.intarr[indexNumber] as c2, " +
@@ -368,7 +368,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				var epl =
 					"create schema Lvl1(id string);\n" +
 					"@public @buseventtype create schema Lvl0(lvl1 Lvl1[], indexNumber int, lvl0id string);\n" +
-					"@name('s0') select lvl1[indexNumber].id as c0, me.lvl1[indexNumber].id as c1 from Lvl0 as me";
+					"@Name('s0') select lvl1[indexNumber].id as c0, me.lvl1[indexNumber].id as c1 from Lvl0 as me";
 				env.CompileDeploy(epl, path).AddListener("s0");
 				var fields = "c0,c1".SplitCsv();
 				var @out = env.Statement("s0").EventType;
@@ -464,7 +464,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					"@public @buseventtype create schema Lvl0(lvl1 Lvl1, indexNumber int, id string);\n";
 				env.CompileDeploy(eplSchema, path);
 
-				var epl = "@name('s0') select " +
+				var epl = "@Name('s0') select " +
 				          "lvl1.intarr[indexNumber] as c0, " +
 				          "lvl1.intarr.size() as c1, " +
 				          "me.lvl1.intarr[indexNumber] as c2, " +
@@ -546,7 +546,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select " +
+				var epl = "@Name('s0') select " +
 				          "intarr[indexNumber] as c0, " +
 				          "intarr.size() as c1, " +
 				          "me.intarr[indexNumber] as c2, " +

@@ -25,7 +25,12 @@ namespace com.espertech.esper.common.client.util
 
         public Type ClassForName(string className)
         {
-            return TypeHelper.GetTypeForSimpleName(className, false, true);
+            var simpleType = TypeHelper.GetTypeForSimpleName(className, false, false);
+            if (simpleType != null) {
+                return simpleType;
+            }
+
+            return TypeHelper.ResolveType(className, true);
         }
     }
 } // end of namespace

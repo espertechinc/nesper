@@ -53,14 +53,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var milestone = new AtomicLong();
                 var eplSingleIndex =
-                    "@name('s0') select (select P00 from SupportBean_S0#keepall as S0 where S0.P01 in (S1.P10, S1.P11)) as c0 from SupportBean_S1 as S1";
+                    "@Name('s0') select (select P00 from SupportBean_S0#keepall as S0 where S0.P01 in (S1.P10, S1.P11)) as c0 from SupportBean_S1 as S1";
                 env.CompileDeployAddListenerMile(eplSingleIndex, "s0", milestone.GetAndIncrement());
 
                 TryAssertionPerformanceInKeywordAsPartOfSubquery(env);
                 env.UndeployAll();
 
                 var eplMultiIdx =
-                    "@name('s0') select (select P00 from SupportBean_S0#keepall as S0 where S1.P11 in (S0.P00, S0.P01)) as c0 from SupportBean_S1 as S1";
+                    "@Name('s0') select (select P00 from SupportBean_S0#keepall as S0 where S1.P11 in (S0.P00, S0.P01)) as c0 from SupportBean_S1 as S1";
                 env.CompileDeployAddListenerMile(eplMultiIdx, "s0", milestone.GetAndIncrement());
 
                 TryAssertionPerformanceInKeywordAsPartOfSubquery(env);
@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select IntPrimitive from SupportBean(TheString='A') as S0 where IntPrimitive in (" +
+                    "@Name('s0') select IntPrimitive from SupportBean(TheString='A') as S0 where IntPrimitive in (" +
                     "select LongBoxed from SupportBean(TheString='B')#length(10000) where S0.IntPrimitive = LongBoxed)";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
@@ -109,7 +109,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select Id from SupportBean_S0 as S0 where P00 in (" +
+                var stmtText = "@Name('s0') select Id from SupportBean_S0 as S0 where P00 in (" +
                                "select P10 from SupportBean_S1#length(10000) where S0.P00 = P10)";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 

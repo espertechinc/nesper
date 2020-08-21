@@ -68,7 +68,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
 		private void RunAssertionExceptionHandler(RegressionEnvironment env)
 		{
-			var epl = "@name('ABCName') select * from SupportBean(throwException())";
+			var epl = "@Name('ABCName') select * from SupportBean(throwException())";
 			env.CompileDeploy(epl);
 
 			var handler = SupportExceptionHandlerFactory.Handlers[SupportExceptionHandlerFactory.Handlers.Count - 1];
@@ -100,13 +100,13 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 			var listenerXML = new SupportListenerTimerHRes();
 			var listenerOA = new SupportListenerTimerHRes();
 			var listenerJson = new SupportListenerTimerHRes();
-			env.CompileDeploy("@name('s0') select SupportStaticMethodLib.sleep(100) from MyMap").Statement("s0").AddListener(listenerMap);
-			env.CompileDeploy("@name('s1') select SupportStaticMethodLib.sleep(100) from SupportBean").Statement("s1").AddListener(listenerBean);
-			env.CompileDeploy("@name('s2') select SupportStaticMethodLib.sleep(100) from XMLType").Statement("s2").AddListener(listenerXML);
-			env.CompileDeploy("@name('s3') select SupportStaticMethodLib.sleep(100) from MyOA").Statement("s3").AddListener(listenerOA);
+			env.CompileDeploy("@Name('s0') select SupportStaticMethodLib.sleep(100) from MyMap").Statement("s0").AddListener(listenerMap);
+			env.CompileDeploy("@Name('s1') select SupportStaticMethodLib.sleep(100) from SupportBean").Statement("s1").AddListener(listenerBean);
+			env.CompileDeploy("@Name('s2') select SupportStaticMethodLib.sleep(100) from XMLType").Statement("s2").AddListener(listenerXML);
+			env.CompileDeploy("@Name('s3') select SupportStaticMethodLib.sleep(100) from MyOA").Statement("s3").AddListener(listenerOA);
 			env.CompileDeploy(
 					"@public @buseventtype create json schema JsonEvent();\n" +
-					"@name('s4') select SupportStaticMethodLib.sleep(100) from JsonEvent")
+					"@Name('s4') select SupportStaticMethodLib.sleep(100) from JsonEvent")
 				.Statement("s4")
 				.AddListener(listenerJson);
 

@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select instanceof(TheString,string) as t0, " +
+				var epl = "@Name('s0') select instanceof(TheString,string) as t0, " +
 				          "instanceof(TheString,float,string,int) as t1 " +
 				          "from SupportBean";
 				env.EplToModelCompileDeploy(epl).AddListener("s0").Milestone(0);
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select instanceof(item?, string) as t0, " +
+				var epl = "@Name('s0') select instanceof(item?, string) as t0, " +
 				          " instanceof(item?, int) as t1, " +
 				          " instanceof(item?, System.Single) as t2, " +
 				          " instanceof(item?, System.Single, char, byte) as t3, " +
@@ -171,7 +171,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select" +
+				var epl = "@Name('s0') select" +
 				          " instanceof(item?, " + typeof(SupportMarkerInterface).Name + ") as t0, " +
 				          " instanceof(item?, " + typeof(ISupportA).Name + ") as t1, " +
 				          " instanceof(item?, " + typeof(ISupportBaseAB).Name + ") as t2, " +

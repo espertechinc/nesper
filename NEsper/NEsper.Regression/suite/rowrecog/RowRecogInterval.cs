@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             public void Run(RegressionEnvironment env)
             {
                 SendTimer(0, env);
-                var text = "@name('s0') select * from SupportRecogBean#keepall " +
+                var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            " measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1, last(B.TheString) as lastb" +
                            " pattern (A B*)" +
@@ -178,7 +178,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             {
                 SendTimer(0, env);
                 var fields = new [] { "a","b0","b1","lastb" };
-                var text = "@name('s0') select * from SupportRecogBean#keepall " +
+                var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  partition by Cat " +
                            "  measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1, last(B.TheString) as lastb" +
@@ -263,7 +263,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             {
                 SendTimer(0, env);
                 var fields = new [] { "a","b0","b1","lastb" };
-                var text = "@name('s0') select * from SupportRecogBean#keepall " +
+                var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1, last(B.TheString) as lastb" +
                            "  pattern (A B*) " +
@@ -361,7 +361,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             public void Run(RegressionEnvironment env)
             {
                 SendCurrentTime(env, "2002-02-01T09:00:00.000");
-                var text = "@name('s0') select * from SupportBean " +
+                var text = "@Name('s0') select * from SupportBean " +
                            "match_recognize (" +
                            " measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1 " +
                            " pattern (A B*)" +

@@ -57,14 +57,14 @@ namespace com.espertech.esper.common.@internal.@event.json.serde
 			Write(@object, output);
 		}
 
-		public object ReadAny(
+		public object Read(
 			DataInput input,
 			byte[] unitKey)
 		{
-			return Read(input, unitKey);
+			return ReadValue(input, unitKey);
 		}
 
-		public IDictionary<string, object> Read(
+		public IDictionary<string, object> ReadValue(
 			DataInput input,
 			byte[] unitKey)
 		{
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serde
 			var map = new LinkedHashMap<string, object>();
 			for (var i = 0; i < size; i++) {
 				var key = input.ReadUTF();
-				var value = ReadValue(input);
+				var value = DIOJsonSerdeHelper.ReadValue(input);
 				map.Put(key, value);
 			}
 

@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 			public void Run(RegressionEnvironment env)
 			{
 				string epl = "create schema MANE as MyAutoNameEvent;\n" +
-				             "@name('s0') select p0 from MANE;\n";
+				             "@Name('s0') select p0 from MANE;\n";
 				EPCompiled compiled = env.CompileWBusPublicType(epl);
 				env.Deploy(compiled).AddListener("s0");
 

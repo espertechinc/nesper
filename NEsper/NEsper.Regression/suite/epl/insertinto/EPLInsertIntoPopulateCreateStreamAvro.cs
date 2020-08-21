@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') insert into AvroExistingType select " +
+                var epl = "@Name('s0') insert into AvroExistingType select " +
                           "1 as MyLong," +
                           "{1L, 2L} as MyLongArray," +
                           typeof(EPLInsertIntoPopulateCreateStreamAvro).Name + ".MakeByteArray() as MyByteArray, " +
@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 var insertInto = typeof(EPLInsertIntoPopulateCreateStreamAvro).FullName;
-                var epl = "@name('s0') " +
+                var epl = "@Name('s0') " +
                           EventRepresentationChoice.AVRO.GetAnnotationText() +
                           " select 1 as myInt," +
                           "{1L, 2L} as myLongArray," +

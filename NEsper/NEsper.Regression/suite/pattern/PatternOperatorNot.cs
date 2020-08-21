@@ -257,7 +257,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@name('s0') select A.TheString as TheString from pattern " +
+                var text = "@Name('s0') select A.TheString as TheString from pattern " +
                            "[every A=SupportBean(IntPrimitive=123) -> (timer:interval(30 seconds) and not SupportMarketDataBean(Volume=123, Symbol=A.TheString))]";
                 env.CompileDeploy(text);
 
@@ -292,7 +292,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select * from pattern [ every( SupportBean(IntPrimitive>0) -> (SupportMarketDataBean and not SupportBean(IntPrimitive=0) ) ) ]";
+                    "@Name('s0') select * from pattern [ every( SupportBean(IntPrimitive>0) -> (SupportMarketDataBean and not SupportBean(IntPrimitive=0) ) ) ]";
                 env.CompileDeploy(stmtText);
 
                 env.AddListener("s0");
@@ -316,7 +316,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var fields = new [] { "c0" };
 
                 var epl =
-                    "@name('s0') select a.TheString as c0 from pattern [(every a=SupportBean(IntPrimitive>=0)) and not SupportBean(IntPrimitive<0)]";
+                    "@Name('s0') select a.TheString as c0 from pattern [(every a=SupportBean(IntPrimitive>=0)) and not SupportBean(IntPrimitive<0)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);

@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    public class ExprCorePriorUnboundSceneOne : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var text = "@name('s0') select prior(1, Symbol) as prior1 from SupportMarketDataBean";
+	            var text = "@Name('s0') select prior(1, Symbol) as prior1 from SupportMarketDataBean";
 	            env.CompileDeploy(text).AddListener("s0");
 
 	            env.SendEventBean(MakeMarketDataEvent("E0"));
@@ -90,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	        public void Run(RegressionEnvironment env) {
 	            var fields = "c0,c1,c2".SplitCsv();
 
-	            var epl = "@name('s0') select TheString as c0, prior(1, IntPrimitive) as c1, prior(2, IntPrimitive) as c2 from SupportBean";
+	            var epl = "@Name('s0') select TheString as c0, prior(1, IntPrimitive) as c1, prior(2, IntPrimitive) as c2 from SupportBean";
 	            env.CompileDeploy(epl).AddListener("s0");
 
 	            env.Milestone(1);
@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	    public class ExprCorePriorBoundedMultiple : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
 	            var fields = "c0,c1,c2".SplitCsv();
-	            var epl = "@name('s0') select irstream TheString as c0, prior(1, IntPrimitive) as c1, prior(2, IntPrimitive) as c2 from SupportBean#length(2)";
+	            var epl = "@Name('s0') select irstream TheString as c0, prior(1, IntPrimitive) as c1, prior(2, IntPrimitive) as c2 from SupportBean#length(2)";
 	            env.CompileDeploy(epl).AddListener("s0");
 
 	            env.Milestone(1);
@@ -163,7 +163,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	            env.Milestone(0);
 
-	            var epl = "@name('s0') select irstream TheString as c0, prior(1, IntPrimitive) as c1 from SupportBean#length(2)";
+	            var epl = "@Name('s0') select irstream TheString as c0, prior(1, IntPrimitive) as c1 from SupportBean#length(2)";
 	            env.CompileDeploy(epl).AddListener("s0");
 
 	            env.Milestone(1);
@@ -198,7 +198,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	    private class ExprCorePriorTimewindowStats : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
 
-	            var epl = "@name('s0') SELECT prior(1, average) as value FROM SupportBean()#time(5 minutes)#uni(IntPrimitive)";
+	            var epl = "@Name('s0') SELECT prior(1, average) as value FROM SupportBean()#time(5 minutes)#uni(IntPrimitive)";
 	            env.CompileDeploy(epl).AddListener("s0");
 
 	            env.SendEventBean(new SupportBean("E1", 1));
@@ -225,7 +225,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	            // must be a constant-value expression
 	            env.CompileDeploy("create variable int NUM_PRIOR_NONCONST = 1", path);
-	            TryInvalidCompile(env, path, "@name('s0') select prior(NUM_PRIOR_NONCONST, s0) as result from SupportBean_S0#length(2) as s0",
+	            TryInvalidCompile(env, path, "@Name('s0') select prior(NUM_PRIOR_NONCONST, s0) as result from SupportBean_S0#length(2) as s0",
 	                "Failed to validate select-clause expression 'prior(NUM_PRIOR_NONCONST,s0)': Prior function requires a constant-value integer-typed index expression as the first parameter");
 
 	            env.UndeployAll();
@@ -234,7 +234,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCorePriorTimeWindow : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0') select irstream Symbol as currSymbol, " +
+	            var epl = "@Name('s0') select irstream Symbol as currSymbol, " +
 	                      " prior(2, Symbol) as priorSymbol, " +
 	                      " prior(2, Price) as priorPrice " +
 	                      "from SupportMarketDataBean#time(1 min)";
@@ -318,7 +318,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCorePriorExtTimedWindow : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0') select irstream Symbol as currSymbol, " +
+	            var epl = "@Name('s0') select irstream Symbol as currSymbol, " +
 	                      " prior(2, Symbol) as priorSymbol, " +
 	                      " prior(3, Price) as priorPrice " +
 	                      "from SupportMarketDataBean#ext_timed(Volume, 1 min) ";
@@ -377,7 +377,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCorePriorTimeBatchWindow : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0') select irstream Symbol as currSymbol, " +
+	            var epl = "@Name('s0') select irstream Symbol as currSymbol, " +
 	                      " prior(3, Symbol) as priorSymbol, " +
 	                      " prior(2, Price) as priorPrice " +
 	                      "from SupportMarketDataBean#time_batch(1 min) ";
@@ -430,7 +430,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCorePriorUnbound : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0') select Symbol as currSymbol, " +
+	            var epl = "@Name('s0') select Symbol as currSymbol, " +
 	                      " prior(3, Symbol) as priorSymbol, " +
 	                      " prior(2, Price) as priorPrice " +
 	                      "from SupportMarketDataBean";
@@ -469,7 +469,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCorePriorNoDataWindowWhere : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var text = "@name('s0') select * from SupportMarketDataBean where prior(1, Price) = 100";
+	            var text = "@Name('s0') select * from SupportMarketDataBean where prior(1, Price) = 100";
 	            env.CompileDeploy(text).AddListener("s0");
 
 	            SendMarketEvent(env, "IBM", 75);
@@ -489,7 +489,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		    public bool IsExcludeWhenInstrumented => true;
 
 		    public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0') select Symbol as currSymbol, " +
+	            var epl = "@Name('s0') select Symbol as currSymbol, " +
 	                      " prior(3, Symbol) as prior0Symbol " +
 	                      "from SupportMarketDataBean#sort(3, Symbol)";
 	            env.CompileDeploy(epl).AddListener("s0");
@@ -516,7 +516,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		    public bool IsExcludeWhenInstrumented => true;
 
 		    public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0') select Symbol as currSymbol, " +
+	            var epl = "@Name('s0') select Symbol as currSymbol, " +
 	                      " prior(3, Symbol) as prior0Symbol " +
 	                      "from SupportMarketDataBean";
 	            env.CompileDeploy(epl).AddListener("s0");
@@ -545,7 +545,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 		    public void Run(RegressionEnvironment env) {
 
-	            var epl = "@name('s0') select Symbol as currSymbol, " +
+	            var epl = "@Name('s0') select Symbol as currSymbol, " +
 	                      " prior(3, Symbol) as prior0Symbol, " +
 	                      " prior(2, Symbol) as prior1Symbol, " +
 	                      " prior(1, Symbol) as prior2Symbol, " +
@@ -577,7 +577,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCorePriorLengthWindow : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0') select irstream Symbol as currSymbol, " +
+	            var epl = "@Name('s0') select irstream Symbol as currSymbol, " +
 	                      "prior(0, Symbol) as prior0Symbol, " +
 	                      "prior(1, Symbol) as prior1Symbol, " +
 	                      "prior(2, Symbol) as prior2Symbol, " +
@@ -634,7 +634,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    public class ExprCorePriorLengthWindowSceneTwo : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var text = "@name('s0') select prior(1, symbol) as prior1, prior(2, Symbol) as prior2 from SupportMarketDataBean#length(3)";
+	            var text = "@Name('s0') select prior(1, symbol) as prior1, prior(2, Symbol) as prior2 from SupportMarketDataBean#length(3)";
 	            env.CompileDeploy(text).AddListener("s0");
 
 	            env.SendEventBean(MakeMarketDataEvent("E0"));
@@ -680,7 +680,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCorePriorLengthWindowWhere : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0') select prior(2, Symbol) as currSymbol " +
+	            var epl = "@Name('s0') select prior(2, Symbol) as currSymbol " +
 	                      "from SupportMarketDataBean#length(1) " +
 	                      "where prior(2, Price) > 100";
 	            env.CompileDeploy(epl).AddListener("s0");
@@ -699,7 +699,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	    private class ExprCorePriorSortWindow : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
 		        var milestone = new AtomicLong();
-	            var epl = "@name('s0') select irstream Symbol as currSymbol, " +
+	            var epl = "@Name('s0') select irstream Symbol as currSymbol, " +
 	                      " prior(0, Symbol) as prior0Symbol, " +
 	                      " prior(1, Symbol) as prior1Symbol, " +
 	                      " prior(2, Symbol) as prior2Symbol, " +
@@ -711,7 +711,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	                      "from SupportMarketDataBean#sort(3, Symbol)";
 	            TryPriorSortWindow(env, epl, milestone);
 
-	            epl = "@name('s0') select irstream Symbol as currSymbol, " +
+	            epl = "@Name('s0') select irstream Symbol as currSymbol, " +
 	                " prior(3, Symbol) as prior3Symbol, " +
 	                " prior(1, Symbol) as prior1Symbol, " +
 	                " prior(2, Symbol) as prior2Symbol, " +
@@ -727,7 +727,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCorePriorTimeBatchWindowJoin : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0') select TheString as currSymbol, " +
+	            var epl = "@Name('s0') select TheString as currSymbol, " +
 	                      "prior(2, Symbol) as priorSymbol, " +
 	                      "prior(1, Price) as priorPrice " +
 	                      "from SupportBean#keepall, SupportMarketDataBean#time_batch(1 min)";

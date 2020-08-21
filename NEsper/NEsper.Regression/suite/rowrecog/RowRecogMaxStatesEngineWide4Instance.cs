@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             handler = SupportConditionHandlerFactory.LastHandler;
             var fields = new [] { "c0" };
 
-            var eplOne = "@name('S1') select * from SupportBean(TheString = 'A') " +
+            var eplOne = "@Name('S1') select * from SupportBean(TheString = 'A') " +
                          "match_recognize (" +
                          "  partition by IntPrimitive " +
                          "  measures P2.IntPrimitive as c0" +
@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                          ")";
             env.CompileDeploy(eplOne).AddListener("S1");
 
-            var eplTwo = "@name('S2') select * from SupportBean(TheString = 'B')#length(2) " +
+            var eplTwo = "@Name('S2') select * from SupportBean(TheString = 'B')#length(2) " +
                          "match_recognize (" +
                          "  partition by IntPrimitive " +
                          "  measures P2.IntPrimitive as c0" +

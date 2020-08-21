@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('create') create table MyTableEUIV as (pKey0 string primary key, pkey1 int primary key, thecnt count(*))",
+                    "@Name('create') create table MyTableEUIV as (pKey0 string primary key, pkey1 int primary key, thecnt count(*))",
                     path);
                 env.CompileDeploy(
                     "into table MyTableEUIV select count(*) as thecnt from SupportBean group by TheString, IntPrimitive",
@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 }
 
                 // try on-update unique index violation
-                env.CompileDeploy("@name('on-update') on SupportBean_S1 update MyTableEUIV set pkey1 = 0", path);
+                env.CompileDeploy("@Name('on-update') on SupportBean_S1 update MyTableEUIV set pkey1 = 0", path);
                 try {
                     env.SendEventBean(new SupportBean_S1(0));
                     Assert.Fail();
@@ -129,7 +129,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 // disallow on-merge unique key updates
                 try {
                     env.CompileWCheckedEx(
-                        "@name('on-merge') on SupportBean_S1 merge MyTableEUIV when matched then update set pkey1 = 0",
+                        "@Name('on-merge') on SupportBean_S1 merge MyTableEUIV when matched then update set pkey1 = 0",
                         path);
                     Assert.Fail();
                 }
@@ -149,7 +149,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('create') create table MyTableLUIV as (" +
+                    "@Name('create') create table MyTableLUIV as (" +
                     "pKey0 string primary key, " +
                     "pkey1 int primary key, " +
                     "col0 int, " +
@@ -164,7 +164,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 // On-merge exists before creating a unique index
                 env.CompileDeploy(
-                    "@name('on-merge') on SupportBean_S1 merge MyTableLUIV " +
+                    "@Name('on-merge') on SupportBean_S1 merge MyTableLUIV " +
                     "when matched then update set col0 = 0",
                     path);
                 try {
@@ -182,7 +182,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.UndeployModuleContaining("on-merge");
 
                 // on-update exists before creating a unique index
-                env.CompileDeploy("@name('on-update') on SupportBean_S1 update MyTableLUIV set pkey1 = 0", path);
+                env.CompileDeploy("@Name('on-update') on SupportBean_S1 update MyTableLUIV set pkey1 = 0", path);
                 env.CompileDeploy("create unique index MyUniqueSecondary on MyTableLUIV (pkey1)", path);
                 try {
                     env.SendEventBean(new SupportBean_S1(0));
@@ -248,7 +248,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var fields = new [] { "pKey0","pkey1","c0" };
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('s1') create table MyTableMultiKey(pKey0 string primary key, pkey1 int primary key, c0 long)",
+                    "@Name('s1') create table MyTableMultiKey(pKey0 string primary key, pkey1 int primary key, c0 long)",
                     path);
                 env.CompileDeploy(
                     "insert into MyTableMultiKey select TheString as pKey0, IntPrimitive as pkey1, LongPrimitive as c0 from SupportBean",
@@ -303,7 +303,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var fields = new [] { "pKey0","c0" };
                 var path = new RegressionPath();
-                env.CompileDeploy("@name('s0') create table MyTableSingleKey(pKey0 string primary key, c0 int)", path);
+                env.CompileDeploy("@Name('s0') create table MyTableSingleKey(pKey0 string primary key, c0 int)", path);
                 env.CompileDeploy(
                     "insert into MyTableSingleKey select TheString as pKey0, IntPrimitive as c0 from SupportBean",
                     path);

@@ -47,12 +47,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         {
             var path = new RegressionPath();
             var eplCreate = namedWindow
-                ? "@name('TheInfra') create window MyInfra#keepall as select * from SupportBean"
-                : "@name('TheInfra') create table MyInfra as (TheString string primary key, IntPrimitive int primary key, LongPrimitive long)";
+                ? "@Name('TheInfra') create window MyInfra#keepall as select * from SupportBean"
+                : "@Name('TheInfra') create table MyInfra as (TheString string primary key, IntPrimitive int primary key, LongPrimitive long)";
             env.CompileDeploy(eplCreate, path);
             var eplInsert = namedWindow
-                ? "@name('Insert') insert into MyInfra select * from SupportBean"
-                : "@name('Insert') on SupportBean sb merge MyInfra mi where mi.TheString = sb.TheString and mi.IntPrimitive=sb.IntPrimitive" +
+                ? "@Name('Insert') insert into MyInfra select * from SupportBean"
+                : "@Name('Insert') on SupportBean sb merge MyInfra mi where mi.TheString = sb.TheString and mi.IntPrimitive=sb.IntPrimitive" +
                   " when not matched then insert select TheString, IntPrimitive, LongPrimitive";
             env.CompileDeploy(eplInsert, path);
 

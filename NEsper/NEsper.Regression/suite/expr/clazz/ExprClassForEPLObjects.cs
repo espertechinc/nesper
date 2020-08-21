@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 	                    "    public static MyBean getBean(int id) {return new MyBean(id);}\n" +
 	                    "  }\n" +
 	                    "\"\"\" \n" +
-	                    "@name('s0') select MyBean.getBean(intPrimitive) as c0 from SupportBean";
+	                    "@Name('s0') select MyBean.getBean(IntPrimitive) as c0 from SupportBean";
 	            env.CompileDeploy(epl).AddListener("s0");
 	            var eventType = env.Statement("s0").EventType;
 	            Assert.AreEqual("MyBean", eventType.GetPropertyType("c0").Name);
@@ -97,7 +97,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 	                            "  var rows = new arrayType(2);\n" +
 	                            "  return rows;\n" +
 	                            "}]" +
-	                            "@name('s0') select myItemProducerScript() from SupportBean";
+	                            "@Name('s0') select myItemProducerScript() from SupportBean";
 	            env.CompileDeploy(eplScript).AddListener("s0");
 
 	            try {
@@ -128,8 +128,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 	                    "\"\"\" \n";
 	            env.CompileDeploy(eplCreateClass, path);
 
-	            var epl = "@name('s0')" +
-	                      "@name('s0') select s.id as c0 from SupportBean as e,\n" +
+	            var epl = "@Name('s0')" +
+	                      "@Name('s0') select s.id as c0 from SupportBean as e,\n" +
 	                      "method:MyFromClauseMethod.getBeans() as s";
 	            var compiled = env.Compile(epl, path);
 	            var assembly = compiled.Assembly;

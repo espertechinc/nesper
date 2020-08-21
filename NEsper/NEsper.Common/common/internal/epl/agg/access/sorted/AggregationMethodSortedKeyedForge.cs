@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 		{
 			CodegenMethod method = parent.MakeChild(typeof(AggregationMultiFunctionAggregationMethod), GetType(), classScope);
 			method.Block
-				.DeclareVar(typeof(ExprEvaluator), "keyEval", ExprNodeUtilityCodegen.CodegenEvaluator(_key.Forge, method, GetType(), classScope))
+				.DeclareVar<ExprEvaluator>("keyEval", ExprNodeUtilityCodegen.CodegenEvaluator(_key.Forge, method, GetType(), classScope))
 				.MethodReturn(
 					StaticMethod(
 						typeof(AggregationMethodSortedKeyedFactory),

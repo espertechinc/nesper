@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             RegressionPath path)
         {
             // try array property in select
-            env.CompileDeploy("@name('s0') select * from " + eventTypeNameNested + "#lastevent", path).AddListener("s0");
+            env.CompileDeploy("@Name('s0') select * from " + eventTypeNameNested + "#lastevent", path).AddListener("s0");
 
             CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             env.UndeployModuleContaining("s0");
 
             // try array property nested
-            env.CompileDeploy("@name('s0') select nested3.* from " + eventTypeNameABC + "#lastevent", path);
+            env.CompileDeploy("@Name('s0') select nested3.* from " + eventTypeNameABC + "#lastevent", path);
             SupportXML.SendDefaultEvent(env.EventService, "test", eventTypeNameABC);
             var stmtSelectResult = env.GetEnumerator("s0").Advance();
             SupportEventTypeAssertionUtil.AssertConsistency(stmtSelectResult);

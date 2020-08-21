@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             // Therefore property transposal is disabled for Property-XPath expressions.
 
             // note class not a fragment
-            env.CompileDeploy("@name('s0') insert into MyNestedStream select nested1 from " + eventTypeName + "#lastevent", path);
+            env.CompileDeploy("@Name('s0') insert into MyNestedStream select nested1 from " + eventTypeName + "#lastevent", path);
             CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {
                     new EventPropertyDescriptor("nested1", typeof(XmlNode), null, false, false, false, false, false)

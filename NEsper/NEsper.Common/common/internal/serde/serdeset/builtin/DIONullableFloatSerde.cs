@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        return ReadInternal(input);
 	    }
 
-	    public override float? Read(DataInput input, byte[] resourceKey) {
+	    public override float? ReadValue(DataInput input, byte[] resourceKey) {
 	        return ReadInternal(input);
 	    }
 

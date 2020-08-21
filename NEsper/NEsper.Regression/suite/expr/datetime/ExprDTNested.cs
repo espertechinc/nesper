@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         public void Run(RegressionEnvironment env)
         {
             var fields = new [] { "val0", "val1", "val2", "val3" };
-            var eplFragment = "@name('s0') select " +
+            var eplFragment = "@Name('s0') select " +
                               "LongDate.set('hour', 1).set('minute', 2).set('second', 3) as val0," +
                               "DateTimeEx.set('hour', 1).set('minute', 2).set('second', 3) as val1," +
                               "DateTimeOffset.set('hour', 1).set('minute', 2).set('second', 3) as val2," +
@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
             env.UndeployAll();
 
-            eplFragment = "@name('s0') select " +
+            eplFragment = "@Name('s0') select " +
                           "LongDate.set('hour', 1).set('minute', 2).set('second', 3).toDateTimeEx() as val0," +
                           "DateTimeEx.set('hour', 1).set('minute', 2).set('second', 3).toDateTimeEx() as val1," +
                           "DateTimeOffset.set('hour', 1).set('minute', 2).set('second', 3).toDateTimeEx() as val2," +

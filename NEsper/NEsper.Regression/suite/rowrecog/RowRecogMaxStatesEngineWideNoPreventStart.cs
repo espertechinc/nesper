@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
             var fields = new [] { "c0" };
 
-            var epl = "@name('s0') select * from SupportBean " +
+            var epl = "@Name('s0') select * from SupportBean " +
                       "match_recognize (" +
                       "  partition by TheString " +
                       "  measures P1.TheString as c0" +

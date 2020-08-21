@@ -18,7 +18,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
     {
         public void Run(RegressionEnvironment env)
         {
-            var statementText = "@name('s0') select " +
+            var statementText = "@Name('s0') select " +
                                 "explicitFNested.fieldNestedClassValue as fnested, " +
                                 "explicitMNested.readNestedClassValue as mnested" +
                                 " from MyLegacyEvent#length(5)";

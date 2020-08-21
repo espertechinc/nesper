@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			public void Run(RegressionEnvironment env)
 			{
 				var epl = "@public @buseventtype create json schema JsonEvent ();\n" +
-				          "@name('s0') select * from JsonEvent;\n";
+				          "@Name('s0') select * from JsonEvent;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				var json = "{\n" +
@@ -81,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			public void Run(RegressionEnvironment env)
 			{
 				var epl = "@public @buseventtype create json schema JsonEvent (carray Object[], cobject Map);\n" +
-				          "@name('s0') select * from JsonEvent;\n";
+				          "@Name('s0') select * from JsonEvent;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendAssert(
@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				var epl = "@public @buseventtype create json schema JsonEvent (" +
 				          "cbool boolean, cboola1 boolean[], cboola2 boolean[][]);\n" +
-				          "@name('s0') select * from JsonEvent;\n";
+				          "@Name('s0') select * from JsonEvent;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendAssert(
@@ -165,10 +165,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			public void Run(RegressionEnvironment env)
 			{
 				var epl = "@public @buseventtype create json schema JsonEvent (" +
-				          "cbyte byte, cshort short, cint int, clong long, cdouble double, cfloat float, cbigint biginteger, cbigdec bigdecimal," +
-				          "cbytea1 byte[], cshorta1 short[], cinta1 int[], clonga1 long[], cdoublea1 double[], cfloata1 float[], cbiginta1 biginteger[], cbigdeca1 bigdecimal[]," +
-				          "cbytea2 byte[][], cshorta2 short[][], cinta2 int[][], clonga2 long[][], cdoublea2 double[][], cfloata2 float[][], cbiginta2 biginteger[][], cbigdeca2 bigdecimal[][]);\n" +
-				          "@name('s0') select * from JsonEvent;\n";
+				          "cbyte byte, cshort short, cint int, clong long, cdouble double, cfloat float, cBigint Biginteger, cDecimalOne DecimalOneimal," +
+				          "cbytea1 byte[], cshorta1 short[], cinta1 int[], clonga1 long[], cdoublea1 double[], cfloata1 float[], cBiginta1 Biginteger[], cDecimalOnea1 DecimalOneimal[]," +
+				          "cbytea2 byte[][], cshorta2 short[][], cinta2 int[][], clonga2 long[][], cdoublea2 double[][], cfloata2 float[][], cBiginta2 Biginteger[][], cDecimalOnea2 DecimalOneimal[][]);\n" +
+				          "@Name('s0') select * from JsonEvent;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				var eventType = env.Runtime.EventTypeService.GetEventType(env.DeploymentId("s0"), "JsonEvent");
 
@@ -197,7 +197,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 					catch (EPException ex) {
 						var typeName = propertyName.Substring(1).Replace("a1", "").Replace("a2", "");
 						Type type;
-						if (typeName.Equals("bigint")) {
+						if (typeName.Equals("Bigint")) {
 							type = typeof(BigInteger);
 						}
 						else {
@@ -247,7 +247,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			public void Run(RegressionEnvironment env)
 			{
 				var epl = "@public @buseventtype @JsonSchema create json schema JsonEvent(p1 string);\n" +
-				          "@name('s0') select * from JsonEvent;\n";
+				          "@Name('s0') select * from JsonEvent;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				// lax parsing is the default
@@ -268,7 +268,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			public void Run(RegressionEnvironment env)
 			{
 				var epl = "@public @buseventtype @JsonSchema create json schema JsonEvent(p1 string);\n" +
-				          "@name('s0') select * from JsonEvent;\n";
+				          "@Name('s0') select * from JsonEvent;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				TryInvalid(env, "", "Failed to parse Json: Unexpected end of input at 1:1");
@@ -337,7 +337,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			else if (propertyName.Contains("decimal")) {
 				Assert.AreEqual(expected.AsDecimal(), actual.AsDecimal());
 			}
-			else if (propertyName.Contains("bigint")) {
+			else if (propertyName.Contains("Bigint")) {
 				Assert.AreEqual(expected.ToString(), actual.ToString());
 			}
 			else {

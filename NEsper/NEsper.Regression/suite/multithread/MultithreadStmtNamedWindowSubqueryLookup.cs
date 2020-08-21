@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                           "create schema MySchema as (TheString string, intval int);\n";
             env.CompileDeployWBusPublicType(schemas, path);
 
-            env.CompileDeploy("@name('window') create window MyWindow#keepall as MySchema", path);
+            env.CompileDeploy("@Name('window') create window MyWindow#keepall as MySchema", path);
             env.CompileDeploy(
                 "on MyUpdateEvent mue merge MyWindow mw " +
                 "where mw.TheString = mue.key " +
@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 "when matched then delete",
                 path);
             env.CompileDeploy(
-                "@name('target') select (select intval from MyWindow mw where mw.TheString = sb.TheString) as val from SupportBean sb",
+                "@Name('target') select (select intval from MyWindow mw where mw.TheString = sb.TheString) as val from SupportBean sb",
                 path);
 
             // execute

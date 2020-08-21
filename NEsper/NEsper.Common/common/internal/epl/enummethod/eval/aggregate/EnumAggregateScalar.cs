@@ -101,10 +101,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate
 				.BlockReturn(Ref("value"));
 			
 			block
-				.DeclareVar<ObjectArrayEventBean>("event", NewInstance<ObjectArrayEventBean>(
+				.DeclareVar<ObjectArrayEventBean>("@event", NewInstance<ObjectArrayEventBean>(
 					NewArrayByLength(typeof(object), Constant(_numParameters)), typeMember))
-				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("event"))
-				.DeclareVar<object[]>("props", ExprDotName(Ref("event"), "Properties"));
+				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("@event"))
+				.DeclareVar<object[]>("props", ExprDotName(Ref("@event"), "Properties"));
 			
 			if (_numParameters > 3) {
 				block.AssignArrayElement("props", Constant(3), ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"));

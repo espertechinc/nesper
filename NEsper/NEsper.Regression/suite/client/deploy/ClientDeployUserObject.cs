@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             public void Run(RegressionEnvironment env)
             {
                 MyUserObjectRuntimeOption.Contexts.Clear();
-                var epl = "@name('s0') select * from SupportBean";
+                var epl = "@Name('s0') select * from SupportBean";
                 var compiled = env.Compile(epl);
                 var options = new DeploymentOptions();
                 options.StatementUserObjectRuntime = new MyUserObjectRuntimeOption();
@@ -81,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
         {
             public void Run(RegressionEnvironment env)
             {
-                var compiled = env.Compile("@name('s0') select * from SupportBean");
+                var compiled = env.Compile("@Name('s0') select * from SupportBean");
 
                 var milestone = new AtomicLong();
                 AssertDeploy(env, compiled, milestone, null);

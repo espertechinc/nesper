@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
             configs["b_sub"] = config;
 
             var result = EventTypeRepositoryUtil.GetCreationOrder(setOne, setTwo, configs);
-            Assert.AreEqual("[a, b_super, y, b_sub]", result.RenderAny());
+            Assert.AreEqual("[\"a\", \"b_super\", \"y\", \"b_sub\"]", result.RenderAny());
         }
     }
 } // end of namespace

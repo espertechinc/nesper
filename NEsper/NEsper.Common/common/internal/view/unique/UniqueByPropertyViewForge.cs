@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.view.unique
 
         public override IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
         {
-            MultiKeyPlan desc = MultiKeyPlanner.PlanMultiKey(
+            var desc = MultiKeyPlanner.PlanMultiKey(
                 _criteriaExpressions,
                 false,
                 viewForgeEnv.StatementRawInfo,
@@ -103,16 +103,6 @@ namespace com.espertech.esper.common.@internal.view.unique
             CodegenClassScope classScope)
         {
             ViewMultiKeyHelper.Assign(_criteriaExpressions, _multiKeyClassNames, method, factory, symbols, classScope);
-            
-            method.Block
-                .SetProperty(
-                    factory,
-                    "CriteriaEvals",
-                    CodegenEvaluators(_criteriaExpressions, method, GetType(), classScope))
-                .SetProperty(
-                    factory,
-                    "CriteriaTypes",
-                    Constant(ExprNodeUtilityQuery.GetExprResultTypes(_criteriaExpressions)));
         }
     }
 } // end of namespace

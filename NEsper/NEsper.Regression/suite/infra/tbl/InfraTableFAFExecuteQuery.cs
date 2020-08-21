@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
                 var propertyNames = new [] { "p0","p1" };
-                env.CompileDeploy("@name('create') create table MyTableINS as (p0 string, p1 int)", path);
+                env.CompileDeploy("@Name('create') create table MyTableINS as (p0 string, p1 int)", path);
 
                 var eplInsertInto = "insert into MyTableINS (p0, p1) select 'a', 1";
                 var resultOne = env.CompileExecuteFAF(eplInsertInto, path);
@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('create') create table MyTableDEL as (p0 string primary key, thesum sum(int))",
+                    "@Name('create') create table MyTableDEL as (p0 string primary key, thesum sum(int))",
                     path);
                 env.CompileDeploy(
                     "into table MyTableDEL select TheString, sum(IntPrimitive) as thesum from SupportBean group by TheString",
@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var path = new RegressionPath();
                 var fields = new [] { "p0","p1" };
                 env.CompileDeploy(
-                    "@name('TheTable') create table MyTableUPD as (p0 string primary key, p1 string, thesum sum(int))",
+                    "@Name('TheTable') create table MyTableUPD as (p0 string primary key, p1 string, thesum sum(int))",
                     path);
                 env.CompileDeploy(
                     "into table MyTableUPD select TheString, sum(IntPrimitive) as thesum from SupportBean group by TheString",
@@ -127,7 +127,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var path = new RegressionPath();
                 var fields = new [] { "P0" };
                 env.CompileDeploy(
-                    "@name('TheTable') create table MyTableSEL as (P0 string primary key, thesum sum(int))",
+                    "@Name('TheTable') create table MyTableSEL as (P0 string primary key, thesum sum(int))",
                     path);
                 env.CompileDeploy(
                     "into table MyTableSEL select TheString, sum(IntPrimitive) as thesum from SupportBean group by TheString",

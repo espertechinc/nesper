@@ -20,7 +20,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@name('s0') select avg(DecimalOne) as c0 from SupportBeanNumeric";
+            var epl = "@Name('s0') select avg(DecimalOne) as c0 from SupportBeanNumeric";
             env.CompileDeploy(epl).AddListener("s0");
 
             env.SendEventBean(new SupportBeanNumeric(null, MakeDecimal(0, 2, MidpointRounding.AwayFromZero)));

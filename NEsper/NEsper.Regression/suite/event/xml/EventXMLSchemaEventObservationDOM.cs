@@ -76,25 +76,25 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             string eventTypeName,
             RegressionPath path)
         {
-            var stmtExampleOneText = "@name('s0') select ID, Observation.Command, Observation.ID,\n" +
+            var stmtExampleOneText = "@Name('s0') select ID, Observation.Command, Observation.ID,\n" +
                                      "Observation.Tag[0].ID, Observation.Tag[1].ID\n" +
                                      "from " +
                                      eventTypeName;
             env.CompileDeploy(stmtExampleOneText, path).AddListener("s0");
 
             env.CompileDeploy(
-                "@name('e2_0') insert into ObservationStream\n" +
+                "@Name('e2_0') insert into ObservationStream\n" +
                 "select ID, Observation from " +
                 eventTypeName,
                 path);
-            env.CompileDeploy("@name('e2_1') select Observation.Command, Observation.Tag[0].ID from ObservationStream", path);
+            env.CompileDeploy("@Name('e2_1') select Observation.Command, Observation.Tag[0].ID from ObservationStream", path);
 
             env.CompileDeploy(
-                "@name('e3_0') insert into TagListStream\n" +
+                "@Name('e3_0') insert into TagListStream\n" +
                 "select ID as sensorId, Observation.* from " +
                 eventTypeName,
                 path);
-            env.CompileDeploy("@name('e3_1') select sensorId, Command, Tag[0].ID from TagListStream", path);
+            env.CompileDeploy("@Name('e3_1') select sensorId, Command, Tag[0].ID from TagListStream", path);
 
             var doc = SupportXML.GetDocument(OBSERVATION_XML);
             var sender = env.EventService.GetEventSender(eventTypeName);

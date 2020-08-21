@@ -62,5 +62,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         {
             return _ref.GetHashCode();
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(Ref)}: {Ref}";
+        }
     }
 } // end of namespace

@@ -52,10 +52,10 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 			{
 				CreateStmt(
 					env,
-					"@name('A') @public create table MyTableAggs(theString String primary key, thecnt count(*), thewin window(*) @type(SupportBean))");
+					"@Name('A') @public create table MyTableAggs(TheString String primary key, thecnt count(*), thewin window(*) @type(SupportBean))");
 				CreateStmt(
 					env,
-					"@name('B') into table MyTableAggs select count(*) as thecnt, window(*) as thewin from SupportBean#keepall() group by theString");
+					"@Name('B') into table MyTableAggs select count(*) as thecnt, window(*) as thewin from SupportBean#keepall() group by TheString");
 
 				env.UndeployAll();
 			}
@@ -65,11 +65,11 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				CreateStmt(env, "@name('Create') @public create table MyTable(id String primary key, theGroup int primary key)");
-				CreateStmt(env, "@name('Index') create unique index I1 on MyTable(id)");
+				CreateStmt(env, "@Name('Create') @public create table MyTable(id String primary key, theGroup int primary key)");
+				CreateStmt(env, "@Name('Index') create unique index I1 on MyTable(id)");
 
-				CreateStmt(env, "@name('Create') @public create window MyWindow#keepall as SupportBean");
-				CreateStmt(env, "@name('Index') create unique index I1 on MyWindow(theString)");
+				CreateStmt(env, "@Name('Create') @public create window MyWindow#keepall as SupportBean");
+				CreateStmt(env, "@Name('Index') create unique index I1 on MyWindow(TheString)");
 
 				env.UndeployAll();
 			}
@@ -89,8 +89,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 				                  "create inlined_class \"\"\" public class MyClass { public static String doIt(String parameter) { return \"def\"; } }\"\"\";\n";
 				env.CompileDeploy(deployed, new RegressionPath());
 
-				string epl = "@name('s0') select myvariable as c0, myExpr() as c1, myScript() as c2, preconfigured_variable as c3," +
-				             "MyClass.doIt(theString) as c4 from SupportBean;\n" +
+				string epl = "@Name('s0') select myvariable as c0, myExpr() as c1, myScript() as c2, preconfigured_variable as c3," +
+				             "MyClass.doIt(TheString) as c4 from SupportBean;\n" +
 				             "select * from MySchema;" +
 				             "on SupportBean_S1 delete from MyWindow;\n" +
 				             "on SupportBean_S1 delete from MyTable;\n" +

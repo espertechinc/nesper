@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                       "create variable int varyear;\n" +
                       "create variable int varmonth;\n" +
                       "create variable int varday;\n" +
-                      "@name('s0') select " +
+                      "@Name('s0') select " +
                       "current_timestamp.withDate(varyear, varmonth, varday) as val0," +
                       "LongDate.withDate(varyear, varmonth, varday) as val1," +
                       "DateTimeEx.withDate(varyear, varmonth, varday) as val2," + 

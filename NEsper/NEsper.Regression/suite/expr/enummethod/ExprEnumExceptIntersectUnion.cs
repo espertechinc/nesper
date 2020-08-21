@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 	        public void Run(RegressionEnvironment env) {
 
 	            string epl =
-	                "@name('s0') expression last10A {" +
+	                "@Name('s0') expression last10A {" +
 	                    " (select * from SupportBean_ST0(key0 like 'A%')#length(2)) " +
 	                    "}" +
 	                    "expression last10NonZero {" +
@@ -195,7 +195,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 	    internal class ExprEnumUnionWhere : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
 
-	            string epl = "@name('s0') expression one {" +
+	            string epl = "@Name('s0') expression one {" +
 	                "  x => x.contained.where(y => p00 = 10)" +
 	                "} " +
 	                "" +

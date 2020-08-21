@@ -86,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 object theEvent = new SupportBean();
                 env.SendEventBean(theEvent);
                 Assert.AreEqual(theEvent, env.Listener("s0").AssertOneGetNewAndReset().Underlying);
-                Assert.AreEqual("@name('s0') " + stmtText, env.Statement("s0").GetProperty(StatementProperty.EPL));
+                Assert.AreEqual("@Name('s0') " + stmtText, env.Statement("s0").GetProperty(StatementProperty.EPL));
 
                 env.UndeployAll();
             }

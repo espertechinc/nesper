@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 string expectedColumn,
                 object value)
             {
-                var epl = "@name('s0') select " + selectColumn + " from SupportBean";
+                var epl = "@Name('s0') select " + selectColumn + " from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
                 if (!env.Statement("s0").EventType.PropertyNames[0].Equals(expectedColumn)) {
                     Assert.Fail(
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 env.CompileDeploy("insert into MyStream select Nested from SupportBeanComplexProps", path);
-                var epl = "@name('s0') select Nested.NestedValue, Nested.NestedNested.NestedNestedValue from MyStream";
+                var epl = "@Name('s0') select Nested.NestedValue, Nested.NestedNested.NestedNestedValue from MyStream";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 env.SendEventBean(SupportBeanComplexProps.MakeDefaultBean());
@@ -114,7 +114,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "Outer", "Join"
                 };
 
-                env.CompileDeploy("@name('s0') select " + string.Join(",", fields) + " from SupportBeanKeywords")
+                env.CompileDeploy("@Name('s0') select " + string.Join(",", fields) + " from SupportBeanKeywords")
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBeanKeywords());
@@ -130,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.UndeployAll();
 
                 env.CompileDeploy(
-                    "@name('s0') select Escape as Stddev, count(*) as Count, Last from SupportBeanKeywords");
+                    "@Name('s0') select Escape as Stddev, count(*) as Count, Last from SupportBeanKeywords");
                 env.AddListener("s0");
                 env.SendEventBean(new SupportBeanKeywords());
 
@@ -148,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 // The following EPL syntax compiles but fails to match a string "A'B", we are looking into:
-                // env.CompileDeploy("@name('s0') select * from SupportBean(string='A\\\'B')");
+                // env.CompileDeploy("@Name('s0') select * from SupportBean(string='A\\\'B')");
 
                 TryEscapeMatch(env, "A'B", "\"A'B\""); // opposite quotes
                 TryEscapeMatch(env, "A'B", "'A\\'B'"); // escape '
@@ -158,14 +158,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 TryEscapeMatch(env, "A\"B", "'A\\\"B'"); // escape "
                 TryEscapeMatch(env, "A\"B", "'A\\u0022B'"); // unicode
 
-                env.CompileDeploy("@name('A\\\'B') @Description(\"A\\\"B\") select * from SupportBean");
+                env.CompileDeploy("@Name('A\\\'B') @Description(\"A\\\"B\") select * from SupportBean");
                 Assert.AreEqual("A\'B", env.Statement("A\'B").Name);
                 var desc = (DescriptionAttribute) env.Statement("A\'B").Annotations[1];
                 Assert.AreEqual("A\"B", desc.Value);
                 env.UndeployAll();
 
                 env.CompileDeploy(
-                    "@name('s0') select 'Volume' as field1, \"sleep\" as field2, \"\\u0041\" as unicodeA from SupportBean");
+                    "@Name('s0') select 'Volume' as field1, \"sleep\" as field2, \"\\u0041\" as unicodeA from SupportBean");
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean());
@@ -194,7 +194,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 string property,
                 string escaped)
             {
-                var epl = "@name('s0') select * from SupportBean(TheString=" + escaped + ")";
+                var epl = "@Name('s0') select * from SupportBean(TheString=" + escaped + ")";
                 var text = "trying >" + escaped + "< (" + escaped.Length + " chars) EPL " + epl;
                 log.Info("tryEscapeMatch for " + text);
                 env.CompileDeploy(epl).AddListener("s0");
@@ -210,7 +210,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var text = "trying EPL " + epl;
                 log.Info("tryEscapeMatch for " + text);
-                env.CompileDeploy("@name('s0') " + epl).AddListener("s0");
+                env.CompileDeploy("@Name('s0') " + epl).AddListener("s0");
                 env.SendEventBean(new SupportBean(property, 1));
                 Assert.AreEqual(env.Listener("s0").AssertOneGetNewAndReset().Get("IntPrimitive"), 1);
                 env.UndeployAll();
@@ -222,7 +222,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select TheString, BoolBoxed aBool, 3*IntPrimitive, FloatBoxed+FloatPrimitive result" +
+                    "@Name('s0') select TheString, BoolBoxed aBool, 3*IntPrimitive, FloatBoxed+FloatPrimitive result" +
                     " from SupportBean#length(3) " +
                     " where BoolBoxed = true";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -246,7 +246,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select TheString, BoolBoxed as aBool, 3*IntPrimitive, FloatBoxed+FloatPrimitive as result" +
+                    "@Name('s0') select TheString, BoolBoxed as aBool, 3*IntPrimitive, FloatBoxed+FloatPrimitive as result" +
                     " from SupportBean#length(3) " +
                     " where BoolBoxed = true";
                 env.CompileDeploy(epl).AddListener("s0");

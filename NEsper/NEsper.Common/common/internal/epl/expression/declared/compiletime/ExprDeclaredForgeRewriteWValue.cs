@@ -80,8 +80,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                 Cast(typeof(ObjectArrayEventType), EventTypeUtility.ResolveTypeCodegen(_valueEventType, EPStatementInitServicesConstants.REF)));
 
             method.Block
-                .DeclareVar(typeof(object[]), "props", NewArrayByLength(typeof(object), Constant(_valueExpressions.Count)))
-                .DeclareVar(typeof(EventBean[]), "events", NewArrayByLength(typeof(EventBean), Constant(_eventEnumerationForges.Length)))
+                .DeclareVar<object[]>("props", NewArrayByLength(typeof(object), Constant(_valueExpressions.Count)))
+                .DeclareVar<EventBean[]>("events", NewArrayByLength(typeof(EventBean), Constant(_eventEnumerationForges.Length)))
                 .AssignArrayElement("events", Constant(0), NewInstance(typeof(ObjectArrayEventBean), Ref("props"), valueType));
             for (var i = 0; i < _valueExpressions.Count; i++) {
                 method.Block.AssignArrayElement(

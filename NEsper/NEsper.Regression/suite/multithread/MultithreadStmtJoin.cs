@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         public void Run(RegressionEnvironment env)
         {
             env.CompileDeploy(
-                "@name('s0') select istream * \n" +
+                "@Name('s0') select istream * \n" +
                 "  from SupportBean(TheString='s0')#length(1000000) as S0,\n" +
                 "       SupportBean(TheString='s1')#length(1000000) as S1\n" +
                 "where S0.LongPrimitive = S1.LongPrimitive\n"

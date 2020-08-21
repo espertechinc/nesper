@@ -374,7 +374,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 env.AdvanceTime(0);
                 string epl =
-                    "@Hint('reclaim_group_aged=10,reclaim_group_freq=1') @name('s0') select theString, intPrimitive, sum(longPrimitive) as thesum from SupportBean group by theString, intPrimitive";
+                    "@Hint('reclaim_group_aged=10,reclaim_group_freq=1') @name('s0') select TheString, IntPrimitive, sum(LongPrimitive) as thesum from SupportBean group by TheString, IntPrimitive";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEventSBAssert(env, "A", 0, 100, 100);
@@ -438,7 +438,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 var fields = new [] { "c0", "c1", "c2", "c3" };
 
-                var epl = "@name('s0') select TheString as c0, sum(IntPrimitive) as c1," +
+                var epl = "@Name('s0') select TheString as c0, sum(IntPrimitive) as c1," +
                           "min(IntPrimitive) as c2, max(IntPrimitive) as c3 from SupportBean group by TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -522,7 +522,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select istream avg(Price) as aPrice, Symbol from SupportMarketDataBean" +
+                var stmtText = "@Name('s0') select istream avg(Price) as aPrice, Symbol from SupportMarketDataBean" +
                                "#length(2) group by Symbol";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
@@ -571,16 +571,16 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var eplOne =
-                    "@name('S0') @Hint('disable_reclaim_group') select sum(IntPrimitive) as val from SupportBean.win:keepall() group by TheString";
+                    "@Name('S0') @Hint('disable_reclaim_group') select sum(IntPrimitive) as val from SupportBean.win:keepall() group by TheString";
                 env.CompileDeploy(eplOne).AddListener("S0");
                 var eplTwo =
-                    "@name('S1') @Hint('disable_reclaim_group') select window(IntPrimitive) as val from SupportBean.win:keepall() group by TheString";
+                    "@Name('S1') @Hint('disable_reclaim_group') select window(IntPrimitive) as val from SupportBean.win:keepall() group by TheString";
                 env.CompileDeploy(eplTwo).AddListener("S1");
                 var eplThree =
-                    "@name('S2') @Hint('disable_reclaim_group') select sum(IntPrimitive) as val1, window(IntPrimitive) as val2 from SupportBean.win:keepall() group by TheString";
+                    "@Name('S2') @Hint('disable_reclaim_group') select sum(IntPrimitive) as val1, window(IntPrimitive) as val2 from SupportBean.win:keepall() group by TheString";
                 env.CompileDeploy(eplThree).AddListener("S2");
                 var eplFour =
-                    "@name('S3') @Hint('reclaim_group_aged=10,reclaim_group_freq=5') select sum(IntPrimitive) as val1, window(IntPrimitive) as val2 from SupportBean.win:keepall() group by TheString";
+                    "@Name('S3') @Hint('reclaim_group_aged=10,reclaim_group_freq=5') select sum(IntPrimitive) as val1, window(IntPrimitive) as val2 from SupportBean.win:keepall() group by TheString";
                 env.CompileDeploy(eplFour).AddListener("S3");
 
                 var fieldsOne = new [] { "val" };
@@ -690,7 +690,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select sb.GetTheString() as c0, sum(IntPrimitive) as c1 " +
+                var epl = "@Name('s0') select sb.GetTheString() as c0, sum(IntPrimitive) as c1 " +
                           "from SupportBean#length_batch(2) as sb group by sb.GetTheString()";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -714,7 +714,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 // with output snapshot
                 var epl =
-                    "@name('s0') select TheString as c0, sum(IntPrimitive) as c1 from SupportBean group by TheString " +
+                    "@Name('s0') select TheString as c0, sum(IntPrimitive) as c1 from SupportBean group by TheString " +
                     "output snapshot every 3 events";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -757,7 +757,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 // with order-by
                 epl =
-                    "@name('s0') select TheString as c0, sum(IntPrimitive) as c1 from SupportBean group by TheString " +
+                    "@Name('s0') select TheString as c0, sum(IntPrimitive) as c1 from SupportBean group by TheString " +
                     "output snapshot every 3 events order by TheString asc";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -796,7 +796,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 // test un-grouped case
                 epl =
-                    "@name('s0') select null as c0, sum(IntPrimitive) as c1 from SupportBean output snapshot every 3 events";
+                    "@Name('s0') select null as c0, sum(IntPrimitive) as c1 from SupportBean output snapshot every 3 events";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
@@ -830,7 +830,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 // test reclaim
                 env.AdvanceTime(1000);
                 epl =
-                    "@name('s0') @Hint('reclaim_group_aged=1,reclaim_group_freq=1') select TheString as c0, sum(IntPrimitive) as c1 from SupportBean group by TheString " +
+                    "@Name('s0') @Hint('reclaim_group_aged=1,reclaim_group_freq=1') select TheString as c0, sum(IntPrimitive) as c1 from SupportBean group by TheString " +
                     "output snapshot every 3 events";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -890,7 +890,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.SendEventBean(new SupportBean_B("delete"));
 
                 epl =
-                    "@name('s0') select TheString, sum(IntPrimitive) as mysum from MyWindow group by TheString order by TheString";
+                    "@Name('s0') select TheString, sum(IntPrimitive) as mysum from MyWindow group by TheString order by TheString";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 TryAssertionNamedWindowDelete(env, fields, milestone);
@@ -908,7 +908,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 // After the oldest group is 60 second old, reclaim group older then  30 seconds
                 var epl =
-                    "@name('s0') @Hint('reclaim_group_aged=30,reclaim_group_freq=5') select LongPrimitive, count(*) from SupportBean group by LongPrimitive";
+                    "@Name('s0') @Hint('reclaim_group_aged=30,reclaim_group_freq=5') select LongPrimitive, count(*) from SupportBean group by LongPrimitive";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 for (var i = 0; i < 1000; i++) {
@@ -949,20 +949,20 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 // no frequency provided
                 epl =
-                    "@name('s0') @Hint('reclaim_group_aged=30') select LongPrimitive, count(*) from SupportBean group by LongPrimitive";
+                    "@Name('s0') @Hint('reclaim_group_aged=30') select LongPrimitive, count(*) from SupportBean group by LongPrimitive";
                 env.CompileDeploy(epl).AddListener("s0");
                 env.SendEventBean(new SupportBean());
                 env.UndeployAll();
 
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('define-age') create variable int myAge = 10;\n" +
-                    "@name('define-freq') create variable int myFreq = 10;\n",
+                    "@Name('define-age') create variable int myAge = 10;\n" +
+                    "@Name('define-freq') create variable int myFreq = 10;\n",
                     path);
                 var deploymentIdVariables = env.DeploymentId("define-age");
 
                 epl =
-                    "@name('s0') @Hint('reclaim_group_aged=myAge,reclaim_group_freq=myFreq') select LongPrimitive, count(*) from SupportBean group by LongPrimitive";
+                    "@Name('s0') @Hint('reclaim_group_aged=myAge,reclaim_group_freq=myFreq') select LongPrimitive, count(*) from SupportBean group by LongPrimitive";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 for (var i = 0; i < 1000; i++) {
@@ -1035,7 +1035,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 // test for ESPER-185
                 var fields = new [] { "mycount" };
-                var epl = "@name('s0') select irstream count(Price) as mycount " +
+                var epl = "@Name('s0') select irstream count(Price) as mycount " +
                           "from SupportMarketDataBean#length(5) " +
                           "group by Price";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -1097,7 +1097,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 // test for ESPER-185
                 var fields = new [] { "mycount" };
-                var epl = "@name('s0') select irstream count(Price) as mycount " +
+                var epl = "@Name('s0') select irstream count(Price) as mycount " +
                           "from SupportMarketDataBean#length(5) " +
                           "group by Symbol, Price";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -1174,7 +1174,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 // test for ESPER-185
                 var fields = new [] { "Symbol","Price","mycount" };
-                var epl = "@name('s0') select irstream Symbol,Price,count(Price) as mycount " +
+                var epl = "@Name('s0') select irstream Symbol,Price,count(Price) as mycount " +
                           "from SupportMarketDataBean#length(5) " +
                           "group by Symbol, Price order by Symbol asc";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -1324,7 +1324,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 SendTimer(env, 0);
                 var epl = "insert into MyStream select Symbol, Price from SupportMarketDataBean#time_batch(1 sec);\n" +
-                          "@name('s0') select Symbol " +
+                          "@Name('s0') select Symbol " +
                           "from MyStream#time_batch(1 sec)#unique(Symbol) " +
                           "group by Symbol";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -1350,7 +1350,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream Symbol," +
+                var epl = "@Name('s0') select irstream Symbol," +
                           "sum(Price) as mySum," +
                           "avg(Price) as myAvg " +
                           "from SupportBeanString#length(100) as one, " +
@@ -1374,7 +1374,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream Symbol," +
+                var epl = "@Name('s0') select irstream Symbol," +
                           "sum(Price) as mySum," +
                           "avg(Price) as myAvg " +
                           "from SupportMarketDataBean#length(3) " +

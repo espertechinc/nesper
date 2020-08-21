@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 new[] {new object[] {1}});
 
             // test iterate
-            env.CompileDeploy("@name('iterate') select col0 from MyTable(pkey='E2')", path);
+            env.CompileDeploy("@Name('iterate') select col0 from MyTable(pkey='E2')", path);
             EPAssertionUtil.AssertPropsPerRow(
                 env.GetEnumerator("iterate"),
                 fields,
@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             // test subquery
             env.CompileDeploy(
-                    "@name('subq') select (select col0 from MyTable(pkey='E3')) as col0 from SupportBean_S0",
+                    "@Name('subq') select (select col0 from MyTable(pkey='E3')) as col0 from SupportBean_S0",
                     path)
                 .AddListener("subq");
             env.SendEventBean(new SupportBean_S0(0));

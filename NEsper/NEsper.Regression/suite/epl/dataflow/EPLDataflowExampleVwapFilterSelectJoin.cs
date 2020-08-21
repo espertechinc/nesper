@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 return;
             }
 
-            var epl = "@name('flow')create dataflow VWAPSample\r\n" +
+            var epl = "@Name('flow')create dataflow VWAPSample\r\n" +
                       "create objectarray schema TradeQuoteType as (type string, ticker string, Price double, Volume long, askPrice double, asksize long),\n" +
                       "MyObjectArrayGraphSource -> TradeQuoteStream<TradeQuoteType> {}\r\n" +
                       "filter(TradeQuoteStream) -> TradeStream {\r\n" +

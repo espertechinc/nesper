@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			return ReadInternal(input);
 		}
 
-		public override BigInteger? Read(
+		public override BigInteger? ReadValue(
 			DataInput input,
 			byte[] resourceKey)
 		{

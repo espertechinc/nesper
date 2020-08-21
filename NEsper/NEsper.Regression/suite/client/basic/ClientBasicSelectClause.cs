@@ -17,7 +17,7 @@ namespace com.espertech.esper.regressionlib.suite.client.basic
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@name('s0') select IntPrimitive from SupportBean";
+            var epl = "@Name('s0') select IntPrimitive from SupportBean";
             env.CompileDeployAddListenerMileZero(epl, "s0");
 
             env.SendEventBean(new SupportBean("E1", 10));

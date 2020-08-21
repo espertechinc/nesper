@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             SupportQueryPlanIndexHook.Reset();
             var eplUnique = IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
-                            "@name('s0') select * from ";
+                            "@Name('s0') select * from ";
 
             if (caseEnum == CaseEnum.UNIDIRECTIONAL || caseEnum == CaseEnum.UNIDIRECTIONAL_3STREAM) {
                 eplUnique += "SupportSimpleBeanOne as ssb1 unidirectional ";

@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 			CodegenExpression groupKeyEval = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(_groupKeys, null, _groupByMultiKeyClasses, method, classScope);
 
 			method.Block
-				.DeclareVar(typeof(SubSelectStrategyFactoryLocalViewPreloaded), "factory", NewInstance(typeof(SubSelectStrategyFactoryLocalViewPreloaded)))
+				.DeclareVar<SubSelectStrategyFactoryLocalViewPreloaded>("factory", NewInstance(typeof(SubSelectStrategyFactoryLocalViewPreloaded)))
 				.SetProperty(Ref("factory"), "SubqueryNumber", Constant(_subqueryNumber))
 				.SetProperty(Ref("factory"), "ViewFactories",  ViewFactoryForgeUtil.CodegenForgesWInit(_viewForges, 0, _subqueryNumber, method, symbols, classScope))
 				.SetProperty(Ref("factory"), "ViewResourceDelegate", _viewResourceDelegateDesc.ToExpression())
@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 						: ExprNodeUtilityCodegen.CodegenEvaluatorNoCoerce(_filterExprNode.Forge, method, GetType(), classScope));
 
 			if (_namedWindow != null) {
-				method.Block.ExprDotMethod(
+				method.Block.SetProperty(
 					Ref("factory"), "NamedWindow", NamedWindowDeployTimeResolver.MakeResolveNamedWindow(_namedWindow, symbols.GetAddInitSvc(method)));
 				if (_namedWindowFilterExpr != null) {
 					method.Block

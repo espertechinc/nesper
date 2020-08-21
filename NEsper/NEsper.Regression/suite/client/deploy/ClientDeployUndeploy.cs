@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 env.CompileDeploy("create variable int A = 10", path);
                 env.CompileDeploy("create variable int B = A", path);
                 env.CompileDeploy("create variable int C = B", path);
-                env.CompileDeploy("@name('s0') create variable int D = C", path);
+                env.CompileDeploy("@Name('s0') create variable int D = C", path);
 
                 Assert.AreEqual(10, env.Runtime.VariableService.GetVariableValue(env.DeploymentId("s0"), "D"));
 
@@ -114,15 +114,15 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@name('infra') create window SimpleWindow#keepall as SupportBean", path);
+                env.CompileDeploy("@Name('infra') create window SimpleWindow#keepall as SupportBean", path);
 
                 var text = "Named window 'SimpleWindow'";
-                TryDeployInvalidUndeploy(env, path, "infra", "@name('A') select * from SimpleWindow", "A", text);
+                TryDeployInvalidUndeploy(env, path, "infra", "@Name('A') select * from SimpleWindow", "A", text);
                 TryDeployInvalidUndeploy(
                     env,
                     path,
                     "infra",
-                    "@name('B') select (select * from SimpleWindow) from SupportBean",
+                    "@Name('B') select (select * from SimpleWindow) from SupportBean",
                     "B",
                     text);
 
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('infra') create table SimpleTable(col1 string primary key, col2 string)",
+                    "@Name('infra') create table SimpleTable(col1 string primary key, col2 string)",
                     path);
 
                 var text = "Table 'SimpleTable'";
@@ -144,21 +144,21 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     env,
                     path,
                     "infra",
-                    "@name('A') select SimpleTable['a'] from SupportBean",
+                    "@Name('A') select SimpleTable['a'] from SupportBean",
                     "A",
                     text);
                 TryDeployInvalidUndeploy(
                     env,
                     path,
                     "infra",
-                    "@name('B') select (select * from SimpleTable) from SupportBean",
+                    "@Name('B') select (select * from SimpleTable) from SupportBean",
                     "B",
                     text);
                 TryDeployInvalidUndeploy(
                     env,
                     path,
                     "infra",
-                    "@name('C') create index MyIndex on SimpleTable(col2)",
+                    "@Name('C') create index MyIndex on SimpleTable(col2)",
                     "C",
                     text);
 
@@ -171,21 +171,21 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@name('variable') create variable string varstring", path);
+                env.CompileDeploy("@Name('variable') create variable string varstring", path);
 
                 var text = "Variable 'varstring'";
                 TryDeployInvalidUndeploy(
                     env,
                     path,
                     "variable",
-                    "@name('A') select varstring from SupportBean",
+                    "@Name('A') select varstring from SupportBean",
                     "A",
                     text);
                 TryDeployInvalidUndeploy(
                     env,
                     path,
                     "variable",
-                    "@name('B') on SupportBean set varstring='a'",
+                    "@Name('B') on SupportBean set varstring='a'",
                     "B",
                     text);
 
@@ -199,7 +199,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('ctx') create context MyContext partition by TheString from SupportBean",
+                    "@Name('ctx') create context MyContext partition by TheString from SupportBean",
                     path);
 
                 var text = "Context 'MyContext'";
@@ -207,7 +207,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     env,
                     path,
                     "ctx",
-                    "@name('A') context MyContext select count(*) from SupportBean",
+                    "@Name('A') context MyContext select count(*) from SupportBean",
                     "A",
                     text);
 
@@ -220,17 +220,17 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@name('schema') create schema MySchema(col string)", path);
+                env.CompileDeploy("@Name('schema') create schema MySchema(col string)", path);
 
                 var text = "Event type 'MySchema'";
                 TryDeployInvalidUndeploy(
                     env,
                     path,
                     "schema",
-                    "@name('A') insert into MySchema select 'a' as col from SupportBean",
+                    "@Name('A') insert into MySchema select 'a' as col from SupportBean",
                     "A",
                     text);
-                TryDeployInvalidUndeploy(env, path, "schema", "@name('B') select count(*) from MySchema", "B", text);
+                TryDeployInvalidUndeploy(env, path, "schema", "@Name('B') select count(*) from MySchema", "B", text);
 
                 env.UndeployModuleContaining("schema");
             }
@@ -241,21 +241,21 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@name('expr') create expression myexpression { 0 }", path);
+                env.CompileDeploy("@Name('expr') create expression myexpression { 0 }", path);
 
                 var text = "Declared-expression 'myexpression'";
                 TryDeployInvalidUndeploy(
                     env,
                     path,
                     "expr",
-                    "@name('A') select myexpression() as col from SupportBean",
+                    "@Name('A') select myexpression() as col from SupportBean",
                     "A",
                     text);
                 TryDeployInvalidUndeploy(
                     env,
                     path,
                     "expr",
-                    "@name('B') select (select myexpression from SupportBean#keepall) from SupportBean",
+                    "@Name('B') select (select myexpression from SupportBean#keepall) from SupportBean",
                     "B",
                     text);
 
@@ -268,14 +268,14 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@name('script') create expression double myscript(stringvalue) [0]", path);
+                env.CompileDeploy("@Name('script') create expression double myscript(stringvalue) [0]", path);
 
                 var text = "Script 'myscript (1 parameters)'";
                 TryDeployInvalidUndeploy(
                     env,
                     path,
                     "script",
-                    "@name('A') select myscript('a') as col from SupportBean",
+                    "@Name('A') select myscript('a') as col from SupportBean",
                     "A",
                     text);
 
@@ -291,22 +291,22 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 string text;
 
                 // Table
-                env.CompileDeploy("@name('infra') create table MyTable(k1 string primary key, i1 int)", path);
-                env.CompileDeploy("@name('index') create index MyIndexOnTable on MyTable(i1)", path);
+                env.CompileDeploy("@Name('infra') create table MyTable(k1 string primary key, i1 int)", path);
+                env.CompileDeploy("@Name('index') create index MyIndexOnTable on MyTable(i1)", path);
 
                 text = "Index 'MyIndexOnTable'";
                 TryDeployInvalidUndeploy(
                     env,
                     path,
                     "index",
-                    "@name('A') select * from SupportBean as sb, MyTable as mt where sb.IntPrimitive = mt.i1",
+                    "@Name('A') select * from SupportBean as sb, MyTable as mt where sb.IntPrimitive = mt.i1",
                     "A",
                     text);
                 TryDeployInvalidUndeploy(
                     env,
                     path,
                     "index",
-                    "@name('B') select * from SupportBean as sb where exists (select * from MyTable as mt where sb.IntPrimitive = mt.i1)",
+                    "@Name('B') select * from SupportBean as sb where exists (select * from MyTable as mt where sb.IntPrimitive = mt.i1)",
                     "B",
                     text);
 
@@ -314,15 +314,15 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 env.UndeployModuleContaining("infra");
 
                 // Named window
-                env.CompileDeploy("@name('infra') create window MyWindow#keepall as SupportBean", path);
-                env.CompileDeploy("@name('index') create index MyIndexOnNW on MyWindow(IntPrimitive)", path);
+                env.CompileDeploy("@Name('infra') create window MyWindow#keepall as SupportBean", path);
+                env.CompileDeploy("@Name('index') create index MyIndexOnNW on MyWindow(IntPrimitive)", path);
 
                 text = "Index 'MyIndexOnNW'";
                 TryDeployInvalidUndeploy(
                     env,
                     path,
                     "index",
-                    "@name('A') on SupportBean_S0 as S0 delete from MyWindow as mw where mw.IntPrimitive = S0.Id",
+                    "@Name('A') on SupportBean_S0 as S0 delete from MyWindow as mw where mw.IntPrimitive = S0.Id",
                     "A",
                     text);
 
@@ -338,7 +338,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('clazz') create inlined_class \"\"\" " +
+                    "@Name('clazz') create inlined_class \"\"\" " +
                     "public class MyClass {" +
                     "  public static String DoIt() {" +
                     "    return \"def\";" +
@@ -347,7 +347,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     path);
 
                 var text = "Application-inlined class 'MyClass'";
-                TryDeployInvalidUndeploy(env, path, "clazz", "@name('A') select MyClass.doIt() as col from SupportBean", "A", text);
+                TryDeployInvalidUndeploy(env, path, "clazz", "@Name('A') select MyClass.doIt() as col from SupportBean", "A", text);
 
                 env.UndeployModuleContaining("clazz");
             }

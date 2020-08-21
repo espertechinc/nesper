@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 				              "  public String getId() {return id;}\n" +
 				              "}";
 				string epl = EscapeClass(text) +
-				             "@name('s0') select new MyResult(theString) as c0 from SupportBean";
+				             "@Name('s0') select new MyResult(TheString) as c0 from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				env.SendEventBean(new SupportBean("E1", 0));
@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 				              "  }" +
 				              "}";
 				string epl = EscapeClass(text) +
-				             "@name('s0') select MyConstants$MyInnerClass.VALUE as c0 from SupportBean";
+				             "@Name('s0') select MyConstants$MyInnerClass.VALUE as c0 from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendSBAssert(env, "E1", 0, "abc");
@@ -82,7 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 				              "  public final static String VALUE = \"test\";\n" +
 				              "}";
 				string epl = EscapeClass(text) +
-				             "@name('s0') select MyConstants.VALUE as c0 from SupportBean";
+				             "@Name('s0') select MyConstants.VALUE as c0 from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendSBAssert(env, "E1", 0, "test");
@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 				              "  public int getLevelCode() {return levelCode;}\n" +
 				              "}";
 				string epl = EscapeClass(text) +
-				             "@name('s0') select MyLevel.MEDIUM.getLevelCode() as c0 from SupportBean";
+				             "@Name('s0') select MyLevel.MEDIUM.getLevelCode() as c0 from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendSBAssert(env, "E1", 0, 2);

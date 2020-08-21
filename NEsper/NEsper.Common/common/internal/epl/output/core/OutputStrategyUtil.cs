@@ -65,7 +65,6 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             EventPropertyValueGetter distinctKeyGetter)
         {
             IEnumerator<EventBean> enumerator;
-            EventType eventType;
             if (joinExecutionStrategy != null) {
                 var joinSet = joinExecutionStrategy.StaticJoin();
                 enumerator = resultSetProcessor.GetEnumerator(joinSet);

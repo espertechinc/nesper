@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('ABCName') select myinvalidagg() from SupportBean";
+                var epl = "@Name('ABCName') select myinvalidagg() from SupportBean";
                 env.CompileDeploy(epl);
 
                 try {
@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 SupportExceptionHandlerFactory.Handlers.Clear();
                 runtime.Initialize();
 
-                var epl = "@name('ABCName') select myinvalidagg() from SupportBean";
+                var epl = "@Name('ABCName') select myinvalidagg() from SupportBean";
                 EPDeployment deployment;
                 try {
                     var compiled = EPCompilerProvider.Compiler.Compile(epl, new CompilerArguments(configuration));
@@ -119,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     typeof(ClientRuntimeExceptionHandlerNoHandler).Name,
                     configuration);
 
-                var epl = "@name('ABCName') select myinvalidagg() from SupportBean";
+                var epl = "@Name('ABCName') select myinvalidagg() from SupportBean";
                 EPDeployment deployment;
                 try {
                     var compiled = EPCompilerProvider.Compiler.Compile(epl, new CompilerArguments(configuration));

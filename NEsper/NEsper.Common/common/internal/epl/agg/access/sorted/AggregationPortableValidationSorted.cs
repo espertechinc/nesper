@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 		{
 			var method = parent.MakeChild(typeof(AggregationPortableValidationSorted), this.GetType(), classScope);
 			method.Block
-				.DeclareVar(typeof(AggregationPortableValidationSorted), "v", NewInstance(typeof(AggregationPortableValidationSorted)))
+				.DeclareVar<AggregationPortableValidationSorted>("v", NewInstance(typeof(AggregationPortableValidationSorted)))
 				.SetProperty(Ref("v"), "AggFuncName", Constant(aggFuncName))
 				.SetProperty(Ref("v"), "ContainedEventType", EventTypeUtility.ResolveTypeCodegen(containedEventType, symbols.GetAddInitSvc(method)))
 				.SetProperty(Ref("v"), "OptionalCriteriaTypes", Constant(optionalCriteriaTypes))

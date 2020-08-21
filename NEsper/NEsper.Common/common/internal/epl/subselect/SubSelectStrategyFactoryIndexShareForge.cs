@@ -192,7 +192,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 				: _queryPlan.Make(method, symbols, classScope);
 			
 			method.Block
-				.DeclareVar(typeof(SubSelectStrategyFactoryIndexShare), "s", NewInstance(typeof(SubSelectStrategyFactoryIndexShare)))
+				.DeclareVar<SubSelectStrategyFactoryIndexShare>("s", NewInstance(typeof(SubSelectStrategyFactoryIndexShare)))
 				.SetProperty(Ref("s"), "Table", tableExpr)
 				.SetProperty(Ref("s"), "NamedWindow", namedWindowExpr)
 				.SetProperty(Ref("s"), "AggregationServiceFactory", aggregationServiceFactoryExpr)

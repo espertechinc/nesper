@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select " +
+				var epl = "@Name('s0') select " +
 				          "new char[][] {} as c0, " +
 				          "new double[][] {{1}} as c1, " +
 				          "new int[][] {{1},{IntPrimitive,10}} as c2, " +
@@ -306,7 +306,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 				// Runtime null handling
 				//
-				var eplNullDimension = "@name('s0') select new double[IntBoxed] from SupportBean";
+				var eplNullDimension = "@Name('s0') select new double[IntBoxed] from SupportBean";
 				env.CompileDeploy(eplNullDimension).AddListener("s0");
 				try {
 					env.SendEventBean(new SupportBean());
@@ -319,7 +319,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 				env.UndeployAll();
 
-				var eplNullValuePrimitiveArray = "@name('s0') select new double[] {IntBoxed} from SupportBean";
+				var eplNullValuePrimitiveArray = "@Name('s0') select new double[] {IntBoxed} from SupportBean";
 				env.CompileDeploy(eplNullValuePrimitiveArray).AddListener("s0");
 				try {
 					env.SendEventBean(new SupportBean());
@@ -383,7 +383,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select " +
+				var epl = "@Name('s0') select " +
 				          "new SupportBean(\"A\",IntPrimitive) as c0, " +
 				          "new SupportBean(\"B\",IntPrimitive+10), " +
 				          "new SupportBean() as c2, " +

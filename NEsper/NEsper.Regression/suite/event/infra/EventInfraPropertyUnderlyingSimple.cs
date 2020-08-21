@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			FunctionSendEventIntString send,
 			RegressionPath path)
 		{
-			var epl = "@name('s0') select * from " + typename;
+			var epl = "@Name('s0') select * from " + typename;
 			env.CompileDeploy(epl, path).AddListener("s0");
 
 			var fields = "myInt,myString".SplitCsv();
@@ -124,7 +124,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			FunctionSendEventIntString send,
 			RegressionPath path)
 		{
-			var epl = "@name('s0') select myInt, exists(myInt) as exists_myInt, myString, exists(myString) as exists_myString from " + typename;
+			var epl = "@Name('s0') select myInt, exists(myInt) as exists_myInt, myString, exists(myString) as exists_myString from " + typename;
 			env.CompileDeploy(epl, path).AddListener("s0");
 
 			var fields = "myInt,exists_myInt,myString,exists_myString".SplitCsv();

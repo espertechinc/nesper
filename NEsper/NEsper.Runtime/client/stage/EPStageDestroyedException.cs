@@ -6,6 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+using System.Runtime.Serialization;
+
 using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.runtime.client.stage
@@ -15,13 +18,20 @@ namespace com.espertech.esper.runtime.client.stage
 	///     <para />
 	///     This exception applies to destroyed runtime when a client attempts to use the runtime after it was destroyed.
 	/// </summary>
-	public class EPStageDestroyedException : EPRuntimeException
+	[Serializable]
+    public class EPStageDestroyedException : EPRuntimeException
     {
 	    /// <summary>
 	    ///     Ctor.
 	    /// </summary>
 	    /// <param name="runtimeURI">runtime URI</param>
 	    public EPStageDestroyedException(string runtimeURI) : base("Runtime has already been destroyed for runtime URI '" + runtimeURI + "'")
+        {
+        }
+
+        protected EPStageDestroyedException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

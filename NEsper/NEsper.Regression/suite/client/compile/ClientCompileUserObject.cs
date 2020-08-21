@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 				MyUserObjectResolver.Contexts.Clear();
 				var args = new CompilerArguments(env.Configuration);
 				args.Options.StatementUserObject = (new MyUserObjectResolver()).GetValue;
-				var epl = "@name('s0') select * from SupportBean";
+				var epl = "@Name('s0') select * from SupportBean";
 				env.Compile(epl, args);
 
 				var ctx = MyUserObjectResolver.Contexts[0];
@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 		{
 			var args = new CompilerArguments(env.Configuration);
 			args.Options.SetStatementUserObject(_ => userObject);
-			var compiled = env.Compile("@name('s0') select * from SupportBean", args);
+			var compiled = env.Compile("@Name('s0') select * from SupportBean", args);
 			env.Deploy(compiled);
 			var received = env.Statement("s0").UserObjectCompileTime;
 			if (received == null) {

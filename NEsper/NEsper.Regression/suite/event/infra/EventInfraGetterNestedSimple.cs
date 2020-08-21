@@ -113,8 +113,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 		{
 
 			var epl = createSchemaEPL +
-			          "@name('s0') select * from LocalEvent;\n" +
-			          "@name('s1') select property.id as c0, exists(property.id) as c1, typeof(property.id) as c2 from LocalEvent;\n";
+			          "@Name('s0') select * from LocalEvent;\n" +
+			          "@Name('s1') select property.id as c0, exists(property.id) as c1, typeof(property.id) as c2 from LocalEvent;\n";
 			env.CompileDeploy(epl).AddListener("s0").AddListener("s1");
 			var eventType = env.Statement("s0").EventType;
 

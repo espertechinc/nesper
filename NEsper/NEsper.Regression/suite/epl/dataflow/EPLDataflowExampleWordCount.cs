@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@name('flow') create dataflow WordCount " +
+            var epl = "@Name('flow') create dataflow WordCount " +
                       "MyLineFeedSource -> LineOfTextStream {} " +
                       "MyTokenizerCounter(LineOfTextStream) -> SingleLineCountStream {}" +
                       "MyWordCountAggregator(SingleLineCountStream) -> WordCountStream {}" +

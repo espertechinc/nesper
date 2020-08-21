@@ -268,9 +268,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 string epl = "create variant schema MyVariant as SupportEventWithManyArray;\n" +
                              "insert into MyVariant select * from SupportEventWithManyArray;\n" +
-                             "@name('s0') select distinct * from MyVariant#keepall;\n" +
-                             "@name('s1') select distinct intOne from MyVariant#keepall;\n" +
-                             "@name('s2') select distinct intOne, intTwo from MyVariant#keepall;\n";
+                             "@Name('s0') select distinct * from MyVariant#keepall;\n" +
+                             "@Name('s1') select distinct IntOne from MyVariant#keepall;\n" +
+                             "@Name('s2') select distinct IntOne, intTwo from MyVariant#keepall;\n";
                 env.CompileDeploy(epl);
 
                 SendManyArray(env, new int[] {1, 2}, new int[] {3, 4});
@@ -293,8 +293,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 string epl = "create window MyWindow#keepall as SupportEventWithManyArray;\n" +
                              "insert into MyWindow select * from SupportEventWithManyArray;\n" +
-                             "@name('s0') on SupportBean_S0 select distinct intOne from MyWindow;\n" +
-                             "@name('s1') on SupportBean_S1 select distinct intOne, intTwo from MyWindow;\n";
+                             "@Name('s0') on SupportBean_S0 select distinct IntOne from MyWindow;\n" +
+                             "@Name('s1') on SupportBean_S1 select distinct IntOne, intTwo from MyWindow;\n";
                 env.CompileDeploy(epl).AddListener("s0").AddListener("s1");
 
                 SendManyArray(env, new int[] {1, 2}, new int[] {3, 4});
@@ -306,7 +306,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean_S0(0));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "intOne".SplitCsv(),
+                    "IntOne".SplitCsv(),
                     new object[][] { 
                         new object[] {new int[] {1, 2}},  
                         new object[] {new int[] {3, 4}}});
@@ -314,7 +314,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean_S1(0));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s1").GetAndResetLastNewData(),
-                    "intOne,intTwo".SplitCsv(),
+                    "IntOne,intTwo".SplitCsv(),
                     new object[][] {
                          
                         new object[] {new int[] {1, 2}, new int[] {3, 4}},  
@@ -331,8 +331,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 string epl =
-                    "@name('s0') select distinct intOne from SupportEventWithManyArray#keepall;\n" +
-                    "@name('s1') select distinct intOne, intTwo from SupportEventWithManyArray#keepall;\n";
+                    "@Name('s0') select distinct IntOne from SupportEventWithManyArray#keepall;\n" +
+                    "@Name('s1') select distinct IntOne, intTwo from SupportEventWithManyArray#keepall;\n";
                 env.CompileDeploy(epl);
 
                 SendManyArray(env, new int[] {1, 2}, new int[] {3, 4});
@@ -343,14 +343,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s0"),
-                    "intOne".SplitCsv(),
+                    "IntOne".SplitCsv(),
                     new object[][] { 
                         new object[] {new int[] {1, 2}},  
                         new object[] {new int[] {3, 4}}});
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s1"),
-                    "intOne,intTwo".SplitCsv(),
+                    "IntOne,intTwo".SplitCsv(),
                     new object[][] {
                         new object[] {new int[] {1, 2}, new int[] {3, 4}}, 
                         new object[] {new int[] {3, 4}, new int[] {1, 2}}, 
@@ -366,7 +366,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 RegressionPath path = new RegressionPath();
-                string epl = "@name('s0') create window MyWindow#keepall as SupportEventWithManyArray;\n" +
+                string epl = "@Name('s0') create window MyWindow#keepall as SupportEventWithManyArray;\n" +
                              "insert into MyWindow select * from SupportEventWithManyArray;\n";
                 env.CompileDeploy(epl, path);
 
@@ -376,18 +376,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SendManyArray(env, new int[] {3, 4}, new int[] {1, 2});
                 SendManyArray(env, new int[] {1, 2}, new int[] {3, 4});
 
-                EPFireAndForgetQueryResult result = env.CompileExecuteFAF("select distinct intOne from MyWindow", path);
+                EPFireAndForgetQueryResult result = env.CompileExecuteFAF("select distinct IntOne from MyWindow", path);
                 EPAssertionUtil.AssertPropsPerRow(
                     result.Array,
-                    "intOne".SplitCsv(),
+                    "IntOne".SplitCsv(),
                     new object[][] {
                         new object[] {new int[] {1, 2}}, 
                         new object[] {new int[] {3, 4}}});
 
-                result = env.CompileExecuteFAF("select distinct intOne, intTwo from MyWindow", path);
+                result = env.CompileExecuteFAF("select distinct IntOne, intTwo from MyWindow", path);
                 EPAssertionUtil.AssertPropsPerRow(
                     result.Array,
-                    "intOne,intTwo".SplitCsv(),
+                    "IntOne,intTwo".SplitCsv(),
                     new object[][] {
                         new object[] {new int[] {1, 2}, new int[] {3, 4}}, 
                         new object[] {new int[] {3, 4}, new int[] {1, 2}}, 
@@ -403,7 +403,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 env.AdvanceTime(0);
-                string epl = "@name('s0') select distinct intOne, intTwo from SupportEventWithManyArray output every 1 seconds";
+                string epl = "@Name('s0') select distinct IntOne, intTwo from SupportEventWithManyArray output every 1 seconds";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendManyArray(env, new int[] {1, 2}, new int[] {3, 4});
@@ -416,7 +416,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "intOne,intTwo".SplitCsv(),
+                    "IntOne,intTwo".SplitCsv(),
                     new object[][] {
                         new object[] {new int[] {1, 2}, new int[] {3, 4}}, 
                         new object[] {new int[] {3, 4}, new int[] {1, 2}}, 
@@ -432,7 +432,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 env.AdvanceTime(0);
-                string epl = "@name('s0') select distinct intOne from SupportEventWithManyArray output every 1 seconds";
+                string epl = "@Name('s0') select distinct IntOne from SupportEventWithManyArray output every 1 seconds";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendManyArray(env, new int[] {1, 2});
@@ -445,7 +445,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "intOne".SplitCsv(),
+                    "IntOne".SplitCsv(),
                     new object[][] { 
                         new object[] {new int[] {1, 2}},  
                         new object[] {new int[] {2, 1}},  
@@ -459,7 +459,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select distinct * from " +
+                var epl = "@Name('s0') select distinct * from " +
                           "SupportBean(IntPrimitive=0) as fooB unidirectional " +
                           "inner join " +
                           "pattern [" +
@@ -493,7 +493,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select distinct * from " +
+                var epl = "@Name('s0') select distinct * from " +
                           "SupportBean(IntPrimitive=0) as fooB unidirectional " +
                           "inner join " +
                           "pattern [" +
@@ -566,7 +566,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     new[] {new object[] {"E1", 1}, new object[] {"E1", 2}, new object[] {"E2", 2}});
 
                 env.CompileDeploy(
-                        "@name('s0') on SupportBean_A select distinct TheString, IntPrimitive from MyWindow order by TheString, IntPrimitive asc",
+                        "@Name('s0') on SupportBean_A select distinct TheString, IntPrimitive from MyWindow order by TheString, IntPrimitive asc",
                         path)
                     .AddListener("s0");
 
@@ -586,7 +586,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 string[] fields = {"TheString", "IntPrimitive"};
                 env.CompileDeploy(
-                    "@name('s0') select * from SupportBean where TheString in (select distinct Id from SupportBean_A#keepall)");
+                    "@Name('s0') select * from SupportBean where TheString in (select distinct Id from SupportBean_A#keepall)");
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("E1"));
@@ -614,7 +614,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 string[] fields = {"TheString", "IntPrimitive"};
-                var statementText = "@name('s0') select distinct * from SupportBean#keepall";
+                var statementText = "@Name('s0') select distinct * from SupportBean#keepall";
                 env.CompileDeploy(statementText);
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -654,7 +654,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 string[] fields = {"Id"};
-                var statementText = "@name('s0') select distinct * from SupportBean_A#keepall";
+                var statementText = "@Name('s0') select distinct * from SupportBean_A#keepall";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("E1"));
@@ -695,7 +695,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 string[] fields = {"IntPrimitive", "val1", "val2"};
                 var statementText =
-                    "@name('s0') select distinct *, IntBoxed%5 as val1, IntBoxed as val2 from SupportBean_N#keepall";
+                    "@Name('s0') select distinct *, IntBoxed%5 as val1, IntBoxed as val2 from SupportBean_N#keepall";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_N(1, 8));
@@ -727,7 +727,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 string[] fields = {"k1", "v1"};
-                var statementText = "@name('s0') select distinct * from MyMapTypeKVDistinct#keepall";
+                var statementText = "@Name('s0') select distinct * from MyMapTypeKVDistinct#keepall";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 SendMapEvent(env, "E1", 1);
@@ -759,7 +759,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 string[] fields = {"TheString", "IntPrimitive"};
-                var statementText = "@name('s0') select distinct TheString, IntPrimitive from SupportBean#keepall";
+                var statementText = "@Name('s0') select distinct TheString, IntPrimitive from SupportBean#keepall";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 TryAssertionSimpleColumn(env, env.Listener("s0"), env.Statement("s0"), fields);
@@ -767,7 +767,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 // test join
                 statementText =
-                    "@name('s0') select distinct TheString, IntPrimitive from SupportBean#keepall a, SupportBean_A#keepall b where a.TheString = b.Id";
+                    "@Name('s0') select distinct TheString, IntPrimitive from SupportBean#keepall a, SupportBean_A#keepall b where a.TheString = b.Id";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("E1"));
@@ -784,7 +784,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 string[] fields = {"TheString", "IntPrimitive"};
                 var statementText =
-                    "@name('s0') @IterableUnbound select distinct TheString, IntPrimitive from SupportBean output every 3 events";
+                    "@Name('s0') @IterableUnbound select distinct TheString, IntPrimitive from SupportBean output every 3 events";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 TryAssertionOutputEvery(env, fields);
@@ -792,7 +792,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 // test join
                 statementText =
-                    "@name('s0') select distinct TheString, IntPrimitive from SupportBean#lastevent a, SupportBean_A#keepall b where a.TheString = b.Id output every 3 events";
+                    "@Name('s0') select distinct TheString, IntPrimitive from SupportBean#lastevent a, SupportBean_A#keepall b where a.TheString = b.Id output every 3 events";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("E1"));
@@ -809,14 +809,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 string[] fields = {"TheString", "IntPrimitive"};
                 var statementText =
-                    "@name('s0') select distinct TheString, IntPrimitive from SupportBean#keepall output snapshot every 3 events order by TheString asc";
+                    "@Name('s0') select distinct TheString, IntPrimitive from SupportBean#keepall output snapshot every 3 events order by TheString asc";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 TryAssertionSnapshotColumn(env, env.Listener("s0"), env.Statement("s0"), fields);
                 env.UndeployAll();
 
                 statementText =
-                    "@name('s0') select distinct TheString, IntPrimitive from SupportBean#keepall a, SupportBean_A#keepall b where a.TheString = b.Id output snapshot every 3 events order by TheString asc";
+                    "@Name('s0') select distinct TheString, IntPrimitive from SupportBean#keepall a, SupportBean_A#keepall b where a.TheString = b.Id output snapshot every 3 events order by TheString asc";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("E1"));
@@ -837,7 +837,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 string[] fields = {"TheString", "IntPrimitive"};
                 var statementText =
-                    "@name('s0') select distinct TheString, IntPrimitive from SupportBean#length_batch(3)";
+                    "@Name('s0') select distinct TheString, IntPrimitive from SupportBean#length_batch(3)";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -878,7 +878,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AdvanceTime(0);
                 string[] fieldsTwo = {"c1", "c2"};
                 var epl =
-                    "@name('s0') insert into ABC select distinct TheString as c1, first(IntPrimitive) as c2 from SupportBean#time_batch(1 second)";
+                    "@Name('s0') insert into ABC select distinct TheString as c1, first(IntPrimitive) as c2 from SupportBean#time_batch(1 second)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -903,7 +903,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 string[] fields = {"TheString", "IntPrimitive"};
                 var statementText =
-                    "@name('s0') select distinct TheString, IntPrimitive from SupportBean#length_batch(3) a, SupportBean_A#keepall b where a.TheString = b.Id";
+                    "@Name('s0') select distinct TheString, IntPrimitive from SupportBean#length_batch(3) a, SupportBean_A#keepall b where a.TheString = b.Id";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("E1"));
@@ -950,7 +950,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "insert into MyStream select distinct TheString, IntPrimitive from SupportBean#length_batch(3)";
                 env.CompileDeploy(statementText, path);
 
-                statementText = "@name('s0') select * from MyStream";
+                statementText = "@Name('s0') select * from MyStream";
                 env.CompileDeploy(statementText, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));

@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             var listener = new SupportMTUpdateListener();
             env.CompileDeploy(
-                "@name('s0') select irstream IntPrimitive, TheString as key from SupportBean#time(1 sec)");
+                "@Name('s0') select irstream IntPrimitive, TheString as key from SupportBean#time(1 sec)");
             env.Statement("s0").AddListener(listener);
 
             var threadPool = Executors.NewFixedThreadPool(

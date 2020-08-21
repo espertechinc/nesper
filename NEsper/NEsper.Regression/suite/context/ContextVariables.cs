@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "context MyCtx on SupportBean(IntPrimitive > 0) set mycontextvar = IntPrimitive",
                     path);
 
-                env.CompileDeploy("@name('s0') context MyCtx select mycontextvar from SupportBean_S0", path)
+                env.CompileDeploy("@Name('s0') context MyCtx select mycontextvar from SupportBean_S0", path)
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBean("P1", 0)); // allocate partition P1
@@ -137,7 +137,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
 
                 env.CompileDeploy(
-                    "@name('s0') context MyCtx select mycontextvar from SupportBean_S2(P20 = context.S0.P00)",
+                    "@Name('s0') context MyCtx select mycontextvar from SupportBean_S2(P20 = context.S0.P00)",
                     path);
                 env.AddListener("s0");
 
@@ -228,12 +228,12 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.UndeployAll();
 
                 // test module deployment and undeployment
-                var epl = "@name(\"context\")\n" +
+                var epl = "@Name(\"context\")\n" +
                           "create context MyContext\n" +
                           "initiated by distinct(TheString) SupportBean as input\n" +
                           "terminated by SupportBean(TheString = input.TheString);\n" +
                           "\n" +
-                          "@name(\"ctx variable counter\")\n" +
+                          "@Name(\"ctx variable counter\")\n" +
                           "context MyContext create variable integer counter = 0;\n";
                 env.CompileDeploy(epl).UndeployAll();
             }
@@ -245,16 +245,16 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('ctx') create context MyCtx as initiated by SupportBean_S0 S0 terminated after 24 hours",
+                    "@Name('ctx') create context MyCtx as initiated by SupportBean_S0 S0 terminated after 24 hours",
                     path);
 
                 var fields = new [] { "mycontextvar" };
-                env.CompileDeploy("@name('var') context MyCtx create variable int mycontextvar = 5", path);
+                env.CompileDeploy("@Name('var') context MyCtx create variable int mycontextvar = 5", path);
 
                 env.Milestone(0);
 
                 env.CompileDeploy(
-                    "@name('upd') context MyCtx on SupportBean(TheString = context.S0.P00) set mycontextvar = IntPrimitive",
+                    "@Name('upd') context MyCtx on SupportBean(TheString = context.S0.P00) set mycontextvar = IntPrimitive",
                     path);
                 env.AddListener("var").AddListener("upd");
 
@@ -318,7 +318,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(
                     "create context MyCtx as initiated by SupportBean_S0 S0 terminated after 24 hours",
                     path);
-                env.CompileDeploy("@name('var') context MyCtx create variable int mycontextvar = 5", path);
+                env.CompileDeploy("@Name('var') context MyCtx create variable int mycontextvar = 5", path);
                 env.CompileDeploy(
                     "context MyCtx on SupportBean(TheString = context.S0.P00) set mycontextvar = IntPrimitive",
                     path);
@@ -341,7 +341,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 AssertVariableValues(env, 1, 11);
 
                 // global variable - trying to set via context partition selection
-                env.CompileDeploy("@name('globalvar') create variable int myglobarvar = 0");
+                env.CompileDeploy("@Name('globalvar') create variable int myglobarvar = 0");
                 var nameGlobalVar = new DeploymentIdNamePair(env.DeploymentId("globalvar"), "myglobarvar");
                 try {
                     env.Runtime.VariableService.SetVariableValue(

@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public void Run(RegressionEnvironment env)
         {
             env.CompileDeploy(
-                "@name('flow') create dataflow MyGraph " +
+                "@Name('flow') create dataflow MyGraph " +
                 "DefaultSupportSourceOp -> outstream<SupportBean> {} " +
                 "DefaultSupportCaptureOp(outstream) {}");
 

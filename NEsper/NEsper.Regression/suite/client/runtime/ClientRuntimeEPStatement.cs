@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select * from SupportBean#length(2)");
+                env.CompileDeploy("@Name('s0') select * from SupportBean#length(2)");
                 var listener = new SupportUpdateListener();
 
                 // test empty statement
@@ -64,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 listener.Reset();
 
                 // test 1 event
-                env.CompileDeploy("@name('s0') select * from SupportBean#length(2)");
+                env.CompileDeploy("@Name('s0') select * from SupportBean#length(2)");
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.Statement("s0").AddListenerWithReplay(listener);
                 Assert.AreEqual("E1", listener.AssertOneGetNewAndReset().Get("TheString"));
@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 listener.Reset();
 
                 // test 2 events
-                env.CompileDeploy("@name('s0') select * from SupportBean#length(2)");
+                env.CompileDeploy("@Name('s0') select * from SupportBean#length(2)");
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean("E2", 1));
                 env.Statement("s0").AddListenerWithReplay(listener);
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select * from SupportBean");
+                env.CompileDeploy("@Name('s0') select * from SupportBean");
                 var statement = env.Statement("s0");
                 env.UndeployAll();
                 Assert.IsTrue(statement.IsDestroyed);

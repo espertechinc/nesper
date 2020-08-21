@@ -232,7 +232,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 SendTimer(0, env);
 
                 // Set up a timer:within
-                env.CompileDeploy("@name('s0') select * from pattern [timer:interval(1 minute 2 seconds)]");
+                env.CompileDeploy("@Name('s0') select * from pattern [timer:interval(1 minute 2 seconds)]");
                 env.AddListener("s0");
 
                 SendTimer(62 * 1000 - 1, env);
@@ -257,7 +257,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.CompileDeploy("create variable double M_isv=1", path);
                 env.CompileDeploy("create variable double S_isv=2", path);
                 env.CompileDeploy(
-                    "@name('s0') select * from pattern [timer:interval(M_isv minute S_isv seconds)]",
+                    "@Name('s0') select * from pattern [timer:interval(M_isv minute S_isv seconds)]",
                     path);
                 env.AddListener("s0");
 
@@ -282,7 +282,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var path = new RegressionPath();
                 env.CompileDeploy("create variable double MOne=1", path);
                 env.CompileDeploy("create variable double SOne=2", path);
-                env.CompileDeploy("@name('s0') select * from pattern [timer:interval(MOne*60+SOne seconds)]", path);
+                env.CompileDeploy("@Name('s0') select * from pattern [timer:interval(MOne*60+SOne seconds)]", path);
                 env.AddListener("s0");
 
                 SendTimer(62 * 1000 - 1, env);
@@ -304,7 +304,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Set up a timer:within
                 env.CompileDeploy(
-                    "@name('s0') select a.TheString as Id from pattern [every a=SupportBean -> timer:interval(IntPrimitive seconds)]");
+                    "@Name('s0') select a.TheString as Id from pattern [every a=SupportBean -> timer:interval(IntPrimitive seconds)]");
                 env.AddListener("s0");
 
                 SendTimer(10000, env);
@@ -334,7 +334,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Set up a timer:within
                 env.CompileDeploy(
-                    "@name('s0') select a[0].TheString as a0Id, a[1].TheString as a1Id from pattern [ [2] a=SupportBean -> timer:interval(a[0].IntPrimitive+a[1].IntPrimitive seconds)]");
+                    "@Name('s0') select a[0].TheString as a0Id, a[1].TheString as a1Id from pattern [ [2] a=SupportBean -> timer:interval(a[0].IntPrimitive+a[1].IntPrimitive seconds)]");
                 env.AddListener("s0");
 
                 SendTimer(10000, env);
@@ -362,7 +362,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Set up a timer:within
                 var compiled = env
-                    .Compile("@name('s0') select * from pattern [timer:interval(?::int minute ?::int seconds)]");
+                    .Compile("@Name('s0') select * from pattern [timer:interval(?::int minute ?::int seconds)]");
                 env.Deploy(
                     compiled,
                     new DeploymentOptions().WithStatementSubstitutionParameter(
@@ -387,7 +387,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 SendCurrentTime(env, "2002-02-01T09:00:00.000");
-                env.CompileDeploy("@name('s0') select * from pattern [timer:interval(1 month)]").AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from pattern [timer:interval(1 month)]").AddListener("s0");
 
                 SendCurrentTimeWithMinus(env, "2002-03-01T09:00:00.000", 1);
                 Assert.IsFalse(env.Listener("s0").IsInvoked);

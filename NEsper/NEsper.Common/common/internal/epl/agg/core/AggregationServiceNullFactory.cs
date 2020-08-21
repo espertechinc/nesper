@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             CodegenClassScope classScope,
             AggregationClassNames classNames)
         {
-            method.Block.MethodReturn(NewInstance(classNames.ServiceFactory, Ref("this")));
+            method.Block.MethodReturn(NewInstanceInner(classNames.ServiceFactory, Ref("this")));
         }
 
         public AggregationCodegenRowLevelDesc RowLevelDesc => AggregationCodegenRowLevelDesc.EMPTY;

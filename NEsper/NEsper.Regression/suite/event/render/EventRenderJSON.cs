@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
             public void Run(RegressionEnvironment env)
             {
                 string epl = "@public @buseventtype create json schema MyJsonEvent(p0 string, p1 int);\n" +
-                             "@name('s0') select * from MyJsonEvent#keepall;\n";
+                             "@Name('s0') select * from MyJsonEvent#keepall;\n";
                 env.CompileDeploy(epl).AddListener("s0");
                 
                 var jobject = new JObject(
@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                 bean.CharPrimitive = 'x';
                 bean.EnumValue = SupportEnum.ENUM_VALUE_1;
 
-                env.CompileDeploy("@name('s0') select * from SupportBean").AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from SupportBean").AddListener("s0");
                 env.SendEventBean(bean);
 
                 var result = env.Runtime.RenderEventService.RenderJSON("supportBean", env.Statement("s0").First());
@@ -117,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select * from OuterMap").AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from OuterMap").AddListener("s0");
 
                 IDictionary<string, object> dataInner = new LinkedHashMap<string, object>();
                 dataInner.Put("stringarr", new[] {"a", "b"});
@@ -165,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select * from EmptyMapEvent");
+                env.CompileDeploy("@Name('s0') select * from EmptyMapEvent");
 
                 env.SendEventBean(new EmptyMapEvent(null));
                 var result = env.Runtime.RenderEventService.RenderJSON("outer", env.GetEnumerator("s0").Advance());

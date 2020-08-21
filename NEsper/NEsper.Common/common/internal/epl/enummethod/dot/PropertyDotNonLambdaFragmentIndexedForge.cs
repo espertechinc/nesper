@@ -82,9 +82,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 			CodegenMethod method = parent.MakeChild(typeof(EventBean), typeof(PropertyDotNonLambdaFragmentIndexedForge), classScope);
 			CodegenExpressionRef refEps = symbols.GetAddEPS(method);
 			method.Block
-				.DeclareVar(typeof(EventBean), "event", ArrayAtIndex(refEps, Constant(_streamId)))
-				.IfRefNullReturnNull("event")
-				.DeclareVar(typeof(EventBean[]), "array", Cast(typeof(EventBean[]), _getter.EventBeanFragmentCodegen(Ref("event"), method, classScope)))
+				.DeclareVar<EventBean>("@event", ArrayAtIndex(refEps, Constant(_streamId)))
+				.IfRefNullReturnNull("@event")
+				.DeclareVar<EventBean[]>("array", Cast(typeof(EventBean[]), _getter.EventBeanFragmentCodegen(Ref("@event"), method, classScope)))
 				.DeclareVar(typeof(int?), "index", _indexExpr.Forge.EvaluateCodegen(typeof(int?), method, symbols, classScope))
 				.IfRefNullReturnNull("index")
 				.IfCondition(Relational(Ref("index"), CodegenExpressionRelational.CodegenRelational.GE, ArrayLength(Ref("array"))))

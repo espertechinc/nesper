@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             RegressionRunner.Run(_session, InfraNWTableFAFIndex.Executions());
         }
 
-        [Test, RunInApplicationDomain]
+        [Test]
         public void TestInfraNWTableFAFResolve()
         {
             RegressionRunner.Run(_session, InfraNWTableFAFResolve.Executions());

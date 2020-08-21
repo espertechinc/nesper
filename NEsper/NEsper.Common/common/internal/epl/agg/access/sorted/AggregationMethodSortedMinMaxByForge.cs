@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 		{
 			CodegenMethod method = parent.MakeChild(typeof(AggregationMethodSortedMinMaxBy), GetType(), classScope);
 			method.Block
-				.DeclareVar(typeof(AggregationMethodSortedMinMaxBy), "strat", NewInstance(typeof(AggregationMethodSortedMinMaxBy)))
+				.DeclareVar<AggregationMethodSortedMinMaxBy>("strat", NewInstance(typeof(AggregationMethodSortedMinMaxBy)))
 				.SetProperty(Ref("strat"), "Max", Constant(max))
 				.MethodReturn(Ref("strat"));
 			return LocalMethod(method);

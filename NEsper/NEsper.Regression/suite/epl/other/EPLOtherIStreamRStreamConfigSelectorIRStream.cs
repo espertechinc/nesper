@@ -17,7 +17,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
     {
         public void Run(RegressionEnvironment env)
         {
-            var stmtText = "@name('s0') select * from SupportBean#length(3)";
+            var stmtText = "@Name('s0') select * from SupportBean#length(3)";
             env.CompileDeploy(stmtText).AddListener("s0");
 
             var eventOld = SendEvent(env, "a");

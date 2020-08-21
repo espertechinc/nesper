@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             var fields = new[] {"word"};
 
             // test single-row method
-            stmtText = "@name('s0') select * from MySentenceEvent[splitSentence" +
+            stmtText = "@Name('s0') select * from MySentenceEvent[splitSentence" +
                        "_" +
                        eventRepresentationEnum.GetName() +
                        "(sentence)@type(WordEvent)]";
@@ -108,7 +108,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
 
             // test script
             if (eventRepresentationEnum.IsMapEvent()) {
-                stmtText = "@name('s0') expression System.Collection js:splitSentenceJS(sentence) [" +
+                stmtText = "@Name('s0') expression System.Collection js:splitSentenceJS(sentence) [" +
                            "  debug.Debug('test');" +
                            "  var listType = host.type('System.Collections.ArrayList');" +
                            "  var words = host.newObj(listType);" +
@@ -135,7 +135,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             }
 
             // test multiple splitters
-            stmtText = "@name('s0') select * from " +
+            stmtText = "@Name('s0') select * from " +
                        "MySentenceEvent[splitSentence_" +
                        eventRepresentationEnum.GetName() +
                        "(sentence)@type(WordEvent)][splitWord_" +
@@ -157,7 +157,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             env.UndeployModuleContaining("s0");
 
             // test wildcard parameter
-            stmtText = "@name('s0') select * from MySentenceEvent[splitSentenceBean_" +
+            stmtText = "@Name('s0') select * from MySentenceEvent[splitSentenceBean_" +
                        eventRepresentationEnum.GetName() +
                        "(*)@type(WordEvent)]";
             env.CompileDeploy(stmtText, path).AddListener("s0");
@@ -221,7 +221,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 env.UndeployAll();
             }
             else if (eventRepresentationEnum.IsAvroEvent()) {
-                stmtText = "@name('s0') " +
+                stmtText = "@Name('s0') " +
                            eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonWord>() +
                            " select * from SupportAvroArrayEvent[someAvroArray@type(WordEvent)]";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
@@ -246,7 +246,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                     });
                 env.UndeployAll();
             } else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
-                stmtText = "@name('s0') " +
+                stmtText = "@Name('s0') " +
                            eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonWord>() +
                            " select * from SupportJsonArrayEvent[someJsonArray@type(WordEvent)]";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
@@ -495,7 +495,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var script = "@name('mystmt') create expression Object js:myGetScriptContext() [\n" +
+                var script = "@Name('mystmt') create expression Object js:myGetScriptContext() [\n" +
                              "function myGetScriptContext() {" +
                              "  return epl;\n" +
                              "}" +
@@ -503,7 +503,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                              "]";
                 env.CompileDeploy(script, path);
 
-                env.CompileDeploy("@name('s0') select myGetScriptContext() as c0 from SupportBean", path)
+                env.CompileDeploy("@Name('s0') select myGetScriptContext() as c0 from SupportBean", path)
                     .AddListener("s0");
                 env.SendEventBean(new SupportBean());
                 var context = (EPLScriptContext) env.Listener("s0").AssertOneGetNewAndReset().Get("c0");
@@ -560,7 +560,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 RegressionPath path,
                 string functionOrScript)
             {
-                var epl = "@name('s0') select * from SplitEvent[" + functionOrScript + "(value) @type(BaseEvent)]";
+                var epl = "@Name('s0') select * from SplitEvent[" + functionOrScript + "(value) @type(BaseEvent)]";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 env.SendEventMap(Collections.SingletonDataMap("value", "AE1,BE2,AE3"), "SplitEvent");

@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select `Seconds`, `Order` from SomeKeywords").AddListener("s0");
+                env.CompileDeploy("@Name('s0') select `Seconds`, `Order` from SomeKeywords").AddListener("s0");
 
                 object theEvent = new SupportBeanReservedKeyword(1, 2);
                 env.SendEventBean(theEvent, "SomeKeywords");
@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 Assert.AreEqual(2, eventBean.Get("Order"));
 
                 env.UndeployAll();
-                env.CompileDeploy("@name('s0') select * from `Order`").AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from `Order`").AddListener("s0");
 
                 env.SendEventBean(theEvent, "Order");
                 eventBean = env.Listener("s0").AssertOneGetNewAndReset();
@@ -87,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 Assert.AreEqual(2, eventBean.Get("Order"));
 
                 env.UndeployAll();
-                env.CompileDeploy("@name('s0') select Timestamp.`Hour` as val from SomeKeywords").AddListener("s0");
+                env.CompileDeploy("@Name('s0') select Timestamp.`Hour` as val from SomeKeywords").AddListener("s0");
 
                 var bean = new SupportBeanReservedKeyword(1, 2);
                 bean.Timestamp = new SupportBeanReservedKeyword.Inner();
@@ -99,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
                 // test back-tick with spaces etc
                 env.CompileDeploy(
-                        "@name('s0') select `candidate book` as c0, `XML Message Type` as c1, `select` as c2, `children's books`[0] as c3, `my <> map`('xx') as c4 from MyType")
+                        "@Name('s0') select `candidate book` as c0, `XML Message Type` as c1, `select` as c2, `children's books`[0] as c3, `my <> map`('xx') as c4 from MyType")
                     .AddListener("s0");
 
                 IDictionary<string, object> defValues = new Dictionary<string, object>();
@@ -134,7 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                     path);
 
                 // test escape in column name
-                env.CompileDeploy("@name('s0') select TheString as `order`, TheString as `price.for.goods` from SupportBean")
+                env.CompileDeploy("@Name('s0') select TheString as `order`, TheString as `price.for.goods` from SupportBean")
                     .AddListener("s0");
                 var eventTypeS0 = env.Statement("s0").EventType;
                 Assert.AreEqual(typeof(string), eventTypeS0.GetPropertyType("order"));
@@ -160,7 +160,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select * from SupportBeanWriteOnly").AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from SupportBeanWriteOnly").AddListener("s0");
 
                 object theEvent = new SupportBeanWriteOnly();
                 env.SendEventBean(theEvent);
@@ -178,7 +178,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select MYPROPERTY, myproperty, myProperty from SupportBeanDupProperty")
+                env.CompileDeploy("@Name('s0') select MYPROPERTY, myproperty, myProperty from SupportBeanDupProperty")
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBeanDupProperty("lowercamel", "uppercamel", "upper", "lower"));

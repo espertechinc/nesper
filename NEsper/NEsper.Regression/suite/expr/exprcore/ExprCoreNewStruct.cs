@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select " +
+				var epl = "@Name('s0') select " +
 				          "case TheString" +
 				          " when \"A\" then new{TheString=\"Q\",IntPrimitive,col2=TheString||\"A\"}" +
 				          " when \"B\" then new{TheString,IntPrimitive=10,col2=TheString||\"B\"} " +
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				env.UndeployAll();
 
 				// test to-expression string
-				epl = "@name('s0') select " +
+				epl = "@Name('s0') select " +
 				      "case TheString" +
 				      " when \"A\" then new{TheString=\"Q\",IntPrimitive,col2=TheString||\"A\" }" +
 				      " when \"B\" then new{TheString,IntPrimitive = 10,col2=TheString||\"B\" } " +
@@ -147,7 +147,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			public void Run(RegressionEnvironment env)
 			{
 				AtomicLong milestone = new AtomicLong();
-				var epl = "@name('s0') select " +
+				var epl = "@Name('s0') select " +
 				          "case " +
 				          "  when TheString = 'A' then new { col1 = 'X', col2 = 10 } " +
 				          "  when TheString = 'B' then new { col1 = 'Y', col2 = 20 } " +
@@ -156,7 +156,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				          "end as val0 from SupportBean sb";
 				TryAssertion(env, epl, milestone);
 
-				epl = "@name('s0') select " +
+				epl = "@Name('s0') select " +
 				      "case TheString " +
 				      "  when 'A' then new { col1 = 'X', col2 = 10 } " +
 				      "  when 'B' then new { col1 = 'Y', col2 = 20 } " +
@@ -257,7 +257,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			AtomicLong milestone)
 		{
 			var epl = rep.GetAnnotationTextWJsonProvided<MyLocalJsonProvided>() +
-			          "@name('s0') select new { TheString = 'x' || TheString || 'x', IntPrimitive = IntPrimitive + 2} as val0 from SupportBean as sb";
+			          "@Name('s0') select new { TheString = 'x' || TheString || 'x', IntPrimitive = IntPrimitive + 2} as val0 from SupportBean as sb";
 			env.CompileDeploy(epl).AddListener("s0").Milestone(milestone.GetAndIncrement());
 
 			Assert.AreEqual(

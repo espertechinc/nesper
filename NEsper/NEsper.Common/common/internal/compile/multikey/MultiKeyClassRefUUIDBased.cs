@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
             CodegenClassScope classScope)
         {
             CheckClassPostfix();
-            return NewInstance(GetClassNameMKSerde(classPostfix));
+            return NewInstanceInner(GetClassNameMKSerde(classPostfix));
         }
 
         public Type[] MKTypes { get; }

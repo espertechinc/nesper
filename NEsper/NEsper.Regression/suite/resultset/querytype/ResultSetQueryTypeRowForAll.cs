@@ -176,7 +176,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 var epl =
                     $"import {typeof(MyHelper).FullName};\n" +
-                    "@name('s0') select MyHelper.DoOuter(MyHelper.DoInner(last(theString))) as c0 from SupportBean;\n";
+                    "@Name('s0') select MyHelper.DoOuter(MyHelper.DoInner(last(TheString))) as c0 from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -194,7 +194,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 env.Milestone(0);
                 env.AdvanceTime(0);
-                var epl = "@name('s0') select TheString as c0, sum(IntPrimitive) as c1," +
+                var epl = "@Name('s0') select TheString as c0, sum(IntPrimitive) as c1," +
                           "min(IntPrimitive) as c2, max(IntPrimitive) as c3 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -254,7 +254,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 var fields = new [] { "c0", "c1", "c2" };
 
-                var epl = "@name('s0') select irstream TheString as c0, sum(IntPrimitive) as c1," +
+                var epl = "@Name('s0') select irstream TheString as c0, sum(IntPrimitive) as c1," +
                           "window(*) as c2 from SupportBean.win:length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -320,7 +320,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream " +
+                var epl = "@Name('s0') select irstream " +
                           "avg(Price) as avgPrice," +
                           "sum(Price) as sumPrice," +
                           "min(Price) as minPrice," +
@@ -429,7 +429,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream " +
+                var epl = "@Name('s0') select irstream " +
                           "min(Price) as minPrice," +
                           "max(Price) as maxPrice " +
                           "from  SupportMarketDataBean#length(2)";
@@ -488,7 +488,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream sum(LongBoxed) as mySum " +
+                var epl = "@Name('s0') select irstream sum(LongBoxed) as mySum " +
                           "from SupportBean#time(10 sec)";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -504,7 +504,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream sum(LongBoxed) as mySum " +
+                var epl = "@Name('s0') select irstream sum(LongBoxed) as mySum " +
                           "from SupportBeanString#keepall as one, " +
                           "SupportBean#time(10 sec) as two " +
                           "where one.TheString = two.TheString";
@@ -524,7 +524,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream avg(Price) as Avgp, Sym " +
+                var epl = "@Name('s0') select irstream avg(Price) as Avgp, Sym " +
                           "from SupportPriceEvent#groupwin(Sym)#length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -566,7 +566,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select istream * from SupportMarketDataBean#groupwin(Symbol)#length(2)";
+                var stmtText = "@Name('s0') select istream * from SupportMarketDataBean#groupwin(Symbol)#length(2)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEvent(env, "A", 1);
@@ -582,7 +582,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select istream Price from SupportMarketDataBean#groupwin(Symbol)#length(2)";
+                var stmtText = "@Name('s0') select istream Price from SupportMarketDataBean#groupwin(Symbol)#length(2)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEvent(env, "A", 1);
@@ -597,7 +597,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select istream avg(Price) as aPrice from SupportMarketDataBean" +
+                var stmtText = "@Name('s0') select istream avg(Price) as aPrice from SupportMarketDataBean" +
                                "#groupwin(Symbol)#length(2)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
@@ -619,7 +619,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select istream average as aPrice from SupportMarketDataBean" +
+                var stmtText = "@Name('s0') select istream average as aPrice from SupportMarketDataBean" +
                                "#groupwin(Symbol)#length(2)#uni(Price)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
@@ -659,7 +659,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 var epl = "create window ABCWin.win:keepall() as SupportBean;\n" +
                           "insert into ABCWin select * from SupportBean;\n" +
                           "on SupportBean_A delete from ABCWin where TheString = Id;\n" +
-                          "@name('s0') select irstream TheString as c0, window(IntPrimitive) as c1 from ABCWin;\n";
+                          "@Name('s0') select irstream TheString as c0, window(IntPrimitive) as c1 from ABCWin;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);

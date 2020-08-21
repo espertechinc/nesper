@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@name('ABC') create variable long varDRR = 2";
+                var text = "@Name('ABC') create variable long varDRR = 2";
                 env.CompileDeploy(text);
 
                 Assert.AreEqual(2L, env.Runtime.VariableService.GetVariableValue(env.DeploymentId("ABC"), "varDRR"));
@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
                 AssertNotFound(env, deploymentIdABC, "varDRR");
 
-                text = "@name('CDE') create variable string varDRR = 'a'";
+                text = "@Name('CDE') create variable string varDRR = 'a'";
                 env.CompileDeploy(text);
 
                 Assert.AreEqual("a", env.Runtime.VariableService.GetVariableValue(env.DeploymentId("CDE"), "varDRR"));
@@ -93,8 +93,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 var path = new RegressionPath();
 
                 // single variable
-                env.CompileDeploy("@name('S0') create variable boolean var2vmd = true", path);
-                env.CompileDeploy("@name('S1') select * from SupportBean(var2vmd)", path);
+                env.CompileDeploy("@Name('S0') create variable boolean var2vmd = true", path);
+                env.CompileDeploy("@Name('S1') select * from SupportBean(var2vmd)", path);
                 Assert.AreEqual(true, env.Runtime.VariableService.GetVariableValue(env.DeploymentId("S0"), "var2vmd"));
 
                 try {
@@ -114,12 +114,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
                 // multiple variable
                 path.Clear();
-                env.CompileDeploy("@name('T0') create variable boolean v1 = true", path);
-                env.CompileDeploy("@name('T1') create variable long v2 = 1", path);
-                env.CompileDeploy("@name('T2') create variable string v3 = 'a'", path);
-                env.CompileDeploy("@name('TX') select * from SupportBean(v1, v2=1, v3='a')", path);
-                env.CompileDeploy("@name('TY') select * from SupportBean(v2=2)", path);
-                env.CompileDeploy("@name('TZ') select * from SupportBean(v3='A', v1)", path);
+                env.CompileDeploy("@Name('T0') create variable boolean v1 = true", path);
+                env.CompileDeploy("@Name('T1') create variable long v2 = 1", path);
+                env.CompileDeploy("@Name('T2') create variable string v3 = 'a'", path);
+                env.CompileDeploy("@Name('TX') select * from SupportBean(v1, v2=1, v3='a')", path);
+                env.CompileDeploy("@Name('TY') select * from SupportBean(v2=2)", path);
+                env.CompileDeploy("@Name('TZ') select * from SupportBean(v3='A', v1)", path);
 
                 AssertCannotUndeploy(env, "T0,T1,T2");
                 env.UndeployModuleContaining("TX");

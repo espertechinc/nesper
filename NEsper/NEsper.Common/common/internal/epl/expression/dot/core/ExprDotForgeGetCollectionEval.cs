@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 			}
 
 			var targetType = EPTypeHelper.GetCodegenReturnType(forge.TypeInfo);
-			block.DeclareVar(typeof(int), "index", forge.IndexExpression.EvaluateCodegen(typeof(int), methodNode, exprSymbol, codegenClassScope))
+			block.DeclareVar<int>("index", forge.IndexExpression.EvaluateCodegen(typeof(int), methodNode, exprSymbol, codegenClassScope))
 				.MethodReturn(
 					CodegenLegoCast.CastSafeFromObjectType(
 						targetType,

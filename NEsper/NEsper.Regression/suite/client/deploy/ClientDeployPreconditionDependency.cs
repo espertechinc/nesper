@@ -82,7 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             {
                 var path = new RegressionPath();
                 env.Compile(
-                    "@name('infra') create inlined_class \"\"\" public class MyClass { public static String doIt() { return \"def\"; } }\"\"\";\n",
+                    "@Name('infra') create inlined_class \"\"\" public class MyClass { public static String doIt() { return \"def\"; } }\"\"\";\n",
                     path); // Note: not deploying, just adding to path
 
                 var text = "dependency application-inlined class 'MyClass'";
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             {
                 var path = new RegressionPath();
                 env.Compile(
-                    "@name('infra') create variable string somevariable = 'a'",
+                    "@Name('infra') create variable string somevariable = 'a'",
                     path); // Note: not deploying, just adding to path
 
                 var text = "dependency variable 'somevariable'";
@@ -154,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             {
                 var path = new RegressionPath();
                 env.Compile(
-                    "@name('infra') create window SimpleWindow#keepall as SupportBean",
+                    "@Name('infra') create window SimpleWindow#keepall as SupportBean",
                     path); // Note: not deploying, just adding to path
 
                 var text = "dependency named window 'SimpleWindow'";
@@ -168,7 +168,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             {
                 var path = new RegressionPath();
                 env.Compile(
-                    "@name('infra') create table SimpleTable(col1 string)",
+                    "@Name('infra') create table SimpleTable(col1 string)",
                     path); // Note: not deploying, just adding to path
 
                 var text = "dependency table 'SimpleTable'";
@@ -182,7 +182,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             {
                 var path = new RegressionPath();
                 env.Compile(
-                    "@name('infra') create expression someexpression { 0 }",
+                    "@Name('infra') create expression someexpression { 0 }",
                     path); // Note: not deploying, just adding to path
 
                 var text = "dependency declared-expression 'someexpression'";
@@ -196,7 +196,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             {
                 var path = new RegressionPath();
                 env.Compile(
-                    "@name('infra') create expression double myscript(stringvalue) [0]",
+                    "@Name('infra') create expression double myscript(stringvalue) [0]",
                     path); // Note: not deploying, just adding to path
 
                 var text = "dependency script 'myscript'";
@@ -210,7 +210,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             {
                 var path = new RegressionPath();
                 env.Compile(
-                    "@name('infra') create context MyContext partition by TheString from SupportBean",
+                    "@Name('infra') create context MyContext partition by TheString from SupportBean",
                     path); // Note: not deploying, just adding to path
 
                 var text = "dependency context 'MyContext'";
@@ -226,9 +226,9 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 string text;
 
                 // Table
-                env.CompileDeploy("@name('infra') create table MyTable(col1 string primary key, col2 string)", path);
+                env.CompileDeploy("@Name('infra') create table MyTable(col1 string primary key, col2 string)", path);
                 env.Compile(
-                    "@name('infra') create index MyIndexForTable on MyTable(col2)",
+                    "@Name('infra') create index MyIndexForTable on MyTable(col2)",
                     path); // Note: not deploying, just adding to path
 
                 text = "dependency index 'MyIndexForTable'";
@@ -244,9 +244,9 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     text);
 
                 // Named Window
-                env.CompileDeploy("@name('infra') create window MyWindow#keepall as SupportBean", path);
+                env.CompileDeploy("@Name('infra') create window MyWindow#keepall as SupportBean", path);
                 env.Compile(
-                    "@name('infra') create index MyIndexForNW on MyWindow(IntPrimitive)",
+                    "@Name('infra') create index MyIndexForNW on MyWindow(IntPrimitive)",
                     path); // Note: not deploying, just adding to path
 
                 text = "dependency index 'MyIndexForNW'";
@@ -266,7 +266,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             {
                 var path = new RegressionPath();
                 env.Compile(
-                    "@name('infra') create schema MySchema(col1 string)",
+                    "@Name('infra') create schema MySchema(col1 string)",
                     path); // Note: not deploying, just adding to path
 
                 var text = "dependency event type 'MySchema'";

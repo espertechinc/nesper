@@ -89,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 			// Comment-me-in: System.out.println("Start from " + startTime);
 			env.AdvanceTime(ParseWithMicro(startTime));
 
-			env.CompileDeploy("@name('s0') " + epl).AddListener("s0");
+			env.CompileDeploy("@Name('s0') " + epl).AddListener("s0");
 			RunSequenceMilliseconds(env, times);
 
 			env.UndeployAll();

@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        WriteInternal(@object, output);
 	    }
 
-	    public override BigInteger[][] Read(DataInput input, byte[] unitKey) {
+	    public override BigInteger[][] ReadValue(DataInput input, byte[] unitKey) {
 	        return ReadInternal(input);
 	    }
 

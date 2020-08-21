@@ -351,7 +351,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             string orderBy)
         {
             var epl = hint.GetHint() +
-                      "@name('s0') select irstream " +
+                      "@Name('s0') select irstream " +
                       selectClause +
                       " " +
                       "from SupportBean#length(2) " +

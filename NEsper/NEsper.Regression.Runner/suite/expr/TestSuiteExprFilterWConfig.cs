@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
     [TestFixture]
     public class TestSuiteExprFilterWConfig
     {
-        private static readonly string HOOK = "@Hook(type=HookType.INTERNAL_FILTERSPEC, hook='" + typeof(SupportFilterPlanHook).FullName + "')";
+        private static readonly string HOOK = "@Hook(Type=HookType.INTERNAL_FILTERSPEC, hook='" + typeof(SupportFilterPlanHook).FullName + "')";
 
         private void RunAssertionFilter<T>(
             ConfigurationCompilerExecution.FilterIndexPlanningEnum config,

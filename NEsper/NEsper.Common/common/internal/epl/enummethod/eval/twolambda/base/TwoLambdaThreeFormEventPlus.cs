@@ -90,11 +90,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@bas
 			InitBlock(methodNode.Block, methodNode, scope, codegenClassScope);
 
 			methodNode.Block
-				.DeclareVar(typeof(ObjectArrayEventBean), "indexEvent",
+				.DeclareVar<ObjectArrayEventBean>("indexEvent",
 					NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(_numParameters - 1)), resultTypeMember))
 				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda + 1), @Ref("indexEvent"))
-				.DeclareVar(typeof(object[]), "props", ExprDotName(@Ref("indexEvent"), "Properties"))
-				.DeclareVar(typeof(int), "count", Constant(-1));
+				.DeclareVar<object[]>("props", ExprDotName(@Ref("indexEvent"), "Properties"))
+				.DeclareVar<int>("count", Constant(-1));
 			if (hasSize) {
 				methodNode.Block.AssignArrayElement(@Ref("props"), Constant(1), ExprDotMethod(REF_ENUMCOLL, "size"));
 			}

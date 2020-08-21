@@ -103,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 env.AdvanceTime(0);
-                env.CompileDeploy("@name('s0') select count(*) as y from SupportBean#time_batch(1 seconds) group by theString having count(*) > 0");
+                env.CompileDeploy("@Name('s0') select count(*) as y from SupportBean#time_batch(1 seconds) group by TheString having count(*) > 0");
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 0));
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@name('s0') select * from SupportBean(IntPrimitive = 3)#length(10) as e1 group by TheString having count(*) > 2";
+                    "@Name('s0') select * from SupportBean(IntPrimitive = 3)#length(10) as e1 group by TheString having count(*) > 2";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("A1", 3));
@@ -143,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream Symbol, sum(Price) as mySum " +
+                var epl = "@Name('s0') select irstream Symbol, sum(Price) as mySum " +
                           "from SupportBeanString#length(100) as one, " +
                           " SupportMarketDataBean#length(3) as two " +
                           "where (Symbol='DELL' or Symbol='IBM' or Symbol='GE')" +
@@ -166,7 +166,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream Symbol, sum(Price) as mySum " +
+                var epl = "@Name('s0') select irstream Symbol, sum(Price) as mySum " +
                           "from SupportMarketDataBean#length(3) " +
                           "where Symbol='DELL' or Symbol='IBM' or Symbol='GE' " +
                           "group by Symbol " +

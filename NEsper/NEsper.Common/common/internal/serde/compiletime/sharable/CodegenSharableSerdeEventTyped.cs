@@ -68,16 +68,16 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.sharable
 	    public class CodegenSharableSerdeName
 	    {
 		    public static readonly CodegenSharableSerdeName NULLABLEEVENTMAYCOLLATE =
-			    new CodegenSharableSerdeName("nullableEventMayCollate");
+			    new CodegenSharableSerdeName("NullableEventMayCollate");
 
 		    public static readonly CodegenSharableSerdeName LISTEVENTS =
-			    new CodegenSharableSerdeName("listEvents");
+			    new CodegenSharableSerdeName("ListEvents");
 
 		    public static readonly CodegenSharableSerdeName LINKEDHASHMAPEVENTSANDINT =
-			    new CodegenSharableSerdeName("linkedHashMapEventsAndInt");
+			    new CodegenSharableSerdeName("LinkedHashMapEventsAndInt");
 
 		    public static readonly CodegenSharableSerdeName REFCOUNTEDSETATOMICINTEGER =
-			    new CodegenSharableSerdeName("refCountedSetAtomicInteger");
+			    new CodegenSharableSerdeName("RefCountedSetAtomicInteger");
 
 		    public string MethodName { get; }
 

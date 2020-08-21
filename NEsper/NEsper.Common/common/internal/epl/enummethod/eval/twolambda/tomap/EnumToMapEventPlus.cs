@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tom
 			ExprForgeCodegenSymbol scope,
 			CodegenClassScope codegenClassScope)
 		{
-			block.DeclareVar(typeof(IDictionary<object, object>), "map", NewInstance(typeof(Dictionary<object, object>)));
+			block.DeclareVar<IDictionary<object, object>>("map", NewInstance(typeof(Dictionary<object, object>)));
 		}
 
 		public override void ForEachBlock(
@@ -96,9 +96,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tom
 			ExprForgeCodegenSymbol scope,
 			CodegenClassScope codegenClassScope)
 		{
-			block.DeclareVar(typeof(object), "key", InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-				.DeclareVar(typeof(object), "value", SecondExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-				.Expression(ExprDotMethod(@Ref("map"), "put", @Ref("key"), @Ref("value")));
+			block.DeclareVar<object>("key", InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+				.DeclareVar<object>("value", SecondExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+				.Expression(ExprDotMethod(@Ref("map"), "Put", @Ref("key"), @Ref("value")));
 		}
 
 		public override void ReturnResult(CodegenBlock block)

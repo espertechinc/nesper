@@ -45,14 +45,14 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('bean') select * from " + BEAN_TYPENAME + ";\n" +
-                    "@name('map') select * from " + MAP_TYPENAME + ";\n" +
-                    "@name('oa') select * from " + OA_TYPENAME + ";\n" +
-                    "@name('xml') select * from " + XML_TYPENAME + ";\n" +
-                    "@name('avro') select * from " + AVRO_TYPENAME + ";\n" +
+                    "@Name('bean') select * from " + BEAN_TYPENAME + ";\n" +
+                    "@Name('map') select * from " + MAP_TYPENAME + ";\n" +
+                    "@Name('oa') select * from " + OA_TYPENAME + ";\n" +
+                    "@Name('xml') select * from " + XML_TYPENAME + ";\n" +
+                    "@Name('avro') select * from " + AVRO_TYPENAME + ";\n" +
                     "@public @buseventtype create json schema JsonEvent(ident string);\n" +
-                    "@name('json') select * from JsonEvent;\n" +
-                    "@name('trigger') select * from SupportBean;";
+                    "@Name('json') select * from JsonEvent;\n" +
+                    "@Name('trigger') select * from SupportBean;";
                 env.CompileDeploy(epl)
                     .AddListener("map")
                     .AddListener("oa")

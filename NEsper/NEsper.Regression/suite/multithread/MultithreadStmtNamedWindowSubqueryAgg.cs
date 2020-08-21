@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                           "create schema WindowSchema as (wskey string, wsint int);\n";
             env.CompileDeployWBusPublicType(schemas, path);
 
-            var createEpl = "@name('namedWindow') create window MyWindow#keepall as WindowSchema";
+            var createEpl = "@Name('namedWindow') create window MyWindow#keepall as WindowSchema";
             if (indexShare) {
                 createEpl = "@Hint('enable_window_subquery_indexshare') " + createEpl;
             }
@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 path);
             // note: here all threads use the same string key to insert/delete and different values for the int
             env.CompileDeploy(
-                "@name('target') select (select intListAgg(wsint) from MyWindow mw where wskey = sb.TheString) as val from SupportBean sb",
+                "@Name('target') select (select intListAgg(wsint) from MyWindow mw where wskey = sb.TheString) as val from SupportBean sb",
                 path);
 
             // execute

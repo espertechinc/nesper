@@ -35,8 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             if (rhsType != null && lhsType != null) {
                 if (!lhsType.IsArray) {
                     methodNode.Block
-                        .DeclareVar(typeof(object), "left", lhs.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
-                        .DeclareVar(typeof(object), "right", rhs.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope));
+                        .DeclareVar<object>("left", lhs.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
+                        .DeclareVar<object>("right", rhs.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope));
                     compare = ExprDotMethod(Ref("left"), "equals", Ref("right"));
                 }
                 else {
@@ -60,17 +60,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
             else {
                 if (lhsType == null && rhsType == null) {
-                    methodNode.Block.DeclareVar(typeof(bool), "result", ConstantTrue());
+                    methodNode.Block.DeclareVar<bool>("result", ConstantTrue());
                 }
                 else if (lhsType == null) {
                     methodNode.Block
-                        .DeclareVar(typeof(object), "right", rhs.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
-                        .DeclareVar(typeof(bool), "result", EqualsNull(Ref("right")));
+                        .DeclareVar<object>("right", rhs.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
+                        .DeclareVar<bool>("result", EqualsNull(Ref("right")));
                 }
                 else {
                     methodNode.Block
-                        .DeclareVar(typeof(object), "left", lhs.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
-                        .DeclareVar(typeof(bool), "result", EqualsNull(Ref("left")));
+                        .DeclareVar<object>("left", lhs.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
+                        .DeclareVar<bool>("result", EqualsNull(Ref("left")));
                 }
             }
 

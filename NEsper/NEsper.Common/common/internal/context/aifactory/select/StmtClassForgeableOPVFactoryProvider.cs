@@ -190,7 +190,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 .AddParam(typeof(ResultSetProcessor), NAME_RESULTSETPROCESSOR)
                 .AddParam(typeof(AgentInstanceContext), NAME_AGENTINSTANCECONTEXT);
             makeViewMethod.Block.MethodReturn(
-                NewInstance(CLASSNAME_OUTPUTPROCESSVIEW, Ref("o"), MEMBER_RESULTSETPROCESSOR, MEMBER_AGENTINSTANCECONTEXT));
+                NewInstanceInner(CLASSNAME_OUTPUTPROCESSVIEW, Ref("o"), MEMBER_RESULTSETPROCESSOR, MEMBER_AGENTINSTANCECONTEXT));
             var methods = new CodegenClassMethods();
             var properties = new CodegenClassProperties();
 
@@ -210,7 +210,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
             providerCtor.Block.AssignRef(
                     MEMBERNAME_OPVFACTORY,
-                    NewInstance(CLASSNAME_OUTPUTPROCESSVIEWFACTORY, Ref("this")))
+                    NewInstanceInner(CLASSNAME_OUTPUTPROCESSVIEWFACTORY, Ref("this")))
                 .AssignRef(
                     MEMBERNAME_STATEMENTRESULTSVC,
                     ExprDotName(

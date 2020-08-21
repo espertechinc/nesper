@@ -742,7 +742,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
 					forEach.ExprDotMethod(
 						Ref("resultEvents"),
-						"put",
+						"Put",
 						Ref("groupKey"),
 						ExprDotMethod(
 							MEMBER_SELECTEXPRPROCESSOR,
@@ -852,7 +852,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 			};
 			return instance.Methods.AddMethod(
 				typeof(void),
-				"generateOutputBatchedJoinPerKey",
+				"GenerateOutputBatchedJoinPerKey",
 				CodegenNamedParam.From(
 					typeof(ISet<MultiKeyArrayOfKeys<EventBean>>), "outputEvents",
 					typeof(object[]), "groupByKeys",
@@ -2389,7 +2389,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 						"istream",
 						LocalMethod(shortcutEvalGivenKey, REF_NEWDATA, Ref("newGroupKey"), ConstantTrue(), REF_ISSYNTHESIZE));
 				if (!forge.IsSelectRStream) {
-					methodNode.Block.MethodReturn(StaticMethod(typeof(ResultSetProcessorUtil), "toPairNullIfNullIStream", Ref("istream")));
+					methodNode.Block.MethodReturn(StaticMethod(typeof(ResultSetProcessorUtil), "ToPairNullIfNullIStream", Ref("istream")));
 				}
 				else {
 					methodNode.Block.DeclareVar<EventBean>(

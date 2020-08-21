@@ -39,10 +39,10 @@ namespace com.espertech.esper.regressionlib.suite.context
             string fromClause)
         {
             var path = new RegressionPath();
-            var epl = "create context Ctx partition by theString from SupportBean;\n" +
-                      "@name('window') context Ctx create window MyWindow#keepall as SupportBean;" +
-                      "@name('insert') context Ctx insert into MyWindow select * from SupportBean;" +
-                      "@name('s0') context Ctx select irstream context.key1 as c0, a.IntPrimitive as c1 from " +
+            var epl = "create context Ctx partition by TheString from SupportBean;\n" +
+                      "@Name('window') context Ctx create window MyWindow#keepall as SupportBean;" +
+                      "@Name('insert') context Ctx insert into MyWindow select * from SupportBean;" +
+                      "@Name('s0') context Ctx select irstream context.key1 as c0, a.IntPrimitive as c1 from " +
                       fromClause;
             env.CompileDeploy(epl, path).AddListener("s0");
             var fields = "c0,c1".SplitCsv();
@@ -189,7 +189,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('context') create context SegmentedByString partition by TheString from SupportBean",
+                    "@Name('context') create context SegmentedByString partition by TheString from SupportBean",
                     path);
                 env.CompileDeploy(
                     "@Hint('enable_window_subquery_indexshare') create window MyWindowTwo#keepall as SupportBean_S0",
@@ -197,7 +197,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy("insert into MyWindowTwo select * from SupportBean_S0", path);
 
                 env.CompileDeploy(
-                    "@name('s0') context SegmentedByString " +
+                    "@Name('s0') context SegmentedByString " +
                     "select TheString, IntPrimitive, (select P00 from MyWindowTwo as S0 where sb.IntPrimitive = S0.Id) as val0 " +
                     "from SupportBean as sb",
                     path);
@@ -214,10 +214,10 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('context') create context SegmentedByString partition by TheString from SupportBean;\n" +
+                    "@Name('context') create context SegmentedByString partition by TheString from SupportBean;\n" +
                     "create window MyWindowThree#keepall as SupportBean_S0;\n" +
                     "insert into MyWindowThree select * from SupportBean_S0;\n" +
-                    "@name('s0') context SegmentedByString " +
+                    "@Name('s0') context SegmentedByString " +
                     "select TheString, IntPrimitive, (select P00 from MyWindowThree as S0 where sb.IntPrimitive = S0.Id) as val0 " +
                     "from SupportBean as sb;\n";
                 env.CompileDeploy(epl).AddListener("s0");

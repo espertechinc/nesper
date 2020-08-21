@@ -153,7 +153,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             params UniformPair<string>[] pairs)
         {
             var buf = new StringBuilder();
-            buf.Append("@name('test') select ");
+            buf.Append("@Name('test') select ");
             var count = 0;
             foreach (var pair in pairs) {
                 buf.Append(pair.First);
@@ -190,7 +190,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var epl = "@name('s0') select " +
+            var epl = "@Name('s0') select " +
                       "com.espertech.esper.compat.collections.Collections.List(\"a\") as c0, " +
                       "com.espertech.esper.compat.collections.Collections.List({\"a\"}) as c1, " +
                       "com.espertech.esper.compat.collections.Collections.List(\"a\", \"b\") as c2, " +

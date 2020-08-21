@@ -138,7 +138,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
                     var method = MultiKeyCodegen.CodegenMethod(groupKeyExpressions, optionalMultiKeyClasses, methodNode, classScope);
                     methodNode
                         .Block
-                        .DeclareVar(typeof(object), "key", LocalMethod(method, REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA, MEMBER_AGENTINSTANCECONTEXT))
+                        .DeclareVar<object>("key", LocalMethod(method, REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA, MEMBER_AGENTINSTANCECONTEXT))
                         .Apply(Instblock(classScope, "aResultSetProcessComputeGroupKeys", ExprForgeCodegenNames.REF_ISNEWDATA, Ref("key")))
                         .MethodReturn(Ref("key"));
                     return;
@@ -151,7 +151,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
                 var expression = CodegenLegoMethodExpression.CodegenExpression(groupKeyExpressions[0].Forge, methodNode, classScope);
                 methodNode
                     .Block
-                    .DeclareVar(typeof(object), "key", LocalMethod(expression, REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA, MEMBER_AGENTINSTANCECONTEXT))
+                    .DeclareVar<object>("key", LocalMethod(expression, REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA, MEMBER_AGENTINSTANCECONTEXT))
                     .Apply(Instblock(classScope, "aResultSetProcessComputeGroupKeys", ExprForgeCodegenNames.REF_ISNEWDATA, Ref("key")))
                     .MethodReturn(Ref("key"));
             };

@@ -139,7 +139,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             {
                 env.Runtime.VariableService.SetVariableValue(null, "var_output_limit", 3L);
                 var stmtTextSelect =
-                    "@name('s0') select count(*) as cnt from SupportBean output last every var_output_limit events";
+                    "@Name('s0') select count(*) as cnt from SupportBean output last every var_output_limit events";
                 env.CompileDeploy(stmtTextSelect).AddListener("s0");
 
                 TryAssertionOutputRateEventsAll(env);
@@ -160,7 +160,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
 
                 var stmtTextSelect =
-                    "@name('s0') select count(*) as cnt from SupportBean output last every var_output_limit events";
+                    "@Name('s0') select count(*) as cnt from SupportBean output last every var_output_limit events";
                 Assert.AreEqual(stmtTextSelect, model.ToEPL());
                 env.CompileDeploy(model, new RegressionPath()).AddListener("s0");
 
@@ -177,7 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.Runtime.VariableService.SetVariableValue(null, "var_output_limit", 3L);
 
                 var stmtTextSelect =
-                    "@name('s0') select count(*) as cnt from SupportBean output last every var_output_limit events";
+                    "@Name('s0') select count(*) as cnt from SupportBean output last every var_output_limit events";
                 env.EplToModelCompileDeploy(stmtTextSelect).AddListener("s0");
 
                 TryAssertionOutputRateEventsAll(env);
@@ -194,7 +194,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 SendTimer(env, 0);
 
                 var stmtTextSelect =
-                    "@name('s0') select count(*) as cnt from SupportBean output snapshot every var_output_limit seconds";
+                    "@Name('s0') select count(*) as cnt from SupportBean output snapshot every var_output_limit seconds";
                 env.CompileDeploy(stmtTextSelect).AddListener("s0");
 
                 SendSupportBeans(env, "E1", "E2"); // varargs: sends 2 events

@@ -102,12 +102,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			var path = new RegressionPath();
 			env.CompileDeploy(createSchemaEPL, path);
 
-			env.CompileDeploy("@name('s0') select * from LocalEvent", path).AddListener("s0");
+			env.CompileDeploy("@Name('s0') select * from LocalEvent", path).AddListener("s0");
 			var eventType = env.Statement("s0").EventType;
 			var g0 = eventType.GetGetter("mapped('a')");
 			var g1 = eventType.GetGetter("mapped('b')");
 
-			var propepl = "@name('s1') select mapped('a') as c0, mapped('b') as c1," +
+			var propepl = "@Name('s1') select mapped('a') as c0, mapped('b') as c1," +
 			              "exists(mapped('a')) as c2, exists(mapped('b')) as c3, " +
 			              "typeof(mapped('a')) as c4, typeof(mapped('b')) as c5 from LocalEvent;\n";
 			env.CompileDeploy(propepl, path).AddListener("s1");

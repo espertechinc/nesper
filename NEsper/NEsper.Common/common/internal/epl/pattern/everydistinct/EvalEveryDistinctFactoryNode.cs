@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
 
         public Type[] DistinctTypes { get; set; }
         
-        public DataInputOutputSerde<Object> DistinctSerde { get; set; }
+        public DataInputOutputSerde DistinctSerde { get; set; }
 
         public override EvalNode MakeEvalNode(
             PatternAgentInstanceContext agentInstanceContext,

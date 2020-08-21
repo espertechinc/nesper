@@ -124,8 +124,8 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			             "@public @buseventtype @name('schema') create json schema " +
 			             JSON_TYPENAME +
 			             "();\n" +
-			             "@name('trigger') select * from TriggerEvent;\n" +
-			             "@name('s0') select * from " +
+			             "@Name('trigger') select * from TriggerEvent;\n" +
+			             "@Name('s0') select * from " +
 			             typename +
 			             ";\n";
 			env.CompileDeploy(epl, path).AddListener("s0");

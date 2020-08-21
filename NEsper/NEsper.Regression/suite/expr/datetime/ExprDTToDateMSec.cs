@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             public void Run(RegressionEnvironment env)
             {
                 env.AdvanceTime(0);
-                env.CompileDeploy("@name('s0') select current_timestamp.ToDateTimeEx().AddDays(1) as c from SupportBean");
+                env.CompileDeploy("@Name('s0') select current_timestamp.ToDateTimeEx().AddDays(1) as c from SupportBean");
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 0));
@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 };
 
                 var eplFragment =
-                    "@name('s0') select " +
+                    "@Name('s0') select " +
 
                     "current_timestamp.toDateTime() as val1a," +
                     "LongDate.toDateTime() as val1b," +

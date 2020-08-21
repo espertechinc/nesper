@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     return;
                 }
 
-                var epl = "@name('flow') create dataflow MyGraph \n" +
+                var epl = "@Name('flow') create dataflow MyGraph \n" +
                           "" +
                           "create objectarray schema SchemaOne (p1 string),\n" +
                           "\n" +
@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('flow') create dataflow MultiInMultiOutGraph \n" +
+                var epl = "@Name('flow') create dataflow MultiInMultiOutGraph \n" +
                           "" +
                           "create objectarray schema SchemaOne (p1 string),\n" +
                           "create objectarray schema SchemaTwo (p2 int),\n" +
@@ -162,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('flow') create dataflow FactorialGraph \n" +
+                var epl = "@Name('flow') create dataflow FactorialGraph \n" +
                           "" +
                           "create objectarray schema InputSchema (number int),\n" +
                           "create objectarray schema TempSchema (current int, temp long),\n" +

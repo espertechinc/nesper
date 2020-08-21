@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 string[] fields = {"prio", "cnt"};
-                var epl = "@name('s0') select c1.Event_criteria_id as ecId, " +
+                var epl = "@Name('s0') select c1.Event_criteria_id as ecId, " +
                           "c1.Priority as priority, " +
                           "c2.Priority as prio, cast(count(*), int) as cnt from " +
                           "SupportHierarchyEvent#lastevent as c1, " +

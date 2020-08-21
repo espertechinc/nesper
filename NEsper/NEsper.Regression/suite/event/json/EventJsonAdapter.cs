@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				          typeof(MyDateJSONParser).FullName +
 				          "')\n" +
 				          "create json schema JsonEvent(myDate Date);\n" +
-				          "@name('s0') select * from JsonEvent;\n";
+				          "@Name('s0') select * from JsonEvent;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				env.SendEventJson("{\"myDate\" : \"22-09-2018\"}", "JsonEvent");
@@ -98,8 +98,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 					"@JsonSchemaField(name=point, adapter=" + nameof(SupportJsonFieldAdapterStringPoint) + ") " +
 					EventRepresentationChoice.JSON.GetAnnotationText() +
 					" insert into JsonEvent select point, mydate from LocalEvent;\n" +
-					"@name('s0') select point, mydate from JsonEvent;\n" +
-					"@name('s1') select * from JsonEvent;\n";
+					"@Name('s0') select point, mydate from JsonEvent;\n" +
+					"@Name('s1') select * from JsonEvent;\n";
 				env.CompileDeploy(epl).AddListener("s0").AddListener("s1");
 
 				env.SendEventBean(
@@ -132,8 +132,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				          nameof(SupportJsonFieldAdapterStringDate) +
 				          ") " +
 				          "create json schema JsonEvent(point java.awt.Point, mydate Date);\n" +
-				          "@name('s0') select point, mydate from JsonEvent;\n" +
-				          "@name('s1') select * from JsonEvent;\n";
+				          "@Name('s0') select point, mydate from JsonEvent;\n" +
+				          "@Name('s1') select * from JsonEvent;\n";
 				env.CompileDeploy(epl).AddListener("s0").AddListener("s1");
 
 				var jsonFilled = "{\"point\":\"7,14\",\"mydate\":\"2002-05-01T08:00:01.999\"}";

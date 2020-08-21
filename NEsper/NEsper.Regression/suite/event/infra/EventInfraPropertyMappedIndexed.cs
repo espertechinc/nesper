@@ -86,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			RunAssertionTypeValidProp(env, typename, underlying);
 			RunAssertionTypeInvalidProp(env, typename);
 
-			var stmtText = "@name('s0') select * from " + typename;
+			var stmtText = "@Name('s0') select * from " + typename;
 			env.CompileDeploy(stmtText, path).AddListener("s0");
 
 			send.Invoke(env, underlying, typename);

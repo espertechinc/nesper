@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         public void Run(RegressionEnvironment env)
         {
             env.CompileDeploy(
-                "@name('s0') select * \n" +
+                "@Name('s0') select * \n" +
                 "  from SupportBean#length(1000) as S0,\n" +
                 "      sql:MyDB ['select myvarchar from mytesttable where ${IntPrimitive} = mytesttable.myBigint'] as S1"
             );

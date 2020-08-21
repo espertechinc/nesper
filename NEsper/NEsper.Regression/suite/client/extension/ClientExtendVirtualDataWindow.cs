@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
             // test aggregated consumer - wherein the virtual data window does not return an iterator that prefills the aggregation state
             var fields = new [] { "val0" };
-            env.CompileDeploy("@name('s0') select sum(IntPrimitive) as val0 from MyVDW", path).AddListener("s0");
+            env.CompileDeploy("@Name('s0') select sum(IntPrimitive) as val0 from MyVDW", path).AddListener("s0");
             EPAssertionUtil.AssertProps(
                 env.Statement("s0").First(),
                 fields,
@@ -99,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             window.Events.Clear();
 
             // test filter criteria passed to event
-            env.CompileDeploy("@name('ABC') select sum(IntPrimitive) as val0 from MyVDW(TheString = 'A')", path);
+            env.CompileDeploy("@Name('ABC') select sum(IntPrimitive) as val0 from MyVDW(TheString = 'A')", path);
             var eventWithFilter = (VirtualDataWindowEventConsumerAdd) window.Events[0];
             Assert.IsNotNull(eventWithFilter.Filter);
             Assert.IsNotNull(eventWithFilter.ExprEvaluatorContext);
@@ -117,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             window.Data = Collections.SingletonSet<object>(supportBean);
 
             env.CompileDeploy(
-                "@name('s0') select (select sum(IntPrimitive) from MyVDW vdw where vdw.TheString = S0.P00) from SupportBean_S0 S0",
+                "@Name('s0') select (select sum(IntPrimitive) from MyVDW vdw where vdw.TheString = S0.P00) from SupportBean_S0 S0",
                 path);
             env.AddListener("s0");
             var spiContext = (VirtualDataWindowLookupContextSPI) window.LastRequestedLookup;
@@ -138,7 +138,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
             // test straight consume
             fields = new [] { "TheString","IntPrimitive" };
-            env.CompileDeploy("@name('s0') select irstream * from MyVDW", path).AddListener("s0");
+            env.CompileDeploy("@Name('s0') select irstream * from MyVDW", path).AddListener("s0");
 
             env.SendEventBean(new SupportBean("E1", 200));
             Assert.IsNull(env.Listener("s0").LastOldData);
@@ -150,7 +150,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
             // test aggregated consumer - wherein the virtual data window does not return an iterator that prefills the aggregation state
             fields = new [] { "val0" };
-            env.CompileDeploy("@name('s0') select sum(IntPrimitive) as val0 from MyVDW", path).AddListener("s0");
+            env.CompileDeploy("@Name('s0') select sum(IntPrimitive) as val0 from MyVDW", path).AddListener("s0");
 
             env.SendEventBean(new SupportBean("E1", 100));
             EPAssertionUtil.AssertProps(
@@ -181,13 +181,13 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
             var fieldsMerge = new [] { "col1","col2" };
             env.CompileDeploy(
-                    "@name('s0') on SupportBean sb merge MyVDW vdw " +
+                    "@Name('s0') on SupportBean sb merge MyVDW vdw " +
                     "where col1 = TheString " +
                     "when matched then update set col2 = 'xxx'" +
                     "when not matched then insert select TheString as col1, 'abc' as col2, 1 as col3",
                     path)
                 .AddListener("s0");
-            env.CompileDeploy("@name('consume') select * from MyVDW", path).AddListener("consume");
+            env.CompileDeploy("@Name('consume') select * from MyVDW", path).AddListener("consume");
 
             // try yes-matched case
             env.SendEventBean(new SupportBean("key1", 2));
@@ -235,7 +235,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
         private void RunAssertionLimitation(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("@name('window') create window MyVDW.test:vdw() as SupportBean", path);
+            env.CompileDeploy("@Name('window') create window MyVDW.test:vdw() as SupportBean", path);
             var window = (SupportVirtualDW) GetFromContext(env, "/virtualdw/MyVDW");
             var supportBean = new SupportBean("S1", 100);
             window.Data = Collections.SingletonSet<object>(supportBean);
@@ -245,7 +245,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             Assert.IsFalse(env.GetEnumerator("window").MoveNext());
 
             // test data window aggregation (rows not included in aggregation)
-            env.CompileDeploy("@name('s0') select window(TheString) as val0 from MyVDW", path).AddListener("s0");
+            env.CompileDeploy("@Name('s0') select window(TheString) as val0 from MyVDW", path).AddListener("s0");
 
             env.SendEventBean(new SupportBean("E1", 100));
             EPAssertionUtil.AssertEqualsExactOrder(
@@ -276,7 +276,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             Assert.AreEqual("MyVDW", window.Context.NamedWindowName);
 
             // test no-criteria join
-            env.CompileDeploy("@name('s0') select * from MyVDW vdw, SupportBean_ST0#lastevent st0", path)
+            env.CompileDeploy("@Name('s0') select * from MyVDW vdw, SupportBean_ST0#lastevent st0", path)
                 .AddListener("s0");
             AssertIndexSpec(window.LastRequestedLookup, "", "");
 
@@ -290,7 +290,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
             // test single-criteria join
             env.CompileDeploy(
-                    "@name('s0') select * from MyVDW vdw, SupportBean_ST0#lastevent st0 where vdw.TheString = st0.Id",
+                    "@Name('s0') select * from MyVDW vdw, SupportBean_ST0#lastevent st0 where vdw.TheString = st0.Id",
                     path)
                 .AddListener("s0");
             AssertIndexSpec(window.RequestedLookups[1], "TheString=(System.String)", "");
@@ -308,7 +308,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
             // test multi-criteria join
             env.CompileDeploy(
-                "@name('s0') select vdw.TheString from MyVDW vdw, SupportBeanRange#lastevent st0 " +
+                "@Name('s0') select vdw.TheString from MyVDW vdw, SupportBeanRange#lastevent st0 " +
                 "where vdw.TheString = st0.Id and LongPrimitive = KeyLong and IntPrimitive between RangeStart and RangeEnd",
                 path);
             env.AddListener("s0");
@@ -340,7 +340,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             var window = RegisterTypeSetMapData(env, path);
 
             // test no-criteria subquery
-            env.CompileDeploy("@name('s0') select (select col1 from MyVDW vdw) from SupportBean_ST0", path)
+            env.CompileDeploy("@Name('s0') select (select col1 from MyVDW vdw) from SupportBean_ST0", path)
                 .AddListener("s0");
             AssertIndexSpec(window.LastRequestedLookup, "", "");
 
@@ -354,7 +354,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
             // test single-criteria subquery
             env.CompileDeploy(
-                    "@name('s0') select (select col1 from MyVDW vdw where col1=st0.Id) as val0 from SupportBean_ST0 st0",
+                    "@Name('s0') select (select col1 from MyVDW vdw where col1=st0.Id) as val0 from SupportBean_ST0 st0",
                     path)
                 .AddListener("s0");
             AssertIndexSpec(window.LastRequestedLookup, "col1=(System.String)", "");
@@ -375,7 +375,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
             // test multi-criteria subquery
             env.CompileDeploy(
-                    "@name('s0') select " +
+                    "@Name('s0') select " +
                     "(select col1 from MyVDW vdw where col1=r.Id and col2=r.Key and col3 between r.RangeStart and r.RangeEnd) as val0 " +
                     "from SupportBeanRange r",
                     path)
@@ -396,7 +396,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.CompileDeploy("create schema SampleEvent as (Id string)", path);
             env.CompileDeploy("create window MySampleWindow.test:vdw() as SampleEvent", path);
             env.CompileDeploy(
-                    "@name('s0') select (select count(*) as cnt from MySampleWindow) as c0 " + "from SupportBean ste",
+                    "@Name('s0') select (select count(*) as cnt from MySampleWindow) as c0 " + "from SupportBean ste",
                     path)
                 .AddListener("s0");
 
@@ -433,7 +433,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.CompileDeploy("context MyContext create window MyWindow.test:vdw() as SupportBean", path);
 
             // join
-            var eplSubquerySameCtx = "@name('s0') context MyContext " +
+            var eplSubquerySameCtx = "@Name('s0') context MyContext " +
                                      "select * from SupportBean_S0 as S0 unidirectional, MyWindow as mw where mw.TheString = S0.P00";
             env.CompileDeploy(eplSubquerySameCtx, path).AddListener("s0");
 
@@ -460,7 +460,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             var eplSubquerySameCtx = "context MyContext " +
                                      "select (select IntPrimitive from MyWindow mw where mw.TheString = S0.P00) as c0 " +
                                      "from SupportBean_S0 S0";
-            env.CompileDeploy("@name('s0') " + eplSubquerySameCtx, path).AddListener("s0");
+            env.CompileDeploy("@Name('s0') " + eplSubquerySameCtx, path).AddListener("s0");
             env.CompileDeploy("@Hint('disable_window_subquery_indexshare') @Name('s1') " + eplSubquerySameCtx, path);
 
             env.SendEventBean(new SupportBean_S0(0, "E1"));
@@ -543,7 +543,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             var window = RegisterTypeSetMapData(env, path);
 
             // test no-criteria on-delete
-            env.CompileDeploy("@name('s0') on SupportBean_ST0 delete from MyVDW vdw", path).AddListener("s0");
+            env.CompileDeploy("@Name('s0') on SupportBean_ST0 delete from MyVDW vdw", path).AddListener("s0");
             AssertIndexSpec(window.LastRequestedLookup, "", "");
 
             env.SendEventBean(new SupportBean_ST0("E1", 0));
@@ -555,7 +555,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.UndeployModuleContaining("s0");
 
             // test single-criteria on-delete
-            env.CompileDeploy("@name('s0') on SupportBean_ST0 st0 delete from MyVDW vdw where col1=st0.Id", path)
+            env.CompileDeploy("@Name('s0') on SupportBean_ST0 st0 delete from MyVDW vdw where col1=st0.Id", path)
                 .AddListener("s0");
             AssertIndexSpec(window.LastRequestedLookup, "col1=(System.String)", "");
 
@@ -572,7 +572,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
             // test multie-criteria on-delete
             env.CompileDeploy(
-                    "@name('s0') on SupportBeanRange r delete " +
+                    "@Name('s0') on SupportBeanRange r delete " +
                     "from MyVDW vdw where col1=r.Id and col2=r.Key and col3 between r.RangeStart and r.RangeEnd",
                     path)
                 .AddListener("s0");
@@ -627,7 +627,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
             // create-index event
             vdw.Events.Clear();
-            env.CompileDeploy("@name('idx') create index IndexOne on MyVDW (col3, col2 btree)", path);
+            env.CompileDeploy("@Name('idx') create index IndexOne on MyVDW (col3, col2 btree)", path);
             var startEvent = (VirtualDataWindowEventStartIndex) vdw.Events[0];
             Assert.AreEqual("MyVDW", startEvent.NamedWindowName);
             Assert.AreEqual("IndexOne", startEvent.IndexName);
@@ -723,7 +723,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             window.Data = Collections.SingletonSet<object>(supportBean);
 
             var eplUnique = IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
-                            "@name('s0') select * from ";
+                            "@Name('s0') select * from ";
 
             if (caseEnum == CaseEnum.UNIDIRECTIONAL) {
                 eplUnique += "SupportSimpleBeanOne as ssb1 unidirectional ";
@@ -752,7 +752,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             RegressionPath path)
         {
             SupportVirtualDWForge.Initializations.Clear();
-            env.CompileDeploy("@name('create-nw') create window MyVDW.test:vdw() as MapType", path);
+            env.CompileDeploy("@Name('create-nw') create window MyVDW.test:vdw() as MapType", path);
 
             Assert.AreEqual(1, SupportVirtualDWForge.Initializations.Count);
             var forgeContext = SupportVirtualDWForge.Initializations[0];

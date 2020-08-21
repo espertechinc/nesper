@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
         private readonly bool unique;
         private readonly EventPropertyValueGetter valueGetter;
         private readonly MultiKeyFromObjectArray transformFireAndForget;
-        private readonly DataInputOutputSerde<Object> keySerde;
+        private readonly DataInputOutputSerde keySerde;
 
         public PropertyHashedFactoryFactory(
             int indexedStreamNum,
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             bool unique,
             EventPropertyValueGetter valueGetter,
             MultiKeyFromObjectArray transformFireAndForget,
-            DataInputOutputSerde<Object> keySerde)
+            DataInputOutputSerde keySerde)
             : base(indexedStreamNum, subqueryNum, isFireAndForget)
         {
             this.indexProps = indexProps;

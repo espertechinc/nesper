@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				env.CompileDeploy(
 						"@public @buseventtype create json schema JsonEvent();\n" +
-						"@name('s0') select *  from JsonEvent#keepall")
+						"@Name('s0') select *  from JsonEvent#keepall")
 					.AddListener("s0");
 
 				IDictionary<string, object> actualOne = SendJsonGetUnderlying(env, "{\"a\" : 1, \"b\": 2, \"c\": 3}\n");
@@ -59,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				env.CompileDeploy(
 						"@public @buseventtype create json schema JsonEvent(a int);\n" +
-						"@name('s0') select *  from JsonEvent#keepall")
+						"@Name('s0') select *  from JsonEvent#keepall")
 					.AddListener("s0");
 
 				IDictionary<string, object> actualOne = SendJsonGetUnderlying(env, "{\"a\" : 1, \"b\": 2, \"c\": 3}\n");
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				env.CompileDeploy(
 						"@public @buseventtype create json schema JsonEvent(a int, b int);\n" +
-						"@name('s0') select *  from JsonEvent#keepall")
+						"@Name('s0') select *  from JsonEvent#keepall")
 					.AddListener("s0");
 
 				IDictionary<string, object> actualOne = SendJsonGetUnderlying(env, "{\"a\" : 1, \"b\": 2, \"c\": 3}\n");
@@ -134,7 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				env.CompileDeploy(
 						"@JsonSchema(dynamic=true) @public @buseventtype create json schema JsonEvent();\n" +
-						"@name('s0') select *  from JsonEvent#keepall")
+						"@Name('s0') select *  from JsonEvent#keepall")
 					.AddListener("s0");
 
 				IDictionary<string, object> actualOne = SendJsonGetUnderlying(env, "{\"a\" : 1, \"b\": 2, \"c\": 3}\n");
@@ -178,7 +178,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				env.CompileDeploy(
 						"@JsonSchema(dynamic=true) @public @buseventtype create json schema JsonEvent(a int);\n" +
-						"@name('s0') select *  from JsonEvent#keepall")
+						"@Name('s0') select *  from JsonEvent#keepall")
 					.AddListener("s0");
 
 				IDictionary<string, object> actualOne = SendJsonGetUnderlying(env, "{\"a\" : 1, \"b\": 2, \"c\": 3}\n");
@@ -224,7 +224,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				env.CompileDeploy(
 						"@JsonSchema(dynamic=true) @public @buseventtype create json schema JsonEvent(a int, b int);\n" +
-						"@name('s0') select *  from JsonEvent#keepall")
+						"@Name('s0') select *  from JsonEvent#keepall")
 					.AddListener("s0");
 
 				IDictionary<string, object> actualOne = SendJsonGetUnderlying(env, "{\"a\" : 1, \"b\": 2, \"c\": 3}\n");

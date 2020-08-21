@@ -158,7 +158,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select sorted(TheString desc, IntPrimitive desc) as c0 from SupportBean#keepall";
+                var epl = "@Name('s0') select sorted(TheString desc, IntPrimitive desc) as c0 from SupportBean#keepall";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("C", 10));
@@ -199,7 +199,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var milestone = new AtomicLong();
 
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "window(*) as c0, " +
                           "sorted(IntPrimitive desc) as c1, " +
                           "sorted(IntPrimitive asc) as c2, " +
@@ -221,7 +221,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.UndeployAll();
 
                 // test join
-                var eplJoin = "@name('s0') select " +
+                var eplJoin = "@Name('s0') select " +
                               "window(sb.*) as c0, " +
                               "sorted(IntPrimitive desc) as c1, " +
                               "sorted(IntPrimitive asc) as c2, " +
@@ -239,7 +239,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 // test join multirow
                 var fields = new [] { "c0" };
                 var joinMultirow =
-                    "@name('s0') select sorted(IntPrimitive desc) as c0 from SupportBean_S0#keepall, SupportBean#length(2)";
+                    "@Name('s0') select sorted(IntPrimitive desc) as c0 from SupportBean_S0#keepall, SupportBean#length(2)";
                 env.CompileDeploy(joinMultirow).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "S1"));
@@ -282,7 +282,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9" };
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "maxbyever(LongPrimitive) as c0, " +
                           "minbyever(LongPrimitive) as c1, " +
                           "maxby(LongPrimitive).LongPrimitive as c2, " +
@@ -358,7 +358,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "maxby(IntPrimitive).TheString, " +
                           "minby(IntPrimitive)," +
                           "maxbyever(IntPrimitive).TheString, " +
@@ -383,7 +383,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7" };
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "maxbyever(IntPrimitive).LongPrimitive as c0," +
                           "maxbyever(TheString).LongPrimitive as c1," +
                           "minbyever(IntPrimitive).LongPrimitive as c2," +
@@ -462,7 +462,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
                 // test sorted multiple criteria
                 var fields = new [] { "c0", "c1", "c2", "c3" };
-                epl = "@name('s0') select " +
+                epl = "@Name('s0') select " +
                       "sorted(TheString desc, IntPrimitive desc) as c0," +
                       "sorted(TheString, IntPrimitive) as c1," +
                       "sorted(TheString asc, IntPrimitive asc) as c2," +
@@ -526,7 +526,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
                 // test min/max
                 var fieldsTwo = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7" };
-                epl = "@name('s0') select " +
+                epl = "@Name('s0') select " +
                       "maxbyever(IntPrimitive, TheString).LongPrimitive as c0," +
                       "minbyever(IntPrimitive, TheString).LongPrimitive as c1," +
                       "maxbyever(TheString, IntPrimitive).LongPrimitive as c2," +
@@ -587,7 +587,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var fields = new [] { "c0", "c1", "c2", "c3" };
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "maxbyever(IntPrimitive).TheString as c0, " +
                           "minbyever(IntPrimitive).TheString as c1, " +
                           "maxby(IntPrimitive).TheString as c2, " +

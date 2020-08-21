@@ -19,7 +19,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("@name('create') create window AWindow#keepall as SupportTimeStartEndA", path);
+            env.CompileDeploy("@Name('create') create window AWindow#keepall as SupportTimeStartEndA", path);
             env.CompileDeploy("insert into AWindow select * from SupportTimeStartEndA", path);
 
             var eventTypeNW = env.Statement("create").EventType;
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             long durationB,
             string expectedAKey)
         {
-            env.CompileDeploy("@name('s0') " + epl, path).AddListener("s0");
+            env.CompileDeploy("@Name('s0') " + epl, path).AddListener("s0");
 
             // query
             var startTime = PerformanceObserver.MilliTime;

@@ -87,8 +87,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             public void Run(RegressionEnvironment env)
             {
                 foreach (var epl in new[] {
-                    "@name('s0') select field1, field2 from method:MyMethodHandlerMap.GetMapData()",
-                    "@name('s0') select field1, field2 from method:MyMethodHandlerOA.GetOAData()"
+                    "@Name('s0') select field1, field2 from method:MyMethodHandlerMap.GetMapData()",
+                    "@Name('s0') select field1, field2 from method:MyMethodHandlerOA.GetOAData()"
                 }) {
                     env.CompileDeploy(epl);
                     EPAssertionUtil.AssertProps(
@@ -115,7 +115,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                     "create variable MyNonConstantServiceVariable var = MyNonConstantServiceVariableFactory.Make()",
                     path);
                 env.CompileDeploy(
-                        "@name('s0') context MyContext " +
+                        "@Name('s0') context MyContext " +
                         "select Id as c0 from SupportBean(IntPrimitive=context.c_s0.Id) as sb, " +
                         "method:var.FetchABean(IntPrimitive) as h0",
                         path)
@@ -162,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select Id as c0 from SupportBean as sb, " +
+                var epl = "@Name('s0') select Id as c0 from SupportBean as sb, " +
                           "method:MyConstantServiceVariable.FetchABean(IntPrimitive) as h0";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -190,7 +190,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 var modifyEPL = "on SupportBean_S0 set MyNonConstantServiceVariable.Postfix=P00";
                 env.CompileDeploy(soda, modifyEPL);
 
-                var epl = "@name('s0') select Id as c0 from SupportBean as sb, " +
+                var epl = "@Name('s0') select Id as c0 from SupportBean as sb, " +
                           "method:MyNonConstantServiceVariable.FetchABean(IntPrimitive) as h0";
                 env.CompileDeploy(soda, epl).AddListener("s0");
 

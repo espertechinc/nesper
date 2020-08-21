@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         public void Run(RegressionEnvironment env)
         {
             env.AdvanceTime(startTime);
-            var epl = "@name('s0') select * from SupportBean output every " + size + " seconds";
+            var epl = "@Name('s0') select * from SupportBean output every " + size + " seconds";
             env.CompileDeploy(epl).AddListener("s0");
 
             env.SendEventBean(new SupportBean("E1", 10));

@@ -168,12 +168,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         {
             var path = new RegressionPath();
             var eplCreate = namedWindow
-                ? "@name('TheInfra') create window MyInfra#keepall as select * from SupportBean"
-                : "@name('TheInfra') create table MyInfra as (TheString string primary key, IntPrimitive int primary key, LongPrimitive long)";
+                ? "@Name('TheInfra') create window MyInfra#keepall as select * from SupportBean"
+                : "@Name('TheInfra') create table MyInfra as (TheString string primary key, IntPrimitive int primary key, LongPrimitive long)";
             env.CompileDeploy(eplCreate, path);
             var eplInsert = namedWindow
-                ? "@name('Insert') insert into MyInfra select * from SupportBean"
-                : "@name('Insert') on SupportBean sb merge MyInfra mi where mi.TheString = sb.TheString and mi.IntPrimitive=sb.IntPrimitive" +
+                ? "@Name('Insert') insert into MyInfra select * from SupportBean"
+                : "@Name('Insert') on SupportBean sb merge MyInfra mi where mi.TheString = sb.TheString and mi.IntPrimitive=sb.IntPrimitive" +
                   " when not matched then insert select TheString, IntPrimitive, LongPrimitive";
             env.CompileDeploy(eplInsert, path);
             return path;
@@ -955,17 +955,17 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 RunAssertionIn(env, path);
 
                 // try suitable index
-                env.CompileDeploy("@name('stmtIdx1') create index Idx1 on MyInfra(TheString, IntPrimitive)", path);
+                env.CompileDeploy("@Name('stmtIdx1') create index Idx1 on MyInfra(TheString, IntPrimitive)", path);
                 RunAssertionIn(env, path);
                 env.UndeployModuleContaining("stmtIdx1");
 
                 // backwards index
-                env.CompileDeploy("@name('stmtIdx2') create index Idx2 on MyInfra(IntPrimitive, TheString)", path);
+                env.CompileDeploy("@Name('stmtIdx2') create index Idx2 on MyInfra(IntPrimitive, TheString)", path);
                 RunAssertionIn(env, path);
                 env.UndeployModuleContaining("stmtIdx2");
 
                 // partial index
-                env.CompileDeploy("@name('stmtIdx3') create index Idx3 on MyInfra(IntPrimitive)", path);
+                env.CompileDeploy("@Name('stmtIdx3') create index Idx3 on MyInfra(IntPrimitive)", path);
                 RunAssertionIn(env, path);
                 env.UndeployModuleContaining("stmtIdx3");
 
@@ -1155,8 +1155,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create window
                 var stmtTextCreate = namedWindow
-                    ? "@name('create') create window MyInfra.win:keepall() as select TheString as key, IntBoxed as value from SupportBean"
-                    : "@name('create') create table MyInfra (key string primary key, value int)";
+                    ? "@Name('create') create window MyInfra.win:keepall() as select TheString as key, IntBoxed as value from SupportBean"
+                    : "@Name('create') create table MyInfra (key string primary key, value int)";
                 env.CompileDeploy(stmtTextCreate, path).AddListener("create");
 
                 var stmtTextInsert =
@@ -1436,7 +1436,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     namedWindow ? BACKING_SINGLE_UNIQUE : null);
 
                 // test consumption
-                env.CompileDeploy("@name('s0') select rstream * from MyInfra", path).AddListener("s0");
+                env.CompileDeploy("@Name('s0') select rstream * from MyInfra", path).AddListener("s0");
                 env.CompileExecuteFAF("delete from MyInfra", path);
                 string[] fields = {"TheString", "IntPrimitive"};
                 if (namedWindow) {
@@ -1613,7 +1613,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     namedWindow ? BACKING_SINGLE_UNIQUE : null);
 
                 // test consumption
-                env.CompileDeploy("@name('s0') select irstream * from MyInfra", path).AddListener("s0");
+                env.CompileDeploy("@Name('s0') select irstream * from MyInfra", path).AddListener("s0");
                 env.CompileExecuteFAF("update MyInfra set IntPrimitive=1000 where TheString = 'E0'", path);
                 if (namedWindow) {
                     EPAssertionUtil.AssertProps(
@@ -1721,8 +1721,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // try second no-column-provided version
                 var eplMyInfraThree = namedWindow
-                    ? "@name('InfraThree') create window MyInfraThree#keepall as (p0 string, p1 int)"
-                    : "@name('InfraThree') create table MyInfraThree as (p0 string, p1 int)";
+                    ? "@Name('InfraThree') create window MyInfraThree#keepall as (p0 string, p1 int)"
+                    : "@Name('InfraThree') create table MyInfraThree as (p0 string, p1 int)";
                 env.CompileDeploy(eplMyInfraThree, path);
                 env.CompileExecuteFAF("insert into MyInfraThree select 'a' as p0, 1 as p1", path);
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
@@ -1733,8 +1733,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // try enum-value insert
                 var epl = "create schema MyMode (Mode " + typeof(SupportEnum).Name + ");\n" +
                           (namedWindow
-                              ? "@name('enumwin') create window MyInfraTwo#unique(Mode) as MyMode"
-                              : "@name('enumwin') create table MyInfraTwo as (Mode " + typeof(SupportEnum).Name + ");\n");
+                              ? "@Name('enumwin') create window MyInfraTwo#unique(Mode) as MyMode"
+                              : "@Name('enumwin') create table MyInfraTwo as (Mode " + typeof(SupportEnum).Name + ");\n");
                 env.CompileDeploy(epl, path);
                 env.CompileExecuteFAF(
                     "insert into MyInfraTwo select " +

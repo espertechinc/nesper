@@ -54,16 +54,16 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			public void Run(RegressionEnvironment env)
 			{
 				var epl =
-					"@buseventtype @public create schema OrderEvent(orderId string, price double);\n" +
-					"@name('a') select sorted(price).lowerKey(price) as lowerPrice from OrderEvent#time(10 minutes);\n" +
-					"@name('b') select sorted(price).lowerEvent(price).orderId as lowerPriceOrderId from OrderEvent#time(10 minutes);\n" +
+					"@buseventtype @public create schema OrderEvent(OrderId string, price double);\n" +
+					"@Name('a') select sorted(price).lowerKey(price) as lowerPrice from OrderEvent#time(10 minutes);\n" +
+					"@Name('b') select sorted(price).lowerEvent(price).OrderId as lowerPriceOrderId from OrderEvent#time(10 minutes);\n" +
 					"create table OrderPrices(prices sorted(price) @type('OrderEvent'));\n" +
 					"into table OrderPrices select sorted(*) as prices from OrderEvent#time(10 minutes);\n" +
-					"@name('c') select OrderPrices.prices.firstKey() as lowestPrice, OrderPrices.prices.lastKey() as highestPrice from OrderEvent;\n" +
-					"@name('d') select (select prices.firstKey() from OrderPrices) as lowestPrice, * from OrderEvent;\n";
+					"@Name('c') select OrderPrices.prices.firstKey() as lowestPrice, OrderPrices.prices.lastKey() as highestPrice from OrderEvent;\n" +
+					"@Name('d') select (select prices.firstKey() from OrderPrices) as lowestPrice, * from OrderEvent;\n";
 				env.CompileDeploy(epl).AddListener("a").AddListener("b").AddListener("c").AddListener("d");
 
-				env.SendEventMap(CollectionUtil.BuildMap("orderId", "A", "price", 10d), "OrderEvent");
+				env.SendEventMap(CollectionUtil.BuildMap("OrderId", "A", "price", 10d), "OrderEvent");
 				EPAssertionUtil.AssertProps(env.Listener("a").AssertOneGetNewAndReset(), "lowerPrice".SplitCsv(), new object[] {null});
 				EPAssertionUtil.AssertProps(env.Listener("b").AssertOneGetNewAndReset(), "lowerPriceOrderId".SplitCsv(), new object[] {null});
 				EPAssertionUtil.AssertProps(env.Listener("c").AssertOneGetNewAndReset(), "lowestPrice,highestPrice".SplitCsv(), new object[] {10d, 10d});
@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
 				env.Milestone(0);
 
-				env.SendEventMap(CollectionUtil.BuildMap("orderId", "B", "price", 20d), "OrderEvent");
+				env.SendEventMap(CollectionUtil.BuildMap("OrderId", "B", "price", 20d), "OrderEvent");
 				EPAssertionUtil.AssertProps(env.Listener("a").AssertOneGetNewAndReset(), "lowerPrice".SplitCsv(), new object[] {10d});
 				EPAssertionUtil.AssertProps(env.Listener("b").AssertOneGetNewAndReset(), "lowerPriceOrderId".SplitCsv(), new object[] {"A"});
 				EPAssertionUtil.AssertProps(env.Listener("c").AssertOneGetNewAndReset(), "lowestPrice,highestPrice".SplitCsv(), new object[] {10d, 20d});
@@ -87,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			public void Run(RegressionEnvironment env)
 			{
 				var path = new RegressionPath();
-				env.CompileDeploy("create table MyTable(sortcol sorted(intPrimitive) @type('SupportBean'));\n", path);
+				env.CompileDeploy("create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n", path);
 
 				TryInvalidCompile(
 					env,
@@ -137,9 +137,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "create table MyTable(k0 string primary key, sortcol sorted(intPrimitive) @type('SupportBean'));\n" +
-				          "into table MyTable select sorted(*) as sortcol from SupportBean group by theString;\n" +
-				          "@name('s0') select " +
+				var epl = "create table MyTable(k0 string primary key, sortcol sorted(IntPrimitive) @type('SupportBean'));\n" +
+				          "into table MyTable select sorted(*) as sortcol from SupportBean group by TheString;\n" +
+				          "@Name('s0') select " +
 				          "MyTable[p00].sortcol.sorted() as sortcol," +
 				          "MyTable[p00].sortcol.firstKey() as firstkey," +
 				          "MyTable[p00].sortcol.lastKey() as lastkey" +
@@ -179,9 +179,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "create table MyTable(sortcol sorted(theString, intPrimitive) @type('SupportBean'));\n" +
+				var epl = "create table MyTable(sortcol sorted(TheString, IntPrimitive) @type('SupportBean'));\n" +
 				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
-				          "@name('s0') select " +
+				          "@Name('s0') select " +
 				          "MyTable.sortcol.firstKey() as firstkey," +
 				          "MyTable.sortcol.lastKey() as lastkey," +
 				          "MyTable.sortcol.lowerKey(new HashableMultiKey('E4', 1)) as lowerkey," +
@@ -211,9 +211,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				var epl = "@public @buseventtype create schema MySubmapEvent as " +
 				          typeof(MySubmapEvent).FullName +
 				          ";\n" +
-				          "create table MyTable(sortcol sorted(intPrimitive) @type('SupportBean'));\n" +
+				          "create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n" +
 				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
-				          "@name('s0') select " +
+				          "@Name('s0') select " +
 				          "MyTable.sortcol.eventsBetween(fromKey, fromInclusive, toKey, toInclusive) as eb," +
 				          "MyTable.sortcol.eventsBetween(fromKey, fromInclusive, toKey, toInclusive).lastOf() as eblastof," +
 				          "MyTable.sortcol.subMap(fromKey, fromInclusive, toKey, toInclusive) as sm" +
@@ -254,9 +254,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			public void Run(RegressionEnvironment env)
 			{
 				var epl =
-					"create table MyTable(sortcol sorted(intPrimitive) @type('SupportBean'));\n" +
+					"create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n" +
 					"into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
-					"@name('s0') select " +
+					"@Name('s0') select " +
 					"MyTable.sortcol.dictionaryReference() as nmr" +
 					" from SupportBean_S0";
 				env.CompileDeploy(epl).AddListener("s0");
@@ -278,15 +278,15 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "create table MyTable(sortcol sorted(intPrimitive) @type('SupportBean'));\n" +
+				var epl = "create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n" +
 				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
-				          "@name('s0') select " +
+				          "@Name('s0') select " +
 				          "MyTable.sortcol.getEvent(id) as ge," +
 				          "MyTable.sortcol.getEvents(id) as ges," +
 				          "MyTable.sortcol.containsKey(id) as ck," +
 				          "MyTable.sortcol.countEvents() as cnte," +
 				          "MyTable.sortcol.countKeys() as cntk," +
-				          "MyTable.sortcol.getEvent(id).theString as geid," +
+				          "MyTable.sortcol.getEvent(id).TheString as geid," +
 				          "MyTable.sortcol.getEvent(id).firstOf() as gefo," +
 				          "MyTable.sortcol.getEvents(id).lastOf() as geslo " +
 				          " from SupportBean_S0";
@@ -323,13 +323,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "create table MyTable(sortcol sorted(intPrimitive) @type('SupportBean'));\n" +
+				var epl = "create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n" +
 				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
-				          "@name('s0') select " +
-				          "MyTable.sortcol.firstEvent().theString as feid," +
+				          "@Name('s0') select " +
+				          "MyTable.sortcol.firstEvent().TheString as feid," +
 				          "MyTable.sortcol.firstEvent().firstOf() as fefo," +
 				          "MyTable.sortcol.firstEvents().lastOf() as feslo," +
-				          "MyTable.sortcol.lastEvent().theString() as leid," +
+				          "MyTable.sortcol.lastEvent().TheString() as leid," +
 				          "MyTable.sortcol.lastEvent().firstOf() as lefo," +
 				          "MyTable.sortcol.lastEvents().lastOf as leslo" +
 				          " from SupportBean_S0";
@@ -358,9 +358,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "create table MyTable(sortcol sorted(intPrimitive) @type('SupportBean'));\n" +
+				var epl = "create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n" +
 				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
-				          "@name('s0') select " +
+				          "@Name('s0') select " +
 				          "MyTable.sortcol.firstEvent() as fe," +
 				          "MyTable.sortcol.minBy() as minb," +
 				          "MyTable.sortcol.firstEvents() as fes," +
@@ -398,19 +398,19 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "create table MyTable(sortcol sorted(intPrimitive) @type('SupportBean'));\n" +
+				var epl = "create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n" +
 				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
-				          "@name('s0') select " +
-				          "MyTable.sortcol.ceilingEvent(id).theString as ceid," +
+				          "@Name('s0') select " +
+				          "MyTable.sortcol.ceilingEvent(id).TheString as ceid," +
 				          "MyTable.sortcol.ceilingEvent(id).firstOf() as cefo," +
 				          "MyTable.sortcol.ceilingEvents(id).lastOf() as ceslo," +
-				          "MyTable.sortcol.floorEvent(id).theString as feid," +
+				          "MyTable.sortcol.floorEvent(id).TheString as feid," +
 				          "MyTable.sortcol.floorEvent(id).firstOf() as fefo," +
 				          "MyTable.sortcol.floorEvents(id).lastOf() as feslo," +
-				          "MyTable.sortcol.higherEvent(id).theString as heid," +
+				          "MyTable.sortcol.higherEvent(id).TheString as heid," +
 				          "MyTable.sortcol.higherEvent(id).firstOf() as hefo," +
 				          "MyTable.sortcol.higherEvents(id).lastOf() as heslo," +
-				          "MyTable.sortcol.lowerEvent(id).theString as leid," +
+				          "MyTable.sortcol.lowerEvent(id).TheString as leid," +
 				          "MyTable.sortcol.lowerEvent(id).firstOf() as lefo," +
 				          "MyTable.sortcol.lowerEvents(id).lastOf() as leslo " +
 				          " from SupportBean_S0";
@@ -449,11 +449,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			public void Run(RegressionEnvironment env)
 			{
 				var path = new RegressionPath();
-				var epl = "create table MyTable(sortcol sorted(intPrimitive) @type('SupportBean'));\n" +
+				var epl = "create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n" +
 				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n";
 				env.CompileDeploy(epl, path);
 
-				var select = "@name('s0') select " +
+				var select = "@Name('s0') select " +
 				             "MyTable.sortcol as sortedItself, " +
 				             "MyTable.sortcol.ceilingEvent(id) as ce, " +
 				             "MyTable.sortcol.ceilingEvents(id) as ces, " +
@@ -505,7 +505,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				var fields = "c0".SplitCsv();
 				var treemap = new BTreeDictionary<int, IList<SupportBean>>();
 
-				var epl = "@name('s0') select sorted(intPrimitive).floorEvent(intPrimitive-1) as c0 from SupportBean#length(3) as sb";
+				var epl = "@Name('s0') select sorted(IntPrimitive).floorEvent(IntPrimitive-1) as c0 from SupportBean#length(3) as sb";
 				env.EplToModelCompileDeploy(epl).AddListener("s0");
 
 				MakeSendBean(env, treemap, "E1", 10);
@@ -530,9 +530,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "create table MyTable(sortcol sorted(intPrimitive) @type('SupportBean'));\n" +
+				var epl = "create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n" +
 				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
-				          "@name('s0') select MyTable.sortcol.floorEvent(id) as c0 from SupportBean_S0";
+				          "@Name('s0') select MyTable.sortcol.floorEvent(id) as c0 from SupportBean_S0";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				var treemap = new BTreeDictionary<int, IList<SupportBean>>();
@@ -559,11 +559,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			public void Run(RegressionEnvironment env)
 			{
 				var path = new RegressionPath();
-				var epl = "create table MyTable(sortcol sorted(intPrimitive) @type('SupportBean'));\n" +
+				var epl = "create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n" +
 				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n";
 				env.CompileDeploy(epl, path);
 
-				env.EplToModelCompileDeploy("@name('s0') select sortcol.floorEvent(id) as c0 from SupportBean_S0, MyTable", path).AddListener("s0");
+				env.EplToModelCompileDeploy("@Name('s0') select sortcol.floorEvent(id) as c0 from SupportBean_S0, MyTable", path).AddListener("s0");
 
 				var treemap = new BTreeDictionary<int, IList<SupportBean>>();
 				MakeSendBean(env, treemap, "E1", 10);

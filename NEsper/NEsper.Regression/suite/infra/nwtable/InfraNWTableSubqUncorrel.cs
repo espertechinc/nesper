@@ -75,8 +75,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var path = new RegressionPath();
                 var stmtTextCreate = namedWindow
-                    ? "@name('create') create window MyInfra#keepall as select TheString as a, LongPrimitive as b, LongBoxed as c from SupportBean"
-                    : "@name('create') create table MyInfra(a string primary key, b long, c long)";
+                    ? "@Name('create') create window MyInfra#keepall as select TheString as a, LongPrimitive as b, LongBoxed as c from SupportBean"
+                    : "@Name('create') create table MyInfra(a string primary key, b long, c long)";
                 if (enableIndexShareCreate) {
                     stmtTextCreate = "@Hint('enable_window_subquery_indexshare') " + stmtTextCreate;
                 }
@@ -90,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create consumer
                 var stmtTextSelectOne =
-                    "@name('select') select irstream (select a from MyInfra) as value, Symbol from SupportMarketDataBean";
+                    "@Name('select') select irstream (select a from MyInfra) as value, Symbol from SupportMarketDataBean";
                 if (disableIndexShareConsumer) {
                     stmtTextSelectOne = "@Hint('disable_window_subquery_indexshare') " + stmtTextSelectOne;
                 }
@@ -124,7 +124,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create consumer 2 -- note that this one should not start empty now
                 var stmtTextSelectTwo =
-                    "@name('selectTwo') select irstream (select a from MyInfra) as value, Symbol from SupportMarketDataBean";
+                    "@Name('selectTwo') select irstream (select a from MyInfra) as value, Symbol from SupportMarketDataBean";
                 if (disableIndexShareConsumer) {
                     stmtTextSelectTwo = "@Hint('disable_window_subquery_indexshare') " + stmtTextSelectTwo;
                 }
@@ -162,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     new object[] {null, "M2"});
 
                 // create delete stmt
-                var stmtTextDelete = "@name('delete') on SupportBean_A delete from MyInfra where Id = a";
+                var stmtTextDelete = "@Name('delete') on SupportBean_A delete from MyInfra where Id = a";
                 env.CompileDeploy(stmtTextDelete, path).AddListener("delete");
 
                 // delete S1

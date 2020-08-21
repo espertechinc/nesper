@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			              "_1(lvl1 int, l2 " +
 			              JSON_TYPENAME +
 			              "_2[]);\n" +
-			              "@name('types') @public @buseventtype create json schema " +
+			              "@Name('types') @public @buseventtype create json schema " +
 			              JSON_TYPENAME +
 			              "(l1 " +
 			              JSON_TYPENAME +
@@ -143,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			FunctionSendEvent4IntWArrayNested send,
 			RegressionPath path)
 		{
-			var epl = "@name('s0') select * from " + typename;
+			var epl = "@Name('s0') select * from " + typename;
 			env.CompileDeploy(epl, path).AddListener("s0");
 
 			send.Invoke(typename, env, 1, 2, 3, 4);
@@ -168,7 +168,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			FunctionSendEvent4IntWArrayNested send,
 			RegressionPath path)
 		{
-			var epl = "@name('s0') select " +
+			var epl = "@Name('s0') select " +
 			          "l1[0].lvl1 as c0, " +
 			          "exists(l1[0].lvl1) as exists_c0, " +
 			          "l1[0].l2[0].lvl2 as c1, " +

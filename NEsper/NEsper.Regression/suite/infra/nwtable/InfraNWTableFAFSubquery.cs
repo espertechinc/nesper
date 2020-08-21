@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 	            TryInvalidFAFCompile(env, path, "select (select * from SupportBean#lastevent) from WinSB",
 	                "Fire-and-forget queries only allow subqueries against named windows and tables");
 
-	            TryInvalidFAFCompile(env, path, "select (select * from WinSB(theString='x')) from WinSB",
+	            TryInvalidFAFCompile(env, path, "select (select * from WinSB(TheString='x')) from WinSB",
 	                "Failed to plan subquery number 1 querying WinSB: Subqueries in fire-and-forget queries do not allow filter expressions");
 
 	            TryInvalidFAFCompile(env, path, "select (select * from PartitionedWinS0) from WinSB",
@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 	            
 	            var delta = PerformanceObserver.TimeMillis(
 		            () => {
-			            var query = "select (select id from Infra as i where i.value = wsb.theString) as c0 from WinSB as wsb";
+			            var query = "select (select id from Infra as i where i.value = wsb.TheString) as c0 from WinSB as wsb";
 			            result = CompileExecute(env, path, query);
 		            });
 	            
@@ -171,7 +171,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 	                    "insert into WinSB select * from SupportBean;\n";
 	            env.CompileDeploy(epl, path);
 
-	            var query = "select (select intPrimitive from WinSB where theString = 'x') as c0 from WinS0";
+	            var query = "select (select IntPrimitive from WinSB where TheString = 'x') as c0 from WinS0";
 	            SendS0(env, 0, null);
 	            AssertQuerySingle(env, path, query, null);
 
@@ -198,13 +198,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 	                    "insert into WinSB select * from SupportBean;\n";
 	            env.CompileDeploy(epl, path);
 
-	            var query = "select (select theString, sum(intPrimitive) as thesum from WinSB group by theString) as c0 from WinS0";
+	            var query = "select (select TheString, sum(IntPrimitive) as thesum from WinSB group by TheString) as c0 from WinS0";
 	            SendS0(env, 0, null);
 
 	            SendSB(env, "E1", 10);
 	            SendSB(env, "E1", 11);
 	            var result = (IDictionary<string, object>) RunQuerySingle(env, path, query);
-	            Assert.AreEqual("E1", result.Get("theString"));
+	            Assert.AreEqual("E1", result.Get("TheString"));
 	            Assert.AreEqual(21, result.Get("thesum"));
 
 	            env.UndeployAll();
@@ -226,8 +226,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 	            SendS0(env, 2, "b");
 	            SendSB(env, "E1", 1);
 
-	            var query = "context MyContext select p00, (select theString from WinSB) as theString from WinS0";
-	            AssertQueryMultirowAnyOrder(env, path, query, "p00,theString", new object[][]{
+	            var query = "context MyContext select p00, (select TheString from WinSB) as TheString from WinS0";
+	            AssertQueryMultirowAnyOrder(env, path, query, "p00,TheString", new object[][]{
 		            new object[] {"a", "E1"}, 
 		            new object[] {"b", "E1"}
 	            });
@@ -270,7 +270,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 	            var path = new RegressionPath();
 	            var epl =
 	                "@public create window WinS0#keepall as SupportBean_S0;\n" +
-	                    "@public create window WinSB#unique(intPrimitive) as SupportBean;\n" +
+	                    "@public create window WinSB#unique(IntPrimitive) as SupportBean;\n" +
 	                    "insert into WinS0 select * from SupportBean_S0;\n" +
 	                    "insert into WinSB select * from SupportBean;\n";
 	            env.CompileDeploy(epl, path);
@@ -282,7 +282,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 	            SendSB(env, "a", 0);
 	            SendSB(env, "b", 2);
 
-	            var update = "delete from WinS0 as wins0 where id = (select intPrimitive from WinSB winsb where winsb.theString = wins0.p00)";
+	            var update = "delete from WinS0 as wins0 where id = (select IntPrimitive from WinSB winsb where winsb.TheString = wins0.p00)";
 	            CompileExecute(env, path, update);
 
 	            var query = "select * from WinS0";
@@ -300,7 +300,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 	            var path = new RegressionPath();
 	            var epl =
 	                "@public create window WinS0#keepall as SupportBean_S0;\n" +
-	                    "@public create window WinSB#unique(intPrimitive) as SupportBean;\n" +
+	                    "@public create window WinSB#unique(IntPrimitive) as SupportBean;\n" +
 	                    "insert into WinS0 select * from SupportBean_S0;\n" +
 	                    "insert into WinSB select * from SupportBean;\n";
 	            env.CompileDeploy(epl, path);
@@ -312,7 +312,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 	            SendSB(env, "a", 0);
 	            SendSB(env, "b", 2);
 
-	            var update = "update WinS0 as wins0 set p00 = 'x' where id = (select intPrimitive from WinSB winsb where winsb.theString = wins0.p00)";
+	            var update = "update WinS0 as wins0 set p00 = 'x' where id = (select IntPrimitive from WinSB winsb where winsb.TheString = wins0.p00)";
 	            CompileExecute(env, path, update);
 
 	            var query = "select * from WinS0";
@@ -331,7 +331,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 	            var path = new RegressionPath();
 	            var epl =
 	                "@public create window WinS0#keepall as SupportBean_S0;\n" +
-	                    "@public create window WinSB#unique(intPrimitive) as SupportBean;\n" +
+	                    "@public create window WinSB#unique(IntPrimitive) as SupportBean;\n" +
 	                    "insert into WinS0 select * from SupportBean_S0;\n" +
 	                    "insert into WinSB select * from SupportBean;\n";
 	            env.CompileDeploy(epl, path);
@@ -344,7 +344,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 	            SendSB(env, "Y", 1);
 	            SendSB(env, "Z", 3);
 
-	            var update = "update WinS0 as wins0 set p00 = (select theString from WinSB winsb where winsb.intPrimitive = wins0.id)";
+	            var update = "update WinS0 as wins0 set p00 = (select TheString from WinSB winsb where winsb.IntPrimitive = wins0.id)";
 	            CompileExecute(env, path, update);
 
 	            var query = "select * from WinS0";
@@ -363,7 +363,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 	            var path = new RegressionPath();
 	            var epl =
 	                "@public create window WinS0#keepall as SupportBean_S0;\n" +
-	                    "@public create window WinSB#unique(intPrimitive) as SupportBean;\n" +
+	                    "@public create window WinSB#unique(IntPrimitive) as SupportBean;\n" +
 	                    "insert into WinS0 select * from SupportBean_S0;\n" +
 	                    "insert into WinSB select * from SupportBean;\n";
 	            env.CompileDeploy(epl, path);
@@ -376,8 +376,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 	            SendSB(env, "Y", 1);
 	            SendSB(env, "Z", 3);
 
-	            var query = "select id, (select theString from WinSB winsb where winsb.intPrimitive = wins0.id) as theString from WinS0 as wins0";
-	            AssertQueryMultirowAnyOrder(env, path, query, "id,theString", new object[][] {
+	            var query = "select id, (select TheString from WinSB winsb where winsb.IntPrimitive = wins0.id) as TheString from WinS0 as wins0";
+	            AssertQueryMultirowAnyOrder(env, path, query, "id,TheString", new object[][] {
 		            new object[]{1, "Y"}, 
 		            new object[]{2, "X"}, 
 		            new object[]{3, "Z"}
@@ -386,7 +386,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 	            SendSB(env, "Q", 1);
 	            SendSB(env, "R", 3);
 	            SendSB(env, "S", 2);
-	            AssertQueryMultirowAnyOrder(env, path, query, "id,theString", new object[][] {
+	            AssertQueryMultirowAnyOrder(env, path, query, "id,TheString", new object[][] {
 		            new object[]{1, "Q"}, 
 		            new object[]{2, "S"}, 
 		            new object[]{3, "R"}
@@ -408,7 +408,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 	            CompileExecute(env, path, "insert into Win select 'k2' as key, 2 as value");
 	            CompileExecute(env, path, "insert into Win select 'k3' as key, 3 as value");
 
-	            var delete = "delete from Win where value = (select intPrimitive from WinSB)";
+	            var delete = "delete from Win where value = (select IntPrimitive from WinSB)";
 	            var query = "select * from Win";
 
 	            AssertQueryMultirowAnyOrder(env, path, query, "key,value", new object[][] {
@@ -448,7 +448,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 	            env.CompileDeploy(epl, path);
 	            CompileExecute(env, path, "insert into Win select 1 as value");
 
-	            var update = "update Win set value = (select intPrimitive from WinSB)";
+	            var update = "update Win set value = (select IntPrimitive from WinSB)";
 	            var query = "select value as c0 from Win";
 
 	            AssertQuerySingle(env, path, query, 1);
@@ -484,14 +484,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 	                        "insert into InfraSB select * from SupportBean;\n";
 	            } else {
 	                epl +=
-	                    "@public create table InfraSB(theString string);\n" +
+	                    "@public create table InfraSB(TheString string);\n" +
 	                        "on SupportBean as sb merge InfraSB as issb" +
-	                        "  when not matched then insert select theString when matched then update set issb.theString=sb.theString;\n";
+	                        "  when not matched then insert select TheString when matched then update set issb.TheString=sb.TheString;\n";
 
 	            }
 	            env.CompileDeploy(epl, path);
 
-	            var insert = "insert into Win(value) select (select theString from InfraSB)";
+	            var insert = "insert into Win(value) select (select TheString from InfraSB)";
 	            var query = "select * from Win";
 
 	            CompileExecute(env, path, insert);
@@ -525,7 +525,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 	                    "insert into WinSB select * from SupportBean;\n" +
 	                    "insert into WinS0 select * from SupportBean_S0;\n" +
 	                    "insert into WinS1 select * from SupportBean_S1;\n";
-	            var query = "select (select theString from WinSB) as c0, p00, p10 from WinS0, WinS1";
+	            var query = "select (select TheString from WinSB) as c0, p00, p10 from WinS0, WinS1";
 	            env.CompileDeploy(epl, path);
 
 	            AssertQueryNoRows(env, path, query, typeof(string));

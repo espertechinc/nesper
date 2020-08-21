@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				string epl =
 					"@public @buseventtype @JsonSchema create json schema MyEvent(p1 string);\n" +
-					"@name('s0') select * from MyEvent;\n";
+					"@Name('s0') select * from MyEvent;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				EventSenderJson sender = (EventSenderJson) env.Runtime.EventService.GetEventSender("MyEvent");

@@ -34,8 +34,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             public void Run(RegressionEnvironment env)
             {
                 string epl = "create window MyWindow#keepall as SupportBean;\n" +
-                             "@name('insert') insert into MyWindow select * from SupportBean;\n" +
-                             "@name('s0') select exists (select * from MyWindow(TheString='E1')) as c0 from SupportBean_S0;\n";
+                             "@Name('insert') insert into MyWindow select * from SupportBean;\n" +
+                             "@Name('s0') select exists (select * from MyWindow(TheString='E1')) as c0 from SupportBean_S0;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendAssert(env, false);
@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean("E2", 1));
 
-                env.CompileDeploy("@name('s0') select * from MyWindow where (select count(*) from MyWindow) > 0", path)
+                env.CompileDeploy("@Name('s0') select * from MyWindow where (select count(*) from MyWindow) > 0", path)
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E3", 1));

@@ -30,7 +30,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         [NonSerialized] private ExprForge _forge;
 
-
         public ExprNewInstanceNode(string classIdent, int numArrayDimensions)
         {
             this._classIdent = classIdent;

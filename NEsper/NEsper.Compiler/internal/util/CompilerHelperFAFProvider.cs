@@ -244,15 +244,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 classScope,
                 new List<CodegenTypedParam>());
 
-            ctor.Block.AssignRef(Ref("statementFields"), NewInstance(statementFieldsClassName));
-
-            // provide module dependencies
-            var getModuleDependenciesMethod = CodegenMethod.MakeParentNode(
-                typeof(ModuleDependenciesRuntime),
-                typeof(EPCompilerImpl),
-                CodegenSymbolProviderEmpty.INSTANCE,
-                classScope);
-            getModuleDependenciesMethod.Block.MethodReturn(compileTimeServices.ModuleDependencies.Make(getModuleDependenciesMethod, classScope));
+            ctor.Block.AssignRef(Ref("statementFields"), NewInstanceInner(statementFieldsClassName));
 
             // initialize-event-types
             var initializeEventTypesMethod = MakeInitEventTypes(classScope, compileTimeServices);
@@ -269,7 +261,7 @@ namespace com.espertech.esper.compiler.@internal.util
                     EPStatementInitServicesConstants.REF.Ref);
             initializeQueryMethod.Block.AssignMember(
                 MEMBERNAME_QUERY_METHOD_PROVIDER,
-                NewInstance(queryMethodProviderClassName, EPStatementInitServicesConstants.REF, Ref("statementFields")));
+                NewInstanceInner(queryMethodProviderClassName, EPStatementInitServicesConstants.REF, Ref("statementFields")));
 
             // get-execute
             var queryMethodProviderProperty = CodegenProperty.MakePropertyNode(
@@ -279,8 +271,18 @@ namespace com.espertech.esper.compiler.@internal.util
                 classScope);
             queryMethodProviderProperty.GetterBlock.BlockReturn(Ref(MEMBERNAME_QUERY_METHOD_PROVIDER));
 
+            // provide module dependencies
+            var moduleDependenciesProperty = CodegenProperty.MakePropertyNode(
+                typeof(ModuleDependenciesRuntime),
+                typeof(EPCompilerImpl),
+                CodegenSymbolProviderEmpty.INSTANCE,
+                classScope);
+            moduleDependenciesProperty.GetterBlock
+                .BlockReturn(compileTimeServices.ModuleDependencies.Make(
+                    initializeQueryMethod, classScope));
+
             // build stack
-            CodegenStackGenerator.RecursiveBuildStack(getModuleDependenciesMethod, "GetModuleDependencies", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(moduleDependenciesProperty, "ModuleDependencies", methods, properties);
             CodegenStackGenerator.RecursiveBuildStack(initializeEventTypesMethod, "InitializeEventTypes", methods, properties);
             CodegenStackGenerator.RecursiveBuildStack(initializeQueryMethod, "InitializeQuery", methods, properties);
             CodegenStackGenerator.RecursiveBuildStack(queryMethodProviderProperty, "QueryMethodProvider", methods, properties);

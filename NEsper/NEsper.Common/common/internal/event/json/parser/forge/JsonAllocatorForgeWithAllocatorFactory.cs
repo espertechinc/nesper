@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.@event.json.parser.forge
             var method = parent
                 .MakeChild(typeof(JsonDeserializerBase), typeof(JsonForgeFactoryEventTypeTyped), classScope);
             method.Block
-                .DeclareVar(typeof(JsonSerializationContext), "factory", NewInstance(_allocatorFactoryClassName))
+                .DeclareVar<JsonSerializationContext>("factory", NewInstanceInner(_allocatorFactoryClassName))
                 .MethodReturn(ExprDotMethod(Ref("factory"), "make", fields.BaseHandler, fields.This));
             return LocalMethod(method);
         }

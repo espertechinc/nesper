@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select SupportBean.TheString as val1, SupportBean.IntPrimitive as val2 from SupportBean";
+                    "@Name('s0') select SupportBean.TheString as val1, SupportBean.IntPrimitive as val2 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "E1", 10);

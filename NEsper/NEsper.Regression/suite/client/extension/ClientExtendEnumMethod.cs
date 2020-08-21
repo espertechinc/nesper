@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select strvals.enumPlugInLambdaScalarWStateAndValue('X', (r, v) => r || v) as c0 " +
+                var epl = "@Name('s0') select strvals.enumPlugInLambdaScalarWStateAndValue('X', (r, v) => r || v) as c0 " +
                           "from SupportCollection";
                 env.CompileDeploy(epl).AddListener("s0");
                 Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("c0"));
@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select intvals.enumPlugInLambdaScalarWPredicateAndIndex((v, ind) => v > 0 and ind < 3) as c0 " +
+                var epl = "@Name('s0') select intvals.enumPlugInLambdaScalarWPredicateAndIndex((v, ind) => v > 0 and ind < 3) as c0 " +
                           "from SupportCollection";
                 env.CompileDeploy(epl).AddListener("s0");
                 Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("c0"));
@@ -102,8 +102,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select " +
-                          "(select * from SupportBean#keepall).enumPlugInLambdaEventWPredicateAndIndex((v, ind) => v.intPrimitive > 0 and ind < 3) as c0 " +
+                var epl = "@Name('s0') select " +
+                          "(select * from SupportBean#keepall).enumPlugInLambdaEventWPredicateAndIndex((v, ind) => v.IntPrimitive > 0 and ind < 3) as c0 " +
                           "from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
                 Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("c0"));
@@ -138,8 +138,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select " +
-                          "(select * from SupportBean#keepall).enumPlugInTwoLambda(l1 -> 2*intPrimitive, l2 -> 3*intPrimitive) as c0 " +
+                var epl = "@Name('s0') select " +
+                          "(select * from SupportBean#keepall).enumPlugInTwoLambda(l1 -> 2*IntPrimitive, l2 -> 3*IntPrimitive) as c0 " +
                           "from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
                 Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("c0"));
@@ -171,8 +171,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select " +
-                          "(select * from SupportBean#keepall).enumPlugInReturnSingleEvent(v => intPrimitive > 0).theString as c0 " +
+                var epl = "@Name('s0') select " +
+                          "(select * from SupportBean#keepall).enumPlugInReturnSingleEvent(v => IntPrimitive > 0).TheString as c0 " +
                           "from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
                 Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("c0"));
@@ -207,8 +207,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select " +
-                          "(select * from SupportBean#keepall).enumPlugInReturnEvents(v => intPrimitive > 0).lastOf().theString as c0 " +
+                var epl = "@Name('s0') select " +
+                          "(select * from SupportBean#keepall).enumPlugInReturnEvents(v => IntPrimitive > 0).lastOf().TheString as c0 " +
                           "from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
                 Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("c0"));
@@ -244,7 +244,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             public void Run(RegressionEnvironment env)
             {
                 var fields = "val0".SplitCsv();
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "intvals.enumPlugInEarlyExit() as val0 " +
                           "from SupportCollection";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -272,7 +272,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             public void Run(RegressionEnvironment env)
             {
                 var fields = "val0".SplitCsv();
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "intvals.enumPlugInOne(10, 20) as val0 " +
                           "from SupportCollection";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -301,7 +301,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             public void Run(RegressionEnvironment env)
             {
                 var fields = "c0,c1,c2".SplitCsv();
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "strvals.enumPlugInMedian(v => extractNum(v)) as c0," +
                           "strvals.enumPlugInMedian((v, i) => extractNum(v) + i*10) as c1," +
                           "strvals.enumPlugInMedian((v, i, s) => extractNum(v) + i*10+s*100) as c2 " +
@@ -335,7 +335,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             public void Run(RegressionEnvironment env)
             {
                 var fields = "val0".SplitCsv();
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "contained.enumPlugInMedian(x => p00) as val0 " +
                           "from SupportBean_ST0_Container";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -366,7 +366,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             public void Run(RegressionEnvironment env)
             {
                 var fields = "val0".SplitCsv();
-                var eplFragment = "@name('s0') select intvals.enumPlugInMedian() as val0 from SupportCollection";
+                var eplFragment = "@Name('s0') select intvals.enumPlugInMedian() as val0 from SupportCollection";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
                 LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] {typeof(double?)});

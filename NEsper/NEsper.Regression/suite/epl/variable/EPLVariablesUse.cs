@@ -168,7 +168,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             object[][] testdata)
         {
             env.CompileDeploy(
-                "@name('s0') select TheString as c0,IntPrimitive as c1 from SupportBean(" + @operator + ")",
+                "@Name('s0') select TheString as c0,IntPrimitive as c1 from SupportBean(" + @operator + ")",
                 path);
             env.AddListener("s0");
 
@@ -220,7 +220,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select * from SupportBean(varargsTestClient.FunctionWithVarargs(LongBoxed, varargsTestClient.GetTestObject(TheString))) as t";
+                    "@Name('s0') select * from SupportBean(varargsTestClient.FunctionWithVarargs(LongBoxed, varargsTestClient.GetTestObject(TheString))) as t";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SupportBean sb = new SupportBean("5", 0);
@@ -236,7 +236,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select * from MyVariableCustomEvent(Name=my_variable_custom_typed)")
+                env.CompileDeploy("@Name('s0') select * from MyVariableCustomEvent(Name=my_variable_custom_typed)")
                     .AddListener("s0");
 
                 env.SendEventBean(new MyVariableCustomEvent(MyVariableCustomType.Of("abc")));
@@ -250,7 +250,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select var_simple_preconfig_const as c0 from SupportBean")
+                env.CompileDeploy("@Name('s0') select var_simple_preconfig_const as c0 from SupportBean")
                     .AddListener("s0");
 
                 env.Milestone(0);
@@ -269,7 +269,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             public void Run(RegressionEnvironment env)
             {
                 var epl = "create variable boolean var_simple_module_const = true;\n" +
-                          "@name('s0') select var_simple_module_const as c0 from SupportBean;\n";
+                          "@Name('s0') select var_simple_module_const as c0 from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
                 env.Milestone(0);
                 env.SendEventBean(new SupportBean("E1", 0));
@@ -284,7 +284,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             {
                 var path = new RegressionPath();
                 env.CompileDeploy("create variable boolean var_simple_twomodule_const = true", path);
-                env.CompileDeploy("@name('s0') select var_simple_twomodule_const as c0 from SupportBean", path);
+                env.CompileDeploy("@Name('s0') select var_simple_twomodule_const as c0 from SupportBean", path);
                 env.AddListener("s0");
                 env.Milestone(0);
                 env.SendEventBean(new SupportBean("E1", 0));
@@ -324,7 +324,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     new MySimpleVariableService());
 
                 var epStatement = env
-                    .CompileDeploy("@name('s0') select mySimpleVariableService.DoSomething() as c0 from SupportBean")
+                    .CompileDeploy("@Name('s0') select mySimpleVariableService.DoSomething() as c0 from SupportBean")
                     .Statement("s0");
 
                 var latch = new CountDownLatch(1);
@@ -361,7 +361,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     path);
 
                 // exercise
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "myService.DoSomething() as c0, " +
                           "myInitService.DoSomething() as c1 " +
                           "from SupportBean";
@@ -571,7 +571,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 // test SODA
                 env.UndeployAll();
 
-                var epl = "@name('variable') create constant variable int MYCONST = 10";
+                var epl = "@Name('variable') create constant variable int MYCONST = 10";
                 env.EplToModelCompileDeploy(epl);
 
                 // test invalid
@@ -595,7 +595,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
                 // try ESPER-653
                 env.CompileDeploy(
-                    "@name('s0') create constant variable com.espertech.esper.compat.DateTimeEx START_TIME = com.espertech.esper.compat.DateTimeEx.NowUtc()");
+                    "@Name('s0') create constant variable com.espertech.esper.compat.DateTimeEx START_TIME = com.espertech.esper.compat.DateTimeEx.NowUtc()");
                 var value = env.GetEnumerator("s0").Advance().Get("START_TIME");
                 Assert.IsNotNull(value);
                 env.UndeployModuleContaining("s0");
@@ -603,7 +603,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 // test array constant
                 env.UndeployAll();
                 env.CompileDeploy("create constant variable string[] var_strings = {'E1', 'E2'}", path);
-                env.CompileDeploy("@name('s0') select var_strings from SupportBean", path);
+                env.CompileDeploy("@Name('s0') select var_strings from SupportBean", path);
                 Assert.AreEqual(typeof(string[]), env.Statement("s0").EventType.GetPropertyType("var_strings"));
                 env.UndeployModuleContaining("s0");
 
@@ -644,7 +644,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     "Cannot create variable 'var_beans', type 'SupportBean' cannot be declared as an array type as it is an event type [create constant variable SupportBean[] var_beans]");
 
                 // test array of primitives
-                env.CompileDeploy("@name('s0') create variable byte[] myBytesBoxed");
+                env.CompileDeploy("@Name('s0') create variable byte[] myBytesBoxed");
                 object[][] expectedType = {
                     new object[] {"myBytesBoxed", typeof(byte?[])}
                 };
@@ -655,7 +655,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     SupportEventTypeAssertionEnum.TYPE);
                 env.UndeployModuleContaining("s0");
 
-                env.CompileDeploy("@name('s0') create variable byte[primitive] myBytesPrimitive");
+                env.CompileDeploy("@Name('s0') create variable byte[primitive] myBytesPrimitive");
                 expectedType = new[] {
                     new object[] {"myBytesPrimitive", typeof(byte[])}
                 };
@@ -700,7 +700,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 RegressionPath path,
                 string varName)
             {
-                env.CompileDeploy("@name('s0') select * from SupportBean(TheString in (" + varName + "))", path)
+                env.CompileDeploy("@Name('s0') select * from SupportBean(TheString in (" + varName + "))", path)
                     .AddListener("s0");
 
                 SendBeanAssert(env, "E1", true);
@@ -815,7 +815,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 }
 
                 // create new variable on the fly
-                env.CompileDeploy("@name('create') create variable int dummy = 20 + 20");
+                env.CompileDeploy("@Name('create') create variable int dummy = 20 + 20");
                 Assert.AreEqual(40, env.Runtime.VariableService.GetVariableValue(env.DeploymentId("create"), "dummy"));
 
                 // try type coercion
@@ -902,7 +902,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtTextSet = "@name('set') on SupportBean_S0 set var1IFB = P00, var2IFB = P01";
+                var stmtTextSet = "@Name('set') on SupportBean_S0 set var1IFB = P00, var2IFB = P01";
                 env.CompileDeploy(stmtTextSet).AddListener("set");
                 string[] fieldsVar = {"var1IFB", "var2IFB"};
                 EPAssertionUtil.AssertPropsPerRow(
@@ -911,7 +911,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     new[] {new object[] {null, null}});
 
                 var stmtTextSelect =
-                    "@name('s0') select TheString, IntPrimitive from SupportBean(TheString = var1IFB or TheString = var2IFB)";
+                    "@Name('s0') select TheString, IntPrimitive from SupportBean(TheString = var1IFB or TheString = var2IFB)";
                 string[] fieldsSelect = {"TheString", "IntPrimitive"};
                 env.CompileDeploy(stmtTextSelect).AddListener("s0");
 
@@ -974,7 +974,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtTextSet = "@name('set') on SupportBean_S0 set var1IF = P00";
+                var stmtTextSet = "@Name('set') on SupportBean_S0 set var1IF = P00";
                 env.CompileDeploy(stmtTextSet).AddListener("set");
                 string[] fieldsVar = {"var1IF"};
                 EPAssertionUtil.AssertPropsPerRow(
@@ -982,7 +982,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     fieldsVar,
                     new[] {new object[] {null}});
 
-                var stmtTextSelect = "@name('s0') select TheString, IntPrimitive from SupportBean(TheString = var1IF)";
+                var stmtTextSelect = "@Name('s0') select TheString, IntPrimitive from SupportBean(TheString = var1IF)";
                 string[] fieldsSelect = {"TheString", "IntPrimitive"};
                 env.CompileDeploy(stmtTextSelect).AddListener("s0");
 

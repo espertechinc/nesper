@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 			          "create objectarray schema MyOATarget (unfilled string, p0 string, p1 string, i0 MyInner);\n" +
 			          "create objectarray schema MyOASource (p0 string, p1 string, i0 MyInner);\n" +
 			          "insert into MyOATarget select p0, p1, i0, null as unfilled from MyOASource;\n" +
-			          "@name('s0') select * from MyOATarget;\n";
+			          "@Name('s0') select * from MyOATarget;\n";
 			env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
 			env.SendEventObjectArray(new object[] {"p0value", "p1value", new object[] {"i"}}, "MyOASource");
@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 			env.CompileDeploy(
 				type.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedNodePlus>() + "create schema NodePlus(npid string, node Node)",
 				path);
-			env.CompileDeploy("@name('s0') insert into NodePlus select 'E1' as npid, n1 as node from NodeWindow n1", path).AddListener("s0");
+			env.CompileDeploy("@Name('s0') insert into NodePlus select 'E1' as npid, n1 as node from NodeWindow n1", path).AddListener("s0");
 
 			if (type.IsObjectArrayEvent()) {
 				env.SendEventObjectArray(new object[] {"n1"}, "Node");
@@ -165,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 			env.CompileDeployWBusPublicType(epl, path);
 
 			env.CompileDeploy(
-					"@name('s0') insert into AllMyEvent " +
+					"@Name('s0') insert into AllMyEvent " +
 					"select c as myEvent, 'test' as clazz, false as reverse " +
 					"from MyEvent(myId=1) c",
 					path)
@@ -174,7 +174,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 			Assert.IsTrue(eventRepresentationEnum.MatchesClass(env.Statement("s0").EventType.UnderlyingType));
 
 			env.CompileDeploy(
-					"@name('s1') insert into SuspectMyEvent " +
+					"@Name('s1') insert into SuspectMyEvent " +
 					"select c.myEvent as myEvent, clazz " +
 					"from AllMyEvent(not reverse) c",
 					path)

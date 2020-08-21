@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			throw new UnsupportedOperationException("Operation not supported");
 		}
 
-		public override TE Read(
+		public override TE ReadValue(
 			DataInput input,
 			byte[] unitKey)
 		{

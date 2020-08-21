@@ -258,7 +258,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 makeMethod.Block.MethodReturn(ConstantNull());
             }
             else {
-                makeMethod.Block.MethodReturn(NewInstance(classNameRow, CTX_REF));
+                makeMethod.Block.MethodReturn(NewInstanceInner(classNameRow, CTX_REF));
             }
 
             var methods = new CodegenClassMethods();
@@ -384,7 +384,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 readMethod.Block.MethodReturn(ConstantNull());
             }
             else {
-                readMethod.Block.DeclareVar(classNameRow, "row", NewInstance(classNameRow, CTX_REF));
+                readMethod.Block.DeclareVar(classNameRow, "row", NewInstanceInner(classNameRow, CTX_REF));
                 readConsumer.Invoke(readMethod, level);
 
                 var methodFactories = levelDesc.StateDesc.MethodFactories;
@@ -453,7 +453,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             var properties = new CodegenClassProperties();
 
             CodegenStackGenerator.RecursiveBuildStack(writeMethod, "Write", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(readMethod, "Read", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(readMethod, "ReadValue", methods, properties);
 
             var innerClassInterface = typeof(DataInputOutputSerdeBase<AggregationRow>);
             var innerClass = new CodegenInnerClass(

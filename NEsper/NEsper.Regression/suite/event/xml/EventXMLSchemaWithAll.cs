@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             RegressionPath path)
         {
             // url='page4'
-            var text = "@name('s0') select a.url as sesja from pattern [ every a=" + eventTypeName + "(url='page1') ]";
+            var text = "@Name('s0') select a.url as sesja from pattern [ every a=" + eventTypeName + "(url='page1') ]";
             env.CompileDeploy(text, path).AddListener("s0");
 
             SupportXML.SendXMLEvent(
@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 eventTypeName);
             Assert.IsFalse(env.Listener("s0").IsInvoked);
 
-            var type = env.CompileDeploy("@name('s1') select * from " + eventTypeName, path).Statement("s1").EventType;
+            var type = env.CompileDeploy("@Name('s1') select * from " + eventTypeName, path).Statement("s1").EventType;
             CollectionAssert.AreEquivalent(
                 new EventPropertyDescriptor[] {
                     new EventPropertyDescriptor("sessionId", typeof(XmlNode), null, false, false, false, false, true),

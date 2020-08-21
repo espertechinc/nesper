@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	    private const long FOURTH_EVENT = 4;
 	    private const bool FITH_EVENT = false;
 
-	    private const string EPL = "select bytePrimitive&ByteBoxed as myFirstProperty, " +
+	    private const string EPL = "select BytePrimitive&ByteBoxed as myFirstProperty, " +
 	        "ShortPrimitive|ShortBoxed as mySecondProperty, " +
 	        "IntPrimitive|IntBoxed as myThirdProperty, " +
 	        "LongPrimitive^LongBoxed as myFourthProperty, " +
@@ -57,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	            var model = new EPStatementObjectModel();
 	            model.SelectClause = SelectClause.Create()
-		            .Add(Expressions.BinaryAnd().Add("bytePrimitive").Add("ByteBoxed"), "myFirstProperty")
+		            .Add(Expressions.BinaryAnd().Add("BytePrimitive").Add("ByteBoxed"), "myFirstProperty")
 		            .Add(Expressions.BinaryOr().Add("ShortPrimitive").Add("ShortBoxed"), "mySecondProperty")
 		            .Add(Expressions.BinaryOr().Add("IntPrimitive").Add("IntBoxed"), "myThirdProperty")
 		            .Add(Expressions.BinaryXor().Add("LongPrimitive").Add("LongBoxed"), "myFourthProperty")
@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	            model = SerializableObjectCopier.GetInstance(env.Container).Copy(model);
 	            Assert.AreEqual(EPL, model.ToEPL());
 
-	            env.CompileDeploy("@name('s0')  " + EPL).AddListener("s0");
+	            env.CompileDeploy("@Name('s0')  " + EPL).AddListener("s0");
 
 	            RunBitWiseOperators(env);
 
@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	    {
 		    public void Run(RegressionEnvironment env)
 		    {
-			    env.CompileDeploy("@name('s0') " + EPL).AddListener("s0");
+			    env.CompileDeploy("@Name('s0') " + EPL).AddListener("s0");
 
 			    var type = env.Statement("s0").EventType;
 			    Assert.AreEqual(typeof(byte?), type.GetPropertyType("myFirstProperty"));
@@ -94,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 			    var fields = "c0".SplitCsv();
 			    var builder = new SupportEvalBuilder("SupportBean")
-				    .WithExpression(fields[0], "bytePrimitive&ByteBoxed");
+				    .WithExpression(fields[0], "BytePrimitive&ByteBoxed");
 			    builder.WithAssertion(MakeEventBB(1, 1)).Expect(fields, (byte) 1);
 			    builder.WithAssertion(MakeEventBB(1, null)).Expect(fields, new object[] {null});
 			    builder.Run(env);

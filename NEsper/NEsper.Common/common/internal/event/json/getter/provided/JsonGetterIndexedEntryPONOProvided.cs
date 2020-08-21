@@ -130,7 +130,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(field.DeclaringType, "und")
                 .Block
-                .DeclareVar(typeof(object), "value", ExprDotName(Ref("und"), field.Name))
+                .DeclareVar<object>("value", ExprDotName(Ref("und"), field.Name))
                 .MethodReturn(
                     LocalMethod(
                         BaseNestableEventUtil.GetBeanArrayValueCodegen(
@@ -148,7 +148,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             return codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
                 .AddParam(field.DeclaringType, "und")
                 .Block
-                .DeclareVar(typeof(object), "value", ExprDotName(Ref("und"), field.Name))
+                .DeclareVar<object>("value", ExprDotName(Ref("und"), field.Name))
                 .MethodReturn(
                     LocalMethod(
                         BaseNestableEventUtil.GetBeanArrayValueExistsCodegen(

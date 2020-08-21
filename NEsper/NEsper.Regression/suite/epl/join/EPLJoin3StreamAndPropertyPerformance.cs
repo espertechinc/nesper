@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             public void Run(RegressionEnvironment env)
             {
                 // Statement where all streams are reachable from each other via properties
-                var stmt = "@name('s0') select * from " +
+                var stmt = "@Name('s0') select * from " +
                            "SupportBean_A()#length(1000000) S1," +
                            "SupportBean_B()#length(1000000) S2," +
                            "SupportBean_C()#length(1000000) S3" +
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             public void Run(RegressionEnvironment env)
             {
                 // Statement where the s1 stream is not reachable by joining s2 to s3 and s3 to s1
-                var stmt = "@name('s0') select * from " +
+                var stmt = "@Name('s0') select * from " +
                            "SupportBean_A#length(1000000) S1," +
                            "SupportBean_B#length(1000000) S2," +
                            "SupportBean_C#length(1000000) S3" +
@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var methodName = ".testPerfPartialStreams";
 
                 // Statement where the s1 stream is not reachable by joining s2 to s3 and s3 to s1
-                var epl = "@name('s0') select * from " +
+                var epl = "@Name('s0') select * from " +
                           "SupportBean_A#length(1000000) S1," +
                           "SupportBean_B#length(1000000) S2," +
                           "SupportBean_C#length(1000000) S3" +

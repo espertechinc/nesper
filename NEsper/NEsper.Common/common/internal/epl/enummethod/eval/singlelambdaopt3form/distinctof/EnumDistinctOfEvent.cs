@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 	    {
 	        block.IfCondition(Relational(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"), LE, Constant(1)))
 	            .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
-	            .DeclareVar(typeof(IDictionary<string, object>), "distinct", NewInstance(typeof(LinkedHashMap<string, object>)));
+	            .DeclareVar<IDictionary<string, object>>("distinct", NewInstance(typeof(LinkedHashMap<string, object>)));
 	    }
 
 	    public override void ForEachBlock(CodegenBlock block, CodegenMethod methodNode, ExprForgeCodegenSymbol scope, CodegenClassScope codegenClassScope) {

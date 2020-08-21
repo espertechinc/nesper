@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') inlined_class \"\"\"\n" +
+				string epl = "@Name('s0') inlined_class \"\"\"\n" +
 				             "  import com.espertech.esper.common.client.hook.singlerowfunc.*;\n" +
 				             "  @ExtensionSingleRowFunction(name=\"multiply\", methodName=\"multiplyIt\")\n" +
 				             "  public class MultiplyHelper {\n" +
@@ -57,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				             "    }\n" +
 				             "  }\n" +
 				             "\"\"\" " +
-				             "select multiply(intPrimitive,intPrimitive) as c0, multiply(intPrimitive,intPrimitive,intPrimitive) as c1 \n" +
+				             "select multiply(IntPrimitive,IntPrimitive) as c0, multiply(IntPrimitive,IntPrimitive,IntPrimitive) as c1 \n" +
 				             " from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 
@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') inlined_class \"\"\"\n" +
+				string epl = "@Name('s0') inlined_class \"\"\"\n" +
 				             "  @" +
 				             typeof(ExtensionSingleRowFunctionAttribute).FullName +
 				             "(" +
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				             "    }\n" +
 				             "  }\n" +
 				             "\"\"\" " +
-				             "select multiply(intPrimitive,intPrimitive) as c0 from SupportBean";
+				             "select multiply(IntPrimitive,IntPrimitive) as c0 from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendAssertIntMultiply(env, 5, 25);
@@ -105,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string eplCreateInlined = "@name('clazz') @public create inlined_class \"\"\"\n" +
+				string eplCreateInlined = "@Name('clazz') @public create inlined_class \"\"\"\n" +
 				                          "  @" +
 				                          typeof(ExtensionSingleRowFunctionAttribute).FullName +
 				                          "(name=\"multiply\", methodName=\"multiply\")\n" +
@@ -118,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				RegressionPath path = new RegressionPath();
 				env.Compile(eplCreateInlined.Replace("%BEHAVIOR%", "return -1;"), path);
 
-				string eplSelect = "@name('s0') select multiply(intPrimitive,intPrimitive) as c0 from SupportBean";
+				string eplSelect = "@Name('s0') select multiply(IntPrimitive,IntPrimitive) as c0 from SupportBean";
 				EPCompiled compiledSelect = env.Compile(eplSelect, path);
 
 				env.CompileDeploy(eplCreateInlined.Replace("%BEHAVIOR%", "return a*b;"));
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				             "    }\n" +
 				             "  }\n" +
 				             "\"\"\"\n;" +
-				             "@name('s0') select multiply(intPrimitive,intPrimitive) as c0 from SupportBean;\n";
+				             "@Name('s0') select multiply(IntPrimitive,IntPrimitive) as c0 from SupportBean;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendAssertIntMultiply(env, 5, 25);
@@ -171,8 +171,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 			public void Run(RegressionEnvironment env)
 			{
 				RegressionPath path = new RegressionPath();
-				string eplWindow = "create window MyWindow#keepall as (theString string);\n" +
-				                   "on SupportBean merge MyWindow insert select theString;\n";
+				string eplWindow = "create window MyWindow#keepall as (TheString string);\n" +
+				                   "on SupportBean merge MyWindow insert select TheString;\n";
 				env.CompileDeploy(eplWindow, path);
 
 				env.SendEventBean(new SupportBean("E1", 1));
@@ -186,7 +186,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				                "      return '>' + parameter + '<';\n" +
 				                "    }\n" +
 				                "  }\n" +
-				                "\"\"\"\n select appendDelimiters(theString) as c0 from MyWindow";
+				                "\"\"\"\n select appendDelimiters(TheString) as c0 from MyWindow";
 				EPFireAndForgetQueryResult result = env.CompileExecuteFAF(eplFAF, path);
 				Assert.AreEqual(">E1<", result.Array[0].Get("c0"));
 
@@ -203,7 +203,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') inlined_class \"\"\"\n" +
+				string epl = "@Name('s0') inlined_class \"\"\"\n" +
 				             "  @" +
 				             typeof(ExtensionSingleRowFunctionAttribute).FullName +
 				             "(name=\"multiply\", methodName=\"multiply\")\n" +
@@ -217,7 +217,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				             "    public static int multiply(int a, int b, int c) { return 0; }\n" +
 				             "  }\n" +
 				             "\"\"\" " +
-				             "select multiply(intPrimitive,intPrimitive) as c0 from SupportBean";
+				             "select multiply(IntPrimitive,IntPrimitive) as c0 from SupportBean";
 				TryInvalidCompile(
 					env,
 					epl,
@@ -236,7 +236,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') inlined_class \"\"\"\n" +
+				string epl = "@Name('s0') inlined_class \"\"\"\n" +
 				             "  @" +
 				             typeof(ExtensionSingleRowFunctionAttribute).FullName +
 				             "(name=\"multiply\", methodName=\"multiply\")\n" +
@@ -246,7 +246,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				             "    }\n" +
 				             "  }\n" +
 				             "\"\"\" " +
-				             "select multiply(intPrimitive,intPrimitive) as c0 from SupportBean";
+				             "select multiply(IntPrimitive,IntPrimitive) as c0 from SupportBean";
 				env.CompileDeploy(soda, epl).AddListener("s0");
 
 				SendAssertIntMultiply(env, 5, 25);

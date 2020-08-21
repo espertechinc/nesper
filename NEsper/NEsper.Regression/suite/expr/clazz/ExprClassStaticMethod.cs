@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 				             "    }\n" +
 				             "  }\n" +
 				             "\"\"\"\n" +
-				             "select MyUtility.fib(intPrimitive) from SupportBean";
+				             "select MyUtility.fib(IntPrimitive) from SupportBean";
 				env.Compile(epl);
 
 				RegressionPath path = new RegressionPath();
@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 				                   "  }\n" +
 				                   "\"\"\"";
 				env.Compile(eplCreate, path);
-				env.Compile("select MyUtility.midPrice(doublePrimitive, doubleBoxed) from SupportBean", path);
+				env.Compile("select MyUtility.midPrice(DoublePrimitive, DoubleBoxed) from SupportBean", path);
 			}
 		}
 
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 				                  "\"\"\"\n";
 				env.CompileDeploy(eplClass, path);
 
-				string epl = "@name('s0') select MyClass.doIt() as c0 from SupportBean\n";
+				string epl = "@Name('s0') select MyClass.doIt() as c0 from SupportBean\n";
 				env.CompileDeploy(epl, path).AddListener("s0");
 
 				SendSBAssert(env, "E1", 1, "|bubba|");
@@ -105,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') inlined_class \"\"\"\n" +
+				string epl = "@Name('s0') inlined_class \"\"\"\n" +
 				             "    package mypackage;" +
 				             "    public class MyUtil {\n" +
 				             "        public static String doIt() {\n" +
@@ -130,12 +130,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 					"create inlined_class \"\"\"\n" +
 					"    package mypackage;" +
 					"    public class MyUtil {\n" +
-					"        public static String doIt(String theString, int intPrimitive) {\n" +
-					"            return theString + Convert.ToString(intPrimitive);\n" +
+					"        public static String doIt(String TheString, int IntPrimitive) {\n" +
+					"            return TheString + Convert.ToString(IntPrimitive);\n" +
 					"        }\n" +
 					"    }\n" +
 					"\"\"\";\n" +
-					"@name('s0') select mypackage.MyUtil.doIt(theString, intPrimitive) as c0 from SupportBean;\n";
+					"@Name('s0') select mypackage.MyUtil.doIt(TheString, IntPrimitive) as c0 from SupportBean;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendSBAssert(env, "E1", 1, "E11");
@@ -157,13 +157,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 					"        }\n" +
 					"    }\n" +
 					"\"\"\";\n" +
-					"create window MyWindow#keepall as (theString string);\n" +
-					"on SupportBean merge MyWindow insert select theString;\n";
+					"create window MyWindow#keepall as (TheString string);\n" +
+					"on SupportBean merge MyWindow insert select TheString;\n";
 				env.CompileDeploy(eplWindow, path);
 
 				env.SendEventBean(new SupportBean("E1", 1));
 
-				string eplFAF = "select MyClass.doIt(theString) as c0 from MyWindow";
+				string eplFAF = "select MyClass.doIt(TheString) as c0 from MyWindow";
 				EPFireAndForgetQueryResult result = env.CompileExecuteFAF(eplFAF, path);
 				Assert.AreEqual("abc", result.Array[0].Get("c0"));
 
@@ -181,8 +181,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 			public void Run(RegressionEnvironment env)
 			{
 				RegressionPath path = new RegressionPath();
-				string eplWindow = "create window MyWindow#keepall as (theString string);\n" +
-				                   "on SupportBean merge MyWindow insert select theString;\n";
+				string eplWindow = "create window MyWindow#keepall as (TheString string);\n" +
+				                   "on SupportBean merge MyWindow insert select TheString;\n";
 				env.CompileDeploy(eplWindow, path);
 
 				env.SendEventBean(new SupportBean("E1", 1));
@@ -193,7 +193,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 				                "            return '>' + parameter + '<';\n" +
 				                "        }\n" +
 				                "    }\n" +
-				                "\"\"\"\n select MyClass.doIt(theString) as c0 from MyWindow";
+				                "\"\"\"\n select MyClass.doIt(TheString) as c0 from MyWindow";
 				EPFireAndForgetQueryResult result = env.CompileExecuteFAF(eplFAF, path);
 				Assert.AreEqual(">E1<", result.Array[0].Get("c0"));
 
@@ -261,7 +261,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 
 				RegressionPath path = new RegressionPath();
 				path.Add(compiledReturnZero);
-				EPCompiled compiledQuery = env.Compile("@name('s0') select MyClass.doIt(intPrimitive) as c0 from SupportBean;\n", path);
+				EPCompiled compiledQuery = env.Compile("@Name('s0') select MyClass.doIt(IntPrimitive) as c0 from SupportBean;\n", path);
 				env.Deploy(compiledReturnPlusOne);
 				env.Deploy(compiledQuery).AddListener("s0");
 
@@ -295,7 +295,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 				                  "    }\n" +
 				                  "\"\"\"\n";
 				env.CompileDeploy(_soda, eplClass, path);
-				env.CompileDeploy(_soda, "@name('s0') select MyClass.doIt(theString) as c0 from SupportBean", path);
+				env.CompileDeploy(_soda, "@Name('s0') select MyClass.doIt(TheString) as c0 from SupportBean", path);
 				env.AddListener("s0");
 
 				SendSBAssert(env, "E1", 0, "|E1|");
@@ -319,14 +319,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') inlined_class \"\"\"\n" +
+				string epl = "@Name('s0') inlined_class \"\"\"\n" +
 				             "    public class MyClass {\n" +
 				             "        public static String doIt(String parameter) {\n" +
 				             "            return \"|\" + parameter + \"|\";\n" +
 				             "        }\n" +
 				             "    }\n" +
 				             "\"\"\" " +
-				             "select MyClass.doIt(theString) as c0 from SupportBean\n";
+				             "select MyClass.doIt(TheString) as c0 from SupportBean\n";
 				env.CompileDeploy(_soda, epl).AddListener("s0");
 
 				SendSBAssert(env, "E1", 0, "|E1|");

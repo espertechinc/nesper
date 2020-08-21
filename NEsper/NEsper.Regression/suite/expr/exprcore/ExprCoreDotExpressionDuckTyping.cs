@@ -20,7 +20,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 		public void Run(RegressionEnvironment env)
 		{
-			var epl = "@name('s0') select " +
+			var epl = "@Name('s0') select " +
 			          "(dt).makeString() as strval, " +
 			          "(dt).makeInteger() as intval, " +
 			          "(dt).makeCommon().makeString() as commonstrval, " +

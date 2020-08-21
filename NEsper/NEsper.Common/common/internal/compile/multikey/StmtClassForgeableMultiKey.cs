@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -58,48 +59,39 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			CodegenClassMethods methods = new CodegenClassMethods();
 			CodegenClassScope classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, className);
 
-			CodegenMethod hashMethod = CodegenMethod.MakeParentNode(
-				typeof(int),
-				typeof(StmtClassForgeableMultiKey),
-				CodegenSymbolProviderEmpty.INSTANCE,
-				classScope);
+			CodegenMethod hashMethod = CodegenMethod
+				.MakeParentNode(typeof(int), typeof(StmtClassForgeableMultiKey), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.WithOverride();
 			MakeHashMethod(types.Length, hashMethod);
 			CodegenStackGenerator.RecursiveBuildStack(hashMethod, "GetHashCode", methods, properties);
 
 			CodegenMethod equalsMethod = CodegenMethod
 				.MakeParentNode(typeof(bool), typeof(StmtClassForgeableMultiKey), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.WithOverride()
 				.AddParam(typeof(object), "o");
 			MakeEqualsMethod(types.Length, equalsMethod);
 			CodegenStackGenerator.RecursiveBuildStack(equalsMethod, "Equals", methods, properties);
 
-			CodegenMethod getNumKeysMethod = CodegenMethod.MakeParentNode(
-				typeof(int),
-				typeof(StmtClassForgeableMultiKey),
-				CodegenSymbolProviderEmpty.INSTANCE,
-				classScope);
-			getNumKeysMethod.Block.MethodReturn(Constant(types.Length));
-			CodegenStackGenerator.RecursiveBuildStack(getNumKeysMethod, "GetNumKeys", methods, properties);
+			CodegenProperty numKeysProperty = CodegenProperty
+				.MakePropertyNode(typeof(int), typeof(StmtClassForgeableMultiKey), CodegenSymbolProviderEmpty.INSTANCE, classScope);
+			numKeysProperty.GetterBlock.BlockReturn(Constant(types.Length));
+			CodegenStackGenerator.RecursiveBuildStack(numKeysProperty, "NumKeys", methods, properties);
 
-			CodegenMethod getKeyMethod = CodegenMethod.MakeParentNode(
-					typeof(object),
-					typeof(StmtClassForgeableMultiKey),
-					CodegenSymbolProviderEmpty.INSTANCE,
-					classScope)
+			CodegenMethod getKeyMethod = CodegenMethod
+				.MakeParentNode(typeof(object), typeof(StmtClassForgeableMultiKey), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(typeof(int), "num");
 			MakeGetKeyMethod(types.Length, getKeyMethod);
 			CodegenStackGenerator.RecursiveBuildStack(getKeyMethod, "GetKey", methods, properties);
 
-			CodegenMethod toStringMethod = CodegenMethod.MakeParentNode(
-				typeof(string),
-				typeof(StmtClassForgeableMultiKey),
-				CodegenSymbolProviderEmpty.INSTANCE,
-				classScope);
+			CodegenMethod toStringMethod = CodegenMethod
+				.MakeParentNode(typeof(string), typeof(StmtClassForgeableMultiKey), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.WithOverride();
 			MakeToStringMethod(toStringMethod);
 			CodegenStackGenerator.RecursiveBuildStack(toStringMethod, "ToString", methods, properties);
 
 			return new CodegenClass(
 				CodegenClassType.KEYPROVISIONING,
-				typeof(MultiKeyArrayOfKeys<object>),
+				typeof(MultiKey),
 				className,
 				classScope,
 				EmptyList<CodegenTypedParam>.Instance, 
@@ -170,13 +162,13 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			// - pull the key value from the "getKey" method of KeyProvisioning
 			// - may cast the key in case of Array.equals
 			equalsMethod.Block
-				.IfCondition(Not(InstanceOf(Ref("o"), typeof(MultiKeyArrayOfKeys<>))))
+				.IfCondition(Not(InstanceOf(Ref("o"), typeof(MultiKeyArrayOfKeys<object>))))
 				.BlockReturn(Constant(false))
-				.DeclareVar(typeof(MultiKeyArrayOfKeys<object>), "k", Cast(typeof(MultiKeyArrayOfKeys<>), Ref("o")));
+				.DeclareVar<MultiKeyArrayOfKeys<object>>("k", Cast(typeof(MultiKeyArrayOfKeys<object>), Ref("o")));
 
 			for (int i = 0; i < length; i++) {
 				CodegenExpressionRef self = Ref("k" + i);
-				CodegenExpression other = ExprDotMethod(Ref("k"), "GetKey", Constant(i));
+				CodegenExpression other = ExprDotMethod(Ref("k"), "Get", Constant(i));
 				if (types[i].IsArray) {
 					other = Cast(types[i], other);
 				}
@@ -196,16 +188,6 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			int length,
 			CodegenMethod method)
 		{
-			/*
-			public Object getKey(int num) {
-			    switch(num) {
-			        case 0: return k0;
-			        case 1: return k1;
-			        default: throw new UnsupportedOperationException();
-			    }
-			}
-			*/
-
 			CodegenBlock[] blocks = method.Block.SwitchBlockOfLength(Ref("num"), length, true);
 			for (int i = 0; i < length; i++) {
 				blocks[i].BlockReturn(Ref("k" + i));
@@ -264,7 +246,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 			// <code>
 
 			CodegenExpression computeHash = GetHashExpression(Ref("k0"), types[0]);
-			hashMethod.Block.DeclareVar(typeof(int), "h", computeHash);
+			hashMethod.Block.DeclareVar<int>("h", computeHash);
 
 			for (int i = 1; i < length; i++) {
 				computeHash = GetHashExpression(Ref("k" + i), types[i]);
@@ -293,7 +275,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
 		private void MakeToStringMethod(CodegenMethod toStringMethod)
 		{
 			toStringMethod.Block
-				.DeclareVar(typeof(StringBuilder), "b", NewInstance(typeof(StringBuilder)))
+				.DeclareVar<StringBuilder>("b", NewInstance(typeof(StringBuilder)))
 				.ExprDotMethod(Ref("b"), "Append", Constant(typeof(MultiKeyArrayOfKeys<object>).Name + "["));
 			for (int i = 0; i < types.Length; i++) {
 				if (i > 0) {

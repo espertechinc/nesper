@@ -81,13 +81,13 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 return method;
             }
 
-            method.Block.DeclareVar(typeof(FilterSpecPlanPath[]), "paths", NewArrayByLength(typeof(FilterSpecPlanPath), Constant(Paths.Length)));
+            method.Block.DeclareVar<FilterSpecPlanPath[]>("paths", NewArrayByLength(typeof(FilterSpecPlanPath), Constant(Paths.Length)));
             for (var i = 0; i < Paths.Length; i++) {
                 method.Block.AssignArrayElement("paths", Constant(i), LocalMethod(Paths[i].Codegen(method, symbolsWithType, classScope)));
             }
 
             method.Block
-                .DeclareVar(typeof(FilterSpecPlan), "plan", NewInstance(typeof(FilterSpecPlan)))
+                .DeclareVar<FilterSpecPlan>("plan", NewInstance(typeof(FilterSpecPlan)))
                 .SetProperty(Ref("plan"), "Paths", Ref("paths"))
                 .SetProperty(Ref("plan"), "FilterConfirm", OptionalEvaluator(FilterConfirm, method, classScope))
                 .SetProperty(Ref("plan"), "FilterNegate", OptionalEvaluator(FilterNegate, method, classScope))

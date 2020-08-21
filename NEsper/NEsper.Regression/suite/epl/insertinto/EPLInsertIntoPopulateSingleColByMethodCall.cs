@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 				"SupportMarketDataBean",
 				new SupportMarketDataBean("ACME", 0, 0L, null),
 				FBEANWTYPE,
-				"theString".SplitCsv(),
+				"TheString".SplitCsv(),
 				new object[] {"ACME"});
 
 			// Map
@@ -211,8 +211,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 			object[] propertyValues)
 		{
 			string streamName = prefix + "_Stream";
-			string textOne = "@name('s1') insert into " + streamName + " select * from " + typeNameOrigin;
-			string textTwo = "@name('s2') insert into " +
+			string textOne = "@Name('s1') insert into " + streamName + " select * from " + typeNameOrigin;
+			string textTwo = "@Name('s2') insert into " +
 			                 streamName +
 			                 " select " +
 			                 typeof(SupportStaticMethodLib).FullName +
@@ -257,7 +257,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
 			// test native
 			env.CompileDeploy(
-				"@name('insert') insert into " +
+				"@Name('insert') insert into " +
 				typeNameTarget +
 				" select " +
 				typeof(SupportStaticMethodLib).FullName +
@@ -267,7 +267,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 				typeNameOrigin +
 				" as s0",
 				path);
-			env.CompileDeploy("@name('s0') select * from " + typeNameTarget, path).AddListener("s0");
+			env.CompileDeploy("@Name('s0') select * from " + typeNameTarget, path).AddListener("s0");
 
 			sendEvent.Invoke(env, @event, typeNameOrigin);
 

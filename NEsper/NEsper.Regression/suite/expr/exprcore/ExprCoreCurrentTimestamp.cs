@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			public void Run(RegressionEnvironment env)
 			{
 				SendTimer(env, 0);
-				var stmtText = "@name('s0') select current_timestamp(), " +
+				var stmtText = "@Name('s0') select current_timestamp(), " +
 				               " current_timestamp as t0, " +
 				               " current_timestamp() as t1, " +
 				               " current_timestamp + 1 as t2 " +
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			public void Run(RegressionEnvironment env)
 			{
 				SendTimer(env, 0);
-				var stmtText = "@name('s0') select current_timestamp() as t0 from SupportBean";
+				var stmtText = "@Name('s0') select current_timestamp() as t0 from SupportBean";
 				env.EplToModelCompileDeploy(stmtText).AddListener("s0").Milestone(0);
 
 				Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("t0"));

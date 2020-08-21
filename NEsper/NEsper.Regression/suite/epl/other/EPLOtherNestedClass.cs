@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 			{
 				string epl =
 					$"@public @buseventtype create schema MyEventWithColorEnum as {typeof(MyEventWithColorEnum).MaskTypeName()};\n" +
-					$"@name('s0') select {typeof(MyEventWithColorEnum).MaskTypeName()}$Color.RED as c0 " +
+					$"@Name('s0') select {typeof(MyEventWithColorEnum).MaskTypeName()}$Color.RED as c0 " +
 					$"from MyEventWithColorEnum(enumProp={typeof(MyEventWithColorEnum).MaskTypeName()}$Color.GREEN)#firstevent";
 				env.CompileDeploy(epl).AddListener("s0");
 

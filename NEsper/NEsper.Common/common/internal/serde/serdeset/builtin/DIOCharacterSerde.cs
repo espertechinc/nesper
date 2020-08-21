@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			stream.WriteChar(@object);
 		}
 
-		public override char Read(
+		public override char ReadValue(
 			DataInput s,
 			byte[] resourceKey)
 		{

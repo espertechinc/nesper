@@ -47,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             var fields = new [] { "c0", "c1" };
             var eplRead =
-                "@name('s0') select varaggIUD.p0 as c0, varaggIUD.sumint as c1, varaggIUD as c2 from SupportBean_S0";
+                "@Name('s0') select varaggIUD.p0 as c0, varaggIUD.sumint as c1, varaggIUD as c2 from SupportBean_S0";
             env.CompileDeploy(soda, eplRead, path).AddListener("s0");
 
             // assert selected column types
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             var fields = new [] { "c0", "c1", "c2", "c3" };
             var eplRead =
-                "@name('s0') select varaggMIU[Id].p0 as c0, varaggMIU[Id].p1 as c1, varaggMIU[Id].p2 as c2, varaggMIU[Id].sumint as c3 from SupportBean_S0";
+                "@Name('s0') select varaggMIU[Id].p0 as c0, varaggMIU[Id].p1 as c1, varaggMIU[Id].p2 as c2, varaggMIU[Id].sumint as c3 from SupportBean_S0";
             env.CompileDeploy(soda, eplRead, path).AddListener("s0");
 
             // assert selected column types
@@ -162,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 new object[] {null, null, null, null});
 
             // create merge
-            var eplMerge = "@name('merge') on SupportBean merge varaggMIU" +
+            var eplMerge = "@Name('merge') on SupportBean merge varaggMIU" +
                            " where IntPrimitive=key" +
                            " when not matched then" +
                            " insert select IntPrimitive as key, \"v1\" as p0, 1000 as p1, {1,2} as p2" +
@@ -248,7 +248,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             var fields = new [] { "c0", "c1", "c2" };
             var eplRead =
-                "@name('s0') select varaggMIUD[Id,P00].keyOne as c0, varaggMIUD[Id,P00].keyTwo as c1, varaggMIUD[Id,P00].prop as c2 from SupportBean_S0";
+                "@Name('s0') select varaggMIUD[Id,P00].keyOne as c0, varaggMIUD[Id,P00].keyTwo as c1, varaggMIUD[Id,P00].prop as c2 from SupportBean_S0";
             env.CompileDeploy(soda, eplRead, path).AddListener("s0");
 
             // assert selected column types
@@ -270,7 +270,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 new object[] {null, null, null});
 
             // create merge
-            var eplMerge = "@name('merge') on SupportBean merge varaggMIUD" +
+            var eplMerge = "@Name('merge') on SupportBean merge varaggMIUD" +
                            " where IntPrimitive=keyOne and TheString=keyTwo" +
                            " when not matched then" +
                            " insert select IntPrimitive as keyOne, TheString as keyTwo, \"inserted\" as prop" +
@@ -314,7 +314,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             // test typable output
             env.CompileDeploy(
-                    "@name('convert') insert into LocalBean select varaggMIUD[10, 'A'] as val0 from SupportBean_S1",
+                    "@Name('convert') insert into LocalBean select varaggMIUD[10, 'A'] as val0 from SupportBean_S1",
                     path)
                 .AddListener("convert");
             env.SendEventBean(new SupportBean_S1(2));
@@ -409,8 +409,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 string epl =
                     "create table MyTable(dbls double[]);\n" +
                     "@priority(2) on SupportBean merge MyTable when not matched then insert select new System.Double[3] as dbls;\n" +
-                    "@priority(1) on SupportBean merge MyTable when matched then update set dbls[intPrimitive] = 1;\n" +
-                    "@name('s0') select MyTable.dbls as c0 from SupportBean;\n";
+                    "@priority(1) on SupportBean merge MyTable when matched then update set dbls[IntPrimitive] = 1;\n" +
+                    "@Name('s0') select MyTable.dbls as c0 from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -468,7 +468,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "  when matched then update set value = ALPHA * x + (1 - ALPHA) * value;\n" +
                     "" +
                     "// Output value\n" +
-                    "@name('output') select EMA.value as burn from MyEvent;\n";
+                    "@Name('output') select EMA.value as burn from MyEvent;\n";
                 env.CompileDeploy(epl).AddListener("output");
 
                 SendAssertEMA(env, "E1", 1, null);
@@ -506,12 +506,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 string epl =
-                    "@name('T0') create table TableZero(k0 string primary key, v0 int);\n" +
-                    "@name('T1') create table TableOne(k1 string primary key, v1 int);\n" +
+                    "@Name('T0') create table TableZero(k0 string primary key, v0 int);\n" +
+                    "@Name('T1') create table TableOne(k1 string primary key, v1 int);\n" +
                     "on SupportBean merge TableZero " +
-                    "  where theString = k0 when not matched " +
-                    "  then insert select theString as k0, intPrimitive as v0" +
-                    "  then insert into TableOne(k1, v1) select theString, intPrimitive;\n";
+                    "  where TheString = k0 when not matched " +
+                    "  then insert select TheString as k0, IntPrimitive as v0" +
+                    "  then insert into TableOne(k1, v1) select TheString, IntPrimitive;\n";
                 env.CompileDeploy(epl);
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -542,7 +542,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var path = new RegressionPath();
                 var fields = new [] { "k1","v1" };
 
-                env.CompileDeploy("@name('tbl') create table varaggKV (k1 string primary key, v1 int)", path);
+                env.CompileDeploy("@Name('tbl') create table varaggKV (k1 string primary key, v1 int)", path);
                 env.CompileDeploy(
                     "on SupportBean as sb merge varaggKV as va where sb.TheString = va.k1 " +
                     "when not matched then insert select TheString as k1, IntPrimitive as v1 " +
@@ -594,7 +594,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "from SupportBean#lastevent group by TheString",
                     path);
 
-                env.CompileDeploy("@name('s0') select varaggMMR[P00].keyOne as c0 from SupportBean_S0", path)
+                env.CompileDeploy("@Name('s0') select varaggMMR[P00].keyOne as c0 from SupportBean_S0", path)
                     .AddListener("s0");
                 env.CompileDeploy("on SupportBean_S1 merge varaggMMR where cnt = 0 when matched then delete", path);
 
@@ -633,7 +633,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "on SupportBean_S0 merge varaggMS " +
                     "when matched then insert into ResultStream select eventset, total, eventset.takeLast(1) as c0",
                     path);
-                env.CompileDeploy("@name('s0') select * from ResultStream", path).AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from ResultStream", path).AddListener("s0");
 
                 var e1 = new SupportBean("E1", 15);
                 env.SendEventBean(e1);

@@ -17,7 +17,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
     {
         public void Run(RegressionEnvironment env)
         {
-            var stmtText = "@name('s0') select * from SupportBean as sb " +
+            var stmtText = "@Name('s0') select * from SupportBean as sb " +
                            "left outer join " +
                            "sql:MyDBWithExpiryTime ['select myint from mytesttable'] as t " +
                            "on sb.IntPrimitive = t.myint " +

@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 var handler = SupportConditionHandlerFactory.LastHandler;
 
-                var expression = "@name('s0') select a.Id as a, b.Id as b, c.Id as c from pattern [" +
+                var expression = "@Name('s0') select a.Id as a, b.Id as b, c.Id as c from pattern [" +
                                  "every a=SupportBean_A -[2]> b=SupportBean_B -[3]> c=SupportBean_C]";
                 env.CompileDeploy(expression).AddListener("s0");
 
@@ -161,7 +161,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 var handler = SupportConditionHandlerFactory.LastHandler;
 
-                var expression = "@name('s0') select a.Id as a, b.Id as b, c.Id as c from pattern [" +
+                var expression = "@Name('s0') select a.Id as a, b.Id as b, c.Id as c from pattern [" +
                                  "every a=SupportBean_A -> b=SupportBean_B -[2]> c=SupportBean_C]";
                 env.CompileDeploy(expression).AddListener("s0");
 
@@ -212,7 +212,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // not-operator
                 var expression =
-                    "@name('s0') select a.Id as a, b.Id as b from pattern [every a=SupportBean_A -[2]> (b=SupportBean_B and not SupportBean_C)]";
+                    "@Name('s0') select a.Id as a, b.Id as b from pattern [every a=SupportBean_A -[2]> (b=SupportBean_B and not SupportBean_C)]";
                 env.CompileDeploy(expression).AddListener("s0");
                 string[] fields = {"a", "b"};
 
@@ -237,7 +237,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // guard
                 var expressionTwo =
-                    "@name('s0') select a.Id as a, b.Id as b from pattern [every a=SupportBean_A -[2]> (b=SupportBean_B where timer:within(1))]";
+                    "@Name('s0') select a.Id as a, b.Id as b from pattern [every a=SupportBean_A -[2]> (b=SupportBean_B where timer:within(1))]";
                 env.CompileDeploy(expressionTwo).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("A1"));
@@ -263,7 +263,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // every-operator
                 var expressionThree =
-                    "@name('s0') select a.Id as a, b.Id as b from pattern [every a=SupportBean_A -[2]> (every b=SupportBean_B(Id=a.Id) and not SupportBean_C(Id=a.Id))]";
+                    "@Name('s0') select a.Id as a, b.Id as b from pattern [every a=SupportBean_A -[2]> (every b=SupportBean_B(Id=a.Id) and not SupportBean_C(Id=a.Id))]";
                 env.CompileDeploy(expressionThree).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("1"));
@@ -303,7 +303,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var handler = SupportConditionHandlerFactory.LastHandler;
 
                 var expression =
-                    "@name('s0') select a.Id as a, b.Id as b from pattern [every a=SupportBean_A -[2]> b=SupportBean_B]";
+                    "@Name('s0') select a.Id as a, b.Id as b from pattern [every a=SupportBean_A -[2]> b=SupportBean_B]";
                 env.CompileDeploy(expression).AddListener("s0");
                 RunAssertionSingleMaxSimple(env, handler);
                 env.UndeployAll();
@@ -317,7 +317,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var path = new RegressionPath();
                 env.CompileDeploy("create variable int myvar=3", path);
                 expression =
-                    "@name('s0') select a.Id as a, b.Id as b from pattern [every a=SupportBean_A -[myvar-1]> b=SupportBean_B]";
+                    "@Name('s0') select a.Id as a, b.Id as b from pattern [every a=SupportBean_A -[myvar-1]> b=SupportBean_B]";
                 env.CompileDeploy(expression, path).AddListener("s0");
                 RunAssertionSingleMaxSimple(env, handler);
 

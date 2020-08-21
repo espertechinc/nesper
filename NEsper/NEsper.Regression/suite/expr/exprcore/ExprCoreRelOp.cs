@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				bean => bean.IntPrimitive = 3);
 			RunAssertion(
 				env,
-				"bigInteger",
+				"BigInteger",
 				"BigInteger.valueOf(2)",
 				bean => bean.BigInteger = new BigInteger(1),
 				bean => bean.BigInteger = new BigInteger(2),

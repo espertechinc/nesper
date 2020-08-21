@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             foreach (var assertion in assertions) {
                 log.Info("======= Testing #" + count++);
                 var consumeEpl = INDEX_CALLBACK_HOOK +
-                                 "@name('s0') " +
+                                 "@Name('s0') " +
                                  (assertion.Hint == null ? "" : assertion.Hint) +
                                  "select *, " +
                                  "(select * from MyInfra where " +
@@ -164,7 +164,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 Insert(env, path, "{'a', 'c'}", 20);
                 Insert(env, path, "{'a'}", 30);
 
-                string epl = "@name('s0') select (select v from MyInfra as mi where mi.k = ma.stringOne) as v from SupportEventWithManyArray as ma";
+                string epl = "@Name('s0') select (select v from MyInfra as mi where mi.k = ma.stringOne) as v from SupportEventWithManyArray as ma";
                 epl = namedWindow ? "@Hint('index(MyInfraIndex, bust)')" + epl : epl;
                 env.CompileDeploy(epl, path).AddListener("s0");
 
@@ -223,7 +223,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 Insert(env, path, "{'a'}", "{'c', 'd'}", 30);
 
                 string epl =
-                    "@name('s0') select (select v from MyInfra as mi where mi.k1 = ma.stringOne and mi.k2 = ma.stringTwo) as v from SupportEventWithManyArray as ma";
+                    "@Name('s0') select (select v from MyInfra as mi where mi.k1 = ma.stringOne and mi.k2 = ma.stringTwo) as v from SupportEventWithManyArray as ma";
                 epl = namedWindow ? "@Hint('index(MyInfraIndex, bust)')" + epl : epl;
                 env.CompileDeploy(epl, path).AddListener("s0");
 
@@ -701,11 +701,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy("insert into MyInfraNWT select TheString, IntPrimitive from SupportBean", path);
 
                 if (createExplicitIndex) {
-                    env.CompileDeploy("@name('index') create index MyIndex on MyInfraNWT (TheString)", path);
+                    env.CompileDeploy("@Name('index') create index MyIndex on MyInfraNWT (TheString)", path);
                 }
 
                 var consumeEpl =
-                    "@name('s0') select status.*, (select * from MyInfraNWT where TheString = SupportBean_S0.P00) @eventbean as details from SupportBean_S0 as status";
+                    "@Name('s0') select status.*, (select * from MyInfraNWT where TheString = SupportBean_S0.P00) @eventbean as details from SupportBean_S0 as status";
                 if (disableIndexShareConsumer) {
                     consumeEpl = "@Hint('disable_window_subquery_indexshare') " + consumeEpl;
                 }

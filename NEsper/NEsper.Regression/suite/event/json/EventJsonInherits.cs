@@ -47,8 +47,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				var epl =
 					"@JsonSchema(dynamic=true) create json schema ParentEvent();\n" +
 					"@public @buseventtype create json schema ChildEvent() inherits ParentEvent;\n" +
-					"@name('s0') select value? as c0 from ChildEvent#keepall;\n" +
-					"@name('s1') select * from ChildEvent#keepall;\n";
+					"@Name('s0') select value? as c0 from ChildEvent#keepall;\n" +
+					"@Name('s1') select * from ChildEvent#keepall;\n";
 				env.CompileDeploy(epl).AddListener("s0").AddListener("s1");
 				RunAssertionDynamicProps(env);
 				env.UndeployAll();
@@ -62,8 +62,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				var epl =
 					"create json schema ParentEvent();\n" +
 					"@JsonSchema(dynamic=true) @public @buseventtype create json schema ChildEvent() inherits ParentEvent;\n" +
-					"@name('s0') select value? as c0 from ChildEvent#keepall;\n" +
-					"@name('s1') select * from ChildEvent#keepall;\n";
+					"@Name('s0') select value? as c0 from ChildEvent#keepall;\n" +
+					"@Name('s1') select * from ChildEvent#keepall;\n";
 				env.CompileDeploy(epl).AddListener("s0").AddListener("s1");
 				RunAssertionDynamicProps(env);
 				env.UndeployAll();
@@ -78,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				env.CompileDeploy("module A; create json schema A(a1 string)", path);
 				env.CompileDeploy("module B; create json schema B(b1 string) inherits A", path);
 				env.CompileDeploy("module C; @public @buseventtype create json schema C(c1 string) inherits B", path);
-				env.CompileDeploy("@name('s0') select * from C#keepall", path).AddListener("s0");
+				env.CompileDeploy("@Name('s0') select * from C#keepall", path).AddListener("s0");
 
 				env.SendEventJson("{ \"a1\": \"a\", \"b1\": \"b\", \"c1\": \"c\"}", "C");
 				AssertEvent(env.Listener("s0").AssertOneGetNewAndReset());
@@ -105,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				var epl = "create json schema NestedObject(n1 string);\n" +
 				          "@public @buseventtype create json schema P(pn NestedObject, pa int[primitive]);\n" +
 				          "@public @buseventtype create json schema C(cn NestedObject, ca int[primitive]) inherits P;\n" +
-				          "@name('s0') select * from C#keepall;\n";
+				          "@Name('s0') select * from C#keepall;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				env.SendEventJson("{ \"pn\": {\"n1\": \"a\"}, \"pa\": [1, 2], \"cn\": {\"n1\": \"b\"}, \"ca\": [3, 4] }", "C");
@@ -142,10 +142,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 					"@public @buseventtype create json schema C1(c11 string, c12 int) inherits P;\n" +
 					"@public @buseventtype create json schema C2(c21 string) inherits P;\n" +
 					"@public @buseventtype create json schema C3() inherits P;\n" +
-					"@name('sp') select * from P;\n" +
-					"@name('sc1') select * from C1#keepall;\n" +
-					"@name('sc2') select * from C2#keepall;\n" +
-					"@name('sc3') select * from C3#keepall;\n";
+					"@Name('sp') select * from P;\n" +
+					"@Name('sc1') select * from C1#keepall;\n" +
+					"@Name('sc2') select * from C2#keepall;\n" +
+					"@Name('sc3') select * from C3#keepall;\n";
 				env.CompileDeploy(epl).AddListener("sp").AddListener("sc1").AddListener("sc2").AddListener("sc3");
 
 				var jsonOne = "{\"p1\":\"PA\",\"c11\":\"x\",\"c12\":50}";
@@ -263,7 +263,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 					"@public @buseventtype create json schema B() inherits A;\n" +
 					"@public @buseventtype create json schema C() inherits B;\n" +
 					"@public @buseventtype create json schema D() inherits C;\n" +
-					"@name('sd') select * from D#keepall;\n";
+					"@Name('sd') select * from D#keepall;\n";
 				env.CompileDeploy(epl).AddListener("sd");
 
 				env.SendEventJson("{}", "D");
@@ -300,7 +300,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 					"@public @buseventtype create json schema B(b1 double) inherits A;\n" +
 					"@public @buseventtype create json schema C() inherits B;\n" +
 					"@public @buseventtype create json schema D(d1 string) inherits C;\n" +
-					"@name('sd') select * from D#keepall;\n";
+					"@Name('sd') select * from D#keepall;\n";
 				env.CompileDeploy(epl).AddListener("sd");
 
 				env.SendEventJson("{\"b1\": 4, \"d1\": \"def\"}", "D");
@@ -349,7 +349,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 					"@public @buseventtype create json schema B() inherits A;\n" +
 					"@public @buseventtype create json schema C(c1 string) inherits B;\n" +
 					"@public @buseventtype create json schema D() inherits C;\n" +
-					"@name('sd') select * from D#keepall;\n";
+					"@Name('sd') select * from D#keepall;\n";
 				env.CompileDeploy(epl).AddListener("sd");
 
 				env.SendEventJson("{\"a1\": 4, \"c1\": \"def\"}", "D");
@@ -401,10 +401,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 					"@public @buseventtype create json schema B(b1 string, b2 int) inherits A;\n" +
 					"@public @buseventtype create json schema C(c1 string) inherits B;\n" +
 					"@public @buseventtype create json schema D(d1 double, d2 int) inherits C;\n" +
-					"@name('sa') select * from A#keepall;\n" +
-					"@name('sb') select * from B#keepall;\n" +
-					"@name('sc') select * from C#keepall;\n" +
-					"@name('sd') select * from D#keepall;\n";
+					"@Name('sa') select * from A#keepall;\n" +
+					"@Name('sb') select * from B#keepall;\n" +
+					"@Name('sc') select * from C#keepall;\n" +
+					"@Name('sd') select * from D#keepall;\n";
 				env.CompileDeploy(epl).AddListener("sa").AddListener("sb").AddListener("sc").AddListener("sd");
 
 				env.SendEventJson("{\"d2\": 1, \"d1\": 2, \"c1\": \"def\", \"b2\": 3, \"b1\": \"x\", \"a1\": 4}", "D");
@@ -482,7 +482,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				var epl = "@public @buseventtype create json schema ParentJson(p1 string, p2 int);\n" +
 				          "@public @buseventtype create json schema ChildJson(c1 string, c2 int) inherits ParentJson;\n" +
-				          "@name('s0') select * from ChildJson#keepall;\n";
+				          "@Name('s0') select * from ChildJson#keepall;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				env.SendEventJson("{\"p1\": \"abc\", \"p2\": 10, \"c1\": \"def\", \"c2\": 20}", "ChildJson");

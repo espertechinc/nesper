@@ -32,8 +32,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('insert') insert into StreamOne select * from pattern [a=SupportBean_A -> b=SupportBean_B];\n" +
-                    "@name('s0') select *, 1 as code from StreamOne;\n";
+                    "@Name('insert') insert into StreamOne select * from pattern [a=SupportBean_A -> b=SupportBean_B];\n" +
+                    "@Name('s0') select *, 1 as code from StreamOne;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("A1"));
@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtTxtOne = "@name('s0') select * from pattern [[2] a=SupportBean_A -> b=SupportBean_B]";
+                var stmtTxtOne = "@Name('s0') select * from pattern [[2] a=SupportBean_A -> b=SupportBean_B]";
                 env.CompileDeploy(stmtTxtOne).AddListener("s0");
 
                 EPAssertionUtil.AssertEqualsAnyOrder(

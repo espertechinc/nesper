@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			public void Run(RegressionEnvironment env)
 			{
 				EPStage stageA = env.StageService.GetStage("ST");
-				env.CompileDeploy("@name('s0') select * from SupportBean");
+				env.CompileDeploy("@Name('s0') select * from SupportBean");
 				string deploymentId = env.DeploymentId("s0");
 
 				StageIt(env, "ST", deploymentId);

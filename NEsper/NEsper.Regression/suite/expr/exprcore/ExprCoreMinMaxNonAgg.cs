@@ -94,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				env.EplToModelCompileDeploy("@name('s0') " + EPL).AddListener("s0");
+				env.EplToModelCompileDeploy("@Name('s0') " + EPL).AddListener("s0");
 				TryMinMaxWindowStats(env);
 				env.UndeployAll();
 			}

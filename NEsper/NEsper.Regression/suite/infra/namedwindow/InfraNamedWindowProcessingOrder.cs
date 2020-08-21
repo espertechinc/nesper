@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 epl += "insert into TestForwardEvent select'V1' as prop1 from TestInputEvent;\n";
                 epl += eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedNamedWin>() + " create window NamedWin#unique(prop1) (prop1 string, prop2 string);\n";                epl += "insert into NamedWin select 'V1' as prop1, 'O1' as prop2 from StartValueEvent;\n";
                 epl += "on TestForwardEvent update NamedWin as work set prop2 = 'U1' where work.prop1 = 'V1';\n";
-                epl += "@name('select') select irstream prop1, prop2 from NamedWin;\n";
+                epl += "@Name('select') select irstream prop1, prop2 from NamedWin;\n";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("select");
 
                 var fields = new[] {"prop1", "prop2"};
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                           "on MyWindow e delete from MyWindow win where win.TheString=e.TheString and e.IntPrimitive = 7;\n" +
                           "on MyWindow e delete from MyWindow win where win.TheString=e.TheString and e.IntPrimitive = 5;\n" +
                           "on MyWindow e insert into ResultStream select e.* from MyWindow;\n" +
-                          "@name('s0') select * from ResultStream;\n";
+                          "@Name('s0') select * from ResultStream;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 7));

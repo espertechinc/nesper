@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 			return ReadInternal(input);
 		}
 
-		public override decimal? Read(
+		public override decimal? ReadValue(
 			DataInput input,
 			byte[] resourceKey)
 		{

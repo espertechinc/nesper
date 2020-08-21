@@ -106,8 +106,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
         private static void RunAssertion(RegressionEnvironment env, String eventTypeName, RegressionPath path)
         {
-            env.CompileDeploy("@name('insert') insert into Nested3Stream select nested1simple, nested4array from " + eventTypeName + "#lastevent", path);
-            env.CompileDeploy("@name('sw') select * from " + eventTypeName + "#lastevent", path);
+            env.CompileDeploy("@Name('insert') insert into Nested3Stream select nested1simple, nested4array from " + eventTypeName + "#lastevent", path);
+            env.CompileDeploy("@Name('sw') select * from " + eventTypeName + "#lastevent", path);
  
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("insert").EventType);
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("sw").EventType);

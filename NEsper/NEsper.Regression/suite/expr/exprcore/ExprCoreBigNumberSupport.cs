@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				AtomicLong milestone = new AtomicLong();
 
 				// test equals BigDecimal
-				var epl = "@name('s0') select * from SupportBeanNumeric where DecimalOne = 1 or DecimalOne = IntOne or DecimalOne = DoubleOne";
+				var epl = "@Name('s0') select * from SupportBeanNumeric where DecimalOne = 1 or DecimalOne = IntOne or DecimalOne = DoubleOne";
 				env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
 				SendBigNumEvent(env, -1, 1m);
@@ -64,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 				// test equals BigInteger
 				env.UndeployAll();
-				epl = "@name('s0') select * from SupportBeanNumeric where DecimalOne = Bigint or Bigint = IntOne or Bigint = 1";
+				epl = "@Name('s0') select * from SupportBeanNumeric where DecimalOne = Bigint or Bigint = IntOne or Bigint = 1";
 				env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
 				env.SendEventBean(new SupportBeanNumeric(0, 0, new BigInteger(2), 2m, 0, 0));
@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			public void Run(RegressionEnvironment env)
 			{
 				// relational op tests handled by relational op unit test
-				var epl = "@name('s0') select * from SupportBeanNumeric where DecimalOne < 10 and Bigint > 10";
+				var epl = "@Name('s0') select * from SupportBeanNumeric where DecimalOne < 10 and Bigint > 10";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendBigNumEvent(env, 10, 10m);
@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
 				env.UndeployAll();
 
-				epl = "@name('s0') select * from SupportBeanNumeric where DecimalOne < 10.0";
+				epl = "@Name('s0') select * from SupportBeanNumeric where DecimalOne < 10.0";
 				env.CompileDeployAddListenerMile(epl, "s0", 1);
 
 				SendBigNumEvent(env, 0, 11m);
@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				env.UndeployAll();
 
 				// test float
-				env.CompileDeployAddListenerMile("@name('s0') select * from SupportBeanNumeric where floatOne < 10f and floatTwo > 10f", "s0", 1);
+				env.CompileDeployAddListenerMile("@Name('s0') select * from SupportBeanNumeric where floatOne < 10f and floatTwo > 10f", "s0", 1);
 
 				env.SendEventBean(new SupportBeanNumeric(true, 1f, 20f));
 				Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
@@ -127,7 +127,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select * from SupportBeanNumeric where DecimalOne between 10 and 20 or Bigint between 100 and 200";
+				var epl = "@Name('s0') select * from SupportBeanNumeric where DecimalOne between 10 and 20 or Bigint between 100 and 200";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendBigNumEvent(env, 0, 9m);
@@ -150,7 +150,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select * from SupportBeanNumeric where DecimalOne in (10, 20d) or Bigint in (0x02, 3)";
+				var epl = "@Name('s0') select * from SupportBeanNumeric where DecimalOne in (10, 20d) or Bigint in (0x02, 3)";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendBigNumEvent(env, 0, 9m);
@@ -179,7 +179,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select * from SupportBeanNumeric " +
+				var epl = "@Name('s0') select * from SupportBeanNumeric " +
 				          "where DecimalOne+Bigint=100 or DecimalOne+1=2 or DecimalOne+2d=5.0 or Bigint+5L=8 or Bigint+5d=9.0";
 				env.CompileDeploy(epl).AddListener("s0");
 
@@ -209,7 +209,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				env.UndeployAll();
 
 				env.CompileDeployAddListenerMile(
-					"@name('s0') select DecimalOne+Bigint as v1, DecimalOne+2 as v2, DecimalOne+3d as v3, Bigint+5L as v4, Bigint+5d as v5 " +
+					"@Name('s0') select DecimalOne+Bigint as v1, DecimalOne+2 as v2, DecimalOne+3d as v3, Bigint+5L as v4, Bigint+5d as v5 " +
 					" from SupportBeanNumeric",
 					"s0",
 					1);
@@ -235,7 +235,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				// test aggregation-sum, multiplication and division all together; test for ESPER-340
 				env.UndeployAll();
 
-				env.CompileDeployAddListenerMile("@name('s0') select (sum(DecimalTwo * DecimalOne)/sum(DecimalOne)) as avgRate from SupportBeanNumeric", "s0", 2);
+				env.CompileDeployAddListenerMile("@Name('s0') select (sum(DecimalTwo * DecimalOne)/sum(DecimalOne)) as avgRate from SupportBeanNumeric", "s0", 2);
 				Assert.AreEqual(typeof(decimal), env.Statement("s0").EventType.GetPropertyType("avgRate"));
 				SendBigNumEvent(env, 0, 5m);
 				var avgRate = env.Listener("s0").AssertOneGetNewAndReset().Get("avgRate");
@@ -264,7 +264,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 					"min(Bigint)",
 					"min(DecimalOne)"
 				};
-				var epl = "@name('s0') select " + string.Join(",", fields) + " from SupportBeanNumeric";
+				var epl = "@Name('s0') select " + string.Join(",", fields) + " from SupportBeanNumeric";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendBigNumEvent(env, 1, 2m);
@@ -313,7 +313,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select " +
+				var epl = "@Name('s0') select " +
 				          "min(Bigint, 10) as v1, " +
 				          "min(10, Bigint) as v2, " +
 				          "max(DecimalOne, 10) as v3, " +
@@ -359,7 +359,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			public void Run(RegressionEnvironment env)
 			{
 				var fieldList = "DecimalOne".SplitCsv();
-				var epl = "@name('s0') select DecimalOne from SupportBeanNumeric(DecimalOne = 4)";
+				var epl = "@Name('s0') select DecimalOne from SupportBeanNumeric(DecimalOne = 4)";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendBigNumEvent(env, 0, 2);
@@ -369,7 +369,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fieldList, 4m);
 
 				env.UndeployAll();
-				env.CompileDeployAddListenerMile("@name('s0') select DecimalOne from SupportBeanNumeric(DecimalOne = 4d)", "s0", 1);
+				env.CompileDeployAddListenerMile("@Name('s0') select DecimalOne from SupportBeanNumeric(DecimalOne = 4d)", "s0", 1);
 
 				SendBigNumEvent(env, 0, 4m);
 				Assert.IsTrue(env.Listener("s0").IsInvoked);
@@ -379,7 +379,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fieldList, 4m);
 
 				env.UndeployAll();
-				env.CompileDeployAddListenerMile("@name('s0') select DecimalOne from SupportBeanNumeric(Bigint = 4)", "s0", 2);
+				env.CompileDeployAddListenerMile("@Name('s0') select DecimalOne from SupportBeanNumeric(Bigint = 4)", "s0", 2);
 
 				SendBigNumEvent(env, 3, 4m);
 				Assert.IsFalse(env.Listener("s0").IsInvoked);
@@ -396,7 +396,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			public void Run(RegressionEnvironment env)
 			{
 				var fieldList = "Bigint,DecimalOne".SplitCsv();
-				var epl = "@name('s0') select Bigint,DecimalOne from SupportBeanNumeric#keepall(), SupportBean#keepall " +
+				var epl = "@Name('s0') select Bigint,DecimalOne from SupportBeanNumeric#keepall(), SupportBean#keepall " +
 				          "where IntPrimitive = Bigint and DoublePrimitive = DecimalOne";
 				env.CompileDeploy(epl).AddListener("s0");
 
@@ -417,7 +417,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			public void Run(RegressionEnvironment env)
 			{
 				var epl =
-					"@name('s0') select " +
+					"@Name('s0') select " +
 					"SupportStaticMethodLib.MyBigIntFunc(cast(2, BigInteger)) as v1, " +
 					"SupportStaticMethodLib.MyDecimalFunc(cast(3d, BigDecimal)) as v2 from SupportBeanNumeric";
 				env.CompileDeploy(epl).AddListener("s0");

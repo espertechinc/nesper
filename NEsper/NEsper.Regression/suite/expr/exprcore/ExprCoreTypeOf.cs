@@ -144,7 +144,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			env.CompileDeploy("insert into VarSchema select * from S0", path);
 			env.CompileDeploy("insert into VarSchema select * from SupportBean", path);
 
-			var stmtText = "@name('s0') select typeof(A) as t0 from VarSchema as A";
+			var stmtText = "@Name('s0') select typeof(A) as t0 from VarSchema as A";
 			env.CompileDeploy(stmtText, path).AddListener("s0");
 
 			if (eventRepresentationEnum.IsObjectArrayEvent()) {
@@ -195,7 +195,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 			env.UndeployModuleContaining("s0");
 			env.CompileDeploy(
-					"@name('s0') select * from VarSchema match_recognize(\n" +
+					"@Name('s0') select * from VarSchema match_recognize(\n" +
 					"  measures A as a, B as b\n" +
 					"  pattern (A B)\n" +
 					"  define A as typeof(A) = \"EventOne\",\n" +

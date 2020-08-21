@@ -277,8 +277,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 					StaticMethod(typeof(DynamicPropertyGetterByMethodOrPropertyBase), "DynamicPropertyCacheCheck", Ref("cache"), Ref("obj")))
 				.IfRefNotNull("desc")
 				.BlockReturn(Ref("desc"))
-				.DeclareVar(typeof(Type), "clazz", ExprDotMethod(Ref("obj"), "GetType"))
-				.DeclareVar(typeof(MethodInfo), "method", DetermineMethodCodegen(Ref("clazz"), method, codegenClassScope))
+				.DeclareVar<Type>("clazz", ExprDotMethod(Ref("obj"), "GetType"))
+				.DeclareVar<MethodInfo>("method", DetermineMethodCodegen(Ref("clazz"), method, codegenClassScope))
 				.AssignRef(
 					"desc",
 					StaticMethod(typeof(DynamicPropertyGetterByMethodOrPropertyBase), "DynamicPropertyCacheAdd", Ref("clazz"), Ref("method"), Ref("cache")))

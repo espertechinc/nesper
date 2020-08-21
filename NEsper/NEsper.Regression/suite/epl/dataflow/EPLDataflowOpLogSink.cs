@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 "create dataflow DF1 LogSink -> s1 {}",
                 "Failed to obtain operator 'LogSink': LogSink operator does not provide an output stream");
 
-            var docSmple = "@name('flow') create dataflow MyDataFlow\n" +
+            var docSmple = "@Name('flow') create dataflow MyDataFlow\n" +
                            "  BeaconSource -> instream {}\n" +
                            "  // Output textual event to log using defaults.\n" +
                            "  LogSink(instream) {}\n" +
@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             string title,
             bool? linefeed)
         {
-            var graph = "@name('flow') create dataflow MyConsoleOut\n" +
+            var graph = "@Name('flow') create dataflow MyConsoleOut\n" +
                         "Emitter -> instream<SupportBean>{name : 'e1'}\n" +
                         "LogSink(instream) {\n" +
                         (format == null ? "" : "  format: '" + format + "',\n") +

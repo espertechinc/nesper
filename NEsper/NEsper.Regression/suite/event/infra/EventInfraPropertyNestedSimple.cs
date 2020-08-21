@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				"create json schema " + JSON_TYPENAME + "_3(lvl3 int, l4 " + JSON_TYPENAME + "_4);\n" +
 				"create json schema " + JSON_TYPENAME + "_2(lvl2 int, l3 " + JSON_TYPENAME + "_3);\n" +
 				"create json schema " + JSON_TYPENAME + "_1(lvl1 int, l2 " + JSON_TYPENAME + "_2);\n" +
-				"@name('types') @public @buseventtype create json schema " +
+				"@Name('types') @public @buseventtype create json schema " +
 				JSON_TYPENAME + "(l1 " + JSON_TYPENAME + "_1);\n";
 			env.CompileDeploy(epl, path);
 			Type nestedClass = SupportJsonEventTypeUtil.GetUnderlyingType(env, "types", JSON_TYPENAME + "_1");
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			FunctionSendEvent4Int send,
 			RegressionPath path)
 		{
-			var epl = "@name('s0') select * from " + typename;
+			var epl = "@Name('s0') select * from " + typename;
 			env.CompileDeploy(epl, path).AddListener("s0");
 
 			send.Invoke(typename, env, 1, 2, 3, 4);
@@ -113,7 +113,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			FunctionSendEvent4Int send,
 			RegressionPath path)
 		{
-			var epl = "@name('s0') select " +
+			var epl = "@Name('s0') select " +
 			          "l1.lvl1 as c0, " +
 			          "exists(l1.lvl1) as exists_c0, " +
 			          "l1.l2.lvl2 as c1, " +

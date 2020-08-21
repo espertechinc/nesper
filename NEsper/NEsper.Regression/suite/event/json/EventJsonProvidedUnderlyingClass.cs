@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 					"@public @buseventtype @JsonSchema(className='" +
 					typeof(MyLocalJsonProvidedEventOut).FullName +
 					"') create json schema EventOut();\n" +
-					"@name('s0') insert into EventOut select s as startEvent, e as endEvents from pattern [" +
+					"@Name('s0') insert into EventOut select s as startEvent, e as endEvents from pattern [" +
 					"every s=EventOne -> e=EventTwo(id=s.id) until timer:interval(10 sec)]";
 				env.CompileDeploy(epl).AddListener("s0");
 
@@ -85,8 +85,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				string epl = "@public @buseventtype @JsonSchema(className='" +
 				             typeof(MyLocalJsonProvidedPrimitiveInt).FullName +
 				             "') create json schema MySchema();\n" +
-				             "insert into MySchema select intBoxed as primitiveInt from SupportBean;\n" +
-				             "@name('s0') select * from MySchema;\n";
+				             "insert into MySchema select IntBoxed as primitiveInt from SupportBean;\n" +
+				             "@Name('s0') select * from MySchema;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				env.SendEventBean(new SupportBean());
@@ -205,7 +205,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 					"partners Partner[]\n" +
 					");\n" +
 					"@public @buseventtype create json schema Clients(clients Client[]);\n" +
-					"@name('s0') select * from Clients;\n";
+					"@Name('s0') select * from Clients;\n";
 				env.CompileDeploy(schema).AddListener("s0");
 
 				env.SendEventJson(ClientsJson, "Clients");
@@ -248,7 +248,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 					"favoriteFruit string\n" +
 					");\n" +
 					"@public @buseventtype create json schema Users(users User[]);\n" +
-					"@name('s0') select * from Users;\n";
+					"@Name('s0') select * from Users;\n";
 				env.CompileDeploy(schema).AddListener("s0");
 
 				env.SendEventJson(UsersJson, "Users");
@@ -267,7 +267,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				string epl = "@public @buseventtype @JsonSchema(className='" +
 				             typeof(SupportClientsEvent).FullName +
 				             "') create json schema Clients();\n" +
-				             "@name('s0') select * from Clients;";
+				             "@Name('s0') select * from Clients;";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				// try sender parse-only
@@ -302,7 +302,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				string epl = "@public @buseventtype @JsonSchema(className='" +
 				             typeof(SupportUsersEvent).FullName +
 				             "') create json schema Users();\n" +
-				             "@name('s0') select * from Users;";
+				             "@Name('s0') select * from Users;";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				// try sender parse-only

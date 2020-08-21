@@ -186,7 +186,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                string epl = "@name('s0') select id, sum(value) as thesum from SupportEventWithIntArray group by array";
+                string epl = "@Name('s0') select id, sum(value) as thesum from SupportEventWithIntArray group by array";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendAssertIntArray(env, "E1", new int[] {1, 2}, 5, 5);
@@ -212,7 +212,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select sb.GetLongPrimitive() as c0, sum(IntPrimitive) as c1 from SupportBean#length_batch(2) as sb group by sb.GetTheString()";
+                    "@Name('s0') select sb.GetLongPrimitive() as c0, sum(IntPrimitive) as c1 from SupportBean#length_batch(2) as sb group by sb.GetTheString()";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 MakeSendSupportBean(env, "E1", 10, 100L);
@@ -235,7 +235,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 var fields = new [] { "c0", "c1" };
                 var epl =
-                    "@name('s0') @IterableUnbound select TheString as c0, sum(IntPrimitive) as c1 from SupportBean group by TheString";
+                    "@Name('s0') @IterableUnbound select TheString as c0, sum(IntPrimitive) as c1 from SupportBean group by TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
@@ -264,7 +264,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select TheString from SupportBean group by TheString having IntPrimitive > 5";
+                var epl = "@Name('s0') select TheString from SupportBean group by TheString having IntPrimitive > 5";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 3));
@@ -290,7 +290,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 // test no output limit
                 var fields = new [] { "TheString"," IntPrimitive"," minval" };
                 var epl =
-                    "@name('s0') select *, min(IntPrimitive) as minval from SupportBean#length(2) group by TheString";
+                    "@Name('s0') select *, min(IntPrimitive) as minval from SupportBean#length(2) group by TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("G1", 10));
@@ -323,7 +323,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 // test for ESPER-185
                 var fields = new [] { "Volume","Symbol","Price","mycount" };
-                var epl = "@name('s0') select irstream Volume,Symbol,Price,count(Price) as mycount " +
+                var epl = "@Name('s0') select irstream Volume,Symbol,Price,count(Price) as mycount " +
                           "from SupportMarketDataBean#length(5) " +
                           "group by Symbol, Price";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -447,7 +447,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // Every event generates a new row, this time we sum the price by symbol and output volume
-                var epl = "@name('s0') select irstream Symbol, Volume, sum(Price) as mySum " +
+                var epl = "@Name('s0') select irstream Symbol, Volume, sum(Price) as mySum " +
                           "from SupportMarketDataBean#length(3) " +
                           "where Symbol='DELL' or Symbol='IBM' or Symbol='GE' " +
                           "group by Symbol";
@@ -464,7 +464,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // Every event generates a new row, this time we sum the price by symbol and output volume
-                var epl = "@name('s0') select irstream Symbol, Volume, sum(Price) as mySum " +
+                var epl = "@Name('s0') select irstream Symbol, Volume, sum(Price) as mySum " +
                           "from SupportBeanString#length(100) as one, " +
                           "SupportMarketDataBean#length(3) as two " +
                           "where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') " +
@@ -486,7 +486,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var stmt =
-                    "@name('s0') select Symbol as Symbol, avg(Price) as average, sum(Volume) as sumation from SupportMarketDataBean#length(3000)";
+                    "@Name('s0') select Symbol as Symbol, avg(Price) as average, sum(Volume) as sumation from SupportMarketDataBean#length(3000)";
                 env.CompileDeploy(stmt).AddListener("s0");
 
                 env.SendEventBean(new SupportMarketDataBean("IBM", 10D, 20000L, null));
@@ -497,9 +497,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 // create insert into statements
                 stmt =
-                    "@name('s1') insert into StockAverages select Symbol as Symbol, avg(Price) as average, sum(Volume) as sumation " +
+                    "@Name('s1') insert into StockAverages select Symbol as Symbol, avg(Price) as average, sum(Volume) as sumation " +
                     "from SupportMarketDataBean#length(3000);\n" +
-                    "@name('s2') select * from StockAverages";
+                    "@Name('s2') select * from StockAverages";
                 env.CompileDeploy(stmt).AddListener("s1").AddListener("s2");
 
                 // send event

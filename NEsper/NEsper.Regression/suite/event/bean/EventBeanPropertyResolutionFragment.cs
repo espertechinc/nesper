@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select * from MSTypeOne").AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from MSTypeOne").AddListener("s0");
 
                 IDictionary<string, object> dataInner = new Dictionary<string, object>();
                 dataInner.Put("p1someval", "A");
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select * from OASimple").AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from OASimple").AddListener("s0");
 
                 IDictionary<string, object> dataInner = new Dictionary<string, object>();
                 dataInner.Put("p1someval", "A");
@@ -121,7 +121,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select *, p0simple.p1id + 1 as plusone, p0bean as mybean from Frosty");
+                env.CompileDeploy("@Name('s0') select *, p0simple.p1id + 1 as plusone, p0bean as mybean from Frosty");
                 env.AddListener("s0");
 
                 IDictionary<string, object> dataInner = new Dictionary<string, object>();
@@ -163,7 +163,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                    "@name('s0') select *, p0simple.p1id + 1 as plusone, p0bean as mybean from WheatRoot");
+                    "@Name('s0') select *, p0simple.p1id + 1 as plusone, p0bean as mybean from WheatRoot");
                 env.AddListener("s0");
 
                 env.SendEventObjectArray(
@@ -197,7 +197,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select * from SupportBeanComplexProps").AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from SupportBeanComplexProps").AddListener("s0");
 
                 // assert nested fragments
                 env.SendEventBean(SupportBeanComplexProps.MakeDefaultBean());
@@ -224,7 +224,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 env.UndeployAll();
 
                 // assert indexed fragments
-                env.CompileDeploy("@name('s0') select * from SupportBeanCombinedProps").AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from SupportBeanCombinedProps").AddListener("s0");
                 var eventObject = SupportBeanCombinedProps.MakeDefaultBean();
                 env.SendEventBean(eventObject);
                 eventBean = env.Listener("s0").AssertOneGetNewAndReset();
@@ -255,7 +255,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select * from HomerunRoot").AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from HomerunRoot").AddListener("s0");
 
                 IDictionary<string, object> dataInner = new Dictionary<string, object>();
                 dataInner.Put("p1id", 10);
@@ -299,7 +299,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select * from GoalRoot").AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from GoalRoot").AddListener("s0");
 
                 Assert.AreEqual(typeof(object[]), env.Statement("s0").EventType.UnderlyingType);
 
@@ -346,7 +346,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select * from FlywheelRoot").AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from FlywheelRoot").AddListener("s0");
 
                 IDictionary<string, object> dataInner = new Dictionary<string, object>();
                 dataInner.Put("p1id", 10);
@@ -375,7 +375,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select * from pattern[one=GistMapOne until two=GistMapTwo]")
+                env.CompileDeploy("@Name('s0') select * from pattern[one=GistMapOne until two=GistMapTwo]")
                     .AddListener("s0");
 
                 IDictionary<string, object> dataInner = new Dictionary<string, object>();
@@ -446,7 +446,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select * from pattern[one=CashMapOne until two=CashMapTwo]")
+                env.CompileDeploy("@Name('s0') select * from pattern[one=CashMapOne until two=CashMapTwo]")
                     .AddListener("s0");
 
                 object[] dataInner = {2000};
@@ -518,7 +518,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select * from TXTypeRoot").AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from TXTypeRoot").AddListener("s0");
 
                 IDictionary<string, object> dataInner = new Dictionary<string, object>();
                 dataInner.Put("p1simple", new SupportBean("E1", 11));
@@ -581,7 +581,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select * from LocalTypeRoot").AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from LocalTypeRoot").AddListener("s0");
 
                 Assert.AreEqual(typeof(object[]), env.Statement("s0").EventType.UnderlyingType);
 
@@ -644,7 +644,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select * from JimTypeRoot").AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from JimTypeRoot").AddListener("s0");
 
                 IDictionary<string, object> dataLev1 = new Dictionary<string, object>();
                 dataLev1.Put("p2id", 10);
@@ -704,7 +704,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select * from JackTypeRoot").AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from JackTypeRoot").AddListener("s0");
 
                 Assert.AreEqual(typeof(object[]), env.Statement("s0").EventType.UnderlyingType);
 
@@ -765,7 +765,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select * from MMOuterMap").AddListener("s0");
+                env.CompileDeploy("@Name('s0') select * from MMOuterMap").AddListener("s0");
 
                 IDictionary<string, object> dataInnerInner = new Dictionary<string, object>();
                 dataInnerInner.Put("p2id", 10);

@@ -112,10 +112,10 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 
 	        if (eventType is MapEventType) {
 	            writeMethod.Block
-		            .DeclareVar(typeof(IDictionary<string, object>), "map", Cast(typeof(IDictionary<string, object>), Ref(OBJECT_NAME)));
+		            .DeclareVar<IDictionary<string, object>>("map", Cast(typeof(IDictionary<string, object>), Ref(OBJECT_NAME)));
 	        } else if (eventType is ObjectArrayEventType) {
 	            writeMethod.Block
-		            .DeclareVar(typeof(object[]), "oa", Cast(typeof(object[]), Ref(OBJECT_NAME)));
+		            .DeclareVar<object[]>("oa", Cast(typeof(object[]), Ref(OBJECT_NAME)));
 	        } else if (eventType is JsonEventType) {
 	            var jsonEventType = (JsonEventType) eventType;
 	            writeMethod.Block
@@ -142,14 +142,20 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 	                get = Ref("json." + field.FieldName);
 	            }
 
-	            writeMethod.Block.ExprDotMethod(serde, "write", get, Ref(OUTPUT_NAME), Ref(UNITKEY_NAME), Ref(WRITER_NAME));
+	            writeMethod.Block.ExprDotMethod(serde, "Write", get, Ref(OUTPUT_NAME), Ref(UNITKEY_NAME), Ref(WRITER_NAME));
 	        }
 
 	        if (eventType is JsonEventType) {
 	            var jsonEventType = (JsonEventType) eventType;
 	            if (jsonEventType.Detail.IsDynamic) {
 	                CodegenExpression get = Ref("json." + StmtClassForgeableJsonUnderlying.DYNAMIC_PROP_FIELD);
-	                writeMethod.Block.ExprDotMethod(PublicConstValue(typeof(DIOJsonObjectSerde), "INSTANCE"), "write", get, Ref(OUTPUT_NAME), Ref(UNITKEY_NAME), Ref(WRITER_NAME));
+	                writeMethod.Block.ExprDotMethod(
+		                PublicConstValue(typeof(DIOJsonObjectSerde), "INSTANCE"),
+		                "Write",
+		                get,
+		                Ref(OUTPUT_NAME),
+		                Ref(UNITKEY_NAME),
+		                Ref(WRITER_NAME));
 	            }
 	        }
 	    }
@@ -171,7 +177,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 		    }
 		    else if (eventType is ObjectArrayEventType) {
 			    readMethod.Block
-				    .DeclareVar(typeof(object[]), "oa", NewArrayByLength(typeof(object), Constant(forges.Length)));
+				    .DeclareVar<object[]>("oa", NewArrayByLength(typeof(object), Constant(forges.Length)));
 			    underlyingRef = Ref("oa");
 		    }
 		    else if (eventType is JsonEventType) {
@@ -186,10 +192,10 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 
 		    for (var i = 0; i < forges.Length; i++) {
 			    CodegenExpression serde = Ref("s" + i);
-			    var read = ExprDotMethod(serde, "read", Ref(INPUT_NAME), Ref(UNITKEY_NAME));
+			    var read = ExprDotMethod(serde, "Read", Ref(INPUT_NAME), Ref(UNITKEY_NAME));
 
 			    if (eventType is MapEventType) {
-				    readMethod.Block.ExprDotMethod(Ref("map"), "put", Constant(propertyNames[i]), read);
+				    readMethod.Block.ExprDotMethod(Ref("map"), "Put", Constant(propertyNames[i]), read);
 			    }
 			    else if (eventType is ObjectArrayEventType) {
 				    readMethod.Block.AssignArrayElement(Ref("oa"), Constant(i), read);
@@ -211,7 +217,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
 			    if (jsonEventType.Detail.IsDynamic) {
 				    var read = ExprDotMethod(
 					    PublicConstValue(typeof(DIOJsonObjectSerde), "INSTANCE"),
-					    "read",
+					    "Read",
 					    Ref(INPUT_NAME),
 					    Ref(UNITKEY_NAME));
 				    readMethod.Block.AssignRef(Ref("json." + StmtClassForgeableJsonUnderlying.DYNAMIC_PROP_FIELD), read);

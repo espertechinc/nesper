@@ -16,7 +16,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@name('s0') inlined_class \"\"\"\n" +
+            var epl = "@Name('s0') inlined_class \"\"\"\n" +
                       "    public class MyClass {}\n" +
                       "\"\"\" " +
                       "select * from SupportBean\n";

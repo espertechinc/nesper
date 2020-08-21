@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
 
 		public void Run(RegressionEnvironment env)
 		{
-			string epl = "@name('input') @public @buseventtype create avro schema Input(symbol string, price double);\n" +
+			string epl = "@Name('input') @public @buseventtype create avro schema Input(symbol string, price double);\n" +
 			             "\n" +
 			             "@public @buseventtype create avro schema SuperType(symbol string);\n" +
 			             "@public @buseventtype create avro schema B() inherits SuperType;\n" +

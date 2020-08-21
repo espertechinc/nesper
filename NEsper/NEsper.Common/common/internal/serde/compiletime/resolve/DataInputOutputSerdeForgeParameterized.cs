@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 				@params[i] = functions[i].Invoke(vars);
 			}
 
-			return NewInstance(dioClassName, @params);
+			return NewInstanceInner(dioClassName, @params);
 		}
 	}
 } // end of namespace

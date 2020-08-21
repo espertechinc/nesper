@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 var epl = "create window MyWindow#keepall as select * from SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
                           "on SupportBean_A delete from MyWindow where TheString = Id;\n" +
-                          "@name('s0') select firstever(TheString) as firsteverstring, " +
+                          "@Name('s0') select firstever(TheString) as firsteverstring, " +
                           "lastever(TheString) as lasteverstring," +
                           "countever(*) as counteverall from MyWindow";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "firstever(TheString) as firsteverstring, " +
                           "lastever(TheString) as lasteverstring, " +
                           "first(TheString) as firststring, " +

@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('flow') create dataflow HelloWorldDataFlow\n" +
+                var epl = "@Name('flow') create dataflow HelloWorldDataFlow\n" +
                           "BeaconSource -> helloworldStream { text: 'hello world', iterations : 1 }\n" +
                           "LogSink(helloworldStream) {}";
                 env.CompileDeploy(epl);
@@ -139,7 +139,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         {
             public void Run(RegressionEnvironment env)
             {
-                var soda = "@name('create dataflow full')\n" +
+                var soda = "@Name('create dataflow full')\n" +
                            "create dataflow DFFull\n" +
                            "create map schema ABC1 as (col1 int, col2 int),\n" +
                            "create map schema ABC2 as (col1 int, col2 int),\n" +

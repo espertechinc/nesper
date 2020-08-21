@@ -99,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select * from " +
+                var epl = "@Name('s0') select * from " +
                           "SupportBean_A#length(3) as streamA," +
                           "SupportBean_B#length(3) as streamB," +
                           "SupportBean_C#length(3) as streamC" +
@@ -156,7 +156,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select * from " +
+                var epl = "@Name('s0') select * from " +
                           "SupportBean_A#length(3) as streamA, " +
                           "SupportBean_B#length(3) as streamB, " +
                           "SupportBean_C#length(3) as streamC " +

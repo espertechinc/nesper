@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.support.expreval
 			bool soda)
 		{
 			var epl = new StringBuilder();
-			epl.Append("@name('s0') select ");
+			epl.Append("@Name('s0') select ");
 
 			var delimiter = "";
 			foreach (var entry in builder.Expressions) {

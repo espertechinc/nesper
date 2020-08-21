@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                                  "where vt.topgroup = IntPrimitive and vt.thecnt > 0 " +
                                  "when matched then insert into MyOutputStream select *";
             env.CompileDeploy(eplMergeSelect, path);
-            env.CompileDeploy("@name('s0') select * from MyOutputStream", path).AddListener("s0");
+            env.CompileDeploy("@Name('s0') select * from MyOutputStream", path).AddListener("s0");
             var listener = env.Listener("s0");
 
             var writeRunnable = new WriteRunnable(env);

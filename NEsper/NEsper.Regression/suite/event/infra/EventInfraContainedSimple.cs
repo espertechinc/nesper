@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			string createSchemaEPL,
 			BiConsumer<EventType, string> sender)
 		{
-			env.CompileDeploy(createSchemaEPL + "@name('s0') select * from LocalEvent[property];\n").AddListener("s0");
+			env.CompileDeploy(createSchemaEPL + "@Name('s0') select * from LocalEvent[property];\n").AddListener("s0");
 			var eventType = env.Runtime.EventTypeService.GetEventType(env.DeploymentId("s0"), "LocalEvent");
 
 			sender.Invoke(eventType, "a");

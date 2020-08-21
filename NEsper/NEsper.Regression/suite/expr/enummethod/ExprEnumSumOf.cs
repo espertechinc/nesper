@@ -60,11 +60,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2,c3,c4".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_Container");
-				builder.WithExpression(fields[0], "beans.sumOf(x => intBoxed)");
-				builder.WithExpression(fields[1], "beans.sumOf(x => doubleBoxed)");
-				builder.WithExpression(fields[2], "beans.sumOf(x => longBoxed)");
-				builder.WithExpression(fields[3], "beans.sumOf(x => bigDecimal)");
-				builder.WithExpression(fields[4], "beans.sumOf(x => bigInteger)");
+				builder.WithExpression(fields[0], "beans.sumOf(x => IntBoxed)");
+				builder.WithExpression(fields[1], "beans.sumOf(x => DoubleBoxed)");
+				builder.WithExpression(fields[2], "beans.sumOf(x => LongBoxed)");
+				builder.WithExpression(fields[3], "beans.sumOf(x => DecimalBoxed)");
+				builder.WithExpression(fields[4], "beans.sumOf(x => BigInteger)");
 
 				builder.WithStatementConsumer(
 					stmt => AssertTypes(
@@ -92,9 +92,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				string[] fields = "c0,c1,c2".SplitCsv();
 				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_Container");
-				builder.WithExpression(fields[0], "beans.sumOf(x => intBoxed)");
-				builder.WithExpression(fields[1], "beans.sumOf( (x, i) => intBoxed + i*10)");
-				builder.WithExpression(fields[2], "beans.sumOf( (x, i, s) => intBoxed + i*10 + s*100)");
+				builder.WithExpression(fields[0], "beans.sumOf(x => IntBoxed)");
+				builder.WithExpression(fields[1], "beans.sumOf( (x, i) => IntBoxed + i*10)");
+				builder.WithExpression(fields[2], "beans.sumOf( (x, i, s) => IntBoxed + i*10 + s*100)");
 
 				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
 

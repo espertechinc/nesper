@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 env.Milestone(0);
 
-                var epl = "@name('s0') select irstream * from SupportBean#length(2)";
+                var epl = "@Name('s0') select irstream * from SupportBean#length(2)";
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
 
                 EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("s0"), fields, null);
@@ -129,7 +129,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@name('s0') select irstream Symbol, " +
+                var text = "@Name('s0') select irstream Symbol, " +
                            "prev(1, Symbol) as prev1, " +
                            "prior(1, Symbol) as prio1, " +
                            "prevtail(Symbol) as prevtail0, " +
@@ -194,7 +194,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select " +
+                var epl = "@Name('s0') select " +
                           "Mapped('keyOne') as a," +
                           "Indexed[1] as b, " +
                           "Nested.NestedNested.NestedNestedValue as c, " +
@@ -232,7 +232,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select Symbol, Price from SupportMarketDataBean#length(2)";
+                var epl = "@Name('s0') select Symbol, Price from SupportMarketDataBean#length(2)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, "ABC", 20);

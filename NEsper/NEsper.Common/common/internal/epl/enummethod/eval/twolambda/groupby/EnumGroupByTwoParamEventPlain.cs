@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.gro
 			ExprForgeCodegenSymbol scope,
 			CodegenClassScope codegenClassScope)
 		{
-			block.DeclareVar(typeof(IDictionary<string, object>), "result", NewInstance(typeof(Dictionary<string, object>)));
+			block.DeclareVar<IDictionary<string, object>>("result", NewInstance(typeof(Dictionary<string, object>)));
 		}
 
 		public override void ForEachBlock(
@@ -95,14 +95,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.gro
 			ExprForgeCodegenSymbol scope,
 			CodegenClassScope codegenClassScope)
 		{
-			block.DeclareVar(typeof(object), "key", InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-				.DeclareVar(typeof(object), "entry", SecondExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+			block.DeclareVar<object>("key", InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+				.DeclareVar<object>("entry", SecondExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
 				.DeclareVar(typeof(ICollection<object>), "value", Cast(typeof(ICollection<object>), ExprDotMethod(Ref("result"), "get", Ref("key"))))
 				.IfRefNull("value")
 				.AssignRef("value", NewInstance(typeof(List<object>)))
-				.Expression(ExprDotMethod(Ref("result"), "put", Ref("key"), Ref("value")))
+				.Expression(ExprDotMethod(Ref("result"), "Put", Ref("key"), Ref("value")))
 				.BlockEnd()
-				.Expression(ExprDotMethod(Ref("value"), "add", Ref("entry")));
+				.Expression(ExprDotMethod(Ref("value"), "Add", Ref("entry")));
 		}
 
 		public override void ReturnResult(CodegenBlock block)

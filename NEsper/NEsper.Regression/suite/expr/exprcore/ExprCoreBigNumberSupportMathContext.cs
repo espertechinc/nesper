@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select 10/5.0m as c0 from SupportBean";
+				var epl = "@Name('s0') select 10/5.0m as c0 from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				var fields = "c0".SplitCsv();
@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			public void Run(RegressionEnvironment env)
 			{
 				// cast and divide
-				env.CompileDeploy("@name('s0')  Select 1.6m / 9.2m from SupportBean").AddListener("s0");
+				env.CompileDeploy("@Name('s0')  Select 1.6m / 9.2m from SupportBean").AddListener("s0");
 				env.Statement("s0").SetSubscriber(new MySubscriber());
 				env.SendEventBean(new SupportBean());
 				env.UndeployAll();

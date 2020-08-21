@@ -16,7 +16,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
     {
         public void Run(RegressionEnvironment env)
         {
-            var statementText = "@name('s0') select a\\.b, a\\.b\\.c, nes\\., nes\\.nes2.x\\.y from DotMap";
+            var statementText = "@Name('s0') select a\\.b, a\\.b\\.c, nes\\., nes\\.nes2.x\\.y from DotMap";
             env.CompileDeploy(statementText).AddListener("s0");
 
             var data = EventMapCore.MakeMap(

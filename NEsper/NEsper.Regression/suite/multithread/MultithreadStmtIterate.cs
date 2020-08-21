@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
         private static void RunAssertionIteratorSingleStmt(RegressionEnvironment env)
         {
-            env.CompileDeploy("@name('s0') select TheString from SupportBean#time(5 min)");
+            env.CompileDeploy("@Name('s0') select TheString from SupportBean#time(5 min)");
             EPStatement[] stmt = {env.Statement("s0")};
             TrySend(env, 2, 10, stmt);
             env.UndeployAll();
@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var stmt = new EPStatement[3];
             for (var i = 0; i < stmt.Length; i++) {
                 var name = "Stmt_" + i;
-                var stmtText = "@name('" + name + "') select TheString from SupportBean#time(5 min)";
+                var stmtText = "@Name('" + name + "') select TheString from SupportBean#time(5 min)";
                 env.CompileDeploy(stmtText);
                 stmt[i] = env.Statement(name);
             }

@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 				             "@Name('G') on FStreamTwo\n" +
 				             "insert into FinalStream select * insert into otherstream select * output all;\n" +
 				             "\n" +
-				             "@name('final') select * from FinalStream;\n";
+				             "@Name('final') select * from FinalStream;\n";
 				env.CompileDeploy(epl).AddListener("final");
 
 				env.Milestone(0);
@@ -82,17 +82,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 			public void Run(RegressionEnvironment env)
 			{
 				RegressionPath path = new RegressionPath();
-				env.CompileDeploy("@name('i1') insert into WrappedBean select *, intPrimitive as p0 from SupportBean", path);
+				env.CompileDeploy("@Name('i1') insert into WrappedBean select *, IntPrimitive as p0 from SupportBean", path);
 				env.AddListener("i1");
 
-				env.CompileDeploy("@name('i2') insert into WrappedBean select sb from SupportEventContainsSupportBean sb", path);
+				env.CompileDeploy("@Name('i2') insert into WrappedBean select sb from SupportEventContainsSupportBean sb", path);
 				env.AddListener("i2");
 
 				env.SendEventBean(new SupportBean("E1", 1));
-				EPAssertionUtil.AssertProps(env.Listener("i1").AssertOneGetNewAndReset(), "theString,intPrimitive,p0".SplitCsv(), new object[] {"E1", 1, 1});
+				EPAssertionUtil.AssertProps(env.Listener("i1").AssertOneGetNewAndReset(), "TheString,IntPrimitive,p0".SplitCsv(), new object[] {"E1", 1, 1});
 
 				env.SendEventBean(new SupportEventContainsSupportBean(new SupportBean("E2", 2)));
-				EPAssertionUtil.AssertProps(env.Listener("i2").AssertOneGetNewAndReset(), "theString,intPrimitive,p0".SplitCsv(), new object[] {"E2", 2, null});
+				EPAssertionUtil.AssertProps(env.Listener("i2").AssertOneGetNewAndReset(), "TheString,IntPrimitive,p0".SplitCsv(), new object[] {"E2", 2, null});
 
 				env.UndeployAll();
 			}
@@ -102,9 +102,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string statementOne = "@name('s0') insert into StreamA select irstream * from SupportBeanSimple#length(2)";
-				string statementTwo = "@name('s1') insert into StreamB select irstream *, myString||'A' as propA from StreamA#length(2)";
-				string statementThree = "@name('s2') insert into StreamC select irstream *, propA||'B' as propB from StreamB#length(2)";
+				string statementOne = "@Name('s0') insert into StreamA select irstream * from SupportBeanSimple#length(2)";
+				string statementTwo = "@Name('s1') insert into StreamB select irstream *, myString||'A' as propA from StreamA#length(2)";
+				string statementThree = "@Name('s2') insert into StreamC select irstream *, propA||'B' as propB from StreamB#length(2)";
 
 				RegressionPath path = new RegressionPath();
 				env.CompileDeploy(statementOne, path);

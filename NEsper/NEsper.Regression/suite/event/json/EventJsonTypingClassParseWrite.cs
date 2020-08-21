@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				string epl = "@public @buseventtype create json schema JsonEvent(local " +
 				             typeof(MyLocalEventNestedRecursive).FullName +
 				             ");\n" +
-				             "@name('s0') select * from JsonEvent#keepall;\n";
+				             "@Name('s0') select * from JsonEvent#keepall;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				JObject depthTwo = new JObject(
@@ -124,7 +124,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				string epl = "@public @buseventtype create json schema JsonEvent(local " +
 				             typeof(MyLocalEventWArrayColl).FullName +
 				             ");\n" +
-				             "@name('s0') select * from JsonEvent#keepall;\n";
+				             "@Name('s0') select * from JsonEvent#keepall;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				JObject localFilled = new JObject(
@@ -332,8 +332,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				int intPrimitive)
 			{
 				return new JObject(
-					new JProperty("theString", theString),
-					new JProperty("intPrimitive", intPrimitive));
+					new JProperty("TheString", theString),
+					new JProperty("IntPrimitive", intPrimitive));
 			}
 
 			private MyLocalEvent MakeLocal(
@@ -380,7 +380,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				string epl = "@public @buseventtype create json schema JsonEvent(local " +
 				             localType.FullName +
 				             ");\n" +
-				             "@name('s0') select * from JsonEvent#keepall;\n";
+				             "@Name('s0') select * from JsonEvent#keepall;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				JObject localFilled = new JObject(
@@ -450,7 +450,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				string epl = "@public @buseventtype create json schema JsonEvent(local " +
 				             typeof(MyLocalEventCollectionEnumType).FullName +
 				             ");\n" +
-				             "@name('s0') select * from JsonEvent#keepall;\n";
+				             "@Name('s0') select * from JsonEvent#keepall;\n";
 
 				env.CompileDeploy(epl).AddListener("s0");
 
@@ -545,7 +545,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				string epl = "@public @buseventtype create json schema JsonEvent(local " +
 				             typeof(MyLocalEventCollectionBuiltinType).FullName +
 				             ");\n" +
-				             "@name('s0') select * from JsonEvent#keepall;\n";
+				             "@Name('s0') select * from JsonEvent#keepall;\n";
 
 				env.CompileDeploy(epl).AddListener("s0");
 
@@ -733,13 +733,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				string epl = "@public @buseventtype create json schema JsonEvent(local " +
 				             typeof(MyLocalEvent).FullName +
 				             ");\n" +
-				             "@name('s0') select * from JsonEvent#keepall;\n";
+				             "@Name('s0') select * from JsonEvent#keepall;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				string json = "{\n" +
 				              "  \"local\": {\n" +
-				              "    \"theString\": \"abc\",\n" +
-				              "    \"intPrimitive\" : 10\n" +
+				              "    \"TheString\": \"abc\",\n" +
+				              "    \"IntPrimitive\" : 10\n" +
 				              "  }\n" +
 				              "}";
 				env.SendEventJson(json, "JsonEvent");

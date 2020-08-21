@@ -99,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	        public void Run(RegressionEnvironment env) {
 	            var fields = "e,ne".SplitCsv();
 	            var builder = new SupportEvalBuilder("SupportBeanArrayCollMap")
-	                .WithExpressions(fields, "LongBoxed = all ({1, 1}, intArr, longCol)", "LongBoxed != all ({1, 1}, intArr, longCol)");
+	                .WithExpressions(fields, "LongBoxed = all ({1, 1}, IntArr, LongCol)", "LongBoxed != all ({1, 1}, IntArr, LongCol)");
 
 	            var arrayBean = MakeArrayBean();
 	            builder.WithAssertion(arrayBean).Expect(fields, true, false);
@@ -184,7 +184,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	        public void Run(RegressionEnvironment env) {
 	            var fields = "e,ne".SplitCsv();
 	            var builder = new SupportEvalBuilder("SupportBeanArrayCollMap")
-	                .WithExpressions(fields, "LongBoxed = any ({1, 1}, intArr, longCol)", "LongBoxed != any ({1, 1}, intArr, longCol)");
+	                .WithExpressions(fields, "LongBoxed = any ({1, 1}, IntArr, LongCol)", "LongBoxed != any ({1, 1}, IntArr, LongCol)");
 
 	            var arrayBean = MakeArrayBean();
 	            builder.WithAssertion(arrayBean).Expect(fields, true, false);
@@ -214,7 +214,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	            var fields = "g,ge".SplitCsv();
 	            var eplReference = new Atomic<string>();
 	            var builder = new SupportEvalBuilder("SupportBeanArrayCollMap")
-	                .WithExpressions(fields, "LongBoxed>all({1,2},intArr,intCol)", "LongBoxed>=all({1,2},intArr,intCol)")
+	                .WithExpressions(fields, "LongBoxed>all({1,2},IntArr,intCol)", "LongBoxed>=all({1,2},IntArr,intCol)")
 	                .WithStatementConsumer(stmt => eplReference.Set(stmt.GetProperty(StatementProperty.EPL).ToString()));
 
 	            var arrayBean = MakeBean();
@@ -271,7 +271,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	            var fields = "vall,vany".SplitCsv();
 	            string epl;
 
-	            epl = "@name('s0') select " +
+	            epl = "@Name('s0') select " +
 	                "IntBoxed >= all ({DoubleBoxed, LongBoxed}) as vall, " +
 	                "IntBoxed >= any ({DoubleBoxed, LongBoxed}) as vany " +
 	                " from SupportBean(TheString like 'E%')";
@@ -293,7 +293,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	            // test fields
 	            fields = "vall,vany".SplitCsv();
-	            epl = "@name('s0') select " +
+	            epl = "@Name('s0') select " +
 	                "IntBoxed >= all (DoubleBoxed, LongBoxed) as vall, " +
 	                "IntBoxed >= any (DoubleBoxed, LongBoxed) as vany " +
 	                " from SupportBean(TheString like 'E%')";
@@ -318,9 +318,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	    private class ExprCoreRelationalOpAnyArray : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
 	            var fields = "g,ge".SplitCsv();
-	            var epl = "@name('s0') select " +
-	                      "LongBoxed > any ({1, 2}, intArr, intCol) as g, " +
-	                      "LongBoxed >= any ({1, 2}, intArr, intCol) as ge " +
+	            var epl = "@Name('s0') select " +
+	                      "LongBoxed > any ({1, 2}, IntArr, intCol) as g, " +
+	                      "LongBoxed >= any ({1, 2}, IntArr, intCol) as ge " +
 	                      "from SupportBeanArrayCollMap";
 	            env.CompileDeploy(epl).AddListener("s0");
 
@@ -353,7 +353,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	    private class ExprCoreRelationalOpAll : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
 	            var fields = "g,ge,l,le".SplitCsv();
-	            var epl = "@name('s0') select " +
+	            var epl = "@Name('s0') select " +
 	                      "IntPrimitive > all (1, 3, 4) as g, " +
 	                      "IntPrimitive >= all (1, 3, 4) as ge, " +
 	                      "IntPrimitive < all (1, 3, 4) as l, " +
@@ -382,7 +382,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	    private class ExprCoreRelationalOpAny : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
 	            var fields = "g,ge,l,le".SplitCsv();
-	            var epl = "@name('s0') select " +
+	            var epl = "@Name('s0') select " +
 	                      "IntPrimitive > any (1, 3, 4) as g, " +
 	                      "IntPrimitive >= some (1, 3, 4) as ge, " +
 	                      "IntPrimitive < any (1, 3, 4) as l, " +
@@ -415,7 +415,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	            string epl;
 
 	            fields = "eall,eany,neall,neany,isin".SplitCsv();
-	            epl = "@name('s0') select " +
+	            epl = "@Name('s0') select " +
 	                "IntBoxed = all ({DoubleBoxed, LongBoxed}) as eall, " +
 	                "IntBoxed = any ({DoubleBoxed, LongBoxed}) as eany, " +
 	                "IntBoxed != all ({DoubleBoxed, LongBoxed}) as neall, " +
@@ -440,7 +440,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	            // test non-array case
 	            fields = "eall,eany,neall,neany,isin".SplitCsv();
-	            epl = "@name('s0') select " +
+	            epl = "@Name('s0') select " +
 	                "IntBoxed = all (DoubleBoxed, LongBoxed) as eall, " +
 	                "IntBoxed = any (DoubleBoxed, LongBoxed) as eany, " +
 	                "IntBoxed != all (DoubleBoxed, LongBoxed) as neall, " +
@@ -467,10 +467,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCoreAnyAllSomeInvalid : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            SupportMessageAssertUtil.TryInvalidCompile(env, "select intArr = all (1, 2, 3) as r1 from SupportBeanArrayCollMap",
-	                "Failed to validate select-clause expression 'intArr=all(1,2,3)': Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
-	            SupportMessageAssertUtil.TryInvalidCompile(env, "select intArr > all (1, 2, 3) as r1 from SupportBeanArrayCollMap",
-	                "Failed to validate select-clause expression 'intArr>all(1,2,3)': Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
+	            SupportMessageAssertUtil.TryInvalidCompile(env, "select IntArr = all (1, 2, 3) as r1 from SupportBeanArrayCollMap",
+	                "Failed to validate select-clause expression 'IntArr=all(1,2,3)': Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
+	            SupportMessageAssertUtil.TryInvalidCompile(env, "select IntArr > all (1, 2, 3) as r1 from SupportBeanArrayCollMap",
+	                "Failed to validate select-clause expression 'IntArr>all(1,2,3)': Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
 	        }
 	    }
 

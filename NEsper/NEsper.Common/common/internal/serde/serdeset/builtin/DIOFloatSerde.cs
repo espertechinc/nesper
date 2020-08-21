@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 	        return input.ReadFloat();
 	    }
 
-	    public override float Read(DataInput input, byte[] resourceKey) {
+	    public override float ReadValue(DataInput input, byte[] resourceKey) {
 	        return input.ReadFloat();
 	    }
 	}

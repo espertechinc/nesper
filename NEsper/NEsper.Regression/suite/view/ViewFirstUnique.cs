@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 var fields = new [] { "c0", "c1" };
                 var epl =
-                    "@name('s0') select irstream TheString as c0, IntPrimitive as c1 from SupportBean#firstunique(TheString)";
+                    "@Name('s0') select irstream TheString as c0, IntPrimitive as c1 from SupportBean#firstunique(TheString)";
                 if (optionalAnnotations != null) {
                     epl = optionalAnnotations + epl;
                 }
@@ -135,7 +135,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@name('s0') select irstream Symbol, Price from SupportMarketDataBean#firstunique(Symbol) order by Symbol";
+                    "@Name('s0') select irstream Symbol, Price from SupportMarketDataBean#firstunique(Symbol) order by Symbol";
                 if (optionalAnnotation != null) {
                     text = optionalAnnotation + text;
                 }

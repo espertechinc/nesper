@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 }
 
                 exprSymbol.DerivedSymbolsCodegen(method, method.Block, classScope);
-                method.Block.MethodReturn(NewInstance(optionalMultiKey.ClassNameMK, expressions));
+                method.Block.MethodReturn(NewInstanceInner(optionalMultiKey.ClassNameMK, expressions));
             };
 
             return namedMethods.AddMethodWithSymbols(

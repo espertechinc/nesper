@@ -38,14 +38,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 			{
 				var fields = "c0,c1,c2,c3,c4,c5,c6,c7".SplitCsv();
 				var builder = new SupportEvalBuilder("SupportBean_Container");
-				builder.WithExpression(fields[0], "beans.average(x => intBoxed)");
-				builder.WithExpression(fields[1], "beans.average(x => doubleBoxed)");
-				builder.WithExpression(fields[2], "beans.average(x => longBoxed)");
-				builder.WithExpression(fields[3], "beans.average(x => bigDecimal)");
-				builder.WithExpression(fields[4], "beans.average( (x, i) => intBoxed + i*10)");
-				builder.WithExpression(fields[5], "beans.average( (x, i) => bigDecimal + i*10)");
-				builder.WithExpression(fields[6], "beans.average( (x, i, s) => intBoxed + i*10 + s*100)");
-				builder.WithExpression(fields[7], "beans.average( (x, i, s) => bigDecimal + i*10 + s*100)");
+				builder.WithExpression(fields[0], "beans.average(x => IntBoxed)");
+				builder.WithExpression(fields[1], "beans.average(x => DoubleBoxed)");
+				builder.WithExpression(fields[2], "beans.average(x => LongBoxed)");
+				builder.WithExpression(fields[3], "beans.average(x => DecimalBoxed)");
+				builder.WithExpression(fields[4], "beans.average( (x, i) => IntBoxed + i*10)");
+				builder.WithExpression(fields[5], "beans.average( (x, i) => DecimalBoxed + i*10)");
+				builder.WithExpression(fields[6], "beans.average( (x, i, s) => IntBoxed + i*10 + s*100)");
+				builder.WithExpression(fields[7], "beans.average( (x, i, s) => DecimalBoxed + i*10 + s*100)");
 
 				builder.WithStatementConsumer(
 					stmt => AssertTypes(

@@ -47,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var path = new RegressionPath();
             env.CompileDeploy("create context CtxEachString partition by TheString from SupportBean", path);
             env.CompileDeploy(
-                "@name('select') context CtxEachString " +
+                "@Name('select') context CtxEachString " +
                 "select * from SupportBean, " +
                 "  sql:MyDB ['select mycol3 from mytesttable_large where ${TheString} = mycol1']",
                 path);

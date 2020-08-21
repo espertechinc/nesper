@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
                 .MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(_underlyingClassName, "und");
             method.Block
-                .DeclareVar(typeof(object), "inner", ExprDotMethod(Ref("und"), "get", Constant(_propertyName)))
+                .DeclareVar<object>("inner", ExprDotMethod(Ref("und"), "get", Constant(_propertyName)))
                 .IfNotInstanceOf("inner", typeof(IDictionary<string, object>))
                 .BlockReturn(ConstantNull())
                 .MethodReturn(_innerGetter.UnderlyingGetCodegen(Cast(typeof(IDictionary<string, object>), Ref("inner")), method, codegenClassScope));
@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
                 .MakeChild(typeof(bool), GetType(), codegenClassScope)
                 .AddParam(_underlyingClassName, "und");
             method.Block
-                .DeclareVar(typeof(object), "inner", ExprDotMethod(Ref("und"), "Get", Constant(_propertyName)))
+                .DeclareVar<object>("inner", ExprDotMethod(Ref("und"), "Get", Constant(_propertyName)))
                 .IfNotInstanceOf("inner", typeof(IDictionary<string, object>))
                 .BlockReturn(ConstantFalse())
                 .MethodReturn(_innerGetter.UnderlyingExistsCodegen(Cast(typeof(IDictionary<string, object>), Ref("inner")), method, codegenClassScope));

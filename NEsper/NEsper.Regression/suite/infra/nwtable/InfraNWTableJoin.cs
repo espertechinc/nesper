@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create join
                 var stmtTextJoin =
-                    "@name('s0') select ce.cId as c0, sb.IntPrimitive as c1 from MyInfra as ce, SupportBean#keepall() as sb" +
+                    "@Name('s0') select ce.cId as c0, sb.IntPrimitive as c1 from MyInfra as ce, SupportBean#keepall() as sb" +
                     " where sb.TheString = ce.cId";
                 env.CompileDeploy(stmtTextJoin, path).AddListener("s0");
 

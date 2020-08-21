@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 			methodNode.Block
 				.IfCondition(Relational(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"), LE, Constant(1)))
 				.BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
-				.DeclareVar(typeof(IDictionary<object, object>), "distinct", NewInstance(typeof(LinkedHashMap<object, object>)));
+				.DeclareVar<IDictionary<object, object>>("distinct", NewInstance(typeof(LinkedHashMap<object, object>)));
 		}
 
 		public override void ForEachBlock(

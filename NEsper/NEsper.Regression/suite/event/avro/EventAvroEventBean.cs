@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
 
         private void RunAssertionNestedMap(RegressionEnvironment env)
         {
-            env.CompileDeploy("@name('s0') select i.mymap('x') as c0 from MyNestedMap");
+            env.CompileDeploy("@Name('s0') select i.mymap('x') as c0 from MyNestedMap");
             env.AddListener("s0");
 
             var inner = new GenericRecord(INNER_SCHEMA);
@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
             var path = new RegressionPath();
             env.CompileDeployWBusPublicType("create avro schema MyEvent()", path);
 
-            env.CompileDeploy("@name('s0') select * from MyEvent", path).AddListener("s0");
+            env.CompileDeploy("@Name('s0') select * from MyEvent", path).AddListener("s0");
 
             var schema = ((AvroEventType) env.Statement("s0").EventType).SchemaAvro;
             env.SendEventAvro(new GenericRecord(schema.AsRecordSchema()), "MyEvent");

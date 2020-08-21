@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.support.filter
             for (var i = 0; i < _theCase.Filters.Length; i++) {
                 var filter = _theCase.Filters[i];
                 var stmtName = "s" + i;
-                var epl = "@name('" + stmtName + "') select * from SupportBean(" + filter + ")";
+                var epl = "@Name('" + stmtName + "') select * from SupportBean(" + filter + ")";
                 env.CompileDeploy(epl).AddListener(stmtName);
                 existingStatements[i] = true;
                 startedStatements[i] = true;

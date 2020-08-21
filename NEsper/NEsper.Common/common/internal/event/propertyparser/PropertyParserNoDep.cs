@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
         public static MappedPropertyParseResult ParseMappedProperty(string property)
         {
             // split the class and method from the parentheses and argument
-            var indexOpenParen = property.IndexOf("(");
+            var indexOpenParen = property.IndexOf('(');
             if (indexOpenParen == -1) {
                 return null;
             }
@@ -75,8 +75,8 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
 
             // find the first quote
             int startArg;
-            var indexFirstDoubleQuote = parensAndArg.IndexOf("\"");
-            var indexFirstSingleQuote = parensAndArg.IndexOf("'");
+            var indexFirstDoubleQuote = parensAndArg.IndexOf('\"');
+            var indexFirstSingleQuote = parensAndArg.IndexOf('\'');
             if (indexFirstSingleQuote != -1 && indexFirstDoubleQuote != -1) {
                 startArg = Math.Min(indexFirstDoubleQuote, indexFirstSingleQuote);
             }
@@ -92,8 +92,8 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
 
             // find the last quote
             int endArg;
-            var indexLastDoubleQuote = parensAndArg.LastIndexOf("\"");
-            var indexLastSingleQuote = parensAndArg.LastIndexOf("'");
+            var indexLastDoubleQuote = parensAndArg.LastIndexOf('\"');
+            var indexLastSingleQuote = parensAndArg.LastIndexOf('\'');
             if (indexLastSingleQuote != -1 && indexLastDoubleQuote != -1) {
                 endArg = Math.Max(indexLastDoubleQuote, indexLastSingleQuote);
             }
@@ -111,9 +111,9 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
                 return null;
             }
 
-            var argument = parensAndArg.Substring(startArg + 1, endArg);
+            var argument = parensAndArg.Substring(startArg + 1, endArg - startArg - 1);
             // split the class from the method
-            var indexLastDot = classAndMethod.LastIndexOf(".");
+            var indexLastDot = classAndMethod.LastIndexOf('.');
             if (indexLastDot == -1) {
                 // no class name
                 return new MappedPropertyParseResult(null, classAndMethod, argument);

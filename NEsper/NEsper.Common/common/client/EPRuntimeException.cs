@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.client
 {
@@ -40,6 +41,12 @@ namespace com.espertech.esper.common.client
         /// </param>
         public EPRuntimeException(Exception cause)
             : base(MyType.FullName + ": " + cause.Message, cause)
+        {
+        }
+
+        protected EPRuntimeException(
+        SerializationInfo info,
+            StreamingContext context) : base(info, context)
         {
         }
     }

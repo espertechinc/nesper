@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 RegressionPath path = new RegressionPath();
                 env.CompileDeploy("create context MyContext initiated by distinct(array) SupportEventWithIntArray as se", path);
-                env.CompileDeploy("@name('s0') context MyContext select context.se.id as id, sum(intPrimitive) as thesum from SupportBean", path);
+                env.CompileDeploy("@Name('s0') context MyContext select context.se.id as id, sum(IntPrimitive) as thesum from SupportBean", path);
                 env.AddListener("s0");
                 var fields = "id,thesum".SplitCsv();
 
@@ -156,7 +156,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var fields = new [] { "TheString","LongPrimitive","cnt" };
                 env.CompileDeploy(
-                    "@name('s0') context MyContext " +
+                    "@Name('s0') context MyContext " +
                     "select TheString, LongPrimitive, count(*) as cnt from SupportBean(TheString = context.S0.TheString)",
                     path);
                 env.AddListener("s0");
@@ -268,7 +268,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var fields = new [] { "Id","P00","P01","cnt" };
                 env.CompileDeploy(
-                    "@name('s0') context MyContext " +
+                    "@Name('s0') context MyContext " +
                     "select Id, P00, P01, count(*) as cnt " +
                     "from SupportBean_S0(Id = context.sb.IntPrimitive and P00 = context.sb.TheString)",
                     path);
@@ -369,7 +369,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(
                     "create context MyContext initiated by distinct(TheString) SupportBean as sb terminated after 24 hours",
                     path);
-                env.CompileDeploy("@name('s0') context MyContext select count(*) as cnt from SupportBean", path);
+                env.CompileDeploy("@Name('s0') context MyContext select count(*) as cnt from SupportBean", path);
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean(null, 10));
@@ -397,7 +397,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(
                     "create context MyContext initiated by distinct(TheString, IntBoxed, IntPrimitive) SupportBean as sb terminated after 100 hours",
                     path);
-                env.CompileDeploy("@name('s0') context MyContext select count(*) as cnt from SupportBean", path);
+                env.CompileDeploy("@Name('s0') context MyContext select count(*) as cnt from SupportBean", path);
                 env.AddListener("s0");
 
                 SendSBEvent(env, "A", null, 1);

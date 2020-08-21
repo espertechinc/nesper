@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
 		{
 			CodegenMethod method = parent.MakeChild(typeof(AgregationMethodCountMinSketchFreq), this.GetType(), classScope);
 			method.Block
-				.DeclareVar(typeof(AgregationMethodCountMinSketchFreq), "strat", NewInstance(typeof(AgregationMethodCountMinSketchFreq)))
+				.DeclareVar<AgregationMethodCountMinSketchFreq>("strat", NewInstance(typeof(AgregationMethodCountMinSketchFreq)))
 				.SetProperty(Ref("strat"), "FrequencyEval", ExprNodeUtilityCodegen.CodegenEvaluator(_frequencyEval.Forge, method, this.GetType(), classScope))
 				.MethodReturn(Ref("strat"));
 			return LocalMethod(method);

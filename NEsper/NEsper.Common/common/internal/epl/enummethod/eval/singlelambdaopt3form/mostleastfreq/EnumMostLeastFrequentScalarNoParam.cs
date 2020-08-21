@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 				.Block
 				.IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
 				.BlockReturn(ConstantNull())
-				.DeclareVar(typeof(IDictionary<object, int>), "items", NewInstance(typeof(Dictionary<object, int>)));
+				.DeclareVar<IDictionary<object, int>>("items", NewInstance(typeof(Dictionary<object, int>)));
 			
 			var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
 				.DeclareVar<int?>("existing", Cast(typeof(int?), ExprDotMethod(Ref("items"), "Get", Ref("next"))))

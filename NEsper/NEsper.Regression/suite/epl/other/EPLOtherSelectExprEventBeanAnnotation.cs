@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 				var path = new RegressionPath();
 				env.CompileDeployWBusPublicType("create objectarray schema MyEvent(col1 string, col2 string)", path);
 
-				var eplInsert = "@name('insert') insert into DStream select " +
+				var eplInsert = "@Name('insert') insert into DStream select " +
 				                "(select * from MyEvent#keepall) @eventbean as c0 " +
 				                "from SupportBean";
 				env.CompileDeploy(eplInsert, path);
@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 				// test consuming statement
 				var fields = "f0,f1".SplitCsv();
 				env.CompileDeploy(
-						"@name('s0') select " +
+						"@Name('s0') select " +
 						"c0 as f0, " +
 						"c0.lastOf().col1 as f1 " +
 						"from DStream",
@@ -99,10 +99,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 		{
 			var path = new RegressionPath();
 			env.CompileDeployWBusPublicType(
-				rep.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyEvent>() + "@name('schema') create schema MyEvent(col1 string)",
+				rep.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyEvent>() + "@Name('schema') create schema MyEvent(col1 string)",
 				path);
 
-			var eplInsert = "@name('insert') insert into DStream select " +
+			var eplInsert = "@Name('insert') insert into DStream select " +
 			                "last(*) @eventbean as c0, " +
 			                "window(*) @eventbean as c1, " +
 			                "prevwindow(s0) @eventbean as c2 " +
@@ -116,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 			// test consuming statement
 			var fields = "f0,f1,f2,f3,f4,f5".SplitCsv();
 			env.CompileDeploy(
-					"@name('s0') select " +
+					"@Name('s0') select " +
 					"c0 as f0, " +
 					"c0.col1 as f1, " +
 					"c1 as f2, " +
@@ -126,7 +126,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 					"from DStream",
 					path)
 				.AddListener("s0");
-			env.CompileDeploy("@name('s1') select * from MyEvent", path).AddListener("s1");
+			env.CompileDeploy("@Name('s1') select * from MyEvent", path).AddListener("s1");
 
 			var eventOne = SendEvent(env, rep, "E1");
 			if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
@@ -157,7 +157,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 			TryInvalidCompile(
 				env,
 				path,
-				"@name('s0') select last(*) @xxx from MyEvent",
+				"@Name('s0') select last(*) @xxx from MyEvent",
 				"Failed to recognize select-expression annotation 'xxx', expected 'eventbean' in text 'last(*) @xxx'");
 
 			env.UndeployAll();

@@ -110,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select p00 like p01 as r1, " +
+				var epl = "@Name('s0') select p00 like p01 as r1, " +
 				          " p00 like p01 escape \"!\" as r2," +
 				          " p02 regexp p03 as r3 " +
 				          " from SupportBean_S0";
@@ -163,7 +163,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var stmtText = "@name('s0') select p00 like p01 as r1, " +
+				var stmtText = "@Name('s0') select p00 like p01 as r1, " +
 				               "p00 like p01 escape \"!\" as r2, " +
 				               "p02 regexp p03 as r3 " +
 				               "from SupportBean_S0";
@@ -192,7 +192,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@name('s0') select p00 like p01 as r1, " +
+				var epl = "@Name('s0') select p00 like p01 as r1, " +
 				          "p00 like p01 escape \"!\" as r2, " +
 				          "p02 regexp p03 as r3 " +
 				          "from SupportBean_S0";

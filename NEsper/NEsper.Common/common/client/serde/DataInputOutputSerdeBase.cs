@@ -21,11 +21,11 @@ namespace com.espertech.esper.common.client.serde
             Write((T) @object, output, unitKey, writer);
         }
 
-        public object ReadAny(
+        public object Read(
             DataInput input,
             byte[] unitKey)
         {
-            return Read(input, unitKey);
+            return ReadValue(input, unitKey);
         }
 
         public abstract void Write(
@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.client.serde
             byte[] unitKey,
             EventBeanCollatedWriter writer);
 
-        public abstract T Read(
+        public abstract T ReadValue(
             DataInput input,
             byte[] unitKey);
     }

@@ -89,7 +89,7 @@ namespace com.espertech.esper.regressionlib.support.multistmtassert
         {
             for (var i = 0; i < epls.Count; i++) {
                 var name = "s" + i;
-                var epl = "@name('" + name + "') " + epls[i];
+                var epl = "@Name('" + name + "') " + epls[i];
                 log.Info("Compiling and deploying ... {}", epl);
                 env.CompileDeploy(epl).AddListener(name);
             }
@@ -126,7 +126,7 @@ namespace com.espertech.esper.regressionlib.support.multistmtassert
         {
             for (var i = 0; i < epls.Count; i++) {
                 var name = "s" + i;
-                var epl = "@name('" + name + "') " + epls[i];
+                var epl = "@Name('" + name + "') " + epls[i];
                 log.Info("Compiling and deploying ... {}", epl);
                 env.CompileDeploy(epl).AddListener(name);
             }
@@ -157,7 +157,7 @@ namespace com.espertech.esper.regressionlib.support.multistmtassert
             for (var i = 0; i < descriptors.Count; i++) {
                 var name = "s" + i;
                 var desc = descriptors[i];
-                var epl = "@name('" + name + "') " + desc.Epl();
+                var epl = "@Name('" + name + "') " + desc.Epl();
                 log.Info("Compiling and deploying ... {}", epl);
                 env.CompileDeploy(epl).AddListener(name);
             }

@@ -306,7 +306,6 @@ namespace com.espertech.esper.compiler.@internal.util
             var moduleName = arguments.Options.ModuleName?.Invoke(new ModuleNameContext(null));
             var moduleUses = arguments.Options.ModuleUses?.Invoke(new ModuleUsesContext(moduleName, null));
 
-
             ModuleCompileTimeServices compileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses, true);
             try {
                 return CompilerHelperFAFProvider.Compile(compilable, compileTimeServices, arguments);

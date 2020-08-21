@@ -105,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var statements = new EPStatement[4];
             var listeners = new SupportUpdateListener[4];
             for (var i = 0; i < typeNames.Length; i++) {
-                env.CompileDeploy("@name('s" + i + "') select * from " + typePrefix + "_" + typeNames[i], path);
+                env.CompileDeploy("@Name('s" + i + "') select * from " + typePrefix + "_" + typeNames[i], path);
                 statements[i] = env.Statement("s" + i);
                 listeners[i] = new SupportUpdateListener();
                 statements[i].AddListener(listeners[i]);

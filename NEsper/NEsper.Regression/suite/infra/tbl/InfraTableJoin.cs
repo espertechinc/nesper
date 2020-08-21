@@ -115,7 +115,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 epl += " where " + assertion.WhereClause;
 
                 try {
-                    var compiled = env.CompileWCheckedEx("@name('s0')" + epl, path);
+                    var compiled = env.CompileWCheckedEx("@Name('s0')" + epl, path);
                     env.Deploy(compiled).AddListener("s0");
                 }
                 catch (EPCompileException ex) {
@@ -187,7 +187,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var fields = new [] { "TheString"," p1" };
                 var path = new RegressionPath();
                 var epl = "create table MyTable as (p0 string primary key, p1 int);\n" +
-                          "@name('s0') select TheString, p1 from SupportBean unidirectional left outer join MyTable on TheString = p0;\n";
+                          "@Name('s0') select TheString, p1 from SupportBean unidirectional left outer join MyTable on TheString = p0;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
                 env.CompileExecuteFAF("insert into MyTable select 'a' as p0, 10 as p1", path);
 
@@ -221,7 +221,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "select sum(IntPrimitive) as total from SupportBean group by TheString",
                     path);
                 env.CompileDeploy(
-                        "@name('s0') select total as value from SupportBean_S0 as S0, varaggFC as va " +
+                        "@Name('s0') select total as value from SupportBean_S0 as S0, varaggFC as va " +
                         "where va.key = S0.P00",
                         path)
                     .AddListener("s0");
@@ -581,14 +581,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 // Prepare
                 env.CompileDeploy("create table MyTable (sumint sum(int))", path);
                 env.CompileDeploy(
-                    "@name('into') into table MyTable select sum(IntPrimitive) as sumint from SupportBean",
+                    "@Name('into') into table MyTable select sum(IntPrimitive) as sumint from SupportBean",
                     path);
                 env.SendEventBean(new SupportBean("E1", 100));
                 env.SendEventBean(new SupportBean("E2", 101));
                 env.UndeployModuleContaining("into");
 
                 // join simple
-                env.CompileDeploy("@name('join') select sumint from MyTable, SupportBean", path).AddListener("join");
+                env.CompileDeploy("@Name('join') select sumint from MyTable, SupportBean", path).AddListener("join");
                 env.SendEventBean(new SupportBean());
                 Assert.AreEqual(201, env.Listener("join").AssertOneGetNewAndReset().Get("sumint"));
                 env.UndeployModuleContaining("join");
@@ -596,7 +596,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 // test regular columns inserted-into
                 env.CompileDeploy("create table SecondTable (a string, b int)", path);
                 env.CompileExecuteFAF("insert into SecondTable values ('a1', 10)", path);
-                env.CompileDeploy("@name('s0')select a, b from SecondTable, SupportBean", path).AddListener("s0");
+                env.CompileDeploy("@Name('s0')select a, b from SecondTable, SupportBean", path).AddListener("s0");
                 env.SendEventBean(new SupportBean());
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),

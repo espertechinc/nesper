@@ -46,9 +46,9 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 
                 // test on-merge
                 var moduleString =
-                    "@name('S0') create window MyWindow#unique(IntPrimitive) as SupportBean;\n" +
-                    "@name('S1') on MyWindow insert into SecondStream select *;\n" +
-                    "@name('S2') on SecondStream merge MyWindow when matched then insert into ThirdStream select * then delete\n";
+                    "@Name('S0') create window MyWindow#unique(IntPrimitive) as SupportBean;\n" +
+                    "@Name('S1') on MyWindow insert into SecondStream select *;\n" +
+                    "@Name('S2') on SecondStream merge MyWindow when matched then insert into ThirdStream select * then delete\n";
                 var compiled = env.Compile(moduleString);
                 env.Deploy(compiled).UndeployAll().Deploy(compiled).UndeployAll();
 

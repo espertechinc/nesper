@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var fields = new [] { "c0", "c1" };
                 env.AdvanceTime(0);
                 var epl =
-                    "@name('s0') select irstream TheString as c0, IntPrimitive as c1 from SupportBean#firsttime(10 sec)";
+                    "@Name('s0') select irstream TheString as c0, IntPrimitive as c1 from SupportBean#firsttime(10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.Milestone(1);
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
 
-                var text = "@name('s0') select irstream * from SupportMarketDataBean#firsttime(1 sec)";
+                var text = "@Name('s0') select irstream * from SupportMarketDataBean#firsttime(1 sec)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.AdvanceTime(500);
@@ -172,7 +172,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 SendCurrentTime(env, "2002-02-01T09:00:00.000");
-                env.CompileDeployAddListenerMileZero("@name('s0') select * from SupportBean#firsttime(1 month)", "s0");
+                env.CompileDeployAddListenerMileZero("@Name('s0') select * from SupportBean#firsttime(1 month)", "s0");
 
                 SendCurrentTime(env, "2002-02-15T09:00:00.000");
                 env.SendEventBean(new SupportBean("E1", 1));

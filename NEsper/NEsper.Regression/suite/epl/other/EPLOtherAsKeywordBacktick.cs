@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select (select `order`.P00 from SupportBean_S0#lastevent as `order`) as c0 from SupportBean_S1";
+                    "@Name('s0') select (select `order`.P00 from SupportBean_S0#lastevent as `order`) as c0 from SupportBean_S1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "A"));
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 AssertFAF(env, path, "MyWindowMerge", "x", "a");
 
                 env.CompileDeploy(
-                        "@name('s0') on SupportBean select `order`.p0 as c0 from MyWindowMerge as `order`",
+                        "@Name('s0') on SupportBean select `order`.p0 as c0 from MyWindowMerge as `order`",
                         path)
                     .AddListener("s0");
 
@@ -132,7 +132,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy("update istream SupportBean_S0 as `order` set P00=`order`.P01");
-                var epl = "@name('s0') select * from SupportBean_S0";
+                var epl = "@Name('s0') select * from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "a", "x"));
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileExecuteFAF("insert into MyTable select 'x' as k1, 'y' as v1", path);
                 env.CompileExecuteFAF("insert into MyTable select 'a' as k1, 'b' as v1", path);
 
-                var epl = "@name('s0') on SupportBean_S0 as `order` select v1 from MyTable where `order`.P00 = k1";
+                var epl = "@Name('s0') on SupportBean_S0 as `order` select v1 from MyTable where `order`.P00 = k1";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "a"));
@@ -166,7 +166,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select * from SupportBean_S0#lastevent as `order`, SupportBean_S1#lastevent as `select`";
+                    "@Name('s0') select * from SupportBean_S0#lastevent as `order`, SupportBean_S1#lastevent as `select`";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var s0 = new SupportBean_S0(1, "S0_1");

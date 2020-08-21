@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 "  when not matched then insert select '1' as p0, '1' as p1, '1' as p2, '1' as p3, '1' as p4;\n" +
                 "on SupportBean_S0 merge MyTable " +
                 "  when matched then update set p0=P00, p1=P00, p2=P00, p3=P00, p4=P00;\n" +
-                "@name('out') select p0 from SupportBean_S1 unidirectional, MyTable where " +
+                "@Name('out') select p0 from SupportBean_S1 unidirectional, MyTable where " +
                 "(p0='1' and p1='1' and p2='1' and p3='1' and p4='1')" +
                 " or (p0='2' and p1='2' and p2='2' and p3='2' and p4='2')" +
                 ";\n";

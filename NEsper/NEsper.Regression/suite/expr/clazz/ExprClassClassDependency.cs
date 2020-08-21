@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string eplNoImport = "@name('s0') " +
+				string eplNoImport = "@Name('s0') " +
 				                     "inlined_class \"\"\"\n" +
 				                     "    public class MyUtil {\n" +
 				                     "        public static String DoIt(String parameter) {\n" +
@@ -42,10 +42,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 				                     "        }\n" +
 				                     "    }\n" +
 				                     "\"\"\" \n" +
-				                     "select MyUtil.DoIt(theString) as c0 from SupportBean\n";
+				                     "select MyUtil.DoIt(TheString) as c0 from SupportBean\n";
 				RunAssertion(env, eplNoImport);
 
-				string eplImport = "@name('s0') " +
+				string eplImport = "@Name('s0') " +
 				                   "inlined_class \"\"\"\n" +
 				                   "    import " +
 				                   typeof(ExprClassClassDependency).FullName +
@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 				                   "        }\n" +
 				                   "    }\n" +
 				                   "\"\"\" \n" +
-				                   "select MyUtil.DoIt(theString) as c0 from SupportBean\n";
+				                   "select MyUtil.DoIt(TheString) as c0 from SupportBean\n";
 				RunAssertion(env, eplImport);
 			}
 
@@ -96,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 				                    "        }\n" +
 				                    "    }\n" +
 				                    "\"\"\" \n" +
-				                    "select MyClass.DoIt(theString) as c0 from SupportBean\n";
+				                    "select MyClass.DoIt(TheString) as c0 from SupportBean\n";
 				TryInvalidCompile(env, path, eplInvalid, "Failed to compile class: Line 4, Column 27: Unknown variable or type \"MyUtil\" for class");
 
 				// create-class depending on create-class
@@ -115,7 +115,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@name('s0') " +
+				string epl = "@Name('s0') " +
 				             "inlined_class \"\"\"\n" +
 				             "    public class MyUtil {\n" +
 				             "        public static string SomeFunction(String parameter) {\n" +
@@ -130,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 				             "        }\n" +
 				             "    }\n" +
 				             "\"\"\" \n" +
-				             "select MyClass.DoIt(theString) as c0 from SupportBean\n";
+				             "select MyClass.DoIt(TheString) as c0 from SupportBean\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				env.SendEventBean(new SupportBean("E1", 1));

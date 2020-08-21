@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         public void Run(RegressionEnvironment env)
         {
-            var statement = "@name('s0') select * from " +
+            var statement = "@Name('s0') select * from " +
                             "SupportBean_S0#length(100000) as S0," +
                             "SupportBean_S1#length(100000) as S1," +
                             "SupportBean_S2#length(100000) as S2," +

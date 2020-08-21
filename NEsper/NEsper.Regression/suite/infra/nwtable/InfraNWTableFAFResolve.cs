@@ -8,6 +8,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.fireandforget;
@@ -26,11 +28,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
 		public static ICollection<RegressionExecution> Executions()
 		{
-			List<RegressionExecution> execs = new List<RegressionExecution>();
-
+			var execs = new List<RegressionExecution>();
 			execs.Add(new InfraSelectWildcard(true));
 			execs.Add(new InfraSelectWildcard(false));
-
 			return execs;
 		}
 

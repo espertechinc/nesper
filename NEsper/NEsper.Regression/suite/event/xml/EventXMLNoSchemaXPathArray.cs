@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                       "</Participants>\n" +
                       "</Event>";
 
-            env.CompileDeploy("@name('s0') select * from " + eventTypeName, path).AddListener("s0");
+            env.CompileDeploy("@Name('s0') select * from " + eventTypeName, path).AddListener("s0");
 
             SendXMLEvent(env, xml, eventTypeName);
 

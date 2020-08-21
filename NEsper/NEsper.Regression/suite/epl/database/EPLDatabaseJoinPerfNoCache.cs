@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             RegressionEnvironment env,
             string dbname)
         {
-            var stmtText = "@name('s0') select rstream myvarchar from " +
+            var stmtText = "@Name('s0') select rstream myvarchar from " +
                            "SupportBean_S0#length(1000) as S0," +
                            " sql:" +
                            dbname +
@@ -88,7 +88,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             // set time to zero
             env.AdvanceTime(0);
 
-            var stmtText = "@name('s0') select istream myvarchar from " +
+            var stmtText = "@Name('s0') select istream myvarchar from " +
                            "SupportBean_S0#time(1 sec) as S0," +
                            " sql:" +
                            dbname +
@@ -118,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             RegressionEnvironment env,
             string dbname)
         {
-            var stmtText = "@name('s0') select Id, mycol3, mycol2 from " +
+            var stmtText = "@Name('s0') select Id, mycol3, mycol2 from " +
                            "SupportBean_S0#keepall as S0," +
                            " sql:" +
                            dbname +
@@ -143,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             RegressionEnvironment env,
             string dbname)
         {
-            var stmtText = "@name('s0') select myint from " +
+            var stmtText = "@Name('s0') select myint from " +
                            "SupportBean_S0 as S0," +
                            " sql:" +
                            dbname +

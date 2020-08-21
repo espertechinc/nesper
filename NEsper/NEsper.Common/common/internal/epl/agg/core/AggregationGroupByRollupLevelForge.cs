@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                                     expressions[i] = Cast(_allGroupKeyTypes[index], keyExpr);
                                 }
 
-                                block.BlockReturn(NewInstance(_subKeyMultikey.ClassNameMK, expressions));
+                                block.BlockReturn(NewInstanceInner(_subKeyMultikey.ClassNameMK, expressions));
                             }
                         }
                     });
